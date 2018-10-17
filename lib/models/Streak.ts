@@ -20,10 +20,6 @@ export const StreakSchema =  new Schema(
         },
         participants: {
             required: true, 
-            type: Array,
-            select: false
-        },
-        users: {
             type: Array
         },
         startDate: {

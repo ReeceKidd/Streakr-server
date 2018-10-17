@@ -21,9 +21,6 @@ describe("POST /user tests", () => {
       .to.have.property("lastName")
       .eql(postUser.lastName);
     expect(response.body)
-      .to.have.property("email")
-      .eql(postUser.email);
-    expect(response.body)
       .to.have.property("streaks")
       .eql([]);
   });

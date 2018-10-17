@@ -4,7 +4,7 @@ import chaiHttp = require("chai-http");
 import StreakModel from "../lib/models/Streak";
 import UserModel from "../lib/models/User";
 import { userData3, userData4 } from "./test-data";
-import { IStreak, IFixedTermStreak, ILastManStandingStreak } from "../lib/Interfaces";
+import {  IFixedTermStreak, ILastManStandingStreak } from "../lib/Interfaces";
 
 chai.use(chaiHttp);
 const expect = chai.expect;

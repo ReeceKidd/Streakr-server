@@ -45,9 +45,6 @@ describe("GET /user tests VALID", () => {
       .to.have.property("userName")
       .eql(userData2.userName);
     expect(response.body[0])
-      .to.have.property("email")
-      .eql(userData2.email);
-    expect(response.body[0])
       .to.have.property("streaks")
       .eql([]);
   });
@@ -67,9 +64,6 @@ describe("GET /user tests VALID", () => {
       .to.have.property("userName")
       .eql(userData2.userName);
     expect(response.body[0])
-      .to.have.property("email")
-      .eql(userData2.email);
-    expect(response.body[0])
       .to.have.property("streaks")
       .eql([]);
   });
@@ -88,9 +82,6 @@ describe("GET /user tests VALID", () => {
     expect(response.body[0])
       .to.have.property("userName")
       .eql(userData2.userName);
-    expect(response.body[0])
-      .to.have.property("email")
-      .eql(userData2.email);
     expect(response.body[0])
       .to.have.property("streaks")
       .eql([]);
@@ -127,9 +118,6 @@ describe("GET /user?tsearchQuery tests", () => {
       .to.have.property("userName")
       .eql(userData2.userName);
     expect(response.body[0])
-      .to.have.property("email")
-      .eql(userData2.email);
-    expect(response.body[0])
       .to.have.property("streaks")
       .eql([]);
   });
@@ -150,9 +138,6 @@ describe("GET /user?tsearchQuery tests", () => {
     expect(response.body[0])
       .to.have.property("userName")
       .eql(userData2.userName);
-    expect(response.body[0])
-      .to.have.property("email")
-      .eql(userData2.email);
     expect(response.body[0])
       .to.have.property("streaks")
       .eql([]);
@@ -188,8 +173,6 @@ describe("GET /user/:id tests", () => {
       .to.have.property("lastName")
     expect(response.body)
       .to.have.property("userName")
-    expect(response.body)
-      .to.have.property("email")
     expect(response.body)
       .to.have.property("streaks")
       .eql([]);

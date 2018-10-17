@@ -17,6 +17,7 @@ const numberOfStreaks = 2;
 
 before(async () => {
   try {
+    await Promise.all([StreakModel.remove({}), UserModel.remove({})])
     const [userData1Response, userData2Response]  = await Promise.all([chai
     .request(app)
     .post(routes.user)
@@ -72,6 +73,7 @@ describe("GET /streak/:id tests", () => {
     const getAllStreaksResponse = await chai.request(app).get(routes.streak);
     const streakId = getAllStreaksResponse.body[0]._id;
     const response = await chai.request(app).get(`${routes.streak}/${streakId}`);
+    console.log(response.body)
     expect(response.body)
     .to.have.property("streakName")
     .eql(postStreak.streakName);
@@ -82,7 +84,7 @@ describe("GET /streak/:id tests", () => {
     .to.have.property("createdBy")
     .eql(postStreak.createdBy);
   expect(response.body)
-    .to.have.property("users")
+    .to.have.property("participants")
   });
 });
 

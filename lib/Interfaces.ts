@@ -1,4 +1,3 @@
-import { Document } from "mongoose";
 
 interface IUser  {
   firstName: string;
@@ -15,11 +14,9 @@ interface IStreak {
   description: string;
   successCriteria: string;
   createdBy: string;
-  participants: string[]
+  participants: object[]
   startDate: Date;
-  users?: Document[];
   calendar?: object[];
-  
 }
 
 interface IFixedTermStreak extends IStreak {

@@ -30,11 +30,13 @@ const UserSchema = new Schema(
           type: String,
           unique: true,
           trim: true,
-          index: true
+          index: true,
+          select: false
         },
         password: {
           required: true,
-          type: String
+          type: String,
+          select: false, 
         },
         streaks: {
           type: Array,

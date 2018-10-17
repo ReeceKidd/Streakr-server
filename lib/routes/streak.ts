@@ -2,7 +2,6 @@ import { Request, Response, Router, NextFunction } from "express";
 import StreakModel from "../models/Streak";
 import { IStreak } from "Interfaces";
 import UserModel from "../models/User";
-import {Document as MongooseDocument} from "mongoose";
 
 export class StreakRouter {
   public static get(req: Request, res: Response) {
@@ -42,7 +41,7 @@ export class StreakRouter {
     try {
       const body: IStreak = req.body;
       if (body.participants.length === 0 ) throw new Error('Validaition error')
-      body.users = await StreakRouter.getUsersForStreak(body.participants)
+      body.participants = await StreakRouter.getUsersForStreak(body.participants)
       await StreakRouter.saveStreak(body);
       res.send(body)
     } catch (err) {
@@ -51,11 +50,11 @@ export class StreakRouter {
   }
 
   private static async getUsersForStreak(participants) {
-    return Promise.all<MongooseDocument>(
+    return Promise.all<Object>(
       participants.map(async userID => {
         const matchedUser = await UserModel.findOne({ _id: userID });
         if(!matchedUser) throw new Error(`Cannot find user with ID:${userID}`)
-        return matchedUser;
+        return matchedUser.toObject();
       })
     );
   }
