@@ -42,6 +42,9 @@ const UserSchema = new Schema(
           type: Array,
           default: []
         },
+        profilePicture: {
+          type: String
+        },
         createdAt: {
           type: Date,
           required: false
