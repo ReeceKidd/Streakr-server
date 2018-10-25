@@ -1,12 +1,15 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as mongoose from "mongoose";
+import * as winston from "winston";
+import * as WinstonLogger from "WinstonLogger"
 import { Routes } from "./route";
 import config from "../config/_config";
 
 class App {
   public app: express.Application;
   public router: Routes = new Routes();
+  public logger: winston.Logger;
 
   constructor() {
     this.app = express();
@@ -21,20 +24,25 @@ class App {
     this.app.use(bodyParser.urlencoded({ extended: false }));
   }
 
+  private startingAppMessage(): void {
+    
+  }
+
   private errorHandling(): void {
     this.app.use((err: Error, req, res, next) => {
-      console.log(err.message);
       res.status(req.status).send({ ...err });
       next();
     });
   }
 
   private mongoSetup(): void {
-      (<any>mongoose).Promise = global.Promise;
-      mongoose.connect(
+    (<any>mongoose).Promise = global.Promise;
+    mongoose
+      .connect(
         config[this.app.settings.env],
         { useNewUrlParser: true }
-      ).catch(err => console.log(err.message));
+      )
+      .catch(err => console.log(err.message));
   }
 }
 
