@@ -2,14 +2,15 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as mongoose from "mongoose";
 import * as winston from "winston";
-import * as WinstonLogger from "WinstonLogger"
+import * as morgan from "morgan";
+import WinstonLogger from "./WinstonLogger"
 import { Routes } from "./route";
 import config from "../config/_config";
 
 class App {
   public app: express.Application;
   public router: Routes = new Routes();
-  public logger: winston.Logger;
+  public logger = WinstonLogger;
 
   constructor() {
     this.app = express();
@@ -24,12 +25,13 @@ class App {
     this.app.use(bodyParser.urlencoded({ extended: false }));
   }
 
-  private startingAppMessage(): void {
-    
+  private captureHTTPRequests(){
+    this.app.use(morgan('common', {stream: this.logger.stream}));
   }
 
   private errorHandling(): void {
     this.app.use((err: Error, req, res, next) => {
+      this.logger.error(err)
       res.status(req.status).send({ ...err });
       next();
     });
