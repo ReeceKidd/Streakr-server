@@ -11,7 +11,7 @@ class Logger {
   }
   private createWinstonLogger() {
     this.logger = winston.createLogger({
-      level: "info",
+      level: "debug",
       exitOnError: false,
       format: winston.format.json(),
       transports: [

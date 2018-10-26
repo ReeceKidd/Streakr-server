@@ -17,17 +17,13 @@ class App {
     this.config();
     this.mongoSetup();
     this.router.routes(this.app);
-    this.captureHTTPRequests()
     this.errorHandling();
   }
 
   private config(): void {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
-  }
-
-  private captureHTTPRequests(){
-    this.app.use(morgan('tiny', { stream: LoggerStream }));
+    this.app.use(morgan('common', { stream: LoggerStream }));
   }
 
   private errorHandling(): void {
