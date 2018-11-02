@@ -8,7 +8,7 @@ export class Routes {
         /*
         USER ROUTES
         */
-        app.route('/user').get(UserRouter.getAllUsers).post(UserRouter.post);
+        app.route('/users').get(UserRouter.getAllUsers).post(UserRouter.post);
         app.route('/user/:id').get(UserRouter.getById).delete(UserRouter.delete).put(UserRouter.update)
         app.route('/user/login').post(UserRouter.login)
         /*

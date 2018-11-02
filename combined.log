@@ -103,3 +103,9 @@
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"::1 - - [02/Nov/2018:07:30:59 +0000] \"GET /user HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [02/Nov/2018:07:31:16 +0000] \"GET /user HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [02/Nov/2018:07:31:18 +0000] \"GET /user HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::1 - - [02/Nov/2018:07:31:24 +0000] \"GET /user?searchQuery=Kaja HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::1 - - [02/Nov/2018:07:32:25 +0000] \"GET /user?partialTextSearchQuery=Kaja HTTP/1.1\" 200 223\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
