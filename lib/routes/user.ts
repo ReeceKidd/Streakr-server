@@ -4,16 +4,35 @@ import Authentication from "../Authentication";
 import { IUser } from "Interfaces";
 
 export class UserRouter {
-  public static async getAllUsers(req: Request, res: Response) {
-    const defaultUndefinedValue = { $ne: null };
-    const firstName = req.query.firstName || defaultUndefinedValue;
-    const lastName = req.query.lastName || defaultUndefinedValue;
-    const email = req.query.email || defaultUndefinedValue;
-    const partialTextSearchQuery = req.query.searchQuery;
-    const regexSearch = new RegExp(partialTextSearchQuery, "i");
+  public static async getAllUsers(request: Request, response: Response) {
+    const { firstName, lastName, email, partialTextSearchQuery} = UserRouter.getQueryParams(request.query)
+    
+    if(partialTextSearchQuery){
+      const users = await UserRouter.getUsersFromPartialTextSearchQuery(partialTextSearchQuery)
+      return response.send({users})
+    }
 
-    if (partialTextSearchQuery) {
-      const results = await UserModel.aggregate([
+    const standardQuery = UserRouter.getStandardQuery(firstName, lastName, email)
+    const users = await UserRouter.getUsersFromStandardQuery(standardQuery)
+    return response.send({users});
+  }
+
+
+  private static getUsersFromStandardQuery(query: {firstName: string, lastName: string, email: string}){
+    return UserModel.find({ ...query });
+  }
+
+  private static getStandardQuery(firstName: string, lastName: string, email: string){
+    return {
+      firstName, 
+      lastName, 
+      email
+    }
+  }
+
+  private static async getUsersFromPartialTextSearchQuery(partialTextSearchQuery: string){
+    const regexSearch = this.getPartialTextRegularExpression(partialTextSearchQuery)
+      return UserModel.aggregate([
         { $addFields: { name: { $concat: ["$firstName", " ", "$lastName"] } } },
         {
           $match: {
@@ -24,16 +43,39 @@ export class UserRouter {
           }
         }
       ]);
-      return res.send(results);
-    }
+  }
 
-    const query = {
-      firstName,
-      lastName,
-      email
-    };
-    const results = await UserModel.find({ ...query });
-    return res.send(results);
+  private static getPartialTextRegularExpression(partialTextSearchQuery: string){
+    return new RegExp(partialTextSearchQuery, "i");
+  }
+
+  private static getQueryParams(requestQuery){
+    return {
+      firstName: this.getFirstName(requestQuery),
+      lastName: this.getLastName(requestQuery),
+      email: this.getEmail(requestQuery),
+      partialTextSearchQuery: this.getPartialTextSearchQuery(requestQuery)
+    }
+  }
+
+  private static getDefaultUndefinedValue(){
+    return { $ne: null }
+  }
+
+  private static getFirstName(requestQuery){
+    return requestQuery.firstName || this.getDefaultUndefinedValue();
+  }
+
+  private static getLastName(requestQuery){
+    return requestQuery.lastName || this.getDefaultUndefinedValue()
+  }
+
+  private static getEmail(requestQuery){
+    return requestQuery.email || this.getDefaultUndefinedValue()
+  }
+
+  private static getPartialTextSearchQuery(requestQuery){
+    return requestQuery.partialTextSearchQuery
   }
 
   public static getById(req: Request, res: Response) {
