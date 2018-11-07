@@ -1,12 +1,20 @@
 
 interface IUser  {
-  firstName: string;
-  lastName: string;
   userName: string;
   email: string;
   password: string;
-  comparePassword: string;
-  streaks?: object[];
+  createdAt: {
+    type: Date,
+    required: false
+  }, 
+  modifiedAt: {
+    type: Date,
+    required: false
+  }
+  streaks?: IStreak[];
+  profilePicture?: {
+    type: String
+  },
 }
 
 interface IStreak {

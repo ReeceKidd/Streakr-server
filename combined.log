@@ -109,3 +109,64 @@
 {"message":"::1 - - [02/Nov/2018:07:31:24 +0000] \"GET /user?searchQuery=Kaja HTTP/1.1\" 200 2898\n","level":"info"}
 {"message":"::1 - - [02/Nov/2018:07:32:25 +0000] \"GET /user?partialTextSearchQuery=Kaja HTTP/1.1\" 200 223\n","level":"info"}
 {"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [02/Nov/2018:07:33:41 +0000] \"GET /users?partialTextSearchQuery=Kaja HTTP/1.1\" 200 223\n","level":"info"}
+{"message":"::1 - - [02/Nov/2018:07:33:50 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"level":"error"}
+{"message":"::1 - - [02/Nov/2018:07:44:08 +0000] \"GET /user/5b78fcbf7201e224f8228b10 HTTP/1.1\" 500 1822\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [03/Nov/2018:08:12:49 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [03/Nov/2018:08:16:28 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [03/Nov/2018:08:19:18 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [03/Nov/2018:08:22:29 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [03/Nov/2018:08:42:40 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [03/Nov/2018:08:56:42 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [03/Nov/2018:08:58:29 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [03/Nov/2018:08:59:10 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:11:21:32 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:11:36:24 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:11:39:46 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:11:41:17 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:11:42:34 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:11:44:21 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:11:44:26 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:11:56:22 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:11:57:43 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:12:07:34 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:12:09:29 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:12:10:47 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [04/Nov/2018:12:19:29 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [05/Nov/2018:06:57:34 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [05/Nov/2018:07:05:13 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [05/Nov/2018:07:28:11 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [05/Nov/2018:07:34:34 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:19:50:25 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:19:51:24 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:19:57:40 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:19:58:48 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:20:04:30 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:20:05:34 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:20:06:20 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:20:06:52 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:20:11:32 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:20:17:44 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:20:19:45 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:20:21:34 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:20:24:29 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Nov/2018:20:26:19 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Nov/2018:06:56:41 +0000] \"GET /users HTTP/1.1\" 200 2898\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}

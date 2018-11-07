@@ -1,7 +1,7 @@
 import * as bcrypt from "bcrypt";
 
 export default class Auth {
-  public static hashPassword(
+  public static getHashedPassword(
     passwordToHash: string
   ): Promise<string> {
       const saltRounds = 10;
@@ -13,7 +13,7 @@ export default class Auth {
     });
   }
 
-  public static compare(password: string, dbHash: string) {
+  public static comparePasswordToHashedPassword(password: string, dbHash: string) {
     console.log(password, dbHash)
     return new Promise((resolve, reject) => {
       bcrypt.compare(password, dbHash, (err, match) => {

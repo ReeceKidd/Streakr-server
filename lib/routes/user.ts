@@ -78,11 +78,29 @@ export class UserRouter {
     return requestQuery.partialTextSearchQuery
   }
 
-  public static getById(req: Request, res: Response) {
-    UserModel.findById(req.params.id, (err, user) => {
-      if (err) return res.send(err);
-      return res.json(user);
-    });
+  public static async getById(request: Request, response: Response) {
+    const userID = this.getUserID(request.params.userID)
+    const user = await this. getUserById(userID)
+    return response.send({user})
+  }
+
+  private static getUserById(userID: string){
+    // NEED TO CONVERT THIS INTO A PROMISE FOR THIS TO WORK> 
+    return new Promise((resolve, reject) => {
+      UserModel.findById(userID, (err, user) => {
+        if (err) return err
+        return user;
+      });
+    })
+  }
+
+  private static getUserID(userID: string){
+    this.userIDValidation(userID)
+    return userID
+  }
+
+  private static userIDValidation(userID){
+    if(!userID) throw new Error("userID must be defined")
   }
 
   public static update(req: Request, res: Response) {
@@ -104,19 +122,50 @@ export class UserRouter {
     });
   }
 
-  public static async post(req: Request, res: Response) {
-    
-    if(req.body.password !== req.body.comparePassword){
-      return res.status(404).send('Password and compare password do not match.')
-    }
-    req.body.password = await Authentication.hashPassword(req.body.password);
+  public static async register(req: Request, res: Response) {
+    let { password } = req.body
+    const { userName, email } = req.body
+    this.requestBodyValidation(password, userName, email)
+    password = await Authentication.getHashedPassword(password);
+    const newUser = this.createUserFromRequest(req.body)
+    console.log(req.body)
+    this.saveUserToDatabase(newUser)
+  }
 
-    const newUser = new UserModel(req.body);
-    newUser.save(async (err, user) => {
-      if (err) return res.send(err);
-      const validatedUser = await UserModel.findById(user.id)
-      return res.send(validatedUser)
+  private static createUserFromRequest(requestBody){
+    return new UserModel(requestBody)
+  }
+
+  private static saveUserToDatabase(newUser){
+    return new Promise((resolve, reject) => {
+      newUser.save(async (err, user) => {
+        if (err) reject(err);
+        const validatedUser = await this.retreiveCreatedUser(user.id)
+        resolve(validatedUser)
+      });
     });
+  }
+
+  private static retreiveCreatedUser(userId: string){
+    return UserModel.findById(userId)
+  }
+
+  private static requestBodyValidation(password: string, userName: string, email: string){
+    this.passwordValidation(password)
+    this.userNameValidation(userName)
+    this.emailValidation(email)
+  }
+
+  private static passwordValidation(password: string){
+    if(!password) throw new Error('Password is required')
+  }
+
+  private static userNameValidation(userName: string){
+    if(!userName) throw new Error('User Name is required')
+  }
+
+  private static emailValidation(email: string){
+    if(!email) throw new Error('Email is required')
   }
 
   public static async login(req: Request, res: Response){
@@ -129,9 +178,9 @@ export class UserRouter {
       if(!user){
         return res.status(400).send(`No user with userName:${userName} found`)
       }
-      const hashedUserPassword: string = await Authentication.hashPassword(user.password)
+      const hashedUserPassword: string = await Authentication.getHashedPassword(user.password)
       console.log(hashedUserPassword)
-      const passwordsMatch = await Authentication.compare(password, hashedUserPassword);
+      const passwordsMatch = await Authentication.comparePassword(password, hashedUserPassword);
       if(passwordsMatch) return res.status(200).send({message: 'Passwords match'})
       return res.status(404).send({message: `Passwords don't match`});
     } catch(err){

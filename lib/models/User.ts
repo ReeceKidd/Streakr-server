@@ -4,18 +4,6 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
     {
-        firstName: {
-          required: true,
-          type: String,
-          trim: true,
-          index: true
-        },
-        lastName:{
-          required: true,
-          type: String,
-          trim: true,
-          index: true
-        },
         userName: {
           required: true, 
           type: String,
@@ -56,8 +44,7 @@ const UserSchema = new Schema(
       collection: 'Users'
     }   
     )
-    UserSchema.index({firstName: 'text'});
-    UserSchema.index({lastName: 'text'});
+    UserSchema.index({userName: 'text'})
     UserSchema.index({email: 'text'});
     
 
