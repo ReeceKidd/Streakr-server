@@ -122,14 +122,13 @@ export class UserRouter {
     });
   }
 
-  public static async register(req: Request, res: Response) {
-    let { password } = req.body
-    const { userName, email } = req.body
-    this.requestBodyValidation(password, userName, email)
-    password = await Authentication.getHashedPassword(password);
-    const newUser = this.createUserFromRequest(req.body)
-    console.log(req.body)
+  public static async register(request: Request, response: Response) {
+    const { userName, email } = request.body
+    const password = await Authentication.getHashedPassword(request.body.password);
+    const newUser = this.createUserFromRequest(request.body)
+    console.log(request.body)
     this.saveUserToDatabase(newUser)
+    return response.send({newUser})
   }
 
   private static createUserFromRequest(requestBody){
@@ -150,24 +149,6 @@ export class UserRouter {
     return UserModel.findById(userId)
   }
 
-  private static requestBodyValidation(password: string, userName: string, email: string){
-    this.passwordValidation(password)
-    this.userNameValidation(userName)
-    this.emailValidation(email)
-  }
-
-  private static passwordValidation(password: string){
-    if(!password) throw new Error('Password is required')
-  }
-
-  private static userNameValidation(userName: string){
-    if(!userName) throw new Error('User Name is required')
-  }
-
-  private static emailValidation(email: string){
-    if(!email) throw new Error('Email is required')
-  }
-
   public static async login(req: Request, res: Response){
     console.log('Entered method.')
     try {
@@ -180,7 +161,7 @@ export class UserRouter {
       }
       const hashedUserPassword: string = await Authentication.getHashedPassword(user.password)
       console.log(hashedUserPassword)
-      const passwordsMatch = await Authentication.comparePassword(password, hashedUserPassword);
+      const passwordsMatch = await Authentication.comparePasswordToHashedPassword(password, hashedUserPassword);
       if(passwordsMatch) return res.status(200).send({message: 'Passwords match'})
       return res.status(404).send({message: `Passwords don't match`});
     } catch(err){
