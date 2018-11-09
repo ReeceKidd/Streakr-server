@@ -2,10 +2,12 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as mongoose from "mongoose";
 import * as morgan from "morgan";
+import * as expressSession from 'express-session'
 import Logger from "./logging/Logger";
 import LoggerStream from "./logging/LoggerStream";
 import { Routes } from "./route";
 import config from "../config/DATABASE_CONFIG";
+
 
 class App {
   public app: express.Application;
@@ -21,9 +23,22 @@ class App {
   }
 
   private config(): void {
+    this.configureBodyParsing()
+    this.manageSessions()
+    this.logHttpRequests()
+  }
+
+  private logHttpRequests(): void {
+    this.app.use(morgan('common', { stream: LoggerStream }));
+  }
+
+  private configureBodyParsing(): void {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
-    this.app.use(morgan('common', { stream: LoggerStream }));
+  }
+
+  private manageSessions(): void {
+    this.app.use(expressSession({secret: 'test',saveUninitialized: false, resave: false}))
   }
 
   private errorHandling(): void {
