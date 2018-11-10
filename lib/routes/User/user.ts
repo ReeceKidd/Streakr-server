@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import UserModel from "../models/User";
-import Authentication from "../Authentication";
-import { IUser } from "Interfaces";
+import UserModel from "../../models/User";
+import Authentication from "../../Authentication";
+import { IUser } from "../../Interfaces";
 
 export class UserRouter {
   public static async getAllUsers(request: Request, response: Response) {

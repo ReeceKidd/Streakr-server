@@ -42,7 +42,9 @@ class App {
   }
 
   private errorHandling(): void {
+
     this.app.use((err: Error, req, res, next) => {
+      console.log(err)
       this.logger.error(err)
       res.status(req.status).send({ ...err });
       next();
