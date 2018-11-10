@@ -9,8 +9,7 @@
     "start": "set NODE_ENV=DEV&& npm run build:live",
     "build:live": "nodemon --exec ts-node -- ./lib/server.ts",
     "prod": "npm run build && npm start",
-    "test": "set NODE_ENV=TEST&& mocha --timeout 15000 -r ts-node/register ./tests/* --exit",
-    "prepush": "npm test"
+    "test": "set NODE_ENV=TEST&& mocha --timeout 15000 -r ts-node/register ./tests/* --exit"
   },
   "keywords": [],
   "author": "Reece Kidd",
@@ -30,15 +29,12 @@
     "express-http-context": "^1.2.0",
     "express-request-id": "^1.4.1",
     "express-session": "^1.15.6",
-    "express-validation": "^1.0.2",
-    "express-validator": "^5.3.0",
     "joi": "^13.6.0",
     "mongoose": "^5.2.7",
     "morgan": "^1.9.1",
     "winston": "^3.1.0"
   },
   "devDependencies": {
-    "husky": "^0.14.3",
     "ts-node": "^7.0.1",
     "typescript": "^3.0.1"
   }
