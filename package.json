@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node ./lib/server.ts",
+    "dev": "ts-node ./src/server.ts",
     "start": "set NODE_ENV=DEV&& npm run build:live",
-    "build:live": "nodemon --exec ts-node -- ./lib/server.ts",
+    "build:live": "nodemon --exec ts-node -- ./src/server.ts",
     "prod": "npm run build && npm start",
-    "test": "set NODE_ENV=TEST&& mocha --timeout 15000 -r ts-node/register ./tests/* --exit"
+    "test": "jest"
   },
   "keywords": [],
   "author": "Reece Kidd",
@@ -35,6 +35,9 @@
     "winston": "^3.1.0"
   },
   "devDependencies": {
+    "@types/jest": "^23.3.9",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.4",
     "ts-node": "^7.0.1",
     "typescript": "^3.0.1"
   }
