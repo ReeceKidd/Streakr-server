@@ -123,15 +123,12 @@ export class UserRouter {
   }
 
   public static async register(request: Request, response: Response) {
-    const { userName, email } = request.body
-    const password = await Authentication.getHashedPassword(request.body.password);
     const newUser = this.createUserFromRequest(request.body)
-    console.log(request.body)
     this.saveUserToDatabase(newUser)
     return response.send({newUser})
   }
 
-  private static createUserFromRequest(requestBody){
+  public static createUserFromRequest(requestBody){
     return new UserModel(requestBody)
   }
 
