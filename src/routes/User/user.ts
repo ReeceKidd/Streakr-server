@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import UserModel from "../../models/User";
 import Authentication from "../../Authentication";
 import { IUser } from "../../Interfaces";
+import { UserUtils } from "../../Utils/user.utils";
+import {  UserDatabaseHelper } from "../../DatabaseHelpers/userDatabaseHelper";
 
 export class UserRouter {
   public static async getAllUsers(request: Request, response: Response) {
@@ -103,47 +105,14 @@ export class UserRouter {
     if(!userID) throw new Error("userID must be defined")
   }
 
-  public static update(req: Request, res: Response) {
-    UserModel.findOneAndUpdate(
-      { _id: req.params.id },
-      req.body,
-      { new: true },
-      (err, user) => {
-        if (err) return res.send(err);
-        return res.json(user);
-      }
-    );
-  }
 
-  public static delete(req: Request, res: Response) {
-    UserModel.remove({ id: req.params.id }, err => {
-      if (err) return res.send(err);
-      return res.json({ message: "Successfully deleted user" });
-    });
-  }
 
+ 
   public static async register(request: Request, response: Response) {
-    const newUser = this.createUserFromRequest(request.body)
-    this.saveUserToDatabase(newUser)
-    return response.send({newUser})
-  }
-
-  public static createUserFromRequest(requestBody){
-    return new UserModel(requestBody)
-  }
-
-  private static saveUserToDatabase(newUser){
-    return new Promise((resolve, reject) => {
-      newUser.save(async (err, user) => {
-        if (err) reject(err);
-        const validatedUser = await this.retreiveCreatedUser(user.id)
-        resolve(validatedUser)
-      });
-    });
-  }
-
-  private static retreiveCreatedUser(userId: string){
-    return UserModel.findById(userId)
+    const { userName, email, password} = request.body
+    const newUser = UserUtils.createUserFromRequest(userName, email, password)
+    const savedUser = await UserDatabaseHelper.saveUserToDatabase(newUser)
+    return response.send({...savedUser})
   }
 
   public static async login(req: Request, res: Response){
