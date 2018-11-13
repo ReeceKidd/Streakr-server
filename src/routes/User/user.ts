@@ -19,7 +19,6 @@ export class UserRouter {
     return response.send({users});
   }
 
-
   private static getUsersFromStandardQuery(query: {firstName: string, lastName: string, email: string}){
     return UserModel.find({ ...query });
   }
@@ -106,10 +105,11 @@ export class UserRouter {
   }
 
 
-
+  // Need to hash the password on user registration. 
  
   public static async register(request: Request, response: Response) {
     const { userName, email, password} = request.body
+    const hashedUserPassword = await Authentication.getHashedPassword(password)
     const newUser = UserUtils.createUserFromRequest(userName, email, password)
     const savedUser = await UserDatabaseHelper.saveUserToDatabase(newUser)
     return response.send({...savedUser})
