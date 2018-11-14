@@ -11,8 +11,7 @@ export class Routes {
         /*
         USER ROUTES
         */
-        app.use('/users').get(UserRouter.getAllUsers);
-        app.route('/user/:userID').get(UserRouter.getById)
+        app.route('/users').get(UserRouter.getAllUsers);
         app.route('/user/login').post( UserRouter.login)
         app.route('/user/register').post(celebrate(UserValidation.register), UserRouter.register)
         /*

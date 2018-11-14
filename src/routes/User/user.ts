@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import UserModel from "../../models/User";
-import Authentication from "../../Authentication";
+import Authentication from "../../Utils/passsord.helper";
 import { IUser } from "../../Interfaces";
 import { UserUtils } from "../../Utils/user.utils";
 import {  UserDatabaseHelper } from "../../DatabaseHelpers/userDatabaseHelper";
@@ -8,12 +8,10 @@ import {  UserDatabaseHelper } from "../../DatabaseHelpers/userDatabaseHelper";
 export class UserRouter {
   public static async getAllUsers(request: Request, response: Response) {
     const { firstName, lastName, email, partialTextSearchQuery} = UserRouter.getQueryParams(request.query)
-    
     if(partialTextSearchQuery){
       const users = await UserRouter.getUsersFromPartialTextSearchQuery(partialTextSearchQuery)
       return response.send({users})
     }
-
     const standardQuery = UserRouter.getStandardQuery(firstName, lastName, email)
     const users = await UserRouter.getUsersFromStandardQuery(standardQuery)
     return response.send({users});
@@ -79,11 +77,7 @@ export class UserRouter {
     return requestQuery.partialTextSearchQuery
   }
 
-  public static async getById(request: Request, response: Response) {
-    const userID = this.getUserID(request.params.userID)
-    const user = await this. getUserById(userID)
-    return response.send({user})
-  }
+ 
 
   private static getUserById(userID: string){
     // NEED TO CONVERT THIS INTO A PROMISE FOR THIS TO WORK> 
@@ -95,24 +89,17 @@ export class UserRouter {
     })
   }
 
-  private static getUserID(userID: string){
-    this.userIDValidation(userID)
-    return userID
-  }
-
-  private static userIDValidation(userID){
-    if(!userID) throw new Error("userID must be defined")
-  }
+  
 
 
   // Need to hash the password on user registration. 
  
   public static async register(request: Request, response: Response) {
     const { userName, email, password} = request.body
-    const hashedUserPassword = await Authentication.getHashedPassword(password)
-    const newUser = UserUtils.createUserFromRequest(userName, email, password)
-    const savedUser = await UserDatabaseHelper.saveUserToDatabase(newUser)
-    return response.send({...savedUser})
+    const hashedPassword = await Authentication.getHashedPassword(password)
+    const newUser = UserUtils.createUserFromRequest(userName, email, hashedPassword)
+    await UserDatabaseHelper.saveUserToDatabase(newUser)
+    return response.status(200).send(newUser)
   }
 
   public static async login(req: Request, res: Response){

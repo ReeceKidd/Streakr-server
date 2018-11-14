@@ -1,6 +1,6 @@
 import * as bcrypt from "bcrypt";
 
-export default class Auth {
+export default class PasswordHelper {
   public static getHashedPassword(
     passwordToHash: string
   ): Promise<string> {
