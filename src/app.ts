@@ -2,6 +2,7 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as mongoose from "mongoose";
 import * as morgan from "morgan";
+import * as passport from 'passport'
 import Logger from "./logging/Logger";
 import LoggerStream from "./logging/LoggerStream";
 import { Routes } from "./route";
@@ -23,11 +24,9 @@ class App {
 
   private config(): void {
     this.configureBodyParsing()
-    this.logHttpRequests()
-  }
-
-  private logHttpRequests(): void {
     this.app.use(morgan('common', { stream: LoggerStream }));
+    this.app.use(passport.initialize())
+    this.app.use(passport.session())
   }
 
   private configureBodyParsing(): void {
@@ -36,7 +35,6 @@ class App {
   }
 
   private errorHandling(): void {
-
     this.app.use((err: Error, req, res, next) => {
       console.log(err)
       this.logger.error(err)

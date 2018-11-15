@@ -8,8 +8,16 @@ const register = {
       }),
 };
 
+const login = {
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).required()
+  })
+}
+
 const UserValidation = {
-  register
+  register,
+  login
 };
 
 export { UserValidation };

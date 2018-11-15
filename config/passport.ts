@@ -1,14 +1,12 @@
 
-import passport from "passport";
-import passportLocal from "passport-local";
-import _ from 'lodash'
+import * as passport from "passport";
+import {Strategy} from "passport-local";
+import * as _ from 'lodash'
 
-// import { User, UserType } from '../models/User';
-import { default as User } from "../models/User";
+import User from "../src/models/User";
 import { Request, Response, NextFunction } from "express";
 
-const LocalStrategy = passportLocal;
-
+const LocalStrategy = Strategy;
 
 passport.serializeUser<any, any>((user, done) => {
   done(undefined, user.id);
@@ -38,20 +36,15 @@ passport.use(new LocalStrategy({ usernameField: "email" }, (email, password, don
 }));
 
 
-/**
- * Login Required middleware.
- */
-export let isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+  console.log(req)
   if (req.isAuthenticated()) {
     return next();
   }
   res.redirect("/login");
 };
 
-/**
- * Authorization Required middleware.
- */
-export let isAuthorized = (req: Request, res: Response, next: NextFunction) => {
+export const isAuthorized = (req: Request, res: Response, next: NextFunction) => {
   const provider = req.path.split("/").slice(-1)[0];
 
   if (_.find(req.user.tokens, { kind: provider })) {
