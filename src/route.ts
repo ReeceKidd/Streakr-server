@@ -4,6 +4,7 @@ import  UserRouter  from './routes/User/user';
 import { UserValidation } from './routes/User/user.validation'
 import { celebrate, errors } from 'celebrate'
 import {isAuthenticated} from '../config/passport'
+import { UserDatabaseHelper } from './DatabaseHelpers/userDatabaseHelper';
 
 
 export class Routes {
@@ -13,7 +14,7 @@ export class Routes {
         USER ROUTES
         */
         app.route('/users').get(isAuthenticated, UserRouter.getAllUsers);
-        app.route('/user/login').post(isAuthenticated, UserRouter.login)
+        app.route('/user/login').post(celebrate(UserValidation.login), UserDatabaseHelper.doesUserExist, UserRouter.login)
         app.route('/user/register').post(celebrate(UserValidation.register), UserRouter.register)
         /*
         STREAK ROUTES
