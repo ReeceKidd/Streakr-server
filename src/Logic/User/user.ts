@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import UserModel from "../../models/User";
+import UserModel from "../../Models/User";
 import Authentication from "../../Utils/passsord.helper";
 import { IUser } from "../../Interfaces";
 import { UserUtils } from "../../Utils/user.utils";
@@ -7,6 +7,7 @@ import {  UserDatabaseHelper } from "../../DatabaseHelpers/userDatabaseHelper";
 
 export class UserRouter {
   public static async getAllUsers(request: Request, response: Response) {
+    console.log('Entered')
     const { firstName, lastName, email, partialTextSearchQuery} = UserRouter.getQueryParams(request.query)
     if(partialTextSearchQuery){
       const users = await UserRouter.getUsersFromPartialTextSearchQuery(partialTextSearchQuery)
@@ -79,15 +80,15 @@ export class UserRouter {
 
  
 
-  private static getUserById(userID: string){
-    // NEED TO CONVERT THIS INTO A PROMISE FOR THIS TO WORK> 
-    return new Promise((resolve, reject) => {
-      UserModel.findById(userID, (err, user) => {
-        if (err) return err
-        return user;
-      });
-    })
-  }
+  // private static getUserById(userID: string){
+  //   // NEED TO CONVERT THIS INTO A PROMISE FOR THIS TO WORK> 
+  //   return new Promise((resolve, reject) => {
+  //     UserModel.findById(userID, (err, user) => {
+  //       if (err) return err
+  //       return user;
+  //     });
+  //   })
+  // }
 
   
 
@@ -95,11 +96,16 @@ export class UserRouter {
   // Need to hash the password on user registration. 
  
   public static async register(request: Request, response: Response) {
-    const { userName, email, password} = request.body
-    const hashedPassword = await Authentication.getHashedPassword(password)
-    const newUser = UserUtils.createUserFromRequest(userName, email, hashedPassword)
-    await UserDatabaseHelper.saveUserToDatabase(newUser)
-    return response.status(200).send(newUser)
+    try {
+      const { userName, email, password} = request.body
+      const hashedPassword = await Authentication.getHashedPassword(password)
+      const newUser = UserUtils.createUserFromRequest(userName, email, hashedPassword)
+      await UserDatabaseHelper.saveUserToDatabase(newUser)
+      return response.status(200).send(newUser)
+    } catch(err){
+      return response.status(500).send({message: err.message})
+    }
+   
   }
 
   public static async login(req: Request, res: Response){

@@ -1,4 +1,4 @@
-import UserModel from "./../models/User";
+import UserModel from "./../Models/User";
 
 export class UserUtils {
 

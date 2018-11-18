@@ -3,7 +3,7 @@ import * as passport from "passport";
 import {Strategy} from "passport-local";
 import * as _ from 'lodash'
 
-import User from "../src/models/User";
+import User from "../src/Models/User";
 import { Request, Response, NextFunction } from "express";
 
 const LocalStrategy = Strategy;

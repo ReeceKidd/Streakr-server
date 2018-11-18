@@ -3,9 +3,9 @@ import * as bodyParser from "body-parser";
 import * as mongoose from "mongoose";
 import * as morgan from "morgan";
 import * as passport from 'passport'
-import Logger from "./logging/Logger";
-import LoggerStream from "./logging/LoggerStream";
-import { Routes } from "./route";
+import Logger from "./Logging/Logger";
+import LoggerStream from "./Logging/LoggerStream";
+import { Routes } from "./Routes/routes"
 import config from "../config/DATABASE_CONFIG";
 
 

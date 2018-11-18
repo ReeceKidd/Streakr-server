@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import StreakModel from "../../models/Streak";
+import StreakModel from "../../Models/Streak";
 import { IStreak } from "../../Interfaces";
-import UserModel from "../../models/User";
+import UserModel from "../../Models/User";
 
 export class StreakRouter {
   public static get(req: Request, res: Response) {
