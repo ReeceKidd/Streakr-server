@@ -3,7 +3,7 @@ import UserLogic from "../Logic/User/user";
 import { UserValidation } from "../validation/user.validation";
 import { celebrate, errors } from "celebrate";
 import { isAuthenticated } from "../../config/passport";
-import { UserMiddleware } from "../Middleware/user.middleware";
+import { UserValidationMiddleware } from "../Middleware/user.validation.middleware";
 
 export class Routes {
   public routes(app): void {
@@ -16,10 +16,10 @@ export class Routes {
       .route("/user/register")
       .post(
         celebrate(UserValidation.register),
-        UserMiddleware.doesUserEmailExist,
-        UserMiddleware.userEmailExistsValidation,
-        UserMiddleware.doesUserNameExist,
-        UserMiddleware.userNameExistsValidation,
+        UserValidationMiddleware.doesUserEmailExist,
+        UserValidationMiddleware.userEmailExistsValidation,
+        UserValidationMiddleware.doesUserNameExist,
+        UserValidationMiddleware.userNameExistsValidation,
         UserLogic.register
       );
 
