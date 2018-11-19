@@ -5,7 +5,7 @@ import { ErrorMessageHelper } from "../Utils/errorMessage.helper";
 const emailKey = 'email'
 const userNameKey = 'userName'
 
-export class UserMiddleware {
+export class UserValidationMiddleware {
  
   public static async doesUserEmailExist(request: Request, response: Response, next: Function){
     const { email } = request.body;
@@ -41,4 +41,3 @@ export class UserMiddleware {
  
 }
 
-//NEED TO FIX THE FLOW OF THIS MIDDLEWARE VALIDATION TO WORK CORRECTLY.
