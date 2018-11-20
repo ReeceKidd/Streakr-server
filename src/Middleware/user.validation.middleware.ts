@@ -7,9 +7,9 @@ const userNameKey = 'userName'
 
 export class UserValidationMiddleware {
  
-  public static async doesUserEmailExist(request: Request, response: Response, next: Function){
+  public static doesUserEmailExist(request: Request, response: Response, next: Function){
     const { email } = request.body;
-    request.body.emailAlreadyExists = await UserDatabaseHelper.doesUserEmailExist(
+    request.body.emailAlreadyExists = UserDatabaseHelper.doesUserEmailExist(
       email
     );
     next()
