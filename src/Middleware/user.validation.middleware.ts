@@ -13,21 +13,21 @@ export class UserValidationMiddleware {
     next();
   }
   
-  public static async doesUserEmailExist(request: Request, response: Response, next: Function){
+  public static async setEmailExists(request: Request, response: Response, next: Function){
     const { email, doesUserEmailExist } = request.body;
-    request.body.emailAlreadyExists = await doesUserEmailExist(email)
+    request.body.emailExists = await doesUserEmailExist(email)
     next()
   }
 
-  public static async doesUserNameExist(request: Request, response: Response, next: Function){
-    const { userName } = request.body;
-    request.body.userNameAlreadyExists = await UserDatabaseHelper.doesUserNameExist(
+  public static async setUserNameExists(request: Request, response: Response, next: Function){
+    const { userName, doesUserNameExist } = request.body;
+    request.body.userNameExists = await doesUserNameExist(
       userName
     );
     next()
   }
 
-  public static userEmailExistsValidation(request: Request, response: Response, next: Function){
+  public static emailExistsValidation(request: Request, response: Response, next: Function){
     const { emailAlreadyExists, email } = request.body;
     if (emailAlreadyExists) {
       return response.status(400).send({ message: ErrorMessageHelper.generateAlreadyExistsMessage(emailKey, email) });
