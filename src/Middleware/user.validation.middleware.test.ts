@@ -37,8 +37,8 @@ const classMethods = {
 
     it("should set request.body.emailExists to false when email does not exist", async () => {
         
-        const mockedDoesUserNameExistsDatabaseCall = () => Promise.resolve(false)
-        const request: any = {body: {doesUserNameExist: mockedDoesUserNameExistsDatabaseCall}}
+        const mockedDoesEmailExistsDatabaseCall = () => Promise.resolve(false)
+        const request: any = {body: {doesUserNameExist: mockedDoesEmailExistsDatabaseCall}}
 
         const middleware = await UserValidationMiddleware.setUserNameExists;
         expect.assertions(1) 
