@@ -8,18 +8,19 @@ const userNameKey = 'userName'
 export class UserValidationMiddleware {
  
   public static injectDependencies(request: Request, response: Response, next: Function){
+    console.log(response)
     response.locals.doesUserEmailExist = UserDatabaseHelper.doesUserEmailExist
     response.locals.doesUserNameExist = UserDatabaseHelper.doesUserNameExist
     next();
   }
   
-  public static async setEmailExists(request: Request, response: Response, next: Function){
+  public static async doesEmailExist(request: Request, response: Response, next: Function){
     const { email, doesUserEmailExist } = response.locals;
     response.locals.emailExists = await doesUserEmailExist(email)
     next()
   }
 
-  public static async setUserNameExists(request: Request, response: Response, next: Function){
+  public static async doesUserNameExist(request: Request, response: Response, next: Function){
     const { userName, doesUserNameExist } = response.locals;
     response.locals.userNameExists = await doesUserNameExist(
       userName

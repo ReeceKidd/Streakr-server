@@ -13,5 +13,6 @@ describe("UserUtils - createUserFromRequest()", () => {
         expect(user).toHaveProperty('streaks')
         expect(user).toHaveProperty('userName')
     });
+
   });
   

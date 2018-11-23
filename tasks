@@ -1,1 +1,2 @@
-Get node js and mongo connected. 
+Figure out how to make the middleware follow the Single responsibility and get it unit tested, 
+also figure out how to get dependency injection on it. 
