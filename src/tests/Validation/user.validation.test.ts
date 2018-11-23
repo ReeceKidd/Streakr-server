@@ -1,5 +1,5 @@
 import { celebrate } from "celebrate";
-import { UserValidation } from "../../src/Validation/user.validation";
+import { UserValidation } from "../../../src/Validation/user.validation";
 
 const validUserName = "Tester";
 const validEmail = "tester@gmail.com";

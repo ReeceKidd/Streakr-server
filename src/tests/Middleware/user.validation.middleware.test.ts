@@ -1,5 +1,5 @@
-import { UserValidationMiddleware } from "../../src/Middleware/user.validation.middleware";
-import { UserDatabaseHelper } from "../../src/DatabaseHelpers/userDatabaseHelper";
+import { UserValidationMiddleware } from "../../../src/Middleware/user.validation.middleware";
+import { UserDatabaseHelper } from "../../../src/DatabaseHelpers/userDatabaseHelper";
 
 const className = 'UserMiddleware'
 const classMethods = {

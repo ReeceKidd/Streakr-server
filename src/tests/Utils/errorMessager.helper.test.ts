@@ -1,4 +1,4 @@
-import {ErrorMessageHelper} from "../../src/Utils/errorMessage.helper";
+import {ErrorMessageHelper} from "../../../src/Utils/errorMessage.helper";
 
 describe("ErrorMessageHelper - generateAlreadyExistsMessage", () => {
     it("should return correct error message", async() => {

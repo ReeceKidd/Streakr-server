@@ -1,4 +1,4 @@
-import Authentication from "../../src/Utils/passsord.helper";
+import Authentication from "../../../src/Utils/passsord.helper";
 
 describe("Authentication - getHashedPassword", () => {
     it("should return hashed password", async() => {
