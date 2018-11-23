@@ -8,7 +8,6 @@ const userNameKey = 'userName'
 export class UserValidationMiddleware {
  
   public static injectDependencies(request: Request, response: Response, next: Function){
-    console.log(response)
     response.locals.doesUserEmailExist = UserDatabaseHelper.doesUserEmailExist
     response.locals.doesUserNameExist = UserDatabaseHelper.doesUserNameExist
     next();

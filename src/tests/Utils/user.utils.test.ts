@@ -1,4 +1,4 @@
-import { UserUtils } from "./user.utils";
+import { UserUtils } from "../../src/Utils/user.utils";
 
 describe("UserUtils - createUserFromRequest()", () => {
     it("checks that valid user is created", () => {
