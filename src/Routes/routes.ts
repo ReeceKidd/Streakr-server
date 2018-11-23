@@ -16,8 +16,8 @@ export class Routes {
       .route("/user/register")
       .post(
         celebrate(UserValidation.register),
-        UserValidationMiddleware.doesUserEmailExist,
-        UserValidationMiddleware.userEmailExistsValidation,
+        UserValidationMiddleware.doesEmailExist,
+        UserValidationMiddleware.emailExistsValidation,
         UserValidationMiddleware.doesUserNameExist,
         UserValidationMiddleware.userNameExistsValidation,
         UserLogic.register

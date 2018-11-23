@@ -4,76 +4,106 @@ import { UserDatabaseHelper } from "../DatabaseHelpers/userDatabaseHelper";
 const className = 'UserMiddleware'
 const classMethods = {
     injectDependencies: 'injectDependencies',
-    setEmailExists: 'setEmailExists',
-    setUserNameExists: 'setUserNameExists'
+    doesEmailExist: 'doesEmailExist',
+    doesUserNameExist: 'doesUserNameExist',
+    emailExistsValidation: 'emailExistsValidation', 
+    userNameExistsValidation: 'userNameExistsValidation'
 }
 
-
   describe(`${className} - ${classMethods.injectDependencies}`, () => {
-    it("should update request.body to contain the validation functions for dependency injection", async () => {
+    it("should update response.body to contain the validation functions for dependency injection", async () => {
         
-        const request: any = {body: {}} 
+        const response: any = {body: {}} 
         const middleware = UserValidationMiddleware.injectDependencies;
         expect.assertions(2) 
-        middleware(request, null, err => {
-            expect(request.body.doesUserEmailExist).toBe(UserDatabaseHelper.doesUserEmailExist);
-            expect(request.body.doesUserNameExist).toBe(UserDatabaseHelper.doesUserNameExist);
+        middleware(response, null, err => {
+            expect(response.locals.doesUserEmailExist).toBe(UserDatabaseHelper.doesUserEmailExist);
+            expect(response.locals.doesUserNameExist).toBe(UserDatabaseHelper.doesUserNameExist);
           });      
     });
   });
 
-  describe(`${className} - ${classMethods.setEmailExists}`, () => {
-    it("should set request.body.emailExists to true when email exists", async () => {
+  describe(`${className} - ${classMethods.doesEmailExist}`, () => {
+    it("should set response.locals.emailExists to true when email exists", async () => {
         
         const mockedDoesUserEmailExistsDatabaseCall = () => Promise.resolve(true)
-        const request: any = {body: {doesUserEmailExist: mockedDoesUserEmailExistsDatabaseCall}}
+        const response: any = {body: {doesUserEmailExist: mockedDoesUserEmailExistsDatabaseCall}}
 
-        const middleware = await UserValidationMiddleware.setEmailExists;
+        const middleware = await UserValidationMiddleware.doesEmailExist;
         expect.assertions(1) 
-        middleware(request, null, err => {
-            expect(request.body.emailExists).toBe(true);
+        middleware(response, null, err => {
+            expect(response.locals.emailExists).toBe(true);
           });      
     });
 
-    it("should set request.body.emailExists to false when email does not exist", async () => {
+    it("should set response.locals.emailExists to false when email does not exist", async () => {
         
         const mockedDoesEmailExistsDatabaseCall = () => Promise.resolve(false)
-        const request: any = {body: {doesUserNameExist: mockedDoesEmailExistsDatabaseCall}}
+        const response: any = {body: {doesUserNameExist: mockedDoesEmailExistsDatabaseCall}}
 
-        const middleware = await UserValidationMiddleware.setUserNameExists;
+        const middleware = await UserValidationMiddleware.doesUserNameExist;
         expect.assertions(1) 
-        middleware(request, null, err => {
-            expect(request.body.userNameExists).toBe(false);
+        middleware(response, null, err => {
+            expect(response.locals.userNameExists).toBe(false);
           });      
     });
 
   });
 
-  describe(`${className} - ${classMethods.setUserNameExists}`, () => {
-    it("should set request.body.userNameExists to true when userName exists", async () => {
+  describe(`${className} - ${classMethods.doesUserNameExist}`, () => {
+    it("should set response.locals.userNameExists to true when userName exists", async () => {
         
         const mockedDoesUserNameExistsDatabaseCall = () => Promise.resolve(true)
-        const request: any = {body: {doesUserNameExist: mockedDoesUserNameExistsDatabaseCall}}
+        const response: any = {body: {doesUserNameExist: mockedDoesUserNameExistsDatabaseCall}}
 
-        const middleware = await UserValidationMiddleware.setUserNameExists;
+        const middleware = await UserValidationMiddleware.doesUserNameExist;
         expect.assertions(1) 
-        middleware(request, null, err => {
-            expect(request.body.userNameExists).toBe(true);
+        middleware(response, null, err => {
+            expect(response.locals.userNameExists).toBe(true);
           });      
     });
 
-    it("should set request.body.userNameExists to false when userName does not exist", async () => {
+    it("should set response.locals.userNameExists to false when userName does not exist", async () => {
         
         const mockedDoesUserNameExistsDatabaseCall = () => Promise.resolve(false)
-        const request: any = {body: {doesUserNameExist: mockedDoesUserNameExistsDatabaseCall}}
+        const response: any = {body: {doesUserNameExist: mockedDoesUserNameExistsDatabaseCall}}
 
-        const middleware = await UserValidationMiddleware.setUserNameExists;
+        const middleware = await UserValidationMiddleware.doesUserNameExist;
         expect.assertions(1) 
-        middleware(request, null, err => {
-            expect(request.body.userNameExists).toBe(false);
+        middleware(response, null, err => {
+            expect(response.locals.userNameExists).toBe(false);
           });      
     });
   });
+
+  describe(`${className} - ${classMethods.emailExistsValidation}`, () => {
+    it("should update response.body to contain the validation functions for dependency injection", async () => {
+        
+        const response: any = {body: {}} 
+        const middleware = UserValidationMiddleware.injectDependencies;
+        expect.assertions(2) 
+        middleware(response, null, err => {
+            expect(response.locals.doesUserEmailExist).toBe(UserDatabaseHelper.doesUserEmailExist);
+            expect(response.locals.doesUserNameExist).toBe(UserDatabaseHelper.doesUserNameExist);
+          });      
+    });
+  });
+
+  describe(`${className} - ${classMethods.userNameExistsValidation}`, () => {
+    it("should update response.body to contain the validation functions for dependency injection", async () => {
+        
+        const response: any = {body: {}} 
+        const middleware = UserValidationMiddleware.injectDependencies;
+        expect.assertions(2) 
+        middleware(response, null, err => {
+            expect(response.locals.doesUserEmailExist).toBe(UserDatabaseHelper.doesUserEmailExist);
+            expect(response.locals.doesUserNameExist).toBe(UserDatabaseHelper.doesUserNameExist);
+          });      
+    });
+  });
+
+  // Need to do the tests for email exists validation and username exists validation, and then 
+  // update the route to use all of the user validation middleware. 
 
 
 
