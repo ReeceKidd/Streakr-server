@@ -14,13 +14,19 @@ export class UserValidationMiddleware {
   }
   
   public static async doesEmailExist(request: Request, response: Response, next: Function){
-    const { email, doesUserEmailExist } = response.locals;
-    response.locals.emailExists = await doesUserEmailExist(email)
+    const { email } = request.body
+    const { doesUserEmailExist } = response.locals;
+
+      const result = await doesUserEmailExist(email)
+
+      response.locals.emailExists = result
+   
     next()
   }
 
   public static async doesUserNameExist(request: Request, response: Response, next: Function){
-    const { userName, doesUserNameExist } = response.locals;
+    const { userName } = request.body
+    const { doesUserNameExist } = response.locals;
     response.locals.userNameExists = await doesUserNameExist(
       userName
     );
@@ -32,6 +38,7 @@ export class UserValidationMiddleware {
     if (emailAlreadyExists) {
       return response.status(400).send({ message: ErrorMessageHelper.generateAlreadyExistsMessage(emailKey, email) });
     }
+    console.log('Passed email exists validation')
     next()
   }
 

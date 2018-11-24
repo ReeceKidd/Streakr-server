@@ -2,7 +2,6 @@ import StreakLogic from "../Logic/Streak/streak";
 import UserLogic from "../Logic/User/user";
 import { UserValidation } from "../validation/user.validation";
 import { celebrate, errors } from "celebrate";
-import { isAuthenticated } from "../../config/passport";
 import { UserValidationMiddleware } from "../Middleware/user.validation.middleware";
 
 export class Routes {
@@ -16,6 +15,7 @@ export class Routes {
       .route("/user/register")
       .post(
         celebrate(UserValidation.register),
+        UserValidationMiddleware.injectDependencies,
         UserValidationMiddleware.doesEmailExist,
         UserValidationMiddleware.emailExistsValidation,
         UserValidationMiddleware.doesUserNameExist,

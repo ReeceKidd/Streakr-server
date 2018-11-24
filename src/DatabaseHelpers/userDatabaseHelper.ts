@@ -15,7 +15,6 @@ export class UserDatabaseHelper {
 
 
   public static doesUserEmailExist(email: string): Promise<boolean>{
-    console.log(email)
     return new Promise((resolve, reject) => {
       UserModel.findOne({email: email}, (err, user) => {
         if (err) reject(err);

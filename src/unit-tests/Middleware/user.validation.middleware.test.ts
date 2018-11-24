@@ -10,13 +10,17 @@ const classMethods = {
     userNameExistsValidation: 'userNameExistsValidation'
 }
 
+const mockEmail = 'mockedemail@gmail.com'
+const mockUserName = 'mock-username'
+
   describe(`${className} - ${classMethods.injectDependencies}`, () => {
     it("should update response.body to contain the validation functions for dependency injection", async () => {
         
         const response: any = {locals: {}} 
         const middleware = UserValidationMiddleware.injectDependencies;
-        expect.assertions(2) 
+        
         middleware(null, response, err => {
+          expect.assertions(2) 
             expect(response.locals.doesUserEmailExist).toBe(UserDatabaseHelper.doesUserEmailExist);
             expect(response.locals.doesUserNameExist).toBe(UserDatabaseHelper.doesUserNameExist);
           });      
@@ -26,25 +30,32 @@ const classMethods = {
   describe(`${className} - ${classMethods.doesEmailExist}`, () => {
     it("should set response.locals.emailExists to true when email exists", async () => {
         
-        const mockedDoesUserEmailExistsDatabaseCall = () => Promise.resolve(true)
+        const mockedDoesUserEmailExistsDatabaseCall = jest.fn(() => Promise.resolve(true))
+
+        const request: any = {body: {email: mockEmail}}
         const response: any = {locals: {doesUserEmailExist: mockedDoesUserEmailExistsDatabaseCall}}
 
         const middleware = await UserValidationMiddleware.doesEmailExist;
-        expect.assertions(1) 
-        middleware(null, response, err => {
+        
+        middleware(request, response, err => {
+          expect.assertions(2) 
+            expect(mockedDoesUserEmailExistsDatabaseCall).toBeCalledWith(mockEmail)
             expect(response.locals.emailExists).toBe(true);
           });      
     });
 
     it("should set response.locals.emailExists to false when email does not exist", async () => {
         
-        const mockedDoesEmailExistsDatabaseCall = () => Promise.resolve(false)
-        const response: any = {locals: {doesUserNameExist: mockedDoesEmailExistsDatabaseCall}}
+        const mockedDoesEmailExistsDatabaseCall = jest.fn(() => Promise.resolve(false))
+        const request: any = {body: {email: mockEmail}}
+        const response: any = {locals: {doesUserEmailExist: mockedDoesEmailExistsDatabaseCall}}
 
-        const middleware = await UserValidationMiddleware.doesUserNameExist;
-        expect.assertions(1) 
-        middleware(null, response, err => {
-            expect(response.locals.userNameExists).toBe(false);
+        const middleware = await UserValidationMiddleware.doesEmailExist;
+       
+        middleware(request, response, err => {
+          expect.assertions(2) 
+          expect(mockedDoesEmailExistsDatabaseCall).toBeCalledWith(mockEmail)
+            expect(response.locals.emailExists).toBe(false);
           });      
     });
 
@@ -53,24 +64,30 @@ const classMethods = {
   describe(`${className} - ${classMethods.doesUserNameExist}`, () => {
     it("should set response.locals.userNameExists to true when userName exists", async () => {
         
-        const mockedDoesUserNameExistsDatabaseCall = () => Promise.resolve(true)
+        const mockedDoesUserNameExistsDatabaseCall = jest.fn(() => Promise.resolve(true))
+        const request: any = {body: {userName: mockUserName}}
         const response: any = {locals: {doesUserNameExist: mockedDoesUserNameExistsDatabaseCall}}
 
         const middleware = await UserValidationMiddleware.doesUserNameExist;
-        expect.assertions(1) 
-        middleware(null, response, err => {
+      
+        middleware(request, response, err => {
+          expect.assertions(2) 
+          expect(mockedDoesUserNameExistsDatabaseCall).toBeCalledWith(mockUserName)
             expect(response.locals.userNameExists).toBe(true);
           });      
     });
 
     it("should set response.locals.userNameExists to false when userName does not exist", async () => {
         
-        const mockedDoesUserNameExistsDatabaseCall = () => Promise.resolve(false)
+        const mockedDoesUserNameExistsDatabaseCall = jest.fn(() => Promise.resolve(false))
         const response: any = {locals: {doesUserNameExist: mockedDoesUserNameExistsDatabaseCall}}
+        const request: any = {body: {userName: mockUserName}}
 
         const middleware = await UserValidationMiddleware.doesUserNameExist;
-        expect.assertions(1) 
-        middleware(null, response, err => {
+      
+        middleware(request, response, err => {
+          expect.assertions(2) 
+          expect(mockedDoesUserNameExistsDatabaseCall).toBeCalledWith(mockUserName)
             expect(response.locals.userNameExists).toBe(false);
           });      
     });
