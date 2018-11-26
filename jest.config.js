@@ -1,17 +1,18 @@
 module.exports = {
-    "roots": [
-      "<rootDir>/src"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+    transform: {
+      "^.+\\.ts?$": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
-    "moduleFileExtensions": [
+    moduleFileExtensions: [
       "ts",
       "tsx",
       "js",
-      "jsx",
-      "json",
-      "node"
+      "jsx"
+    ],
+    modulePathIgnorePatterns: [
+    "./coverage/*",
+    "./jest.config.js"
+    ],
+    testMatch: [
+      '**/tests/**/*.test.(ts|js)'
     ],
   }

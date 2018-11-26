@@ -1,0 +1,44 @@
+import PasswordHelper, { SALT_ROUNDS } from "../../../src/Utils/passsord.helper"
+import brcypt from "bcrypt"
+const className = 'PasswordHelper'
+const classMethods = {
+    injectDependencies: 'injectDependencies',
+    setHashedPassword: 'setHashedPassword',
+    comparePasswordToHashedPassword: 'comparePasswordToHashedPassword',
+}
+
+const mockPassword = 'password'
+
+  describe(`${className} - ${classMethods.injectDependencies}`, () => {
+    it("should update response.body to contain the validation functions for dependency injection", async () => {
+        
+        const response: any = {locals: {}} 
+        const request: any = {}
+        const middleware = PasswordHelper.injectDependencies;
+        
+        middleware(request, response, next => {
+          expect.assertions(3) 
+            expect(response.locals.hashPassword).toBe(brcypt.hash);
+            expect(response.locals.comparePassword).toBe(brcypt.compare);
+            expect(next).toBeCalled()
+          });      
+    });
+  });
+
+  describe(`${className} - ${classMethods.setHashedPassword}`, () => {
+    it("should set response.locals.hashedPassword to a hashed version of the password", async () => {
+        
+        const hashPasswordMock = jest.fn()
+        const response: any = {locals: { hashPassword: hashPasswordMock}} 
+        const request: any = {body: {password: mockPassword}}
+        const middleware = PasswordHelper.setHashedPassword;
+        
+        middleware(request, response, next => {
+          expect.assertions(3) 
+          expect(response.locals.hashPassword).toBeCalledWith(mockPassword, SALT_ROUNDS, expect.any(Function))
+          expect(response.locals.hashedPassword).toBeDefined();
+          expect(next).toBeCalled();
+          });      
+    });
+  });
+  

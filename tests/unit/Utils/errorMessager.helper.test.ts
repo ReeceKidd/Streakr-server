@@ -6,6 +6,7 @@ describe("ErrorMessageHelper - generateAlreadyExistsMessage", () => {
         const userNameKey = "userName"
         const userName = "tester"
         const errorMessage = ErrorMessageHelper.generateAlreadyExistsMessage(userNameKey, userName)
+        expect.assertions(1)
         expect(errorMessage).toBe(`User with ${userNameKey}: '${userName}' already exists`)
     });
   });
