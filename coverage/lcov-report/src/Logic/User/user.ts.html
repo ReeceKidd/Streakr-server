@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/Logic/User/user.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="..\..\..\prettify.css" />
+    <link rel="stylesheet" href="..\..\..\base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(..\..\..\sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="..\..\..\index.html">All files</a> / <a href="index.html">src/Logic/User</a> user.ts
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/21</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/8</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/11</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/21</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response } from "express";
+<span class="cstat-no" title="statement not covered" >import UserModel from "../../Models/User";</span>
+import Authentication from "../../Utils/passsord.helper";
+import { IUser } from "../../Interfaces";
+import { UserUtils } from "../../Utils/user.utils";
+import {  UserDatabaseHelper } from "../../DatabaseHelpers/userDatabaseHelper";
+&nbsp;
+<span class="cstat-no" title="statement not covered" >export class UserRouter {</span>
+  public <span class="fstat-no" title="function not covered" >static</span> async getAllUsers(request: Request, response: Response) {
+   
+    const { firstName, lastName, email, partialTextSearchQuery} = <span class="cstat-no" title="statement not covered" >UserRouter.getQueryParams(request.query)</span>
+<span class="cstat-no" title="statement not covered" >    if(partialTextSearchQuery){</span>
+      const users = <span class="cstat-no" title="statement not covered" >await UserRouter.getUsersFromPartialTextSearchQuery(partialTextSearchQuery)</span>
+<span class="cstat-no" title="statement not covered" >      return response.send({users})</span>
+    }
+    const standardQuery = <span class="cstat-no" title="statement not covered" >UserRouter.getStandardQuery(firstName, lastName, email)</span>
+    const users = <span class="cstat-no" title="statement not covered" >await UserRouter.getUsersFromStandardQuery(standardQuery)</span>
+<span class="cstat-no" title="statement not covered" >    return response.send({users});</span>
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >static</span> getUsersFromStandardQuery(query: {firstName: string, lastName: string, email: string}){
+<span class="cstat-no" title="statement not covered" >    return UserModel.find({ ...query });</span>
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >static</span> getStandardQuery(firstName: string, lastName: string, email: string){
+<span class="cstat-no" title="statement not covered" >    return {</span>
+      firstName, 
+      lastName, 
+      email
+    }
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >static</span> async getUsersFromPartialTextSearchQuery(partialTextSearchQuery: string){
+    const regexSearch = <span class="cstat-no" title="statement not covered" >this.getPartialTextRegularExpression(partialTextSearchQuery)</span>
+<span class="cstat-no" title="statement not covered" >      return UserModel.aggregate([</span>
+        { $addFields: { name: { $concat: ["$firstName", " ", "$lastName"] } } },
+        {
+          $match: {
+            $or: [
+              { name: { $regex: regexSearch } },
+              { userName: { $regex: regexSearch } }
+            ]
+          }
+        }
+      ]);
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >static</span> getPartialTextRegularExpression(partialTextSearchQuery: string){
+<span class="cstat-no" title="statement not covered" >    return new RegExp(partialTextSearchQuery, "i");</span>
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >static</span> getQueryParams(requestQuery){
+<span class="cstat-no" title="statement not covered" >    return {</span>
+      firstName: this.getFirstName(requestQuery),
+      lastName: this.getLastName(requestQuery),
+      email: this.getEmail(requestQuery),
+      partialTextSearchQuery: this.getPartialTextSearchQuery(requestQuery)
+    }
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >static</span> getDefaultUndefinedValue(){
+<span class="cstat-no" title="statement not covered" >    return { $ne: null }</span>
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >static</span> getFirstName(requestQuery){
+<span class="cstat-no" title="statement not covered" >    return requestQuery.firstName || this.getDefaultUndefinedValue();</span>
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >static</span> getLastName(requestQuery){
+<span class="cstat-no" title="statement not covered" >    return requestQuery.lastName || this.getDefaultUndefinedValue()</span>
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >static</span> getEmail(requestQuery){
+<span class="cstat-no" title="statement not covered" >    return requestQuery.email || this.getDefaultUndefinedValue()</span>
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >static</span> getPartialTextSearchQuery(requestQuery){
+<span class="cstat-no" title="statement not covered" >    return requestQuery.partialTextSearchQuery</span>
+  }
+&nbsp;
+}
+&nbsp;
+ 
+&nbsp;
+  // private static getUserById(userID: string){
+  //   // NEED TO CONVERT THIS INTO A PROMISE FOR THIS TO WORK&gt; 
+  //   return new Promise((resolve, reject) =&gt; {
+  //     UserModel.findById(userID, (err, user) =&gt; {
+  //       if (err) return err
+  //       return user;
+  //     });
+  //   })
+  // }
+&nbsp;
+  
+&nbsp;
+&nbsp;
+  // Need to hash the password on user registration. 
+ 
+  // public static async register(request: Request, response: Response) {
+  //   try {
+  //     const { userName, email, password} = request.body
+  //     const hashedPassword = await Authentication.setHashedPassword(password)
+  //     const newUser = UserUtils.createUserFromRequest(userName, email, hashedPassword)
+  //     await UserDatabaseHelper.saveUserToDatabase(newUser)
+  //     return response.status(200).send(newUser)
+  //   } catch(err){
+  //     return response.status(500).send({message: err.message})
+  //   }
+   
+  // }
+&nbsp;
+//   public static async login(req: Request, res: Response){
+//     console.log('Entered method.')
+//     try {
+//       console.log(req.body)
+//       const {userName, password } = req.body;
+//       const user: IUser = await UserModel.findOne({userName}).lean()
+//       console.log(user)
+//       if(!user){
+//         return res.status(400).send(`No user with userName:${userName} found`)
+//       }
+//       const hashedUserPassword: string = await Authentication.getHashedPassword(user.password)
+//       console.log(hashedUserPassword)
+//       const passwordsMatch = await Authentication.comparePasswordToHashedPassword(password, hashedUserPassword);
+//       if(passwordsMatch) return res.status(200).send({message: 'Passwords match'})
+//       return res.status(404).send({message: `Passwords don't match`});
+//     } catch(err){
+//       res.status(500).send(err)
+//     }
+  
+//   }
+&nbsp;
+// }
+&nbsp;
+<span class="cstat-no" title="statement not covered" > export default UserRouter;</span>
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Nov 27 2018 20:03:19 GMT+0000 (GMT Standard Time)
+</div>
+</div>
+<script src="..\..\..\prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="..\..\..\sorter.js"></script>
+</body>
+</html>

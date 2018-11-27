@@ -9,7 +9,9 @@ export default class PasswordHelper {
   public static injectDependencies(request: Request, response: Response, next: NextFunction){
     response.locals.hashPassword = bcrypt.hash
     response.locals.comparePassword = bcrypt.compare
+    console.log('Next is called')
     next()
+    
   }
 
   public static async setHashedPassword(

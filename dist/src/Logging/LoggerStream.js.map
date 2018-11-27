@@ -1,0 +1,1 @@
+{"version":3,"file":"LoggerStream.js","sourceRoot":"","sources":["../../../src/Logging/LoggerStream.ts"],"names":[],"mappings":";;AAAA,qCAA6B;AAE7B,MAAM,YAAY;IACd,KAAK,CAAC,IAAY;QACd,OAAO,CAAC,GAAG,CAAC,IAAI,CAAC,CAAA;QACjB,gBAAM,CAAC,IAAI,CAAC,IAAI,CAAC,CAAA;IACrB,CAAC;CACJ;AAED,kBAAe,IAAI,YAAY,EAAE,CAAA"}

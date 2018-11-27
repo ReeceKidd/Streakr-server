@@ -8,9 +8,9 @@ export class Routes {
   public routes(app): void {
   
     app.route("/users").get(UserLogic.getAllUsers);
-    app
-      .route("/user/login")
-      .post(celebrate(UserValidation.login), UserLogic.login);
+    // app
+    //   .route("/user/login")
+    //   .post(celebrate(UserValidation.login), UserLogic.login);
     app
       .route("/user/register")
       .post(
@@ -20,7 +20,7 @@ export class Routes {
         UserValidationMiddleware.emailExistsValidation,
         UserValidationMiddleware.doesUserNameExist,
         UserValidationMiddleware.userNameExistsValidation,
-        UserLogic.register
+        //UserLogic.register
       );
 
     app
