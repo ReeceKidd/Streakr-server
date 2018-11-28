@@ -8,6 +8,7 @@ module.exports = {
       "js",
       "jsx"
     ],
+    testEnvironment: 'node',
     modulePathIgnorePatterns: [
     "./coverage/*",
     "./jest.config.js",

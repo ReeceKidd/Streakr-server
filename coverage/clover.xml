@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1543349060928" clover="3.2.0">
-  <project timestamp="1543349060928" name="All files">
-    <metrics statements="82" coveredstatements="47" conditionals="18" coveredconditionals="0" methods="27" coveredmethods="8" elements="127" coveredelements="55" complexity="0" loc="82" ncloc="82" packages="5" files="7" classes="7">
+<coverage generated="1543389391915" clover="3.2.0">
+  <project timestamp="1543389391915" name="All files">
+    <metrics statements="88" coveredstatements="51" conditionals="18" coveredconditionals="0" methods="28" coveredmethods="8" elements="134" coveredelements="59" complexity="0" loc="88" ncloc="88" packages="5" files="7" classes="7">
       <package name="DatabaseHelpers">
         <metrics statements="25" coveredstatements="3" conditionals="12" coveredconditionals="0" methods="16" coveredmethods="0"/>
         <file name="userDatabaseHelper.ts" path="C:\Users\User\Desktop\Streakr\server\src\DatabaseHelpers\userDatabaseHelper.ts">
@@ -34,7 +34,18 @@
         </file>
       </package>
       <package name="Middleware">
-        <metrics statements="26" coveredstatements="17" conditionals="4" coveredconditionals="0" methods="5" coveredmethods="3"/>
+        <metrics statements="34" coveredstatements="23" conditionals="4" coveredconditionals="0" methods="7" coveredmethods="4"/>
+        <file name="user.utils.ts" path="C:\Users\User\Desktop\Streakr\server\src\Middleware\user.utils.ts">
+          <metrics statements="8" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
+          <line num="2" count="1" type="stmt"/>
+          <line num="4" count="1" type="stmt"/>
+          <line num="7" count="0" type="stmt"/>
+          <line num="8" count="0" type="stmt"/>
+          <line num="12" count="1" type="stmt"/>
+          <line num="13" count="1" type="stmt"/>
+          <line num="14" count="1" type="stmt"/>
+          <line num="15" count="1" type="stmt"/>
+        </file>
         <file name="user.validation.middleware.ts" path="C:\Users\User\Desktop\Streakr\server\src\Middleware\user.validation.middleware.ts">
           <metrics statements="26" coveredstatements="17" conditionals="4" coveredconditionals="0" methods="5" coveredmethods="3"/>
           <line num="2" count="1" type="stmt"/>
@@ -66,19 +77,20 @@
         </file>
       </package>
       <package name="Models">
-        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <file name="User.ts" path="C:\Users\User\Desktop\Streakr\server\src\Models\User.ts">
-          <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+          <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="1" count="2" type="stmt"/>
-          <line num="3" count="2" type="stmt"/>
-          <line num="5" count="2" type="stmt"/>
-          <line num="47" count="2" type="stmt"/>
-          <line num="48" count="2" type="stmt"/>
-          <line num="51" count="2" type="stmt"/>
+          <line num="13" count="2" type="stmt"/>
+          <line num="55" count="2" type="stmt"/>
+          <line num="56" count="2" type="stmt"/>
+          <line num="58" count="2" type="stmt"/>
+          <line num="60" count="2" type="stmt"/>
+          <line num="61" count="2" type="stmt"/>
         </file>
       </package>
       <package name="Utils">
-        <metrics statements="20" coveredstatements="16" conditionals="2" coveredconditionals="0" methods="6" coveredmethods="5"/>
+        <metrics statements="17" coveredstatements="13" conditionals="2" coveredconditionals="0" methods="5" coveredmethods="4"/>
         <file name="errorMessage.helper.ts" path="C:\Users\User\Desktop\Streakr\server\src\Utils\errorMessage.helper.ts">
           <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
           <line num="1" count="2" type="stmt"/>
@@ -101,12 +113,6 @@
           <line num="25" count="0" type="stmt"/>
           <line num="28" count="0" type="stmt"/>
           <line num="29" count="0" type="stmt"/>
-        </file>
-        <file name="user.utils.ts" path="C:\Users\User\Desktop\Streakr\server\src\Utils\user.utils.ts">
-          <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-          <line num="1" count="1" type="stmt"/>
-          <line num="3" count="1" type="stmt"/>
-          <line num="6" count="1" type="stmt"/>
         </file>
       </package>
       <package name="Validation">

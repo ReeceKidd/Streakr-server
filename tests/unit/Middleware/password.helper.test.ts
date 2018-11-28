@@ -1,4 +1,4 @@
-import PasswordHelper, { SALT_ROUNDS } from "../../../src/Utils/passsord.helper"
+import PasswordHelper, { SALT_ROUNDS } from "../../../src/Middleware/passsord.helper"
 import * as brcypt from "bcrypt"
 
 const className = 'PasswordHelper'

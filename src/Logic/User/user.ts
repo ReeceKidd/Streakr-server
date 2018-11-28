@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import UserModel from "../../Models/User";
-import Authentication from "../../Utils/passsord.helper";
+import Authentication from "Middleware/passsord.helper";
 import { IUser } from "../../Interfaces";
-import { UserUtils } from "../../Utils/user.utils";
+import { UserUtils } from "Middleware/user.utils";
 import {  UserDatabaseHelper } from "../../DatabaseHelpers/userDatabaseHelper";
 
 export class UserRouter {
