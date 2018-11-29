@@ -46,6 +46,7 @@ export class UserValidationMiddleware {
   ) {
     const { emailAlreadyExists, email } = response.locals;
     if (emailAlreadyExists) {
+      console.log('Entered email exists')
       return response
         .status(400)
         .send({
@@ -55,7 +56,6 @@ export class UserValidationMiddleware {
           )
         });
     }
-    console.log("Passed email exists validation");
     next();
   }
 
