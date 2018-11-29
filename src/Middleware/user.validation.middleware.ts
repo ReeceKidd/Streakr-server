@@ -44,17 +44,15 @@ export class UserValidationMiddleware {
     response: Response,
     next: Function
   ) {
-    const { emailAlreadyExists, email } = response.locals;
-    if (emailAlreadyExists) {
-      console.log('Entered email exists')
-      return response
-        .status(400)
-        .send({
-          message: ErrorMessageHelper.generateAlreadyExistsMessage(
-            emailKey,
-            email
-          )
-        });
+    const { emailExists } = response.locals;
+    const { email } = request.body.email;
+    if (emailExists) {
+      return response.status(400).send({
+        message: ErrorMessageHelper.generateAlreadyExistsMessage(
+          emailKey,
+          email
+        )
+      });
     }
     next();
   }
@@ -64,16 +62,15 @@ export class UserValidationMiddleware {
     response: Response,
     next: Function
   ) {
-    const { userNameAlreadyExists, userName } = response.locals;
-    if (userNameAlreadyExists) {
-      return response
-        .status(400)
-        .send({
-          message: ErrorMessageHelper.generateAlreadyExistsMessage(
-            userNameKey,
-            userName
-          )
-        });
+    const { userNameExists } = response.locals;
+    const { userName } = request.body;
+    if (userNameExists) {
+      return response.status(400).send({
+        message: ErrorMessageHelper.generateAlreadyExistsMessage(
+          userNameKey,
+          userName
+        )
+      });
     } else next();
   }
 }

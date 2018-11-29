@@ -110,13 +110,13 @@ describe(`${className} - ${classMethods.doesUserNameExist}`, () => {
 });
 
 describe(`${className} - ${classMethods.emailExistsValidation}`, () => {
-  it("check that response is returned correctly when email already exists", async () => {
+  it("check that error response is returned correctly when email already exists", async () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const next = jest.fn();
-    const request: any = { body: { userName: mockUserName } };
+    const request: any = { body: { email: mockEmail, userName: mockUserName } };
     const response: any = {
-      locals: { email: mockEmail, emailAlreadyExists: true },
+      locals: { emailExists: true },
       status
     };
 
@@ -142,13 +142,60 @@ describe(`${className} - ${classMethods.emailExistsValidation}`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const next = jest.fn();
-    const request: any = { body: { userName: mockUserName } };
+    const request: any = { body: { userName: mockUserName, email: mockEmail } };
     const response: any = {
-      locals: { email: mockEmail, emailAlreadyExists: false },
+      locals: { emailExists: false },
       status
     };
 
     const middleware = UserValidationMiddleware.emailExistsValidation;
+
+    middleware(request, response,next)
+      expect.assertions(1)
+    expect(next).toHaveBeenCalled()
+});
+})
+
+describe(`${className} - ${classMethods.userNameExistsValidation}`, () => {
+  it("check that error response is returned correctly when userName already exists", async () => {
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const next = jest.fn();
+    const request: any = { body: { userName: mockUserName, email: mockEmail } };
+    const response: any = {
+      locals: { userNameExists: true },
+      status
+    };
+
+    const middleware = UserValidationMiddleware.userNameExistsValidation;
+
+    middleware(request, response, next => {
+      expect.assertions(3);
+      expect(status).toHaveBeenCalledWith(400);
+      expect(send).toBeCalledWith({
+        message: ErrorMessageHelper.generateAlreadyExistsMessage(
+          "userName",
+          mockUserName
+        )
+      });
+    });
+    expect(next).not.toBeCalled()
+
+  });
+});
+
+describe(`${className} - ${classMethods.userNameExistsValidation}`, () => {
+  it("check that next() is called when userName doesn't already exist", async () => {
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const next = jest.fn();
+    const request: any = { body: { userName: mockUserName, email: mockEmail, } };
+    const response: any = {
+      locals: {  userNameAlreadyExists: false },
+      status
+    };
+
+    const middleware = UserValidationMiddleware.userNameExistsValidation;
 
     middleware(request, response,next)
       expect.assertions(1)
