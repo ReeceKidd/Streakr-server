@@ -9,7 +9,6 @@ export default class PasswordHelper {
   public static injectDependencies(request: Request, response: Response, next: NextFunction){
     response.locals.hashPassword = bcrypt.hash
     response.locals.comparePassword = bcrypt.compare
-    console.log('Next is called')
     next()
     
   }
@@ -19,15 +18,13 @@ export default class PasswordHelper {
   ) {
     const { password } = request.body
     const { hashPassword } = response.locals
-    const hashedPassword = await new Promise((resolve, reject) => {
       hashPassword(password, SALT_ROUNDS, (err, hash) => {
-        if (err) reject(err);
-        resolve(hash);
+        if (err) response.send(err)
+        response.locals.hashedPassword = hash
+        next()
       });
-    });
-    response.locals.hashedPassword = hashedPassword
-    next()
   }
+}
 
   // public static comparePasswordToHashedPassword(password: string, dbHash: string, comparePassword= bcrypt.compare, ) {
   //   console.log(password, dbHash)
@@ -41,4 +38,4 @@ export default class PasswordHelper {
   //     });
   //   })
   // }
-}
+

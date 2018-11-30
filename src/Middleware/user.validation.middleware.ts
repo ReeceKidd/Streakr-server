@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UserDatabaseHelper } from "../DatabaseHelpers/userDatabaseHelper";
+import { UserDatabaseHelper } from "./Database/userDatabaseHelper";
 import { ErrorMessageHelper } from "../Utils/errorMessage.helper";
 
 const emailKey = "email";

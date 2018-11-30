@@ -1,5 +1,5 @@
 import { UserValidationMiddleware } from "../../../src/Middleware/user.validation.middleware";
-import { UserDatabaseHelper } from "../../../src/DatabaseHelpers/userDatabaseHelper";
+import { UserDatabaseHelper } from "../../../src/Middleware/Database/userDatabaseHelper";
 import { ErrorMessageHelper } from "../../../src/Utils/errorMessage.helper";
 import { Request, Response, NextFunction } from "express";
 

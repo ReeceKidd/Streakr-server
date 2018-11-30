@@ -3,7 +3,7 @@ import UserModel from "../../Models/User";
 import Authentication from "Middleware/passsord.helper";
 import { IUser } from "../../Interfaces";
 import { UserUtils } from "Middleware/user.utils";
-import {  UserDatabaseHelper } from "../../DatabaseHelpers/userDatabaseHelper";
+import {  UserDatabaseHelper } from "Middleware/Database/userDatabaseHelper";
 
 export class UserRouter {
   public static async getAllUsers(request: Request, response: Response) {
