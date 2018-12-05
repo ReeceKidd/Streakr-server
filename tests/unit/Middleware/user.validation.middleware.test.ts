@@ -15,24 +15,27 @@ const classMethods = {
 const mockEmail = "mockedemail@gmail.com";
 const mockUserName = "mock-username";
 
-describe(`${className} - ${classMethods.injectDependencies}`, () => {
-  it("should update response.body to contain the validation functions for dependency injection", async () => {
-    const response: any = { locals: {} };
-    const middleware = UserValidationMiddleware.injectDependencies;
+describe(`${className}`, () => {
 
-    middleware(null, response, err => {
-      expect.assertions(2);
-      expect(response.locals.doesUserEmailExist).toBe(
-        UserDatabaseHelper.doesUserEmailExist
-      );
-      expect(response.locals.doesUserNameExist).toBe(
-        UserDatabaseHelper.doesUserNameExist
-      );
+  describe(`${classMethods.injectDependencies}`, () => {
+    it("should update response.body to contain the validation functions for dependency injection", async () => {
+      const response: any = { locals: {} };
+      const middleware = UserValidationMiddleware.injectDependencies;
+  
+      middleware(null, response, err => {
+        expect.assertions(2);
+        expect(response.locals.doesUserEmailExist).toBe(
+          UserDatabaseHelper.doesUserEmailExist
+        );
+        expect(response.locals.doesUserNameExist).toBe(
+          UserDatabaseHelper.doesUserNameExist
+        );
+      });
     });
   });
-});
 
-describe(`${className} - ${classMethods.doesEmailExist}`, () => {
+  
+describe(`${classMethods.doesEmailExist}`, () => {
   it("should set response.locals.emailExists to true when email exists", async () => {
     const mockedDoesUserEmailExistsDatabaseCall = jest.fn(() =>
       Promise.resolve(true)
@@ -71,7 +74,7 @@ describe(`${className} - ${classMethods.doesEmailExist}`, () => {
   });
 });
 
-describe(`${className} - ${classMethods.doesUserNameExist}`, () => {
+describe(`${classMethods.doesUserNameExist}`, () => {
   it("should set response.locals.userNameExists to true when userName exists", async () => {
     const mockedDoesUserNameExistsDatabaseCall = jest.fn(() =>
       Promise.resolve(true)
@@ -109,7 +112,7 @@ describe(`${className} - ${classMethods.doesUserNameExist}`, () => {
   });
 });
 
-describe(`${className} - ${classMethods.emailExistsValidation}`, () => {
+describe(`${classMethods.emailExistsValidation}`, () => {
   it("check that error response is returned correctly when email already exists", async () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -137,7 +140,7 @@ describe(`${className} - ${classMethods.emailExistsValidation}`, () => {
   });
 });
 
-describe(`${className} - ${classMethods.emailExistsValidation}`, () => {
+describe(`${classMethods.emailExistsValidation}`, () => {
   it("check that next() is called when email doesn't already exist", async () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -156,7 +159,7 @@ describe(`${className} - ${classMethods.emailExistsValidation}`, () => {
 });
 })
 
-describe(`${className} - ${classMethods.userNameExistsValidation}`, () => {
+describe(`${classMethods.userNameExistsValidation}`, () => {
   it("check that error response is returned correctly when userName already exists", async () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -184,7 +187,7 @@ describe(`${className} - ${classMethods.userNameExistsValidation}`, () => {
   });
 });
 
-describe(`${className} - ${classMethods.userNameExistsValidation}`, () => {
+describe(`${classMethods.userNameExistsValidation}`, () => {
   it("check that next() is called when userName doesn't already exist", async () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -202,3 +205,18 @@ describe(`${className} - ${classMethods.userNameExistsValidation}`, () => {
     expect(next).toHaveBeenCalled()
 });
 })
+
+
+  })
+ 
+
+
+
+
+
+
+
+
+
+
+

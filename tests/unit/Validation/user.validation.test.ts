@@ -7,68 +7,75 @@ const validPassword = "password";
 
 const POST = "POST";
 
-describe("User Routes Validation (Registration) Test", () => {
-  it("checks that valid register request passes", () => {
-    const req: any = {
-      body: {
-        userName: validUserName,
-        email: validEmail,
-        password: validPassword
-      },
-      method: POST
-    };
-    const middleware = celebrate(UserValidation.register);
+const fileName = `User Routes Validation`
+const methods = {
+  register: 'register',
+  login: 'login'
+}
 
-    middleware(req, null, err => {
-      expect.assertions(2);
-      expect(req.body).toEqual({
-        userName: validUserName,
-        email: validEmail,
-        password: validPassword
-      });
-      expect(err).toBeNull();
-    });
-  });
-
-  it("checks that request fails because userName is undefined", () => {
-    const req: any = {
-      body: {
-        userName: undefined,
-        email: validEmail,
-        password: validPassword
-      },
-      method: POST
-    };
-    const middleware = celebrate(UserValidation.register);
-
-    middleware(req, null, err => {
-      expect.assertions(1);
-      expect(err.message).toBe(
-        'child "userName" fails because ["userName" is required]'
-      );
-    });
-  });
-
+describe(`${fileName}`, () => {
+  describe(`${methods.register}`, () => {
+    it("checks that valid register request passes", () => {
+      const req: any = {
+        body: {
+          userName: validUserName,
+          email: validEmail,
+          password: validPassword
+        },
+        method: POST
+      };
+      const middleware = celebrate(UserValidation.register);
   
-  it("checks that request fails because email is undefined", () => {
-    const req: any = {
-      body: {
-        userName:validUserName,
-        email: undefined,
-        password: validPassword
-      },
-      method: POST
-    };
-    const middleware = celebrate(UserValidation.register);
-
-    middleware(req, null, err => {
-      expect.assertions(1);
-      expect(err.message).toBe(
-        'child "email" fails because ["email" is required]'
-      );
+      middleware(req, null, err => {
+        expect.assertions(2);
+        expect(req.body).toEqual({
+          userName: validUserName,
+          email: validEmail,
+          password: validPassword
+        });
+        expect(err).toBeNull();
+      });
     });
-  });
 
+    it("checks that request fails because userName is undefined", () => {
+      const req: any = {
+        body: {
+          userName: undefined,
+          email: validEmail,
+          password: validPassword
+        },
+        method: POST
+      };
+      const middleware = celebrate(UserValidation.register);
+  
+      middleware(req, null, err => {
+        expect.assertions(1);
+        expect(err.message).toBe(
+          'child "userName" fails because ["userName" is required]'
+        );
+      });
+    });
+
+    it("checks that request fails because email is undefined", () => {
+      const req: any = {
+        body: {
+          userName:validUserName,
+          email: undefined,
+          password: validPassword
+        },
+        method: POST
+      };
+      const middleware = celebrate(UserValidation.register);
+  
+      middleware(req, null, err => {
+        expect.assertions(1);
+        expect(err.message).toBe(
+          'child "email" fails because ["email" is required]'
+        );
+      });
+    });
+
+    
   it("checks that request fails because email is not valid", () => {
     const req: any = {
       body: {
@@ -127,7 +134,8 @@ describe("User Routes Validation (Registration) Test", () => {
   });
 });
 
-describe("User Routes Validation (Login) Test", () => {
+
+describe(`${methods.login}`, () => {
   it("checks that valid login request passes", () => {
     const req: any = {
       body: {
@@ -256,3 +264,12 @@ describe("User Routes Validation (Login) Test", () => {
     });
   });
 });
+  
+  })
+ 
+
+
+  
+  
+
+
