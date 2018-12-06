@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import StreakModel from "../../Models/Streak";
 import { IStreak } from "../../Interfaces";
-import UserModel from "../../Models/User";
+import { User } from "../../Models/User";
 
 export class StreakRouter {
   public static get(req: Request, res: Response) {
@@ -52,7 +52,7 @@ export class StreakRouter {
   private static async getUsersForStreak(participants) {
     return Promise.all<Object>(
       participants.map(async userID => {
-        const matchedUser = await UserModel.findOne({ _id: userID });
+        const matchedUser = await User.findOne({ _id: userID });
         if(!matchedUser) throw new Error(`Cannot find user with ID:${userID}`)
         return matchedUser.toObject();
       })

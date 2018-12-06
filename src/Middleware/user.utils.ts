@@ -6,8 +6,9 @@ export class UserUtils {
     public static createUserFromRequest(request: Request, response: Response, next:NextFunction){
         const { userName, email} = request.body
         const { hashedPassword } = response.locals
-        response.locals.user = new User({userName, email, hashedPassword})
+        response.locals.newUser = new User({userName, email, hashedPassword})
         next();
       }
 
 }
+

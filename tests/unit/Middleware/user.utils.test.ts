@@ -26,17 +26,17 @@ describe(`${className}- ${classMethods.createUserFromRequest}`, () => {
       const middleware = UserUtils.createUserFromRequest;
 
       middleware(request, response, next => {
-        const user = response.locals.user;
+        const newUser = response.locals.newUser;
         expect.assertions(7);
 
         expect(request.body).toHaveProperty("userName");
         expect(request.body).toHaveProperty("email");
 
-        expect(user).toHaveProperty("_id");
-        expect(user).toHaveProperty("email");
-        expect(user).toHaveProperty("password");
-        expect(user).toHaveProperty("streaks");
-        expect(user).toHaveProperty("userName");
+        expect(newUser).toHaveProperty("_id");
+        expect(newUser).toHaveProperty("email");
+        expect(newUser).toHaveProperty("password");
+        expect(newUser).toHaveProperty("streaks");
+        expect(newUser).toHaveProperty("userName");
       });
     });
   });

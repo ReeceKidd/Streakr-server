@@ -1,9 +1,5 @@
 import { Request, Response } from "express";
-import UserModel from "../../Models/User";
-import Authentication from "Middleware/passsord.helper";
-import { IUser } from "../../Interfaces";
-import { UserUtils } from "Middleware/user.utils";
-import {  UserDatabaseHelper } from "Middleware/Database/userDatabaseHelper";
+import {User} from "../../Models/User";
 
 export class UserRouter {
   public static async getAllUsers(request: Request, response: Response) {
@@ -19,7 +15,7 @@ export class UserRouter {
   }
 
   private static getUsersFromStandardQuery(query: {firstName: string, lastName: string, email: string}){
-    return UserModel.find({ ...query });
+    return User.find({ ...query });
   }
 
   private static getStandardQuery(firstName: string, lastName: string, email: string){
@@ -32,7 +28,7 @@ export class UserRouter {
 
   private static async getUsersFromPartialTextSearchQuery(partialTextSearchQuery: string){
     const regexSearch = this.getPartialTextRegularExpression(partialTextSearchQuery)
-      return UserModel.aggregate([
+      return User.aggregate([
         { $addFields: { name: { $concat: ["$firstName", " ", "$lastName"] } } },
         {
           $match: {
