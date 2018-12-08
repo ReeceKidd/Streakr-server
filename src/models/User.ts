@@ -10,6 +10,8 @@ export type UserModel = mongoose.Document & {
   modifiedAt: Date;
 };
 
+export const SALT_ROUNDS = 10
+
 const UserSchema = new mongoose.Schema(
   {
     userName: {
@@ -52,6 +54,7 @@ const UserSchema = new mongoose.Schema(
     collection: "Users"
   }
 );
+
 UserSchema.index({ userName: "text" });
 UserSchema.index({ email: "text" });
 

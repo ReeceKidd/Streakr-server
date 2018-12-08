@@ -5,12 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch",
     "dev": "ts-node ./src/server.ts",
     "start": "set NODE_ENV=DEV&& npm run build:live",
     "build:live": "nodemon --exec ts-node -- ./src/server.ts",
     "prod": "npm run build && npm start",
-    "test": "jest --watch --coverage --verbose"
+    "test": "jest --watch --coverage"
   },
   "keywords": [],
   "author": "Reece Kidd",
@@ -39,12 +38,12 @@
     "nock": "^10.0.2",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "ts-jest": "^23.10.5",
     "winston": "^3.1.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.9",
     "jest": "^23.6.0",
+    "ts-jest": "^23.10.4",
     "ts-node": "^7.0.1",
     "typescript": "^3.0.1"
   }

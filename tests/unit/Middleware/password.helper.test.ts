@@ -13,7 +13,7 @@ const classMethods = {
 const mockPassword = "password";
 
 describe(`${className}`, () => {
-  
+
   describe(`${classMethods.injectDependencies}`, () => {
     it("should update response.body to contain the validation functions for dependency injection", async () => {
       const response: any = { locals: {} };

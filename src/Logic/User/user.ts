@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import {User} from "../../Models/User";
+import {default as User} from "../../Models/User";
 
 export class UserRouter {
   public static async getAllUsers(request: Request, response: Response) {

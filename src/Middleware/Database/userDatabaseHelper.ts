@@ -1,4 +1,4 @@
-import {User } from "../../Models/User";
+import { default as User } from "../../Models/User";
 import { Request, Response, NextFunction } from "express";
 
 export class UserDatabaseHelper {
@@ -16,15 +16,16 @@ export class UserDatabaseHelper {
     response: Response,
     next: NextFunction
   ) {
-    try {
       const { newUser } = response.locals;
-      const user = await newUser.save();
-      console.log(user)
-      response.locals.user = user
-      next()
-    } catch (err) {
-      return response.send(err)
-    }
+      console.log(newUser)
+      try {
+        const user = await newUser.save();
+        return response.send(user)
+      } catch(err){
+        next(err)
+      }
+      // response.locals.user = user;
+      // next();
   }
 
   public static doesUserEmailExist(
@@ -35,7 +36,7 @@ export class UserDatabaseHelper {
     const { email } = request.body;
     const { userModel } = response.locals;
     userModel.findOne(
-      { email: email },
+      { email },
       UserDatabaseHelper.doesEmailExist(response, next)
     );
   }
@@ -52,41 +53,21 @@ export class UserDatabaseHelper {
     next: NextFunction
   ) {
     const { userName } = request.body;
-    const { userModel } = response.locals.userModel;
+    const { userModel } = response.locals;
 
-    userModel.findOne({ userName: userName }, (err, user) => {
-      if (err) response.send(err);
-      if (!user) response.locals.userNameExsits = false;
-      response.locals.userNameExsits = true;
-    });
-  }
-
-  public static deleteUser(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
-    const { _id, userModel } = response.locals;
-    userModel.remove({ _id }, err => {
-      if (err) return response.send(err);
-      response.locals.userDeleted = true;
-    });
-  }
-
-  public static updateUser(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
-    const { _id, updateObject, userModel } = response.locals;
-    userModel.findOneAndUpdate(
-      { _id },
-      updateObject,
-      { new: true },
-      (err, user) => {
-        if (err) return response.send(err);
-        response.locals.updatedUser = user;
-      }
+    userModel.findOne(
+      { userName: userName },
+      UserDatabaseHelper.doesUserNameExistCallBack(response, next)
     );
   }
+
+  public static doesUserNameExistCallBack = (response, next) => (
+    err,
+    userName
+  ) => {
+    if (err) return response.send(err);
+    if (userName) response.locals.userNameExists = true;
+    next();
+  };
+  
 }

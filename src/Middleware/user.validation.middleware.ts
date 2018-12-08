@@ -16,29 +16,6 @@ export class UserValidationMiddleware {
     next();
   }
 
-  public static async doesEmailExist(
-    request: Request,
-    response: Response,
-    next: Function
-  ) {
-    const { email } = request.body;
-    const { doesUserEmailExist } = response.locals;
-    const result = await doesUserEmailExist(email);
-    response.locals.emailExists = result;
-    next();
-  }
-
-  public static async doesUserNameExist(
-    request: Request,
-    response: Response,
-    next: Function
-  ) {
-    const { userName } = request.body;
-    const { doesUserNameExist } = response.locals;
-    response.locals.userNameExists = await doesUserNameExist(userName);
-    next();
-  }
-
   public static emailExistsValidation(
     request: Request,
     response: Response,
