@@ -3,11 +3,9 @@ import { UserDatabaseHelper } from "../../../src/Middleware/Database/userDatabas
 import { ErrorMessageHelper } from "../../../src/Utils/errorMessage.helper";
 import { Request, Response, NextFunction } from "express";
 
-const className = "UserMiddleware";
+const className = "UserValidationMiddleware";
 const classMethods = {
   injectDependencies: "injectDependencies",
-  doesEmailExist: "doesEmailExist",
-  doesUserNameExist: "doesUserNameExist",
   emailExistsValidation: "emailExistsValidation",
   userNameExistsValidation: "userNameExistsValidation"
 };
@@ -33,93 +31,12 @@ describe(`${className}`, () => {
     });
   });
 
-  describe(`${classMethods.doesEmailExist}`, () => {
-    it("should set response.locals.emailExists to true when email exists", async () => {
-      const mockedDoesUserEmailExistsDatabaseCall = jest.fn(() =>
-        Promise.resolve(true)
-      );
-
-      const request: any = { body: { email: mockEmail } };
-      const response: any = {
-        locals: { doesUserEmailExist: mockedDoesUserEmailExistsDatabaseCall }
-      };
-
-      const middleware = await UserValidationMiddleware.doesEmailExist;
-
-      middleware(request, response, err => {
-        expect.assertions(2);
-        expect(mockedDoesUserEmailExistsDatabaseCall).toBeCalledWith(mockEmail);
-        expect(response.locals.emailExists).toBe(true);
-      });
-    });
-
-    it("should set response.locals.emailExists to false when email does not exist", async () => {
-      const mockedDoesEmailExistsDatabaseCall = jest.fn(() =>
-        Promise.resolve(false)
-      );
-      const request: any = { body: { email: mockEmail } };
-      const response: any = {
-        locals: { doesUserEmailExist: mockedDoesEmailExistsDatabaseCall }
-      };
-
-      const middleware = await UserValidationMiddleware.doesEmailExist;
-
-      middleware(request, response, err => {
-        expect.assertions(2);
-        expect(mockedDoesEmailExistsDatabaseCall).toBeCalledWith(mockEmail);
-        expect(response.locals.emailExists).toBe(false);
-      });
-    });
-  });
-
-  describe(`${classMethods.doesUserNameExist}`, () => {
-    it("should set response.locals.userNameExists to true when userName exists", async () => {
-      const mockedDoesUserNameExistsDatabaseCall = jest.fn(() =>
-        Promise.resolve(true)
-      );
-      const request: any = { body: { userName: mockUserName } };
-      const response: any = {
-        locals: { doesUserNameExist: mockedDoesUserNameExistsDatabaseCall }
-      };
-
-      const middleware = await UserValidationMiddleware.doesUserNameExist;
-
-      middleware(request, response, err => {
-        expect.assertions(2);
-        expect(mockedDoesUserNameExistsDatabaseCall).toBeCalledWith(
-          mockUserName
-        );
-        expect(response.locals.userNameExists).toBe(true);
-      });
-    });
-
-    it("should set response.locals.userNameExists to false when userName does not exist", async () => {
-      const mockedDoesUserNameExistsDatabaseCall = jest.fn(() =>
-        Promise.resolve(false)
-      );
-      const response: any = {
-        locals: { doesUserNameExist: mockedDoesUserNameExistsDatabaseCall }
-      };
-      const request: any = { body: { userName: mockUserName } };
-
-      const middleware = await UserValidationMiddleware.doesUserNameExist;
-
-      middleware(request, response, err => {
-        expect.assertions(2);
-        expect(mockedDoesUserNameExistsDatabaseCall).toBeCalledWith(
-          mockUserName
-        );
-        expect(response.locals.userNameExists).toBe(false);
-      });
-    });
-  });
-
   describe(`${classMethods.emailExistsValidation}`, () => {
     it("check that error response is returned correctly when email already exists", async () => {
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const next = jest.fn();
-      const request: any = {
+      const request = {
         body: { email: mockEmail, userName: mockUserName }
       };
       const response: any = {
@@ -129,7 +46,7 @@ describe(`${className}`, () => {
 
       const middleware = UserValidationMiddleware.emailExistsValidation;
 
-      middleware(request, response, next => {
+      middleware(request as Request, response as Response, next => {
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(400);
         expect(send).toBeCalledWith({

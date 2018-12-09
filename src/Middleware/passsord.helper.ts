@@ -11,7 +11,6 @@ export class PasswordHelper {
   ) {
     response.locals.hash = bcrypt.hash;
     response.locals.SALT = SALT_ROUNDS
-    response.locals.comparePassword = bcrypt.compare;
     next();
   }
 
