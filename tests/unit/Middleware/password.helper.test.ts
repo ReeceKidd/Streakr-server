@@ -46,23 +46,6 @@ describe(`${className}`, () => {
           expect(next).toBeCalled();
     });
   
-    it("should return an err when promise rejects", async () => {
-      const hashPasswordMock = jest.fn(() => new Error("Password err"));
-      const response: any = { locals: { hashPassword: hashPasswordMock } };
-      const request: any = { body: { password: mockPassword } };
-      const middleware = PasswordHelper.setHashedPassword;
-  
-      middleware(request, response, next => {
-        expect.assertions(3);
-        expect(response.locals.hashPassword).toBeCalledWith(
-          mockPassword,
-          SALT_ROUNDS,
-          expect.any(Function)
-        );
-        expect(response.locals.hashedPassword).toThrowError();
-        expect(next).toBeCalled();
-      });
-    });
   });
 });
 
