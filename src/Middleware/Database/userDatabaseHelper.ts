@@ -17,7 +17,6 @@ export class UserDatabaseHelper {
     next: NextFunction
   ) {
       const { newUser } = response.locals;
-      console.log(newUser)
       try {
         const user = await newUser.save();
         return response.send(user)

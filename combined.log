@@ -959,3 +959,58 @@
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [09/Dec/2018:06:57:01 +0000] \"POST /user/register HTTP/1.1\" 200 8\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"errors":{"password":{"message":"Cast to String failed for value \"Promise { <pending> }\" at path \"password\"","name":"CastError","stringValue":"\"Promise { <pending> }\"","kind":"String","value":{},"path":"password","reason":{"message":"Cast to string failed for value \"Promise { <pending> }\" at path \"password\"","name":"CastError","stringValue":"\"Promise { <pending> }\"","kind":"string","value":{},"path":"password"}}},"_message":"User validation failed","message":"User validation failed: password: Cast to String failed for value \"Promise { <pending> }\" at path \"password\"","name":"ValidationError","level":"error"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"errors":{"password":{"message":"Cast to String failed for value \"Promise { <pending> }\" at path \"password\"","name":"CastError","stringValue":"\"Promise { <pending> }\"","kind":"String","value":{},"path":"password","reason":{"message":"Cast to string failed for value \"Promise { <pending> }\" at path \"password\"","name":"CastError","stringValue":"\"Promise { <pending> }\"","kind":"string","value":{},"path":"password"}}},"_message":"User validation failed","message":"User validation failed: password: Cast to String failed for value \"Promise { <pending> }\" at path \"password\"","name":"ValidationError","level":"error"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [09/Dec/2018:07:28:48 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [09/Dec/2018:07:30:41 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [09/Dec/2018:07:35:48 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [09/Dec/2018:07:36:29 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [09/Dec/2018:07:36:42 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [09/Dec/2018:07:38:03 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [09/Dec/2018:07:38:13 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [09/Dec/2018:07:39:24 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}

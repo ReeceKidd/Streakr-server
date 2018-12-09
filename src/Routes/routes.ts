@@ -24,8 +24,9 @@ export class Routes {
         PasswordHelper.injectDependencies,
         PasswordHelper.setHashedPassword,
         UserUtils.createUserFromRequest,
-        UserDatabaseHelper.saveUserToDatabase
+       // UserDatabaseHelper.saveUserToDatabase
       );
     app.use(errors());
+    
   }
 }
