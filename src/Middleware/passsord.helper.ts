@@ -10,6 +10,7 @@ export class PasswordHelper {
     next: NextFunction
   ) {
     response.locals.hash = bcrypt.hash;
+    response.locals.SALT = SALT_ROUNDS
     response.locals.comparePassword = bcrypt.compare;
     next();
   }
@@ -19,9 +20,9 @@ export class PasswordHelper {
     response: Response,
     next: NextFunction
   ) {
-    const { hash } = response.locals
+    const { hash, SALT } = response.locals
     const { password } = request.body
-    response.locals.hashedPassword = await hash(password, SALT_ROUNDS)
+    response.locals.hashedPassword = await hash(password, SALT)
     next()
   }
 

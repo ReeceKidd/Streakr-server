@@ -1,4 +1,4 @@
-import PasswordHelper, {
+import  {PasswordHelper,
   SALT_ROUNDS
 } from "../../../src/Middleware/passsord.helper";
 import * as brcypt from "bcrypt";
