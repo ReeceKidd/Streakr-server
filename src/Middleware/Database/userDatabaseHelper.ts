@@ -7,24 +7,10 @@ export class UserDatabaseHelper {
     response: Response,
     next: NextFunction
   ) {
-    response.locals.userModel = User;
+    response.locals.findUser = User.findOne;
+    response.locals.setEmailExists = UserDatabaseHelper.setEmailExists
+    response.locals.setUserNameExists = UserDatabaseHelper.setUserNameExists
     next();
-  }
-
-  public static async saveUserToDatabase(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
-      const { newUser } = response.locals;
-      try {
-        const user = await newUser.save();
-        return response.send(user)
-      } catch(err){
-        next(err)
-      }
-      // response.locals.user = user;
-      // next();
   }
 
   public static doesUserEmailExist(
@@ -33,18 +19,19 @@ export class UserDatabaseHelper {
     next: NextFunction
   ) {
     const { email } = request.body;
-    const { userModel } = response.locals;
-    userModel.findOne(
+    const { findUser, setEmailExists } = response.locals;
+    findUser(
       { email },
-      UserDatabaseHelper.doesEmailExist(response, next)
+      setEmailExists(response, next)
     );
   }
 
-  public static doesEmailExist = (response, next) => (err, email) => {
+  public static setEmailExists = (response, next) => (err, email) => {
     if (err) return response.send(err);
     if (email) response.locals.emailExists = true;
     next();
   };
+
 
   public static doesUserNameExist(
     request: Request,
@@ -52,15 +39,15 @@ export class UserDatabaseHelper {
     next: NextFunction
   ) {
     const { userName } = request.body;
-    const { userModel } = response.locals;
+    const { findUser, setUserNameExists } = response.locals;
 
-    userModel.findOne(
+    findUser(
       { userName: userName },
-      UserDatabaseHelper.doesUserNameExistCallBack(response, next)
+      setUserNameExists(response, next)
     );
   }
 
-  public static doesUserNameExistCallBack = (response, next) => (
+  public static setUserNameExists = (response, next) => (
     err,
     userName
   ) => {
@@ -68,5 +55,21 @@ export class UserDatabaseHelper {
     if (userName) response.locals.userNameExists = true;
     next();
   };
+
+    // public static async saveUserToDatabase(
+  //   request: Request,
+  //   response: Response,
+  //   next: NextFunction
+  // ) {
+  //     const { newUser } = response.locals;
+  //     try {
+  //       const user = await newUser.save();
+  //       return response.send(user)
+  //     } catch(err){
+  //       next(err)
+  //     }
+  //     // response.locals.user = user;
+  //     // next();
+  // }
   
 }

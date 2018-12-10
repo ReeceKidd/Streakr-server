@@ -1,58 +1,82 @@
 import { Request, Response, NextFunction } from "express";
 import { UserDatabaseHelper } from "../../../../src/Middleware/Database/userDatabaseHelper";
-import { not } from "joi";
 
 const className = "UserDatabaseHelper";
 const classMethods = {
   injectDependencies: "injectDependencies",
   saveUserToDatabase: "saveUserToDatabse",
   doesUserEmailExist: "doesUserEmailExist",
-  doesUserNameExist: "doesUserNameExist",
-  deleteUser: "deleteUser",
-  updateUser: "updateUser"
+  doesUserNameExist: "doesUserNameExist"
 };
+
+const mockEmail = "test@gmail.com";
+const mockUserName = "test"
 
 describe(`${className}`, () => {
   describe(`${classMethods.injectDependencies}`, () => {
-    it("should define response.locals.userModel", async () => {
+    it("should define necessary dependencies", async () => {
       const response: any = { locals: {} };
       const next = jest.fn();
       const middleware = UserDatabaseHelper.injectDependencies;
 
       middleware(null as Request, response as Response, next as NextFunction);
-      expect.assertions(2);
-      expect(response.locals.userModel).toBeDefined();
+      expect.assertions(4)
+      expect(response.locals.findUser).toBeDefined();
+      expect(response.locals.setEmailExists).toBeDefined();
+      expect(response.locals.setUserNameExists).toBeDefined();
       expect(next).toBeCalled();
     });
   });
 
-  describe(`${classMethods.saveUserToDatabase}`, () => {
-    it("should save new user to database correctly", async () => {
-      const save = jest.fn(() => Promise.resolve(true));
-      const response: any = { locals: { newUser: { save } } };
+  describe(`${classMethods.doesUserEmailExist}`, () => {
+    it("should call findUser with correct parameters", () => {
+        
+     const setEmailExists = jest.fn()
+     const findUser = jest.fn();
+     
+      const request: any = { body: { email: mockEmail } };
+      const response: any = { locals: {findUser, setEmailExists }};
       const next = jest.fn();
-      const middleware = UserDatabaseHelper.saveUserToDatabase;
 
-      await middleware(null as Request, response as Response, next as NextFunction);
-      expect.assertions(3);
-      expect(save).toBeCalled()
-      expect(response.locals.user).toBeDefined()
-      expect(next).toBeCalled()
+      UserDatabaseHelper.doesUserEmailExist(
+        request as Request,
+        response as Response,
+        next as NextFunction
+      );
+
+      expect.assertions(2);
+      expect(findUser).toBeCalledWith(
+        { email: mockEmail },
+        setEmailExists()
+      );
+      expect(setEmailExists).toBeCalledWith(response, next)
     });
-
-    it("should send response with error when save call fails", async () => {
-        const save = jest.fn(() => Promise.reject());
-        const send = jest.fn()
-        const response: any = { locals: { newUser: { save } }, send };
-        const next = jest.fn();
-        const middleware = UserDatabaseHelper.saveUserToDatabase;
-  
-        await middleware(null as Request, response as Response, next as NextFunction);
-        expect.assertions(4);
-        expect(save).toBeCalled()
-        expect(response.locals.user).not.toBeDefined()
-        expect(next).not.toBeCalled()
-        expect(send).toBeCalled()
-      });
   });
+
+  describe(`${classMethods.doesUserNameExist}`, () => {
+    it("should call findUser with correct parameters", () => {
+        
+     const setUserNameExists = jest.fn()
+     const findUser = jest.fn();
+     
+      const request: any = { body: { userName: mockUserName } };
+      const response: any = { locals: {findUser, setUserNameExists}};
+      const next = jest.fn();
+
+      UserDatabaseHelper.doesUserNameExist(
+        request as Request,
+        response as Response,
+        next as NextFunction
+      );
+
+      expect.assertions(2);
+      expect(findUser).toBeCalledWith(
+        { userName: mockUserName },
+        setUserNameExists()
+      );
+      expect(setUserNameExists).toBeCalledWith(response, next)
+    });
+  });
+
+  
 });
