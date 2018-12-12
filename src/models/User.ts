@@ -1,15 +1,5 @@
 import * as mongoose from "mongoose";
 
-export type UserModel = mongoose.Document & {
-  userName: string;
-  email: string;
-  password: string;
-  streaks: [];
-  profilePicture: string;
-  createdAt: Date;
-  modifiedAt: Date;
-};
-
 export const SALT_ROUNDS = 10
 
 const UserSchema = new mongoose.Schema(

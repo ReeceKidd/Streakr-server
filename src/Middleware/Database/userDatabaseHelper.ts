@@ -2,36 +2,21 @@ import { default as User } from "../../Models/User";
 import { Request, Response, NextFunction } from "express";
 
 export class UserDatabaseHelper {
-  public static injectDependencies(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
-    response.locals.findUser = User.findOne;
-    response.locals.setEmailExists = UserDatabaseHelper.setEmailExists
-    response.locals.setUserNameExists = UserDatabaseHelper.setUserNameExists
-    next();
-  }
+ 
 
-  public static doesUserEmailExist(
+  public static async doesUserEmailExist(
     request: Request,
     response: Response,
     next: NextFunction
   ) {
     const { email } = request.body;
     const { findUser, setEmailExists } = response.locals;
-    findUser(
+     const user = await findUser(
       { email },
-      setEmailExists(response, next)
     );
+    if(user) response.locals.emailExists = true
+    next()
   }
-
-  public static setEmailExists = (response, next) => (err, email) => {
-    if (err) return response.send(err);
-    if (email) response.locals.emailExists = true;
-    next();
-  };
-
 
   public static doesUserNameExist(
     request: Request,

@@ -4,10 +4,13 @@ import { UserValidationMiddleware } from "../Middleware/user.validation.middlewa
 import { UserUtils } from "../Middleware/user.utils";
 import { UserDatabaseHelper } from "../Middleware/Database/userDatabaseHelper";
 import { PasswordHelper } from "../Middleware/passsord.helper";
+import  UserRouter from "../Logic/User/user";
+import UserModel from "../Models/User"
+import { doesUserEmailExist } from "../Middleware/Database/doesEmailExist";
 
 export class Routes {
   public routes(app): void {
-    // app.route("/users").get(UserLogic.getAllUsers);
+     app.route("/users").get(UserRouter.getAllUsers);
     // app
     //   .route("/user/login")
     //   .post(celebrate(UserValidation.login), UserLogic.login);
@@ -15,8 +18,7 @@ export class Routes {
       .route("/user/register")
       .post(
         celebrate(UserValidation.register),
-        UserDatabaseHelper.injectDependencies,
-        UserDatabaseHelper.doesUserEmailExist,
+        doesUserEmailExist(),
         UserValidationMiddleware.injectDependencies,
         UserValidationMiddleware.emailExistsValidation,
         UserDatabaseHelper.doesUserNameExist,

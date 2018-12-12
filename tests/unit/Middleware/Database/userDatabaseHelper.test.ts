@@ -6,7 +6,9 @@ const classMethods = {
   injectDependencies: "injectDependencies",
   saveUserToDatabase: "saveUserToDatabse",
   doesUserEmailExist: "doesUserEmailExist",
-  doesUserNameExist: "doesUserNameExist"
+  setEmailExists: "setEmailExists",
+  doesUserNameExist: "doesUserNameExist",
+  setUserNameExists: "setUserNameExists"
 };
 
 const mockEmail = "test@gmail.com";
@@ -52,6 +54,18 @@ describe(`${className}`, () => {
       expect(setEmailExists).toBeCalledWith(response, next)
     });
   });
+
+  describe(`${classMethods.setEmailExists}`, () => {
+      it('should set response.locals.emailExists correctly', () => {
+        const send = jest.fn()  
+        const response: any = { send, locals: {}}
+        const next: any = jest.fn()
+        const err = null
+        const email = true
+
+        UserDatabaseHelper.setEmailExists(response, next)
+      })
+  })
 
   describe(`${classMethods.doesUserNameExist}`, () => {
     it("should call findUser with correct parameters", () => {
