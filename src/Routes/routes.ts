@@ -19,7 +19,6 @@ export class Routes {
       .post(
         celebrate(UserValidation.register),
         doesUserEmailExist(),
-        UserValidationMiddleware.injectDependencies,
         UserValidationMiddleware.emailExistsValidation,
         UserDatabaseHelper.doesUserNameExist,
         UserValidationMiddleware.userNameExistsValidation,
