@@ -1,20 +1,20 @@
 import { Request, Response, NextFunction } from "express";
 
-const emailKey = "email";
+const userNameKey = "userName";
 
-const emailExistsValidation = (generateAlreadyExistsMessage) => (
+const userNameExistsValidation = (generateAlreadyExistsMessage) => (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
-    const { emailExists } = response.locals;
-    const { email } = request.body;
-    if (emailExists) {
+    const { userNameExists } = response.locals;
+    const { userName } = request.body;
+    if (userNameExists) {
       return response.status(400).send({
         message: generateAlreadyExistsMessage(
-          emailKey,
-          email
+          userNameKey,
+          userName
         )
       });
     }
@@ -24,4 +24,4 @@ const emailExistsValidation = (generateAlreadyExistsMessage) => (
   }
 };
 
-export { emailExistsValidation, emailKey };
+export { userNameExistsValidation, userNameKey };
