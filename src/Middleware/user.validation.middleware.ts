@@ -1,20 +1,11 @@
 import { Request, Response } from "express";
-import { UserDatabaseHelper } from "./Database/userDatabaseHelper";
 import { ErrorMessageHelper } from "../Utils/errorMessage.helper";
 
 const emailKey = "email";
 const userNameKey = "userName";
 
 export class UserValidationMiddleware {
-  public static injectDependencies(
-    request: Request,
-    response: Response,
-    next: Function
-  ) {
-    response.locals.doesUserEmailExist = UserDatabaseHelper.doesUserEmailExist;
-    response.locals.doesUserNameExist = UserDatabaseHelper.doesUserNameExist;
-    next();
-  }
+
 
   public static emailExistsValidation(
     request: Request,

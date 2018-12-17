@@ -2,7 +2,6 @@ import { UserValidation } from "../validation/user.validation";
 import { celebrate, errors } from "celebrate";
 import { UserValidationMiddleware } from "../Middleware/user.validation.middleware";
 import { UserUtils } from "../Middleware/user.utils";
-import { UserDatabaseHelper } from "../Middleware/Database/userDatabaseHelper";
 import { PasswordHelper } from "../Middleware/passsord.helper";
 import  UserRouter from "../Logic/User/user";
 import UserModel from "../Models/User"
@@ -18,9 +17,9 @@ export class Routes {
       .route("/user/register")
       .post(
         celebrate(UserValidation.register),
-        doesUserEmailExist(),
+        //doesUserEmailExist(),
         UserValidationMiddleware.emailExistsValidation,
-        UserDatabaseHelper.doesUserNameExist,
+        //UserDatabaseHelper.doesUserNameExist,
         UserValidationMiddleware.userNameExistsValidation,
         PasswordHelper.injectDependencies,
         PasswordHelper.setHashedPassword,
