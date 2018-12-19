@@ -64,4 +64,4 @@ UserSchema.index({ userName: "text" });
 UserSchema.index({ email: "text" });
 
 
-export const User: mongoose.Model<IUser> = mongoose.model<IUser>("User", UserSchema);
+export const UserModel: mongoose.Model<IUser> = mongoose.model<IUser>("User", UserSchema);

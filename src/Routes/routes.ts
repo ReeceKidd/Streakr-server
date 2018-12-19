@@ -1,7 +1,8 @@
 import { UserValidation } from "../validation/user.validation";
 import { celebrate, errors } from "celebrate";
-import * as bcrypt from "bcrypt";
-import {User} from "../Models/User";
+import * as bcrypt from "bcryptjs";
+import {UserModel} from "../Models/User";
+
 
 import { doesUserEmailExist } from "../Middleware/Database/doesEmailExist";
 import { emailExistsValidation } from "../Middleware/Validation/emailExistsValidation";
@@ -24,16 +25,16 @@ export class Routes {
       .route("/user/register")
       .post(
         celebrate(UserValidation.register),
-        doesUserEmailExist(User.findOne),
+        doesUserEmailExist(UserModel),
         emailExistsValidation(ErrorMessageHelper.generateAlreadyExistsMessage),
-        doesUserNameExist(User.findOne),
+        doesUserNameExist(UserModel),
         userNameExistsValidation(
           ErrorMessageHelper.generateAlreadyExistsMessage
         ),
         hashPassword(bcrypt.hash, SALT_ROUNDS),
-        createUserFromRequest(User),
+        createUserFromRequest(UserModel),
         saveUserToDatabase
       );
-   // app.use(errors());
+   app.use(errors());
   }
 }

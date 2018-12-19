@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 
-const doesUserNameExist = (findUser) => async (
+const doesUserNameExist = (UserModel) => async (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
     const { userName } = request.body;
-    const user = await findUser({ userName });
+    const user = await UserModel.findOne({ userName });
     if (user)  {
         response.locals.userNameExists = true
     };

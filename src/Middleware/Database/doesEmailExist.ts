@@ -1,15 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "../../Models/User";
 
-const doesUserEmailExist = (findUser) => async (
+const doesUserEmailExist = (UserModel) => async (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
     const { email } = request.body;
-    const user = await User.findOne({email})
-    console.log('Made it')
+    const user = await UserModel.findOne({email})
     if (user)  {
         response.locals.emailExists = true
     };

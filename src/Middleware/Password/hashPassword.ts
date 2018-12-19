@@ -9,6 +9,7 @@ const hashPassword = (hash, salt) => async (
     const { password } = request.body;
     response.locals.hashedPassword = await hash(password, salt);
     next();
+
   } catch(err){
     next(err)
   }
