@@ -2,6 +2,26 @@ import * as mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
+export interface IStreak {
+    streakName: string;
+    description: string;
+    successCriteria: string;
+    createdBy: string;
+    participants: object[]
+    startDate: Date;
+    calendar?: object[];
+  }
+  
+export interface IFixedTermStreak extends IStreak {
+    endDate: Date;
+    duration: Number;
+  }
+  
+export interface ILastManStandingStreak extends IStreak {
+    lastManStanding: boolean
+  }
+  
+
 export const StreakSchema =  new Schema(
     {
         streakName: {

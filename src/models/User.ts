@@ -1,8 +1,29 @@
 import * as mongoose from "mongoose";
+import { IStreak} from "./Streak"
+
+
 
 export const SALT_ROUNDS = 10
 
-const UserSchema = new mongoose.Schema(
+export interface IUser extends mongoose.Document {
+  userName: string;
+  email: string;
+  password: string;
+  createdAt: {
+    type: Date,
+    required: false
+  }, 
+  modifiedAt: {
+    type: Date,
+    required: false
+  }
+  streaks?: IStreak[];
+  profilePicture?: {
+    type: String
+  },
+}
+
+export const UserSchema = new mongoose.Schema(
   {
     userName: {
       required: true,
@@ -30,25 +51,17 @@ const UserSchema = new mongoose.Schema(
     },
     profilePicture: {
       type: String
-    },
-    createdAt: {
-      type: Date,
-      required: false
-    },
-    modifiedAt: {
-      type: Date,
-      required: false
     }
   },
   {
-    collection: "Users"
+    timestamps: true,
+    collection: 'Users'
   }
 );
 
+mongoose.set('useCreateIndex', true)
 UserSchema.index({ userName: "text" });
 UserSchema.index({ email: "text" });
 
-mongoose.set("useCreateIndex", true);
 
-const User = mongoose.model("User", UserSchema);
-export default User;
+export const User: mongoose.Model<IUser> = mongoose.model<IUser>("User", UserSchema);

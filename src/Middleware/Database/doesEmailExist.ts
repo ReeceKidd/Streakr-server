@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { User } from "../../Models/User";
 
 const doesUserEmailExist = (findUser) => async (
   request: Request,
@@ -7,12 +8,14 @@ const doesUserEmailExist = (findUser) => async (
 ) => {
   try {
     const { email } = request.body;
-    const user = await findUser({ email });
+    const user = await User.findOne({email})
+    console.log('Made it')
     if (user)  {
         response.locals.emailExists = true
     };
     next();
   } catch (err) {
+    console.log(err)
     next(err);
   }
 };
