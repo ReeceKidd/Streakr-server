@@ -12,6 +12,7 @@ import { userNameExistsValidation } from "../Middleware/Validation/userNameExist
 import { hashPassword } from "../Middleware/Password/hashPassword";
 import { createUserFromRequest } from "../Middleware/User/createUserFromRequest";
 import { saveUserToDatabase } from "../Middleware/Database/saveUserToDatabase";
+import { sendFormattedUser } from "../Middleware/User/sendFormattedUser";
 
 const SALT_ROUNDS = 10;
 
@@ -33,7 +34,8 @@ export class Routes {
         ),
         hashPassword(bcrypt.hash, SALT_ROUNDS),
         createUserFromRequest(UserModel),
-        saveUserToDatabase
+        saveUserToDatabase,
+        sendFormattedUser
       );
    app.use(errors());
   }

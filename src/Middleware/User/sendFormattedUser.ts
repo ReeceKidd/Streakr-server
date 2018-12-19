@@ -1,17 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 
-const saveUserToDatabase = async (
+const sendFormattedUser = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
-    const { newUser } = response.locals;
-    response.locals.savedUser = await newUser.save();
-    next()
+    const { savedUser } = response.locals;
+    savedUser.password = undefined
+    return response.send(savedUser);
   } catch (err) {
     next(err);
   }
 };
 
-export { saveUserToDatabase }
+export { sendFormattedUser };
