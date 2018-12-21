@@ -1,9 +1,6 @@
-import { UserValidation } from "../validation/user.validation";
-import { celebrate, errors } from "celebrate";
 import * as bcrypt from "bcryptjs";
+
 import {UserModel} from "../Models/User";
-
-
 import { doesUserEmailExist } from "../Middleware/Database/doesEmailExist";
 import { emailExistsValidation } from "../Middleware/Validation/emailExistsValidation";
 import { ErrorMessageHelper } from "../Utils/errorMessage.helper";
@@ -13,6 +10,7 @@ import { hashPassword } from "../Middleware/Password/hashPassword";
 import { createUserFromRequest } from "../Middleware/User/createUserFromRequest";
 import { saveUserToDatabase } from "../Middleware/Database/saveUserToDatabase";
 import { sendFormattedUser } from "../Middleware/User/sendFormattedUser";
+import { getUserRegistrationValidationMiddleware } from "../Middleware/Validation/getUserRegistrationValidationMiddleware";
 
 const SALT_ROUNDS = 10;
 
@@ -25,7 +23,7 @@ export class Routes {
     app
       .route("/user/register")
       .post(
-        celebrate(UserValidation.register),
+        getUserRegistrationValidationMiddleware, 
         doesUserEmailExist(UserModel),
         emailExistsValidation(ErrorMessageHelper.generateAlreadyExistsMessage),
         doesUserNameExist(UserModel),
@@ -37,6 +35,5 @@ export class Routes {
         saveUserToDatabase,
         sendFormattedUser
       );
-   app.use(errors());
   }
 }

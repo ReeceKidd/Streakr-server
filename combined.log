@@ -1388,3 +1388,23 @@
 {"message":"::1 - - [19/Dec/2018:07:52:31 +0000] \"POST /user/register HTTP/1.1\" 400 64\n","level":"info"}
 {"message":"::1 - - [19/Dec/2018:07:52:39 +0000] \"POST /user/register HTTP/1.1\" 400 63\n","level":"info"}
 {"message":"::1 - - [19/Dec/2018:07:52:45 +0000] \"POST /user/register HTTP/1.1\" 200 187\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [21/Dec/2018:17:10:16 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [21/Dec/2018:17:30:44 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::1 - - [21/Dec/2018:17:30:51 +0000] \"POST /user/register HTTP/1.1\" 422 55\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [21/Dec/2018:17:32:33 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::1 - - [21/Dec/2018:17:32:49 +0000] \"POST /user/register HTTP/1.1\" 422 252\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [21/Dec/2018:17:33:27 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::1 - - [21/Dec/2018:17:33:42 +0000] \"POST /user/register HTTP/1.1\" 422 78\n","level":"info"}
+{"message":"::1 - - [21/Dec/2018:17:33:54 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
