@@ -11,7 +11,7 @@ const emailExistsValidation = (generateAlreadyExistsMessage) => (
     const { emailExists } = response.locals;
     const { email } = request.body;
     if (emailExists) {
-      return response.status(400).send({
+      response.status(400).send({
         message: generateAlreadyExistsMessage(
           emailKey,
           email

@@ -1408,3 +1408,25 @@
 {"message":"::1 - - [21/Dec/2018:17:33:27 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
 {"message":"::1 - - [21/Dec/2018:17:33:42 +0000] \"POST /user/register HTTP/1.1\" 422 78\n","level":"info"}
 {"message":"::1 - - [21/Dec/2018:17:33:54 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:00:00 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:00:04 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:00:25 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:00:58 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:01:49 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:03:37 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:03:37 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:03:37 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:03:43 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:04:28 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:04:32 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [23/Dec/2018:11:05:46 +0000] \"POST /user/register HTTP/1.1\" 404 153\n","level":"info"}

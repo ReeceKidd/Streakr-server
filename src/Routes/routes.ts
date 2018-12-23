@@ -12,16 +12,17 @@ import { saveUserToDatabase } from "../Middleware/Database/saveUserToDatabase";
 import { sendFormattedUser } from "../Middleware/User/sendFormattedUser";
 import { getUserRegistrationValidationMiddleware } from "../Middleware/Validation/getUserRegistrationValidationMiddleware";
 
-const SALT_ROUNDS = 10;
+const SaltRounds = 10;
+
+const User = 'user'
+const UserActions = {
+  register: 'register'
+}
 
 export class Routes {
   public routes(app): void {
-    //app.route("/users").get(UserRouter.getAllUsers);
-    // app
-    //   .route("/user/login")
-    //   .post(celebrate(UserValidation.login), UserLogic.login);
     app
-      .route("/user/register")
+      .route(`/${User}/${UserActions.register}`)
       .post(
         getUserRegistrationValidationMiddleware, 
         doesUserEmailExist(UserModel),
@@ -30,7 +31,7 @@ export class Routes {
         userNameExistsValidation(
           ErrorMessageHelper.generateAlreadyExistsMessage
         ),
-        hashPassword(bcrypt.hash, SALT_ROUNDS),
+        hashPassword(bcrypt.hash, SaltRounds),
         createUserFromRequest(UserModel),
         saveUserToDatabase,
         sendFormattedUser
