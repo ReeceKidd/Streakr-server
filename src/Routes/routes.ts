@@ -19,6 +19,8 @@ const UserActions = {
   register: 'register'
 }
 
+const emailKey = 'email'
+
 export class Routes {
   public routes(app): void {
     app
@@ -26,7 +28,7 @@ export class Routes {
       .post(
         getUserRegistrationValidationMiddleware, 
         doesUserEmailExist(UserModel),
-        emailExistsValidation(ErrorMessageHelper.generateAlreadyExistsMessage),
+        emailExistsValidation(ErrorMessageHelper.generateAlreadyExistsMessage, emailKey),
         doesUserNameExist(UserModel),
         userNameExistsValidation(
           ErrorMessageHelper.generateAlreadyExistsMessage

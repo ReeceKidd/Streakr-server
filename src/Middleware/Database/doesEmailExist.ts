@@ -13,7 +13,6 @@ const doesUserEmailExist = (UserModel) => async (
     };
     next();
   } catch (err) {
-    console.log(err)
     next(err);
   }
 };

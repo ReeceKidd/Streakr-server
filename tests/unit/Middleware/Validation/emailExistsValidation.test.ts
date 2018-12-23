@@ -1,19 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import {
   emailExistsValidation,
-  emailKey
 } from "../../../../src/Middleware/Validation/emailExistsValidation";
 
 const middlewareName = "emailExistsValidation";
 
 const mockEmail = "test@gmail.com";
+const emailKey = 'email'
 
 describe(`${middlewareName}`, () => {
-  it("check that error response is returned correctly when email already exists", () => {
+  it("check that error response is returned correctly when email already exists", async () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const generateAlreadyExistsMessage = jest.fn();
-
     const request = {
       body: { email: mockEmail }
     };
@@ -23,15 +22,14 @@ describe(`${middlewareName}`, () => {
     };
     const next = jest.fn();
 
-    const middleware = emailExistsValidation(generateAlreadyExistsMessage);
+    const middleware = emailExistsValidation(generateAlreadyExistsMessage, emailKey);
 
-    middleware(request as Request, response as Response, next as NextFunction);
+    await middleware(request as Request, response as Response, next as NextFunction);
 
-    expect.assertions(4);
+    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(400);
     expect(send).toBeCalled();
     expect(generateAlreadyExistsMessage).toBeCalledWith(emailKey, mockEmail);
-    expect(next).not.toBeCalled();
   });
 
   it("check that next is called when email doesn't exist", () => {
@@ -48,7 +46,7 @@ describe(`${middlewareName}`, () => {
     };
     const next = jest.fn();
 
-    const middleware = emailExistsValidation(generateAlreadyExistsMessage);
+    const middleware = emailExistsValidation(generateAlreadyExistsMessage, emailKey);
 
     middleware(request as Request, response as Response, next as NextFunction);
 
@@ -74,7 +72,7 @@ describe(`${middlewareName}`, () => {
     };
     const next = jest.fn();
 
-    const middleware = emailExistsValidation(generateAlreadyExistsMessage);
+    const middleware = emailExistsValidation(generateAlreadyExistsMessage, emailKey);
 
     middleware(request as Request, response as Response, next as NextFunction);
 
