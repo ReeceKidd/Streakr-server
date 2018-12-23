@@ -7,18 +7,17 @@ const ERROR_MESSAGE = "error";
 describe(`${middlewareName}`, () => {
 
   it("should send response with saved user", async () => {
-      const mockUser = {
-          userName: 'User',
-          email: 'user@gmail.com',
-          password: 'password'
-      }
     const save = jest.fn(() => {
         return Promise.resolve(mockUser)
-    });
-    const send = jest.fn()
+    }); 
+    const mockUser = {
+          userName: 'User',
+          email: 'user@gmail.com',
+          password: 'password',
+          save
+      }
    
-
-    const response: any = { locals: { newUser: { save}}, send};
+    const response: any = { locals: { newUser: mockUser}};
     const request: any = {}
     const next = jest.fn();
 
@@ -26,25 +25,23 @@ describe(`${middlewareName}`, () => {
 
     expect.assertions(3);
     expect(save).toBeCalled();
-    expect(send).toBeCalledWith(mockUser);
-    expect(next).not.toBeCalled();
+    expect(response.locals.savedUser).toBeDefined()
+    expect(next).toBeCalled();
   });
 
   it("should call next() with err paramater if save call fails", async () => {
     const save = jest.fn(() => {
         return Promise.reject(ERROR_MESSAGE)
     });
-    const send = jest.fn()
 
     const request: any = { };
-    const response: any = { locals: { newUser: { save}}, send};
+    const response: any = { locals: { newUser: { save}}};
     const next = jest.fn();
 
     await saveUserToDatabase(request, response, next);
 
-    expect.assertions(2);
+    expect.assertions(1);
     expect(next).toBeCalledWith(ERROR_MESSAGE);
-    expect(send).not.toBeCalled()
 
   });
 
