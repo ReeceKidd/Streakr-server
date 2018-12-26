@@ -11,32 +11,29 @@ import { createUserFromRequest } from "../Middleware/User/createUserFromRequest"
 import { saveUserToDatabase } from "../Middleware/Database/saveUserToDatabase";
 import { sendFormattedUser } from "../Middleware/User/sendFormattedUser";
 import { getUserRegistrationValidationMiddleware } from "../Middleware/Validation/getUserRegistrationValidationMiddleware";
+import { Router } from "express";
 
 const SaltRounds = 10;
 
-const User = 'user'
-const UserActions = {
+const User = {
   register: 'register'
 }
 
 const emailKey = 'email'
 
-export class Routes {
-  public routes(app): void {
-    app
-      .route(`/${User}/${UserActions.register}`)
-      .post(
-        getUserRegistrationValidationMiddleware, 
-        doesUserEmailExist(UserModel),
-        emailExistsValidation(ErrorMessageHelper.generateAlreadyExistsMessage, emailKey),
-        doesUserNameExist(UserModel),
-        userNameExistsValidation(
-          ErrorMessageHelper.generateAlreadyExistsMessage
-        ),
-        hashPassword(bcrypt.hash, SaltRounds),
-        createUserFromRequest(UserModel),
-        saveUserToDatabase,
-        sendFormattedUser
-      );
-  }
-}
+const userRouter = Router()
+
+userRouter.post(`/${User.register}`,  getUserRegistrationValidationMiddleware, 
+doesUserEmailExist(UserModel),
+emailExistsValidation(ErrorMessageHelper.generateAlreadyExistsMessage, emailKey),
+doesUserNameExist(UserModel),
+userNameExistsValidation(
+  ErrorMessageHelper.generateAlreadyExistsMessage
+),
+hashPassword(bcrypt.hash, SaltRounds),
+createUserFromRequest(UserModel),
+saveUserToDatabase,
+sendFormattedUser)
+
+export default userRouter
+
