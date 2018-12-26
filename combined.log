@@ -1504,3 +1504,15 @@
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"::1 - - [26/Dec/2018:09:40:29 +0000] \"POST /user/register HTTP/1.1\" 400 68\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [26/Dec/2018:09:41:39 +0000] \"POST /user/register HTTP/1.1\" 200 186\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [26/Dec/2018:09:54:51 +0000] \"POST /user/register HTTP/1.1\" 400 72\n","level":"info"}

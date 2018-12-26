@@ -12,4 +12,4 @@ const registerValidationSchema = {
 
 export const getUserRegistrationValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     Joi.validate(request.body, registerValidationSchema, getValidationCallback(request, response, next));
-  };
+ };
