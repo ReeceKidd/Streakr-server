@@ -10,7 +10,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "tests/**/**/a*.ts"
+    "tests/**/**/*.ts"
   ],
   "exclude": [
     "./node_modules"

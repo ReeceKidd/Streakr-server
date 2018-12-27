@@ -1,39 +1,50 @@
 import * as bcrypt from "bcryptjs";
 
-import {UserModel} from "../Models/User";
-import { doesUserEmailExist } from "../Middleware/Database/doesEmailExist";
-import { emailExistsValidation } from "../Middleware/Validation/emailExistsValidation";
+import { UserModel } from "../Models/User";
+import { getDoesUserEmailExistMiddleware } from "../Middleware/Database/getDoesUserEmailExistMiddleware";
+import { getEmailExistsValidationMiddleware } from "../Middleware/Validation/getEmailExistsValidationMiddleware";
 import { ErrorMessageHelper } from "../Utils/errorMessage.helper";
-import { doesUserNameExist } from "../Middleware/Database/doesUserNameExist";
-import { userNameExistsValidation } from "../Middleware/Validation/userNameExistsValidation";
-import { hashPassword } from "../Middleware/Password/hashPassword";
-import { createUserFromRequest } from "../Middleware/User/createUserFromRequest";
-import { saveUserToDatabase } from "../Middleware/Database/saveUserToDatabase";
-import { sendFormattedUser } from "../Middleware/User/sendFormattedUser";
+import { getDoesUserNameExistMiddleware } from "../Middleware/Database/getDoesUserNameExistMiddleware";
+import { getUserNameExistsValidationMiddleware } from "../Middleware/Validation/getUserNameExistsValidationMiddleware";
+import { getHashPasswordMiddleware } from "../Middleware/Password/getHashPasswordMiddleware";
+import { getCreateUserFromRequestMiddleware } from "../Middleware/User/getCreateUserFromRequestMiddleware";
+import { getSaveUserToDatabaseMiddleware } from "../Middleware/Database/getSaveUserToDatabaseMiddleware";
+import { getSendFormattedUserMiddleware } from "../Middleware/User/getSendFormattedUserMiddleware";
 import { getUserRegistrationValidationMiddleware } from "../Middleware/Validation/getUserRegistrationValidationMiddleware";
 import { Router } from "express";
 
-const SaltRounds = 10;
+const saltRounds = 10;
 
 const User = {
-  register: 'register'
-}
+  register: "register",
+  login: "login"
+};
 
-const emailKey = 'email'
+const emailKey = "email";
+const userNameKey = "userName";
 
-const userRouter = Router()
+const userRouter = Router();
 
-userRouter.post(`/${User.register}`,  getUserRegistrationValidationMiddleware, 
-doesUserEmailExist(UserModel),
-emailExistsValidation(ErrorMessageHelper.generateAlreadyExistsMessage, emailKey),
-doesUserNameExist(UserModel),
-userNameExistsValidation(
-  ErrorMessageHelper.generateAlreadyExistsMessage
-),
-hashPassword(bcrypt.hash, SaltRounds),
-createUserFromRequest(UserModel),
-saveUserToDatabase,
-sendFormattedUser)
+const doesUserEmailExistMiddleware = getDoesUserEmailExistMiddleware(UserModel);
+const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, emailKey)
+const doesUserNameExistMiddleware = getDoesUserNameExistMiddleware(UserModel);
+const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, userNameKey)
+const hashPasswordMiddleware = getHashPasswordMiddleware(bcrypt.hash, saltRounds)
+const createUserFromRequestMiddleware = getCreateUserFromRequestMiddleware(UserModel)
 
-export default userRouter
+userRouter.post(
+  `/${User.register}`,
+  getUserRegistrationValidationMiddleware,
+  doesUserEmailExistMiddleware,
+  emailExistsValidationMiddleware,
+  doesUserNameExistMiddleware,
+  userNameExistsValidationMiddleware,
+  hashPasswordMiddleware,
+  createUserFromRequestMiddleware,
+  getSaveUserToDatabaseMiddleware,
+  getSendFormattedUserMiddleware
+);
 
+userRouter.post(`/${User.login}`);
+
+export default userRouter;
