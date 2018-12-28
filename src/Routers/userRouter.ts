@@ -11,6 +11,7 @@ import { getCreateUserFromRequestMiddleware } from "../Middleware/User/getCreate
 import { getSaveUserToDatabaseMiddleware } from "../Middleware/Database/getSaveUserToDatabaseMiddleware";
 import { getSendFormattedUserMiddleware } from "../Middleware/User/getSendFormattedUserMiddleware";
 import { getUserRegistrationValidationMiddleware } from "../Middleware/Validation/getUserRegistrationValidationMiddleware";
+import { getUserLoginValidationMiddleware } from "../Middleware/Validation/getUserLoginValidationMiddleware"
 import { Router } from "express";
 
 const saltRounds = 10;
@@ -45,6 +46,14 @@ userRouter.post(
   getSendFormattedUserMiddleware
 );
 
-userRouter.post(`/${User.login}`);
+
+
+userRouter.post(`/${User.login}`, getUserLoginValidationMiddleware);
+
+// Validate parameters being passed. Check that email and password exist. 
+// Check that user exists with email. 
+// Hash password
+// Compare hashed password
+// Return success message. 
 
 export default userRouter;

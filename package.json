@@ -9,8 +9,7 @@
     "start": "set NODE_ENV=DEV&& npm run build:live",
     "build:live": "nodemon --exec ts-node -- ./src/server.ts",
     "prod": "npm run build && npm start",
-    "test": "jest --watch --coverage",
-    "spec": "jest --testPathPattern=spec\\.js"
+    "test": "jest --watch --coverage"
   },
   "keywords": [],
   "author": "Reece Kidd",

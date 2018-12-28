@@ -1568,3 +1568,6 @@
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"::1 - - [27/Dec/2018:15:45:34 +0000] \"POST /user/register HTTP/1.1\" 400 78\n","level":"info"}
 {"message":"::1 - - [27/Dec/2018:15:45:39 +0000] \"POST /user/register HTTP/1.1\" 200 203\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
