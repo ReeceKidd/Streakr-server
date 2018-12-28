@@ -11,7 +11,8 @@ import { getCreateUserFromRequestMiddleware } from "../Middleware/User/getCreate
 import { getSaveUserToDatabaseMiddleware } from "../Middleware/Database/getSaveUserToDatabaseMiddleware";
 import { getSendFormattedUserMiddleware } from "../Middleware/User/getSendFormattedUserMiddleware";
 import { getUserRegistrationValidationMiddleware } from "../Middleware/Validation/getUserRegistrationValidationMiddleware";
-import { getUserLoginValidationMiddleware } from "../Middleware/Validation/getUserLoginValidationMiddleware"
+import { getUserLoginValidationMiddleware } from "../Middleware/Validation/getUserLoginValidationMiddleware";
+import { getRetreiveUserWithEmailMiddleware } from "Middleware/Database/getRetreiveUserWithEmailMiddleware";
 import { Router } from "express";
 
 const saltRounds = 10;
@@ -27,11 +28,26 @@ const userNameKey = "userName";
 const userRouter = Router();
 
 const doesUserEmailExistMiddleware = getDoesUserEmailExistMiddleware(UserModel);
-const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, emailKey)
+const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(
+  ErrorMessageHelper.generateAlreadyExistsMessage,
+  emailKey
+);
 const doesUserNameExistMiddleware = getDoesUserNameExistMiddleware(UserModel);
-const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, userNameKey)
-const hashPasswordMiddleware = getHashPasswordMiddleware(bcrypt.hash, saltRounds)
-const createUserFromRequestMiddleware = getCreateUserFromRequestMiddleware(UserModel)
+const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(
+  ErrorMessageHelper.generateAlreadyExistsMessage,
+  userNameKey
+);
+const hashPasswordMiddleware = getHashPasswordMiddleware(
+  bcrypt.hash,
+  saltRounds
+);
+const createUserFromRequestMiddleware = getCreateUserFromRequestMiddleware(
+  UserModel
+);
+
+// Once I've done the login route create a function in its own file that returns the user registration route. To clear this file up. 
+// This file should only contain the declaration of the rouer and its paths. Write a unit test for the created function to make sure
+// it has imported everything in the middleware path as expected. 
 
 userRouter.post(
   `/${User.register}`,
@@ -46,14 +62,20 @@ userRouter.post(
   getSendFormattedUserMiddleware
 );
 
+const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(
+  UserModel
+);
 
+userRouter.post(
+  `/${User.login}`,
+  getUserLoginValidationMiddleware,
+  retreiveUserWithEmailMiddleware
+);
 
-userRouter.post(`/${User.login}`, getUserLoginValidationMiddleware);
-
-// Validate parameters being passed. Check that email and password exist. 
-// Check that user exists with email. 
+// Validate parameters being passed. Check that email and password exist. (Done)
+// Check that user exists with email.
 // Hash password
 // Compare hashed password
-// Return success message. 
+// Return success message.
 
 export default userRouter;
