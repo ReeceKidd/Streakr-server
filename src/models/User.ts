@@ -38,12 +38,10 @@ export const UserSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       index: true,
-      select: false
     },
     password: {
       required: true,
       type: String,
-      select: false
     },
     streaks: {
       type: Array,
