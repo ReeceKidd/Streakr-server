@@ -7,6 +7,7 @@ import { ErrorMessageHelper } from "../Utils/errorMessage.helper";
 import { getDoesUserNameExistMiddleware } from "../Middleware/Database/getDoesUserNameExistMiddleware";
 import { getUserNameExistsValidationMiddleware } from "../Middleware/Validation/getUserNameExistsValidationMiddleware";
 import { getHashPasswordMiddleware } from "../Middleware/Password/getHashPasswordMiddleware";
+import { getCompareHashedRequestPasswordToUserPasswordMiddleware} from "../Middleware/Password/getCompareHashedRequestPasswordToUserPasswordMiddleware"
 import { getCreateUserFromRequestMiddleware } from "../Middleware/User/getCreateUserFromRequestMiddleware";
 import { getSaveUserToDatabaseMiddleware } from "../Middleware/Database/getSaveUserToDatabaseMiddleware";
 import { getSendFormattedUserMiddleware } from "../Middleware/User/getSendFormattedUserMiddleware";
@@ -66,15 +67,19 @@ const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(
   UserModel
 );
 
+const compareHashedRequestPasswordToUserPasswordMiddleware = getCompareHashedRequestPasswordToUserPasswordMiddleware(bcrypt.compare)
+
+
 userRouter.post(
   `/${User.login}`,
   getUserLoginValidationMiddleware,
-  retreiveUserWithEmailMiddleware
+  retreiveUserWithEmailMiddleware,
+  hashPasswordMiddleware
 );
 
 // Validate parameters being passed. Check that email and password exist. (Done)
-// Check that user exists with email.
-// Hash password
+// Check that user exists with email. (Done)
+// Hash password (Done)
 // Compare hashed password
 // Return success message.
 
