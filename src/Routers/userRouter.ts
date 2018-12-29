@@ -13,7 +13,9 @@ import { getSaveUserToDatabaseMiddleware } from "../Middleware/Database/getSaveU
 import { getSendFormattedUserMiddleware } from "../Middleware/User/getSendFormattedUserMiddleware";
 import { getUserRegistrationValidationMiddleware } from "../Middleware/Validation/getUserRegistrationValidationMiddleware";
 import { getUserLoginValidationMiddleware } from "../Middleware/Validation/getUserLoginValidationMiddleware";
-import { getRetreiveUserWithEmailMiddleware } from "Middleware/Database/getRetreiveUserWithEmailMiddleware";
+import { getPasswordsMatchValidationMiddleware } from "../Middleware/Validation/getPasswordsMatchValidationMiddleware"
+import { getRetreiveUserWithEmailMiddleware } from "../Middleware/Database/getRetreiveUserWithEmailMiddleware";
+import { getLoginSuccessfulMiddleware } from "../Middleware/Auth/getLoginSuccessfulMiddleware"
 import { Router } from "express";
 
 const saltRounds = 10;
@@ -66,21 +68,22 @@ userRouter.post(
 const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(
   UserModel
 );
-
 const compareHashedRequestPasswordToUserPasswordMiddleware = getCompareHashedRequestPasswordToUserPasswordMiddleware(bcrypt.compare)
+const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware('Incorrect login details')
+const loginSuccessfulMiddlware = getLoginSuccessfulMiddleware('Successful login')
 
+// Idea for the middleware is to export the computed middleware with the file so that it doesn't have to be exported differently each time. 
+// Can also export the getter to allow it to be configured. 
 
+// Need to research session tokens to figure out how they work and add it to this route. 
 userRouter.post(
   `/${User.login}`,
   getUserLoginValidationMiddleware,
   retreiveUserWithEmailMiddleware,
-  hashPasswordMiddleware
+  hashPasswordMiddleware,
+  compareHashedRequestPasswordToUserPasswordMiddleware,
+  passwordsMatchValidationMiddleware,
+  loginSuccessfulMiddlware
 );
-
-// Validate parameters being passed. Check that email and password exist. (Done)
-// Check that user exists with email. (Done)
-// Hash password (Done)
-// Compare hashed password
-// Return success message.
 
 export default userRouter;
