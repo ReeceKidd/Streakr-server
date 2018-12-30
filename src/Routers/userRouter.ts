@@ -1,22 +1,15 @@
 import * as bcrypt from "bcryptjs";
+import { Router } from "express";
 
 import { UserModel } from "../Models/User";
-import { getDoesUserEmailExistMiddleware } from "../Middleware/Database/getDoesUserEmailExistMiddleware";
-import { getEmailExistsValidationMiddleware } from "../Middleware/Validation/getEmailExistsValidationMiddleware";
-import { ErrorMessageHelper } from "../Utils/errorMessage.helper";
-import { getDoesUserNameExistMiddleware } from "../Middleware/Database/getDoesUserNameExistMiddleware";
-import { getUserNameExistsValidationMiddleware } from "../Middleware/Validation/getUserNameExistsValidationMiddleware";
-import { getHashPasswordMiddleware } from "../Middleware/Password/getHashPasswordMiddleware";
-import { getCompareHashedRequestPasswordToUserPasswordMiddleware} from "../Middleware/Password/getCompareHashedRequestPasswordToUserPasswordMiddleware"
-import { getCreateUserFromRequestMiddleware } from "../Middleware/User/getCreateUserFromRequestMiddleware";
-import { getSaveUserToDatabaseMiddleware } from "../Middleware/Database/getSaveUserToDatabaseMiddleware";
-import { getSendFormattedUserMiddleware } from "../Middleware/User/getSendFormattedUserMiddleware";
-import { getUserRegistrationValidationMiddleware } from "../Middleware/Validation/getUserRegistrationValidationMiddleware";
-import { getUserLoginValidationMiddleware } from "../Middleware/Validation/getUserLoginValidationMiddleware";
-import { getPasswordsMatchValidationMiddleware } from "../Middleware/Validation/getPasswordsMatchValidationMiddleware"
-import { getRetreiveUserWithEmailMiddleware } from "../Middleware/Database/getRetreiveUserWithEmailMiddleware";
-import { getLoginSuccessfulMiddleware } from "../Middleware/Auth/getLoginSuccessfulMiddleware"
-import { Router } from "express";
+import { getHashPasswordMiddleware } from "../Middleware/Password/hashPasswordMiddleware";
+import { getCompareHashedRequestPasswordToUserPasswordMiddleware} from "../Middleware/Password/compareHashedRequestPasswordToUserPasswordMiddleware"
+import { getUserLoginValidationMiddleware } from "../Middleware/Validation/userLoginValidationMiddleware";
+import { getPasswordsMatchValidationMiddleware } from "../Middleware/Validation/passwordsMatchValidationMiddleware"
+import { getRetreiveUserWithEmailMiddleware } from "../Middleware/Database/retreiveUserWithEmailMiddleware";
+import { loginSuccessfulMiddleware } from "../Middleware/Auth/loginSuccessfulMiddleware"
+import { registerUserMiddlewares } from "../Routes/User/user.register"
+
 
 const saltRounds = 10;
 
@@ -25,44 +18,19 @@ const User = {
   login: "login"
 };
 
-const emailKey = "email";
-const userNameKey = "userName";
 
 const userRouter = Router();
 
-const doesUserEmailExistMiddleware = getDoesUserEmailExistMiddleware(UserModel);
-const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(
-  ErrorMessageHelper.generateAlreadyExistsMessage,
-  emailKey
-);
-const doesUserNameExistMiddleware = getDoesUserNameExistMiddleware(UserModel);
-const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(
-  ErrorMessageHelper.generateAlreadyExistsMessage,
-  userNameKey
-);
 const hashPasswordMiddleware = getHashPasswordMiddleware(
   bcrypt.hash,
   saltRounds
 );
-const createUserFromRequestMiddleware = getCreateUserFromRequestMiddleware(
-  UserModel
-);
 
-// Once I've done the login route create a function in its own file that returns the user registration route. To clear this file up. 
-// This file should only contain the declaration of the rouer and its paths. Write a unit test for the created function to make sure
-// it has imported everything in the middleware path as expected. 
 
+// Write test for below code. 
 userRouter.post(
   `/${User.register}`,
-  getUserRegistrationValidationMiddleware,
-  doesUserEmailExistMiddleware,
-  emailExistsValidationMiddleware,
-  doesUserNameExistMiddleware,
-  userNameExistsValidationMiddleware,
-  hashPasswordMiddleware,
-  createUserFromRequestMiddleware,
-  getSaveUserToDatabaseMiddleware,
-  getSendFormattedUserMiddleware
+  ...registerUserMiddlewares
 );
 
 const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(
@@ -70,7 +38,6 @@ const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(
 );
 const compareHashedRequestPasswordToUserPasswordMiddleware = getCompareHashedRequestPasswordToUserPasswordMiddleware(bcrypt.compare)
 const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware('Incorrect login details')
-const loginSuccessfulMiddlware = getLoginSuccessfulMiddleware('Successful login')
 
 // Idea for the middleware is to export the computed middleware with the file so that it doesn't have to be exported differently each time. 
 // Can also export the getter to allow it to be configured. 
@@ -83,7 +50,7 @@ userRouter.post(
   hashPasswordMiddleware,
   compareHashedRequestPasswordToUserPasswordMiddleware,
   passwordsMatchValidationMiddleware,
-  loginSuccessfulMiddlware
+  loginSuccessfulMiddleware
 );
 
 export default userRouter;

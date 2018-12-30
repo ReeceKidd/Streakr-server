@@ -7,7 +7,7 @@ import LoggerStream from "./Logging/LoggerStream";
 import userRouter from "./Routers/userRouter"
 import config from "../config/DATABASE_CONFIG";
 
-const User = 'user'
+
 
 const app = express()
 
@@ -24,6 +24,7 @@ mongoose
 )
 .catch(err => console.log(err.message));
 
+const User = 'user'
 app.use(`/${User}`, userRouter)
 
 
