@@ -9,7 +9,7 @@ const getCompareRequestPasswordToUserHashedPasswordMiddleware = (compare ) => as
   try {
     const  requestPassword = request.body.password;
     const { password } = response.locals.user
-    response.locals.passwordMatch = await compare(requestPassword, password)
+    response.locals.passwordMatchesHash = await compare(requestPassword, password)
     next();
   } catch(err){
     next(err)

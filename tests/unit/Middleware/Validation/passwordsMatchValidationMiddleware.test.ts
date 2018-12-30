@@ -15,7 +15,7 @@ describe(`${middlewareName}`, () => {
 
     const request = { };
     const response: any = {
-      locals: { passwordsMatch: false},
+      locals: { passwordMatchesHash: false},
       status
     };
     const next = jest.fn();
@@ -29,13 +29,13 @@ describe(`${middlewareName}`, () => {
     expect(send).toBeCalledWith({message: loginError});
   });
 
-  it("check that next is called when passwordsMatch is true", () => {
+  it("check that next is called when passwordMatchesHash is true", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
     const request = { };
     const response: any = {
-      locals: { passwordsMatch: true },
+      locals: { passwordMatchesHash: true },
       status
     };
     const next = jest.fn();
@@ -57,7 +57,7 @@ describe(`${middlewareName}`, () => {
 
     const request = {};
     const response: any = {
-      locals: { passwordsMatch: false },
+      locals: { passwordMatchesHash: false },
       status
     };
     const next = jest.fn();

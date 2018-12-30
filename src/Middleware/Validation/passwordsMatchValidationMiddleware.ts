@@ -7,8 +7,8 @@ const getPasswordsMatchValidationMiddleware =(loginUnsuccessfulMessage) => (
   next: NextFunction
 ) => {
   try {
-    const { passwordsMatch } = response.locals;
-    if (!passwordsMatch) {
+    const { passwordMatchesHash } = response.locals;
+    if (!passwordMatchesHash) {
       return response.status(400).send({
         message: loginUnsuccessfulMessage
       });
