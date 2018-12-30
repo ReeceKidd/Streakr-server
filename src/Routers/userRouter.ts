@@ -1,35 +1,23 @@
 import { Router } from "express";
 
-import { hashPasswordMiddleware } from "../Middleware/Password/hashPasswordMiddleware";
-import { compareHashedRequestPasswordToUserPasswordMiddleware} from "../Middleware/Password/compareHashedRequestPasswordToUserPasswordMiddleware"
-import { userLoginValidationMiddleware } from "../Middleware/Validation/userLoginValidationMiddleware";
-import { passwordsMatchValidationMiddleware } from "../Middleware/Validation/passwordsMatchValidationMiddleware"
-import { retreiveUserWithEmailMiddleware } from "../Middleware/Database/retreiveUserWithEmailMiddleware";
-import { loginSuccessfulMiddleware } from "../Middleware/Auth/loginSuccessfulMiddleware"
 import { registerUserMiddlewares } from "../Routes/User/user.register"
+import { userLoginMiddlewares } from "../Routes/User/user.login";
 
-const User = {
+const UserPaths = {
   register: "register",
   login: "login"
 };
 
 const userRouter = Router();
 
-// Write test for below code. 
 userRouter.post(
-  `/${User.register}`,
+  `/${UserPaths.register}`,
   ...registerUserMiddlewares
 );
-
-// Need to research session tokens to figure out how they work and add it to this route. 
+ 
 userRouter.post(
-  `/${User.login}`,
-  userLoginValidationMiddleware,
-  retreiveUserWithEmailMiddleware,
-  hashPasswordMiddleware,
-  compareHashedRequestPasswordToUserPasswordMiddleware,
-  passwordsMatchValidationMiddleware,
-  loginSuccessfulMiddleware
+  `/${UserPaths.login}`,
+  ...userLoginMiddlewares
 );
 
 export default userRouter;

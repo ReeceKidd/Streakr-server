@@ -1607,3 +1607,28 @@
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [30/Dec/2018:18:09:53 +0000] \"POST /user/register HTTP/1.1\" 200 176\n","level":"info"}
+{"message":"::1 - - [30/Dec/2018:18:10:10 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [30/Dec/2018:18:11:03 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [30/Dec/2018:18:11:30 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [30/Dec/2018:18:12:43 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [30/Dec/2018:18:13:22 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [30/Dec/2018:18:14:30 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::1 - - [30/Dec/2018:18:17:04 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
