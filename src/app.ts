@@ -3,6 +3,7 @@ import * as bodyParser from "body-parser";
 import * as mongoose from "mongoose";
 import * as morgan from "morgan";
 import * as passport from 'passport'
+import * as jwt from "jsonwebtoken"
 import LoggerStream from "./Logging/LoggerStream";
 import userRouter from "./Routers/userRouter"
 import config from "../config/DATABASE_CONFIG";

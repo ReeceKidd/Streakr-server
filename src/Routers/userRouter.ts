@@ -20,4 +20,9 @@ userRouter.post(
   ...userLoginMiddlewares
 );
 
+/*
+Need to read up on using passport and Json Web Tokens to provide authentication for the routes.
+Probably best to look at the passport docs and a youtube tutorial or two. 
+*/
+
 export default userRouter;
