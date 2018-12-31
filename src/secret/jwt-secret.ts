@@ -1,1 +1,0 @@
-export const jwtSecret = '0O-w%9"m|Z52]q(OJe`d!aW<uJrac%'
