@@ -5,6 +5,11 @@ import { IStreak} from "./Streak"
 
 export const SALT_ROUNDS = 10
 
+enum UserTypes {
+  user = 'user',
+  admin = 'admin'
+}
+
 export interface IUser extends mongoose.Document {
   userName: string;
   email: string;
@@ -21,6 +26,7 @@ export interface IUser extends mongoose.Document {
   profilePicture?: {
     type: String
   },
+  role: string
 }
 
 export const UserSchema = new mongoose.Schema(
@@ -49,6 +55,11 @@ export const UserSchema = new mongoose.Schema(
     },
     profilePicture: {
       type: String
+    },
+    role: {
+      type: String,
+      enum: [UserTypes.user, UserTypes.admin],
+      default: UserTypes.user
     }
   },
   {
