@@ -1,8 +1,6 @@
 import * as mongoose from "mongoose";
 import { IStreak} from "./Streak"
 
-
-
 export const SALT_ROUNDS = 10
 
 enum UserTypes {

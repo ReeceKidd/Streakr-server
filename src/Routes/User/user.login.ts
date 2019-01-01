@@ -3,11 +3,15 @@ import { retreiveUserWithEmailMiddleware } from "../../Middleware/Database/retre
 import { compareRequestPasswordToUserHashedPasswordMiddleware } from "../../Middleware/Password/compareRequestPasswordToUserHashedPasswordMiddleware";
 import { passwordsMatchValidationMiddleware } from "../../Middleware/Validation/passwordsMatchValidationMiddleware";
 import { loginSuccessfulMiddleware } from "../../Middleware/Auth/loginSuccessfulMiddleware";
+import { setMinimumUserDataMiddleware } from "../../Middleware/User/setMinimumUserDataMiddleware";
+import { setJwtTokenMiddleware } from "../../Middleware/Auth/setJsonWebtTokenMiddleware";
 
 export const userLoginMiddlewares = [
   userLoginValidationMiddleware,
   retreiveUserWithEmailMiddleware,
   compareRequestPasswordToUserHashedPasswordMiddleware,
   passwordsMatchValidationMiddleware,
+  setMinimumUserDataMiddleware,
+  setJwtTokenMiddleware,
   loginSuccessfulMiddleware
 ];
