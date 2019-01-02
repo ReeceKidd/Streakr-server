@@ -9,7 +9,7 @@ export const getSetMinimumUserDataMiddleware = (
     const { user } = response.locals;
     const minimumUserData = {
         _id: user._id,
-        email: user.email
+        userName: user.userName
     }
     response.locals.minimumUserData = minimumUserData
     next()

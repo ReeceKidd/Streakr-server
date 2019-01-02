@@ -5,7 +5,7 @@ const middlewareName = "getSendFormattedUserMiddleware";
 const ERROR_MESSAGE = "error";
 
 describe(`${middlewareName}`, () => {
-  it("should should send user in response with password undefined", () => {
+  it("should send user in response with password undefined", () => {
   
     const mockUserName = 'abc'
     const mockEmail = 'email@gmail.com'
