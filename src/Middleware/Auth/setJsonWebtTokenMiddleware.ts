@@ -2,14 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken"
 import { jwtSecret} from "../../../secret/jwt-secret"
 
-export const getSetJsonWebtTokenMiddleware = (signFunction: Function, jwtSecret: string) =>  (
+export const getSetJsonWebTokenMiddleware = (signToken: Function, jwtSecret: string, jwtOptions: object) => (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
     const { minimumUserData } = response.locals
-    const token = jwt.sign({ user: minimumUserData }, jwtSecret);
+    const token = signToken({ minimumUserData }, jwtSecret, jwtOptions);
     response.locals.token = token
     next()
   } catch (err) {
@@ -17,4 +17,4 @@ export const getSetJsonWebtTokenMiddleware = (signFunction: Function, jwtSecret:
   }
 };
 
-export const setJwtTokenMiddleware = getSetJsonWebtTokenMiddleware(jwt.sign, jwtSecret)
+export const setJsonWebTokenMiddleware = getSetJsonWebTokenMiddleware(jwt.sign, jwtSecret, { expiresIn: "7d"})
