@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { hash} from "bcryptjs"
-import saltRounds from "../../Constants/Auth/saltRounds";
+import {saltRounds} from "../../Constants/Auth/saltRounds";
 
 
 const getHashPasswordMiddleware = (hash, salt) => async (

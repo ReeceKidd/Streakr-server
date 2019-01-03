@@ -9,9 +9,11 @@ export const getSetJsonWebTokenMiddleware = (signToken: Function, jwtSecret: str
 ) => {
   try {
     const { minimumUserData } = response.locals
-    const token = signToken({ minimumUserData }, jwtSecret, jwtOptions);
-    response.locals.token = token
-    next()
+    signToken({ minimumUserData }, jwtSecret, jwtOptions, (err, token) => {
+      if(err) next(err)
+      response.locals.token = token
+      next()
+    });
   } catch (err) {
     next(err);
   }

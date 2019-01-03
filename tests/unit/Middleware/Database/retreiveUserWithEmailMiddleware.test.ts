@@ -42,7 +42,7 @@ describe(`${middlewareName}`, () => {
 
     expect.assertions(3);
     expect(findOne).toBeCalledWith({ email: mockEmail });
-    expect(response.locals.emailExistsw).toBe(undefined);
+    expect(response.locals.emailExists).toBe(undefined);
     expect(next).toBeCalledWith();
   });
 
