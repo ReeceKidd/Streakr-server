@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { UserModel } from "../../Models/User";
 
-const getRetreiveUserWithEmailMiddleware = UserModel => async (
+const getRetreiveUserWithEmailMiddleware = (UserModel) => async (
   request: Request,
   response: Response,
   next: NextFunction
