@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { userDoesNotExistMessage } from "../../Messages/failure.messages"
+import { loginUnsuccessfulMessage } from "../../Messages/failure.messages"
 
 
 export const  getUserExistsValidationMiddleware  = (userDoesNotExistMessage) => (
@@ -20,6 +20,6 @@ export const  getUserExistsValidationMiddleware  = (userDoesNotExistMessage) => 
   }
 };
 
-export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(userDoesNotExistMessage)
+export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(loginUnsuccessfulMessage)
 
 
