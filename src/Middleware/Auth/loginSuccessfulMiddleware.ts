@@ -7,8 +7,8 @@ const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) =>  (
   next: NextFunction
 ) => {
   try {
-    const {token } = response.locals
-    return response.send({message: loginSuccessMessage, token});
+    const {jsonWebToken } = response.locals
+    return response.send({message: loginSuccessMessage, jsonWebToken});
   } catch (err) {
     next(err);
   }

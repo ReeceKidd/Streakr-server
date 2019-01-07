@@ -11,7 +11,7 @@ describe(`${middlewareName}`, () => {
       
     const send = jest.fn()
     const mockToken = '1234'
-    const response: any = { locals: {token: mockToken}, send };
+    const response: any = { locals: {jsonWebToken: mockToken}, send };
 
     const request: any = { }
     const next = jest.fn();
@@ -22,7 +22,7 @@ describe(`${middlewareName}`, () => {
 
     expect.assertions(2);
     expect(next).not.toBeCalled()
-    expect(send).toBeCalledWith({message: loginSuccessMessage, token: mockToken})
+    expect(send).toBeCalledWith({message: loginSuccessMessage, jsonWebToken: mockToken})
   });
 
   it("should call next with an error on failure", () => {
@@ -31,7 +31,7 @@ describe(`${middlewareName}`, () => {
     const send = jest.fn(() => {
         throw new Error(ERROR_MESSAGE)
     })
-    const response: any = { send, locals: {token: mockToken} };
+    const response: any = { send, locals: {jsonWebToken: mockToken} };
 
     const request: any = { }
     const next = jest.fn();
