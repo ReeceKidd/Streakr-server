@@ -20,7 +20,7 @@ describe(`${middlewareName}`, () => {
 
     expect.assertions(3);
     expect(signTokenMock).toBeCalledWith({minimumUserData}, jwtSecretMock, jwtOptionsMock)
-    expect(response.locals.token).toBeDefined()
+    expect(response.locals.jsonWebToken).toBeDefined()
     expect(next).toBeCalled()
   });
 

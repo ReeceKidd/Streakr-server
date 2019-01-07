@@ -1920,3 +1920,40 @@
 {"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:27:32 +0000] \"POST /user/login HTTP/1.1\" 400 33\n","level":"info"}
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:30:51 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:30:54 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:31:00 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:35:59 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:37:26 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:38:48 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:40:36 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:43:43 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:58:59 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:59:10 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:59:36 +0000] \"POST /user/register HTTP/1.1\" 200 195\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:59:38 +0000] \"POST /user/register HTTP/1.1\" 400 64\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:06:59:59 +0000] \"POST /user/login HTTP/1.1\" 200 274\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:07:00:05 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:07:00:06 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:07:00:11 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:07:00:25 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:07:00:32 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [06/Jan/2019:07:00:44 +0000] \"POST /user/login HTTP/1.1\" 200 270\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:05:57 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:06:03 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:06:12 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:06:40 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:06:55 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:07:40 +0000] \"POST /user/register HTTP/1.1\" 200 200\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:07:57 +0000] \"POST /user/login HTTP/1.1\" 200 279\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:09:55 +0000] \"POST /user/login HTTP/1.1\" 400 32\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:10:49 +0000] \"POST /user/login HTTP/1.1\" 200 279\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:12:16 +0000] \"POST /user/login HTTP/1.1\" 200 279\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:13:55 +0000] \"POST /user/login HTTP/1.1\" 200 279\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [07/Jan/2019:06:15:41 +0000] \"POST /user/login HTTP/1.1\" 200 279\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
