@@ -7,7 +7,6 @@ import { passwordsMatchValidationMiddleware } from "../../../../src/Middleware/V
 import { loginSuccessfulMiddleware } from "../../../../src/Middleware/Auth/loginSuccessfulMiddleware";
 import { setMinimumUserDataMiddleware } from "../../../../src/Middleware/User/setMinimumUserDataMiddleware";
 import { setJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/setJsonWebtTokenMiddleware";
-import { decodeJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/decodeJsonWebTokenMiddleware"
 
 const fileName = "user.login";
 
@@ -22,7 +21,6 @@ describe(`${fileName}`, () => {
         passwordsMatchValidationMiddleware,
         setMinimumUserDataMiddleware,
         setJsonWebTokenMiddleware,
-        decodeJsonWebTokenMiddleware,
         loginSuccessfulMiddleware
     ]);
   });

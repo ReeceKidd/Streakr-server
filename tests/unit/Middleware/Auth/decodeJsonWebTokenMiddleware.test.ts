@@ -9,7 +9,7 @@ describe(`${middlewareName}`, () => {
     const tokenMock = '1234'
     const verifyMock = jest.fn(() => true)
     const jwtSecretMock = '1234'
-    const response: any = { locals: {token: tokenMock} };
+    const response: any = { locals: {jsonWebToken: tokenMock} };
     const request: any = { }
     const next = jest.fn();
 
@@ -31,7 +31,7 @@ describe(`${middlewareName}`, () => {
     const tokenMock = '1234'
     const jwtSecretMock = '1234'
 
-    const response: any = { locals: {token: tokenMock }};
+    const response: any = { locals: {jsonWebToken: tokenMock }};
     const request: any = { }
     const next = jest.fn();
 
@@ -49,7 +49,7 @@ describe(`${middlewareName}`, () => {
   const tokenMock = '1234'
   const jwtSecretMock = '1234'
 
-  const response: any = { locals: {token: tokenMock }};
+  const response: any = { locals: {jsonWebToken: tokenMock }};
   const request: any = { }
   const next = jest.fn();
 

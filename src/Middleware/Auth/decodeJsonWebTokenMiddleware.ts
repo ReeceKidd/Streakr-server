@@ -10,9 +10,9 @@ export const getDecodeJsonWebTokenMiddleware = (
   getDecodedTokenCallback: Function
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { token } = response.locals;
+    const { jsonWebToken } = response.locals;
     const decodedToken = await verify(
-      token,
+      jsonWebToken,
       jsonWebTokenSecret,
       getDecodedTokenCallback
     );
