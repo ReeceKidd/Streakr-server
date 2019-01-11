@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { loginMiddlewares } from "Routes/Auth/login";
+import { loginMiddlewares } from "../Routes/Auth/login";
 
 const authPaths = {
   login: "login"
