@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { ErrorMessageHelper } from "../../Utils/errorMessage.helper";
-import { userNameKey } from "../../Constants/Keys/keys";
+import { ErrorMessageHelper } from "../../../Utils/errorMessage.helper";
+import { userNameKey } from "../../../Constants/Keys/keys";
 
 const getUserNameExistsValidationMiddleware  = (generateAlreadyExistsMessage, userNameKey) => (
   request: Request,

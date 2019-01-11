@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import {
   getUserNameExistsValidationMiddleware 
-} from "../../../../src/Middleware/Validation/userNameExistsValidationMiddleware";
+} from "../../../../../src/Middleware/Validation/User/userNameExistsValidationMiddleware";
 
 const middlewareName = "getUserNameExistsValidationMiddleware";
 

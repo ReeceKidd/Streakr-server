@@ -1,32 +1,13 @@
-import {getUserRegistrationValidationMiddleware}  from '../../../../src/Middleware/Validation/userRegistrationValidationMiddleware'
+import { getLoginRequestValidationMiddleware }  from '../../../../../src/Middleware/Validation/Auth/loginRequestValidationMiddleware'
 
-const middlewareName = "getUserRegistrationValidationMiddlware";
+const middlewareName = "getUserLoginValidationMiddlware";
 
-const mockUserName = 'mockUserName'
 const mockEmail = 'mock@gmail.com'
 const mockPassword = '12345678'
 
 describe(`${middlewareName}`, () => {
 
   it("check that valid request passes", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-
-    const request: any = {
-      body: { userName: mockUserName, email: mockEmail, password: mockPassword }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    getUserRegistrationValidationMiddleware(request, response, next);
-
-    expect.assertions(1);
-    expect(next).toBeCalled();
-  });
-
-  it("check that correct response is sent when userName is missing", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -38,27 +19,26 @@ describe(`${middlewareName}`, () => {
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    getLoginRequestValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
-    expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({"message": "child \"userName\" fails because [\"userName\" is required]"});
-    expect(next).not.toBeCalled();
+    expect.assertions(1);
+    expect(next).toBeCalled();
   });
+
 
   it("check that correct response is sent when email is missing", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
     const request: any = {
-      body: { userName: mockUserName, password: mockPassword }
+      body: { password: mockPassword }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    getLoginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
@@ -73,14 +53,14 @@ describe(`${middlewareName}`, () => {
     const incorrectEmail = '1234'
 
     const request: any = {
-      body: { userName: mockUserName, email: incorrectEmail, password: mockPassword }
+      body: { email: incorrectEmail, password: mockPassword }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    getLoginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
@@ -93,14 +73,14 @@ describe(`${middlewareName}`, () => {
     const status = jest.fn(() => ({ send }));
 
     const request: any = {
-      body: { userName: mockUserName, email: mockEmail }
+      body: { email: mockEmail }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    getLoginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
@@ -115,14 +95,14 @@ describe(`${middlewareName}`, () => {
     const incorrectPassword = '123'
 
     const request: any = {
-      body: { userName: mockUserName, email: mockEmail, password: incorrectPassword }
+      body: { email: mockEmail, password: incorrectPassword }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    getLoginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
@@ -137,14 +117,14 @@ describe(`${middlewareName}`, () => {
     const notAllowed = '123'
 
     const request: any = {
-      body: { notAllowed, userName: mockUserName, email: mockEmail, password: mockPassword }
+      body: { notAllowed, email: mockEmail, password: mockPassword }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    getLoginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(400);
@@ -153,8 +133,4 @@ describe(`${middlewareName}`, () => {
   });
 
   
-
-
-
-
 });

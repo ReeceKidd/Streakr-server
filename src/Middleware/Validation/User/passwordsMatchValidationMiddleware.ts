@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { loginUnsuccessfulMessage} from "../../Messages/failure.messages"
+import { loginUnsuccessfulMessage} from "../../../Messages/failure.messages"
 
 const getPasswordsMatchValidationMiddleware =(loginUnsuccessfulMessage) => (
   request: Request,

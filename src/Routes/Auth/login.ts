@@ -1,14 +1,14 @@
-import { userLoginValidationMiddleware } from "../../Middleware/Validation/userLoginValidationMiddleware";
+import { loginRequestValidationMiddleware } from "../../Middleware/Validation/Auth/loginRequestValidationMiddleware";
 import { retreiveUserWithEmailMiddleware } from "../../Middleware/Database/retreiveUserWithEmailMiddleware";
-import { userExistsValidationMiddleware } from "../../Middleware/Validation/userExistsValidationMiddleware";
+import { userExistsValidationMiddleware } from "../../Middleware/Validation/User/userExistsValidationMiddleware";
 import { compareRequestPasswordToUserHashedPasswordMiddleware } from "../../Middleware/Password/compareRequestPasswordToUserHashedPasswordMiddleware";
-import { passwordsMatchValidationMiddleware } from "../../Middleware/Validation/passwordsMatchValidationMiddleware";
+import { passwordsMatchValidationMiddleware } from "../../Middleware/Validation/User/passwordsMatchValidationMiddleware";
 import { loginSuccessfulMiddleware } from "../../Middleware/Auth/loginSuccessfulMiddleware";
 import { setMinimumUserDataMiddleware } from "../../Middleware/User/setMinimumUserDataMiddleware";
-import { setJsonWebTokenMiddleware } from "../../Middleware/Auth/setJsonWebtTokenMiddleware";
+import { setJsonWebTokenMiddleware } from "../../Middleware/Auth/setJsonWebTokenMiddleware";
 
-export const userLoginMiddlewares = [
-  userLoginValidationMiddleware,
+export const loginMiddlewares = [
+  loginRequestValidationMiddleware,
   retreiveUserWithEmailMiddleware,
   userExistsValidationMiddleware,
   compareRequestPasswordToUserHashedPasswordMiddleware,

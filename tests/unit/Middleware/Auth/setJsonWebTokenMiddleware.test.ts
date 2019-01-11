@@ -1,4 +1,4 @@
-import { getSetJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/setJsonWebtTokenMiddleware";
+import { getSetJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/setJsonWebTokenMiddleware";
 
 const middlewareName = "setJsonWebTokenMiddleware";
 
@@ -26,7 +26,7 @@ describe(`${middlewareName}`, () => {
 
   it("should call next with an error on failure", () => {
 
-    const signTokenMock = jest.fn((first, second) => {
+    const signTokenMock = jest.fn(() => {
         throw new Error(ERROR_MESSAGE)
     })
     const minimumUserData = { userName: 'user'}

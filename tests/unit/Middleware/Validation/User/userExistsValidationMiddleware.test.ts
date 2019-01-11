@@ -1,46 +1,45 @@
 import { Request, Response, NextFunction } from "express";
 import {
-  getPasswordsMatchValidationMiddleware
-} from "../../../../src/Middleware/Validation/passwordsMatchValidationMiddleware";
+  getUserExistsValidationMiddleware,
+} from "../../../../../src/Middleware/Validation/User/userExistsValidationMiddleware";
 
-const middlewareName = "getPasswordsMatchValidationMiddleware";
+const middlewareName = "userExistsValidationMiddleware";
+const mockErrorMessage = 'User does not exist'
 
-const loginError = 'login details are incorrect'
-const errorMessage = 'error'
 
 describe(`${middlewareName}`, () => {
-  it("check that error response is returned correctly when passwords don't match", async () => {
+  it("check that error response is returned correctly when user wasn't found", async () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
-    const request = { };
+ 
+    const request = {};
     const response: any = {
-      locals: { passwordMatchesHash: false},
+      locals: {},
       status
     };
     const next = jest.fn();
 
-    const middleware =  getPasswordsMatchValidationMiddleware(loginError);
+    const middleware = getUserExistsValidationMiddleware(mockErrorMessage);
 
-    await middleware(request as Request, response as Response, next as NextFunction);
+    middleware(request as Request, response as Response, next as NextFunction);
 
     expect.assertions(2);
     expect(status).toHaveBeenCalledWith(400);
-    expect(send).toBeCalledWith({message: loginError});
+    expect(send).toBeCalledWith({message: mockErrorMessage});
   });
 
-  it("check that next is called when passwordMatchesHash is true", () => {
+  it("check that next is called when user is defined on response.locals", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
     const request = { };
     const response: any = {
-      locals: { passwordMatchesHash: true },
+      locals: { user: true },
       status
     };
     const next = jest.fn();
 
-    const middleware =  getPasswordsMatchValidationMiddleware(loginError);
+    const middleware = getUserExistsValidationMiddleware(mockErrorMessage);
 
     middleware(request as Request, response as Response, next as NextFunction);
 
@@ -50,19 +49,20 @@ describe(`${middlewareName}`, () => {
     expect(next).toBeCalled();
   });
 
-  it("check that when error is thrown next is called with err", () => {
+  it("check that next is called with err on send failure", () => {
+      const errorMessage = 'error'
     const send = jest.fn(() => {throw new Error(errorMessage)});
     const status = jest.fn(() => ({ send }));
+    const generateAlreadyExistsMessage = jest.fn();
 
-
-    const request = {};
+    const request = { };
     const response: any = {
-      locals: { passwordMatchesHash: false },
+      locals: { user: false },
       status
     };
     const next = jest.fn();
 
-    const middleware =  getPasswordsMatchValidationMiddleware(loginError)
+    const middleware =  getUserExistsValidationMiddleware(mockErrorMessage);
 
     middleware(request as Request, response as Response, next as NextFunction);
 

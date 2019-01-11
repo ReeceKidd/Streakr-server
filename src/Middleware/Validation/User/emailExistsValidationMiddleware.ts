@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { ErrorMessageHelper } from "../../Utils/errorMessage.helper";
-import { emailKey } from "../../Constants/Keys/keys";
+import { ErrorMessageHelper } from "../../../Utils/errorMessage.helper";
+import { emailKey } from "../../../Constants/Keys/keys";
 
 const  getEmailExistsValidationMiddleware  = (generateAlreadyExistsMessage, emailKey) => (
   request: Request,
