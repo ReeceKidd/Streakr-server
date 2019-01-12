@@ -1,8 +1,6 @@
 import { getRetreiveJsonWebTokenMiddleware, jsonWebTokenHeaderName } from "../../../../src/Middleware/Auth/retreiveJsonWebTokenMiddleware";
 
 
-const ERROR_MESSAGE = "error";
-
 describe(`retreiveJsonWebTokenMiddleware`, () => {
   it("should set response.locals.jsonWebToken", () => {
    
@@ -23,15 +21,16 @@ describe(`retreiveJsonWebTokenMiddleware`, () => {
 
   it("should call next with an error on failure", () => {
 
+
     const response: any = { locals: { }};
     const request: any = { }
-    const next = jest.fn(() => {throw new Error(ERROR_MESSAGE)});
+    const next = jest.fn();
 
     const middleware = getRetreiveJsonWebTokenMiddleware(jsonWebTokenHeaderName);
     middleware(request, response, next)
 
     expect.assertions(1);
-    expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))
+    expect(next).toBeCalledWith(new TypeError("Cannot read property 'x-access-token' of undefined"))
   })
 
 
