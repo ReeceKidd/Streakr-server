@@ -5,7 +5,7 @@ import { compareRequestPasswordToUserHashedPasswordMiddleware } from "../../Midd
 import { passwordsMatchValidationMiddleware } from "../../Middleware/Validation/User/passwordsMatchValidationMiddleware";
 import { loginSuccessfulMiddleware } from "../../Middleware/Auth/loginSuccessfulMiddleware";
 import { setMinimumUserDataMiddleware } from "../../Middleware/User/setMinimumUserDataMiddleware";
-import { setJsonWebTokenMiddleware } from "../../Middleware/Auth/setJsonWebTokenMiddleware";
+import { setJsonWebTokenMiddleware } from "../../Middleware/Auth/signJsonWebTokenMiddleware";
 
 export const loginMiddlewares = [
   loginRequestValidationMiddleware,
@@ -17,3 +17,5 @@ export const loginMiddlewares = [
   setJsonWebTokenMiddleware,
   loginSuccessfulMiddleware
 ];
+
+

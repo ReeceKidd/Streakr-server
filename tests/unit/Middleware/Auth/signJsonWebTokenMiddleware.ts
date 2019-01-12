@@ -1,4 +1,4 @@
-import { getSetJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/setJsonWebTokenMiddleware";
+import { getSignJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/signJsonWebTokenMiddleware";
 
 const middlewareName = "setJsonWebTokenMiddleware";
 
@@ -15,7 +15,7 @@ describe(`${middlewareName}`, () => {
     const next = jest.fn();
 
     
-    const middleware = getSetJsonWebTokenMiddleware(signTokenMock, jwtSecretMock, jwtOptionsMock);
+    const middleware = getSignJsonWebTokenMiddleware(signTokenMock, jwtSecretMock, jwtOptionsMock);
     middleware(request, response, next)
 
     expect.assertions(3);
@@ -37,7 +37,7 @@ describe(`${middlewareName}`, () => {
     const request: any = { }
     const next = jest.fn();
 
-    const middleware = getSetJsonWebTokenMiddleware(signTokenMock, jwtSecretMock, jwtOptionsMock);
+    const middleware = getSignJsonWebTokenMiddleware(signTokenMock, jwtSecretMock, jwtOptionsMock);
     middleware(request, response, next)
 
     expect.assertions(1);

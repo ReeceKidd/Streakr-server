@@ -6,7 +6,7 @@ import { compareRequestPasswordToUserHashedPasswordMiddleware } from "../../../.
 import { passwordsMatchValidationMiddleware } from "../../../../src/Middleware/Validation/User/passwordsMatchValidationMiddleware";
 import { loginSuccessfulMiddleware } from "../../../../src/Middleware/Auth/loginSuccessfulMiddleware";
 import { setMinimumUserDataMiddleware } from "../../../../src/Middleware/User/setMinimumUserDataMiddleware";
-import { setJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/setJsonWebTokenMiddleware";
+import { setJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/signJsonWebTokenMiddleware";
 
 const fileName = "user.login";
 

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken"
 import { jwtSecret} from "../../../secret/jwt-secret"
 
-export const getSetJsonWebTokenMiddleware = (signToken: Function, jwtSecret: string, jwtOptions: object) => (
+export const getSignJsonWebTokenMiddleware = (signToken: Function, jwtSecret: string, jwtOptions: object) => (
   request: Request,
   response: Response,
   next: NextFunction
@@ -17,4 +17,4 @@ export const getSetJsonWebTokenMiddleware = (signToken: Function, jwtSecret: str
   }
 };
 
-export const setJsonWebTokenMiddleware = getSetJsonWebTokenMiddleware(jwt.sign, jwtSecret, { expiresIn: "7d"})
+export const setJsonWebTokenMiddleware = getSignJsonWebTokenMiddleware(jwt.sign, jwtSecret, { expiresIn: "7d"})

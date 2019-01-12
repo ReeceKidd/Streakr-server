@@ -2,8 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
 import { jwtSecret } from "../../../secret/jwt-secret";
 
-
-
 export const getDecodeJsonWebTokenMiddleware = (
   verify: Function,
   jsonWebTokenSecret: string,
@@ -12,7 +10,7 @@ export const getDecodeJsonWebTokenMiddleware = (
     const { jsonWebToken } = response.locals;
     const decodedToken = verify(
       jsonWebToken,
-      jsonWebTokenSecret
+      jsonWebTokenSecret,
     );
     response.locals.decodedToken = decodedToken;
     next();
@@ -21,4 +19,5 @@ export const getDecodeJsonWebTokenMiddleware = (
   }
 };
 
+export const decodeJsonWebTokenMiddleware = getDecodeJsonWebTokenMiddleware(jwt.verify, jwtSecret)
 
