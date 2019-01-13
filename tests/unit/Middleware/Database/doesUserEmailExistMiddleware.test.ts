@@ -1,12 +1,9 @@
 import { getDoesUserEmailExistMiddleware } from "../../../../src/Middleware/Database/doesUserEmailExistMiddleware";
 
-const middlewareName = "getDoesUserEmailExistMiddleware";
-
 const mockEmail = "test@gmail.com";
-
 const ERROR_MESSAGE = "error";
 
-describe(`${middlewareName}`, () => {
+describe(`doesUserEmailExistMiddleware`, () => {
 
   it("should set emailExists to true when user is found", async () => {
     const findOne = jest.fn(() => Promise.resolve(true));

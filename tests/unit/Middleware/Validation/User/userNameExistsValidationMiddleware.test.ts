@@ -3,13 +3,11 @@ import {
   getUserNameExistsValidationMiddleware 
 } from "../../../../../src/Middleware/Validation/User/userNameExistsValidationMiddleware";
 
-const middlewareName = "getUserNameExistsValidationMiddleware";
-
 const mockUserName = "testName";
 
 const userNameKey = 'userName'
 
-describe(`${middlewareName}`, () => {
+describe(`userNameExistsValidationMiddleware`, () => {
   it("check that error response is returned correctly when userName already exists", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));

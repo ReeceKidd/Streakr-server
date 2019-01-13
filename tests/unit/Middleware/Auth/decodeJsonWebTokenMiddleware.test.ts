@@ -1,10 +1,8 @@
 import { getDecodeJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/decodeJsonWebTokenMiddleware";
 
-const middlewareName = "decodeJsonWebTokenMiddleware";
-
 const ERROR_MESSAGE = "error";
 
-describe(`${middlewareName}`, () => {
+describe(`"decodeJsonWebTokenMiddleware"`, () => {
   it("should set response.locals.token", async () => {
     const tokenMock = '1234'
     const verifyMock = jest.fn(() => true)

@@ -1,8 +1,6 @@
 import { getSetMinimumUserDataMiddleware } from "../../../../src/Middleware/User/setMinimumUserDataMiddleware";
 
-const middlewareName = "getSetMinimumUserDataMiddleware";
-
-describe(`${middlewareName}`, () => {
+describe(`setMinimumUserDataMiddleware`, () => {
   it("should set response.locals.minimumUserData", () => {
   
     const mockUserName = 'abc'

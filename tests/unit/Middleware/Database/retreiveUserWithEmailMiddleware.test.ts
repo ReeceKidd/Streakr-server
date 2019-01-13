@@ -1,12 +1,9 @@
 import { getRetreiveUserWithEmailMiddleware } from "../../../../src/Middleware/Database/retreiveUserWithEmailMiddleware";
 
-const middlewareName = "getRetreiveUserWithEmailMiddleware";
-
 const mockEmail = "test@gmail.com";
-
 const ERROR_MESSAGE = "error";
 
-describe(`${middlewareName}`, () => {
+describe(`retreiveUserWithEmailMiddleware`, () => {
 
   it("should define response.locals.user when user is found", async () => {
     const findOne = jest.fn(() => Promise.resolve(true));

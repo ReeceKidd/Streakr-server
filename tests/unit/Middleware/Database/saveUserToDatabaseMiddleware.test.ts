@@ -1,10 +1,8 @@
 import { getSaveUserToDatabaseMiddleware  } from "../../../../src/Middleware/Database/saveUserToDatabaseMiddleware";
 
-const middlewareName = "getSaveUserToDatabaseMiddleware";
-
 const ERROR_MESSAGE = "error";
 
-describe(`${middlewareName}`, () => {
+describe(`saveUserToDatabaseMiddleware`, () => {
 
   it("should set response.locals.savedUser", async () => {
     const save = jest.fn(() => {

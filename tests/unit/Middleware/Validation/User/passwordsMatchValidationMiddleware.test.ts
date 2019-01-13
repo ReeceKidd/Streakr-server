@@ -3,12 +3,10 @@ import {
   getPasswordsMatchValidationMiddleware
 } from "../../../../../src/Middleware/Validation/User/passwordsMatchValidationMiddleware";
 
-const middlewareName = "getPasswordsMatchValidationMiddleware";
-
 const loginError = 'login details are incorrect'
 const errorMessage = 'error'
 
-describe(`${middlewareName}`, () => {
+describe(`passwordsMatchValidationMiddleware`, () => {
   it("check that error response is returned correctly when passwords don't match", async () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));

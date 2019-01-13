@@ -1,14 +1,11 @@
 import { getCompareRequestPasswordToUserHashedPasswordMiddleware } from "../../../../src/Middleware/Password/compareRequestPasswordToUserHashedPasswordMiddleware";
 
-
-const middlewareName = "getCompareRequestPasswordToUserHashedPasswordMiddleware";
-
 const ERROR_MESSAGE = "error";
 
 const mockedPassword = "password";
 const mockedHash = '1234'
 
-describe(`${middlewareName}`, () => {
+describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
   it("should set response.locals.passwordMatchesHash to true when the request password matches the user hash", async () => {
    
     const compare = jest.fn(() => {

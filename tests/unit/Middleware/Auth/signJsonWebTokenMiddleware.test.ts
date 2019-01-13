@@ -1,10 +1,8 @@
 import { getSignJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/signJsonWebTokenMiddleware";
 
-const middlewareName = "setJsonWebTokenMiddleware";
-
 const ERROR_MESSAGE = "error";
 
-describe(`${middlewareName}`, () => {
+describe(`setJsonWebTokenMiddleware`, () => {
   it("should set response.locals.token", () => {
     const minimumUserData = { userName: 'user'}
     const signTokenMock = jest.fn(() => true)

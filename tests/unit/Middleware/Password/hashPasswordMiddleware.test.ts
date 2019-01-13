@@ -1,10 +1,8 @@
 import {getHashPasswordMiddleware } from "../../../../src/Middleware/Password/hashPasswordMiddleware";
 
-const middlewareName = "getHashPasswordMiddleware";
-
 const ERROR_MESSAGE = "error";
 
-describe(`${middlewareName}`, () => {
+describe(`hashPasswordMiddleware`, () => {
   it("should set response.locals.hashedPassword", async () => {
     const mockedPassword = "password";
     const hashedPassword = "12$4354";

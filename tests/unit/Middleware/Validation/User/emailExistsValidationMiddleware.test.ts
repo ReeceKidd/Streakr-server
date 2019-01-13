@@ -3,12 +3,10 @@ import {
   getEmailExistsValidationMiddleware ,
 } from "../../../../../src/Middleware/Validation/User/emailExistsValidationMiddleware";
 
-const middlewareName = " getEmailExistsValidationMiddleware ";
-
 const mockEmail = "test@gmail.com";
 const emailKey = 'email'
 
-describe(`${middlewareName}`, () => {
+describe(`emailExistsValidationMiddleware `, () => {
   it("check that error response is returned correctly when email already exists", async () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));

@@ -1,12 +1,10 @@
 import { getDoesUserNameExistMiddleware  } from "../../../../src/Middleware/Database/doesUserNameExistMiddleware";
 
-const middlewareName = "getDoesUserNameExistMiddleware";
-
 const mockUserName = "testname";
 
 const ERROR_MESSAGE = "error";
 
-describe(`${middlewareName}`, () => {
+describe(`doesUserNameExistMiddleware`, () => {
 
   it("should set userNameExists to true when userExists", async () => {
     const findOne = jest.fn(() => Promise.resolve(true));

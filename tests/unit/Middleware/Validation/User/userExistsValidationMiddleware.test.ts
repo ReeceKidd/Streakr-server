@@ -3,11 +3,9 @@ import {
   getUserExistsValidationMiddleware,
 } from "../../../../../src/Middleware/Validation/User/userExistsValidationMiddleware";
 
-const middlewareName = "userExistsValidationMiddleware";
 const mockErrorMessage = 'User does not exist'
 
-
-describe(`${middlewareName}`, () => {
+describe(`userExistsValidationMiddleware`, () => {
   it("check that error response is returned correctly when user wasn't found", async () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));

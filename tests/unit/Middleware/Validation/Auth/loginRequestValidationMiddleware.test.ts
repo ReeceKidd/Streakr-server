@@ -1,11 +1,9 @@
 import { getLoginRequestValidationMiddleware }  from '../../../../../src/Middleware/Validation/Auth/loginRequestValidationMiddleware'
 
-const middlewareName = "getUserLoginValidationMiddlware";
-
 const mockEmail = 'mock@gmail.com'
 const mockPassword = '12345678'
 
-describe(`${middlewareName}`, () => {
+describe(`loginRequestValidationMiddlware`, () => {
 
   it("check that valid request passes", () => {
     const send = jest.fn();

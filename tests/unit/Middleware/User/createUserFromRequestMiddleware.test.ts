@@ -1,10 +1,6 @@
 import { getCreateUserFromRequestMiddleware } from "../../../../src/Middleware/User/createUserFromRequestMiddleware";
 
-const middlewareName = "getCreateUserFromRequestMiddleware";
-
-const ERROR_MESSAGE = "error";
-
-describe(`${middlewareName}`, () => {
+describe(`createUserFromRequestMiddleware`, () => {
   it("should define response.locals.newUser", async () => {
     const hashedPassword = "12$4354";
     const userName = 'user'

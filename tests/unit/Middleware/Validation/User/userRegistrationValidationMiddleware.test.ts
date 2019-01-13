@@ -1,12 +1,10 @@
 import {getUserRegistrationValidationMiddleware}  from '../../../../../src/Middleware/Validation/User/userRegistrationValidationMiddleware'
 
-const middlewareName = "getUserRegistrationValidationMiddlware";
-
 const mockUserName = 'mockUserName'
 const mockEmail = 'mock@gmail.com'
 const mockPassword = '12345678'
 
-describe(`${middlewareName}`, () => {
+describe(`userRegistrationValidationMiddlware`, () => {
 
   it("check that valid request passes", () => {
     const send = jest.fn();

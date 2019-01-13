@@ -1,10 +1,8 @@
 import { getSendFormattedUserMiddleware } from "../../../../src/Middleware/User/sendFormattedUserMiddleware";
 
-const middlewareName = "getSendFormattedUserMiddleware";
-
 const ERROR_MESSAGE = "error";
 
-describe(`${middlewareName}`, () => {
+describe(`sendFormattedUserMiddleware`, () => {
   it("should send user in response with password undefined", () => {
   
     const mockUserName = 'abc'

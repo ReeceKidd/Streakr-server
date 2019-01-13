@@ -1,6 +1,5 @@
 import { getRetreiveJsonWebTokenMiddleware, jsonWebTokenHeaderName } from "../../../../src/Middleware/Auth/retreiveJsonWebTokenMiddleware";
 
-
 describe(`retreiveJsonWebTokenMiddleware`, () => {
   it("should set response.locals.jsonWebToken", () => {
    

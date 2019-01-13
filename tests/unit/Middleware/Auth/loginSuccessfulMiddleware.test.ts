@@ -1,12 +1,9 @@
 import { getLoginSuccessfulMiddleware } from "../../../../src/Middleware/Auth/loginSuccessfulMiddleware";
 
-const middlewareName = "getLoginSuccessfulMiddleware";
-
 const ERROR_MESSAGE = "error";
-
 const loginSuccessMessage = 'success'
 
-describe(`${middlewareName}`, () => {
+describe(`loginSuccessfulMiddleware`, () => {
   it("should should send login success message", () => {
       
     const send = jest.fn()
