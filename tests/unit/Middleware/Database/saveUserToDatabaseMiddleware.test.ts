@@ -1,4 +1,4 @@
-import { getSaveUserToDatabaseMiddleware  } from "../../../../src/Middleware/Database/saveUserToDatabaseMiddleware";
+import { saveUserToDatabaseMiddleware  } from "../../../../src/Middleware/Database/saveUserToDatabaseMiddleware";
 
 const ERROR_MESSAGE = "error";
 
@@ -19,7 +19,7 @@ describe(`saveUserToDatabaseMiddleware`, () => {
     const request: any = {}
     const next = jest.fn();
 
-    await getSaveUserToDatabaseMiddleware (request, response, next);
+    await saveUserToDatabaseMiddleware (request, response, next);
 
     expect.assertions(3);
     expect(save).toBeCalled();
@@ -36,7 +36,7 @@ describe(`saveUserToDatabaseMiddleware`, () => {
     const response: any = { locals: { newUser: { save}}};
     const next = jest.fn();
 
-    await getSaveUserToDatabaseMiddleware(request, response, next);
+    await saveUserToDatabaseMiddleware(request, response, next);
 
     expect.assertions(1);
     expect(next).toBeCalledWith(ERROR_MESSAGE);

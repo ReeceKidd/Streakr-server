@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { ErrorMessageHelper } from "../../../Utils/errorMessage.helper";
 import { emailKey } from "../../../Constants/Keys/keys";
 
-const  getEmailExistsValidationMiddleware  = (generateAlreadyExistsMessage, emailKey) => (
+export const  getEmailExistsValidationMiddleware  = (generateAlreadyExistsMessage, emailKey) => (
   request: Request,
   response: Response,
   next: NextFunction
@@ -24,6 +24,6 @@ const  getEmailExistsValidationMiddleware  = (generateAlreadyExistsMessage, emai
   }
 };
 
-const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, emailKey)
+export const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, emailKey)
 
-export {  getEmailExistsValidationMiddleware, emailExistsValidationMiddleware  };
+

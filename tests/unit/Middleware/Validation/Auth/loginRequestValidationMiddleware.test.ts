@@ -1,4 +1,4 @@
-import { getLoginRequestValidationMiddleware }  from '../../../../../src/Middleware/Validation/Auth/loginRequestValidationMiddleware'
+import { loginRequestValidationMiddleware }  from '../../../../../src/Middleware/Validation/Auth/loginRequestValidationMiddleware'
 
 const mockEmail = 'mock@gmail.com'
 const mockPassword = '12345678'
@@ -17,7 +17,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     };
     const next = jest.fn();
 
-    getLoginRequestValidationMiddleware(request, response, next);
+    loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(1);
     expect(next).toBeCalled();
@@ -36,7 +36,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     };
     const next = jest.fn();
 
-    getLoginRequestValidationMiddleware(request, response, next);
+    loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
@@ -58,7 +58,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     };
     const next = jest.fn();
 
-    getLoginRequestValidationMiddleware(request, response, next);
+    loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
@@ -78,7 +78,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     };
     const next = jest.fn();
 
-    getLoginRequestValidationMiddleware(request, response, next);
+    loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
@@ -100,7 +100,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     };
     const next = jest.fn();
 
-    getLoginRequestValidationMiddleware(request, response, next);
+    loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
@@ -122,7 +122,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     };
     const next = jest.fn();
 
-    getLoginRequestValidationMiddleware(request, response, next);
+    loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(400);

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-const getSendFormattedUserMiddleware = (
+export const sendFormattedUserMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
@@ -14,6 +14,3 @@ const getSendFormattedUserMiddleware = (
   }
 };
 
-const sendFormattedUserMiddleware = getSendFormattedUserMiddleware
-
-export { getSendFormattedUserMiddleware, sendFormattedUserMiddleware };

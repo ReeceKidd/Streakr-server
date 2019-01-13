@@ -8,10 +8,7 @@ const loginValidationSchema = {
         password: Joi.string().min(6).required()
 };
 
-const getLoginRequestValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const loginRequestValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     Joi.validate(request.body, loginValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
  };
 
- const loginRequestValidationMiddleware = getLoginRequestValidationMiddleware
-
- export { getLoginRequestValidationMiddleware, loginRequestValidationMiddleware}

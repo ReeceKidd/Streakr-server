@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { ErrorMessageHelper } from "../../../Utils/errorMessage.helper";
 import { userNameKey } from "../../../Constants/Keys/keys";
 
-const getUserNameExistsValidationMiddleware  = (generateAlreadyExistsMessage, userNameKey) => (
+export const getUserNameExistsValidationMiddleware  = (generateAlreadyExistsMessage, userNameKey) => (
   request: Request,
   response: Response,
   next: NextFunction
@@ -24,6 +24,5 @@ const getUserNameExistsValidationMiddleware  = (generateAlreadyExistsMessage, us
   }
 };
 
-const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, userNameKey)
+export const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, userNameKey)
 
-export { getUserNameExistsValidationMiddleware, userNameExistsValidationMiddleware };

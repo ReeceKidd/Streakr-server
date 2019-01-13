@@ -1,11 +1,10 @@
-import {getUserRegistrationValidationMiddleware}  from '../../../../../src/Middleware/Validation/User/userRegistrationValidationMiddleware'
+import { userRegistrationValidationMiddleware } from "../../../../../src/Middleware/Validation/User/userRegistrationValidationMiddleware";
 
-const mockUserName = 'mockUserName'
-const mockEmail = 'mock@gmail.com'
-const mockPassword = '12345678'
+const mockUserName = "mockUserName";
+const mockEmail = "mock@gmail.com";
+const mockPassword = "12345678";
 
 describe(`userRegistrationValidationMiddlware`, () => {
-
   it("check that valid request passes", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -18,7 +17,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    userRegistrationValidationMiddleware(request, response, next);
 
     expect.assertions(1);
     expect(next).toBeCalled();
@@ -36,11 +35,13 @@ describe(`userRegistrationValidationMiddlware`, () => {
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    userRegistrationValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({"message": "child \"userName\" fails because [\"userName\" is required]"});
+    expect(send).toBeCalledWith({
+      message: 'child "userName" fails because ["userName" is required]'
+    });
     expect(next).not.toBeCalled();
   });
 
@@ -56,11 +57,13 @@ describe(`userRegistrationValidationMiddlware`, () => {
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    userRegistrationValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({"message": "child \"email\" fails because [\"email\" is required]"});
+    expect(send).toBeCalledWith({
+      message: 'child "email" fails because ["email" is required]'
+    });
     expect(next).not.toBeCalled();
   });
 
@@ -68,21 +71,27 @@ describe(`userRegistrationValidationMiddlware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
-    const incorrectEmail = '1234'
+    const incorrectEmail = "1234";
 
     const request: any = {
-      body: { userName: mockUserName, email: incorrectEmail, password: mockPassword }
+      body: {
+        userName: mockUserName,
+        email: incorrectEmail,
+        password: mockPassword
+      }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    userRegistrationValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({"message": "child \"email\" fails because [\"email\" must be a valid email]"});
+    expect(send).toBeCalledWith({
+      message: 'child "email" fails because ["email" must be a valid email]'
+    });
     expect(next).not.toBeCalled();
   });
 
@@ -98,11 +107,13 @@ describe(`userRegistrationValidationMiddlware`, () => {
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    userRegistrationValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({"message": "child \"password\" fails because [\"password\" is required]"});
+    expect(send).toBeCalledWith({
+      message: 'child "password" fails because ["password" is required]'
+    });
     expect(next).not.toBeCalled();
   });
 
@@ -110,21 +121,28 @@ describe(`userRegistrationValidationMiddlware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
-    const incorrectPassword = '123'
+    const incorrectPassword = "123";
 
     const request: any = {
-      body: { userName: mockUserName, email: mockEmail, password: incorrectPassword }
+      body: {
+        userName: mockUserName,
+        email: mockEmail,
+        password: incorrectPassword
+      }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    userRegistrationValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({"message": "child \"password\" fails because [\"password\" length must be at least 6 characters long]"});
+    expect(send).toBeCalledWith({
+      message:
+        'child "password" fails because ["password" length must be at least 6 characters long]'
+    });
     expect(next).not.toBeCalled();
   });
 
@@ -132,27 +150,26 @@ describe(`userRegistrationValidationMiddlware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
-    const notAllowed = '123'
+    const notAllowed = "123";
 
     const request: any = {
-      body: { notAllowed, userName: mockUserName, email: mockEmail, password: mockPassword }
+      body: {
+        notAllowed,
+        userName: mockUserName,
+        email: mockEmail,
+        password: mockPassword
+      }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    getUserRegistrationValidationMiddleware(request, response, next);
+    userRegistrationValidationMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(400);
-    expect(send).toBeCalledWith({"message": "\"notAllowed\" is not allowed"});
+    expect(send).toBeCalledWith({ message: '"notAllowed" is not allowed' });
     expect(next).not.toBeCalled();
   });
-
-  
-
-
-
-
 });

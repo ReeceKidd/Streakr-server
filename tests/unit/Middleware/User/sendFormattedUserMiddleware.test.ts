@@ -1,4 +1,4 @@
-import { getSendFormattedUserMiddleware } from "../../../../src/Middleware/User/sendFormattedUserMiddleware";
+import { sendFormattedUserMiddleware } from "../../../../src/Middleware/User/sendFormattedUserMiddleware";
 
 const ERROR_MESSAGE = "error";
 
@@ -16,7 +16,7 @@ describe(`sendFormattedUserMiddleware`, () => {
     const request: any = { }
     const next = jest.fn();
 
-    getSendFormattedUserMiddleware(request, response, next);
+    sendFormattedUserMiddleware(request, response, next);
 
     expect.assertions(3);
     expect(response.locals.savedUser.password).toBeUndefined()
@@ -38,7 +38,7 @@ describe(`sendFormattedUserMiddleware`, () => {
     const request: any = { }
     const next = jest.fn();
 
-    getSendFormattedUserMiddleware(request, response, next);
+    sendFormattedUserMiddleware(request, response, next);
 
     expect.assertions(1);
     expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))

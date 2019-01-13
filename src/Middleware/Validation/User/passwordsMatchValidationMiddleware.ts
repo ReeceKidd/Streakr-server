@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { loginUnsuccessfulMessage} from "../../../Messages/failure.messages"
 
-const getPasswordsMatchValidationMiddleware =(loginUnsuccessfulMessage) => (
+export const getPasswordsMatchValidationMiddleware =(loginUnsuccessfulMessage) => (
   request: Request,
   response: Response,
   next: NextFunction
@@ -19,6 +19,5 @@ const getPasswordsMatchValidationMiddleware =(loginUnsuccessfulMessage) => (
   }
 };
 
-const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware(loginUnsuccessfulMessage)
+export const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware(loginUnsuccessfulMessage)
 
-export {  getPasswordsMatchValidationMiddleware, passwordsMatchValidationMiddleware  };

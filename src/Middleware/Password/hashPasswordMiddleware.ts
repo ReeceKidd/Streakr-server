@@ -3,7 +3,7 @@ import { hash} from "bcryptjs"
 import {saltRounds} from "../../Constants/Auth/saltRounds";
 
 
-const getHashPasswordMiddleware = (hash, salt) => async (
+export const getHashPasswordMiddleware = (hash, salt) => async (
   request: Request,
   response: Response,
   next: NextFunction
@@ -18,6 +18,4 @@ const getHashPasswordMiddleware = (hash, salt) => async (
   }
 };
 
-const hashPasswordMiddleware = getHashPasswordMiddleware(hash, saltRounds)
-
-export { getHashPasswordMiddleware, hashPasswordMiddleware };
+export const hashPasswordMiddleware = getHashPasswordMiddleware(hash, saltRounds)

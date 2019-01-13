@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 const notAllowedParameterErrorRegExp = /is not allowed/;
 
-const getValidationErrorMessageSenderMiddleware = (request: Request, response: Response, next: NextFunction) => (
+export const getValidationErrorMessageSenderMiddleware = (request: Request, response: Response, next: NextFunction) => (
   error: Error
 ): void => {
   if (error) {
@@ -15,7 +15,3 @@ const getValidationErrorMessageSenderMiddleware = (request: Request, response: R
     next();
   }
 };
-
-const validationErrorMessageSenderMiddleware = getValidationErrorMessageSenderMiddleware
-
-export { getValidationErrorMessageSenderMiddleware, validationErrorMessageSenderMiddleware}

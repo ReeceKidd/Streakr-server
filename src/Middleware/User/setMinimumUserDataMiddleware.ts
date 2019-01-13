@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-export const getSetMinimumUserDataMiddleware = (
+export const setMinimumUserDataMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
@@ -18,5 +18,4 @@ export const getSetMinimumUserDataMiddleware = (
   }
 };
 
-export const setMinimumUserDataMiddleware = getSetMinimumUserDataMiddleware
 

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-const getSaveUserToDatabaseMiddleware  = async (
+export const saveUserToDatabaseMiddleware  = async (
   request: Request,
   response: Response,
   next: NextFunction
@@ -14,6 +14,4 @@ const getSaveUserToDatabaseMiddleware  = async (
   }
 };
 
-const saveUserToDatabaseMiddleware = getSaveUserToDatabaseMiddleware
 
-export { getSaveUserToDatabaseMiddleware, saveUserToDatabaseMiddleware }

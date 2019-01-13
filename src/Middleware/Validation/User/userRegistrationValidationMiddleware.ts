@@ -10,10 +10,8 @@ const registerValidationSchema = {
 };
 
 
-const getUserRegistrationValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const userRegistrationValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     Joi.validate(request.body, registerValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
  };
 
- const userRegistrationValidationMiddleware = getUserRegistrationValidationMiddleware
 
- export { getUserRegistrationValidationMiddleware, userRegistrationValidationMiddleware}

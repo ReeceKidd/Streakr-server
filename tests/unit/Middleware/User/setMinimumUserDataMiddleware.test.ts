@@ -1,4 +1,4 @@
-import { getSetMinimumUserDataMiddleware } from "../../../../src/Middleware/User/setMinimumUserDataMiddleware";
+import { setMinimumUserDataMiddleware } from "../../../../src/Middleware/User/setMinimumUserDataMiddleware";
 
 describe(`setMinimumUserDataMiddleware`, () => {
   it("should set response.locals.minimumUserData", () => {
@@ -12,7 +12,7 @@ describe(`setMinimumUserDataMiddleware`, () => {
     const request: any = { }
     const next = jest.fn();
 
-    getSetMinimumUserDataMiddleware(request, response, next);
+    setMinimumUserDataMiddleware(request, response, next);
 
     expect.assertions(4);
     expect(response.locals.minimumUserData).toBeDefined()
@@ -28,7 +28,7 @@ describe(`setMinimumUserDataMiddleware`, () => {
     const request: any = { }
     const next = jest.fn();
 
-    getSetMinimumUserDataMiddleware(request, response, next);
+    setMinimumUserDataMiddleware(request, response, next);
 
     expect.assertions(1);
     expect(next).toBeCalledWith(new TypeError(`Cannot read property '_id' of undefined`))

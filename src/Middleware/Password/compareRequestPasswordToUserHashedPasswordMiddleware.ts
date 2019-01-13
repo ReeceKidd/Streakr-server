@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import {compare } from 'bcryptjs'
 
-const getCompareRequestPasswordToUserHashedPasswordMiddleware = (compare ) => async (
+export const getCompareRequestPasswordToUserHashedPasswordMiddleware = (compare ) => async (
   request: Request,
   response: Response,
   next: NextFunction
@@ -16,6 +16,4 @@ const getCompareRequestPasswordToUserHashedPasswordMiddleware = (compare ) => as
   }
 };
 
-const compareRequestPasswordToUserHashedPasswordMiddleware = getCompareRequestPasswordToUserHashedPasswordMiddleware(compare)
-
-export { getCompareRequestPasswordToUserHashedPasswordMiddleware, compareRequestPasswordToUserHashedPasswordMiddleware };
+export const compareRequestPasswordToUserHashedPasswordMiddleware = getCompareRequestPasswordToUserHashedPasswordMiddleware(compare)

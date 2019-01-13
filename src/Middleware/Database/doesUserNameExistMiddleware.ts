@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { UserModel } from "../../Models/User";
 
-const getDoesUserNameExistMiddleware = (UserModel) => async (
+export const getDoesUserNameExistMiddleware = (UserModel) => async (
   request: Request,
   response: Response,
   next: NextFunction
@@ -18,6 +18,4 @@ const getDoesUserNameExistMiddleware = (UserModel) => async (
   }
 };
 
-const doesUserNameExistMiddleware = getDoesUserNameExistMiddleware(UserModel)
-
-export { getDoesUserNameExistMiddleware, doesUserNameExistMiddleware };
+export const doesUserNameExistMiddleware = getDoesUserNameExistMiddleware(UserModel)

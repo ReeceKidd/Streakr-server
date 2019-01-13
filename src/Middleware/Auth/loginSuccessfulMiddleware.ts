@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import {loginSuccessMessage } from "../../Messages/success.messages"
 
-const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) =>  (
+export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) =>  (
   request: Request,
   response: Response,
   next: NextFunction
@@ -13,7 +13,5 @@ const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) =>  (
     next(err);
   }
 };
-
-export { getLoginSuccessfulMiddleware };
 
 export const loginSuccessfulMiddleware = getLoginSuccessfulMiddleware(loginSuccessMessage)
