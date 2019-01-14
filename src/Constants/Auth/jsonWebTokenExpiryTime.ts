@@ -1,1 +1,1 @@
-export const jsonWebTokenExpiryTime = '7d'
+export const jsonWebTokenExpiryTime = '7d';

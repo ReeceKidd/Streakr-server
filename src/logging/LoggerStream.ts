@@ -1,9 +1,9 @@
-import Logger from "./Logger"
+import Logger from './Logger';
 
 class LoggerStream {
-    write(text: string) {
-        Logger.info(text)
-    }
+  write(text: string) {
+    Logger.info(text);
+  }
 }
 
-export default new LoggerStream()
+export default new LoggerStream();

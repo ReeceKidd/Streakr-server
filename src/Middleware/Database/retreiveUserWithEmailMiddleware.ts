@@ -1,14 +1,14 @@
-import { Request, Response, NextFunction } from "express";
-import { UserModel } from "../../Models/User";
+import { Request, Response, NextFunction } from 'express';
+import { UserModel } from '../../Models/User';
 
-export const getRetreiveUserWithEmailMiddleware = (UserModel) => async (
+export const getRetreiveUserWithEmailMiddleware = userModel => async (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { email } = request.body;
-    const user = await UserModel.findOne({ email });
+    const user = await userModel.findOne({ email });
     response.locals.user = user;
     next();
   } catch (err) {
@@ -16,5 +16,4 @@ export const getRetreiveUserWithEmailMiddleware = (UserModel) => async (
   }
 };
 
-export const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(UserModel)
-
+export const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(UserModel);

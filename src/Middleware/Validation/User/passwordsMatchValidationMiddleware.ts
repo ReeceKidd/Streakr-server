@@ -1,16 +1,16 @@
-import { Request, Response, NextFunction } from "express";
-import { loginUnsuccessfulMessage} from "../../../Messages/failure.messages"
+import { Request, Response, NextFunction } from 'express';
+import { loginUnsuccessfulMessage } from '../../../Messages/failure.messages';
 
-export const getPasswordsMatchValidationMiddleware =(loginUnsuccessfulMessage) => (
+export const getPasswordsMatchValidationMiddleware = loginUnsuccessfulMessage => (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { passwordMatchesHash } = response.locals;
     if (!passwordMatchesHash) {
       return response.status(400).send({
-        message: loginUnsuccessfulMessage
+        message: loginUnsuccessfulMessage,
       });
     }
     next();
@@ -19,5 +19,4 @@ export const getPasswordsMatchValidationMiddleware =(loginUnsuccessfulMessage) =
   }
 };
 
-export const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware(loginUnsuccessfulMessage)
-
+export const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware(loginUnsuccessfulMessage);

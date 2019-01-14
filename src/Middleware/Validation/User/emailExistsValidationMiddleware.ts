@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from "express";
-import { ErrorMessageHelper } from "../../../Utils/errorMessage.helper";
-import { emailKey } from "../../../Constants/Keys/keys";
+import { Request, Response, NextFunction } from 'express';
+import { ErrorMessageHelper } from '../../../Utils/errorMessage.helper';
+import { emailKey } from '../../../Constants/Keys/keys';
 
 export const  getEmailExistsValidationMiddleware  = (generateAlreadyExistsMessage, emailKey) => (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { emailExists } = response.locals;
@@ -14,8 +14,8 @@ export const  getEmailExistsValidationMiddleware  = (generateAlreadyExistsMessag
       return response.status(400).send({
         message: generateAlreadyExistsMessage(
           emailKey,
-          email
-        )
+          email,
+           ),
       });
     }
     next();
@@ -24,6 +24,4 @@ export const  getEmailExistsValidationMiddleware  = (generateAlreadyExistsMessag
   }
 };
 
-export const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, emailKey)
-
-
+export const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, emailKey);

@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
-import * as jwt from "jsonwebtoken";
-import { jwtSecret } from "../../../secret/jwt-secret";
+import { Request, Response, NextFunction } from 'express';
+import * as jwt from 'jsonwebtoken';
+import { jwtSecret } from '../../../secret/jwt-secret';
 
 export const getDecodeJsonWebTokenMiddleware = (
   verify: Function,
@@ -19,5 +19,4 @@ export const getDecodeJsonWebTokenMiddleware = (
   }
 };
 
-export const decodeJsonWebTokenMiddleware = getDecodeJsonWebTokenMiddleware(jwt.verify, jwtSecret)
-
+export const decodeJsonWebTokenMiddleware = getDecodeJsonWebTokenMiddleware(jwt.verify, jwtSecret);

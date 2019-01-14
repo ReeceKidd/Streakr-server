@@ -1,1 +1,1 @@
-export const loginSuccessMessage = 'Successfully logged in'
+export const loginSuccessMessage = 'Successfully logged in';
