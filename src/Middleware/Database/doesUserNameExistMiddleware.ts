@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserModel } from '../../Models/User';
+import { userModel } from '../../Models/User';
 
 export const getDoesUserNameExistMiddleware = userModel => async (
   request: Request,
@@ -8,7 +8,7 @@ export const getDoesUserNameExistMiddleware = userModel => async (
 ) => {
   try {
     const { userName } = request.body;
-    const user = await UserModel.findOne({ userName });
+    const user = await userModel.findOne({ userName });
     if (user)  {
       response.locals.userNameExists = true;
     }
@@ -18,4 +18,4 @@ export const getDoesUserNameExistMiddleware = userModel => async (
   }
 };
 
-export const doesUserNameExistMiddleware = getDoesUserNameExistMiddleware(UserModel);
+export const doesUserNameExistMiddleware = getDoesUserNameExistMiddleware(userModel);

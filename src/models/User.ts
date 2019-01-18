@@ -1,11 +1,11 @@
-import * as mongoose from "mongoose";
-import { IStreak} from "./Streak"
+import * as mongoose from 'mongoose';
+import { IStreak } from './Streak';
 
-export const SALT_ROUNDS = 10
+export const SALT_ROUNDS = 10;
 
 enum UserTypes {
   user = 'user',
-  admin = 'admin'
+  admin = 'admin',
 }
 
 export interface IUser extends mongoose.Document {
@@ -14,27 +14,27 @@ export interface IUser extends mongoose.Document {
   password: string;
   createdAt: {
     type: Date,
-    required: false
-  }, 
+    required: false,
+  };
   modifiedAt: {
     type: Date,
-    required: false
-  }
+    required: false,
+  };
   streaks?: IStreak[];
   profilePicture?: {
-    type: String
-  },
-  role: string
+    type: String,
+  };
+  role: string;
 }
 
-export const UserSchema = new mongoose.Schema(
+export const userSchema = new mongoose.Schema(
   {
     userName: {
       required: true,
       type: String,
       unique: true,
       trim: true,
-      index: true
+      index: true,
     },
     email: {
       required: true,
@@ -49,26 +49,25 @@ export const UserSchema = new mongoose.Schema(
     },
     streaks: {
       type: Array,
-      default: []
+      default: [],
     },
     profilePicture: {
-      type: String
+      type: String,
     },
     role: {
       type: String,
       enum: [UserTypes.user, UserTypes.admin],
-      default: UserTypes.user
-    }
+      default: UserTypes.user,
+    },
   },
   {
     timestamps: true,
-    collection: 'Users'
-  }
+    collection: 'Users',
+  },
 );
 
-mongoose.set('useCreateIndex', true)
-UserSchema.index({ userName: "text" });
-UserSchema.index({ email: "text" });
+mongoose.set('useCreateIndex', true);
+userSchema.index({ userName: 'text' });
+userSchema.index({ email: 'text' });
 
-
-export const UserModel: mongoose.Model<IUser> = mongoose.model<IUser>("User", UserSchema);
+export const userModel: mongoose.Model<IUser> = mongoose.model<IUser>('User', userSchema);

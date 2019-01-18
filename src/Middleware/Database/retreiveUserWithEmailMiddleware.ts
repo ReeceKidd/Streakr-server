@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserModel } from '../../Models/User';
+import { userModel } from '../../Models/User';
 
 export const getRetreiveUserWithEmailMiddleware = userModel => async (
   request: Request,
@@ -16,4 +16,4 @@ export const getRetreiveUserWithEmailMiddleware = userModel => async (
   }
 };
 
-export const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(UserModel);
+export const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(userModel);

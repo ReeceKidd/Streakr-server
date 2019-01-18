@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserModel } from '../../Models/User';
+import { userModel } from '../../Models/User';
 
 export const getCreateUserFromRequestMiddleware = user => (request: Request, response: Response, next: NextFunction) => {
   const { hashedPassword } = response.locals;
@@ -8,4 +8,4 @@ export const getCreateUserFromRequestMiddleware = user => (request: Request, res
   next();
 };
 
-export const createUserFromRequestMiddleware = getCreateUserFromRequestMiddleware(UserModel);
+export const createUserFromRequestMiddleware = getCreateUserFromRequestMiddleware(userModel);
