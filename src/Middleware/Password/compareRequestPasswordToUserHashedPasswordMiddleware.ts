@@ -7,10 +7,10 @@ export const getCompareRequestPasswordToUserHashedPasswordMiddleware = compare =
   next: NextFunction,
 ) => {
   try {
-    const  requestPassword = request.body.password;
+    const requestPassword = request.body.password;
     const { password } = response.locals.user;
     response.locals.passwordMatchesHash = await compare(requestPassword, password);
-    next();
+    next()
   } catch (err) {
     next(err);
   }

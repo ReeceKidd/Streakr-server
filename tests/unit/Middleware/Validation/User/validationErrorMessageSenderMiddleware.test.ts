@@ -34,7 +34,7 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
 
     const request = {
       query: { param: true }
-    };
+    }
     const response: any = {
       status
     };
@@ -51,7 +51,7 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(400);
-    expect(send).toBeCalledWith({message: paramNotAllowedError});
+    expect(send).toBeCalledWith({ message: paramNotAllowedError });
     expect(next).not.toBeCalled();
   });
 
@@ -78,8 +78,8 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({message: otherError});
+    expect(send).toBeCalledWith({ message: otherError });
     expect(next).not.toBeCalled();
   });
-  
+
 });
