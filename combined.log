@@ -2246,3 +2246,57 @@
 {"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:30:00 +0000] \"POST /register HTTP/1.1\" 404 148\n","level":"info"}
 {"message":"Express server listening on port 4040","level":"info"}
 {"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:31:36 +0000] \"POST /register HTTP/1.1\" 404 148\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:34:02 +0000] \"POST /register HTTP/1.1\" 404 148\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:34:02 +0000] \"POST /register HTTP/1.1\" 404 148\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:35:18 +0000] \"POST /user/register HTTP/1.1\" 200 196\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:35:18 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:35:21 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:35:21 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:35:51 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:35:51 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:36:20 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:36:20 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:36:49 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:36:49 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:39:03 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:39:03 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:39:58 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:39:58 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:42:10 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:42:10 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:42:50 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:42:50 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"Express server listening on port 4040","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:43:00 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:43:00 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:43:39 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:43:39 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:44:04 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:44:04 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:44:43 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:44:43 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:46:27 +0000] \"POST /user/register HTTP/1.1\" 200 196\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:46:27 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:49:22 +0000] \"POST /user/register HTTP/1.1\" 400 65\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:49:22 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:52:18 +0000] \"POST /user/register HTTP/1.1\" 200 196\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:52:18 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:52:37 +0000] \"POST /user/register HTTP/1.1\" 200 196\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:52:37 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:52:53 +0000] \"POST /user/register HTTP/1.1\" 200 196\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:52:53 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:53:25 +0000] \"POST /user/register HTTP/1.1\" 200 196\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:53:25 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:54:23 +0000] \"POST /user/register HTTP/1.1\" 200 196\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [21/Jan/2019:06:54:23 +0000] \"POST /user/register HTTP/1.1\" 422 73\n","level":"info"}
