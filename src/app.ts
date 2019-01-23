@@ -4,7 +4,6 @@ import * as mongoose from "mongoose";
 import * as morgan from "morgan";
 import * as passport from 'passport'
 import LoggerStream from "./Logging/LoggerStream";
-import config from "../config/DATABASE_CONFIG";
 
 import authRouter from "./Routers/authRouter";
 import userRouter from "./Routers/userRouter";
@@ -15,7 +14,11 @@ const app = express()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(morgan('common', { stream: LoggerStream }))
+
+if (process.env.NODE_ENV !== 'TEST') {
+  app.use(morgan('common', { stream: LoggerStream }))
+}
+
 app.use(passport.initialize())
 app.use(passport.session())
 
