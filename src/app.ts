@@ -8,13 +8,14 @@ import authRouter from "./Routers/authRouter";
 import userRouter from "./Routers/userRouter";
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
+import { Environments } from '../config/ENVIRONMENT_CONFIG'
 
 const app = express()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }));
 
-if (process.env.NODE_ENV !== 'TEST') {
+if (process.env.NODE_ENV !== Environments.TEST) {
   app.use(morgan('common'))
 }
 
