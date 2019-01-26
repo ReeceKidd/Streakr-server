@@ -3,7 +3,6 @@ import * as bodyParser from "body-parser";
 import * as mongoose from "mongoose";
 import * as morgan from "morgan";
 import * as passport from 'passport'
-import LoggerStream from "./Logging/LoggerStream";
 
 import authRouter from "./Routers/authRouter";
 import userRouter from "./Routers/userRouter";
@@ -16,7 +15,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }));
 
 if (process.env.NODE_ENV !== 'TEST') {
-  app.use(morgan('common', { stream: LoggerStream }))
+  app.use(morgan('common'))
 }
 
 app.use(passport.initialize())

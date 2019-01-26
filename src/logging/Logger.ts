@@ -1,6 +1,4 @@
 import * as winston from 'winston';
-import * as express from 'express';
-import ENVIRONMENT_CONFIG from '../../config/ENVIRONMENT_CONFIG';
 
 const logger = winston.createLogger({
   level: 'debug',
@@ -13,15 +11,10 @@ const logger = winston.createLogger({
       handleExceptions: true,
     }),
     new winston.transports.File({ filename: 'combined.log' }),
-  ],
-});
-
-if (express().settings.env !== ENVIRONMENT_CONFIG.PROD) {
-  logger.add(
     new winston.transports.Console({
       format: winston.format.simple(),
-    }),
-  );
-}
+    })
+  ],
+});
 
 export default logger;
