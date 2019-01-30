@@ -5,8 +5,7 @@ export const jsonWebTokenHeaderName = 'x-access-token';
 export const getRetreiveJsonWebTokenMiddleware = (jsonWebTokenHeaderName: string) => (
   request: Request, response: Response, next: NextFunction) => {
   try {
-    const jsonWebToken = request.headers[jsonWebTokenHeaderName];
-    response.locals.jsonWebToken = jsonWebToken;
+    response.locals.jsonWebToken = request.headers[jsonWebTokenHeaderName];;
     next();
   } catch (err) {
     next(err);

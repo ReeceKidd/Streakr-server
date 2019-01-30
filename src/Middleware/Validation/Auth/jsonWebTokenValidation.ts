@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { invalidTokenMessage } from '../../../Messages/failure.messages';
+import { missingJsonWebTokenMessage } from '../../../Messages/failure.messages';
 
-export const getJsonWebTokenValidationMiddleware = (jsonWebTokenValidationErrorObject: {auth: boolean, message: string}) => (request: Request, response: Response, next: NextFunction) => {
+export const getJsonWebTokenValidationMiddleware = (jsonWebTokenValidationErrorObject: { auth: boolean, message: string }) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { jsonWebToken } = response.locals;
     if (!jsonWebToken) return response.status(401).send(jsonWebTokenValidationErrorObject);
@@ -11,4 +11,4 @@ export const getJsonWebTokenValidationMiddleware = (jsonWebTokenValidationErrorO
   }
 };
 
-export const jsonWebTokenValidationMiddleware = getJsonWebTokenValidationMiddleware({ auth: false, message: invalidTokenMessage });
+export const jsonWebTokenValidationMiddleware = getJsonWebTokenValidationMiddleware({ auth: false, message: missingJsonWebTokenMessage });

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { loginSuccessMessage } from '../../Messages/success.messages';
 
-export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) =>  (
+export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) => (
   request: Request,
   response: Response,
   next: NextFunction,
