@@ -13,8 +13,8 @@ const userRouter = Router();
  * /user/register:
  *   post:
  *     tags:
- *       - Auth
- *     description: Logs user in
+ *       - User
+ *     description: Registers user
  *     produces:
  *       - application/json
  *     responses:
