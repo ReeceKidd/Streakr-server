@@ -10,28 +10,20 @@ import userRouter from "./Routers/userRouter";
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
+import { swaggerDefinition } from '../config/SWAGGER_DEFINTION'
 
-const swaggerDefinition = {
-  info: {
-    title: 'Streakr API',
-    version: '1.0.0',
-    description: 'Demonstrating how to describe a RESTful API with Swagger',
-  },
-  host: 'localhost:4040',
-  basePath: '/',
-};
 
 const options = {
   swaggerDefinition,
-  apis: ['./src/Routes/**/*.ts'],
+  apis: ['./src/Routers/**/*.ts'],
 };
-
-const swaggerSpec = swaggerJSDoc(options);
 
 const app = express()
 
 app.get('/swagger.json', (req, res) => {
+  const swaggerSpec = swaggerJSDoc(options);
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.send(swaggerSpec);
 });
 
@@ -52,6 +44,7 @@ mongoose
     { useNewUrlParser: true }
   )
   .catch(err => console.log(err.message));
+
 
 const user = 'user'
 const auth = 'auth'

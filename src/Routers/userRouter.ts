@@ -8,9 +8,23 @@ const userPaths = {
 
 const userRouter = Router();
 
+/**
+ * @swagger
+ * /user/register:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     description: Logs user in
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         jsonWebToken: A jsonWebToken used for authentication
+ *         message: Message response from server
+ */
 userRouter.post(
   `/${userPaths.register}`,
   ...registerUserMiddlewares
 );
- 
+
 export default userRouter;
