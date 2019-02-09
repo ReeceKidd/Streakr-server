@@ -10,16 +10,8 @@ import userRouter from "./Routers/userRouter";
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
+import swaggerDefinition from '../config/SWAGGER_DEFINITION'
 
-const swaggerDefinition = {
-  info: {
-    title: 'Streakr API',
-    version: '1.0.0',
-    description: 'Demonstrating how to describe a RESTful API with Swagger',
-  },
-  host: 'localhost:4040',
-  basePath: '/',
-};
 
 const options = {
   swaggerDefinition,
@@ -58,5 +50,6 @@ const user = 'user'
 const auth = 'auth'
 app.use(`/${user}`, userRouter)
 app.use(`/${auth}`, authRouter)
+
 
 export default app
