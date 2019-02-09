@@ -2,11 +2,16 @@ import * as mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
+export enum SupportedStreakCheckIns {
+  DAILY = 'Daily',
+}
+
 export interface IStreak {
   streakName: string;
   description: string;
   successCriteria: string;
   createdBy: string;
+  checkIn: string;
   participants: object[];
   startDate: Date;
   calendar?: object[];
@@ -59,9 +64,9 @@ export const streakSchema = new Schema({
   lastManStanding: {
     type: Boolean,
   },
-},                                     {
-  collection: 'Streaks',
-},
+}, {
+    collection: 'Streaks',
+  },
 );
 
 export default mongoose.model('Streak', streakSchema);
