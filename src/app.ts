@@ -23,15 +23,15 @@ const swaggerDefinition = {
 
 const options = {
   swaggerDefinition,
-  apis: ['./src/Routes/**/*.ts'],
+  apis: ['./src/Routers/**/*.ts'],
 };
-
-const swaggerSpec = swaggerJSDoc(options);
 
 const app = express()
 
 app.get('/swagger.json', (req, res) => {
+  const swaggerSpec = swaggerJSDoc(options);
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.send(swaggerSpec);
 });
 
@@ -52,6 +52,7 @@ mongoose
     { useNewUrlParser: true }
   )
   .catch(err => console.log(err.message));
+
 
 const user = 'user'
 const auth = 'auth'
