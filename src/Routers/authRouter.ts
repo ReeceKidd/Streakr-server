@@ -21,8 +21,9 @@ const authRouter = Router();
  *       - application/json
  *     responses:
  *       200:
- *         jsonWebToken: A jsonWebToken used for authentication
- *         message: Message response from server
+ *         description: successful operation
+ *       400:
+ *         description: Invalid email supplied
  */
 authRouter.post(
   `/${authPaths.login}`,
