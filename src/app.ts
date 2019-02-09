@@ -10,23 +10,8 @@ import userRouter from "./Routers/userRouter";
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
-import swaggerDefinition from '../config/SWAGGER_DEFINITION'
-
-
-const options = {
-  swaggerDefinition,
-  apis: ['./src/Routers/**/*.ts'],
-};
 
 const app = express()
-
-app.get('/swagger.json', (req, res) => {
-  const swaggerSpec = swaggerJSDoc(options);
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.send(swaggerSpec);
-});
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }));
 

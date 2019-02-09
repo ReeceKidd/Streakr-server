@@ -10,21 +10,6 @@ const authPaths = {
 
 const authRouter = Router();
 
-/**
- * @swagger
- * /auth/login:
- *   post:
- *     tags:
- *       - Auth
- *     description: Logs user in
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: successful operation
- *       400:
- *         description: Invalid email supplied
- */
 authRouter.post(
   `/${authPaths.login}`,
   ...loginMiddlewares
