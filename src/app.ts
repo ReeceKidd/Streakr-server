@@ -2,8 +2,7 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as mongoose from "mongoose";
 import * as morgan from "morgan";
-import * as passport from 'passport'
-import * as swaggerJSDoc from 'swagger-jsdoc'
+import * as passport from 'passport';
 
 import authRouter from "./Routers/authRouter";
 import userRouter from "./Routers/userRouter";

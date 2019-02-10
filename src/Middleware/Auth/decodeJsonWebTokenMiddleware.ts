@@ -8,12 +8,15 @@ export const getDecodeJsonWebTokenMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { jsonWebToken } = response.locals;
-    const decodedToken = verify(
-      jsonWebToken,
-      jsonWebTokenSecret,
-    );
-    response.locals.decodedToken = decodedToken;
-    next();
+    try {
+      response.locals.decodedToken = verify(
+        jsonWebToken,
+        jsonWebTokenSecret,
+      );
+      next();
+    } catch (err) {
+      return response.send(err)
+    }
   } catch (err) {
     next(err);
   }
