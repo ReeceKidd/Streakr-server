@@ -2,10 +2,12 @@ import { retreiveJsonWebTokenMiddleware } from "../../Middleware/Auth/retreiveJs
 import { jsonWebTokenValidationMiddleware } from "../../Middleware/Validation/Auth/jsonWebTokenValidation";
 import { decodeJsonWebTokenMiddleware } from "../../Middleware/Auth/decodeJsonWebTokenMiddleware";
 import { getLoginSuccessfulMiddleware } from "../../Middleware/Auth/loginSuccessfulMiddleware";
+import { jsonWebTokenErrorResponseMiddleware } from "../../Middleware/ErrorHandler/jsonWebTokenErrorResponseMiddleware";
 
 export const verifyJsonWebTokenMiddlewares = [
     retreiveJsonWebTokenMiddleware,
     jsonWebTokenValidationMiddleware,
     decodeJsonWebTokenMiddleware,
+    jsonWebTokenErrorResponseMiddleware,
     getLoginSuccessfulMiddleware
 ]

@@ -15,7 +15,8 @@ export const getDecodeJsonWebTokenMiddleware = (
       );
       next();
     } catch (err) {
-      return response.send(err)
+      response.locals.jsonWebTokenError = err
+      next()
     }
   } catch (err) {
     next(err);
