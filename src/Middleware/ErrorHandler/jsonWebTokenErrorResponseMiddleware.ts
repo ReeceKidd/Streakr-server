@@ -6,6 +6,7 @@ export const jsonWebTokenErrorResponseMiddleware = (request: Request, response: 
     try {
         const { jsonWebTokenError } = response.locals;
         if (jsonWebTokenError) return response.send(jsonWebTokenError)
+        next()
     } catch (err) {
         next(err);
     }
