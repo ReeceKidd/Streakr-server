@@ -11,7 +11,7 @@ import { setJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/signJ
 const fileName = "user.login";
 
 describe(`${fileName}`, () => {
-  it("check that exported array contains the necessary middlewares in the correct order", () => {
+  test("check that exported array contains the necessary middlewares in the correct order", () => {
     expect.assertions(1);
     expect(loginMiddlewares).toEqual([
         loginRequestValidationMiddleware,

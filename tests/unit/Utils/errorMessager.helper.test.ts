@@ -7,7 +7,7 @@ const classMethods = {
 
 describe(`${className}`, () => {
   describe(`${classMethods.generateAlreadyExistsMessage}`, () => {
-    it("should return correct error message", () => {
+    test("should return correct error message", () => {
       expect.assertions(1);
       const userNameKey = "userName";
       const userName = "tester";

@@ -3,7 +3,7 @@ import { Router } from "express";
 import { loginMiddlewares } from "../Routes/Auth/login";
 import { verifyJsonWebTokenMiddlewares } from "../Routes/Auth/verifyJsonWebTokenMiddlewares";
 
-const authPaths = {
+export const authPaths = {
   login: "login",
   verifyJsonWebToken: "verify-json-web-token"
 };

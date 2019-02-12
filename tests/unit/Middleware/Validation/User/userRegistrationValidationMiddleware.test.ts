@@ -5,7 +5,7 @@ const mockEmail = "mock@gmail.com";
 const mockPassword = "12345678";
 
 describe(`userRegistrationValidationMiddlware`, () => {
-  it("check that valid request passes", () => {
+  test("check that valid request passes", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -23,7 +23,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
     expect(next).toBeCalled();
   });
 
-  it("check that correct response is sent when userName is missing", () => {
+  test("check that correct response is sent when userName is missing", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -45,7 +45,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  it("check that correct response is sent when email is missing", () => {
+  test("check that correct response is sent when email is missing", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -67,7 +67,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  it("check that correct response is sent when email is incorrect", () => {
+  test("check that correct response is sent when email is incorrect", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -95,7 +95,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  it("check that correct response is sent when password is missing", () => {
+  test("check that correct response is sent when password is missing", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -117,7 +117,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  it("check that correct response is sent when password is too short", () => {
+  test("check that correct response is sent when password is too short", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -146,7 +146,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  it("check that not allowed parameter is caught", () => {
+  test("check that not allowed parameter is caught", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 

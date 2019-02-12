@@ -3,7 +3,7 @@ import {getHashPasswordMiddleware } from "../../../../src/Middleware/Password/ha
 const ERROR_MESSAGE = "error";
 
 describe(`hashPasswordMiddleware`, () => {
-  it("should set response.locals.hashedPassword", async () => {
+  test("should set response.locals.hashedPassword", async () => {
     const mockedPassword = "password";
     const hashedPassword = "12$4354";
     const saltMock = 10;
@@ -24,7 +24,7 @@ describe(`hashPasswordMiddleware`, () => {
     expect(next).toBeCalled();
   });
 
-  it("should call next() with err paramater if hash password call fails", async () => {
+  test("should call next() with err paramater if hash password call fails", async () => {
     const mockedPassword = "password";
     const hashedPassword = "12$4354";
     const saltMock = 10;

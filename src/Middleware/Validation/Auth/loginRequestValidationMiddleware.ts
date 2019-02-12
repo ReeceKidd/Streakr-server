@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 
-import { getValidationErrorMessageSenderMiddleware } from '../User/validationErrorMessageSenderMiddleware';
+import { getValidationErrorMessageSenderMiddleware } from '../validationErrorMessageSenderMiddleware';
 
 const loginValidationSchema = {
   email: Joi.string().email().required(),

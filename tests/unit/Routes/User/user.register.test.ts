@@ -14,7 +14,7 @@ const fileName = "user.register";
 
 describe(`${fileName}`, () => {
 
-  it("check that exported array contains the necessary middlewares in the correct order", () => {
+  test("check that exported array contains the necessary middlewares in the correct order", () => {
  
     expect.assertions(1);
     expect(registerUserMiddlewares).toEqual([

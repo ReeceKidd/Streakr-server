@@ -1,7 +1,7 @@
 import { getRetreiveJsonWebTokenMiddleware, jsonWebTokenHeaderName } from '../../../../src/Middleware/Auth/retreiveJsonWebTokenMiddleware';
 
 describe('retreiveJsonWebTokenMiddleware', () => {
-  it('should set response.locals.jsonWebToken', () => {
+  test('should set response.locals.jsonWebToken', () => {
 
     const jsonWebTokenHeaderNameMock = 123;
 
@@ -17,10 +17,10 @@ describe('retreiveJsonWebTokenMiddleware', () => {
     expect(next).toBeCalled();
   });
 
-  it('should call next with an error on failure', () => {
+  test('should call next with an error on failure', () => {
 
-    const response: any = { locals: { } };
-    const request: any = { };
+    const response: any = { locals: {} };
+    const request: any = {};
     const next = jest.fn();
 
     const middleware = getRetreiveJsonWebTokenMiddleware(jsonWebTokenHeaderName);

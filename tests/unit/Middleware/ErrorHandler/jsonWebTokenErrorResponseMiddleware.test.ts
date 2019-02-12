@@ -1,9 +1,7 @@
 import { jsonWebTokenErrorResponseMiddleware } from "../../../../src/Middleware/ErrorHandler/jsonWebTokenErrorResponseMiddleware";
 
-const ERROR_MESSAGE = "error";
-
 describe(`jsonWebTokenErrorResponseMiddleware`, () => {
-    it("should send jsonWebToken error if it is defined in response.locals", () => {
+    test("should send jsonWebToken error if it is defined in response.locals", () => {
 
         const jsonWebTokenError = {
             name: "TokenExpiredError",
@@ -24,7 +22,7 @@ describe(`jsonWebTokenErrorResponseMiddleware`, () => {
         expect(send).toBeCalledWith(jsonWebTokenError)
     });
 
-    it("should call next wehn jsonWebTokenError is not defined.", () => {
+    test("should call next wehn jsonWebTokenError is not defined.", () => {
         const response: any = { locals: {} };
         const request: any = {}
         const next = jest.fn();
@@ -33,6 +31,19 @@ describe(`jsonWebTokenErrorResponseMiddleware`, () => {
 
         expect.assertions(1);
         expect(next).toBeCalled()
+    })
+
+
+    test("should call next with an error on failure", () => {
+
+        const request: any = {}
+        const response: any = {}
+        const next = jest.fn();
+
+        jsonWebTokenErrorResponseMiddleware(request, response, next);
+
+        expect.assertions(1);
+        expect(next).toBeCalledWith(new TypeError("Cannot destructure property `jsonWebTokenError` of 'undefined' or 'null'."))
     })
 
 

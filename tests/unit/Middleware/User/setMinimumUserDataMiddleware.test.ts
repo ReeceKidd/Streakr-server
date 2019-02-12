@@ -1,15 +1,15 @@
 import { setMinimumUserDataMiddleware } from "../../../../src/Middleware/User/setMinimumUserDataMiddleware";
 
 describe(`setMinimumUserDataMiddleware`, () => {
-  it("should set response.locals.minimumUserData", () => {
-  
+  test("should set response.locals.minimumUserData", () => {
+
     const mockUserName = 'abc'
     const mockId = '12345678'
-    
-    const mockUser = { userName: mockUserName, _id: mockId}
-    const response: any = { locals: {user: mockUser }};
 
-    const request: any = { }
+    const mockUser = { userName: mockUserName, _id: mockId }
+    const response: any = { locals: { user: mockUser } };
+
+    const request: any = {}
     const next = jest.fn();
 
     setMinimumUserDataMiddleware(request, response, next);
@@ -21,11 +21,11 @@ describe(`setMinimumUserDataMiddleware`, () => {
     expect(next).toBeCalled()
   });
 
-  it("should call next with an error on failure because response.locals.user is not defined", () => {
-    
-    const response: any = { locals: { } };
+  test("should call next with an error on failure because response.locals.user is not defined", () => {
 
-    const request: any = { }
+    const response: any = { locals: {} };
+
+    const request: any = {}
     const next = jest.fn();
 
     setMinimumUserDataMiddleware(request, response, next);

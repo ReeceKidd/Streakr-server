@@ -15,9 +15,9 @@ beforeAll(async () => {
     await userModel.deleteMany({});
     return request(server).post(registrationRoute).send(
         {
-            "userName": "registeredUser",
-            "email": registeredEmail,
-            "password": registeredPassword
+            userName: "registeredUser",
+            email: registeredEmail,
+            password: registeredPassword
         }
     )
 });
@@ -27,8 +27,8 @@ describe('auth/login', () => {
         expect.assertions(6)
         const response = await request(server).post(route).send(
             {
-                "email": registeredEmail,
-                "password": registeredPassword
+                email: registeredEmail,
+                password: registeredPassword
             }
         )
         expect(response.status).toEqual(200)
@@ -43,8 +43,8 @@ describe('auth/login', () => {
         expect.assertions(5)
         const response = await request(server).post(route).send(
             {
-                "email": 'invalidemail@gmail.com',
-                "password": 'invalidPassword'
+                email: 'invalidemail@gmail.com',
+                password: 'invalidPassword'
             }
         )
         expect(response.status).toEqual(400)
@@ -58,8 +58,8 @@ describe('auth/login', () => {
         expect.assertions(5)
         const response = await request(server).post(route).send(
             {
-                "email": 'invalidemail@gmail.com',
-                "password": registeredPassword
+                email: 'invalidemail@gmail.com',
+                password: registeredPassword
             }
         )
         expect(response.status).toEqual(400)
@@ -73,8 +73,8 @@ describe('auth/login', () => {
         expect.assertions(5)
         const response = await request(server).post(route).send(
             {
-                "email": registeredEmail,
-                "password": 'invalidPassword'
+                email: registeredEmail,
+                password: 'invalidPassword'
             }
         )
         expect(response.status).toEqual(400)
@@ -96,7 +96,7 @@ describe('auth/login', () => {
     test('fails because email is missing from request', async () => {
         expect.assertions(4)
         const response = await request(server).post(route).send({
-            "password": "12345678"
+            password: "12345678"
         })
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
@@ -108,8 +108,8 @@ describe('auth/login', () => {
         expect.assertions(4)
 
         const response = await request(server).post(route).send({
-            "email": "invalid email",
-            "password": "12345678"
+            email: "invalid email",
+            password: "12345678"
         })
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
@@ -120,7 +120,7 @@ describe('auth/login', () => {
     test('fails because password is missing from request', async () => {
         expect.assertions(4)
         const response = await request(server).post(route).send({
-            "email": "tester1@gmail.com",
+            email: "tester1@gmail.com",
         })
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
@@ -131,8 +131,8 @@ describe('auth/login', () => {
     test('fails because password is less than 6 characters long', async () => {
         expect.assertions(4)
         const response = await request(server).post(route).send({
-            "email": "tester1@gmail.com",
-            "password": "1234"
+            email: "tester1@gmail.com",
+            password: "1234"
         })
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
@@ -143,8 +143,8 @@ describe('auth/login', () => {
     test('fails because password is not a string', async () => {
         expect.assertions(4)
         const response = await request(server).post(route).send({
-            "email": "tester1@gmail.com",
-            "password": 123456
+            email: "tester1@gmail.com",
+            password: 123456
 
         })
         expect(response.status).toEqual(422)

@@ -1,4 +1,4 @@
-import { getDoesUserNameExistMiddleware  } from "../../../../src/Middleware/Database/doesUserNameExistMiddleware";
+import { getDoesUserNameExistMiddleware } from "../../../../src/Middleware/Database/doesUserNameExistMiddleware";
 
 const mockUserName = "testname";
 
@@ -6,7 +6,7 @@ const ERROR_MESSAGE = "error";
 
 describe(`doesUserNameExistMiddleware`, () => {
 
-  it("should set userNameExists to true when userExists", async () => {
+  test("should set userNameExists to true when userExists", async () => {
     const findOne = jest.fn(() => Promise.resolve(true));
     const UserModel = {
       findOne
@@ -25,7 +25,7 @@ describe(`doesUserNameExistMiddleware`, () => {
     expect(next).toBeCalledWith();
   });
 
-  it("should set userNameExists to false when user doesn't exist", async () => {
+  test("should set userNameExists to false when user doesn't exist", async () => {
     const findOne = jest.fn(() => Promise.resolve(false));
     const UserModel = {
       findOne
@@ -34,7 +34,7 @@ describe(`doesUserNameExistMiddleware`, () => {
     const response: any = { locals: {} };
     const next = jest.fn();
 
-    const middleware = getDoesUserNameExistMiddleware (UserModel);
+    const middleware = getDoesUserNameExistMiddleware(UserModel);
 
     await middleware(request, response, next);
 
@@ -44,16 +44,16 @@ describe(`doesUserNameExistMiddleware`, () => {
     expect(next).toBeCalledWith();
   });
 
-  it("should call next() with err paramater if database call fails", async () => {
+  test("should call next() with err paramater if database call fails", async () => {
     const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
     const UserModel = {
       findOne
     }
-    const request: any = { body: { userName: mockUserName} };
+    const request: any = { body: { userName: mockUserName } };
     const response: any = { locals: {} };
     const next = jest.fn();
 
-    const middleware = getDoesUserNameExistMiddleware (UserModel);
+    const middleware = getDoesUserNameExistMiddleware(UserModel);
 
     await middleware(request, response, next);
 

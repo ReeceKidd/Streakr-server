@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import {
-  getUserNameExistsValidationMiddleware 
+  getUserNameExistsValidationMiddleware
 } from "../../../../../src/Middleware/Validation/User/userNameExistsValidationMiddleware";
 
 const mockUserName = "testName";
@@ -8,7 +8,7 @@ const mockUserName = "testName";
 const userNameKey = 'userName'
 
 describe(`userNameExistsValidationMiddleware`, () => {
-  it("check that error response is returned correctly when userName already exists", () => {
+  test("check that error response is returned correctly when userName already exists", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const generateAlreadyExistsMessage = jest.fn();
@@ -33,7 +33,7 @@ describe(`userNameExistsValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  it("check that next is called when userName doesn't exist", () => {
+  test("check that next is called when userName doesn't exist", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const generateAlreadyExistsMessage = jest.fn();
@@ -58,9 +58,9 @@ describe(`userNameExistsValidationMiddleware`, () => {
     expect(next).toBeCalled();
   });
 
-  it("check that when error is thrown next is called with err", () => {
-      const errorMessage = 'error'
-    const send = jest.fn(() => {throw new Error(errorMessage)});
+  test("check that when error is thrown next is called with err", () => {
+    const errorMessage = 'error'
+    const send = jest.fn(() => { throw new Error(errorMessage) });
     const status = jest.fn(() => ({ send }));
     const generateAlreadyExistsMessage = jest.fn();
 

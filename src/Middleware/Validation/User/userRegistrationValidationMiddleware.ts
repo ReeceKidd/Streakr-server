@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 
-import { getValidationErrorMessageSenderMiddleware } from './validationErrorMessageSenderMiddleware';
+import { getValidationErrorMessageSenderMiddleware } from '../validationErrorMessageSenderMiddleware';
 
 const registerValidationSchema = {
   userName: Joi.string().required(),

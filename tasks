@@ -1,3 +1,43 @@
 Need to implement tests for the rest of the files in the validation
 middleware folder. Would like to know the best way to organise 
 the routes as well. 
+
+
+Questions: 
+
+Is it possible to retreive a value from beforeAll like this? 
+
+import * as request from 'supertest'
+import server from '../../src/app'
+import { userModel } from '../../src/Models/User';
+
+let jsonWebToken
+
+const registeredEmail = "register@gmail.com"
+const registeredPassword = "12345678"
+
+const registrationRoute = '/user/register'
+const loginRoute = '/auth/login'
+
+beforeAll(async () => {
+    await userModel.deleteMany({});
+    await request(server).post(registrationRoute).send(
+        {
+            userName: "registeredUser",
+            email: registeredEmail,
+            password: registeredPassword
+        }
+    )
+    const response = await request(server).post(loginRoute).send({
+        email: registeredEmail,
+        password: registeredPassword
+    })
+    jsonWebToken = response.body.jsonWebToken
+})
+
+Where is the best place to store interfaces for requests? Is it in the validation schema or in 
+it's own file? 
+
+Is there a benefit for defining an interface for response.locals between middlewares? 
+
+Is it ok to duplicate middlewares if they are for a different middleware chain? 

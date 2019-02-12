@@ -5,7 +5,7 @@ const ERROR_MESSAGE = "error";
 
 describe(`doesUserEmailExistMiddleware`, () => {
 
-  it("should set emailExists to true when user is found", async () => {
+  test("should set emailExists to true when user is found", async () => {
     const findOne = jest.fn(() => Promise.resolve(true));
     const UserModel = {
       findOne
@@ -24,7 +24,7 @@ describe(`doesUserEmailExistMiddleware`, () => {
     expect(next).toBeCalledWith();
   });
 
-  it("should set emailExists to false when user doesn't exist", async () => {
+  test("should set emailExists to false when user doesn't exist", async () => {
     const findOne = jest.fn(() => Promise.resolve(false));
     const UserModel = {
       findOne
@@ -43,7 +43,7 @@ describe(`doesUserEmailExistMiddleware`, () => {
     expect(next).toBeCalledWith();
   });
 
-  it("should call next() with err paramater if database call fails", async () => {
+  test("should call next() with err paramater if database call fails", async () => {
     const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
     const UserModel = {
       findOne

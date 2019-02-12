@@ -3,13 +3,13 @@ import { getSignJsonWebTokenMiddleware } from '../../../../src/Middleware/Auth/s
 const ERROR_MESSAGE = 'error';
 
 describe('setJsonWebTokenMiddleware', () => {
-  it('should set response.locals.token', () => {
+  test('should set response.locals.token', () => {
     const minimumUserData = { userName: 'user' };
     const signTokenMock = jest.fn(() => true);
     const jwtSecretMock = '1234';
     const jwtOptionsMock = {};
     const response: any = { locals: { minimumUserData } };
-    const request: any = { };
+    const request: any = {};
     const next = jest.fn();
 
     const middleware = getSignJsonWebTokenMiddleware(signTokenMock, jwtSecretMock, jwtOptionsMock);
@@ -21,7 +21,7 @@ describe('setJsonWebTokenMiddleware', () => {
     expect(next).toBeCalled();
   });
 
-  it('should call next with an error on failure', () => {
+  test('should call next with an error on failure', () => {
 
     const signTokenMock = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
@@ -31,7 +31,7 @@ describe('setJsonWebTokenMiddleware', () => {
     const jwtOptionsMock = {};
 
     const response: any = { locals: { minimumUserData } };
-    const request: any = { };
+    const request: any = {};
     const next = jest.fn();
 
     const middleware = getSignJsonWebTokenMiddleware(signTokenMock, jwtSecretMock, jwtOptionsMock);

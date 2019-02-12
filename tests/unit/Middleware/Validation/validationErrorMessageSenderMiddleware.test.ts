@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { getValidationErrorMessageSenderMiddleware } from "../../../../../src/Middleware/Validation/User/validationErrorMessageSenderMiddleware";
+import { getValidationErrorMessageSenderMiddleware } from "Middleware/Validation/validationErrorMessageSenderMiddleware";
 
 describe(`validationErrorMessageSenderMiddleware`, () => {
-  it("calls 'next' middleware if all params are correct ", () => {
+  test("calls 'next' middleware if all params are correct ", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -28,7 +28,7 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
     expect(next).toBeCalled();
   });
 
-  it("check that notAllowedParameter error is thrown when error message returns is not allowed", () => {
+  test("check that notAllowedParameter error is thrown when error message returns is not allowed", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -55,7 +55,7 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  it("returns '422' if value of one of the parameters is not correct", () => {
+  test("returns '422' if value of one of the parameters is not correct", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 

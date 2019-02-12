@@ -1,11 +1,11 @@
-import { loginRequestValidationMiddleware }  from '../../../../../src/Middleware/Validation/Auth/loginRequestValidationMiddleware'
+import { loginRequestValidationMiddleware } from '../../../../../src/Middleware/Validation/Auth/loginRequestValidationMiddleware'
 
 const mockEmail = 'mock@gmail.com'
 const mockPassword = '12345678'
 
 describe(`loginRequestValidationMiddlware`, () => {
 
-  it("check that valid request passes", () => {
+  test("check that valid request passes", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -24,7 +24,7 @@ describe(`loginRequestValidationMiddlware`, () => {
   });
 
 
-  it("check that correct response is sent when email is missing", () => {
+  test("check that correct response is sent when email is missing", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -40,11 +40,11 @@ describe(`loginRequestValidationMiddlware`, () => {
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({"message": "child \"email\" fails because [\"email\" is required]"});
+    expect(send).toBeCalledWith({ "message": "child \"email\" fails because [\"email\" is required]" });
     expect(next).not.toBeCalled();
   });
 
-  it("check that correct response is sent when email is incorrect", () => {
+  test("check that correct response is sent when email is incorrect", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -62,11 +62,11 @@ describe(`loginRequestValidationMiddlware`, () => {
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({"message": "child \"email\" fails because [\"email\" must be a valid email]"});
+    expect(send).toBeCalledWith({ "message": "child \"email\" fails because [\"email\" must be a valid email]" });
     expect(next).not.toBeCalled();
   });
 
-  it("check that correct response is sent when password is missing", () => {
+  test("check that correct response is sent when password is missing", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -82,11 +82,11 @@ describe(`loginRequestValidationMiddlware`, () => {
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({"message": "child \"password\" fails because [\"password\" is required]"});
+    expect(send).toBeCalledWith({ "message": "child \"password\" fails because [\"password\" is required]" });
     expect(next).not.toBeCalled();
   });
 
-  it("check that correct response is sent when password is too short", () => {
+  test("check that correct response is sent when password is too short", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -104,11 +104,11 @@ describe(`loginRequestValidationMiddlware`, () => {
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(422);
-    expect(send).toBeCalledWith({"message": "child \"password\" fails because [\"password\" length must be at least 6 characters long]"});
+    expect(send).toBeCalledWith({ "message": "child \"password\" fails because [\"password\" length must be at least 6 characters long]" });
     expect(next).not.toBeCalled();
   });
 
-  it("check that not allowed parameter is caught", () => {
+  test("check that not allowed parameter is caught", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -126,9 +126,9 @@ describe(`loginRequestValidationMiddlware`, () => {
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(400);
-    expect(send).toBeCalledWith({"message": "\"notAllowed\" is not allowed"});
+    expect(send).toBeCalledWith({ "message": "\"notAllowed\" is not allowed" });
     expect(next).not.toBeCalled();
   });
 
-  
+
 });
