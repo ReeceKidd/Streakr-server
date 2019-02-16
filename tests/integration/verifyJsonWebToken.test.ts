@@ -2,7 +2,7 @@ import * as request from 'supertest'
 import server from '../../src/app'
 import { userModel } from '../../src/Models/User';
 
-const registeredEmail = "register@gmail.com"
+const registeredEmail = "jsonwebtoken@gmail.com"
 const registeredPassword = "12345678"
 
 const registrationRoute = '/user/register'

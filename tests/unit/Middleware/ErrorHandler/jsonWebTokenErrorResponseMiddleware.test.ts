@@ -4,21 +4,24 @@ describe(`jsonWebTokenErrorResponseMiddleware`, () => {
     test("should send jsonWebToken error if it is defined in response.locals", () => {
 
         const jsonWebTokenError = {
+            auth: false,
             name: "TokenExpiredError",
             message: "jwt expired",
             expiredAt: "2019-01-16T06:15:39.000Z"
         }
         const send = jest.fn()
-        const response: any = { locals: { jsonWebTokenError }, send };
+        const status = jest.fn(() => ({ send }))
+        const response: any = { locals: { jsonWebTokenError }, status };
 
         const request: any = {}
         const next = jest.fn();
 
         jsonWebTokenErrorResponseMiddleware(request, response, next);
 
-        expect.assertions(3);
+        expect.assertions(4);
         expect(response.locals.jsonWebTokenError).toBeDefined()
         expect(next).not.toBeCalled()
+        expect(status).toBeCalledWith(400)
         expect(send).toBeCalledWith(jsonWebTokenError)
     });
 

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { getValidationErrorMessageSenderMiddleware } from "Middleware/Validation/validationErrorMessageSenderMiddleware";
+import { getValidationErrorMessageSenderMiddleware } from "../../../../src/Middleware/Validation/validationErrorMessageSenderMiddleware";
 
 describe(`validationErrorMessageSenderMiddleware`, () => {
   test("calls 'next' middleware if all params are correct ", () => {
