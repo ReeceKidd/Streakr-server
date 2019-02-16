@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { registerUserMiddlewares } from "../Routes/User/user.register"
+import { registerUserMiddlewares } from "../Routes/User/registerUserMiddlewares"
 
 const userPaths = {
   register: "register",

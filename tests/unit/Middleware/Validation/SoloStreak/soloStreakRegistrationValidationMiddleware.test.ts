@@ -1,28 +1,23 @@
-import { streakRegistrationValidationMiddleware } from "../../../../../src/Middleware/Validation/Streak/streakRegistrationValidationMiddleware";
+import { soloStreakRegistrationValidationMiddleware } from "../../../../../src/Middleware/Validation/SoloStreak/soloStreakRegistrationValidationMiddleware";
 
 const userId = '12345678'
 const streakName = 'Spanish Streak'
 const streakDescription = ' Do the insane amount of XP for Duolingo each day'
-const whoIsInvolved = 'Just me'
-const soloForfeitDescription = 'I must give my friend £100'
-const soloRewardDescription = 'I can book a trip to barcelona'
-const groupForfeitDescription = 'Loser has to do something'
-const groupRewardDescription = 'Winner takes home the pot.'
 
-describe(`streakRegistrationValidationMiddlware`, () => {
+describe(`soloStreakRegistrationValidationMiddlware`, () => {
     test("that minimum amount of information needed for a strak passes", () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakName, streakDescription, whoIsInvolved }
+            body: { userId, streakName, streakDescription }
         };
         const response: any = {
             status
         };
         const next = jest.fn();
 
-        streakRegistrationValidationMiddleware(request, response, next);
+        soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(1);
         expect(next).toBeCalled();
@@ -33,14 +28,14 @@ describe(`streakRegistrationValidationMiddlware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakName, streakDescription, whoIsInvolved, soloForfeitDescription, soloRewardDescription }
+            body: { userId, streakName, streakDescription }
         };
         const response: any = {
             status
         };
         const next = jest.fn();
 
-        streakRegistrationValidationMiddleware(request, response, next);
+        soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(1);
         expect(next).toBeCalled();
@@ -51,14 +46,14 @@ describe(`streakRegistrationValidationMiddlware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { streakName, streakDescription, whoIsInvolved }
+            body: { streakName, streakDescription }
         };
         const response: any = {
             status
         };
         const next = jest.fn();
 
-        streakRegistrationValidationMiddleware(request, response, next);
+        soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
@@ -73,14 +68,14 @@ describe(`streakRegistrationValidationMiddlware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId: 1234, streakName, streakDescription, whoIsInvolved }
+            body: { userId: 1234, streakName, streakDescription }
         };
         const response: any = {
             status
         };
         const next = jest.fn();
 
-        streakRegistrationValidationMiddleware(request, response, next);
+        soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
@@ -95,14 +90,14 @@ describe(`streakRegistrationValidationMiddlware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakDescription, whoIsInvolved }
+            body: { userId, streakDescription }
         };
         const response: any = {
             status
         };
         const next = jest.fn();
 
-        streakRegistrationValidationMiddleware(request, response, next);
+        soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
@@ -117,14 +112,14 @@ describe(`streakRegistrationValidationMiddlware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakName: 1234, streakDescription, whoIsInvolved }
+            body: { userId, streakName: 1234, streakDescription }
         };
         const response: any = {
             status
         };
         const next = jest.fn();
 
-        streakRegistrationValidationMiddleware(request, response, next);
+        soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
@@ -139,14 +134,14 @@ describe(`streakRegistrationValidationMiddlware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakName, whoIsInvolved }
+            body: { userId, streakName }
         };
         const response: any = {
             status
         };
         const next = jest.fn();
 
-        streakRegistrationValidationMiddleware(request, response, next);
+        soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
@@ -161,14 +156,14 @@ describe(`streakRegistrationValidationMiddlware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakName, streakDescription: 1234, whoIsInvolved }
+            body: { userId, streakName, streakDescription: 1234 }
         };
         const response: any = {
             status
         };
         const next = jest.fn();
 
-        streakRegistrationValidationMiddleware(request, response, next);
+        soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
@@ -177,53 +172,5 @@ describe(`streakRegistrationValidationMiddlware`, () => {
         });
         expect(next).not.toBeCalled();
     });
-
-    test("that correct response is sent when whoIsInvolved is missing", () => {
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-
-        const request: any = {
-            body: { userId, streakName, streakDescription }
-        };
-        const response: any = {
-            status
-        };
-        const next = jest.fn();
-
-        streakRegistrationValidationMiddleware(request, response, next);
-
-        expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
-        expect(send).toBeCalledWith({
-            message: 'child "whoIsInvolved" fails because ["whoIsInvolved" is required]'
-        });
-        expect(next).not.toBeCalled();
-    });
-
-    test("that error response is sent when whoIsInvolved is not a string", () => {
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-
-        const request: any = {
-            body: { userId, streakName, streakDescription, whoIsInvolved: 1 }
-        };
-        const response: any = {
-            status
-        };
-        const next = jest.fn();
-
-        streakRegistrationValidationMiddleware(request, response, next);
-
-        expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
-        expect(send).toBeCalledWith({
-            message: 'child "whoIsInvolved" fails because ["whoIsInvolved" must be a string]'
-        });
-        expect(next).not.toBeCalled();
-    });
-
-    test("that error response is sent when whoIsInvolved is not a supported value", () => {
-        expect(true).toEqual(false)
-    })
 
 });

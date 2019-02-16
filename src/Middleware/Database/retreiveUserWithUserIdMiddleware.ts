@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { userModel } from '../../Models/User';
 
-export const getRetreiveUserWithUserIdMiddleware = userModel => async (
+export const getRetreiveUserWhoCreatedStreakMiddleware = userModel => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ) => {
     try {
-        const { userId } = request.body;
-        const user = await userModel.findOne({ _id: userId });
+        const { userWhoCreatedStreakId } = request.body;
+        const user = await userModel.findOne({ _id: userWhoCreatedStreakId });
         response.locals.user = user;
         next();
     } catch (err) {
@@ -16,4 +16,4 @@ export const getRetreiveUserWithUserIdMiddleware = userModel => async (
     }
 };
 
-export const retreiveUserWithEmailMiddleware = getRetreiveUserWithUserIdMiddleware(userModel);
+export const retreiveUserWithUserIdMiddleware = getRetreiveUserWhoCreatedStreakMiddleware(userModel);

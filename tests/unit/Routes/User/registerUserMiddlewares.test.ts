@@ -1,4 +1,4 @@
-import {registerUserMiddlewares}  from '../../../../src/Routes/User/user.register'
+import { registerUserMiddlewares } from '../../../../src/Routes/User/registerUserMiddlewares'
 import { userRegistrationValidationMiddleware } from '../../../../src/Middleware/Validation/User/userRegistrationValidationMiddleware';
 import { doesUserEmailExistMiddleware } from '../../../../src/Middleware/Database/doesUserEmailExistMiddleware';
 import { emailExistsValidationMiddleware } from '../../../../src/Middleware/Validation/User/emailExistsValidationMiddleware';
@@ -9,24 +9,21 @@ import { createUserFromRequestMiddleware } from '../../../../src/Middleware/User
 import { saveUserToDatabaseMiddleware } from '../../../../src/Middleware/Database/saveUserToDatabaseMiddleware';
 import { sendFormattedUserMiddleware } from '../../../../src/Middleware/User/sendFormattedUserMiddleware';
 
-const fileName = "user.register";
-
-
-describe(`${fileName}`, () => {
+describe(`registerUserMiddlewares`, () => {
 
   test("check that exported array contains the necessary middlewares in the correct order", () => {
- 
+
     expect.assertions(1);
     expect(registerUserMiddlewares).toEqual([
-        userRegistrationValidationMiddleware,
-        doesUserEmailExistMiddleware,
-        emailExistsValidationMiddleware,
-        doesUserNameExistMiddleware,
-        userNameExistsValidationMiddleware,
-        hashPasswordMiddleware,
-        createUserFromRequestMiddleware,
-        saveUserToDatabaseMiddleware,
-        sendFormattedUserMiddleware
+      userRegistrationValidationMiddleware,
+      doesUserEmailExistMiddleware,
+      emailExistsValidationMiddleware,
+      doesUserNameExistMiddleware,
+      userNameExistsValidationMiddleware,
+      hashPasswordMiddleware,
+      createUserFromRequestMiddleware,
+      saveUserToDatabaseMiddleware,
+      sendFormattedUserMiddleware
     ]);
   });
 
