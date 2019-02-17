@@ -1,11 +1,17 @@
 import { soloStreakRegistrationValidationMiddleware } from "../../Middleware/Validation/SoloStreak/soloStreakRegistrationValidationMiddleware";
+import { retreiveUserWithUserIdMiddleware } from "../../Middleware/Database/retreiveUserWithUserIdMiddleware";
+import { userExistsValidationMiddleware } from "../../Middleware/Validation/User/userExistsValidationMiddleware";
+import { createSoloStreakFromRequestMiddleware } from "../../Middleware/SoloStreak/createSoloStreakFromRequestMiddleware";
+import { saveSoloStreakToDatabaseMiddleware } from "../../Middleware/Database/saveSoloStreakToDatabaseMiddleware";
+import { sendFormattedSoloStreakMiddleware } from "../../Middleware/SoloStreak/sendFormattedSoloStreakMiddleware";
 
 export const createSoloStreakMiddlewares = [
     soloStreakRegistrationValidationMiddleware,
-    // retreiveUserWhoCreatedStreakMiddleware,
-    // createStreakFromRequestMiddleware,
-    // saveStreakToDatabaseMiddleware,
-    // sendFormattedStreakMiddleware
+    retreiveUserWithUserIdMiddleware,
+    userExistsValidationMiddleware,
+    createSoloStreakFromRequestMiddleware,
+    saveSoloStreakToDatabaseMiddleware,
+    sendFormattedSoloStreakMiddleware
 ];
 
 /*
@@ -19,13 +25,6 @@ Porifle picture? I guess it is so I should just store a reference to the
 user in the streak? And then if I have a reference how do I actually 
 populate this? Is this done on the database level or do I have to make an 
 API call? 
-
-Should it be a different API call for a solo streak vs a group streak? 
-
-This does make it easier to sort everything out because then I could 
-organize streaks easier it will also be easier to add put, post, get and delete
-routes if it is Solo Streaks and Group Streaks. Do these get there own collection
-or should it just be a type of streak? 
 
 Can a solo streak transform into a group streak? Yes because my example was I started a
 Spanish streak and would then want to invite someone along. But in this case would it have been 

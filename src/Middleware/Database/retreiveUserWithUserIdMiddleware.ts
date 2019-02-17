@@ -7,8 +7,8 @@ export const getRetreiveUserWhoCreatedStreakMiddleware = userModel => async (
     next: NextFunction,
 ) => {
     try {
-        const { userWhoCreatedStreakId } = request.body;
-        const user = await userModel.findOne({ _id: userWhoCreatedStreakId });
+        const { userId } = request.body;
+        const user = await userModel.findOne({ _id: userId });
         response.locals.user = user;
         next();
     } catch (err) {
