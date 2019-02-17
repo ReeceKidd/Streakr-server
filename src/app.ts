@@ -6,6 +6,7 @@ import * as passport from 'passport';
 
 import authRouter from "./Routers/authRouter";
 import userRouter from "./Routers/userRouter";
+import soloStreakRouter from "./Routers/soloStreakRouter";
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
@@ -32,6 +33,9 @@ mongoose
 
 const user = 'user'
 const auth = 'auth'
+const soloStreak = 'solo-streak'
+
+app.use(`${soloStreak}`, soloStreakRouter)
 app.use(`/${user}`, userRouter)
 app.use(`/${auth}`, authRouter)
 

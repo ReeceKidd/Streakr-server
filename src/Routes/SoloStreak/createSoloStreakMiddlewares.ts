@@ -1,4 +1,4 @@
-import { soloStreakRegistrationValidationMiddleware } from "Middleware/Validation/SoloStreak/soloStreakRegistrationValidationMiddleware";
+import { soloStreakRegistrationValidationMiddleware } from "../../Middleware/Validation/SoloStreak/soloStreakRegistrationValidationMiddleware";
 
 export const createSoloStreakMiddlewares = [
     soloStreakRegistrationValidationMiddleware,
