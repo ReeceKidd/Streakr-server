@@ -35,7 +35,7 @@ const user = 'user'
 const auth = 'auth'
 const soloStreak = 'solo-streak'
 
-app.use(`${soloStreak}`, soloStreakRouter)
+app.use(`/${soloStreak}`, soloStreakRouter)
 app.use(`/${user}`, userRouter)
 app.use(`/${auth}`, authRouter)
 

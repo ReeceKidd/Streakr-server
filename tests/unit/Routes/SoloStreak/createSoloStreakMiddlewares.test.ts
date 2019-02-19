@@ -1,5 +1,10 @@
 import { createSoloStreakMiddlewares } from '../../../../src/Routes/SoloStreak/createSoloStreakMiddlewares'
 import { soloStreakRegistrationValidationMiddleware } from '../../../../src/Middleware/Validation/SoloStreak/soloStreakRegistrationValidationMiddleware';
+import { retreiveUserWithUserIdMiddleware } from '../../../../src/Middleware/Database/retreiveUserWithUserIdMiddleware';
+import { userExistsValidationMiddleware } from '../../../../src/Middleware/Validation/User/userExistsValidationMiddleware';
+import { createSoloStreakFromRequestMiddleware } from '../../../../src/Middleware/SoloStreak/createSoloStreakFromRequestMiddleware';
+import { saveSoloStreakToDatabaseMiddleware } from '../../../../src/Middleware/Database/saveSoloStreakToDatabaseMiddleware';
+import { sendFormattedSoloStreakMiddleware } from '../../../../src/Middleware/SoloStreak/sendFormattedSoloStreakMiddleware';
 
 describe(`createSoloStreakMiddlewares`, () => {
 
@@ -7,7 +12,12 @@ describe(`createSoloStreakMiddlewares`, () => {
 
         expect.assertions(1);
         expect(createSoloStreakMiddlewares).toEqual([
-            soloStreakRegistrationValidationMiddleware
+            soloStreakRegistrationValidationMiddleware,
+            retreiveUserWithUserIdMiddleware,
+            userExistsValidationMiddleware,
+            createSoloStreakFromRequestMiddleware,
+            saveSoloStreakToDatabaseMiddleware,
+            sendFormattedSoloStreakMiddleware
         ]);
     });
 

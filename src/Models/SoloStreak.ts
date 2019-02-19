@@ -1,19 +1,25 @@
 import * as mongoose from 'mongoose';
+import { IUser } from './User';
 
 export interface ISoloStreak extends mongoose.Document {
+    user: IUser;
     streakName: string;
-    description: string;
+    streakDescription: string;
     startDate: Date;
     calendar?: object[];
 }
 
 export const soloStreakSchema = new mongoose.Schema({
+    user: {
+        required: true,
+        type: Object
+    },
     streakName: {
         required: true,
         type: String,
         index: true,
     },
-    description: {
+    streakDescription: {
         required: true,
         type: String,
     },

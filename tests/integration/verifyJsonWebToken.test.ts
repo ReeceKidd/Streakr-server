@@ -9,34 +9,38 @@ const registrationRoute = '/user/register'
 const loginRoute = '/auth/login'
 const verifyJsonWebTokenRoute = '/auth/verify-json-web-token'
 
-beforeAll(async () => {
-    userModel.deleteMany({});
-    return request(server).post(registrationRoute).send(
-        {
-            "userName": "tester1",
-            "email": registeredEmail,
-            "password": registeredPassword
-        }
-    )
-})
 
 describe('auth/verify-json-web-token', () => {
-    test(`that request passes when json web token is valid`, async () => {
-        expect.assertions(4)
-        jest.setTimeout(15000)
+
+    let jsonWebToken!: string
+
+    beforeAll(async () => {
+        await userModel.deleteMany({});
+        await request(server).post(registrationRoute).send(
+            {
+                "userName": "jsonwebtokenuser",
+                "email": registeredEmail,
+                "password": registeredPassword
+            }
+        )
         const loginResponse = await request(server).post(loginRoute).send(
             {
                 email: registeredEmail,
                 password: registeredPassword
             }
         )
-        const jsonWebToken = loginResponse.body.jsonWebToken
+        jsonWebToken = loginResponse.body.jsonWebToken
+        console.log(loginResponse)
+        console.log(jsonWebToken)
+    })
+
+    test(`that request passes when json web token is valid`, async () => {
+        expect.assertions(3)
         const response = await request(server)
             .post(verifyJsonWebTokenRoute)
             .set({ 'x-access-token': jsonWebToken })
         expect(response.status).toEqual(200)
         expect(response.body.auth).toBe(true)
-        expect(response.body.message).toBe('JSON web token is missing from header')
         expect(response.type).toEqual('application/json')
     })
 

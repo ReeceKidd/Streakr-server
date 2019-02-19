@@ -2,6 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { jwtSecret } from '../../../secret/jwt-secret';
 
+export interface DecodedToken {
+  minimumUserDate: {
+    _id: string,
+    userName: string
+  }
+}
+
 export const getDecodeJsonWebTokenMiddleware = (
   verify: Function,
   jsonWebTokenSecret: string,
@@ -13,6 +20,7 @@ export const getDecodeJsonWebTokenMiddleware = (
         jsonWebToken,
         jsonWebTokenSecret,
       );
+      console.log(response.locals.decodedToken)
       next();
     } catch (err) {
       response.locals.jsonWebTokenError = err
