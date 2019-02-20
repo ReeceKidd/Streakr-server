@@ -1,5 +1,8 @@
 import * as mongoose from 'mongoose';
 import { IStreak } from './Streak';
+import { SupportedLanguages } from '../Messages/supportedLanguages';
+import { Collections } from './Collections';
+import { Models } from './Models';
 
 export const SALT_ROUNDS = 10;
 
@@ -25,6 +28,7 @@ export interface IUser extends mongoose.Document {
     type: String,
   };
   role: string;
+  preferredLanguage: string;
 }
 
 export const userSchema = new mongoose.Schema(
@@ -59,10 +63,14 @@ export const userSchema = new mongoose.Schema(
       enum: [UserTypes.user, UserTypes.admin],
       default: UserTypes.user,
     },
+    preferredLanguage: {
+      type: String,
+      default: SupportedLanguages.EN
+    }
   },
   {
     timestamps: true,
-    collection: 'Users',
+    collection: Collections.Users,
   },
 );
 
@@ -70,4 +78,4 @@ mongoose.set('useCreateIndex', true);
 userSchema.index({ userName: 'text' });
 userSchema.index({ email: 'text' });
 
-export const userModel: mongoose.Model<IUser> = mongoose.model<IUser>('User', userSchema);
+export const userModel: mongoose.Model<IUser> = mongoose.model<IUser>(Models.User, userSchema);

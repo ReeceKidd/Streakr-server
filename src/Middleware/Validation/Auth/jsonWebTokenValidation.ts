@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { missingJsonWebTokenMessage } from '../../../Messages/failure.messages';
+import { FailureMessageKeys } from '../../../Messages/failureMessages';
+import { getLocalisedString } from '../../../Messages/getLocalisedString';
+import { MessageCategories } from '../../../Messages/messages';
 
 export const getJsonWebTokenValidationMiddleware = (jsonWebTokenValidationErrorObject: { auth: boolean, message: string }) => (request: Request, response: Response, next: NextFunction) => {
   try {
@@ -11,4 +13,6 @@ export const getJsonWebTokenValidationMiddleware = (jsonWebTokenValidationErrorO
   }
 };
 
-export const jsonWebTokenValidationMiddleware = getJsonWebTokenValidationMiddleware({ auth: false, message: missingJsonWebTokenMessage });
+const localisedMissingJsonWebTokenMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.missingJsonWebTokenMessage)
+
+export const jsonWebTokenValidationMiddleware = getJsonWebTokenValidationMiddleware({ auth: false, message: localisedMissingJsonWebTokenMessage });

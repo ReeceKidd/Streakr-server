@@ -1,5 +1,7 @@
 import * as mongoose from 'mongoose';
 import { IUser } from './User';
+import { Collections } from './Collections';
+import { Models } from './Models';
 
 export interface ISoloStreak extends mongoose.Document {
     user: IUser;
@@ -32,8 +34,9 @@ export const soloStreakSchema = new mongoose.Schema({
         default: [],
     },
 }, {
-        collection: 'SoloStreaks',
+        timestamps: true,
+        collection: Collections.SoloStreaks,
     },
 );
 
-export const soloStreakModel: mongoose.Model<ISoloStreak> = mongoose.model<ISoloStreak>('SoloStreak', soloStreakSchema);
+export const soloStreakModel: mongoose.Model<ISoloStreak> = mongoose.model<ISoloStreak>(Models.SoloStreak, soloStreakSchema);

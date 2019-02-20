@@ -1,3 +1,9 @@
-export const supportedLanguages = {
-    EN: 'english'
+
+export enum SupportedLanguages {
+    EN = 'english'
 }
+
+export const supportedLanguages = {
+    EN: SupportedLanguages.EN
+}
+

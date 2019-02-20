@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { loginUnsuccessfulMessage } from '../../../Messages/failure.messages';
+import { FailureMessageKeys } from '../../../Messages/failureMessages';
+import { getLocalisedString } from '../../../Messages/getLocalisedString';
+import { MessageCategories } from '../../../Messages/messages';
 
-export const  getUserExistsValidationMiddleware  = userDoesNotExistMessage => (
+export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
   request: Request,
   response: Response,
   next: NextFunction,
@@ -19,4 +21,6 @@ export const  getUserExistsValidationMiddleware  = userDoesNotExistMessage => (
   }
 };
 
-export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(loginUnsuccessfulMessage);
+const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.userDoesNotExistMessage)
+
+export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(localisedUserDoesNotExistMessage);

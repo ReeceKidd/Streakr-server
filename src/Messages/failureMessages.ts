@@ -1,10 +1,17 @@
 import { supportedLanguages } from "./supportedLanguages";
 
+export enum FailureMessageKeys {
+        loginUnsuccessfulMessage = 'loginUnsuccessfulMessage',
+        userDoesNotExistMessage = 'userDoesNotExistMessage',
+        invalidTokenMessage = 'invalidTokenMessage',
+        missingJsonWebTokenMessage = 'missingJsonWebTokenMessage'
+}
+
 export const failureMessages = {
-    [supportedLanguages.EN]: {
-        loginUnsuccessfulMessage: 'Login unsuccessful',
-        userDoesNotExistMessage: 'User does not exist',
-        invalidTokenMessage: 'Invalid token',
-        missingJsonWebTokenMessage: 'JSON web token is missing from header'
-    }
+        [supportedLanguages.EN]: {
+                [FailureMessageKeys.loginUnsuccessfulMessage]: 'Login unsuccessful',
+                [FailureMessageKeys.userDoesNotExistMessage]: 'User does not exist',
+                [FailureMessageKeys.invalidTokenMessage]: 'Invalid token',
+                [FailureMessageKeys.missingJsonWebTokenMessage]: 'JSON web token is missing from header'
+        }
 }

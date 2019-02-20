@@ -1,9 +1,8 @@
 import * as request from 'supertest'
 import server from '../../src/app'
 import { userModel } from '../../src/Models/User';
-import { loginSuccessMessage } from '../../src/Messages/success.messages';
-import { loginUnsuccessfulMessage } from '../../src/Messages/failure.messages';
-
+import { SuccessMessageKeys } from 'Messages/successMessages';
+import { FailureMessageKeys } from 'Messages/failureMessages';
 
 const route = '/auth/login'
 const registrationRoute = '/user/register'
@@ -36,7 +35,7 @@ describe('auth/login', () => {
         expect(response.body).toHaveProperty('jsonWebToken')
         expect(response.body.jsonWebToken.length).toBeGreaterThan(20)
         expect(response.body).toHaveProperty('message')
-        expect(response.body.message).toEqual(loginSuccessMessage)
+        expect(response.body.message).toEqual(SuccessMessageKeys.loginSuccessMessage)
     })
 
     test('that response is correct when incorrect email and password is used', async () => {
@@ -51,7 +50,7 @@ describe('auth/login', () => {
         expect(response.type).toEqual('application/json')
         expect(response.body).not.toHaveProperty('jsonWebToken')
         expect(response.body).toHaveProperty('message')
-        expect(response.body.message).toEqual(loginUnsuccessfulMessage)
+        expect(response.body.message).toEqual(FailureMessageKeys.loginUnsuccessfulMessage)
     })
 
     test('that response is correct when invalid email and correct password is used', async () => {
@@ -66,7 +65,7 @@ describe('auth/login', () => {
         expect(response.type).toEqual('application/json')
         expect(response.body).not.toHaveProperty('jsonWebToken')
         expect(response.body).toHaveProperty('message')
-        expect(response.body.message).toEqual(loginUnsuccessfulMessage)
+        expect(response.body.message).toEqual(FailureMessageKeys.loginUnsuccessfulMessage)
     })
 
     test('that response is correct when valid email and incorrect password is used', async () => {
@@ -81,7 +80,7 @@ describe('auth/login', () => {
         expect(response.type).toEqual('application/json')
         expect(response.body).not.toHaveProperty('jsonWebToken')
         expect(response.body).toHaveProperty('message')
-        expect(response.body.message).toEqual(loginUnsuccessfulMessage)
+        expect(response.body.message).toEqual(FailureMessageKeys.loginUnsuccessfulMessage)
     })
 
     test('fails because nothing is sent with request', async () => {

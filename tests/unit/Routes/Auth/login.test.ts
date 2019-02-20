@@ -4,7 +4,7 @@ import { retreiveUserWithEmailMiddleware } from "../../../../src/Middleware/Data
 import { userExistsValidationMiddleware } from "../../../../src/Middleware/Validation/User/userExistsValidationMiddleware"
 import { compareRequestPasswordToUserHashedPasswordMiddleware } from "../../../../src/Middleware/Password/compareRequestPasswordToUserHashedPasswordMiddleware";
 import { passwordsMatchValidationMiddleware } from "../../../../src/Middleware/Validation/User/passwordsMatchValidationMiddleware";
-import { loginSuccessfulMiddleware } from "../../../../src/Middleware/Auth/loginSuccessfulMiddleware";
+import { loginSuccessfulMiddleware } from "Middleware/Handlers/loginSuccessfulMiddleware";
 import { setMinimumUserDataMiddleware } from "../../../../src/Middleware/User/setMinimumUserDataMiddleware";
 import { setJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/signJsonWebTokenMiddleware";
 
@@ -14,14 +14,14 @@ describe(`${fileName}`, () => {
   test("check that exported array contains the necessary middlewares in the correct order", () => {
     expect.assertions(1);
     expect(loginMiddlewares).toEqual([
-        loginRequestValidationMiddleware,
-        retreiveUserWithEmailMiddleware,
-        userExistsValidationMiddleware,
-        compareRequestPasswordToUserHashedPasswordMiddleware,
-        passwordsMatchValidationMiddleware,
-        setMinimumUserDataMiddleware,
-        setJsonWebTokenMiddleware,
-        loginSuccessfulMiddleware
+      loginRequestValidationMiddleware,
+      retreiveUserWithEmailMiddleware,
+      userExistsValidationMiddleware,
+      compareRequestPasswordToUserHashedPasswordMiddleware,
+      passwordsMatchValidationMiddleware,
+      setMinimumUserDataMiddleware,
+      setJsonWebTokenMiddleware,
+      loginSuccessfulMiddleware
     ]);
   });
 });

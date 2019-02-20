@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { loginUnsuccessfulMessage } from '../../../Messages/failure.messages';
+import { FailureMessageKeys } from '../../../Messages/failureMessages';
+import { getLocalisedString } from '../../../Messages/getLocalisedString';
+import { MessageCategories } from '../../../Messages/messages';
+import { SupportedLanguages } from '../../../Messages/supportedLanguages';
 
 export const getPasswordsMatchValidationMiddleware = loginUnsuccessfulMessage => (
   request: Request,
@@ -19,4 +22,6 @@ export const getPasswordsMatchValidationMiddleware = loginUnsuccessfulMessage =>
   }
 };
 
-export const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware(loginUnsuccessfulMessage);
+const localisedLoginUnsuccessfulMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
+
+export const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware(localisedLoginUnsuccessfulMessage);
