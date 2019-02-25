@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { FailureMessageKeys } from '../../../Messages/failureMessages';
 import { getLocalisedString } from '../../../Messages/getLocalisedString';
-import { MessageCategories } from '../../../Messages/messages';
+import { MessageCategories } from '../../../Messages/messageCategories';
+import { LoginResponseLocals } from 'Routes/Auth/login';
 
 export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
   request: Request,
@@ -9,7 +10,7 @@ export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
   next: NextFunction,
 ) => {
   try {
-    const { user } = response.locals;
+    const { user } = response.locals as LoginResponseLocals;
     if (!user) {
       return response.status(400).send({
         message: userDoesNotExistMessage,
@@ -21,6 +22,6 @@ export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
   }
 };
 
-const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.userDoesNotExistMessage)
+const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
 
 export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(localisedUserDoesNotExistMessage);

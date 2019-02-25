@@ -1,6 +1,7 @@
 import { supportedLanguages, SupportedLanguages } from "./supportedLanguages";
-import { messages, MessageCategories, MessageKeys } from "./messages";
+import { messages, MessageKeys } from "./messages";
+import { MessageCategories } from "./messageCategories";
 
-export const getLocalisedString = (parent: MessageCategories, key: MessageKeys, language: SupportedLanguages = supportedLanguages.EN) => {
-    return messages[parent][language][key]
+export const getLocalisedString = (messageCategory: MessageCategories, messageKey: MessageKeys, language: SupportedLanguages = supportedLanguages.EN) => {
+    return messages[messageCategory][language][messageKey]
 }

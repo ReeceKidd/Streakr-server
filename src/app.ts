@@ -7,6 +7,7 @@ import * as passport from 'passport';
 import authRouter from "./Routers/authRouter";
 import userRouter from "./Routers/userRouter";
 import soloStreakRouter from "./Routers/soloStreakRouter";
+import testRouter from "./Routers/testRouter";
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
@@ -30,14 +31,17 @@ mongoose
   )
   .catch(err => console.log(err.message));
 
+export enum RouteCategories {
+  user = 'user',
+  auth = 'auth',
+  soloStreak = 'solo-streak',
+  test = 'test'
+}
 
-const user = 'user'
-const auth = 'auth'
-const soloStreak = 'solo-streak'
-
-app.use(`/${soloStreak}`, soloStreakRouter)
-app.use(`/${user}`, userRouter)
-app.use(`/${auth}`, authRouter)
+app.use(`/${RouteCategories.soloStreak}`, soloStreakRouter)
+app.use(`/${RouteCategories.user}`, userRouter)
+app.use(`/${RouteCategories.auth}`, authRouter)
+app.use(`/${RouteCategories.test}`, testRouter)
 
 
 export default app

@@ -1,8 +1,10 @@
 import * as request from 'supertest'
 import server from '../../src/app'
 import { userModel } from '../../src/Models/User';
-import { SuccessMessageKeys } from 'Messages/successMessages';
-import { FailureMessageKeys } from 'Messages/failureMessages';
+import { SuccessMessageKeys } from '../../src/Messages/successMessages';
+import { FailureMessageKeys } from '../../src/Messages/failureMessages';
+import { getLocalisedString } from '../../src/Messages/getLocalisedString';
+import { MessageCategories } from '../../src/Messages/messageCategories';
 
 const route = '/auth/login'
 const registrationRoute = '/user/register'
@@ -30,12 +32,13 @@ describe('auth/login', () => {
                 password: registeredPassword
             }
         )
+        const localisedLoginSuccessMessage = getLocalisedString(MessageCategories.successMessages, SuccessMessageKeys.loginSuccessMessage)
         expect(response.status).toEqual(200)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('jsonWebToken')
         expect(response.body.jsonWebToken.length).toBeGreaterThan(20)
         expect(response.body).toHaveProperty('message')
-        expect(response.body.message).toEqual(SuccessMessageKeys.loginSuccessMessage)
+        expect(response.body.message).toEqual(localisedLoginSuccessMessage)
     })
 
     test('that response is correct when incorrect email and password is used', async () => {

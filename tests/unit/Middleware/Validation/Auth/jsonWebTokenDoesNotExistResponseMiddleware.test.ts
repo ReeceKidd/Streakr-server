@@ -1,4 +1,4 @@
-import { getJsonWebTokenValidationMiddleware } from "../../../../../src/Middleware/Validation/Auth/jsonWebTokenValidation";
+import { getJsonWebTokenDoesNotExistResponseMiddleware } from "Middleware/Validation/Auth/jsonWebTokenDoesNotExistResponseMiddleware";
 
 const ERROR_MESSAGE = 'Error'
 const mockJsonWebTokenValidationErrorObject = {
@@ -7,7 +7,7 @@ const mockJsonWebTokenValidationErrorObject = {
 }
 const mockJsonWebToken = '1234'
 
-describe(`jsonWebTokenValidationMiddleware`, () => {
+describe(`jsonWebTokenDoesNotExistResponseMiddleware`, () => {
   test("checks when response.locals.jsonWebToken is defined next function is called", () => {
 
     const response: any = { locals: { jsonWebToken: mockJsonWebToken } };
@@ -15,7 +15,7 @@ describe(`jsonWebTokenValidationMiddleware`, () => {
     const request: any = {}
     const next = jest.fn();
 
-    const middleware = getJsonWebTokenValidationMiddleware(mockJsonWebTokenValidationErrorObject);
+    const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject);
     middleware(request, response, next)
 
     expect.assertions(1);
@@ -29,7 +29,7 @@ describe(`jsonWebTokenValidationMiddleware`, () => {
     const request: any = {}
     const next = jest.fn();
 
-    const middleware = getJsonWebTokenValidationMiddleware(mockJsonWebTokenValidationErrorObject);
+    const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject);
     middleware(request, response, next)
 
     expect.assertions(3);
@@ -49,7 +49,7 @@ describe(`jsonWebTokenValidationMiddleware`, () => {
     const request: any = {}
     const next = jest.fn();
 
-    const middleware = getJsonWebTokenValidationMiddleware(mockJsonWebTokenValidationErrorObject);
+    const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject);
     middleware(request, response, next)
 
     expect.assertions(1);

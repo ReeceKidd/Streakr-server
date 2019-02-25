@@ -4,7 +4,7 @@ import { retreiveUserWithEmailMiddleware } from "../../../../src/Middleware/Data
 import { userExistsValidationMiddleware } from "../../../../src/Middleware/Validation/User/userExistsValidationMiddleware"
 import { compareRequestPasswordToUserHashedPasswordMiddleware } from "../../../../src/Middleware/Password/compareRequestPasswordToUserHashedPasswordMiddleware";
 import { passwordsMatchValidationMiddleware } from "../../../../src/Middleware/Validation/User/passwordsMatchValidationMiddleware";
-import { loginSuccessfulMiddleware } from "Middleware/Handlers/loginSuccessfulMiddleware";
+import { loginSuccessfulMiddleware } from "../../../../src/Middleware/Handlers/loginSuccessfulMiddleware";
 import { setMinimumUserDataMiddleware } from "../../../../src/Middleware/User/setMinimumUserDataMiddleware";
 import { setJsonWebTokenMiddleware } from "../../../../src/Middleware/Auth/signJsonWebTokenMiddleware";
 

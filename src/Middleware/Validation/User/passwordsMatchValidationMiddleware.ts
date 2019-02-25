@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { FailureMessageKeys } from '../../../Messages/failureMessages';
 import { getLocalisedString } from '../../../Messages/getLocalisedString';
-import { MessageCategories } from '../../../Messages/messages';
-import { SupportedLanguages } from '../../../Messages/supportedLanguages';
+import { MessageCategories } from '../../../Messages/messageCategories';
+import { LoginResponseLocals } from 'Routes/Auth/login';
+
 
 export const getPasswordsMatchValidationMiddleware = loginUnsuccessfulMessage => (
   request: Request,
@@ -10,7 +11,7 @@ export const getPasswordsMatchValidationMiddleware = loginUnsuccessfulMessage =>
   next: NextFunction,
 ) => {
   try {
-    const { passwordMatchesHash } = response.locals;
+    const { passwordMatchesHash } = response.locals as LoginResponseLocals;
     if (!passwordMatchesHash) {
       return response.status(400).send({
         message: loginUnsuccessfulMessage,

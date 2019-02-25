@@ -1,4 +1,4 @@
-import { getJsonWebTokenVerificationSuccessfulMiddleware } from "Middleware/Handlers/jsonWebTokenVerificationSuccessfulMiddleware";
+import { getJsonWebTokenVerificationSuccessfulMiddleware } from "../../../../src/Middleware/Handlers/jsonWebTokenVerificationSuccessfulMiddleware";
 
 const ERROR_MESSAGE = "error";
 const loginSuccessMessage = 'success'

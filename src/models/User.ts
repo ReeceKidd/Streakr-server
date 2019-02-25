@@ -11,6 +11,11 @@ enum UserTypes {
   admin = 'admin',
 }
 
+export interface IMinimumUserData {
+  _id: string,
+  userName: string
+}
+
 export interface IUser extends mongoose.Document {
   userName: string;
   email: string;

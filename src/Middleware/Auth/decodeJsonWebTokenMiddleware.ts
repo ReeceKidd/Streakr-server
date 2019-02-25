@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { jwtSecret } from '../../../secret/jwt-secret';
+import { IMinimumUserData } from '../../Models/User';
+import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebToken';
 
-export interface DecodedToken {
-  minimumUserDate: {
-    _id: string,
-    userName: string
-  }
+export interface DecodedJsonWebToken {
+  minimumUserDate: IMinimumUserData
 }
 
 export const getDecodeJsonWebTokenMiddleware = (
@@ -14,9 +13,9 @@ export const getDecodeJsonWebTokenMiddleware = (
   jsonWebTokenSecret: string,
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { jsonWebToken } = response.locals;
+    const { jsonWebToken } = response.locals as VerifyJsonWebTokenResponseLocals;
     try {
-      response.locals.decodedToken = verify(
+      response.locals.decodedJsonWebToken = verify(
         jsonWebToken,
         jsonWebTokenSecret,
       );

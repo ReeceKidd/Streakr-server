@@ -1,10 +1,6 @@
 import { successMessages, SuccessMessageKeys } from "./successMessages";
 import { failureMessages, FailureMessageKeys } from "./failureMessages";
-
-export enum MessageCategories {
-    successMessages = 'successMessages',
-    failureMessages = 'failureMessages'
-}
+import { MessageCategories } from "./messageCategories";
 
 export type MessageKeys = SuccessMessageKeys | FailureMessageKeys
 

@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { MessageCategories } from 'Messages/messages';
-import { SuccessMessageKeys } from 'Messages/successMessages';
-import { getLocalisedString } from 'Messages/getLocalisedString';
+import { MessageCategories } from '../../Messages/messageCategories';
+import { SuccessMessageKeys } from '../../Messages/successMessages';
+import { getLocalisedString } from '../../Messages/getLocalisedString';
+import { LoginResponseLocals } from 'Routes/Auth/login';
 
 export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) => (
   request: Request,
@@ -9,7 +10,7 @@ export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) => (
   next: NextFunction,
 ) => {
   try {
-    const { jsonWebToken } = response.locals;
+    const { jsonWebToken } = response.locals as LoginResponseLocals;
     return response.send({ jsonWebToken, message: loginSuccessMessage });
   } catch (err) {
     next(err);
