@@ -4,7 +4,7 @@ import { FailureMessageKeys } from '../../Messages/failureMessages';
 import { AuthResponseObject } from 'Server/response';
 import { getLocalisedString } from '../../Messages/getLocalisedString';
 import { MessageCategories } from '../../Messages/messageCategories';
-import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebToken';
+import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebTokenMiddlewares';
 
 
 export const getJsonWebTokenErrorResponseMiddleware = (unauthorizedErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {

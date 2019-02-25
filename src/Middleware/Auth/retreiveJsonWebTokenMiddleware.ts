@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { SupportedHeaders } from '../../Server/headers';
 import { LoginResponseLocals } from '../../Routes/Auth/login';
-import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebToken';
+import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebTokenMiddlewares';
 
 
 export const getRetreiveJsonWebTokenMiddleware = (jsonWebTokenHeader: string) => (

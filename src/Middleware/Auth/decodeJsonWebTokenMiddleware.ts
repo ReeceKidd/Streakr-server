@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { jwtSecret } from '../../../secret/jwt-secret';
 import { IMinimumUserData } from '../../Models/User';
-import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebToken';
+import { VerifyJsonWebTokenResponseLocals } from '../../Utils/verifyUsersJsonWebTokenMiddlewares';
 
 export interface DecodedJsonWebToken {
   minimumUserDate: IMinimumUserData

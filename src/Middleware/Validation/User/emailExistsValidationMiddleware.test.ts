@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import {
   getEmailExistsValidationMiddleware,
-} from "../../../../../src/Middleware/Validation/User/emailExistsValidationMiddleware";
+} from "../../../Middleware/Validation/User/emailExistsValidationMiddleware";
 
 const mockEmail = "test@gmail.com";
 const emailKey = 'email'

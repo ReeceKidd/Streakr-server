@@ -1,4 +1,4 @@
-import { sendFormattedUserMiddleware } from "../../../../src/Middleware/User/sendFormattedUserMiddleware";
+import { sendFormattedUserMiddleware } from "../../Middleware/User/sendFormattedUserMiddleware";
 
 const ERROR_MESSAGE = "error";
 

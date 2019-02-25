@@ -1,4 +1,4 @@
-import { saveUserToDatabaseMiddleware } from "../../../../src/Middleware/Database/saveUserToDatabaseMiddleware";
+import { saveUserToDatabaseMiddleware } from "../../Middleware/Database/saveUserToDatabaseMiddleware";
 
 const ERROR_MESSAGE = "error";
 

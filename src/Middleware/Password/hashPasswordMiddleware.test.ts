@@ -1,4 +1,4 @@
-import {getHashPasswordMiddleware } from "../../../../src/Middleware/Password/hashPasswordMiddleware";
+import { getHashPasswordMiddleware } from "../../Middleware/Password/hashPasswordMiddleware";
 
 const ERROR_MESSAGE = "error";
 
@@ -31,7 +31,7 @@ describe(`hashPasswordMiddleware`, () => {
     const hash = jest.fn(() => {
       return Promise.reject(ERROR_MESSAGE);
     });
-    
+
 
     const middleware = getHashPasswordMiddleware(hash, saltMock);
     const response: any = { locals: {} };

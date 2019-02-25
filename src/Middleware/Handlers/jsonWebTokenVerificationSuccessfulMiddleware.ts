@@ -4,7 +4,7 @@ import { getLocalisedString } from '../../Messages/getLocalisedString';
 import { MessageCategories } from '../../Messages/messageCategories';
 import { AuthResponseObject } from 'Server/response';
 import { DecodedJsonWebToken } from '../Auth/decodeJsonWebTokenMiddleware';
-import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebToken';
+import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebTokenMiddlewares';
 
 export interface SuccessfulJsonWebTokenVerificationResponse extends AuthResponseObject {
     decodedJsonWebToken: DecodedJsonWebToken

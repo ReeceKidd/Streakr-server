@@ -1,4 +1,4 @@
-import { setMinimumUserDataMiddleware } from "../../../../src/Middleware/User/setMinimumUserDataMiddleware";
+import { setMinimumUserDataMiddleware } from "../../Middleware/User/setMinimumUserDataMiddleware";
 
 describe(`setMinimumUserDataMiddleware`, () => {
   test("should set response.locals.minimumUserData", () => {

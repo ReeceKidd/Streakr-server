@@ -1,4 +1,4 @@
-import { getDecodeJsonWebTokenMiddleware } from '../../../../src/Middleware/Auth/decodeJsonWebTokenMiddleware';
+import { getDecodeJsonWebTokenMiddleware } from './decodeJsonWebTokenMiddleware';
 
 const ERROR_MESSAGE = 'error';
 

@@ -1,4 +1,4 @@
-import { saveSoloStreakToDatabaseMiddleware } from "../../../../src/Middleware/Database/saveSoloStreakToDatabaseMiddleware";
+import { saveSoloStreakToDatabaseMiddleware } from "../../Middleware/Database/saveSoloStreakToDatabaseMiddleware";
 
 const ERROR_MESSAGE = "error";
 

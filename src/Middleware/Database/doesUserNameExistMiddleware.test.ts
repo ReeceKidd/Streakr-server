@@ -1,4 +1,4 @@
-import { getDoesUserNameExistMiddleware } from "../../../../src/Middleware/Database/doesUserNameExistMiddleware";
+import { getDoesUserNameExistMiddleware } from "../../Middleware/Database/doesUserNameExistMiddleware";
 
 const mockUserName = "testname";
 

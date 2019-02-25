@@ -1,4 +1,4 @@
-import { getSignJsonWebTokenMiddleware } from '../../../../src/Middleware/Auth/signJsonWebTokenMiddleware';
+import { getSignJsonWebTokenMiddleware } from './signJsonWebTokenMiddleware';
 
 const ERROR_MESSAGE = 'error';
 

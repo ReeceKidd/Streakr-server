@@ -1,4 +1,4 @@
-import { jsonWebTokenErrorResponseMiddleware } from "../../../../src/Middleware/ErrorHandler/jsonWebTokenErrorResponseMiddleware";
+import { jsonWebTokenErrorResponseMiddleware } from "../../Middleware/ErrorHandler/jsonWebTokenErrorResponseMiddleware";
 
 describe(`jsonWebTokenErrorResponseMiddleware`, () => {
     test("should send jsonWebToken error if it is defined in response.locals", () => {

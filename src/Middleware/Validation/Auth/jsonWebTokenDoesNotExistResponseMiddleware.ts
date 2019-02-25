@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { FailureMessageKeys } from '../../../Messages/failureMessages';
 import { getLocalisedString } from '../../../Messages/getLocalisedString';
 import { MessageCategories } from '../../../Messages/messageCategories';
-import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebToken';
+import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebTokenMiddlewares';
 
 export const getJsonWebTokenDoesNotExistResponseMiddleware = (jsonWebTokenValidationErrorObject: { auth: boolean, message: string }) => (request: Request, response: Response, next: NextFunction) => {
   try {

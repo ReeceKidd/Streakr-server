@@ -1,4 +1,4 @@
-import { sendFormattedSoloStreakMiddleware } from "../../../../src/Middleware/SoloStreak/sendFormattedSoloStreakMiddleware";
+import { sendFormattedSoloStreakMiddleware } from "../../Middleware/SoloStreak/sendFormattedSoloStreakMiddleware";
 
 const ERROR_MESSAGE = "error";
 
