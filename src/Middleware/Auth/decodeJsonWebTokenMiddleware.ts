@@ -13,15 +13,16 @@ export const getDecodeJsonWebTokenMiddleware = (
   jsonWebTokenSecret: string,
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { jsonWebToken } = response.locals as VerifyJsonWebTokenResponseLocals;
+    const locals: VerifyJsonWebTokenResponseLocals = response.locals
+    const { jsonWebToken } = locals;
     try {
-      response.locals.decodedJsonWebToken = verify(
+      locals.decodedJsonWebToken = verify(
         jsonWebToken,
         jsonWebTokenSecret,
       );
       next();
     } catch (err) {
-      response.locals.jsonWebTokenError = err
+      locals.jsonWebTokenError = err
       next()
     }
   } catch (err) {

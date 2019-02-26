@@ -1,4 +1,5 @@
-import { getDecodeJsonWebTokenMiddleware } from './decodeJsonWebTokenMiddleware';
+import { getDecodeJsonWebTokenMiddleware, DecodedJsonWebToken } from './decodeJsonWebTokenMiddleware';
+import { VerifyJsonWebTokenResponseLocals } from '../Validation/Auth/jsonWebTokenRequestValidationMiddleware';
 
 const ERROR_MESSAGE = 'error';
 
@@ -6,17 +7,27 @@ describe('decodeJsonWebTokenMiddleware', () => {
   test('that response.locals.token is set', async () => {
     const tokenMock = '1234';
     const verifyMock = jest.fn(() => true);
-    const jwtSecretMock = '1234';
-    const response: any = { locals: { jsonWebToken: tokenMock } };
+    const jwtSecretMock = 'abc#*'
+    const decodedJsonWebToken: DecodedJsonWebToken = {
+      minimumUserData: {
+        _id: '1234',
+        userName: 'tester'
+      }
+    }
+    const locals: VerifyJsonWebTokenResponseLocals = {
+      jsonWebToken: tokenMock,
+      decodedJsonWebToken
+    }
+    const response: any = { locals };
     const request: any = {};
     const next = jest.fn();
 
     const middleware = getDecodeJsonWebTokenMiddleware(verifyMock, jwtSecretMock);
-    await middleware(request, response, next);
+    middleware(request, response, next);
 
     expect.assertions(3);
     expect(verifyMock).toBeCalledWith(tokenMock, jwtSecretMock);
-    expect(response.locals.decodedToken).toBeDefined();
+    expect(locals.decodedJsonWebToken).toBeDefined();
     expect(next).toBeCalled();
   });
 
