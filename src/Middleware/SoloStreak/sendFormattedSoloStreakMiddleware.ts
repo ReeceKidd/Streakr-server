@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { SoloStreakResponseLocals } from '../../Routes/SoloStreak/createSoloStreakMiddlewares';
 
 export const sendFormattedSoloStreakMiddleware = (
     request: Request,
@@ -6,7 +7,8 @@ export const sendFormattedSoloStreakMiddleware = (
     next: NextFunction,
 ) => {
     try {
-        const { savedSoloStreak } = response.locals;
+        const locals: SoloStreakResponseLocals = response.locals
+        const { savedSoloStreak } = locals;
         return response.send(savedSoloStreak);
     } catch (err) {
         next(err);

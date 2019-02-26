@@ -5,7 +5,7 @@ import { IMinimumUserData } from '../../Models/User';
 import { VerifyJsonWebTokenResponseLocals } from '../../Utils/verifyUsersJsonWebTokenMiddlewares';
 
 export interface DecodedJsonWebToken {
-  minimumUserDate: IMinimumUserData
+  minimumUserData: IMinimumUserData
 }
 
 export const getDecodeJsonWebTokenMiddleware = (

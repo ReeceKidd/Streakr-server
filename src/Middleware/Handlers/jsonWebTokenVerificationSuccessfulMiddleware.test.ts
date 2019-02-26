@@ -1,4 +1,6 @@
-import { getJsonWebTokenVerificationSuccessfulMiddleware } from "../../Middleware/Handlers/jsonWebTokenVerificationSuccessfulMiddleware";
+import { getJsonWebTokenVerificationSuccessfulMiddleware, SuccessfulJsonWebTokenVerificationResponse } from "../../Middleware/Handlers/jsonWebTokenVerificationSuccessfulMiddleware";
+import { DecodedJsonWebToken } from "../Auth/decodeJsonWebTokenMiddleware";
+import { VerifyJsonWebTokenResponseLocals } from "../Validation/Auth/jsonWebTokenRequestValidationMiddleware";
 
 const ERROR_MESSAGE = "error";
 const loginSuccessMessage = 'success'
@@ -7,11 +9,23 @@ describe(`jsonWebTokenVerificationSuccessfulMiddleware`, () => {
     test("should send login success message", () => {
 
         const send = jest.fn()
-        const mockToken = '1234'
-        const response: any = { locals: { jsonWebToken: mockToken }, send };
+        const mockToken: DecodedJsonWebToken = {
+            minimumUserData: {
+                _id: '1234',
+                userName: 'mock username'
+            }
+        }
+        const verifyJsonWebTokenLocals: VerifyJsonWebTokenResponseLocals = {
+            decodedJsonWebToken: mockToken
+        }
+        const response: any = { locals: verifyJsonWebTokenLocals, send };
 
         const request: any = {}
         const next = jest.fn();
+
+        const successfulResponse: SuccessfulJsonWebTokenVerificationResponse = {
+            auth: true, message: loginSuccessMessage, decodedJsonWebToken: mockToken
+        }
 
 
         const middleware = getJsonWebTokenVerificationSuccessfulMiddleware(loginSuccessMessage);
@@ -19,7 +33,7 @@ describe(`jsonWebTokenVerificationSuccessfulMiddleware`, () => {
 
         expect.assertions(2);
         expect(next).not.toBeCalled()
-        expect(send).toBeCalledWith({ message: loginSuccessMessage, jsonWebToken: mockToken })
+        expect(send).toBeCalledWith(successfulResponse)
     });
 
     test("should call next with an error on failure", () => {

@@ -10,11 +10,11 @@ module.exports = {
   ],
   testEnvironment: 'node',
   modulePathIgnorePatterns: [
-  "./coverage/*",
-  "./jest.config.js",
-  "./dist/*"
+    "./coverage/*",
+    "./jest.config.js",
+    "./dist/*"
   ],
   testMatch: [
-    '**/tests/**/*.test.(ts|js)'
+    '**/src/**/*.test.(ts|js)'
   ],
 }
