@@ -7,13 +7,13 @@ import { MessageCategories } from '../../Messages/messageCategories';
 import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebTokenMiddlewares';
 
 
-export const getJsonWebTokenErrorResponseMiddleware = (unauthorizedErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
+export const getJsonWebTokenErrorResponseMiddleware = (unauthorizedErrorMessage: string, unauthorizedStatusCode: number) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { jsonWebTokenError } = response.locals as VerifyJsonWebTokenResponseLocals;
         if (jsonWebTokenError) {
             const jsonWebTokenErrorResponse: AuthResponseObject = { message: unauthorizedErrorMessage, auth: false }
             return response
-                .status(ErrorStatusCodes.lacksAuthenticationCredientails)
+                .status(unauthorizedStatusCode)
                 .send(jsonWebTokenErrorResponse)
         }
         next()
@@ -23,5 +23,5 @@ export const getJsonWebTokenErrorResponseMiddleware = (unauthorizedErrorMessage:
 };
 
 const localisedUnauthorizedErrorMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.unauthorisedMessage)
-export const jsonWebTokenErrorResponseMiddleware = getJsonWebTokenErrorResponseMiddleware(localisedUnauthorizedErrorMessage)
+export const jsonWebTokenErrorResponseMiddleware = getJsonWebTokenErrorResponseMiddleware(localisedUnauthorizedErrorMessage, ErrorStatusCodes.lacksAuthenticationCredientails)
 
