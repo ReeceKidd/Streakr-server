@@ -31,4 +31,20 @@ describe(`createUserFromRequestMiddleware`, () => {
     expect(response.locals.newUser).toEqual(newUser)
   });
 
+  test('should call next with error message on error', () => {
+
+    const user = { userName: 'userName', email: 'username@gmail.com' };
+
+    const response: any = { locals: { user } };
+    const request: any = { body: {} };
+    const next = jest.fn();
+
+    const middleware = getCreateUserFromRequestMiddleware({})
+
+    middleware(request, response, next);
+
+    expect.assertions(1);
+    expect(next).toBeCalledWith(new TypeError("user is not a constructor"))
+  })
+
 });
