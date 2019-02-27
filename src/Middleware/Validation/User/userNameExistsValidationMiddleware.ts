@@ -1,8 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { ErrorMessageHelper } from '../../../Utils/errorMessage.helper';
+import { generateAlreadyExistsMessage } from '../../../Utils/generateAlreadyExistsMessage';
 import { userNameKey } from '../../../Constants/Keys/keys';
 
-export const getUserNameExistsValidationMiddleware  = (generateAlreadyExistsMessage, userNameKey) => (
+interface GenerateUserNameAlreadyExistsMessage {
+  (userSubject: string, userName: string, userKey: string): string
+}
+
+export const getUserNameExistsValidationMiddleware = (generateAlreadyExistsMessage: GenerateUserNameAlreadyExistsMessage, subject: string, userNameKey) => (
   request: Request,
   response: Response,
   next: NextFunction,
@@ -13,6 +17,7 @@ export const getUserNameExistsValidationMiddleware  = (generateAlreadyExistsMess
     if (userNameExists) {
       return response.status(400).send({
         message: generateAlreadyExistsMessage(
+          subject,
           userNameKey,
           userName,
         ),
@@ -24,4 +29,4 @@ export const getUserNameExistsValidationMiddleware  = (generateAlreadyExistsMess
   }
 };
 
-export const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(ErrorMessageHelper.generateAlreadyExistsMessage, userNameKey);
+export const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(generateAlreadyExistsMessage, 'User', userNameKey);

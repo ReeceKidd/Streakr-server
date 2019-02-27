@@ -9,10 +9,9 @@ export const getSignJsonWebTokenMiddleware = (signToken: Function, jwtSecret: st
   next: NextFunction,
 ) => {
   try {
-    const locals: LoginResponseLocals = response.locals
-    const { minimumUserData } = locals
-    const jsonWebToken = signToken({ minimumUserData }, jwtSecret, jwtOptions);
-    locals.jsonWebToken = jsonWebToken;
+    const { minimumUserData } = response.locals as LoginResponseLocals
+    const jsonWebToken: string = signToken({ minimumUserData }, jwtSecret, jwtOptions);
+    (response.locals as LoginResponseLocals).jsonWebToken = jsonWebToken;
     next();
   } catch (err) {
     next(err);

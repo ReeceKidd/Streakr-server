@@ -6,6 +6,7 @@ import {
 const mockUserName = "testName";
 
 const userNameKey = 'userName'
+const subject = 'subject'
 
 describe(`userNameExistsValidationMiddleware`, () => {
   test("check that error response is returned correctly when userName already exists", () => {
@@ -22,14 +23,14 @@ describe(`userNameExistsValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    const middleware = getUserNameExistsValidationMiddleware(generateAlreadyExistsMessage, userNameKey);
+    const middleware = getUserNameExistsValidationMiddleware(generateAlreadyExistsMessage, subject, userNameKey);
 
     middleware(request as Request, response as Response, next as NextFunction);
 
     expect.assertions(4);
     expect(status).toHaveBeenCalledWith(400);
     expect(send).toBeCalled();
-    expect(generateAlreadyExistsMessage).toBeCalledWith(userNameKey, mockUserName);
+    expect(generateAlreadyExistsMessage).toBeCalledWith(subject, userNameKey, mockUserName);
     expect(next).not.toBeCalled();
   });
 
@@ -47,7 +48,7 @@ describe(`userNameExistsValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    const middleware = getUserNameExistsValidationMiddleware(generateAlreadyExistsMessage, userNameKey);
+    const middleware = getUserNameExistsValidationMiddleware(generateAlreadyExistsMessage, subject, userNameKey);
 
     middleware(request as Request, response as Response, next as NextFunction);
 
@@ -73,7 +74,7 @@ describe(`userNameExistsValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    const middleware = getUserNameExistsValidationMiddleware(generateAlreadyExistsMessage, userNameKey);
+    const middleware = getUserNameExistsValidationMiddleware(generateAlreadyExistsMessage, subject, userNameKey);
 
     middleware(request as Request, response as Response, next as NextFunction);
 

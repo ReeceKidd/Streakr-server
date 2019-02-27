@@ -5,6 +5,7 @@ import {
 
 const mockEmail = "test@gmail.com";
 const emailKey = 'email'
+const subject = 'subject'
 
 describe(`emailExistsValidationMiddleware `, () => {
   test("check that error response is returned correctly when email already exists", async () => {
@@ -20,14 +21,14 @@ describe(`emailExistsValidationMiddleware `, () => {
     };
     const next = jest.fn();
 
-    const middleware = getEmailExistsValidationMiddleware(generateAlreadyExistsMessage, emailKey);
+    const middleware = getEmailExistsValidationMiddleware(generateAlreadyExistsMessage, subject, emailKey);
 
     await middleware(request as Request, response as Response, next as NextFunction);
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(400);
     expect(send).toBeCalled();
-    expect(generateAlreadyExistsMessage).toBeCalledWith(emailKey, mockEmail);
+    expect(generateAlreadyExistsMessage).toBeCalledWith(subject, emailKey, mockEmail);
   });
 
   test("check that next is called when email doesn't exist", () => {
@@ -44,7 +45,7 @@ describe(`emailExistsValidationMiddleware `, () => {
     };
     const next = jest.fn();
 
-    const middleware = getEmailExistsValidationMiddleware(generateAlreadyExistsMessage, emailKey);
+    const middleware = getEmailExistsValidationMiddleware(generateAlreadyExistsMessage, subject, emailKey);
 
     middleware(request as Request, response as Response, next as NextFunction);
 
@@ -70,7 +71,7 @@ describe(`emailExistsValidationMiddleware `, () => {
     };
     const next = jest.fn();
 
-    const middleware = getEmailExistsValidationMiddleware(generateAlreadyExistsMessage, emailKey);
+    const middleware = getEmailExistsValidationMiddleware(generateAlreadyExistsMessage, subject, emailKey);
 
     middleware(request as Request, response as Response, next as NextFunction);
 

@@ -16,8 +16,7 @@ export const getJsonWebTokenVerificationSuccessfulMiddleware = (jsonWebTokenVeri
     next: NextFunction,
 ) => {
     try {
-        const locals: VerifyJsonWebTokenResponseLocals = response.locals
-        const { decodedJsonWebToken } = locals
+        const { decodedJsonWebToken } = response.locals as VerifyJsonWebTokenResponseLocals
         const jsonWebTokenVerificationSuccessfulResponse: SuccessfulJsonWebTokenVerificationResponse = { decodedJsonWebToken, message: jsonWebTokenVerificationSuccessfulMessage, auth: true }
         return response.send(jsonWebTokenVerificationSuccessfulResponse);
     } catch (err) {

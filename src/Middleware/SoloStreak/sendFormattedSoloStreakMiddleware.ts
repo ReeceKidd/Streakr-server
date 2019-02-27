@@ -7,8 +7,7 @@ export const sendFormattedSoloStreakMiddleware = (
     next: NextFunction,
 ) => {
     try {
-        const locals: SoloStreakResponseLocals = response.locals
-        const { savedSoloStreak } = locals;
+        const { savedSoloStreak } = response.locals as SoloStreakResponseLocals;
         return response.send(savedSoloStreak);
     } catch (err) {
         next(err);
