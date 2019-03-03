@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { IMinimumUserData } from 'Models/User';
+import { IMinimumUserData } from '../../Models/User';
 import { LoginResponseLocals } from '../../Routes/Auth/login';
 
 export const setMinimumUserDataMiddleware = (
