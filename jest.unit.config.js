@@ -15,6 +15,6 @@ module.exports = {
     "./dist/*"
   ],
   testMatch: [
-    '**/src/**/*.test.(ts|js)'
+    '**/src/**/*.spec.(ts|js)'
   ],
 }

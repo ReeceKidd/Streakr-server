@@ -1,6 +1,6 @@
 import * as request from 'supertest'
-import server from '../../src/app'
-import { userModel } from '../../src/Models/User';
+import server from 'app'
+import { userModel } from 'Models/User';
 
 const registeredEmail = "jsonwebtoken@gmail.com"
 const registeredPassword = "12345678"

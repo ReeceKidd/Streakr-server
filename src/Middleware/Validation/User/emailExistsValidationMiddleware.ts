@@ -2,11 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import { generateAlreadyExistsMessage } from '../../../Utils/generateAlreadyExistsMessage';
 import { emailKey } from '../../../Constants/Keys/keys';
 
-interface EmailAlreadyExistsMessage {
+interface GenerateEmailAlreadyExistsMessage {
   (userSubject: string, userEmail: string, userKey: string): string
 }
 
-export const getEmailExistsValidationMiddleware = (emailAlreadyExistsMessage: EmailAlreadyExistsMessage, subject: string, emailKey: string) => (
+export const getEmailExistsValidationMiddleware = (emailAlreadyExistsMessage: GenerateEmailAlreadyExistsMessage, subject: string, emailKey: string) => (
   request: Request,
   response: Response,
   next: NextFunction,
