@@ -4,8 +4,8 @@ import { userExistsValidationMiddleware } from "../../Middleware/Validation/User
 import { createSoloStreakFromRequestMiddleware } from "../../Middleware/SoloStreak/createSoloStreakFromRequestMiddleware";
 import { saveSoloStreakToDatabaseMiddleware } from "../../Middleware/Database/saveSoloStreakToDatabaseMiddleware";
 import { sendFormattedSoloStreakMiddleware } from "../../Middleware/SoloStreak/sendFormattedSoloStreakMiddleware";
-import { IUser } from "Models/User";
-import { ISoloStreak } from "Models/SoloStreak";
+import { IUser } from "../../Models/User";
+import { ISoloStreak } from "../../Models/SoloStreak";
 
 export interface SoloStreakRegistrationRequestBody {
     userId: string,

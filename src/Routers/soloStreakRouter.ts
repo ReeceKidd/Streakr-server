@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { createSoloStreakMiddlewares } from "../Routes/SoloStreak/createSoloStreakMiddlewares";
+import { createSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakMiddlewares";
 
 const soloStreakPaths = {
     create: "create",

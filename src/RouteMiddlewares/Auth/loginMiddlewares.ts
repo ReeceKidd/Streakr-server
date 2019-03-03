@@ -6,7 +6,7 @@ import { passwordsMatchValidationMiddleware } from "../../Middleware/Validation/
 import { loginSuccessfulMiddleware } from "../../Middleware/Handlers/loginSuccessfulMiddleware";
 import { setMinimumUserDataMiddleware } from "../../Middleware/User/setMinimumUserDataMiddleware";
 import { setJsonWebTokenMiddleware } from "../../Middleware/Auth/signJsonWebTokenMiddleware";
-import { IUser, IMinimumUserData } from "Models/User";
+import { IUser, IMinimumUserData } from "../../Models/User";
 
 
 export interface LoginRequestBody {

@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { verifyJsonWebTokenMiddlewaresWithResponse } from "../Routes/Test/verifyJsonWebTokenMiddlewaresWithResponse";
+import { verifyJsonWebTokenMiddlewaresWithResponse } from "../RouteMiddlewares/Test/verifyJsonWebTokenMiddlewaresWithResponse";
 
 export const testPaths = {
     verifyJsonWebToken: "verify-json-web-token"
