@@ -1,4 +1,4 @@
-import { getJsonWebTokenDoesNotExistResponseMiddleware } from "../../../Middleware/Validation/Auth/jsonWebTokenDoesNotExistResponseMiddleware";
+import { getJsonWebTokenDoesNotExistResponseMiddleware } from "./jsonWebTokenDoesNotExistResponseMiddleware";
 
 const ERROR_MESSAGE = 'Error'
 const mockJsonWebTokenValidationErrorObject = {

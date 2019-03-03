@@ -1,4 +1,4 @@
-import { getCreateUserFromRequestMiddleware } from "../../Middleware/User/createUserFromRequestMiddleware";
+import { getCreateUserFromRequestMiddleware } from "./createUserFromRequestMiddleware";
 
 describe(`createUserFromRequestMiddleware`, () => {
   test("should define response.locals.newUser", async () => {

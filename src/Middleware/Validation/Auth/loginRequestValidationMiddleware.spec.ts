@@ -1,4 +1,4 @@
-import { loginRequestValidationMiddleware } from '../../../Middleware/Validation/Auth/loginRequestValidationMiddleware'
+import { loginRequestValidationMiddleware } from './loginRequestValidationMiddleware'
 
 const mockEmail = 'mock@gmail.com'
 const mockPassword = '12345678'

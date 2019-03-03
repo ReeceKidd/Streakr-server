@@ -1,6 +1,6 @@
 import * as request from 'supertest'
 import server from 'app'
-import { userModel } from 'Models/User';
+import { userModel } from '../../src/Models/User';
 const route = '/user/register'
 
 beforeAll(() => {

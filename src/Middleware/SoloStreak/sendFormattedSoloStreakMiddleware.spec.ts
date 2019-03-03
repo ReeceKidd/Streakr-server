@@ -1,5 +1,5 @@
-import { sendFormattedSoloStreakMiddleware } from "../../Middleware/SoloStreak/sendFormattedSoloStreakMiddleware";
-import { SoloStreakResponseLocals } from "../../Routes/SoloStreak/createSoloStreakMiddlewares";
+import { sendFormattedSoloStreakMiddleware } from "./sendFormattedSoloStreakMiddleware";
+import { SoloStreakResponseLocals } from "Routes/SoloStreak/createSoloStreakMiddlewares";
 import { userModel } from "../../Models/User";
 import { soloStreakModel } from "../../Models/SoloStreak";
 

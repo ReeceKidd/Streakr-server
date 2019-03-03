@@ -1,4 +1,4 @@
-import { userRegistrationValidationMiddleware } from "../../../Middleware/Validation/User/userRegistrationValidationMiddleware";
+import { userRegistrationValidationMiddleware } from "./userRegistrationValidationMiddleware";
 
 const mockUserName = "mockUserName";
 const mockEmail = "mock@gmail.com";

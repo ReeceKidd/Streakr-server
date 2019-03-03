@@ -1,4 +1,4 @@
-import { getJsonWebTokenErrorResponseMiddleware } from "../../Middleware/ErrorHandler/jsonWebTokenErrorResponseMiddleware";
+import { getJsonWebTokenErrorResponseMiddleware } from "./jsonWebTokenErrorResponseMiddleware";
 import { AuthResponseObject } from "Server/response";
 
 const errorMessage = 'Failure'

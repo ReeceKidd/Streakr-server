@@ -1,4 +1,4 @@
-import { getDoesUserEmailExistMiddleware } from "../../Middleware/Database/doesUserEmailExistMiddleware";
+import { getDoesUserEmailExistMiddleware } from "./doesUserEmailExistMiddleware";
 
 const mockEmail = "test@gmail.com";
 const ERROR_MESSAGE = "error";

@@ -1,4 +1,4 @@
-import { getRetreiveUserWithEmailMiddleware } from "../../Middleware/Database/retreiveUserWithEmailMiddleware";
+import { getRetreiveUserWithEmailMiddleware } from "./retreiveUserWithEmailMiddleware";
 
 const mockEmail = "test@gmail.com";
 const ERROR_MESSAGE = "error";

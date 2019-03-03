@@ -1,4 +1,4 @@
-import { soloStreakRegistrationValidationMiddleware } from "../../../Middleware/Validation/SoloStreak/soloStreakRegistrationValidationMiddleware";
+import { soloStreakRegistrationValidationMiddleware } from "./soloStreakRegistrationValidationMiddleware";
 
 const userId = '12345678'
 const streakName = 'Spanish Streak'

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import {
   getPasswordsMatchValidationMiddleware
-} from "../../../Middleware/Validation/User/passwordsMatchValidationMiddleware";
+} from "./passwordsMatchValidationMiddleware";
 
 const loginError = 'login details are incorrect'
 const errorMessage = 'error'

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import {
   getUserExistsValidationMiddleware,
-} from "../../../Middleware/Validation/User/userExistsValidationMiddleware";
+} from "./userExistsValidationMiddleware";
 
 const mockErrorMessage = 'User does not exist'
 

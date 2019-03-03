@@ -1,4 +1,4 @@
-import { getCompareRequestPasswordToUserHashedPasswordMiddleware } from "../../Middleware/Password/compareRequestPasswordToUserHashedPasswordMiddleware";
+import { getCompareRequestPasswordToUserHashedPasswordMiddleware } from "./compareRequestPasswordToUserHashedPasswordMiddleware";
 
 const ERROR_MESSAGE = "error";
 

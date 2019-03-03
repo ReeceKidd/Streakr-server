@@ -1,4 +1,4 @@
-import { getCreateSoloStreakFromRequestMiddleware } from "../../Middleware/SoloStreak/createSoloStreakFromRequestMiddleware";
+import { getCreateSoloStreakFromRequestMiddleware } from "./createSoloStreakFromRequestMiddleware";
 
 describe(`createSoloStreakFromRequestMiddleware`, () => {
     test("should define response.locals.newSoloStreak", async () => {

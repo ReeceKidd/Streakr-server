@@ -1,10 +1,10 @@
 import * as request from 'supertest'
 import server from 'app'
-import { userModel } from 'Models/User';
-import { SuccessMessageKeys } from 'Messages/successMessages';
-import { FailureMessageKeys } from 'Messages/failureMessages';
-import { getLocalisedString } from 'Messages/getLocalisedString';
-import { MessageCategories } from 'Messages/messageCategories';
+import { userModel } from '../../src/Models/User';
+import { SuccessMessageKeys } from '../../src/Messages/successMessages';
+import { FailureMessageKeys } from '../../src/Messages/failureMessages';
+import { getLocalisedString } from '../../src/Messages/getLocalisedString';
+import { MessageCategories } from '../../src/Messages/messageCategories';
 
 const route = '/auth/login'
 const registrationRoute = '/user/register'

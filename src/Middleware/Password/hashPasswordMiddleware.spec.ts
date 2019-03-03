@@ -1,4 +1,4 @@
-import { getHashPasswordMiddleware } from "../../Middleware/Password/hashPasswordMiddleware";
+import { getHashPasswordMiddleware } from "./hashPasswordMiddleware";
 
 const ERROR_MESSAGE = "error";
 

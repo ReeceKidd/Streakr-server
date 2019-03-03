@@ -1,5 +1,5 @@
 import { getDecodeJsonWebTokenMiddleware, DecodedJsonWebToken } from './decodeJsonWebTokenMiddleware';
-import { VerifyJsonWebTokenResponseLocals } from '../Validation/Auth/jsonWebTokenRequestValidationMiddleware';
+import { VerifyJsonWebTokenResponseLocals } from '../Validation/Auth/jsonWebTokenVerificationRequestValidationMiddleware';
 
 const ERROR_MESSAGE = 'error';
 

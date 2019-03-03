@@ -1,4 +1,4 @@
-import { getLoginSuccessfulMiddleware } from "../../Middleware/Handlers/loginSuccessfulMiddleware";
+import { getLoginSuccessfulMiddleware } from "./loginSuccessfulMiddleware";
 
 const ERROR_MESSAGE = "error";
 const loginSuccessMessage = 'success'

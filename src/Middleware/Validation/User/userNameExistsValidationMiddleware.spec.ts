@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import {
   getUserNameExistsValidationMiddleware
-} from "../../../Middleware/Validation/User/userNameExistsValidationMiddleware";
+} from "./userNameExistsValidationMiddleware";
 
 const mockUserName = "testName";
 

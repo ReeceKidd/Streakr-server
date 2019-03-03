@@ -1,6 +1,6 @@
-import { getJsonWebTokenVerificationSuccessfulMiddleware, SuccessfulJsonWebTokenVerificationResponse } from "../../Middleware/Handlers/jsonWebTokenVerificationSuccessfulMiddleware";
+import { getJsonWebTokenVerificationSuccessfulMiddleware, SuccessfulJsonWebTokenVerificationResponse } from "./jsonWebTokenVerificationSuccessfulMiddleware";
 import { DecodedJsonWebToken } from "../Auth/decodeJsonWebTokenMiddleware";
-import { VerifyJsonWebTokenResponseLocals } from "../Validation/Auth/jsonWebTokenRequestValidationMiddleware";
+import { VerifyJsonWebTokenResponseLocals } from "../Validation/Auth/jsonWebTokenVerificationRequestValidationMiddleware";
 
 const ERROR_MESSAGE = "error";
 const loginSuccessMessage = 'success'
