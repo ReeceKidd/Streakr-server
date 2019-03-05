@@ -1,11 +1,16 @@
-import { getJsonWebTokenVerificationSuccessfulMiddleware, SuccessfulJsonWebTokenVerificationResponse } from "./jsonWebTokenVerificationSuccessfulMiddleware";
-import { DecodedJsonWebToken } from "../Auth/decodeJsonWebTokenMiddleware";
-import { VerifyJsonWebTokenResponseLocals } from "../Validation/Auth/jsonWebTokenVerificationRequestValidationMiddleware";
+import { verifyJsonWebTokenMiddlewaresWithResponse } from './verifyJsonWebTokenMiddlewaresWithResponse'
+import { verifyJsonWebTokenMiddlewares } from './verifyJsonWebTokenMiddlewares';
+import { jsonWebTokenVerificationSuccessfulMiddleware } from './verifyJsonWebTokenMiddlewaresWithResponse';
 
-const ERROR_MESSAGE = "error";
-const loginSuccessMessage = 'success'
+import { getJsonWebTokenVerificationSuccessfulMiddleware, SuccessfulJsonWebTokenVerificationResponse } from "./verifyJsonWebTokenMiddlewaresWithResponse";
+import { DecodedJsonWebToken, VerifyJsonWebTokenResponseLocals } from './verifyJsonWebTokenMiddlewares'
+
 
 describe(`jsonWebTokenVerificationSuccessfulMiddleware`, () => {
+
+    const ERROR_MESSAGE = "error";
+    const loginSuccessMessage = 'success'
+
     test("should send login success message", () => {
 
         const send = jest.fn()
@@ -55,4 +60,12 @@ describe(`jsonWebTokenVerificationSuccessfulMiddleware`, () => {
     })
 
 
+});
+
+describe(`verifyJsonWebTokenMiddlewaresWithResponse`, () => {
+    test("that verfiyJsonWebToken middlewares are defined in the correct order", () => {
+        expect.assertions(2);
+        expect(verifyJsonWebTokenMiddlewaresWithResponse[0]).toBe(verifyJsonWebTokenMiddlewares)
+        expect(verifyJsonWebTokenMiddlewaresWithResponse[1]).toBe(jsonWebTokenVerificationSuccessfulMiddleware)
+    });
 });

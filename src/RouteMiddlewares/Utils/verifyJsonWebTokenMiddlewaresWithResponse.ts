@@ -1,10 +1,13 @@
+
 import { Request, Response, NextFunction } from 'express';
-import { SuccessMessageKeys } from '../../Messages/successMessages';
-import { getLocalisedString } from '../../Messages/getLocalisedString';
-import { MessageCategories } from '../../Messages/messageCategories';
+import { verifyJsonWebTokenMiddlewares } from "./verifyJsonWebTokenMiddlewares";
+
+import { SuccessMessageKeys } from 'Messages/successMessages';
+import { getLocalisedString } from 'Messages/getLocalisedString';
+import { MessageCategories } from 'Messages/messageCategories';
 import { AuthResponseObject } from 'Server/response';
-import { DecodedJsonWebToken } from '../Auth/decodeJsonWebTokenMiddleware';
-import { VerifyJsonWebTokenResponseLocals } from 'Utils/verifyUsersJsonWebTokenMiddlewares';
+import { DecodedJsonWebToken } from './verifyJsonWebTokenMiddlewares';
+import { VerifyJsonWebTokenResponseLocals } from './verifyJsonWebTokenMiddlewares';
 
 export interface SuccessfulJsonWebTokenVerificationResponse extends AuthResponseObject {
     decodedJsonWebToken: DecodedJsonWebToken
@@ -27,3 +30,9 @@ export const getJsonWebTokenVerificationSuccessfulMiddleware = (jsonWebTokenVeri
 const localisedJsonWebTokenVerificationSuccessMessage = getLocalisedString(MessageCategories.successMessages, SuccessMessageKeys.jsonWebTokenVerificationSuccessfulMessage)
 
 export const jsonWebTokenVerificationSuccessfulMiddleware = getJsonWebTokenVerificationSuccessfulMiddleware(localisedJsonWebTokenVerificationSuccessMessage);
+
+
+export const verifyJsonWebTokenMiddlewaresWithResponse = [
+    verifyJsonWebTokenMiddlewares,
+    jsonWebTokenVerificationSuccessfulMiddleware
+]
