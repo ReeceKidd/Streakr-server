@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 
-import { getValidationErrorMessageSenderMiddleware } from '../../Middleware/Validation/validationErrorMessageSenderMiddleware';
+import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
 import { IUser } from "../../Models/User";
 import { userModel } from '../../Models/User';

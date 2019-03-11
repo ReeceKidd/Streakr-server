@@ -6,7 +6,7 @@ import { hash } from 'bcryptjs';
 
 import { userModel } from '../../Models/User';
 
-import { getValidationErrorMessageSenderMiddleware } from '../../Middleware/Validation/validationErrorMessageSenderMiddleware';
+import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { generateAlreadyExistsMessage } from '../../Utils/generateAlreadyExistsMessage';
 import { emailKey, userNameKey } from '../../Constants/Keys/keys';
 import { saltRounds } from '../../Constants/Auth/saltRounds';

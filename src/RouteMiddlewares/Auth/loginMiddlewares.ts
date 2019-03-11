@@ -10,7 +10,7 @@ import { SuccessMessageKeys } from '../../Messages/successMessages';
 import { getLocalisedString } from '../../Messages/getLocalisedString';
 import { MessageCategories } from '../../Messages/messageCategories';
 import { IUser, IMinimumUserData } from "../../Models/User";
-import { getValidationErrorMessageSenderMiddleware } from "../../Middleware/Validation/validationErrorMessageSenderMiddleware"
+import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware"
 import { userModel } from '../../Models/User';
 
 

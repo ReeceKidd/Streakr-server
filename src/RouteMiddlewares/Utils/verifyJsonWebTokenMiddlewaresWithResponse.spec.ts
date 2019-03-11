@@ -5,7 +5,6 @@ import { jsonWebTokenVerificationSuccessfulMiddleware } from './verifyJsonWebTok
 import { getJsonWebTokenVerificationSuccessfulMiddleware, SuccessfulJsonWebTokenVerificationResponse } from "./verifyJsonWebTokenMiddlewaresWithResponse";
 import { DecodedJsonWebToken, VerifyJsonWebTokenResponseLocals } from './verifyJsonWebTokenMiddlewares'
 
-
 describe(`jsonWebTokenVerificationSuccessfulMiddleware`, () => {
 
     const ERROR_MESSAGE = "error";

@@ -15,7 +15,6 @@ import {
 import { SupportedHeaders } from '../../Server/headers';
 import { AuthResponseObject } from "../../Server/response";
 
-
 describe('retreiveJsonWebTokenMiddleware', () => {
     test('should set response.locals.jsonWebToken', () => {
 

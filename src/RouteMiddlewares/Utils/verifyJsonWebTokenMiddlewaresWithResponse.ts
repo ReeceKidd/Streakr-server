@@ -2,10 +2,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyJsonWebTokenMiddlewares } from "./verifyJsonWebTokenMiddlewares";
 
-import { SuccessMessageKeys } from 'Messages/successMessages';
-import { getLocalisedString } from 'Messages/getLocalisedString';
-import { MessageCategories } from 'Messages/messageCategories';
-import { AuthResponseObject } from 'Server/response';
+import { SuccessMessageKeys } from '../../Messages/successMessages';
+import { getLocalisedString } from '../../Messages/getLocalisedString';
+import { MessageCategories } from '../../Messages/messageCategories';
+import { AuthResponseObject } from '../../Server/response';
 import { DecodedJsonWebToken } from './verifyJsonWebTokenMiddlewares';
 import { VerifyJsonWebTokenResponseLocals } from './verifyJsonWebTokenMiddlewares';
 

@@ -1,14 +1,14 @@
 
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { jwtSecret } from '../../../secret/jwt-secret';
 
+import { jwtSecret } from '../../../secret/jwt-secret';
 import { SupportedHeaders } from '../../Server/headers';
 import { getLocalisedString } from '../../Messages/getLocalisedString';
 import { MessageCategories } from '../../Messages/messageCategories';
 import { FailureMessageKeys } from '../../Messages/failureMessages';
 import { ErrorStatusCodes } from '../../Server/statusCodes';
-import { AuthResponseObject } from 'Server/response';
+import { AuthResponseObject } from '../../Server/response';
 
 import { IMinimumUserData } from '../../Models/User';
 
