@@ -195,7 +195,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
 describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
 
-    const mockEmail = "test@gmail.com";
+    const mockUserId = "abcdefghij123";
     const ERROR_MESSAGE = "error";
 
 
@@ -204,7 +204,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
         const UserModel = {
             findOne
         }
-        const request: any = { body: { email: mockEmail } };
+        const request: any = { body: { userId: mockUserId } };
         const response: any = { locals: {} };
         const next = jest.fn();
 
@@ -213,7 +213,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
         await middleware(request, response, next);
 
         expect.assertions(3);
-        expect(findOne).toBeCalledWith({ email: mockEmail });
+        expect(findOne).toBeCalledWith({ _id: mockUserId });
         expect(response.locals.user).toBe(true);
         expect(next).toBeCalled();
     });
@@ -223,7 +223,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
         const UserModel = {
             findOne
         }
-        const request: any = { body: { email: mockEmail } };
+        const request: any = { body: { userId: mockUserId } };
         const response: any = { locals: {} };
         const next = jest.fn();
 
@@ -232,7 +232,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
         await middleware(request, response, next);
 
         expect.assertions(3);
-        expect(findOne).toBeCalledWith({ email: mockEmail });
+        expect(findOne).toBeCalledWith({ _id: mockUserId });
         expect(response.locals.emailExists).toBe(undefined);
         expect(next).toBeCalledWith();
     });
@@ -242,7 +242,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
         const UserModel = {
             findOne
         }
-        const request: any = { body: { email: mockEmail } };
+        const request: any = { body: { userId: mockUserId } };
         const response: any = { locals: {} };
         const next = jest.fn();
 
@@ -251,7 +251,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
         await middleware(request, response, next);
 
         expect.assertions(3);
-        expect(findOne).toBeCalledWith({ email: mockEmail });
+        expect(findOne).toBeCalledWith({ _id: mockUserId });
         expect(response.locals.emailExists).toBe(undefined);
         expect(next).toBeCalledWith(ERROR_MESSAGE);
     });
@@ -305,8 +305,6 @@ describe(`userExistsValidationMiddleware`, () => {
         const errorMessage = 'error'
         const send = jest.fn(() => { throw new Error(errorMessage) });
         const status = jest.fn(() => ({ send }));
-        const generateAlreadyExistsMessage = jest.fn();
-
         const request = {};
         const response: any = {
             locals: { user: false },
