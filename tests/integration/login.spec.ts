@@ -1,5 +1,5 @@
 import * as request from 'supertest'
-import server from 'app'
+import server from '../../src/app'
 import { userModel } from '../../src/Models/User';
 import { SuccessMessageKeys } from '../../src/Messages/successMessages';
 import { FailureMessageKeys } from '../../src/Messages/failureMessages';
@@ -53,7 +53,8 @@ describe('auth/login', () => {
         expect(response.type).toEqual('application/json')
         expect(response.body).not.toHaveProperty('jsonWebToken')
         expect(response.body).toHaveProperty('message')
-        expect(response.body.message).toEqual(FailureMessageKeys.loginUnsuccessfulMessage)
+        const localisedFailureMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
+        expect(response.body.message).toEqual(localisedFailureMessage)
     })
 
     test('that response is correct when invalid email and correct password is used', async () => {
@@ -68,7 +69,8 @@ describe('auth/login', () => {
         expect(response.type).toEqual('application/json')
         expect(response.body).not.toHaveProperty('jsonWebToken')
         expect(response.body).toHaveProperty('message')
-        expect(response.body.message).toEqual(FailureMessageKeys.loginUnsuccessfulMessage)
+        const localisedFailureMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
+        expect(response.body.message).toEqual(localisedFailureMessage)
     })
 
     test('that response is correct when valid email and incorrect password is used', async () => {
@@ -83,7 +85,8 @@ describe('auth/login', () => {
         expect(response.type).toEqual('application/json')
         expect(response.body).not.toHaveProperty('jsonWebToken')
         expect(response.body).toHaveProperty('message')
-        expect(response.body.message).toEqual(FailureMessageKeys.loginUnsuccessfulMessage)
+        const localisedFailureMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
+        expect(response.body.message).toEqual(localisedFailureMessage)
     })
 
     test('fails because nothing is sent with request', async () => {

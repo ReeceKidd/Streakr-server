@@ -1,5 +1,5 @@
 import * as request from 'supertest'
-import server from 'app'
+import server from '../../src/app'
 import { userModel } from '../../src/Models/User';
 const route = '/user/register'
 

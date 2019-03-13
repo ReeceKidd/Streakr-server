@@ -14,6 +14,7 @@ import {
 
 import { SupportedHeaders } from '../../Server/headers';
 import { AuthResponseObject } from "../../Server/response";
+import { ErrorStatusCodes } from '../../Server/statusCodes';
 
 describe('retreiveJsonWebTokenMiddleware', () => {
     test('should set response.locals.jsonWebToken', () => {
@@ -63,7 +64,7 @@ describe(`jsonWebTokenDoesNotExistResponseMiddleware`, () => {
         const request: any = {}
         const next = jest.fn();
 
-        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject);
+        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject, ErrorStatusCodes.missingJsonWebToken);
         middleware(request, response, next)
 
         expect.assertions(1);
@@ -77,7 +78,7 @@ describe(`jsonWebTokenDoesNotExistResponseMiddleware`, () => {
         const request: any = {}
         const next = jest.fn();
 
-        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject);
+        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject, ErrorStatusCodes.missingJsonWebToken);
         middleware(request, response, next)
 
         expect.assertions(3);
@@ -97,7 +98,7 @@ describe(`jsonWebTokenDoesNotExistResponseMiddleware`, () => {
         const request: any = {}
         const next = jest.fn();
 
-        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject);
+        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject, ErrorStatusCodes.missingJsonWebToken);
         middleware(request, response, next)
 
         expect.assertions(1);
@@ -176,8 +177,6 @@ describe('decodeJsonWebTokenMiddleware', () => {
         expect.assertions(1);
         expect(next).toBeCalledWith(new TypeError("Cannot destructure property `jsonWebToken` of 'undefined' or 'null'."))
     })
-
-
 
 });
 

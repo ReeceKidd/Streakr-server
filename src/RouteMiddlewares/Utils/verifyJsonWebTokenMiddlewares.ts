@@ -22,7 +22,8 @@ export interface VerifyJsonWebTokenResponseLocals {
 export const getRetreiveJsonWebTokenMiddleware = (jsonWebTokenHeader: string) => (
     request: Request, response: Response, next: NextFunction) => {
     try {
-        (response.locals as VerifyJsonWebTokenResponseLocals).jsonWebToken = request.headers[jsonWebTokenHeader].toString()
+        const requestJsonWebTokenHeader = request.headers[jsonWebTokenHeader]
+        response.locals.jsonWebToken = requestJsonWebTokenHeader
         next();
     } catch (err) {
         next(err);
@@ -32,10 +33,10 @@ export const getRetreiveJsonWebTokenMiddleware = (jsonWebTokenHeader: string) =>
 export const retreiveJsonWebTokenMiddleware = getRetreiveJsonWebTokenMiddleware(SupportedHeaders.xAccessToken);
 
 
-export const getJsonWebTokenDoesNotExistResponseMiddleware = (jsonWebTokenValidationErrorObject: { auth: boolean, message: string }) => (request: Request, response: Response, next: NextFunction) => {
+export const getJsonWebTokenDoesNotExistResponseMiddleware = (jsonWebTokenValidationErrorObject: { auth: boolean, message: string }, unauthorizedStatusCode: number) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { jsonWebToken } = response.locals as VerifyJsonWebTokenResponseLocals;
-        if (!jsonWebToken) return response.status(401).send(jsonWebTokenValidationErrorObject);
+        if (!jsonWebToken) return response.status(unauthorizedStatusCode).send(jsonWebTokenValidationErrorObject);
         next();
     } catch (err) {
         next(err);
@@ -44,13 +45,7 @@ export const getJsonWebTokenDoesNotExistResponseMiddleware = (jsonWebTokenValida
 
 const localisedMissingJsonWebTokenMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.missingJsonWebTokenMessage)
 
-export const jsonWebTokenDoesNotExistResponseMiddleware = getJsonWebTokenDoesNotExistResponseMiddleware({ auth: false, message: localisedMissingJsonWebTokenMessage });
-
-
-
-
-
-
+export const jsonWebTokenDoesNotExistResponseMiddleware = getJsonWebTokenDoesNotExistResponseMiddleware({ auth: false, message: localisedMissingJsonWebTokenMessage }, ErrorStatusCodes.missingJsonWebToken);
 
 export interface DecodedJsonWebToken {
     minimumUserData: IMinimumUserData

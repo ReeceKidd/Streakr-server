@@ -10,7 +10,7 @@
     "build:live": "nodemon --exec ts-node -- ./src/server.ts",
     "prod": "npm run build && npm start",
     "unit-tests": "set NODE_ENV=TEST&& jest --watch --coverage --config=./jest.unit.config.js",
-    "intergration-tests": "set NODE_ENV=TEST&& jest --config=./jest.intergration.config.js"
+    "intergration-tests": "set NODE_ENV=TEST&& jest --watch --coverage --config=./jest.intergration.config.js"
   },
   "keywords": [],
   "author": "Reece Kidd",
