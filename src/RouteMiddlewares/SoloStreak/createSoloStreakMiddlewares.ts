@@ -36,7 +36,7 @@ export const soloStreakRegistrationValidationMiddleware = (request: Request, res
     Joi.validate(request.body, soloStreakRegisterstrationValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
 };
 
-export const getRetreiveUserWhoCreatedStreakMiddleware = userModel => async (
+export const getRetreiveUserWhoCreatedSoloStreakMiddleware = userModel => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -51,7 +51,7 @@ export const getRetreiveUserWhoCreatedStreakMiddleware = userModel => async (
     }
 };
 
-export const retreiveUserWhoCreatedStreakMiddleware = getRetreiveUserWhoCreatedStreakMiddleware(userModel);
+export const retreiveUserWhoCreatedSoloStreakMiddleware = getRetreiveUserWhoCreatedSoloStreakMiddleware(userModel);
 
 export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
     request: Request,
@@ -119,7 +119,7 @@ export const sendFormattedSoloStreakMiddleware = (
 
 export const createSoloStreakMiddlewares = [
     soloStreakRegistrationValidationMiddleware,
-    retreiveUserWhoCreatedStreakMiddleware,
+    retreiveUserWhoCreatedSoloStreakMiddleware,
     userExistsValidationMiddleware,
     createSoloStreakFromRequestMiddleware,
     saveSoloStreakToDatabaseMiddleware,
