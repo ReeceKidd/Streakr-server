@@ -3,8 +3,8 @@ import { Request, Response, NextFunction } from 'express'
 import {
     createSoloStreakMiddlewares,
     soloStreakRegistrationValidationMiddleware,
-    retreiveUserWhoCreatedStreakMiddleware,
-    getRetreiveUserWhoCreatedStreakMiddleware,
+    retreiveUserWhoCreatedSoloStreakMiddleware,
+    getRetreiveUserWhoCreatedSoloStreakMiddleware,
     userExistsValidationMiddleware,
     getUserExistsValidationMiddleware,
     createSoloStreakFromRequestMiddleware,
@@ -208,7 +208,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
         const response: any = { locals: {} };
         const next = jest.fn();
 
-        const middleware = getRetreiveUserWhoCreatedStreakMiddleware(UserModel);
+        const middleware = getRetreiveUserWhoCreatedSoloStreakMiddleware(UserModel);
 
         await middleware(request, response, next);
 
@@ -227,7 +227,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
         const response: any = { locals: {} };
         const next = jest.fn();
 
-        const middleware = getRetreiveUserWhoCreatedStreakMiddleware(UserModel);
+        const middleware = getRetreiveUserWhoCreatedSoloStreakMiddleware(UserModel);
 
         await middleware(request, response, next);
 
@@ -246,7 +246,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
         const response: any = { locals: {} };
         const next = jest.fn();
 
-        const middleware = getRetreiveUserWhoCreatedStreakMiddleware(UserModel);
+        const middleware = getRetreiveUserWhoCreatedSoloStreakMiddleware(UserModel);
 
         await middleware(request, response, next);
 
@@ -469,7 +469,7 @@ describe(`createSoloStreakMiddlewares`, () => {
     test("that createSoloStreak middlewares are defined in the correct order", async () => {
         expect.assertions(6);
         expect(createSoloStreakMiddlewares[0]).toBe(soloStreakRegistrationValidationMiddleware)
-        expect(createSoloStreakMiddlewares[1]).toBe(retreiveUserWhoCreatedStreakMiddleware)
+        expect(createSoloStreakMiddlewares[1]).toBe(retreiveUserWhoCreatedSoloStreakMiddleware)
         expect(createSoloStreakMiddlewares[2]).toBe(userExistsValidationMiddleware)
         expect(createSoloStreakMiddlewares[3]).toBe(createSoloStreakFromRequestMiddleware)
         expect(createSoloStreakMiddlewares[4]).toBe(saveSoloStreakToDatabaseMiddleware)
