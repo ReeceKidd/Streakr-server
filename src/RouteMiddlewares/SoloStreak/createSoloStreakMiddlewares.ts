@@ -75,6 +75,16 @@ const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.fa
 
 export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(localisedUserDoesNotExistMessage);
 
+export const formatResponseLocalsUserMiddleware = (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { user } = response.locals as SoloStreakResponseLocals
+        user.password = undefined
+        response.locals.user = user
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
 
 export const getCreateSoloStreakFromRequestMiddleware = soloStreak => (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -121,6 +131,7 @@ export const createSoloStreakMiddlewares = [
     soloStreakRegistrationValidationMiddleware,
     retreiveUserWhoCreatedSoloStreakMiddleware,
     userExistsValidationMiddleware,
+    formatResponseLocalsUserMiddleware,
     createSoloStreakFromRequestMiddleware,
     saveSoloStreakToDatabaseMiddleware,
     sendFormattedSoloStreakMiddleware

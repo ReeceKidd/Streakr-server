@@ -1,4 +1,5 @@
 import * as request from 'supertest'
+
 import server from '../../src/app'
 import { userModel } from '../../src/Models/User';
 import { SuccessMessageKeys } from '../../src/Messages/successMessages';

@@ -12,6 +12,7 @@ import {
     saveSoloStreakToDatabaseMiddleware,
     sendFormattedSoloStreakMiddleware,
     SoloStreakResponseLocals,
+    formatResponseLocalsUserMiddleware,
 } from './createSoloStreakMiddlewares'
 
 import { userModel } from "../../Models/User";
@@ -321,6 +322,20 @@ describe(`userExistsValidationMiddleware`, () => {
     });
 });
 
+describe('formatResponseLocalsUserMiddleware', () => {
+    test('should make response.locals.user.password null', () => {
+        expect.assertions(2)
+        const user = { userName: 'userName', email: 'username@gmail.com', password: '12345678' };
+        const request: any = {}
+        const response: any = { locals: { user } }
+        const next = jest.fn()
+
+        formatResponseLocalsUserMiddleware(request, response, next)
+        expect(response.locals.password).toBe(undefined)
+        expect(next).toBeCalledWith()
+    })
+})
+
 describe(`createSoloStreakFromRequestMiddleware`, () => {
     test("should define response.locals.newSoloStreak", async () => {
 
@@ -467,12 +482,13 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
 
 describe(`createSoloStreakMiddlewares`, () => {
     test("that createSoloStreak middlewares are defined in the correct order", async () => {
-        expect.assertions(6);
+        expect.assertions(7);
         expect(createSoloStreakMiddlewares[0]).toBe(soloStreakRegistrationValidationMiddleware)
         expect(createSoloStreakMiddlewares[1]).toBe(retreiveUserWhoCreatedSoloStreakMiddleware)
         expect(createSoloStreakMiddlewares[2]).toBe(userExistsValidationMiddleware)
-        expect(createSoloStreakMiddlewares[3]).toBe(createSoloStreakFromRequestMiddleware)
-        expect(createSoloStreakMiddlewares[4]).toBe(saveSoloStreakToDatabaseMiddleware)
-        expect(createSoloStreakMiddlewares[5]).toBe(sendFormattedSoloStreakMiddleware)
+        expect(createSoloStreakMiddlewares[3]).toBe(formatResponseLocalsUserMiddleware)
+        expect(createSoloStreakMiddlewares[4]).toBe(createSoloStreakFromRequestMiddleware)
+        expect(createSoloStreakMiddlewares[5]).toBe(saveSoloStreakToDatabaseMiddleware)
+        expect(createSoloStreakMiddlewares[6]).toBe(sendFormattedSoloStreakMiddleware)
     });
 });
