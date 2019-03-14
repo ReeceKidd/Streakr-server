@@ -14,6 +14,11 @@
     "test": "set NODE_ENV=TEST&& jest --watchAll --coverage --config=./jest.test.config.js",
     "pre-push": "npm test"
   },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm test"
+    }
+  },
   "keywords": [],
   "author": "Reece Kidd",
   "license": "ISC",
