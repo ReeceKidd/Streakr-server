@@ -1,33 +1,39 @@
 import * as request from 'supertest'
 
-import server from '../../src/app'
+import server, { RouteCategories } from '../../src/app'
 import { userModel } from '../../src/Models/User';
 import { SuccessMessageKeys } from '../../src/Messages/successMessages';
 import { FailureMessageKeys } from '../../src/Messages/failureMessages';
 import { getLocalisedString } from '../../src/Messages/getLocalisedString';
 import { MessageCategories } from '../../src/Messages/messageCategories';
+import { AuthPaths } from '../../src/Routers/authRouter';
+import { UserPaths } from '../../src/Routers/userRouter';
 
-const route = '/auth/login'
-const registrationRoute = '/user/register'
+const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
+const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
 
 const registeredEmail = "register@gmail.com"
+const registeredUserName = 'registeredUser'
 const registeredPassword = "12345678"
 
-beforeAll(async () => {
-    await userModel.deleteMany({});
-    return request(server).post(registrationRoute).send(
-        {
-            userName: "registeredUser",
-            email: registeredEmail,
-            password: registeredPassword
-        }
-    )
-});
 
-describe('auth/login', () => {
+
+describe(loginRoute, () => {
+
+    beforeAll(async () => {
+        await userModel.deleteMany({});
+        return request(server).post(registrationRoute).send(
+            {
+                userName: registeredUserName,
+                email: registeredEmail,
+                password: registeredPassword
+            }
+        )
+    });
+
     test('user can login successfully and receives jsonWebToken in response', async () => {
         expect.assertions(6)
-        const response = await request(server).post(route).send(
+        const response = await request(server).post(loginRoute).send(
             {
                 email: registeredEmail,
                 password: registeredPassword
@@ -44,7 +50,7 @@ describe('auth/login', () => {
 
     test('that response is correct when incorrect email and password is used', async () => {
         expect.assertions(5)
-        const response = await request(server).post(route).send(
+        const response = await request(server).post(loginRoute).send(
             {
                 email: 'invalidemail@gmail.com',
                 password: 'invalidPassword'
@@ -60,7 +66,7 @@ describe('auth/login', () => {
 
     test('that response is correct when invalid email and correct password is used', async () => {
         expect.assertions(5)
-        const response = await request(server).post(route).send(
+        const response = await request(server).post(loginRoute).send(
             {
                 email: 'invalidemail@gmail.com',
                 password: registeredPassword
@@ -76,7 +82,7 @@ describe('auth/login', () => {
 
     test('that response is correct when valid email and incorrect password is used', async () => {
         expect.assertions(5)
-        const response = await request(server).post(route).send(
+        const response = await request(server).post(loginRoute).send(
             {
                 email: registeredEmail,
                 password: 'invalidPassword'
@@ -92,7 +98,7 @@ describe('auth/login', () => {
 
     test('fails because nothing is sent with request', async () => {
         expect.assertions(4)
-        const response = await request(server).post(route)
+        const response = await request(server).post(loginRoute)
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
@@ -101,7 +107,7 @@ describe('auth/login', () => {
 
     test('fails because email is missing from request', async () => {
         expect.assertions(4)
-        const response = await request(server).post(route).send({
+        const response = await request(server).post(loginRoute).send({
             password: "12345678"
         })
         expect(response.status).toEqual(422)
@@ -113,7 +119,7 @@ describe('auth/login', () => {
     test('fails because email is invalid', async () => {
         expect.assertions(4)
 
-        const response = await request(server).post(route).send({
+        const response = await request(server).post(loginRoute).send({
             email: "invalid email",
             password: "12345678"
         })
@@ -125,7 +131,7 @@ describe('auth/login', () => {
 
     test('fails because password is missing from request', async () => {
         expect.assertions(4)
-        const response = await request(server).post(route).send({
+        const response = await request(server).post(loginRoute).send({
             email: "tester1@gmail.com",
         })
         expect(response.status).toEqual(422)
@@ -136,7 +142,7 @@ describe('auth/login', () => {
 
     test('fails because password is less than 6 characters long', async () => {
         expect.assertions(4)
-        const response = await request(server).post(route).send({
+        const response = await request(server).post(loginRoute).send({
             email: "tester1@gmail.com",
             password: "1234"
         })
@@ -148,7 +154,7 @@ describe('auth/login', () => {
 
     test('fails because password is not a string', async () => {
         expect.assertions(4)
-        const response = await request(server).post(route).send({
+        const response = await request(server).post(loginRoute).send({
             email: "tester1@gmail.com",
             password: 123456
 

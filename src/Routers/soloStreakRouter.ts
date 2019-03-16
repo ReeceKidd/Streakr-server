@@ -3,7 +3,7 @@ import { Router } from "express";
 import { createSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakMiddlewares";
 import { verifyJsonWebTokenMiddlewares } from "../RouteMiddlewares/Utils/verifyJsonWebTokenMiddlewares";
 
-const soloStreakPaths = {
+export const SoloStreakPaths = {
     create: "create",
 };
 
@@ -12,7 +12,7 @@ const soloStreakRouter = Router();
 soloStreakRouter.use('*', ...verifyJsonWebTokenMiddlewares)
 
 soloStreakRouter.post(
-    `/${soloStreakPaths.create}`,
+    `/${SoloStreakPaths.create}`,
     ...createSoloStreakMiddlewares
 );
 

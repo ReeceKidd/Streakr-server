@@ -1,22 +1,24 @@
 import * as request from 'supertest'
 
-import server from '../../src/app'
+import server, { RouteCategories } from '../../src/app'
 import { userModel } from '../../src/Models/User';
+import { UserPaths } from '../../src/Routers/userRouter';
 
-const route = '/user/register'
+const userRegistationRoute = `/${RouteCategories.user}/${UserPaths.register}`
 
-beforeAll(() => {
-    return userModel.deleteMany({});
-});
+describe(userRegistationRoute, () => {
 
-describe('/register', () => {
+    beforeAll(() => {
+        return userModel.deleteMany({});
+    });
+
     test('user can register successfully', async () => {
         expect.assertions(8)
-        const response = await request(server).post(route).send(
+        const response = await request(server).post(userRegistationRoute).send(
             {
-                "userName": "tester1",
-                "email": "tester1@gmail.com",
-                "password": "12345678"
+                userName: "tester1",
+                email: "tester1@gmail.com",
+                password: "12345678"
             }
         )
         expect(response.status).toEqual(200)
@@ -30,7 +32,7 @@ describe('/register', () => {
     })
     test('fails because nothing is sent with request', async () => {
         expect.assertions(4)
-        const response = await request(server).post(route)
+        const response = await request(server).post(userRegistationRoute)
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
@@ -40,9 +42,9 @@ describe('/register', () => {
     test('fails because userName is missing from request', async () => {
         expect.assertions(4)
 
-        const response = await request(server).post(route).send({
-            "email": "tester1@gmail.com",
-            "password": "12345678"
+        const response = await request(server).post(userRegistationRoute).send({
+            email: "tester1@gmail.com",
+            password: "12345678"
         })
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
@@ -53,10 +55,10 @@ describe('/register', () => {
     test('fails because userName already exists', async () => {
         expect.assertions(4)
 
-        const response = await request(server).post(route).send({
-            "userName": "tester1",
-            "email": "tester001@gmail.com",
-            "password": "12345678"
+        const response = await request(server).post(userRegistationRoute).send({
+            userName: "tester1",
+            email: "tester001@gmail.com",
+            password: "12345678"
         })
         expect(response.status).toEqual(400)
         expect(response.type).toEqual('application/json')
@@ -67,10 +69,10 @@ describe('/register', () => {
     test('fails because userName must be a string', async () => {
         expect.assertions(4)
 
-        const response = await request(server).post(route).send({
-            "userName": 1234567,
-            "email": "tester001@gmail.com",
-            "password": "12345678"
+        const response = await request(server).post(userRegistationRoute).send({
+            userName: 1234567,
+            email: "tester001@gmail.com",
+            password: "12345678"
         })
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
@@ -80,9 +82,9 @@ describe('/register', () => {
 
     test('fails because email is missing from request', async () => {
         expect.assertions(4)
-        const response = await request(server).post(route).send({
-            "userName": "tester1",
-            "password": "12345678"
+        const response = await request(server).post(userRegistationRoute).send({
+            userName: "tester1",
+            password: "12345678"
         })
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
@@ -93,10 +95,10 @@ describe('/register', () => {
     test('fails because email already exists', async () => {
         expect.assertions(4)
 
-        const response = await request(server).post(route).send({
-            "userName": "tester01",
-            "email": "tester1@gmail.com",
-            "password": "12345678"
+        const response = await request(server).post(userRegistationRoute).send({
+            userName: "tester01",
+            email: "tester1@gmail.com",
+            password: "12345678"
         })
         expect(response.status).toEqual(400)
         expect(response.type).toEqual('application/json')
@@ -107,10 +109,10 @@ describe('/register', () => {
     test('fails because email is invalid', async () => {
         expect.assertions(4)
 
-        const response = await request(server).post(route).send({
-            "userName": "tester01",
-            "email": "invalid email",
-            "password": "12345678"
+        const response = await request(server).post(userRegistationRoute).send({
+            userName: "tester01",
+            email: "invalid email",
+            password: "12345678"
         })
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
@@ -120,9 +122,9 @@ describe('/register', () => {
 
     test('fails because password is missing from request', async () => {
         expect.assertions(4)
-        const response = await request(server).post(route).send({
-            "userName": "tester1",
-            "email": "tester1@gmail.com",
+        const response = await request(server).post(userRegistationRoute).send({
+            userName: "tester1",
+            email: "tester1@gmail.com",
         })
         expect(response.status).toEqual(422)
         expect(response.type).toEqual('application/json')
@@ -132,10 +134,10 @@ describe('/register', () => {
 
     test('fails because password is less than 6 characters long', async () => {
         expect.assertions(4)
-        const response = await request(server).post(route).send({
-            "userName": "tester1",
-            "email": "tester1@gmail.com",
-            "password": "1234"
+        const response = await request(server).post(userRegistationRoute).send({
+            userName: "tester1",
+            email: "tester1@gmail.com",
+            password: "1234"
 
         })
         expect(response.status).toEqual(422)
@@ -146,10 +148,10 @@ describe('/register', () => {
 
     test('fails because password is not a string', async () => {
         expect.assertions(4)
-        const response = await request(server).post(route).send({
-            "userName": "tester1",
-            "email": "tester1@gmail.com",
-            "password": 123456
+        const response = await request(server).post(userRegistationRoute).send({
+            userName: "tester1",
+            email: "tester1@gmail.com",
+            password: 123456
 
         })
         expect(response.status).toEqual(422)

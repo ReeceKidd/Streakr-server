@@ -1,16 +1,20 @@
 import * as request from 'supertest'
-import server from '../../src/app'
+import server, { RouteCategories } from '../../src/app'
 import { userModel } from '../../src/Models/User';
+import { UserPaths } from '../../src/Routers/userRouter';
+import { AuthPaths } from '../../src/Routers/authRouter';
+import { TestPaths } from '../../src/Routers/testRouter';
 
 const registeredEmail = "jsonwebtoken@gmail.com"
 const registeredPassword = "12345678"
+const registeredUserName = "json-web-token-user"
 
-const registrationRoute = '/user/register'
-const loginRoute = '/auth/login'
-const verifyJsonWebTokenRoute = '/test/verify-json-web-token'
+const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
+const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
+const verifyJsonWebTokenRoute = `/${RouteCategories.test}/${TestPaths.verifyJsonWebToken}`
 
 
-describe('auth/verify-json-web-token', () => {
+describe(verifyJsonWebTokenRoute, () => {
 
     let jsonWebToken: string
 
@@ -18,9 +22,9 @@ describe('auth/verify-json-web-token', () => {
         await userModel.deleteMany({});
         await request(server).post(registrationRoute).send(
             {
-                "userName": "jsonwebtokenuser",
-                "email": registeredEmail,
-                "password": registeredPassword
+                userName: registeredUserName,
+                email: registeredEmail,
+                password: registeredPassword
             }
         )
         const loginResponse = await request(server).post(loginRoute).send(
