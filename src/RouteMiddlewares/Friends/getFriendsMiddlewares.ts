@@ -50,9 +50,12 @@ export const getRetreiveFriendsMiddleware = userModel => async (request: Request
     try {
         const { user } = response.locals
         const { friends } = user
-        response.locals.friends = await Promise.all(friends.map(friendId => {
+
+        const retreiveFriendsPromises = friends.map(friendId => {
             return userModel.findOne({ _id: friendId })
-        }))
+        })
+        response.locals.friends = await Promise.all(retreiveFriendsPromises)
+        next()
     } catch (err) {
         next(err)
     }

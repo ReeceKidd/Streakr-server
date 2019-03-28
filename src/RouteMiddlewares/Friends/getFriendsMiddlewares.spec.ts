@@ -1,4 +1,4 @@
-import { getFriendsMiddlewares, getFriendsValidationMiddleware, formatFriendsMiddleware, userExistsValidationMiddleware, getUserExistsValidationMiddleware, retreiveFriendsMiddleware, sendFormattedFriendsMiddleware, getRetreiveUserMiddleware, retreiveUserMiddleware } from "./getFriendsMiddlewares";
+import { getFriendsMiddlewares, getFriendsValidationMiddleware, formatFriendsMiddleware, userExistsValidationMiddleware, getUserExistsValidationMiddleware, retreiveFriendsMiddleware, sendFormattedFriendsMiddleware, getRetreiveUserMiddleware, retreiveUserMiddleware, getRetreiveFriendsMiddleware } from "./getFriendsMiddlewares";
 
 describe(`getFriendsValidationMiddleware`, () => {
 
@@ -194,6 +194,27 @@ describe(`userExistsValidationMiddleware`, () => {
         expect(next).toBeCalledWith(new Error(errorMessage));
     });
 });
+
+describe('getRetreiveFriendsMiddleware', () => {
+    test('check that friends are retreived correctly', async () => {
+        const findOne = jest.fn(() => Promise.resolve(true));
+        const UserModel = {
+            findOne
+        }
+        const request: any = {};
+        const response: any = { locals: { user: { friends: ['123', '124', '125'] } } };
+        const next = jest.fn();
+
+        const middleware = getRetreiveFriendsMiddleware(UserModel);
+
+        await middleware(request, response, next);
+
+        expect.assertions(3);
+        expect(findOne).toBeCalledTimes(3)
+        expect(response.locals.friends).toEqual([true, true, true]);
+        expect(next).toBeCalled();
+    })
+})
 
 describe(`getFriendsMiddlewares`, () => {
     test("that getFriendsMiddlewares are defined in the correct order", () => {
