@@ -220,7 +220,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
     });
 
     test("should not define response.locals.user when user doesn't exist", async () => {
-        const findOne = jest.fn(() => Promise.resolve(false));
+        const findOne = jest.fn(() => Promise.resolve(undefined));
         const UserModel = {
             findOne
         }
@@ -234,7 +234,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
 
         expect.assertions(3);
         expect(findOne).toBeCalledWith({ _id: mockUserId });
-        expect(response.locals.emailExists).toBe(undefined);
+        expect(response.locals.user).toBe(undefined);
         expect(next).toBeCalledWith();
     });
 
@@ -253,7 +253,7 @@ describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
 
         expect.assertions(3);
         expect(findOne).toBeCalledWith({ _id: mockUserId });
-        expect(response.locals.emailExists).toBe(undefined);
+        expect(response.locals.user).toBe(undefined);
         expect(next).toBeCalledWith(ERROR_MESSAGE);
     });
 });

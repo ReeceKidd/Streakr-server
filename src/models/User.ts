@@ -28,12 +28,13 @@ export interface IUser extends mongoose.Document {
     type: Date,
     required: false,
   };
+  role: string;
+  preferredLanguage: string;
   streaks?: IStreak[];
   profilePicture?: {
     type: String,
   };
-  role: string;
-  preferredLanguage: string;
+  friends?: string[];
 }
 
 export const userSchema = new mongoose.Schema(
@@ -56,13 +57,6 @@ export const userSchema = new mongoose.Schema(
       required: true,
       type: String
     },
-    streaks: {
-      type: Array,
-      default: [],
-    },
-    profilePicture: {
-      type: String,
-    },
     role: {
       type: String,
       enum: [UserTypes.user, UserTypes.admin],
@@ -71,6 +65,17 @@ export const userSchema = new mongoose.Schema(
     preferredLanguage: {
       type: String,
       default: SupportedLanguages.EN
+    },
+    streaks: {
+      type: Array,
+      default: [],
+    },
+    profilePicture: {
+      type: String,
+    },
+    friends: {
+      type: Array,
+      default: []
     }
   },
   {
