@@ -277,6 +277,53 @@ describe(`formatFriendsMiddleware`, () => {
         })
         expect(next).toBeCalledWith();
     })
+
+    test('checks that errors are passed into the next middleware', () => {
+        expect.assertions(2);
+
+        const request: any = {};
+        const response: any = { locals: {} };
+        const next = jest.fn();
+
+        formatFriendsMiddleware(request, response, next);
+
+        expect(response.locals.formattedFriends).toBe(undefined)
+        expect(next).toBeCalledWith(new TypeError(`Cannot read property 'map' of undefined`))
+    })
+})
+
+describe('sendFormattedFriendsMiddleware', () => {
+    test("should send formattedFriends in response", () => {
+
+        const send = jest.fn()
+        const request: any = {}
+        const formattedFriends = ['friend']
+        const response: any = { locals: { formattedFriends }, send }
+        const next = jest.fn();
+
+        sendFormattedFriendsMiddleware(request, response, next);
+
+        expect.assertions(2);
+        expect(next).not.toBeCalled()
+        expect(send).toBeCalledWith(formattedFriends)
+    });
+
+    test("should call next with an error on failure", () => {
+
+        const ERROR_MESSAGE = 'sendFormattedFriendsMiddleware error'
+        const send = jest.fn(() => {
+            throw new Error(ERROR_MESSAGE)
+        })
+        const response: any = { locals: {}, send };
+
+        const request: any = {}
+        const next = jest.fn();
+
+        sendFormattedFriendsMiddleware(request, response, next);
+
+        expect.assertions(1);
+        expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))
+    })
 })
 
 describe(`getFriendsMiddlewares`, () => {
