@@ -17,17 +17,12 @@ export interface IMinimumUserData {
 }
 
 export interface IUser extends mongoose.Document {
+  _id: string;
   userName: string;
   email: string;
   password: string;
-  createdAt: {
-    type: Date,
-    required: false,
-  };
-  modifiedAt: {
-    type: Date,
-    required: false,
-  };
+  createdAt: Date;
+  modifiedAt: Date;
   role: string;
   preferredLanguage: string;
   streaks?: IStreak[];
