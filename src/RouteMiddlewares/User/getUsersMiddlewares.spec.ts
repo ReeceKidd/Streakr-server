@@ -1,4 +1,4 @@
-import { getUsersMiddlewares, retreiveUsersValidationMiddleware, retreiveUsersByUsernameRegexSearchMiddleware, formatUsersMiddleware, sendUsersMiddleware, maximumSearchQueryLength, getRetreiveUsersByUsernameRegexSearchMiddleware } from "./getUsersMiddlewares";
+import { getUsersMiddlewares, retreiveUsersValidationMiddleware, retreiveUsersByUsernameRegexSearchMiddleware, formatUsersMiddleware, maximumSearchQueryLength, getRetreiveUsersByUsernameRegexSearchMiddleware, sendFormattedUsersMiddleware } from "./getUsersMiddlewares";
 import { IUser } from "Models/User";
 
 describe(`getUsersValidationMiddleware`, () => {
@@ -244,6 +244,41 @@ describe('formatUsersMiddleware', () => {
     })
 })
 
+describe('sendUsersMiddleware', () => {
+    test("should send formattedUsers in response", () => {
+
+        const send = jest.fn()
+        const request: any = {}
+        const formattedUsers = ['user']
+        const response: any = { locals: { formattedUsers }, send }
+        const next = jest.fn();
+
+        sendFormattedUsersMiddleware(request, response, next);
+        send
+
+        expect.assertions(2);
+        expect(next).not.toBeCalled()
+        expect(send).toBeCalledWith(formattedUsers)
+    });
+
+    test("should call next with an error on failure", () => {
+
+        const ERROR_MESSAGE = 'sendFormattedUsersMiddleware error'
+        const send = jest.fn(() => {
+            throw new Error(ERROR_MESSAGE)
+        })
+        const response: any = { locals: {}, send };
+
+        const request: any = {}
+        const next = jest.fn();
+
+        sendFormattedUsersMiddleware(request, response, next);
+
+        expect.assertions(1);
+        expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))
+    })
+})
+
 
 describe(`getUsersMiddlewares`, () => {
     test("that getUsersMiddlewares are defined in the correct order", () => {
@@ -251,6 +286,6 @@ describe(`getUsersMiddlewares`, () => {
         expect(getUsersMiddlewares[0]).toBe(retreiveUsersValidationMiddleware)
         expect(getUsersMiddlewares[1]).toBe(retreiveUsersByUsernameRegexSearchMiddleware)
         expect(getUsersMiddlewares[2]).toBe(formatUsersMiddleware)
-        expect(getUsersMiddlewares[3]).toBe(sendUsersMiddleware)
+        expect(getUsersMiddlewares[3]).toBe(sendFormattedUsersMiddleware)
     });
 });
