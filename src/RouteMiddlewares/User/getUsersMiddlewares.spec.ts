@@ -1,4 +1,5 @@
 import { getUsersMiddlewares, retreiveUsersValidationMiddleware, retreiveUsersByUsernameRegexSearchMiddleware, formatUsersMiddleware, sendUsersMiddleware, maximumSearchQueryLength, getRetreiveUsersByUsernameRegexSearchMiddleware } from "./getUsersMiddlewares";
+import { IUser } from "Models/User";
 
 describe(`getUsersValidationMiddleware`, () => {
 
@@ -194,6 +195,52 @@ describe('getUsersByUsernameRegexSearchMiddleware', () => {
         expect.assertions(2);
         expect(response.locals.users).not.toBeDefined()
         expect(next).toBeCalledWith(errorMessage);
+    })
+})
+
+describe('formatUsersMiddleware', () => {
+    test('checks that response.locals.formattedUsers contains a correctly formatted user', () => {
+        expect.assertions(2);
+
+        const mockUser = {
+            _id: '1234',
+            userName: 'test',
+            email: 'test@test.com',
+            password: '12345678',
+            createdAt: new Date(),
+            modifiedAt: new Date(),
+            role: 'Admin',
+            preferredLanguage: 'English'
+        } as IUser
+
+        const request: any = {};
+        const response: any = { locals: { users: [mockUser] } };
+        const next = jest.fn();
+
+        formatUsersMiddleware(request, response, next);
+
+        const formattedUser = {
+            ...mockUser,
+            password: undefined
+        }
+
+        expect(response.locals.formattedUsers[0]).toEqual({
+            ...formattedUser
+        })
+        expect(next).toBeCalledWith();
+    })
+
+    test('checks that errors are passed into the next middleware', () => {
+        expect.assertions(2);
+
+        const request: any = {};
+        const response: any = { locals: {} };
+        const next = jest.fn();
+
+        formatUsersMiddleware(request, response, next);
+
+        expect(response.locals.formattedUsers).toBe(undefined)
+        expect(next).toBeCalledWith(new TypeError(`Cannot read property 'map' of undefined`))
     })
 })
 

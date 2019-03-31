@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import * as Joi from 'joi'
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { userModel } from '../../Models/User';
+import { networkInterfaces } from 'os';
 
 export const minimumSeachQueryLength = 1
 export const maximumSearchQueryLength = 64
@@ -30,7 +31,18 @@ export const getRetreiveUsersByUsernameRegexSearchMiddleware = userModel => asyn
 export const retreiveUsersByUsernameRegexSearchMiddleware = getRetreiveUsersByUsernameRegexSearchMiddleware(userModel)
 
 export const formatUsersMiddleware = (request: Request, response: Response, next: NextFunction) => {
-
+    try {
+        const { users } = response.locals
+        response.locals.formattedUsers = users.map(user => {
+            return {
+                ...user,
+                password: undefined
+            }
+        })
+        next()
+    } catch (err) {
+        next(err)
+    }
 }
 
 export const sendUsersMiddleware = (request: Request, response: Response, next: NextFunction) => {
