@@ -1,4 +1,4 @@
-import { getUsersMiddlewares, getUsersValidationMiddleware, getUsersByUsernameRegexSearchMiddleware, formatUsersMiddleware, sendUsersMiddleware, maximumSearchQueryLength } from "./getUsersMiddlewares";
+import { getUsersMiddlewares, retreiveUsersValidationMiddleware, retreiveUsersByUsernameRegexSearchMiddleware, formatUsersMiddleware, sendUsersMiddleware, maximumSearchQueryLength, getRetreiveUsersByUsernameRegexSearchMiddleware } from "./getUsersMiddlewares";
 
 describe(`getUsersValidationMiddleware`, () => {
 
@@ -16,10 +16,10 @@ describe(`getUsersValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        getUsersValidationMiddleware(request, response, next);
+        retreiveUsersValidationMiddleware(request, response, next);
 
         expect.assertions(1);
-        expect(next).toBeCalled();
+        expect(next).toBeCalledWith();
     });
 
     test("check that correct response is sent when searchQuery is missing", () => {
@@ -34,7 +34,7 @@ describe(`getUsersValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        getUsersValidationMiddleware(request, response, next);
+        retreiveUsersValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
@@ -56,7 +56,7 @@ describe(`getUsersValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        getUsersValidationMiddleware(request, response, next);
+        retreiveUsersValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
@@ -81,7 +81,7 @@ describe(`getUsersValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        getUsersValidationMiddleware(request, response, next);
+        retreiveUsersValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(400);
@@ -106,7 +106,7 @@ describe(`getUsersValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        getUsersValidationMiddleware(request, response, next);
+        retreiveUsersValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
@@ -130,7 +130,7 @@ describe(`getUsersValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        getUsersValidationMiddleware(request, response, next);
+        retreiveUsersValidationMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
@@ -142,12 +142,67 @@ describe(`getUsersValidationMiddleware`, () => {
 
 });
 
+describe('getUsersByUsernameRegexSearchMiddleware', () => {
+    test('that response.locals.users is populated and next is called', async () => {
+        const mockSearchQuery = 'searchQuery'
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+
+        const find = jest.fn(() => Promise.resolve(true))
+        const userModel = { find }
+
+        const request: any = {
+            body: { searchQuery: mockSearchQuery }
+        };
+        const response: any = {
+            status, locals: {}
+        };
+        const next = jest.fn();
+
+        const middleware = getRetreiveUsersByUsernameRegexSearchMiddleware(userModel)
+
+        await middleware(request, response, next)
+
+        expect.assertions(3);
+        expect(find).toBeCalledWith({ userName: { $regex: mockSearchQuery } })
+        expect(response.locals.users).toBeDefined()
+        expect(next).toBeCalledWith();
+
+    })
+
+    test('that next is called with err on failure', async () => {
+        const mockSearchQuery = 'searchQuery'
+        const errorMessage = 'error'
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+
+        const find = jest.fn(() => Promise.reject(errorMessage))
+        const userModel = { find }
+
+        const request: any = {
+            body: { searchQuery: mockSearchQuery }
+        };
+        const response: any = {
+            status, locals: {}
+        };
+        const next = jest.fn();
+
+        const middleware = getRetreiveUsersByUsernameRegexSearchMiddleware(userModel)
+
+        await middleware(request, response, next)
+
+        expect.assertions(2);
+        expect(response.locals.users).not.toBeDefined()
+        expect(next).toBeCalledWith(errorMessage);
+    })
+})
+
 
 describe(`getUsersMiddlewares`, () => {
     test("that getUsersMiddlewares are defined in the correct order", () => {
         expect.assertions(4);
-        expect(getUsersMiddlewares[0]).toBe(getUsersValidationMiddleware)
-        expect(getUsersMiddlewares[1]).toBe(getUsersByUsernameRegexSearchMiddleware)
+        expect(getUsersMiddlewares[0]).toBe(retreiveUsersValidationMiddleware)
+        expect(getUsersMiddlewares[1]).toBe(retreiveUsersByUsernameRegexSearchMiddleware)
         expect(getUsersMiddlewares[2]).toBe(formatUsersMiddleware)
         expect(getUsersMiddlewares[3]).toBe(sendUsersMiddleware)
     });

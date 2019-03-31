@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import * as Joi from 'joi'
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
+import { userModel } from '../../Models/User';
 
 export const minimumSeachQueryLength = 1
 export const maximumSearchQueryLength = 64
@@ -12,13 +13,21 @@ const getUsersValidationSchema = {
         .required()
 }
 
-export const getUsersValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const retreiveUsersValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     Joi.validate(request.body, getUsersValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
 }
 
-export const getUsersByUsernameRegexSearchMiddleware = (request: Request, response: Response, next: NextFunction) => {
-
+export const getRetreiveUsersByUsernameRegexSearchMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { searchQuery } = request.body
+        response.locals.users = await userModel.find({ userName: { $regex: searchQuery } })
+        next()
+    } catch (err) {
+        next(err)
+    }
 }
+
+export const retreiveUsersByUsernameRegexSearchMiddleware = getRetreiveUsersByUsernameRegexSearchMiddleware(userModel)
 
 export const formatUsersMiddleware = (request: Request, response: Response, next: NextFunction) => {
 
@@ -29,8 +38,8 @@ export const sendUsersMiddleware = (request: Request, response: Response, next: 
 }
 
 export const getUsersMiddlewares = [
-    getUsersValidationMiddleware,
-    getUsersByUsernameRegexSearchMiddleware,
+    retreiveUsersValidationMiddleware,
+    retreiveUsersByUsernameRegexSearchMiddleware,
     formatUsersMiddleware,
     sendUsersMiddleware
 ]
