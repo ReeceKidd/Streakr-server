@@ -2,8 +2,14 @@ import { Request, Response, NextFunction } from 'express'
 import * as Joi from 'joi'
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
+export const minimumSeachQueryLength = 1
+export const maximumSearchQueryLength = 64
+
 const getUsersValidationSchema = {
-    searchQuery: Joi.string().min(1).max(64).required()
+    searchQuery: Joi.string()
+        .min(minimumSeachQueryLength)
+        .max(maximumSearchQueryLength)
+        .required()
 }
 
 export const getUsersValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
