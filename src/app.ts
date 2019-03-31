@@ -8,9 +8,11 @@ import authRouter from "./Routers/authRouter";
 import userRouter from "./Routers/userRouter";
 import soloStreakRouter from "./Routers/soloStreakRouter";
 import testRouter from "./Routers/testRouter";
+import usersRouter from "./Routers/usersRouter";
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
+
 
 const app = express()
 app.use(bodyParser.json())
@@ -33,6 +35,7 @@ mongoose
 
 export enum RouteCategories {
   user = 'user',
+  users = 'users',
   auth = 'auth',
   soloStreak = 'solo-streak',
   test = 'test'
@@ -40,8 +43,8 @@ export enum RouteCategories {
 
 app.use(`/${RouteCategories.soloStreak}`, soloStreakRouter)
 app.use(`/${RouteCategories.user}`, userRouter)
+app.use(`/${RouteCategories.users}`, usersRouter)
 app.use(`/${RouteCategories.auth}`, authRouter)
 app.use(`/${RouteCategories.test}`, testRouter)
-
 
 export default app

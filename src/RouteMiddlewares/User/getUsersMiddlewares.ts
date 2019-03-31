@@ -34,7 +34,7 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
         const { users } = response.locals
         response.locals.formattedUsers = users.map(user => {
             return {
-                ...user,
+                ...user.toObject(),
                 password: undefined
             }
         })
