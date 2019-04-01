@@ -251,15 +251,19 @@ describe(`formatFriendsMiddleware`, () => {
         expect.assertions(2);
 
         const mockFriend = {
-            _id: '1234',
-            userName: 'test',
-            email: 'test@test.com',
-            password: '12345678',
-            createdAt: new Date(),
-            modifiedAt: new Date(),
-            role: 'Admin',
-            preferredLanguage: 'English'
-        } as IUser
+            toObject: jest.fn(() => {
+                return {
+                    _id: '1234',
+                    userName: 'test',
+                    email: 'test@test.com',
+                    password: '12345678',
+                    createdAt: new Date(),
+                    modifiedAt: new Date(),
+                    role: 'Admin',
+                    preferredLanguage: 'English'
+                }
+            })
+        }
 
         const request: any = {};
         const response: any = { locals: { friends: [mockFriend] } };
@@ -268,8 +272,8 @@ describe(`formatFriendsMiddleware`, () => {
         formatFriendsMiddleware(request, response, next);
 
         const formattedFriend = {
-            ...mockFriend,
-            password: undefined
+            ...mockFriend.toObject(),
+            password: undefined,
         }
 
         expect(response.locals.formattedFriends[0]).toEqual({

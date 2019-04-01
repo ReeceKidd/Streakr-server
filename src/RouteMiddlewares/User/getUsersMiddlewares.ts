@@ -40,6 +40,7 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
         })
         next()
     } catch (err) {
+        console.log(err)
         next(err)
     }
 }
