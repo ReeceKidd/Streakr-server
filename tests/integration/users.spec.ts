@@ -51,7 +51,7 @@ describe(getUsersByRegexSearchRoute, () => {
     })
 
     test(`that request returns searchAbleUser when full searchTerm is uaed`, async () => {
-        expect.assertions(9)
+        expect.assertions(10)
         const response = await request(server)
             .get(getUsersByRegexSearchRoute)
             .send({
@@ -59,6 +59,7 @@ describe(getUsersByRegexSearchRoute, () => {
             })
             .set({ 'x-access-token': jsonWebToken })
         expect(response.status).toEqual(200)
+        expect(response.body.length).toBe(1)
         expect(response.type).toEqual('application/json')
         expect(response.body[0]).toHaveProperty('streaks')
         expect(response.body[0]).toHaveProperty('role')
@@ -70,7 +71,7 @@ describe(getUsersByRegexSearchRoute, () => {
     })
 
     test('that request returns searchAble user when partial searchTerm is used', async () => {
-        expect.assertions(9)
+        expect.assertions(10)
         const response = await request(server)
             .get(getUsersByRegexSearchRoute)
             .send({
@@ -79,6 +80,7 @@ describe(getUsersByRegexSearchRoute, () => {
             .set({ 'x-access-token': jsonWebToken })
         expect(response.status).toEqual(200)
         expect(response.type).toEqual('application/json')
+        expect(response.body.length).toBe(1)
         expect(response.body[0]).toHaveProperty('streaks')
         expect(response.body[0]).toHaveProperty('role')
         expect(response.body[0]).toHaveProperty('_id')
