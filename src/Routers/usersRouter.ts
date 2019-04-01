@@ -13,6 +13,3 @@ usersRouter.get(
 );
 
 export default usersRouter;
-
-NEEC TO FIX UNIT TEST AND THEN ADD INTERGRATION TESTS FOR GET USERS ROUTE
-THEN CREATE THE ADD FRIEND ROUTE.reece kidd
