@@ -209,8 +209,6 @@ describe('formatUsersMiddleware', () => {
                     userName: 'test',
                     email: 'test@test.com',
                     password: '12345678',
-                    createdAt: new Date(),
-                    modifiedAt: new Date(),
                     role: 'Admin',
                     preferredLanguage: 'English'
                 }

@@ -3,6 +3,9 @@ import * as Joi from 'joi'
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { userModel } from "../../Models/User";
+import { getLocalisedString } from "../../Messages/getLocalisedString";
+import { MessageCategories } from "../../Messages/messageCategories";
+import { FailureMessageKeys } from "../../Messages/failureMessages";
 
 const addFriendValidationSchema = {
     userId: Joi.string().required(),
@@ -26,9 +29,23 @@ export const getRetreiveUserMiddleware = userModel => async (request: Request, r
 
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel)
 
-export const userExistsValidationMiddleware = (request: Request, response: Response, next: NextFunction) => {
-
+export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { user } = response.locals;
+        if (!user) {
+            return response.status(400).send({
+                message: userDoesNotExistMessage,
+            });
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
 }
+
+const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.userDoesNotExistMessage)
+
+export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(localisedUserDoesNotExistMessage)
 
 export const addFriendMiddleware = (request: Request, response: Response, next: NextFunction) => {
 

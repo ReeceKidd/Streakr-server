@@ -58,7 +58,6 @@ export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
     response: Response,
     next: NextFunction,
 ) => {
-
     try {
         const { user } = response.locals as SoloStreakResponseLocals;
         if (!user) {
@@ -71,7 +70,7 @@ export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
         next(err);
     }
 };
-const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
+const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.userDoesNotExistMessage)
 
 export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(localisedUserDoesNotExistMessage);
 
