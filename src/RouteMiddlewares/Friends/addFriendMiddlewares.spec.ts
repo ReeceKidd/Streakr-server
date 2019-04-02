@@ -1,4 +1,4 @@
-import { addFriendMiddlewares, addFriendValidationMiddleware, retreiveUserMiddleware, userExistsValidationMiddleware, addFriendMiddleware, sendSuccessMessageMiddleware } from "./addFriendMiddlewares";
+import { addFriendMiddlewares, addFriendValidationMiddleware, retreiveUserMiddleware, userExistsValidationMiddleware, addFriendMiddleware, sendSuccessMessageMiddleware, getRetreiveUserMiddleware } from "./addFriendMiddlewares";
 
 describe('addFriendValidationMiddleware', () => {
 
@@ -121,6 +121,70 @@ describe('addFriendValidationMiddleware', () => {
 
     })
 })
+
+describe(`retreiveUserMiddleware`, () => {
+
+    const mockUserId = "abcdefghij123";
+    const ERROR_MESSAGE = "error";
+
+
+    test("should define response.locals.user when user is found", async () => {
+        const findOne = jest.fn(() => Promise.resolve(true));
+        const UserModel = {
+            findOne
+        }
+        const request: any = { body: { userId: mockUserId } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+
+        const middleware = getRetreiveUserMiddleware(UserModel);
+
+        await middleware(request, response, next);
+
+        expect.assertions(3);
+        expect(findOne).toBeCalledWith({ _id: mockUserId });
+        expect(response.locals.user).toBe(true);
+        expect(next).toBeCalled();
+    });
+
+    test("should not define response.locals.user when user doesn't exist", async () => {
+        const findOne = jest.fn(() => Promise.resolve(undefined));
+        const UserModel = {
+            findOne
+        }
+        const request: any = { body: { userId: mockUserId } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+
+        const middleware = getRetreiveUserMiddleware(UserModel);
+
+        await middleware(request, response, next);
+
+        expect.assertions(3);
+        expect(findOne).toBeCalledWith({ _id: mockUserId });
+        expect(response.locals.user).toBe(undefined);
+        expect(next).toBeCalledWith();
+    });
+
+    test("should call next() with err paramater if database call fails", async () => {
+        const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
+        const UserModel = {
+            findOne
+        }
+        const request: any = { body: { userId: mockUserId } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+
+        const middleware = getRetreiveUserMiddleware(UserModel);
+
+        await middleware(request, response, next);
+
+        expect.assertions(3);
+        expect(findOne).toBeCalledWith({ _id: mockUserId });
+        expect(response.locals.user).toBe(undefined);
+        expect(next).toBeCalledWith(ERROR_MESSAGE);
+    });
+});
 
 describe('addFriendMiddlewares', () => {
     test('that middlewares are defined in the correct order', () => {

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as Joi from 'joi'
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
+import { userModel } from "../../Models/User";
 
 const addFriendValidationSchema = {
     userId: Joi.string().required(),
@@ -12,9 +13,18 @@ export const addFriendValidationMiddleware = (request: Request, response: Respon
     Joi.validate(request.body, addFriendValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next))
 }
 
-export const retreiveUserMiddleware = (request: Request, response: Response, next: NextFunction) => {
-
+export const getRetreiveUserMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { userId } = request.body;
+        const user = await userModel.findOne({ _id: userId });
+        response.locals.user = user;
+        next();
+    } catch (err) {
+        next(err);
+    }
 }
+
+export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel)
 
 export const userExistsValidationMiddleware = (request: Request, response: Response, next: NextFunction) => {
 
