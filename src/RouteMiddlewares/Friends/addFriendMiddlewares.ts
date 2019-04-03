@@ -47,9 +47,17 @@ const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.fa
 
 export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(localisedUserDoesNotExistMessage)
 
-export const addFriendMiddleware = (request: Request, response: Response, next: NextFunction) => {
-
+export const getAddFriendMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { userId, friendId } = response.locals
+        await userModel.findOneAndUpdate({ _id: userId }, { $addToSet: { friends: friendId } })
+        next()
+    } catch (err) {
+        next(err)
+    }
 }
+
+export const addFriendMiddleware = getAddFriendMiddleware(userModel)
 
 export const sendSuccessMessageMiddleware = (request: Request, response: Response, next: NextFunction) => {
 

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 
-import { addFriendMiddlewares, addFriendValidationMiddleware, retreiveUserMiddleware, userExistsValidationMiddleware, addFriendMiddleware, sendSuccessMessageMiddleware, getRetreiveUserMiddleware, getUserExistsValidationMiddleware } from "./addFriendMiddlewares";
+import { addFriendMiddlewares, addFriendValidationMiddleware, retreiveUserMiddleware, userExistsValidationMiddleware, getAddFriendMiddleware, addFriendMiddleware, sendSuccessMessageMiddleware, getRetreiveUserMiddleware, getUserExistsValidationMiddleware } from "./addFriendMiddlewares";
 
 describe('addFriendValidationMiddleware', () => {
 
@@ -251,6 +251,50 @@ describe(`userExistsValidationMiddleware`, () => {
         expect(next).toBeCalledWith(new Error(errorMessage));
     });
 });
+
+describe('addFriendMiddleware', () => {
+    const mockUserId = '1234'
+    const mockFriendId = '2345'
+
+    test('that friendId gets added to the users friends array correctly', async () => {
+        const findOneAndUpdate = jest.fn(() => Promise.resolve(true));
+        const UserModel = {
+            findOneAndUpdate
+        }
+        const request = {};
+        const response: any = {
+            locals: { userId: mockUserId, friendId: mockFriendId },
+        };
+        const next = jest.fn();
+
+        const middleware = getAddFriendMiddleware(UserModel);
+
+        await middleware(request as Request, response as Response, next as NextFunction);
+
+        expect.assertions(2);
+        expect(findOneAndUpdate).toBeCalledWith({ _id: mockUserId }, { $addToSet: { friends: mockFriendId } })
+        expect(next).toBeCalledWith();
+    })
+
+    test("should call next() with err paramater if database call fails", async () => {
+        const ERROR_MESSAGE = 'addFriendError'
+        const findOneAndUpdate = jest.fn(() => Promise.reject(ERROR_MESSAGE));
+        const UserModel = {
+            findOneAndUpdate
+        }
+        const request: any = {};
+        const response: any = { locals: { userId: mockUserId, friendId: mockFriendId } };
+        const next = jest.fn();
+
+        const middleware = getAddFriendMiddleware(UserModel);
+
+        await middleware(request, response, next);
+
+        expect.assertions(2);
+        expect(findOneAndUpdate).toBeCalledWith({ _id: mockUserId }, { $addToSet: { friends: mockFriendId } })
+        expect(next).toBeCalledWith(ERROR_MESSAGE);
+    });
+})
 
 describe('addFriendMiddlewares', () => {
     test('that middlewares are defined in the correct order', () => {
