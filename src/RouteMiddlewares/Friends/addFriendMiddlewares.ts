@@ -59,9 +59,17 @@ export const getAddFriendMiddleware = userModel => async (request: Request, resp
 
 export const addFriendMiddleware = getAddFriendMiddleware(userModel)
 
-export const sendSuccessMessageMiddleware = (request: Request, response: Response, next: NextFunction) => {
-
+export const getSendFriendAddedSuccessMessageMiddleware = addFriendSuccessMessage => (request: Request, response: Response, next: NextFunction) => {
+    try {
+        response.send({ message: addFriendSuccessMessage })
+    } catch (err) {
+        next(err)
+    }
 }
+
+export const sendFriendAddedSuccessMessageMiddleware = getSendFriendAddedSuccessMessageMiddleware('hello')
+
+
 
 
 export const addFriendMiddlewares = [
@@ -69,5 +77,5 @@ export const addFriendMiddlewares = [
     retreiveUserMiddleware,
     userExistsValidationMiddleware,
     addFriendMiddleware,
-    sendSuccessMessageMiddleware
+    sendFriendAddedSuccessMessageMiddleware
 ]

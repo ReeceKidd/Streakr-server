@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 
-import { addFriendMiddlewares, addFriendValidationMiddleware, retreiveUserMiddleware, userExistsValidationMiddleware, getAddFriendMiddleware, addFriendMiddleware, sendSuccessMessageMiddleware, getRetreiveUserMiddleware, getUserExistsValidationMiddleware } from "./addFriendMiddlewares";
+import { addFriendMiddlewares, addFriendValidationMiddleware, retreiveUserMiddleware, userExistsValidationMiddleware, getAddFriendMiddleware, addFriendMiddleware, getRetreiveUserMiddleware, getUserExistsValidationMiddleware, sendFriendAddedSuccessMessageMiddleware, getSendFriendAddedSuccessMessageMiddleware } from "./addFriendMiddlewares";
 
 describe('addFriendValidationMiddleware', () => {
 
@@ -296,6 +296,43 @@ describe('addFriendMiddleware', () => {
     });
 })
 
+describe('sendFriendAddedSuccessMessageMiddleware', () => {
+
+    test('that response sends success message inside of object', () => {
+        const successMessage = 'success'
+        const send = jest.fn()
+        const response: any = { send };
+
+        const request: any = {}
+        const next = jest.fn();
+
+        const middleware = getSendFriendAddedSuccessMessageMiddleware(successMessage)
+        middleware(request, response, next);
+
+        expect.assertions(2);
+        expect(next).not.toBeCalled()
+        expect(send).toBeCalledWith({ message: successMessage })
+    })
+
+    test('that next gets called with error on message send failure', () => {
+        const ERROR_MESSAGE = 'error'
+        const successMessage = 'success'
+        const send = jest.fn(() => {
+            throw new Error(ERROR_MESSAGE)
+        })
+        const response: any = { send };
+
+        const request: any = {}
+        const next = jest.fn();
+
+        const middleware = getSendFriendAddedSuccessMessageMiddleware(successMessage)
+        middleware(request, response, next);
+
+        expect.assertions(1);
+        expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))
+    })
+})
+
 describe('addFriendMiddlewares', () => {
     test('that middlewares are defined in the correct order', () => {
         expect.assertions(5)
@@ -303,7 +340,7 @@ describe('addFriendMiddlewares', () => {
         expect(addFriendMiddlewares[1]).toBe(retreiveUserMiddleware)
         expect(addFriendMiddlewares[2]).toBe(userExistsValidationMiddleware)
         expect(addFriendMiddlewares[3]).toBe(addFriendMiddleware)
-        expect(addFriendMiddlewares[4]).toBe(sendSuccessMessageMiddleware)
+        expect(addFriendMiddlewares[4]).toBe(sendFriendAddedSuccessMessageMiddleware)
     })
 
 })
