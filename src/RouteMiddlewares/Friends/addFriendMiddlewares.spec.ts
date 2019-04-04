@@ -261,9 +261,9 @@ describe('addFriendMiddleware', () => {
         const UserModel = {
             findOneAndUpdate
         }
-        const request = {};
+        const request = { body: { userId: mockUserId, friendId: mockFriendId } };
         const response: any = {
-            locals: { userId: mockUserId, friendId: mockFriendId },
+            locals: {},
         };
         const next = jest.fn();
 
@@ -282,8 +282,8 @@ describe('addFriendMiddleware', () => {
         const UserModel = {
             findOneAndUpdate
         }
-        const request: any = {};
-        const response: any = { locals: { userId: mockUserId, friendId: mockFriendId } };
+        const request: any = { body: { userId: mockUserId, friendId: mockFriendId } };
+        const response: any = { locals: {} };
         const next = jest.fn();
 
         const middleware = getAddFriendMiddleware(UserModel);
