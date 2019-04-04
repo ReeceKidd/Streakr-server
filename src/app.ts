@@ -9,9 +9,11 @@ import userRouter from "./Routers/userRouter";
 import soloStreakRouter from "./Routers/soloStreakRouter";
 import testRouter from "./Routers/testRouter";
 import usersRouter from "./Routers/usersRouter";
+import friendsRouter from "./Routers/friendsRouter";
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
+
 
 
 const app = express()
@@ -38,7 +40,8 @@ export enum RouteCategories {
   users = 'users',
   auth = 'auth',
   soloStreak = 'solo-streak',
-  test = 'test'
+  test = 'test',
+  friends = 'friends'
 }
 
 app.use(`/${RouteCategories.soloStreak}`, soloStreakRouter)
@@ -46,5 +49,6 @@ app.use(`/${RouteCategories.user}`, userRouter)
 app.use(`/${RouteCategories.users}`, usersRouter)
 app.use(`/${RouteCategories.auth}`, authRouter)
 app.use(`/${RouteCategories.test}`, testRouter)
+app.use(`/${RouteCategories.friends}`, friendsRouter)
 
 export default app

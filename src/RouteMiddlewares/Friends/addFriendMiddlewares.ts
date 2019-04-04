@@ -49,7 +49,7 @@ export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(
 
 export const getAddFriendMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { userId, friendId } = response.locals
+        const { userId, friendId } = request.body
         await userModel.findOneAndUpdate({ _id: userId }, { $addToSet: { friends: friendId } })
         next()
     } catch (err) {
@@ -68,9 +68,6 @@ export const getSendFriendAddedSuccessMessageMiddleware = addFriendSuccessMessag
 }
 
 export const sendFriendAddedSuccessMessageMiddleware = getSendFriendAddedSuccessMessageMiddleware('hello')
-
-
-
 
 export const addFriendMiddlewares = [
     addFriendValidationMiddleware,
