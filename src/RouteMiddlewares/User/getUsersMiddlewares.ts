@@ -14,12 +14,12 @@ const getUsersValidationSchema = {
 }
 
 export const retreiveUsersValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
-    Joi.validate(request.body, getUsersValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
+    Joi.validate(request.query, getUsersValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
 }
 
 export const getRetreiveUsersByUsernameRegexSearchMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { searchQuery } = request.body
+        const { searchQuery } = request.query
         response.locals.users = await userModel.find({ userName: { $regex: searchQuery } })
         next()
     } catch (err) {

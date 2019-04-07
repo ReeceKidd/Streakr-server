@@ -14,6 +14,8 @@ const searchableUserEmail = "other-user@gmail.com"
 const searchableUserPassword = "12345678"
 const searchableUserUserName = 'other-user'
 
+const searchQueryKey = "searchQuery"
+
 const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
 const getUsersByRegexSearchRoute = `/${RouteCategories.users}/${UsersPaths.getUsersByRegexSearch}`
 const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
@@ -22,18 +24,16 @@ const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
 describe(getUsersByRegexSearchRoute, () => {
 
     let jsonWebToken: string
-    let userId
 
     beforeAll(async () => {
         await userModel.deleteMany({});
-        const registrationResponse = await request(server)
+        await request(server)
             .post(registrationRoute)
             .send({
                 userName: registeredUserName,
                 email: registeredEmail,
                 password: registeredPassword
             })
-        userId = registrationResponse.body._id
         const loginResponse = await request(server)
             .post(loginRoute)
             .send({
@@ -52,11 +52,9 @@ describe(getUsersByRegexSearchRoute, () => {
 
     test(`that request returns searchAbleUser when full searchTerm is uaed`, async () => {
         expect.assertions(10)
+        const getUsersByRegexSearchRouteWithSearchQueryRoute = `${getUsersByRegexSearchRoute}?${searchQueryKey}=${searchableUserUserName}`
         const response = await request(server)
-            .get(getUsersByRegexSearchRoute)
-            .send({
-                searchQuery: searchableUserUserName
-            })
+            .get(getUsersByRegexSearchRouteWithSearchQueryRoute)
             .set({ 'x-access-token': jsonWebToken })
         expect(response.status).toEqual(200)
         expect(response.body.length).toBe(1)
@@ -72,11 +70,10 @@ describe(getUsersByRegexSearchRoute, () => {
 
     test('that request returns searchAble user when partial searchTerm is used', async () => {
         expect.assertions(10)
+        const partialSearchQuery = `${searchableUserUserName[0]}${searchableUserUserName[1]}${searchableUserUserName[2]}`
+        const getUsersByRegexSearchWithPartialSearchQueryRoute = `${getUsersByRegexSearchRoute}?${searchQueryKey}=${partialSearchQuery}`
         const response = await request(server)
-            .get(getUsersByRegexSearchRoute)
-            .send({
-                searchQuery: `${searchableUserUserName[0]}${searchableUserUserName[1]}${searchableUserUserName[2]}`
-            })
+            .get(getUsersByRegexSearchWithPartialSearchQueryRoute)
             .set({ 'x-access-token': jsonWebToken })
         expect(response.status).toEqual(200)
         expect(response.type).toEqual('application/json')

@@ -10,7 +10,7 @@ describe(`getUsersValidationMiddleware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { searchQuery: mockSearchQuery }
+            query: { searchQuery: mockSearchQuery }
         };
         const response: any = {
             status
@@ -28,29 +28,7 @@ describe(`getUsersValidationMiddleware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: {}
-        };
-        const response: any = {
-            status
-        };
-        const next = jest.fn();
-
-        retreiveUsersValidationMiddleware(request, response, next);
-
-        expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
-        expect(send).toBeCalledWith({
-            message: 'child "searchQuery" fails because ["searchQuery" is required]'
-        });
-        expect(next).not.toBeCalled();
-    });
-
-    test("check that correct response is sent when searchQuery is missing", () => {
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-
-        const request: any = {
-            body: {}
+            query: {}
         };
         const response: any = {
             status
@@ -75,7 +53,7 @@ describe(`getUsersValidationMiddleware`, () => {
         const shortSearchQuery = ""
 
         const request: any = {
-            body: { searchQuery: shortSearchQuery }
+            query: { searchQuery: shortSearchQuery }
         };
         const response: any = {
             status
@@ -100,7 +78,7 @@ describe(`getUsersValidationMiddleware`, () => {
         const longSearchQuery = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
         const request: any = {
-            body: { searchQuery: longSearchQuery }
+            query: { searchQuery: longSearchQuery }
         };
         const response: any = {
             status
@@ -124,7 +102,7 @@ describe(`getUsersValidationMiddleware`, () => {
         const numberSearchQuery = 123
 
         const request: any = {
-            body: { searchQuery: numberSearchQuery }
+            query: { searchQuery: numberSearchQuery }
         };
         const response: any = {
             status
@@ -153,7 +131,7 @@ describe('getUsersByUsernameRegexSearchMiddleware', () => {
         const userModel = { find }
 
         const request: any = {
-            body: { searchQuery: mockSearchQuery }
+            query: { searchQuery: mockSearchQuery }
         };
         const response: any = {
             status, locals: {}
@@ -181,7 +159,7 @@ describe('getUsersByUsernameRegexSearchMiddleware', () => {
         const userModel = { find }
 
         const request: any = {
-            body: { searchQuery: mockSearchQuery }
+            query: { searchQuery: mockSearchQuery }
         };
         const response: any = {
             status, locals: {}
