@@ -17,7 +17,7 @@ import {
     getCreateUserFromRequestMiddleware,
     saveUserToDatabaseMiddleware,
     sendFormattedUserMiddleware,
-    userNameToLowercaseMiddleware
+    setUserNameToLowercaseMiddleware
 } from './registerUserMiddlewares'
 
 
@@ -336,7 +336,7 @@ describe(`emailExistsValidationMiddleware `, () => {
     });
 });
 
-describe('userNameToLowercaseMiddleware', () => {
+describe('setUserNameToLowercaseMiddleware', () => {
     const mockUsername = "Testname";
     const mockLowerCaseUsername = "testname";
 
@@ -345,7 +345,7 @@ describe('userNameToLowercaseMiddleware', () => {
         const response: any = { locals: {} }
         const next = jest.fn()
 
-        userNameToLowercaseMiddleware(request, response, next)
+        setUserNameToLowercaseMiddleware(request, response, next)
 
         expect.assertions(2)
         expect(response.locals.lowerCaseUserName).toBe(mockLowerCaseUsername)
@@ -357,7 +357,7 @@ describe('userNameToLowercaseMiddleware', () => {
         const response: any = {}
         const next = jest.fn()
 
-        userNameToLowercaseMiddleware(request, response, next)
+        setUserNameToLowercaseMiddleware(request, response, next)
 
         expect.assertions(1)
         expect(next).toBeCalledWith(new Error())
@@ -701,7 +701,7 @@ describe(`verifyJsonWebTokenMiddlewaresWithResponse`, () => {
         expect(registerUserMiddlewares[0]).toBe(userRegistrationValidationMiddleware)
         expect(registerUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware)
         expect(registerUserMiddlewares[2]).toBe(emailExistsValidationMiddleware)
-        expect(registerUserMiddlewares[3]).toBe(userNameToLowercaseMiddleware)
+        expect(registerUserMiddlewares[3]).toBe(setUserNameToLowercaseMiddleware)
         expect(registerUserMiddlewares[4]).toBe(doesUserNameExistMiddleware)
         expect(registerUserMiddlewares[5]).toBe(userNameExistsValidationMiddleware)
         expect(registerUserMiddlewares[6]).toBe(hashPasswordMiddleware)

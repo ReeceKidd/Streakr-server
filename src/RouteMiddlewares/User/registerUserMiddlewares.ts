@@ -69,7 +69,7 @@ export const getEmailExistsValidationMiddleware = (emailAlreadyExistsMessage: Ge
 
 export const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(generateAlreadyExistsMessage, 'User', emailKey);
 
-export const userNameToLowercaseMiddleware = (request: Request, response: Response, next: NextFunction) => {
+export const setUserNameToLowercaseMiddleware = (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userName } = request.body
     response.locals.lowerCaseUserName = userName.toLowerCase()
@@ -187,7 +187,7 @@ export const registerUserMiddlewares = [
   userRegistrationValidationMiddleware,
   doesUserEmailExistMiddleware,
   emailExistsValidationMiddleware,
-  userNameToLowercaseMiddleware,
+  setUserNameToLowercaseMiddleware,
   doesUserNameExistMiddleware,
   userNameExistsValidationMiddleware,
   hashPasswordMiddleware,

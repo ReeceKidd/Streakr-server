@@ -17,10 +17,20 @@ export const retreiveUsersValidationMiddleware = (request: Request, response: Re
     Joi.validate(request.query, getUsersValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
 }
 
-export const getRetreiveUsersByUsernameRegexSearchMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
+export const setSearchQueryToLowercaseMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
         const { searchQuery } = request.query
-        response.locals.users = await userModel.find({ userName: { $regex: searchQuery } })
+        response.locals.lowerCaseSearchQuery = searchQuery.toLowerCase()
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const getRetreiveUsersByUsernameRegexSearchMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { lowerCaseSearchQuery } = response.locals
+        response.locals.users = await userModel.find({ userName: { $regex: lowerCaseSearchQuery } })
         next()
     } catch (err) {
         next(err)
@@ -55,6 +65,7 @@ export const sendFormattedUsersMiddleware = (request: Request, response: Respons
 
 export const getUsersMiddlewares = [
     retreiveUsersValidationMiddleware,
+    setSearchQueryToLowercaseMiddleware,
     retreiveUsersByUsernameRegexSearchMiddleware,
     formatUsersMiddleware,
     sendFormattedUsersMiddleware

@@ -1,5 +1,4 @@
-import { getUsersMiddlewares, retreiveUsersValidationMiddleware, retreiveUsersByUsernameRegexSearchMiddleware, formatUsersMiddleware, maximumSearchQueryLength, getRetreiveUsersByUsernameRegexSearchMiddleware, sendFormattedUsersMiddleware } from "./getUsersMiddlewares";
-import { IUser } from "Models/User";
+import { getUsersMiddlewares, retreiveUsersValidationMiddleware, retreiveUsersByUsernameRegexSearchMiddleware, formatUsersMiddleware, maximumSearchQueryLength, getRetreiveUsersByUsernameRegexSearchMiddleware, sendFormattedUsersMiddleware, setSearchQueryToLowercaseMiddleware } from "./getUsersMiddlewares";
 
 describe(`getUsersValidationMiddleware`, () => {
 
@@ -121,6 +120,35 @@ describe(`getUsersValidationMiddleware`, () => {
 
 });
 
+describe('setSearchQueryToLowerCaseMiddleware', () => {
+    const mockSearchQuery = "Search";
+    const mockLowerCaseSearchQuery = "search"
+
+    test("it should set userName to lowercase version of itself", () => {
+        const request: any = { query: { searchQuery: mockSearchQuery } }
+        const response: any = { locals: {} }
+        const next = jest.fn()
+
+        setSearchQueryToLowercaseMiddleware(request, response, next)
+
+        expect.assertions(2)
+        expect(response.locals.lowerCaseSearchQuery).toBe(mockLowerCaseSearchQuery)
+        expect(next).toBeCalledWith()
+    })
+
+    test("it should call next with err on failure", () => {
+        const request: any = { query: { searchQuery: { toLowerCase: () => { throw new Error() } } } }
+        const response: any = {}
+        const next = jest.fn()
+
+        setSearchQueryToLowercaseMiddleware(request, response, next)
+
+        expect.assertions(1)
+        expect(next).toBeCalledWith(new Error())
+    })
+})
+
+
 describe('getUsersByUsernameRegexSearchMiddleware', () => {
     test('that response.locals.users is populated and next is called', async () => {
         const mockSearchQuery = 'searchQuery'
@@ -130,11 +158,9 @@ describe('getUsersByUsernameRegexSearchMiddleware', () => {
         const find = jest.fn(() => Promise.resolve(true))
         const userModel = { find }
 
-        const request: any = {
-            query: { searchQuery: mockSearchQuery }
-        };
+        const request: any = {};
         const response: any = {
-            status, locals: {}
+            status, locals: { lowerCaseSearchQuery: mockSearchQuery }
         };
         const next = jest.fn();
 
@@ -150,7 +176,6 @@ describe('getUsersByUsernameRegexSearchMiddleware', () => {
     })
 
     test('that next is called with err on failure', async () => {
-        const mockSearchQuery = 'searchQuery'
         const errorMessage = 'error'
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -159,7 +184,6 @@ describe('getUsersByUsernameRegexSearchMiddleware', () => {
         const userModel = { find }
 
         const request: any = {
-            query: { searchQuery: mockSearchQuery }
         };
         const response: any = {
             status, locals: {}
@@ -262,10 +286,11 @@ describe('sendUsersMiddleware', () => {
 
 describe(`getUsersMiddlewares`, () => {
     test("that getUsersMiddlewares are defined in the correct order", () => {
-        expect.assertions(4);
+        expect.assertions(5);
         expect(getUsersMiddlewares[0]).toBe(retreiveUsersValidationMiddleware)
-        expect(getUsersMiddlewares[1]).toBe(retreiveUsersByUsernameRegexSearchMiddleware)
-        expect(getUsersMiddlewares[2]).toBe(formatUsersMiddleware)
-        expect(getUsersMiddlewares[3]).toBe(sendFormattedUsersMiddleware)
+        expect(getUsersMiddlewares[1]).toBe(setSearchQueryToLowercaseMiddleware)
+        expect(getUsersMiddlewares[2]).toBe(retreiveUsersByUsernameRegexSearchMiddleware)
+        expect(getUsersMiddlewares[3]).toBe(formatUsersMiddleware)
+        expect(getUsersMiddlewares[4]).toBe(sendFormattedUsersMiddleware)
     });
 });
