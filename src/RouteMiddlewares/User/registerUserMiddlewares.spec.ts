@@ -16,7 +16,8 @@ import {
     createUserFromRequestMiddleware,
     getCreateUserFromRequestMiddleware,
     saveUserToDatabaseMiddleware,
-    sendFormattedUserMiddleware
+    sendFormattedUserMiddleware,
+    userNameToLowercaseMiddleware
 } from './registerUserMiddlewares'
 
 
@@ -335,6 +336,35 @@ describe(`emailExistsValidationMiddleware `, () => {
     });
 });
 
+describe('userNameToLowercaseMiddleware', () => {
+    const mockUsername = "Testname";
+    const mockLowerCaseUsername = "testname";
+
+    test("it should set userName to lowercase version of itself", () => {
+        const request: any = { body: { userName: mockUsername } }
+        const response: any = { locals: {} }
+        const next = jest.fn()
+
+        userNameToLowercaseMiddleware(request, response, next)
+
+        expect.assertions(2)
+        expect(response.locals.lowerCaseUserName).toBe(mockLowerCaseUsername)
+        expect(next).toBeCalledWith()
+    })
+
+    test("it should call next with err on failure", () => {
+        const request: any = { body: { userName: { toLowerCase: () => { throw new Error() } } } }
+        const response: any = {}
+        const next = jest.fn()
+
+        userNameToLowercaseMiddleware(request, response, next)
+
+        expect.assertions(1)
+        expect(next).toBeCalledWith(new Error())
+    })
+})
+
+
 describe(`doesUserNameExistMiddleware`, () => {
 
     const mockUserName = "testname";
@@ -345,8 +375,8 @@ describe(`doesUserNameExistMiddleware`, () => {
         const UserModel = {
             findOne
         }
-        const request: any = { body: { userName: mockUserName } };
-        const response: any = { locals: {} };
+        const request: any = {};
+        const response: any = { locals: { lowerCaseUserName: mockUserName } };
         const next = jest.fn();
 
         const middleware = getDoesUserNameExistMiddleware(UserModel);
@@ -364,8 +394,8 @@ describe(`doesUserNameExistMiddleware`, () => {
         const UserModel = {
             findOne
         }
-        const request: any = { body: { userName: mockUserName } };
-        const response: any = { locals: {} };
+        const request: any = {};
+        const response: any = { locals: { lowerCaseUserName: mockUserName } };
         const next = jest.fn();
 
         const middleware = getDoesUserNameExistMiddleware(UserModel);
@@ -383,8 +413,8 @@ describe(`doesUserNameExistMiddleware`, () => {
         const UserModel = {
             findOne
         }
-        const request: any = { body: { userName: mockUserName } };
-        const response: any = { locals: {} };
+        const request: any = { body: {} };
+        const response: any = { locals: { lowerCaseUserName: mockUserName } };
         const next = jest.fn();
 
         const middleware = getDoesUserNameExistMiddleware(UserModel);
@@ -410,10 +440,9 @@ describe(`userNameExistsValidationMiddleware`, () => {
         const generateAlreadyExistsMessage = jest.fn();
 
         const request = {
-            body: { userName: mockUserName }
         };
         const response: any = {
-            locals: { userNameExists: true },
+            locals: { userNameExists: true, lowerCaseUserName: mockUserName },
             status
         };
         const next = jest.fn();
@@ -435,10 +464,10 @@ describe(`userNameExistsValidationMiddleware`, () => {
         const generateAlreadyExistsMessage = jest.fn();
 
         const request = {
-            body: { userName: mockUserName }
+
         };
         const response: any = {
-            locals: { userNameExists: false },
+            locals: { userNameExists: false, lowerCaseUserName: mockUserName },
             status
         };
         const next = jest.fn();
@@ -461,10 +490,9 @@ describe(`userNameExistsValidationMiddleware`, () => {
         const generateAlreadyExistsMessage = jest.fn();
 
         const request = {
-            body: { userName: mockUserName }
         };
         const response: any = {
-            locals: { userNameExists: true },
+            locals: { userNameExists: true, lowerCaseUserName: mockUserName },
             status
         };
         const next = jest.fn();
@@ -543,8 +571,8 @@ describe(`createUserFromRequestMiddleware`, () => {
             }
         }
 
-        const response: any = { locals: { hashedPassword } };
-        const request: any = { body: { userName, email } };
+        const response: any = { locals: { hashedPassword, lowerCaseUserName: userName } };
+        const request: any = { body: { email } };
         const next = jest.fn();
 
         const middleware = getCreateUserFromRequestMiddleware(User)
@@ -669,15 +697,16 @@ describe(`sendFormattedUserMiddleware`, () => {
 
 describe(`verifyJsonWebTokenMiddlewaresWithResponse`, () => {
     test("that verfiyJsonWebToken middlewares are defined in the correct order", () => {
-        expect.assertions(9);
+        expect.assertions(10);
         expect(registerUserMiddlewares[0]).toBe(userRegistrationValidationMiddleware)
         expect(registerUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware)
         expect(registerUserMiddlewares[2]).toBe(emailExistsValidationMiddleware)
-        expect(registerUserMiddlewares[3]).toBe(doesUserNameExistMiddleware)
-        expect(registerUserMiddlewares[4]).toBe(userNameExistsValidationMiddleware)
-        expect(registerUserMiddlewares[5]).toBe(hashPasswordMiddleware)
-        expect(registerUserMiddlewares[6]).toBe(createUserFromRequestMiddleware)
-        expect(registerUserMiddlewares[7]).toBe(saveUserToDatabaseMiddleware)
-        expect(registerUserMiddlewares[8]).toBe(sendFormattedUserMiddleware)
+        expect(registerUserMiddlewares[3]).toBe(userNameToLowercaseMiddleware)
+        expect(registerUserMiddlewares[4]).toBe(doesUserNameExistMiddleware)
+        expect(registerUserMiddlewares[5]).toBe(userNameExistsValidationMiddleware)
+        expect(registerUserMiddlewares[6]).toBe(hashPasswordMiddleware)
+        expect(registerUserMiddlewares[7]).toBe(createUserFromRequestMiddleware)
+        expect(registerUserMiddlewares[8]).toBe(saveUserToDatabaseMiddleware)
+        expect(registerUserMiddlewares[9]).toBe(sendFormattedUserMiddleware)
     });
 });

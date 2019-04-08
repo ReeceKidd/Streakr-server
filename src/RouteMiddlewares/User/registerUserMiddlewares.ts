@@ -69,14 +69,24 @@ export const getEmailExistsValidationMiddleware = (emailAlreadyExistsMessage: Ge
 
 export const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(generateAlreadyExistsMessage, 'User', emailKey);
 
+export const userNameToLowercaseMiddleware = (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { userName } = request.body
+    response.locals.lowerCaseUserName = userName.toLowerCase()
+    next()
+  } catch (err) {
+    next(err)
+  }
+}
+
 export const getDoesUserNameExistMiddleware = userModel => async (
   request: Request,
   response: Response,
   next: NextFunction,
 ) => {
   try {
-    const { userName } = request.body;
-    const user = await userModel.findOne({ userName });
+    const { lowerCaseUserName } = response.locals;
+    const user = await userModel.findOne({ userName: lowerCaseUserName });
     if (user) {
       response.locals.userNameExists = true;
     }
@@ -98,14 +108,13 @@ export const getUserNameExistsValidationMiddleware = (generateAlreadyExistsMessa
   next: NextFunction,
 ) => {
   try {
-    const { userNameExists } = response.locals;
-    const { userName } = request.body;
+    const { userNameExists, lowerCaseUserName } = response.locals;
     if (userNameExists) {
       return response.status(400).send({
         message: generateAlreadyExistsMessage(
           subject,
           userNameKey,
-          userName,
+          lowerCaseUserName,
         ),
       });
     }
@@ -135,9 +144,9 @@ export const hashPasswordMiddleware = getHashPasswordMiddleware(hash, saltRounds
 
 export const getCreateUserFromRequestMiddleware = user => (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { hashedPassword } = response.locals;
-    const { userName, email } = request.body;
-    response.locals.newUser = new user({ userName, email, password: hashedPassword });
+    const { hashedPassword, lowerCaseUserName } = response.locals;
+    const { email } = request.body;
+    response.locals.newUser = new user({ userName: lowerCaseUserName, email, password: hashedPassword });
     next();
   } catch (err) {
     next(err)
@@ -178,6 +187,7 @@ export const registerUserMiddlewares = [
   userRegistrationValidationMiddleware,
   doesUserEmailExistMiddleware,
   emailExistsValidationMiddleware,
+  userNameToLowercaseMiddleware,
   doesUserNameExistMiddleware,
   userNameExistsValidationMiddleware,
   hashPasswordMiddleware,
