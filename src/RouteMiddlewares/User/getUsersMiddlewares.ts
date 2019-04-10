@@ -57,7 +57,7 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
 export const sendFormattedUsersMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
         const { formattedUsers } = response.locals
-        return response.send(formattedUsers)
+        return response.send({ users: formattedUsers })
     } catch (err) {
         next(err)
     }

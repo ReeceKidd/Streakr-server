@@ -262,7 +262,7 @@ describe('sendUsersMiddleware', () => {
 
         expect.assertions(2);
         expect(next).not.toBeCalled()
-        expect(send).toBeCalledWith(formattedUsers)
+        expect(send).toBeCalledWith({ users: formattedUsers })
     });
 
     test("should call next with an error on failure", () => {

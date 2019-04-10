@@ -307,7 +307,7 @@ describe('sendFormattedFriendsMiddleware', () => {
 
         expect.assertions(2);
         expect(next).not.toBeCalled()
-        expect(send).toBeCalledWith(formattedFriends)
+        expect(send).toBeCalledWith({ friends: formattedFriends })
     });
 
     test("should call next with an error on failure", () => {

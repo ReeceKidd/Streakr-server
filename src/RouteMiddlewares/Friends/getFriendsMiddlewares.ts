@@ -80,7 +80,7 @@ export const formatFriendsMiddleware = (request: Request, response: Response, ne
 export const sendFormattedFriendsMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
         const { formattedFriends } = response.locals
-        return response.send(formattedFriends)
+        return response.send({ friends: formattedFriends })
     } catch (err) {
         next(err)
     }
