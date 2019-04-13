@@ -1,18 +1,11 @@
-import { Request, Response, NextFunction } from 'express'
-
 import {
     createSoloStreakMiddlewares,
     soloStreakRegistrationValidationMiddleware,
-    retreiveUserWhoCreatedSoloStreakMiddleware,
-    getRetreiveUserWhoCreatedSoloStreakMiddleware,
-    userExistsValidationMiddleware,
-    getUserExistsValidationMiddleware,
     createSoloStreakFromRequestMiddleware,
     getCreateSoloStreakFromRequestMiddleware,
     saveSoloStreakToDatabaseMiddleware,
     sendFormattedSoloStreakMiddleware,
     SoloStreakResponseLocals,
-    formatResponseLocalsUserMiddleware,
 } from './createSoloStreakMiddlewares'
 
 import { userModel } from "../../Models/User";
@@ -194,169 +187,27 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
 });
 
-describe(`retreiveUserWhoCreatedStreakMiddleware`, () => {
-
-    const mockUserId = "abcdefghij123";
-    const ERROR_MESSAGE = "error";
-
-
-    test("should define response.locals.user when user is found", async () => {
-        const findOne = jest.fn(() => Promise.resolve(true));
-        const UserModel = {
-            findOne
-        }
-        const request: any = { body: { userId: mockUserId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-
-        const middleware = getRetreiveUserWhoCreatedSoloStreakMiddleware(UserModel);
-
-        await middleware(request, response, next);
-
-        expect.assertions(3);
-        expect(findOne).toBeCalledWith({ _id: mockUserId });
-        expect(response.locals.user).toBe(true);
-        expect(next).toBeCalled();
-    });
-
-    test("should not define response.locals.user when user doesn't exist", async () => {
-        const findOne = jest.fn(() => Promise.resolve(undefined));
-        const UserModel = {
-            findOne
-        }
-        const request: any = { body: { userId: mockUserId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-
-        const middleware = getRetreiveUserWhoCreatedSoloStreakMiddleware(UserModel);
-
-        await middleware(request, response, next);
-
-        expect.assertions(3);
-        expect(findOne).toBeCalledWith({ _id: mockUserId });
-        expect(response.locals.user).toBe(undefined);
-        expect(next).toBeCalledWith();
-    });
-
-    test("should call next() with err paramater if database call fails", async () => {
-        const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
-        const UserModel = {
-            findOne
-        }
-        const request: any = { body: { userId: mockUserId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-
-        const middleware = getRetreiveUserWhoCreatedSoloStreakMiddleware(UserModel);
-
-        await middleware(request, response, next);
-
-        expect.assertions(3);
-        expect(findOne).toBeCalledWith({ _id: mockUserId });
-        expect(response.locals.user).toBe(undefined);
-        expect(next).toBeCalledWith(ERROR_MESSAGE);
-    });
-});
-
-describe(`userExistsValidationMiddleware`, () => {
-    const mockErrorMessage = 'User does not exist'
-
-    test("check that error response is returned correctly when user wasn't found", async () => {
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-
-        const request = {};
-        const response: any = {
-            locals: {},
-            status
-        };
-        const next = jest.fn();
-
-        const middleware = getUserExistsValidationMiddleware(mockErrorMessage);
-
-        middleware(request as Request, response as Response, next as NextFunction);
-
-        expect.assertions(2);
-        expect(status).toHaveBeenCalledWith(400);
-        expect(send).toBeCalledWith({ message: mockErrorMessage });
-    });
-
-    test("check that next is called when user is defined on response.locals", () => {
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-
-        const request = {};
-        const response: any = {
-            locals: { user: true },
-            status
-        };
-        const next = jest.fn();
-
-        const middleware = getUserExistsValidationMiddleware(mockErrorMessage);
-
-        middleware(request as Request, response as Response, next as NextFunction);
-
-        expect.assertions(3);
-        expect(status).not.toHaveBeenCalled();
-        expect(send).not.toBeCalled();
-        expect(next).toBeCalled();
-    });
-
-    test("check that next is called with err on send failure", () => {
-        const errorMessage = 'error'
-        const send = jest.fn(() => { throw new Error(errorMessage) });
-        const status = jest.fn(() => ({ send }));
-        const request = {};
-        const response: any = {
-            locals: { user: false },
-            status
-        };
-        const next = jest.fn();
-
-        const middleware = getUserExistsValidationMiddleware(mockErrorMessage);
-
-        middleware(request as Request, response as Response, next as NextFunction);
-
-        expect.assertions(1);
-        expect(next).toBeCalledWith(new Error(errorMessage));
-    });
-});
-
-describe('formatResponseLocalsUserMiddleware', () => {
-    test('should make response.locals.user.password null', () => {
-        expect.assertions(2)
-        const user = { userName: 'userName', email: 'username@gmail.com', password: '12345678' };
-        const request: any = {}
-        const response: any = { locals: { user } }
-        const next = jest.fn()
-
-        formatResponseLocalsUserMiddleware(request, response, next)
-        expect(response.locals.password).toBe(undefined)
-        expect(next).toBeCalledWith()
-    })
-})
-
 describe(`createSoloStreakFromRequestMiddleware`, () => {
     test("should define response.locals.newSoloStreak", async () => {
 
-        const user = { userName: 'userName', email: 'username@gmail.com' };
+        const userId = 'abcdefg';
         const streakName = 'streak name'
         const streakDescription = 'mock streak description'
 
         class SoloStreak {
-            user: object;
+            userId: string;
             streakName: string;
             streakDescription: string;
 
-            constructor({ user, streakName, streakDescription }) {
-                this.user = user;
+            constructor({ userId, streakName, streakDescription }) {
+                this.userId = userId;
                 this.streakName = streakName;
                 this.streakDescription = streakDescription
             }
         }
 
-        const response: any = { locals: { user } };
-        const request: any = { body: { streakName, streakDescription } };
+        const response: any = { locals: {} };
+        const request: any = { body: { userId, streakName, streakDescription } };
         const next = jest.fn();
 
         const middleware = getCreateSoloStreakFromRequestMiddleware(SoloStreak)
@@ -364,19 +215,19 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
         middleware(request, response, next);
 
         expect.assertions(2);
-        const newSoloStreak = new SoloStreak({ user, streakName, streakDescription })
+        const newSoloStreak = new SoloStreak({ userId, streakName, streakDescription })
         expect(response.locals.newSoloStreak).toEqual(newSoloStreak)
         expect(next).toBeCalledWith()
     });
 
     test('should call next with error message on error', () => {
 
-        const user = { userName: 'userName', email: 'username@gmail.com' };
+        const userId = 'abcdefg';
         const streakName = 'streak name'
         const streakDescription = 'mock streak description'
 
-        const response: any = { locals: { user } };
-        const request: any = { body: { streakName, streakDescription } };
+        const response: any = { locals: {} };
+        const request: any = { body: { userId, streakName, streakDescription } };
         const next = jest.fn();
 
         const middleware = getCreateSoloStreakFromRequestMiddleware({})
@@ -399,7 +250,7 @@ describe(`saveSoloStreakToDatabaseMiddleware`, () => {
         });
 
         const mockSoloStreak = {
-            userName: 'User',
+            userId: 'abcdefg',
             email: 'user@gmail.com',
             password: 'password',
             save
@@ -482,13 +333,10 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
 
 describe(`createSoloStreakMiddlewares`, () => {
     test("that createSoloStreak middlewares are defined in the correct order", async () => {
-        expect.assertions(7);
+        expect.assertions(4);
         expect(createSoloStreakMiddlewares[0]).toBe(soloStreakRegistrationValidationMiddleware)
-        expect(createSoloStreakMiddlewares[1]).toBe(retreiveUserWhoCreatedSoloStreakMiddleware)
-        expect(createSoloStreakMiddlewares[2]).toBe(userExistsValidationMiddleware)
-        expect(createSoloStreakMiddlewares[3]).toBe(formatResponseLocalsUserMiddleware)
-        expect(createSoloStreakMiddlewares[4]).toBe(createSoloStreakFromRequestMiddleware)
-        expect(createSoloStreakMiddlewares[5]).toBe(saveSoloStreakToDatabaseMiddleware)
-        expect(createSoloStreakMiddlewares[6]).toBe(sendFormattedSoloStreakMiddleware)
+        expect(createSoloStreakMiddlewares[1]).toBe(createSoloStreakFromRequestMiddleware)
+        expect(createSoloStreakMiddlewares[2]).toBe(saveSoloStreakToDatabaseMiddleware)
+        expect(createSoloStreakMiddlewares[3]).toBe(sendFormattedSoloStreakMiddleware)
     });
 });

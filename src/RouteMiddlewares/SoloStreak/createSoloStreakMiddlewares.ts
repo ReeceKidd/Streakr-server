@@ -36,60 +36,10 @@ export const soloStreakRegistrationValidationMiddleware = (request: Request, res
     Joi.validate(request.body, soloStreakRegisterstrationValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
 };
 
-export const getRetreiveUserWhoCreatedSoloStreakMiddleware = userModel => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-) => {
-    try {
-        const { userId } = request.body;
-        const user = await userModel.findOne({ _id: userId });
-        response.locals.user = user;
-        next();
-    } catch (err) {
-        next(err);
-    }
-};
-
-export const retreiveUserWhoCreatedSoloStreakMiddleware = getRetreiveUserWhoCreatedSoloStreakMiddleware(userModel);
-
-export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-) => {
-    try {
-        const { user } = response.locals as SoloStreakResponseLocals;
-        if (!user) {
-            return response.status(400).send({
-                message: userDoesNotExistMessage,
-            });
-        }
-        next();
-    } catch (err) {
-        next(err);
-    }
-};
-const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.userDoesNotExistMessage)
-
-export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(localisedUserDoesNotExistMessage);
-
-export const formatResponseLocalsUserMiddleware = (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { user } = response.locals as SoloStreakResponseLocals
-        user.password = undefined
-        response.locals.user = user
-        next()
-    } catch (err) {
-        next(err)
-    }
-}
-
 export const getCreateSoloStreakFromRequestMiddleware = soloStreak => (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { user } = response.locals;
-        const { streakName, streakDescription } = request.body
-        response.locals.newSoloStreak = new soloStreak({ streakName, streakDescription, user });
+        const { streakName, streakDescription, userId } = request.body
+        response.locals.newSoloStreak = new soloStreak({ streakName, streakDescription, userId });
         next();
     } catch (err) {
         next(err)
@@ -128,9 +78,6 @@ export const sendFormattedSoloStreakMiddleware = (
 
 export const createSoloStreakMiddlewares = [
     soloStreakRegistrationValidationMiddleware,
-    retreiveUserWhoCreatedSoloStreakMiddleware,
-    userExistsValidationMiddleware,
-    formatResponseLocalsUserMiddleware,
     createSoloStreakFromRequestMiddleware,
     saveSoloStreakToDatabaseMiddleware,
     sendFormattedSoloStreakMiddleware

@@ -18,7 +18,7 @@ const createSoloStreakRoute = `/${RouteCategories.soloStreak}/${SoloStreakPaths.
 describe(createSoloStreakRoute, () => {
 
     let jsonWebToken: string
-    let userId
+    let userId: string
 
     beforeAll(async () => {
         await userModel.deleteMany({});
