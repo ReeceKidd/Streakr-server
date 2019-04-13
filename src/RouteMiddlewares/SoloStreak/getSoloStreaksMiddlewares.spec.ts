@@ -75,8 +75,8 @@ describe('findSoloStreaksMiddleware', () => {
         const soloStreakModel = {
             find
         }
-        const request: any = {};
-        const response: any = { locals: { user: { _id: '123' } } };
+        const request: any = { params: { userId: '1234' } };
+        const response: any = { locals: {} };
         const next = jest.fn();
 
         const middleware = getFindSoloStreaksMiddleware(soloStreakModel);
@@ -95,8 +95,8 @@ describe('findSoloStreaksMiddleware', () => {
         const soloStreakModel = {
             find
         }
-        const request: any = {};
-        const response: any = { locals: { user: { _id: '123' } } };
+        const request: any = { params: { userId: '1234' } };
+        const response: any = { locals: {} };
         const next = jest.fn();
 
         const middleware = getFindSoloStreaksMiddleware(soloStreakModel);
@@ -110,9 +110,9 @@ describe('findSoloStreaksMiddleware', () => {
 
 describe(`getSoloStreaksMiddlewares`, () => {
     test("that getSoloStreaksMiddlewares are defined in the correct order", async () => {
-        expect.assertions(5)
+        expect.assertions(3)
         expect(getSoloStreaksMiddlewares[0]).toBe(getSoloStreaksValidationMiddleware)
-        expect(getSoloStreaksMiddlewares[3]).toBe(findSoloStreaksMiddleware)
-        expect(getSoloStreaksMiddlewares[4]).toBe(sendSoloStreaksMiddleware)
+        expect(getSoloStreaksMiddlewares[1]).toBe(findSoloStreaksMiddleware)
+        expect(getSoloStreaksMiddlewares[2]).toBe(sendSoloStreaksMiddleware)
     });
 });
