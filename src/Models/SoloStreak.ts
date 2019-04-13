@@ -12,9 +12,10 @@ export interface ISoloStreak extends mongoose.Document {
 }
 
 export const soloStreakSchema = new mongoose.Schema({
-    user: {
+    userId: {
         required: true,
-        type: Object
+        type: String,
+        index: true
     },
     streakName: {
         required: true,

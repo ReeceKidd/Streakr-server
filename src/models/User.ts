@@ -3,6 +3,7 @@ import { IStreak } from './Streak';
 import { SupportedLanguages } from '../Messages/supportedLanguages';
 import { Collections } from './Collections';
 import { Models } from './Models';
+import { ISoloStreak } from './SoloStreak';
 
 export const SALT_ROUNDS = 10;
 
@@ -25,7 +26,7 @@ export interface IUser extends mongoose.Document {
   modifiedAt: Date;
   role: string;
   preferredLanguage: string;
-  streaks?: IStreak[];
+  soloStreaks?: ISoloStreak[];
   profilePicture?: {
     type: String,
   };

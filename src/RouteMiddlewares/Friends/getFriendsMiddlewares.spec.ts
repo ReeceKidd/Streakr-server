@@ -1,5 +1,4 @@
 import { getFriendsMiddlewares, getFriendsValidationMiddleware, formatFriendsMiddleware, userExistsValidationMiddleware, getUserExistsValidationMiddleware, retreiveFriendsMiddleware, sendFormattedFriendsMiddleware, getRetreiveUserMiddleware, retreiveUserMiddleware, getRetreiveFriendsMiddleware } from "./getFriendsMiddlewares";
-import { IUser } from "Models/User";
 
 describe(`getFriendsValidationMiddleware`, () => {
 
