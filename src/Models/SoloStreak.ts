@@ -4,7 +4,7 @@ import { Collections } from './Collections';
 import { Models } from './Models';
 
 export interface ISoloStreak extends mongoose.Document {
-    user: IUser;
+    userId: string;
     streakName: string;
     streakDescription: string;
     startDate: Date;

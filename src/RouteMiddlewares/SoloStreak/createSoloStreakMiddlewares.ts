@@ -4,12 +4,7 @@ import * as Joi from 'joi';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
 import { IUser } from "../../Models/User";
-import { userModel } from '../../Models/User';
 import { ISoloStreak, soloStreakModel } from "../../Models/SoloStreak";
-import { MessageCategories } from '../../Messages/messageCategories';
-import { getLocalisedString } from '../../Messages/getLocalisedString';
-import { FailureMessageKeys } from '../../Messages/failureMessages';
-
 
 export interface SoloStreakRegistrationRequestBody {
     userId: string,

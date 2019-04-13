@@ -7,6 +7,7 @@ import * as passport from 'passport';
 import authRouter from "./Routers/authRouter";
 import userRouter from "./Routers/userRouter";
 import soloStreakRouter from "./Routers/soloStreakRouter";
+import soloStreaksRouter from "./Routers/soloStreaksRouter";
 import testRouter from "./Routers/testRouter";
 import usersRouter from "./Routers/usersRouter";
 import friendsRouter from "./Routers/friendsRouter";
@@ -40,11 +41,13 @@ export enum RouteCategories {
   users = 'users',
   auth = 'auth',
   soloStreak = 'solo-streak',
+  soloStreaks = 'solo-streaks',
   test = 'test',
   friends = 'friends'
 }
 
 app.use(`/${RouteCategories.soloStreak}`, soloStreakRouter)
+app.use(`/${RouteCategories.soloStreaks}`, soloStreaksRouter)
 app.use(`/${RouteCategories.user}`, userRouter)
 app.use(`/${RouteCategories.users}`, usersRouter)
 app.use(`/${RouteCategories.auth}`, authRouter)

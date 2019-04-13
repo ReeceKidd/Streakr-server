@@ -1,5 +1,4 @@
 import * as mongoose from 'mongoose';
-import { IStreak } from './Streak';
 import { SupportedLanguages } from '../Messages/supportedLanguages';
 import { Collections } from './Collections';
 import { Models } from './Models';
