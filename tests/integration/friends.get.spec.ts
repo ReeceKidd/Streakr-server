@@ -6,20 +6,21 @@ import { UserPaths } from '../../src/Routers/userRouter';
 import { AuthPaths } from '../../src/Routers/authRouter';
 import { FriendPaths } from '../../src/Routers/friendRouter';
 
-const userRegisteredEmail = "add-friend-user@gmail.com"
+const userRegisteredEmail = "get-friends-user@gmail.com"
 const userRegisteredPassword = "12345678"
-const userRegisteredUserName = 'add-friend-user'
+const userRegisteredUserName = 'get-friends-user'
 
-const friendRegisterEmail = 'add-friend-friend@gmail.com'
+const friendRegisterEmail = 'friend-added@gmail.com'
 const friendRegisteredPassword = '23456789'
-const friendRegisteredUserName = 'add-friend-friend'
+const friendRegisteredUserName = 'get-friend-friend'
 
 const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
 const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
-const addFriendRoute = `/${RouteCategories.friend}/${FriendPaths.add}`
+const addFriendRoute = `/${RouteCategories.friends}/${FriendPaths.add}`
+const getFriendsRoute = `/${RouteCategories.friends}`
 
 
-describe(addFriendRoute, () => {
+describe(getFriendsRoute, () => {
 
     let jsonWebToken: string
     let userId: string
@@ -56,24 +57,24 @@ describe(addFriendRoute, () => {
                 }
             )
         friendId = friendRegistrationResponse.body._id
-
-    })
-
-    test(`that user can add a friend`, async () => {
-        expect.assertions(4)
-        const response = await request(server)
+        await request(server)
             .put(addFriendRoute)
             .send({
                 userId,
                 friendId
             })
             .set({ 'x-access-token': jsonWebToken })
-        expect(response.status).toEqual(200)
-        expect(response.type).toEqual('application/json')
-        expect(response.body.message).toBeDefined()
+    })
 
-        const user = await userModel.findOne({ _id: userId })
-        expect(user.toObject().friends).toContain(friendId)
+    test(`that friends can be retreived for user`, async () => {
+        expect.assertions(2)
+        const getFriendsResponse = await request(server)
+            .get(`${getFriendsRoute}/${userId}`)
+            .set({ 'x-access-token': jsonWebToken })
+        expect(getFriendsResponse.status).toEqual(200)
+        expect(getFriendsResponse.type).toEqual('application/json')
+        console.log(getFriendsResponse.body)
+        expect(getFriendsResponse.body.friends.length).toEqual(1)
     })
 
 })

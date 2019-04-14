@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 
-import { addFriendMiddlewares, addFriendValidationMiddleware, retreiveUserMiddleware, userExistsValidationMiddleware, getAddFriendMiddleware, addFriendMiddleware, getRetreiveUserMiddleware, getUserExistsValidationMiddleware, sendFriendAddedSuccessMessageMiddleware, getSendFriendAddedSuccessMessageMiddleware } from "./addFriendMiddlewares";
+import { addFriendMiddlewares, addFriendValidationMiddleware, retreiveUserMiddleware, userExistsValidationMiddleware, getAddFriendMiddleware, addFriendMiddleware, getRetreiveUserMiddleware, getUserExistsValidationMiddleware, sendFriendAddedSuccessMessageMiddleware, getSendFriendAddedSuccessMessageMiddleware, getFriendAlreadyExistsMiddleware, getRetreiveFriendsDetailsMiddleware, friendAlreadyExistsMiddleware, retreiveFriendsDetailsMiddleware, formatFriendsMiddleware } from "./addFriendMiddlewares";
 
 describe('addFriendValidationMiddleware', () => {
 
@@ -252,6 +252,42 @@ describe(`userExistsValidationMiddleware`, () => {
     });
 });
 
+describe(`friendAlreadyExistsMiddleware`, () => {
+
+    const friendId = 'abc'
+
+    test('that non existing friendId goes to next middleware', () => {
+        const request: any = { body: { friendId } }
+        const response: any = { locals: { user: { friends: [] } } }
+        const next = jest.fn()
+
+        const ERROR_MESSAGE = 'friend already exists'
+        const middleware = getFriendAlreadyExistsMiddleware(ERROR_MESSAGE)
+        middleware(request, response, next)
+
+        expect.assertions(1)
+        expect(next).toBeCalledWith()
+    })
+
+    test('that if friend already exists a 400 response with friend already exists message is sent', () => {
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = { body: { friendId } }
+        const response: any = { locals: { user: { friends: [friendId] } }, status }
+        const next = jest.fn()
+
+        const ERROR_MESSAGE = 'friend already exists'
+        const middleware = getFriendAlreadyExistsMiddleware(ERROR_MESSAGE)
+        middleware(request, response, next)
+
+        expect.assertions(3)
+
+        expect(status).toBeCalledWith(400)
+        expect(send).toBeCalledWith({ message: ERROR_MESSAGE })
+        expect(next).not.toBeCalled()
+    })
+})
+
 describe('addFriendMiddleware', () => {
     const mockUserId = '1234'
     const mockFriendId = '2345'
@@ -296,12 +332,93 @@ describe('addFriendMiddleware', () => {
     });
 })
 
+describe('retreiveFriendsDetailsMiddleware', () => {
+    const friendId = 'abcd'
+
+    test('that response.locals.friends is populated with friends details', async () => {
+        expect.assertions(3)
+        const friends = [friendId]
+        const request: any = {}
+        const response: any = { locals: { updatedUser: { friends } } }
+        const next = jest.fn()
+
+        const find = jest.fn(() => Promise.resolve(true))
+
+        const userModel = {
+            find
+        }
+
+        const middleware = getRetreiveFriendsDetailsMiddleware(userModel)
+        await middleware(request, response, next)
+
+        expect(find).toBeCalledWith({ _id: { $in: friends } })
+        expect(response.locals.friends).toBe(true)
+        expect(next).toBeCalledWith()
+
+    })
+
+    test('that response.locals.friends is populated with friends details', async () => {
+        expect.assertions(2)
+        const friends = [friendId]
+        const request: any = {}
+        const response: any = { locals: { updatedUser: { friends } } }
+        const next = jest.fn()
+
+        const ERROR_MESSAGE = 'error'
+        const find = jest.fn(() => Promise.reject(ERROR_MESSAGE))
+
+        const userModel = {
+            find
+        }
+
+        const middleware = getRetreiveFriendsDetailsMiddleware(userModel)
+        await middleware(request, response, next)
+
+        expect(find).toBeCalledWith({ _id: { $in: friends } })
+        expect(next).toBeCalledWith(ERROR_MESSAGE)
+
+    })
+})
+
+describe('formatFriendsMiddleware', () => {
+    test('that formatted friends have just a userName property', () => {
+        expect.assertions(2)
+        const userName = 'friend'
+        const password = 'password'
+        const email = 'secret@gmail.com'
+        const friend = {
+            userName,
+            password,
+            email
+        }
+        const friends = [friend]
+        const request: any = {}
+        const response: any = { locals: { friends } }
+        const next = jest.fn()
+
+        formatFriendsMiddleware(request, response, next)
+        expect(next).toBeCalledWith()
+        expect(response.locals.formattedFriends).toEqual([{ userName }])
+    })
+
+    test('that next is called with err message on err', () => {
+        expect.assertions(1)
+        const request: any = {}
+        const response: any = { locals: {} }
+        const next = jest.fn()
+
+        formatFriendsMiddleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError(`Cannot read property 'map' of undefined`))
+    })
+})
+
 describe('sendFriendAddedSuccessMessageMiddleware', () => {
 
     test('that response sends success message inside of object', () => {
         const successMessage = 'success'
         const send = jest.fn()
-        const response: any = { send };
+        const formattedFriends = [{ userName: 'abc' }]
+        const response: any = { send, locals: { formattedFriends } };
 
         const request: any = {}
         const next = jest.fn();
@@ -311,16 +428,17 @@ describe('sendFriendAddedSuccessMessageMiddleware', () => {
 
         expect.assertions(2);
         expect(next).not.toBeCalled()
-        expect(send).toBeCalledWith({ message: successMessage })
+        expect(send).toBeCalledWith({ message: successMessage, friends: formattedFriends })
     })
 
     test('that next gets called with error on message send failure', () => {
         const ERROR_MESSAGE = 'error'
         const successMessage = 'success'
+        const formattedFriends = [{ userName: 'abc' }]
         const send = jest.fn(() => {
             throw new Error(ERROR_MESSAGE)
         })
-        const response: any = { send };
+        const response: any = { send, locals: { formattedFriends } };
 
         const request: any = {}
         const next = jest.fn();
@@ -335,12 +453,15 @@ describe('sendFriendAddedSuccessMessageMiddleware', () => {
 
 describe('addFriendMiddlewares', () => {
     test('that middlewares are defined in the correct order', () => {
-        expect.assertions(5)
+        expect.assertions(8)
         expect(addFriendMiddlewares[0]).toBe(addFriendValidationMiddleware)
         expect(addFriendMiddlewares[1]).toBe(retreiveUserMiddleware)
         expect(addFriendMiddlewares[2]).toBe(userExistsValidationMiddleware)
-        expect(addFriendMiddlewares[3]).toBe(addFriendMiddleware)
-        expect(addFriendMiddlewares[4]).toBe(sendFriendAddedSuccessMessageMiddleware)
+        expect(addFriendMiddlewares[3]).toBe(friendAlreadyExistsMiddleware)
+        expect(addFriendMiddlewares[4]).toBe(addFriendMiddleware)
+        expect(addFriendMiddlewares[5]).toBe(retreiveFriendsDetailsMiddleware)
+        expect(addFriendMiddlewares[6]).toBe(formatFriendsMiddleware)
+        expect(addFriendMiddlewares[7]).toBe(sendFriendAddedSuccessMessageMiddleware)
     })
 
 })

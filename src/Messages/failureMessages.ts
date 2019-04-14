@@ -5,7 +5,8 @@ export enum FailureMessageKeys {
         userDoesNotExistMessage = 'userDoesNotExistMessage',
         invalidTokenMessage = 'invalidTokenMessage',
         missingJsonWebTokenMessage = 'missingJsonWebTokenMessage',
-        unauthorisedMessage = 'Unauthorized'
+        unauthorisedMessage = 'Unauthorized',
+        friendAlreadyExists = 'friendAlreadyExists'
 }
 
 export const failureMessages = {
@@ -14,6 +15,7 @@ export const failureMessages = {
                 [FailureMessageKeys.loginUnsuccessfulMessage]: 'Login unsuccessful',
                 [FailureMessageKeys.userDoesNotExistMessage]: 'Unsuccessful',
                 [FailureMessageKeys.invalidTokenMessage]: 'Invalid token',
-                [FailureMessageKeys.missingJsonWebTokenMessage]: 'JSON web token is missing from header'
+                [FailureMessageKeys.missingJsonWebTokenMessage]: 'JSON web token is missing from header',
+                [FailureMessageKeys.friendAlreadyExists]: 'Friend already exists'
         }
 }
