@@ -66,8 +66,7 @@ export const formatFriendsMiddleware = (request: Request, response: Response, ne
         const { friends } = response.locals
         const formattedFriends = friends.map(friend => {
             return {
-                ...friend.toObject(),
-                password: undefined
+                userName: friend.userName
             }
         })
         response.locals.formattedFriends = formattedFriends
