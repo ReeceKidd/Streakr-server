@@ -417,7 +417,7 @@ describe('sendFriendAddedSuccessMessageMiddleware', () => {
 
 describe('addFriendMiddlewares', () => {
     test('that middlewares are defined in the correct order', () => {
-        expect.assertions(8)
+        expect.assertions(7)
         expect(addFriendMiddlewares[0]).toBe(addFriendValidationMiddleware)
         expect(addFriendMiddlewares[1]).toBe(retreiveUserMiddleware)
         expect(addFriendMiddlewares[2]).toBe(userExistsValidationMiddleware)
