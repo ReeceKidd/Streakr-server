@@ -7,11 +7,11 @@ import { AuthPaths } from '../../src/Routers/authRouter';
 import { FriendPaths } from '../../src/Routers/friendRouter';
 
 const userRegisteredEmail = "add-friend-user@gmail.com"
-const userRegisteredPassword = "12345678"
+const userRegisteredPassword = "1234567a"
 const userRegisteredUserName = 'add-friend-user'
 
 const friendRegisterEmail = 'add-friend-friend@gmail.com'
-const friendRegisteredPassword = '23456789'
+const friendRegisteredPassword = '2345678b'
 const friendRegisteredUserName = 'add-friend-friend'
 
 const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
@@ -56,12 +56,10 @@ describe(addFriendRoute, () => {
                 }
             )
         friendId = friendRegistrationResponse.body._id
-
     })
 
     test(`that user can add a friend`, async () => {
         expect.assertions(4)
-        console.log(addFriendRoute)
         const response = await request(server)
             .put(addFriendRoute)
             .send({
@@ -69,12 +67,10 @@ describe(addFriendRoute, () => {
                 friendId
             })
             .set({ 'x-access-token': jsonWebToken })
-        console.log(response.body)
         expect(response.status).toEqual(200)
         expect(response.type).toEqual('application/json')
         expect(response.body.message).toBeDefined()
-        const user = await userModel.findOne({ _id: userId })
-        expect(user.toObject().friends).toContain(friendId)
+        expect(response.body.friends).toBeDefined()
     })
 
 })

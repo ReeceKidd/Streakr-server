@@ -48,7 +48,6 @@ const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.fa
 
 export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(localisedUserDoesNotExistMessage)
 
-
 export const getAddFriendMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
         const { userId, friendId } = request.body

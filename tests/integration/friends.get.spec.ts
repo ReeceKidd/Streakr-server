@@ -64,12 +64,11 @@ describe(getFriendsRoute, () => {
                 friendId
             })
             .set({ 'x-access-token': jsonWebToken })
-        console.log(`Friend added status: ${friendAddedResponse.status}`)
-
     })
 
+
     test(`that friends can be retreived for user`, async () => {
-        expect.assertions(3)
+        expect.assertions(4)
         const getFriendsRouteWithUserId = `${getFriendsRoute}/${userId}`
         const getFriendsResponse = await request(server)
             .get(getFriendsRouteWithUserId)
@@ -77,6 +76,7 @@ describe(getFriendsRoute, () => {
         expect(getFriendsResponse.status).toEqual(200)
         expect(getFriendsResponse.type).toEqual('application/json')
         expect(getFriendsResponse.body.friends.length).toEqual(1)
+        expect(getFriendsResponse.body.friends[0].userName).toEqual(friendRegisteredUserName)
     })
 
 })
