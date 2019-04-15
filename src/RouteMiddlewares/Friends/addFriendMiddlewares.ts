@@ -48,25 +48,6 @@ const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.fa
 
 export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(localisedUserDoesNotExistMessage)
 
-export const getFriendAlreadyExistsMiddleware = friendAlreadyExistsErrorMessage => (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { friendId } = request.body
-        const { user } = response.locals
-        const { friends } = user
-        if (friends.includes(friendId)) {
-            return response.status(400).send({
-                message: friendAlreadyExistsErrorMessage
-            })
-        }
-        next()
-    } catch (err) {
-        next(err)
-    }
-}
-
-const localisedFriendAlreadyExistsMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.friendAlreadyExists)
-
-export const friendAlreadyExistsMiddleware = getFriendAlreadyExistsMiddleware(localisedFriendAlreadyExistsMessage)
 
 export const getAddFriendMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -126,7 +107,6 @@ export const addFriendMiddlewares = [
     addFriendValidationMiddleware,
     retreiveUserMiddleware,
     userExistsValidationMiddleware,
-    friendAlreadyExistsMiddleware,
     addFriendMiddleware,
     retreiveFriendsDetailsMiddleware,
     formatFriendsMiddleware,
