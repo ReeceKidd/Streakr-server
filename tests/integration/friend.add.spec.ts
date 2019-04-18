@@ -4,7 +4,7 @@ import server, { RouteCategories } from '../../src/app'
 import { userModel } from '../../src/Models/User';
 import { UserPaths } from '../../src/Routers/userRouter';
 import { AuthPaths } from '../../src/Routers/authRouter';
-import { FriendPaths } from '../../src/Routers/friendRouter';
+import { FriendsPaths } from '../../src/Routers/friendsRouter';
 
 const userRegisteredEmail = "add-friend-user@gmail.com"
 const userRegisteredPassword = "1234567a"
@@ -16,7 +16,7 @@ const friendRegisteredUserName = 'add-friend-friend'
 
 const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
 const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
-const addFriendRoute = `/${RouteCategories.friend}/${FriendPaths.add}`
+const addFriendRoute = `/${RouteCategories.friends}/${FriendsPaths.add}`
 
 
 describe(addFriendRoute, () => {
@@ -60,8 +60,9 @@ describe(addFriendRoute, () => {
 
     test(`that user can add a friend`, async () => {
         expect.assertions(4)
+        const addFriendRouteWithUserId = `${addFriendRoute}/${userId}`
         const response = await request(server)
-            .put(addFriendRoute)
+            .put(addFriendRouteWithUserId)
             .send({
                 userId,
                 friendId

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as Joi from 'joi'
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { userModel } from "../../Models/User";
+import { userModel, IMinimumUserData } from "../../Models/User";
 import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { MessageCategories } from "../../Messages/messageCategories";
 import { FailureMessageKeys } from "../../Messages/failureMessages";
@@ -17,8 +17,8 @@ export const getFriendsValidationMiddleware = (request: Request, response: Respo
 
 export const getRetreiveUserMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { userId } = request.params
-        const user = await userModel.findOne({ _id: userId })
+        const { _id } = response.locals.minimumUserData as IMinimumUserData
+        const user = await userModel.findOne({ _id })
         response.locals.user = user
         next()
     } catch (err) {

@@ -4,19 +4,18 @@ import server, { RouteCategories } from '../../src/app'
 import { userModel } from '../../src/Models/User';
 import { UserPaths } from '../../src/Routers/userRouter';
 import { AuthPaths } from '../../src/Routers/authRouter';
-import { FriendPaths } from '../../src/Routers/friendRouter';
+import { FriendsPaths } from '../../src/Routers/friendsRouter';
 
 const userRegisteredEmail = "get-friends-user@gmail.com"
 const userRegisteredPassword = "12345678"
 const userRegisteredUserName = 'get-friends-user'
 
-const friendRegisterEmail = 'get-friends-friend@gmail.com'
+const friendRegisteredEmail = 'get-friends-friend@gmail.com'
 const friendRegisteredPassword = '23456789'
 const friendRegisteredUserName = 'get-friends-friend'
 
 const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
 const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
-const addFriendRoute = `/${RouteCategories.friend}/${FriendPaths.add}`
 const getFriendsRoute = `/${RouteCategories.friends}`
 
 
@@ -27,7 +26,6 @@ describe(getFriendsRoute, () => {
     let friendId: string
 
     beforeAll(async () => {
-        await userModel.deleteMany({});
         const userRegistrationResponse = await request(server)
             .post(registrationRoute)
             .send(
@@ -52,18 +50,24 @@ describe(getFriendsRoute, () => {
             .send(
                 {
                     userName: friendRegisteredUserName,
-                    email: friendRegisterEmail,
+                    email: friendRegisteredEmail,
                     password: friendRegisteredPassword
                 }
             )
         friendId = friendRegistrationResponse.body._id
-        const friendAddedResponse = await request(server)
+        const addFriendRoute = `/${RouteCategories.friends}/${FriendsPaths.add}/${userId}`
+        const addFriendsResponse = await request(server)
             .put(addFriendRoute)
             .send({
                 userId,
                 friendId
             })
             .set({ 'x-access-token': jsonWebToken })
+    })
+
+    afterAll(async () => {
+        await userModel.deleteOne({ email: userRegisteredEmail })
+        await userModel.deleteOne({ email: friendRegisteredEmail })
     })
 
 

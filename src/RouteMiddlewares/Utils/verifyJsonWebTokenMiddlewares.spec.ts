@@ -10,6 +10,7 @@ import {
     jsonWebTokenErrorResponseMiddleware,
     getJsonWebTokenErrorResponseMiddleware,
     VerifyJsonWebTokenResponseLocals,
+    setMinimumUserDataOnResponseLocals,
 } from './verifyJsonWebTokenMiddlewares'
 
 import { SupportedHeaders } from '../../Server/headers';
@@ -254,10 +255,12 @@ describe(`jsonWebTokenErrorResponseMiddleware`, () => {
 
 describe(`verifyJsonWebTokenMiddlewares`, () => {
     test("that verfiyJsonWebToken middlewares are defined in the correct order", () => {
-        expect.assertions(4);
+        expect.assertions(6);
+        expect(verifyJsonWebTokenMiddlewares.length).toEqual(5)
         expect(verifyJsonWebTokenMiddlewares[0]).toBe(retreiveJsonWebTokenMiddleware)
         expect(verifyJsonWebTokenMiddlewares[1]).toBe(jsonWebTokenDoesNotExistResponseMiddleware)
         expect(verifyJsonWebTokenMiddlewares[2]).toBe(decodeJsonWebTokenMiddleware)
         expect(verifyJsonWebTokenMiddlewares[3]).toBe(jsonWebTokenErrorResponseMiddleware)
+        expect(verifyJsonWebTokenMiddlewares[4]).toBe(setMinimumUserDataOnResponseLocals)
     });
 });

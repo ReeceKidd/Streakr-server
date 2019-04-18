@@ -11,7 +11,6 @@ import soloStreaksRouter from "./Routers/soloStreaksRouter";
 import testRouter from "./Routers/testRouter";
 import usersRouter from "./Routers/usersRouter";
 import friendsRouter from "./Routers/friendsRouter";
-import friendRouter from "./Routers/friendRouter";
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
@@ -44,7 +43,6 @@ export enum RouteCategories {
   soloStreak = 'solo-streak',
   soloStreaks = 'solo-streaks',
   test = 'test',
-  friend = 'friend',
   friends = 'friends'
 }
 
@@ -54,7 +52,6 @@ app.use(`/${RouteCategories.user}`, userRouter)
 app.use(`/${RouteCategories.users}`, usersRouter)
 app.use(`/${RouteCategories.auth}`, authRouter)
 app.use(`/${RouteCategories.test}`, testRouter)
-app.use(`/${RouteCategories.friend}`, friendRouter)
 app.use(`/${RouteCategories.friends}`, friendsRouter)
 
 export default app

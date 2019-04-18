@@ -92,11 +92,21 @@ export const getJsonWebTokenErrorResponseMiddleware = (unauthorizedErrorMessage:
 const localisedUnauthorizedErrorMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.unauthorisedMessage)
 export const jsonWebTokenErrorResponseMiddleware = getJsonWebTokenErrorResponseMiddleware(localisedUnauthorizedErrorMessage, ErrorStatusCodes.lacksAuthenticationCredientails)
 
+export const setMinimumUserDataOnResponseLocals = (request: Request, response: Response, next: NextFunction) => {
+    try {
+        response.locals.minimumUserData = (response.locals as VerifyJsonWebTokenResponseLocals).decodedJsonWebToken.minimumUserData
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
 export const verifyJsonWebTokenMiddlewares = [
     retreiveJsonWebTokenMiddleware,
     jsonWebTokenDoesNotExistResponseMiddleware,
     decodeJsonWebTokenMiddleware,
     jsonWebTokenErrorResponseMiddleware,
+    setMinimumUserDataOnResponseLocals
 ]
 
 

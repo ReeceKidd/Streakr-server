@@ -1,4 +1,5 @@
 import { getFriendsMiddlewares, getFriendsValidationMiddleware, formatFriendsMiddleware, userExistsValidationMiddleware, getUserExistsValidationMiddleware, retreiveFriendsMiddleware, sendFormattedFriendsMiddleware, getRetreiveUserMiddleware, retreiveUserMiddleware, getRetreiveFriendsMiddleware } from "./getFriendsMiddlewares";
+import { IMinimumUserData } from "Models/User";
 
 describe(`getFriendsValidationMiddleware`, () => {
 
@@ -71,8 +72,12 @@ describe(`getFriendsValidationMiddleware`, () => {
 describe(`retreiveUserMiddleware`, () => {
 
     const mockUserId = "abcdefghij123";
+    const mockUserName = "mock"
+    const minimumUserData: IMinimumUserData = {
+        _id: mockUserId,
+        userName: mockUserName
+    }
     const ERROR_MESSAGE = "error";
-
 
     test("should define response.locals.user when user is found", async () => {
         expect.assertions(3);
@@ -81,8 +86,8 @@ describe(`retreiveUserMiddleware`, () => {
         const UserModel = {
             findOne
         }
-        const request: any = { params: { userId: mockUserId } };
-        const response: any = { locals: {} };
+        const request: any = {};
+        const response: any = { locals: { minimumUserData } };
         const next = jest.fn();
 
         const middleware = getRetreiveUserMiddleware(UserModel);
@@ -101,8 +106,8 @@ describe(`retreiveUserMiddleware`, () => {
         const UserModel = {
             findOne
         }
-        const request: any = { params: { userId: mockUserId } };
-        const response: any = { locals: {} };
+        const request: any = {};
+        const response: any = { locals: { minimumUserData } };
         const next = jest.fn();
 
         const middleware = getRetreiveUserMiddleware(UserModel);
@@ -121,8 +126,8 @@ describe(`retreiveUserMiddleware`, () => {
         const UserModel = {
             findOne
         }
-        const request: any = { params: { userId: mockUserId } };
-        const response: any = { locals: {} };
+        const request: any = {};
+        const response: any = { locals: { minimumUserData } };
         const next = jest.fn();
 
         const middleware = getRetreiveUserMiddleware(UserModel);
