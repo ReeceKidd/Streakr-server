@@ -17,12 +17,12 @@ export const soloStreakSchema = new mongoose.Schema({
         type: String,
         index: true
     },
-    streakName: {
+    name: {
         required: true,
         type: String,
         index: true,
     },
-    streakDescription: {
+    description: {
         required: true,
         type: String,
     },
