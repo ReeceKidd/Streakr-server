@@ -1,10 +1,11 @@
 import * as request from 'supertest'
 
-import server, { RouteCategories } from '../../src/app'
-import { userModel } from '../../src/Models/User';
-import { UserPaths } from '../../src/Routers/userRouter';
-import { AuthPaths } from '../../src/Routers/authRouter';
-import { FriendsPaths } from '../../src/Routers/friendsRouter';
+import server, { ApiVersions } from '../../../src/app'
+import { RouteCategories } from '../../../src/versions/v1'
+import { userModel } from '../../../src/Models/User';
+import { UserPaths } from '../../../src/Routers/userRouter';
+import { AuthPaths } from '../../../src/Routers/authRouter';
+import { FriendsPaths } from '../../../src/Routers/friendsRouter';
 
 const userRegisteredEmail = "add-friend-user@gmail.com"
 const userRegisteredPassword = "1234567a"
@@ -14,9 +15,9 @@ const friendRegisteredEmail = 'add-friend-friend@gmail.com'
 const friendRegisteredPassword = '2345678b'
 const friendRegisteredUserName = 'add-friend-friend'
 
-const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
-const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
-const addFriendRoute = `/${RouteCategories.friends}/${FriendsPaths.add}`
+const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
+const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
+const addFriendRoute = `/${ApiVersions.v1}/${RouteCategories.friends}/${FriendsPaths.add}`
 
 
 describe(addFriendRoute, () => {

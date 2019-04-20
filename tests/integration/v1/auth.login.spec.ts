@@ -1,22 +1,21 @@
 import * as request from 'supertest'
 
-import server, { RouteCategories } from '../../src/app'
-import { userModel } from '../../src/Models/User';
-import { SuccessMessageKeys } from '../../src/Messages/successMessages';
-import { FailureMessageKeys } from '../../src/Messages/failureMessages';
-import { getLocalisedString } from '../../src/Messages/getLocalisedString';
-import { MessageCategories } from '../../src/Messages/messageCategories';
-import { AuthPaths } from '../../src/Routers/authRouter';
-import { UserPaths } from '../../src/Routers/userRouter';
+import server, { ApiVersions } from '../../../src/app'
+import { RouteCategories } from '../../../src/versions/v1'
+import { userModel } from '../../../src/Models/User';
+import { SuccessMessageKeys } from '../../../src/Messages/successMessages';
+import { FailureMessageKeys } from '../../../src/Messages/failureMessages';
+import { getLocalisedString } from '../../../src/Messages/getLocalisedString';
+import { MessageCategories } from '../../../src/Messages/messageCategories';
+import { AuthPaths } from '../../../src/Routers/authRouter';
+import { UserPaths } from '../../../src/Routers/userRouter';
 
-const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
-const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
+const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
+const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
 
 const registeredEmail = "register@gmail.com"
 const registeredUserName = 'registeredUser'
 const registeredPassword = "12345678"
-
-
 
 describe(loginRoute, () => {
 

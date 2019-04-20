@@ -1,17 +1,19 @@
 import * as request from 'supertest'
-import server, { RouteCategories } from '../../src/app'
-import { userModel } from '../../src/Models/User';
-import { UserPaths } from '../../src/Routers/userRouter';
-import { AuthPaths } from '../../src/Routers/authRouter';
-import { TestPaths } from '../../src/Routers/testRouter';
+
+import server, { ApiVersions } from '../../../src/app'
+import { RouteCategories } from '../../../src/versions/v1'
+import { userModel } from '../../../src/Models/User';
+import { UserPaths } from '../../../src/Routers/userRouter';
+import { AuthPaths } from '../../../src/Routers/authRouter';
+import { TestPaths } from '../../../src/Routers/testRouter';
 
 const registeredEmail = "jsonwebtoken@gmail.com"
 const registeredPassword = "12345678"
 const registeredUserName = "json-web-token-user"
 
-const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
-const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
-const verifyJsonWebTokenRoute = `/${RouteCategories.test}/${TestPaths.verifyJsonWebToken}`
+const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
+const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
+const verifyJsonWebTokenRoute = `/${ApiVersions.v1}/${RouteCategories.test}/${TestPaths.verifyJsonWebToken}`
 
 
 describe(verifyJsonWebTokenRoute, () => {

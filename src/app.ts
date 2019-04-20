@@ -4,16 +4,10 @@ import * as mongoose from "mongoose";
 import * as morgan from "morgan";
 import * as passport from 'passport';
 
-import authRouter from "./Routers/authRouter";
-import userRouter from "./Routers/userRouter";
-import soloStreakRouter from "./Routers/soloStreakRouter";
-import soloStreaksRouter from "./Routers/soloStreaksRouter";
-import testRouter from "./Routers/testRouter";
-import usersRouter from "./Routers/usersRouter";
-import friendsRouter from "./Routers/friendsRouter";
-
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
+
+import v1Router from "./versions/v1";
 
 
 
@@ -36,22 +30,10 @@ mongoose
   )
   .catch(err => console.log(err.message));
 
-export enum RouteCategories {
-  user = 'user',
-  users = 'users',
-  auth = 'auth',
-  soloStreak = 'solo-streak',
-  soloStreaks = 'solo-streaks',
-  test = 'test',
-  friends = 'friends'
+export enum ApiVersions {
+  v1 = 'v1'
 }
 
-app.use(`/${RouteCategories.soloStreak}`, soloStreakRouter)
-app.use(`/${RouteCategories.soloStreaks}`, soloStreaksRouter)
-app.use(`/${RouteCategories.user}`, userRouter)
-app.use(`/${RouteCategories.users}`, usersRouter)
-app.use(`/${RouteCategories.auth}`, authRouter)
-app.use(`/${RouteCategories.test}`, testRouter)
-app.use(`/${RouteCategories.friends}`, friendsRouter)
+app.use(`/${ApiVersions.v1}`, v1Router)
 
 export default app

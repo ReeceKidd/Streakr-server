@@ -1,10 +1,11 @@
 import * as request from 'supertest'
 
-import server, { RouteCategories } from '../../src/app'
-import { userModel } from '../../src/Models/User';
-import { UserPaths } from '../../src/Routers/userRouter';
+import server, { ApiVersions } from '../../../src/app'
+import { RouteCategories } from '../../../src/versions/v1'
+import { userModel } from '../../../src/Models/User';
+import { UserPaths } from '../../../src/Routers/userRouter';
 
-const userRegistationRoute = `/${RouteCategories.user}/${UserPaths.register}`
+const userRegistationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
 
 describe(userRegistationRoute, () => {
 

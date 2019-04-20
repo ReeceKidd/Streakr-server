@@ -1,10 +1,11 @@
 import * as request from 'supertest'
 
-import server, { RouteCategories } from '../../src/app'
-import { userModel } from '../../src/Models/User';
-import { UserPaths } from '../../src/Routers/userRouter';
-import { UsersPaths } from '../../src/Routers/usersRouter';
-import { AuthPaths } from '../../src/Routers/authRouter';
+import server, { ApiVersions } from '../../../src/app'
+import { RouteCategories } from '../../../src/versions/v1'
+import { userModel } from '../../../src/Models/User';
+import { UserPaths } from '../../../src/Routers/userRouter';
+import { UsersPaths } from '../../../src/Routers/usersRouter';
+import { AuthPaths } from '../../../src/Routers/authRouter';
 
 const registeredEmail = "search-user@gmail.com"
 const registeredPassword = "12345678"
@@ -16,16 +17,16 @@ const searchableUserUserName = 'other-user'
 
 const searchQueryKey = "searchQuery"
 
-const registrationRoute = `/${RouteCategories.user}/${UserPaths.register}`
-const getUsersByRegexSearchRoute = `/${RouteCategories.users}/${UsersPaths.getUsersByRegexSearch}`
-const loginRoute = `/${RouteCategories.auth}/${AuthPaths.login}`
+const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
+const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
 
-
-describe(getUsersByRegexSearchRoute, () => {
+describe('/users', () => {
 
     let jsonWebToken: string
+    let getUsersByRegexSearchRoute
 
     beforeAll(async () => {
+        getUsersByRegexSearchRoute = `/${ApiVersions.v1}/${RouteCategories.users}/${UsersPaths.getUsersByRegexSearch}`
         await request(server)
             .post(registrationRoute)
             .send({
