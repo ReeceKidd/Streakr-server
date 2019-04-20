@@ -8,17 +8,21 @@ const userRegistationRoute = `/${RouteCategories.user}/${UserPaths.register}`
 
 describe(userRegistationRoute, () => {
 
-    beforeAll(() => {
-        return userModel.deleteMany({});
+    const userName = "tester1"
+    const email = "tester1@gmail.com"
+    const password = "12345678"
+
+    afterAll(async () => {
+        await userModel.deleteOne({ email });
     });
 
     test('user can register successfully', async () => {
         expect.assertions(9)
         const response = await request(server).post(userRegistationRoute).send(
             {
-                userName: "tester1",
-                email: "tester1@gmail.com",
-                password: "12345678"
+                userName,
+                email,
+                password
             }
         )
         expect(response.status).toEqual(200)

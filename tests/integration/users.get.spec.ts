@@ -26,7 +26,6 @@ describe(getUsersByRegexSearchRoute, () => {
     let jsonWebToken: string
 
     beforeAll(async () => {
-        await userModel.deleteMany({});
         await request(server)
             .post(registrationRoute)
             .send({
@@ -48,6 +47,11 @@ describe(getUsersByRegexSearchRoute, () => {
                 email: searchableUserEmail,
                 password: searchableUserPassword
             })
+    })
+
+    afterAll(async () => {
+        await userModel.deleteOne({ email: registeredEmail })
+        await userModel.deleteOne({ email: searchableUserEmail })
     })
 
     test(`that request returns searchAbleUser when full searchTerm is uaed`, async () => {

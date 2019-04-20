@@ -14,15 +14,15 @@ import { soloStreakModel } from "../../Models/SoloStreak";
 describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
     const userId = '12345678'
-    const streakName = 'Spanish Streak'
-    const streakDescription = ' Do the insane amount of XP for Duolingo each day'
+    const name = 'Spanish Streak'
+    const description = ' Do the insane amount of XP for Duolingo each day'
 
     test("that minimum amount of information needed for a sterak passes", () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakName, streakDescription }
+            body: { userId, name, description }
         };
         const response: any = {
             status
@@ -40,7 +40,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakName, streakDescription }
+            body: { userId, name, description }
         };
         const response: any = {
             status
@@ -58,7 +58,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { streakName, streakDescription }
+            body: { name, description }
         };
         const response: any = {
             status
@@ -80,7 +80,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId: 1234, streakName, streakDescription }
+            body: { userId: 1234, name, description }
         };
         const response: any = {
             status
@@ -97,12 +97,12 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         expect(next).not.toBeCalled();
     });
 
-    test("that correct response is sent when streakName is missing", () => {
+    test("that correct response is sent when name is missing", () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakDescription }
+            body: { userId, description }
         };
         const response: any = {
             status
@@ -114,17 +114,17 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
         expect(send).toBeCalledWith({
-            message: 'child "streakName" fails because ["streakName" is required]'
+            message: 'child "name" fails because ["name" is required]'
         });
         expect(next).not.toBeCalled();
     });
 
-    test("that error response is sent when streakName is not a string", () => {
+    test("that error response is sent when name is not a string", () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakName: 1234, streakDescription }
+            body: { userId, name: 1234, description }
         };
         const response: any = {
             status
@@ -136,17 +136,17 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
         expect(send).toBeCalledWith({
-            message: 'child "streakName" fails because ["streakName" must be a string]'
+            message: 'child "name" fails because ["name" must be a string]'
         });
         expect(next).not.toBeCalled();
     });
 
-    test("that correct response is sent when streakDescription is missing", () => {
+    test("that correct response is sent when description is missing", () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakName }
+            body: { userId, name }
         };
         const response: any = {
             status
@@ -158,17 +158,17 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
         expect(send).toBeCalledWith({
-            message: 'child "streakDescription" fails because ["streakDescription" is required]'
+            message: 'child "description" fails because ["description" is required]'
         });
         expect(next).not.toBeCalled();
     });
 
-    test("that error response is sent when streakDescription is not a string", () => {
+    test("that error response is sent when description is not a string", () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            body: { userId, streakName, streakDescription: 1234 }
+            body: { userId, name, description: 1234 }
         };
         const response: any = {
             status
@@ -180,7 +180,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         expect.assertions(3);
         expect(status).toHaveBeenCalledWith(422);
         expect(send).toBeCalledWith({
-            message: 'child "streakDescription" fails because ["streakDescription" must be a string]'
+            message: 'child "description" fails because ["description" must be a string]'
         });
         expect(next).not.toBeCalled();
     });
@@ -191,23 +191,23 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
     test("should define response.locals.newSoloStreak", async () => {
 
         const userId = 'abcdefg';
-        const streakName = 'streak name'
-        const streakDescription = 'mock streak description'
+        const name = 'streak name'
+        const description = 'mock streak description'
 
         class SoloStreak {
             userId: string;
-            streakName: string;
-            streakDescription: string;
+            name: string;
+            description: string;
 
-            constructor({ userId, streakName, streakDescription }) {
+            constructor({ userId, name, description }) {
                 this.userId = userId;
-                this.streakName = streakName;
-                this.streakDescription = streakDescription
+                this.name = name;
+                this.description = description
             }
         }
 
         const response: any = { locals: {} };
-        const request: any = { body: { userId, streakName, streakDescription } };
+        const request: any = { body: { userId, name, description } };
         const next = jest.fn();
 
         const middleware = getCreateSoloStreakFromRequestMiddleware(SoloStreak)
@@ -215,7 +215,7 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
         middleware(request, response, next);
 
         expect.assertions(2);
-        const newSoloStreak = new SoloStreak({ userId, streakName, streakDescription })
+        const newSoloStreak = new SoloStreak({ userId, name, description })
         expect(response.locals.newSoloStreak).toEqual(newSoloStreak)
         expect(next).toBeCalledWith()
     });
@@ -223,11 +223,11 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
     test('should call next with error message on error', () => {
 
         const userId = 'abcdefg';
-        const streakName = 'streak name'
-        const streakDescription = 'mock streak description'
+        const name = 'streak name'
+        const description = 'mock streak description'
 
         const response: any = { locals: {} };
-        const request: any = { body: { userId, streakName, streakDescription } };
+        const request: any = { body: { userId, name, description } };
         const next = jest.fn();
 
         const middleware = getCreateSoloStreakFromRequestMiddleware({})
@@ -292,9 +292,9 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
 
 
     const user = new userModel({ userName: 'userName', email: 'username@gmail.com' })
-    const streakName = 'streakName'
-    const streakDescription = 'streakDescription'
-    const savedSoloStreak = new soloStreakModel({ user, streakName, streakDescription })
+    const name = 'name'
+    const description = 'description'
+    const savedSoloStreak = new soloStreakModel({ user, name, description })
     test("should send user in response with password undefined", () => {
 
         const send = jest.fn()

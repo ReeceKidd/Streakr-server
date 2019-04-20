@@ -8,8 +8,8 @@ import { ISoloStreak, soloStreakModel } from "../../Models/SoloStreak";
 
 export interface SoloStreakRegistrationRequestBody {
     userId: string,
-    streakName: string,
-    streakDescription: string,
+    name: string,
+    description: string,
     createdAt: Date,
     modifiedAt: Date
 }
@@ -23,8 +23,8 @@ export interface SoloStreakResponseLocals {
 
 const soloStreakRegisterstrationValidationSchema = {
     userId: Joi.string().required(),
-    streakName: Joi.string().required(),
-    streakDescription: Joi.string().required(),
+    name: Joi.string().required(),
+    description: Joi.string().required(),
 };
 
 export const soloStreakRegistrationValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
@@ -33,8 +33,8 @@ export const soloStreakRegistrationValidationMiddleware = (request: Request, res
 
 export const getCreateSoloStreakFromRequestMiddleware = soloStreak => (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { streakName, streakDescription, userId } = request.body
-        response.locals.newSoloStreak = new soloStreak({ streakName, streakDescription, userId });
+        const { name, description, userId } = request.body
+        response.locals.newSoloStreak = new soloStreak({ name, description, userId });
         next();
     } catch (err) {
         next(err)

@@ -19,7 +19,6 @@ describe(verifyJsonWebTokenRoute, () => {
     let jsonWebToken: string
 
     beforeAll(async () => {
-        await userModel.deleteMany({});
         await request(server).post(registrationRoute).send(
             {
                 userName: registeredUserName,
@@ -34,6 +33,10 @@ describe(verifyJsonWebTokenRoute, () => {
             }
         )
         jsonWebToken = loginResponse.body.jsonWebToken
+    })
+
+    afterAll(async () => {
+        await userModel.deleteOne({ email: registeredEmail })
     })
 
     test(`that request passes when json web token is valid`, async () => {

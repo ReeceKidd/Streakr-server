@@ -10,7 +10,7 @@ const userRegisteredEmail = "add-friend-user@gmail.com"
 const userRegisteredPassword = "1234567a"
 const userRegisteredUserName = 'add-friend-user'
 
-const friendRegisterEmail = 'add-friend-friend@gmail.com'
+const friendRegisteredEmail = 'add-friend-friend@gmail.com'
 const friendRegisteredPassword = '2345678b'
 const friendRegisteredUserName = 'add-friend-friend'
 
@@ -26,7 +26,6 @@ describe(addFriendRoute, () => {
     let friendId: string
 
     beforeAll(async () => {
-        await userModel.deleteMany({});
         const userRegistrationResponse = await request(server)
             .post(registrationRoute)
             .send(
@@ -51,11 +50,16 @@ describe(addFriendRoute, () => {
             .send(
                 {
                     userName: friendRegisteredUserName,
-                    email: friendRegisterEmail,
+                    email: friendRegisteredEmail,
                     password: friendRegisteredPassword
                 }
             )
         friendId = friendRegistrationResponse.body._id
+    })
+
+    afterAll(async () => {
+        await userModel.deleteOne({ email: userRegisteredEmail });
+        await userModel.deleteOne({ email: friendRegisteredEmail })
     })
 
     test(`that user can add a friend`, async () => {

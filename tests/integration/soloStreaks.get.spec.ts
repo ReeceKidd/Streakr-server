@@ -6,6 +6,7 @@ import { SoloStreakPaths } from '../../src/Routers/soloStreakRouter';
 import { UserPaths } from '../../src/Routers/userRouter';
 import { AuthPaths } from '../../src/Routers/authRouter';
 import { SoloStreaksPaths } from '../../src/Routers/soloStreaksRouter';
+import { soloStreakModel } from '../../src/Models/SoloStreak';
 
 const registeredEmail = "get-solo-streaks@gmail.com"
 const registeredPassword = "12345678"
@@ -21,13 +22,12 @@ const soloStreakDescription = "Each day I must do the insame amount 50xp of Duol
 
 const accessToken = 'x-access-token'
 
-describe(createSoloStreakRoute, () => {
+describe(getSoloStreaksRoute, () => {
 
     let jsonWebToken: string
     let userId: string
 
     beforeAll(async () => {
-        await userModel.deleteMany({});
         const registrationResponse = await request(server)
             .post(registrationRoute)
             .send(
@@ -47,14 +47,19 @@ describe(createSoloStreakRoute, () => {
                 }
             )
         jsonWebToken = loginResponse.body.jsonWebToken
-        await request(server)
+        const createSoloStreak = await request(server)
             .post(createSoloStreakRoute)
             .send({
                 userId,
-                streakName: soloStreakName,
-                streakDescription: soloStreakDescription,
+                name: soloStreakName,
+                description: soloStreakDescription,
             })
             .set({ [accessToken]: jsonWebToken })
+    })
+
+    afterAll(async () => {
+        await userModel.deleteOne({ email: registeredEmail });
+        await soloStreakModel.deleteOne({ name: soloStreakName });
     })
 
     test(`that solo streaks can be retreived for user`, async () => {
@@ -69,9 +74,9 @@ describe(createSoloStreakRoute, () => {
         expect(response.body.soloStreaks[0]).toHaveProperty('_id')
         expect(response.body.soloStreaks[0]).toHaveProperty('startDate')
         expect(response.body.soloStreaks[0]).toHaveProperty('calendar')
-        expect(response.body.soloStreaks[0]).toHaveProperty('streakName')
-        expect(response.body.soloStreaks[0]).toHaveProperty('streakDescription')
-        expect(response.body.soloStreaks[0]).toHaveProperty('userId')
+        expect(response.body.soloStreaks[0].name).toBe(soloStreakName)
+        expect(response.body.soloStreaks[0].description).toBe(soloStreakDescription)
+        expect(response.body.soloStreaks[0].userId).toBe(userId)
         expect(response.body.soloStreaks[0]).toHaveProperty('createdAt')
         expect(response.body.soloStreaks[0]).toHaveProperty('updatedAt')
     })

@@ -21,8 +21,7 @@ const registeredPassword = "12345678"
 describe(loginRoute, () => {
 
     beforeAll(async () => {
-        await userModel.deleteMany({});
-        return request(server).post(registrationRoute).send(
+        await request(server).post(registrationRoute).send(
             {
                 userName: registeredUserName,
                 email: registeredEmail,
@@ -30,6 +29,10 @@ describe(loginRoute, () => {
             }
         )
     });
+
+    afterAll(async () => {
+        await userModel.deleteOne({ email: registeredEmail });
+    })
 
     test('user can login successfully and receives jsonWebToken in response', async () => {
         expect.assertions(6)
