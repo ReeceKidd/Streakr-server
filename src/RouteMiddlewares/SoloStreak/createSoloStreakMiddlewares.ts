@@ -66,7 +66,7 @@ export const sendFormattedSoloStreakMiddleware = (
 ) => {
     try {
         const { savedSoloStreak } = response.locals as SoloStreakResponseLocals;
-        return response.status(ResponseCodes.success).send(savedSoloStreak);
+        return response.status(ResponseCodes.created).send(savedSoloStreak);
     } catch (err) {
         next(err);
     }

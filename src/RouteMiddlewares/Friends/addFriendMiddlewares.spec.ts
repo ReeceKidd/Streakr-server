@@ -394,7 +394,7 @@ describe('sendFriendAddedSuccessMessageMiddleware', () => {
 
         expect.assertions(3);
         expect(next).not.toBeCalled()
-        expect(status).toBeCalledWith(ResponseCodes.success)
+        expect(status).toBeCalledWith(ResponseCodes.created)
         expect(send).toBeCalledWith({ message: successMessage, friends: formattedFriends })
     })
 

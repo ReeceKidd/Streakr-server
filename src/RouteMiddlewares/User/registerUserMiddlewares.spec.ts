@@ -668,9 +668,10 @@ describe(`sendFormattedUserMiddleware`, () => {
 
         sendFormattedUserMiddleware(request, response, next);
 
-        expect.assertions(3);
+        expect.assertions(4);
         expect(response.locals.savedUser.password).toBeUndefined()
         expect(next).not.toBeCalled()
+        expect(status).toBeCalledWith(ResponseCodes.created)
         expect(send).toBeCalledWith({ userName: mockUserName, email: mockEmail })
     });
 

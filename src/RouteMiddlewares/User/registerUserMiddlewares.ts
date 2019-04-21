@@ -178,7 +178,7 @@ export const sendFormattedUserMiddleware = (
   try {
     const { savedUser } = response.locals;
     savedUser.password = undefined;
-    return response.status(ResponseCodes.success).send(savedUser);
+    return response.status(ResponseCodes.created).send(savedUser);
   } catch (err) {
     next(err);
   }

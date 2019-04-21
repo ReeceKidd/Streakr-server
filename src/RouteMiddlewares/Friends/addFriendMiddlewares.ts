@@ -93,7 +93,7 @@ export const formatFriendsMiddleware = (request: Request, response: Response, ne
 export const getSendFriendAddedSuccessMessageMiddleware = addFriendSuccessMessage => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { formattedFriends } = response.locals
-        response.status(ResponseCodes.success).send({ message: addFriendSuccessMessage, friends: formattedFriends })
+        response.status(ResponseCodes.created).send({ message: addFriendSuccessMessage, friends: formattedFriends })
     } catch (err) {
         next(err)
     }
