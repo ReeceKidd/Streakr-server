@@ -9,7 +9,7 @@ import { getLocalisedString } from '../../../src/Messages/getLocalisedString';
 import { MessageCategories } from '../../../src/Messages/messageCategories';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { UserPaths } from '../../../src/Routers/userRouter';
-import { ResponseCodes } from '../../../src/REST/responseCodes';
+import { ResponseCodes } from '../../../src/Server/responseCodes';
 
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`

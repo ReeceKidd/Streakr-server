@@ -8,7 +8,7 @@ import { soloStreakModel } from '../../../src/Models/SoloStreak';
 import { SoloStreakPaths } from '../../../src/Routers/soloStreakRouter';
 import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
-import { ResponseCodes } from '../../../src/REST/responseCodes';
+import { ResponseCodes } from '../../../src/Server/responseCodes';
 
 const registeredEmail = "create-solo-streak-user@gmail.com"
 const registeredPassword = "12345678"

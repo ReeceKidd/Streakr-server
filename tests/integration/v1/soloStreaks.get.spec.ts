@@ -8,7 +8,7 @@ import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { SoloStreaksPaths } from '../../../src/Routers/soloStreaksRouter';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
-import { ResponseCodes } from '../../../src/REST/responseCodes';
+import { ResponseCodes } from '../../../src/Server/responseCodes';
 
 const registeredEmail = "get-solo-streaks@gmail.com"
 const registeredPassword = "12345678"

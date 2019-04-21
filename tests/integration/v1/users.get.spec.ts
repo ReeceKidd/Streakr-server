@@ -6,7 +6,7 @@ import { userModel } from '../../../src/Models/User';
 import { UserPaths } from '../../../src/Routers/userRouter';
 import { UsersPaths } from '../../../src/Routers/usersRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
-import { ResponseCodes } from '../../../src/REST/responseCodes';
+import { ResponseCodes } from '../../../src/Server/responseCodes';
 
 const registeredEmail = "search-user@gmail.com"
 const registeredPassword = "12345678"

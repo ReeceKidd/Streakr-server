@@ -6,7 +6,7 @@ import { userModel } from '../../../src/Models/User';
 import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { FriendsPaths } from '../../../src/Routers/friendsRouter';
-import { ResponseCodes } from '../../../src/REST/responseCodes';
+import { ResponseCodes } from '../../../src/Server/responseCodes';
 
 const userRegisteredEmail = "add-friend-user@gmail.com"
 const userRegisteredPassword = "1234567a"

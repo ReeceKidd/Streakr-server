@@ -4,7 +4,7 @@ import server, { ApiVersions } from '../../../src/app'
 import { RouteCategories } from '../../../src/versions/v1'
 import { userModel } from '../../../src/Models/User';
 import { UserPaths } from '../../../src/Routers/userRouter';
-import { ResponseCodes } from '../../../src/REST/responseCodes';
+import { ResponseCodes } from '../../../src/Server/responseCodes';
 
 const userRegistationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
 
