@@ -5,7 +5,7 @@ import { RouteCategories } from '../../../src/versions/v1'
 import { userModel } from '../../../src/Models/User';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
-import { SoloStreakPaths } from '../../../src/Routers/soloStreakRouter';
+import { SoloStreaksPaths } from '../../../src/Routers/soloStreaksRouter';
 import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
@@ -16,7 +16,7 @@ const registeredUserName = 'create-solo-streak-user'
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
-const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreak}/${SoloStreakPaths.create}`
+const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${SoloStreaksPaths.create}`
 
 
 describe(createSoloStreakRoute, () => {

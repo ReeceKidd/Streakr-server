@@ -2,7 +2,6 @@ import { Router } from "express";
 
 import authRouter from "../Routers/authRouter";
 import userRouter from "../Routers/userRouter";
-import soloStreakRouter from "../Routers/soloStreakRouter";
 import soloStreaksRouter from "../Routers/soloStreaksRouter";
 import testRouter from "../Routers/testRouter";
 import usersRouter from "../Routers/usersRouter";
@@ -12,7 +11,6 @@ export enum RouteCategories {
     user = 'user',
     users = 'users',
     auth = 'auth',
-    soloStreak = 'solo-streak',
     soloStreaks = 'solo-streaks',
     test = 'test',
     friends = 'friends'
@@ -20,7 +18,6 @@ export enum RouteCategories {
 
 const v1Router = Router();
 
-v1Router.use(`/${RouteCategories.soloStreak}`, soloStreakRouter)
 v1Router.use(`/${RouteCategories.soloStreaks}`, soloStreaksRouter)
 v1Router.use(`/${RouteCategories.user}`, userRouter)
 v1Router.use(`/${RouteCategories.users}`, usersRouter)

@@ -3,7 +3,6 @@ import * as request from 'supertest'
 import server, { ApiVersions } from '../../../src/app'
 import { RouteCategories } from '../../../src/versions/v1'
 import { userModel } from '../../../src/Models/User';
-import { SoloStreakPaths } from '../../../src/Routers/soloStreakRouter';
 import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { SoloStreaksPaths } from '../../../src/Routers/soloStreaksRouter';
@@ -16,8 +15,8 @@ const registeredUserName = 'get-solo-streaks-user'
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
-const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreak}/${SoloStreakPaths.create}`
-const getSoloStreaksRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${SoloStreaksPaths.get}`
+const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${SoloStreaksPaths.create}`
+const getSoloStreaksRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/`
 
 const soloStreakName = "Daily Spanish"
 const soloStreakDescription = "Each day I must do the insame amount 50xp of Duolingo"
