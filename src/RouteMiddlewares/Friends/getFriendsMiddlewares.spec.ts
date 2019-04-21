@@ -1,5 +1,6 @@
 import { getFriendsMiddlewares, getFriendsValidationMiddleware, formatFriendsMiddleware, userExistsValidationMiddleware, getUserExistsValidationMiddleware, retreiveFriendsMiddleware, sendFormattedFriendsMiddleware, getRetreiveUserMiddleware, retreiveUserMiddleware, getRetreiveFriendsMiddleware } from "./getFriendsMiddlewares";
-import { IMinimumUserData } from "Models/User";
+import { IMinimumUserData } from "../../Models/User";
+import { ResponseCodes } from "../../Server/responseCodes";
 
 describe(`getFriendsValidationMiddleware`, () => {
 
@@ -38,7 +39,7 @@ describe(`getFriendsValidationMiddleware`, () => {
 
         getFriendsValidationMiddleware(request, response, next);
 
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "userId" fails because ["userId" is required]'
         });
@@ -61,7 +62,7 @@ describe(`getFriendsValidationMiddleware`, () => {
 
         getFriendsValidationMiddleware(request, response, next);
 
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "userId" fails because ["userId" must be a string]'
         });
@@ -160,7 +161,7 @@ describe(`userExistsValidationMiddleware`, () => {
 
         middleware(request, response, next);
 
-        expect(status).toHaveBeenCalledWith(400);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
         expect(send).toBeCalledWith({ message: mockErrorMessage });
     });
 
@@ -295,15 +296,17 @@ describe('sendFormattedFriendsMiddleware', () => {
     test("should send formattedFriends in response", () => {
 
         const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
         const request: any = {}
         const formattedFriends = ['friend']
-        const response: any = { locals: { formattedFriends }, send }
+        const response: any = { locals: { formattedFriends }, status }
         const next = jest.fn();
 
         sendFormattedFriendsMiddleware(request, response, next);
 
-        expect.assertions(2);
+        expect.assertions(3);
         expect(next).not.toBeCalled()
+        expect(status).toBeCalledWith(ResponseCodes.success)
         expect(send).toBeCalledWith({ friends: formattedFriends })
     });
 
@@ -313,7 +316,8 @@ describe('sendFormattedFriendsMiddleware', () => {
         const send = jest.fn(() => {
             throw new Error(ERROR_MESSAGE)
         })
-        const response: any = { locals: {}, send };
+        const status = jest.fn(() => ({ send }))
+        const response: any = { locals: {}, status };
 
         const request: any = {}
         const next = jest.fn();

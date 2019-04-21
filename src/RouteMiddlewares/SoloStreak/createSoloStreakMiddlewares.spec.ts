@@ -10,6 +10,7 @@ import {
 
 import { userModel } from "../../Models/User";
 import { soloStreakModel } from "../../Models/SoloStreak";
+import { ResponseCodes } from '../../Server/responseCodes';
 
 describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
@@ -68,7 +69,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "userId" fails because ["userId" is required]'
         });
@@ -90,7 +91,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "userId" fails because ["userId" must be a string]'
         });
@@ -112,7 +113,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "name" fails because ["name" is required]'
         });
@@ -134,7 +135,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "name" fails because ["name" must be a string]'
         });
@@ -156,7 +157,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "description" fails because ["description" is required]'
         });
@@ -178,7 +179,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         soloStreakRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "description" fails because ["description" must be a string]'
         });
@@ -290,7 +291,6 @@ describe(`saveSoloStreakToDatabaseMiddleware`, () => {
 describe(`sendFormattedSoloStreakMiddleware`, () => {
     const ERROR_MESSAGE = "error";
 
-
     const user = new userModel({ userName: 'userName', email: 'username@gmail.com' })
     const name = 'name'
     const description = 'description'
@@ -298,8 +298,9 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
     test("should send user in response with password undefined", () => {
 
         const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
         const soloStreakResponseLocals: SoloStreakResponseLocals = { savedSoloStreak }
-        const response: any = { locals: soloStreakResponseLocals, send };
+        const response: any = { locals: soloStreakResponseLocals, status };
 
         const request: any = {}
         const next = jest.fn();
@@ -317,7 +318,8 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
         const send = jest.fn(() => {
             throw new Error(ERROR_MESSAGE)
         })
-        const response: any = { locals: { savedSoloStreak }, send };
+        const status = jest.fn(() => ({ send }))
+        const response: any = { locals: { savedSoloStreak }, status };
 
         const request: any = {}
         const next = jest.fn();
@@ -327,7 +329,6 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
         expect.assertions(1);
         expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))
     })
-
 
 });
 

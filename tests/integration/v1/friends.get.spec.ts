@@ -6,6 +6,7 @@ import { userModel } from '../../../src/Models/User';
 import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { FriendsPaths } from '../../../src/Routers/friendsRouter';
+import { ResponseCodes } from '../../../src/REST/responseCodes';
 
 const userRegisteredEmail = "get-friends-user@gmail.com"
 const userRegisteredPassword = "12345678"
@@ -77,7 +78,7 @@ describe(getFriendsRoute, () => {
         const getFriendsResponse = await request(server)
             .get(getFriendsRouteWithUserId)
             .set({ 'x-access-token': jsonWebToken })
-        expect(getFriendsResponse.status).toEqual(200)
+        expect(getFriendsResponse.status).toEqual(ResponseCodes.success)
         expect(getFriendsResponse.type).toEqual('application/json')
         expect(getFriendsResponse.body.friends.length).toEqual(1)
         expect(getFriendsResponse.body.friends[0].userName).toEqual(friendRegisteredUserName)

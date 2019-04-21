@@ -1,4 +1,5 @@
 import { getUsersMiddlewares, retreiveUsersValidationMiddleware, retreiveUsersByUsernameRegexSearchMiddleware, formatUsersMiddleware, maximumSearchQueryLength, getRetreiveUsersByUsernameRegexSearchMiddleware, sendFormattedUsersMiddleware, setSearchQueryToLowercaseMiddleware } from "./getUsersMiddlewares";
+import { ResponseCodes } from "../../Server/responseCodes";
 
 describe(`getUsersValidationMiddleware`, () => {
 
@@ -37,7 +38,7 @@ describe(`getUsersValidationMiddleware`, () => {
         retreiveUsersValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "searchQuery" fails because ["searchQuery" is required]'
         });
@@ -62,7 +63,7 @@ describe(`getUsersValidationMiddleware`, () => {
         retreiveUsersValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(400);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
         expect(send).toBeCalledWith({
             message: 'child "searchQuery" fails because ["searchQuery" is not allowed to be empty]'
         });
@@ -87,7 +88,7 @@ describe(`getUsersValidationMiddleware`, () => {
         retreiveUsersValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "searchQuery" fails because ["searchQuery" length must be less than or equal to 64 characters long]'
         });
@@ -111,7 +112,7 @@ describe(`getUsersValidationMiddleware`, () => {
         retreiveUsersValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "searchQuery" fails because ["searchQuery" must be a string]'
         });
@@ -252,16 +253,18 @@ describe('sendUsersMiddleware', () => {
     test("should send formattedUsers in response", () => {
 
         const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
         const request: any = {}
         const formattedUsers = ['user']
-        const response: any = { locals: { formattedUsers }, send }
+        const response: any = { locals: { formattedUsers }, status }
         const next = jest.fn();
 
         sendFormattedUsersMiddleware(request, response, next);
         send
 
-        expect.assertions(2);
+        expect.assertions(3);
         expect(next).not.toBeCalled()
+        expect(status).toBeCalledWith(ResponseCodes.success)
         expect(send).toBeCalledWith({ users: formattedUsers })
     });
 
@@ -271,7 +274,8 @@ describe('sendUsersMiddleware', () => {
         const send = jest.fn(() => {
             throw new Error(ERROR_MESSAGE)
         })
-        const response: any = { locals: {}, send };
+        const status = jest.fn(() => ({ send }))
+        const response: any = { locals: {}, status };
 
         const request: any = {}
         const next = jest.fn();

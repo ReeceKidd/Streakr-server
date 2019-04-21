@@ -16,6 +16,7 @@ import {
   loginSuccessfulMiddleware,
   getLoginSuccessfulMiddleware
 } from './loginMiddlewares'
+import { ResponseCodes } from '../../Server/responseCodes';
 
 describe(`loginRequestValidationMiddlware`, () => {
 
@@ -56,7 +57,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
-    expect(status).toHaveBeenCalledWith(422);
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({ "message": "child \"email\" fails because [\"email\" is required]" });
     expect(next).not.toBeCalled();
   });
@@ -78,7 +79,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
-    expect(status).toHaveBeenCalledWith(422);
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({ "message": "child \"email\" fails because [\"email\" must be a valid email]" });
     expect(next).not.toBeCalled();
   });
@@ -98,7 +99,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
-    expect(status).toHaveBeenCalledWith(422);
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({ "message": "child \"password\" fails because [\"password\" is required]" });
     expect(next).not.toBeCalled();
   });
@@ -120,7 +121,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
-    expect(status).toHaveBeenCalledWith(422);
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({ "message": "child \"password\" fails because [\"password\" length must be at least 6 characters long]" });
     expect(next).not.toBeCalled();
   });
@@ -142,7 +143,7 @@ describe(`loginRequestValidationMiddlware`, () => {
     loginRequestValidationMiddleware(request, response, next);
 
     expect.assertions(3);
-    expect(status).toHaveBeenCalledWith(400);
+    expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
     expect(send).toBeCalledWith({ "message": "\"notAllowed\" is not allowed" });
     expect(next).not.toBeCalled();
   });
@@ -232,7 +233,7 @@ describe(`userExistsValidationMiddleware`, () => {
     middleware(request as Request, response as Response, next as NextFunction);
 
     expect.assertions(2);
-    expect(status).toHaveBeenCalledWith(400);
+    expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
     expect(send).toBeCalledWith({ message: mockErrorMessage });
   });
 
@@ -365,7 +366,7 @@ describe(`passwordsMatchValidationMiddleware`, () => {
     await middleware(request as Request, response as Response, next as NextFunction);
 
     expect.assertions(2);
-    expect(status).toHaveBeenCalledWith(400);
+    expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
     expect(send).toBeCalledWith({ message: loginError });
   });
 
@@ -499,8 +500,9 @@ describe(`loginSuccessfulMiddleware`, () => {
   test("should send login success message", () => {
 
     const send = jest.fn()
+    const status = jest.fn(() => ({ send }))
     const mockToken = '1234'
-    const response: any = { locals: { jsonWebToken: mockToken }, send };
+    const response: any = { locals: { jsonWebToken: mockToken }, status };
 
     const request: any = {}
     const next = jest.fn();
@@ -509,8 +511,9 @@ describe(`loginSuccessfulMiddleware`, () => {
     const middleware = getLoginSuccessfulMiddleware(loginSuccessMessage);
     middleware(request, response, next)
 
-    expect.assertions(2);
+    expect.assertions(3);
     expect(next).not.toBeCalled()
+    expect(status).toBeCalledWith(ResponseCodes.success)
     expect(send).toBeCalledWith({ message: loginSuccessMessage, jsonWebToken: mockToken })
   });
 
@@ -520,7 +523,8 @@ describe(`loginSuccessfulMiddleware`, () => {
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE)
     })
-    const response: any = { send, locals: { jsonWebToken: mockToken } };
+    const status = jest.fn(() => ({ send }))
+    const response: any = { status, locals: { jsonWebToken: mockToken } };
 
     const request: any = {}
     const next = jest.fn();

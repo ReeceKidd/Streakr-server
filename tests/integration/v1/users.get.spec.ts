@@ -6,6 +6,7 @@ import { userModel } from '../../../src/Models/User';
 import { UserPaths } from '../../../src/Routers/userRouter';
 import { UsersPaths } from '../../../src/Routers/usersRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
+import { ResponseCodes } from '../../../src/REST/responseCodes';
 
 const registeredEmail = "search-user@gmail.com"
 const registeredPassword = "12345678"
@@ -61,7 +62,7 @@ describe('/users', () => {
         const response = await request(server)
             .get(getUsersByRegexSearchRouteWithSearchQueryRoute)
             .set({ 'x-access-token': jsonWebToken })
-        expect(response.status).toEqual(200)
+        expect(response.status).toEqual(ResponseCodes.success)
         expect(response.type).toEqual('application/json')
         const users = response.body.users
         expect(users.length).toBe(1)
@@ -81,7 +82,7 @@ describe('/users', () => {
         const response = await request(server)
             .get(getUsersByRegexSearchWithPartialSearchQueryRoute)
             .set({ 'x-access-token': jsonWebToken })
-        expect(response.status).toEqual(200)
+        expect(response.status).toEqual(ResponseCodes.success)
         expect(response.type).toEqual('application/json')
         const users = response.body.users
         expect(users.length).toBe(1)

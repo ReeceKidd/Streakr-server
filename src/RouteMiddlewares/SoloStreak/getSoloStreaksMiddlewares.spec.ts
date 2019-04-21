@@ -1,4 +1,5 @@
 import { getSoloStreaksMiddlewares, getSoloStreaksValidationMiddleware, getFindSoloStreaksMiddleware, findSoloStreaksMiddleware, sendSoloStreaksMiddleware } from "./getSoloStreaksMiddlewares";
+import { ResponseCodes } from "../../Server/responseCodes";
 
 describe('getSoloStreaksValidationMiddleware', () => {
     test("check that valid request passes", () => {
@@ -36,7 +37,7 @@ describe('getSoloStreaksValidationMiddleware', () => {
 
         getSoloStreaksValidationMiddleware(request, response, next);
 
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "userId" fails because ["userId" is required]'
         });
@@ -59,7 +60,7 @@ describe('getSoloStreaksValidationMiddleware', () => {
 
         getSoloStreaksValidationMiddleware(request, response, next);
 
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "userId" fails because ["userId" must be a string]'
         });
@@ -107,6 +108,50 @@ describe('findSoloStreaksMiddleware', () => {
         expect(next).toBeCalledWith(ERROR_MESSAGE);
     })
 })
+
+describe('sendSoloStreaksMiddleware', () => {
+    test("should send soloStreaks in response", () => {
+
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const request: any = {}
+        const soloStreaks = [{
+            name: '30 minutes reading',
+            description: 'Read for 30 minutes everyday',
+            userId: '1234'
+        }]
+        const response: any = { locals: { soloStreaks }, status }
+        const next = jest.fn();
+
+        sendSoloStreaksMiddleware(request, response, next);
+        send
+
+        expect.assertions(3);
+        expect(next).not.toBeCalled()
+        expect(status).toBeCalledWith(ResponseCodes.success)
+        expect(send).toBeCalledWith({ soloStreaks })
+    });
+
+    test("should call next with an error on failure", () => {
+
+        const ERROR_MESSAGE = 'sendSoloStreaks error'
+        const send = jest.fn(() => {
+            throw new Error(ERROR_MESSAGE)
+        })
+        const status = jest.fn(() => ({ send }))
+        const response: any = { locals: {}, status };
+
+        const request: any = {}
+        const next = jest.fn();
+
+        sendSoloStreaksMiddleware(request, response, next);
+
+        expect.assertions(1);
+        expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))
+    })
+})
+
+
 
 describe(`getSoloStreaksMiddlewares`, () => {
     test("that getSoloStreaksMiddlewares are defined in the correct order", async () => {

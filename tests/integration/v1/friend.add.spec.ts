@@ -6,6 +6,7 @@ import { userModel } from '../../../src/Models/User';
 import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { FriendsPaths } from '../../../src/Routers/friendsRouter';
+import { ResponseCodes } from '../../../src/REST/responseCodes';
 
 const userRegisteredEmail = "add-friend-user@gmail.com"
 const userRegisteredPassword = "1234567a"
@@ -73,7 +74,7 @@ describe(addFriendRoute, () => {
                 friendId
             })
             .set({ 'x-access-token': jsonWebToken })
-        expect(response.status).toEqual(200)
+        expect(response.status).toEqual(ResponseCodes.created)
         expect(response.type).toEqual('application/json')
         expect(response.body.message).toBeDefined()
         expect(response.body.friends).toBeDefined()

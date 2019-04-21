@@ -7,6 +7,7 @@ import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { MessageCategories } from "../../Messages/messageCategories";
 import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { SuccessMessageKeys } from "../../Messages/successMessages";
+import { ResponseCodes } from "../../Server/responseCodes";
 
 const addFriendValidationSchema = {
     userId: Joi.string().required(),
@@ -34,7 +35,7 @@ export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (req
     try {
         const { user } = response.locals;
         if (!user) {
-            return response.status(400).send({
+            return response.status(ResponseCodes.badRequest).send({
                 message: userDoesNotExistMessage,
             });
         }
@@ -92,7 +93,7 @@ export const formatFriendsMiddleware = (request: Request, response: Response, ne
 export const getSendFriendAddedSuccessMessageMiddleware = addFriendSuccessMessage => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { formattedFriends } = response.locals
-        response.send({ message: addFriendSuccessMessage, friends: formattedFriends })
+        response.status(ResponseCodes.success).send({ message: addFriendSuccessMessage, friends: formattedFriends })
     } catch (err) {
         next(err)
     }

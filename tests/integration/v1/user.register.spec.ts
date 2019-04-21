@@ -4,6 +4,7 @@ import server, { ApiVersions } from '../../../src/app'
 import { RouteCategories } from '../../../src/versions/v1'
 import { userModel } from '../../../src/Models/User';
 import { UserPaths } from '../../../src/Routers/userRouter';
+import { ResponseCodes } from '../../../src/REST/responseCodes';
 
 const userRegistationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
 
@@ -26,7 +27,7 @@ describe(userRegistationRoute, () => {
                 password
             }
         )
-        expect(response.status).toEqual(200)
+        expect(response.status).toEqual(ResponseCodes.created)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('streaks')
         expect(response.body).toHaveProperty('role')
@@ -39,7 +40,7 @@ describe(userRegistationRoute, () => {
     test('fails because nothing is sent with request', async () => {
         expect.assertions(4)
         const response = await request(server).post(userRegistationRoute)
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"userName\" fails because [\"userName\" is required]')
@@ -52,7 +53,7 @@ describe(userRegistationRoute, () => {
             email: "tester1@gmail.com",
             password: "12345678"
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"userName\" fails because [\"userName\" is required]')
@@ -66,7 +67,7 @@ describe(userRegistationRoute, () => {
             email: "tester001@gmail.com",
             password: "12345678"
         })
-        expect(response.status).toEqual(400)
+        expect(response.status).toEqual(ResponseCodes.badRequest)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual(`User with userName: 'tester1' already exists`)
@@ -80,7 +81,7 @@ describe(userRegistationRoute, () => {
             email: "tester001@gmail.com",
             password: "12345678"
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual(`child \"userName\" fails because [\"userName\" must be a string]`)
@@ -92,7 +93,7 @@ describe(userRegistationRoute, () => {
             userName: "tester1",
             password: "12345678"
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"email\" fails because [\"email\" is required]')
@@ -106,7 +107,7 @@ describe(userRegistationRoute, () => {
             email: "tester1@gmail.com",
             password: "12345678"
         })
-        expect(response.status).toEqual(400)
+        expect(response.status).toEqual(ResponseCodes.badRequest)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual(`User with email: 'tester1@gmail.com' already exists`)
@@ -120,7 +121,7 @@ describe(userRegistationRoute, () => {
             email: "invalid email",
             password: "12345678"
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual(`child \"email\" fails because [\"email\" must be a valid email]`)
@@ -132,7 +133,7 @@ describe(userRegistationRoute, () => {
             userName: "tester1",
             email: "tester1@gmail.com",
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"password\" fails because [\"password\" is required]')
@@ -146,7 +147,7 @@ describe(userRegistationRoute, () => {
             password: "1234"
 
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"password\" fails because [\"password\" length must be at least 6 characters long]')
@@ -160,7 +161,7 @@ describe(userRegistationRoute, () => {
             password: 123456
 
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"password\" fails because [\"password\" must be a string]')

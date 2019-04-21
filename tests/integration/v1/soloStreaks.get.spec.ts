@@ -8,6 +8,7 @@ import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { SoloStreaksPaths } from '../../../src/Routers/soloStreaksRouter';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
+import { ResponseCodes } from '../../../src/REST/responseCodes';
 
 const registeredEmail = "get-solo-streaks@gmail.com"
 const registeredPassword = "12345678"
@@ -69,7 +70,7 @@ describe(getSoloStreaksRoute, () => {
         const response = await request(server)
             .get(getSoloStreaksRouteWithUserId)
             .set({ 'x-access-token': jsonWebToken })
-        expect(response.status).toEqual(200)
+        expect(response.status).toEqual(ResponseCodes.success)
         expect(response.type).toEqual('application/json')
         expect(response.body.soloStreaks.length).toEqual(1)
         expect(response.body.soloStreaks[0]).toHaveProperty('_id')

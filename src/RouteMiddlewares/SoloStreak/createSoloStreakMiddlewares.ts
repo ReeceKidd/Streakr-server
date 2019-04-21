@@ -5,6 +5,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 
 import { IUser } from "../../Models/User";
 import { ISoloStreak, soloStreakModel } from "../../Models/SoloStreak";
+import { ResponseCodes } from '../../Server/responseCodes';
 
 export interface SoloStreakRegistrationRequestBody {
     userId: string,
@@ -65,7 +66,7 @@ export const sendFormattedSoloStreakMiddleware = (
 ) => {
     try {
         const { savedSoloStreak } = response.locals as SoloStreakResponseLocals;
-        return response.send(savedSoloStreak);
+        return response.status(ResponseCodes.success).send(savedSoloStreak);
     } catch (err) {
         next(err);
     }

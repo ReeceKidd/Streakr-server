@@ -12,6 +12,7 @@ import { MessageCategories } from '../../Messages/messageCategories';
 import { IUser, IMinimumUserData } from "../../Models/User";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware"
 import { userModel } from '../../Models/User';
+import { ResponseCodes } from '../../Server/responseCodes';
 
 
 export interface LoginRequestBody {
@@ -24,7 +25,6 @@ export interface LoginResponseLocals {
   passwordMatchesHash?: boolean;
   minimumUserData?: IMinimumUserData;
   jsonWebToken?: string;
-
 }
 
 const loginValidationSchema = {
@@ -63,7 +63,7 @@ export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
   try {
     const { user } = response.locals as LoginResponseLocals;
     if (!user) {
-      return response.status(400).send({
+      return response.status(ResponseCodes.badRequest).send({
         message: userDoesNotExistMessage,
       });
     }
@@ -104,7 +104,7 @@ export const getPasswordsMatchValidationMiddleware = loginUnsuccessfulMessage =>
   try {
     const { passwordMatchesHash } = response.locals as LoginResponseLocals;
     if (!passwordMatchesHash) {
-      return response.status(400).send({
+      return response.status(ResponseCodes.badRequest).send({
         message: loginUnsuccessfulMessage,
       });
     }
@@ -162,7 +162,7 @@ export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) => (
 ) => {
   try {
     const { jsonWebToken } = response.locals as LoginResponseLocals;
-    return response.send({ jsonWebToken, message: loginSuccessMessage });
+    return response.status(ResponseCodes.success).send({ jsonWebToken, message: loginSuccessMessage });
   } catch (err) {
     next(err);
   }

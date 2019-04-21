@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as Joi from 'joi'
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { soloStreakModel } from "../../Models/SoloStreak";
+import { ResponseCodes } from "../../Server/responseCodes";
 
 const getSoloStreaksValidationSchema = {
     userId: Joi.string().required()
@@ -28,7 +29,7 @@ export const findSoloStreaksMiddleware = getFindSoloStreaksMiddleware(soloStreak
 export const sendSoloStreaksMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
         const { soloStreaks } = response.locals
-        response.send({ soloStreaks })
+        response.status(ResponseCodes.success).send({ soloStreaks })
     } catch (err) {
         next(err)
     }

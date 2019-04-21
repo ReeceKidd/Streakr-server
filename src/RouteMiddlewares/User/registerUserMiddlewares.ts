@@ -10,6 +10,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { generateAlreadyExistsMessage } from '../../Utils/generateAlreadyExistsMessage';
 import { emailKey, userNameKey } from '../../Constants/Keys/keys';
 import { saltRounds } from '../../Constants/Auth/saltRounds';
+import { ResponseCodes } from '../../Server/responseCodes';
 
 const registerValidationSchema = {
   userName: Joi.string().required(),
@@ -53,7 +54,7 @@ export const getEmailExistsValidationMiddleware = (emailAlreadyExistsMessage: Ge
     const { emailExists } = response.locals;
     const { email } = request.body;
     if (emailExists) {
-      return response.status(400).send({
+      return response.status(ResponseCodes.badRequest).send({
         message: emailAlreadyExistsMessage(
           subject,
           emailKey,
@@ -110,7 +111,7 @@ export const getUserNameExistsValidationMiddleware = (generateAlreadyExistsMessa
   try {
     const { userNameExists, lowerCaseUserName } = response.locals;
     if (userNameExists) {
-      return response.status(400).send({
+      return response.status(ResponseCodes.badRequest).send({
         message: generateAlreadyExistsMessage(
           subject,
           userNameKey,
@@ -177,7 +178,7 @@ export const sendFormattedUserMiddleware = (
   try {
     const { savedUser } = response.locals;
     savedUser.password = undefined;
-    return response.send(savedUser);
+    return response.status(ResponseCodes.success).send(savedUser);
   } catch (err) {
     next(err);
   }

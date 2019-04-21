@@ -9,6 +9,7 @@ import { getLocalisedString } from '../../../src/Messages/getLocalisedString';
 import { MessageCategories } from '../../../src/Messages/messageCategories';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { UserPaths } from '../../../src/Routers/userRouter';
+import { ResponseCodes } from '../../../src/REST/responseCodes';
 
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
@@ -42,7 +43,7 @@ describe(loginRoute, () => {
             }
         )
         const localisedLoginSuccessMessage = getLocalisedString(MessageCategories.successMessages, SuccessMessageKeys.loginSuccessMessage)
-        expect(response.status).toEqual(200)
+        expect(response.status).toEqual(ResponseCodes.success)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('jsonWebToken')
         expect(response.body.jsonWebToken.length).toBeGreaterThan(20)
@@ -58,7 +59,7 @@ describe(loginRoute, () => {
                 password: 'invalidPassword'
             }
         )
-        expect(response.status).toEqual(400)
+        expect(response.status).toEqual(ResponseCodes.badRequest)
         expect(response.type).toEqual('application/json')
         expect(response.body).not.toHaveProperty('jsonWebToken')
         expect(response.body).toHaveProperty('message')
@@ -74,7 +75,7 @@ describe(loginRoute, () => {
                 password: registeredPassword
             }
         )
-        expect(response.status).toEqual(400)
+        expect(response.status).toEqual(ResponseCodes.badRequest)
         expect(response.type).toEqual('application/json')
         expect(response.body).not.toHaveProperty('jsonWebToken')
         expect(response.body).toHaveProperty('message')
@@ -90,7 +91,7 @@ describe(loginRoute, () => {
                 password: 'invalidPassword'
             }
         )
-        expect(response.status).toEqual(400)
+        expect(response.status).toEqual(ResponseCodes.badRequest)
         expect(response.type).toEqual('application/json')
         expect(response.body).not.toHaveProperty('jsonWebToken')
         expect(response.body).toHaveProperty('message')
@@ -101,7 +102,7 @@ describe(loginRoute, () => {
     test('fails because nothing is sent with request', async () => {
         expect.assertions(4)
         const response = await request(server).post(loginRoute)
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"email\" fails because [\"email\" is required]')
@@ -112,7 +113,7 @@ describe(loginRoute, () => {
         const response = await request(server).post(loginRoute).send({
             password: "12345678"
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"email\" fails because [\"email\" is required]')
@@ -125,7 +126,7 @@ describe(loginRoute, () => {
             email: "invalid email",
             password: "12345678"
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual(`child \"email\" fails because [\"email\" must be a valid email]`)
@@ -136,7 +137,7 @@ describe(loginRoute, () => {
         const response = await request(server).post(loginRoute).send({
             email: "tester1@gmail.com",
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"password\" fails because [\"password\" is required]')
@@ -148,7 +149,7 @@ describe(loginRoute, () => {
             email: "tester1@gmail.com",
             password: "1234"
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"password\" fails because [\"password\" length must be at least 6 characters long]')
@@ -161,7 +162,7 @@ describe(loginRoute, () => {
             password: 123456
 
         })
-        expect(response.status).toEqual(422)
+        expect(response.status).toEqual(ResponseCodes.unprocessableEntity)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual('child \"password\" fails because [\"password\" must be a string]')

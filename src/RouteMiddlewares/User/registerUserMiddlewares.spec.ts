@@ -19,6 +19,7 @@ import {
     sendFormattedUserMiddleware,
     setUserNameToLowercaseMiddleware
 } from './registerUserMiddlewares'
+import { ResponseCodes } from "../../Server/responseCodes";
 
 
 describe(`userRegistrationValidationMiddlware`, () => {
@@ -60,7 +61,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
         userRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "userName" fails because ["userName" is required]'
         });
@@ -82,7 +83,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
         userRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "email" fails because ["email" is required]'
         });
@@ -110,7 +111,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
         userRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "email" fails because ["email" must be a valid email]'
         });
@@ -132,7 +133,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
         userRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "password" fails because ["password" is required]'
         });
@@ -160,7 +161,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
         userRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message:
                 'child "password" fails because ["password" length must be at least 6 characters long]'
@@ -190,7 +191,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
         userRegistrationValidationMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(400);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
         expect(send).toBeCalledWith({ message: '"notAllowed" is not allowed' });
         expect(next).not.toBeCalled();
     });
@@ -282,7 +283,7 @@ describe(`emailExistsValidationMiddleware `, () => {
         await middleware(request as Request, response as Response, next as NextFunction);
 
         expect.assertions(3);
-        expect(status).toHaveBeenCalledWith(400);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
         expect(send).toBeCalled();
         expect(generateAlreadyExistsMessage).toBeCalledWith(subject, emailKey, mockEmail);
     });
@@ -452,7 +453,7 @@ describe(`userNameExistsValidationMiddleware`, () => {
         middleware(request as Request, response as Response, next as NextFunction);
 
         expect.assertions(4);
-        expect(status).toHaveBeenCalledWith(400);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
         expect(send).toBeCalled();
         expect(generateAlreadyExistsMessage).toBeCalledWith(subject, userNameKey, mockUserName);
         expect(next).not.toBeCalled();
@@ -659,7 +660,8 @@ describe(`sendFormattedUserMiddleware`, () => {
 
         const savedUser = { userName: mockUserName, email: mockEmail, password: mockPassword }
         const send = jest.fn()
-        const response: any = { locals: { savedUser }, send };
+        const status = jest.fn(() => ({ send }))
+        const response: any = { locals: { savedUser }, status };
 
         const request: any = {}
         const next = jest.fn();
@@ -681,7 +683,8 @@ describe(`sendFormattedUserMiddleware`, () => {
         const send = jest.fn(() => {
             throw new Error(ERROR_MESSAGE)
         })
-        const response: any = { locals: { savedUser }, send };
+        const status = jest.fn(() => ({ send }))
+        const response: any = { locals: { savedUser }, status };
 
         const request: any = {}
         const next = jest.fn();

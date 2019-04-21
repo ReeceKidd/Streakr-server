@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import * as Joi from 'joi'
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { userModel } from '../../Models/User';
+import { ResponseCodes } from '../../Server/responseCodes';
 
 export const minimumSeachQueryLength = 1
 export const maximumSearchQueryLength = 64
@@ -57,7 +58,7 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
 export const sendFormattedUsersMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
         const { formattedUsers } = response.locals
-        return response.send({ users: formattedUsers })
+        return response.status(ResponseCodes.success).send({ users: formattedUsers })
     } catch (err) {
         next(err)
     }

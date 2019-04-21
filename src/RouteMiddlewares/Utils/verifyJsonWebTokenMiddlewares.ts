@@ -3,14 +3,12 @@ import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 
 import { jwtSecret } from '../../../secret/jwt-secret';
-import { SupportedHeaders } from '../../Server/headers';
+import { SupportedHeaders } from '../../Server/headers'
 import { getLocalisedString } from '../../Messages/getLocalisedString';
 import { MessageCategories } from '../../Messages/messageCategories';
 import { FailureMessageKeys } from '../../Messages/failureMessages';
-import { ErrorStatusCodes } from '../../Server/statusCodes';
-import { AuthResponseObject } from '../../Server/response';
-
 import { IMinimumUserData } from '../../Models/User';
+import { ResponseCodes } from '../../Server/responseCodes';
 
 export interface VerifyJsonWebTokenResponseLocals {
     jsonWebToken?: string;
@@ -45,7 +43,7 @@ export const getJsonWebTokenDoesNotExistResponseMiddleware = (jsonWebTokenValida
 
 const localisedMissingJsonWebTokenMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.missingJsonWebTokenMessage)
 
-export const jsonWebTokenDoesNotExistResponseMiddleware = getJsonWebTokenDoesNotExistResponseMiddleware({ auth: false, message: localisedMissingJsonWebTokenMessage }, ErrorStatusCodes.missingJsonWebToken);
+export const jsonWebTokenDoesNotExistResponseMiddleware = getJsonWebTokenDoesNotExistResponseMiddleware({ auth: false, message: localisedMissingJsonWebTokenMessage }, ResponseCodes.unautohorized);
 
 export interface DecodedJsonWebToken {
     minimumUserData: IMinimumUserData
@@ -78,7 +76,7 @@ export const getJsonWebTokenErrorResponseMiddleware = (unauthorizedErrorMessage:
     try {
         const { jsonWebTokenError } = response.locals as VerifyJsonWebTokenResponseLocals;
         if (jsonWebTokenError) {
-            const jsonWebTokenErrorResponse: AuthResponseObject = { message: unauthorizedErrorMessage, auth: false }
+            const jsonWebTokenErrorResponse = { message: unauthorizedErrorMessage, auth: false }
             return response
                 .status(unauthorizedStatusCode)
                 .send(jsonWebTokenErrorResponse)
@@ -90,7 +88,7 @@ export const getJsonWebTokenErrorResponseMiddleware = (unauthorizedErrorMessage:
 };
 
 const localisedUnauthorizedErrorMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.unauthorisedMessage)
-export const jsonWebTokenErrorResponseMiddleware = getJsonWebTokenErrorResponseMiddleware(localisedUnauthorizedErrorMessage, ErrorStatusCodes.lacksAuthenticationCredientails)
+export const jsonWebTokenErrorResponseMiddleware = getJsonWebTokenErrorResponseMiddleware(localisedUnauthorizedErrorMessage, ResponseCodes.unautohorized)
 
 export const setMinimumUserDataOnResponseLocals = (request: Request, response: Response, next: NextFunction) => {
     try {

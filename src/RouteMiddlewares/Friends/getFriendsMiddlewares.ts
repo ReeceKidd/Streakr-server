@@ -6,6 +6,7 @@ import { userModel, IMinimumUserData } from "../../Models/User";
 import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { MessageCategories } from "../../Messages/messageCategories";
 import { FailureMessageKeys } from "../../Messages/failureMessages";
+import { ResponseCodes } from "../../Server/responseCodes";
 
 const getFriendsValidationSchema = {
     userId: Joi.string().required()
@@ -32,7 +33,7 @@ export const getUserExistsValidationMiddleware = userDoesNotExistMessage => asyn
     try {
         const { user } = response.locals
         if (!user) {
-            return response.status(400).send({
+            return response.status(ResponseCodes.badRequest).send({
                 message: userDoesNotExistMessage,
             });
         }
@@ -79,7 +80,7 @@ export const formatFriendsMiddleware = (request: Request, response: Response, ne
 export const sendFormattedFriendsMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
         const { formattedFriends } = response.locals
-        return response.send({ friends: formattedFriends })
+        return response.status(ResponseCodes.success).send({ friends: formattedFriends })
     } catch (err) {
         next(err)
     }

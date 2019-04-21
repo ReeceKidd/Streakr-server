@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 
 import { addFriendMiddlewares, addFriendValidationMiddleware, retreiveUserMiddleware, userExistsValidationMiddleware, getAddFriendMiddleware, addFriendMiddleware, getRetreiveUserMiddleware, getUserExistsValidationMiddleware, sendFriendAddedSuccessMessageMiddleware, getSendFriendAddedSuccessMessageMiddleware, getRetreiveFriendsDetailsMiddleware, retreiveFriendsDetailsMiddleware, formatFriendsMiddleware } from "./addFriendMiddlewares";
+import { ResponseCodes } from '../../Server/responseCodes';
 
 describe('addFriendValidationMiddleware', () => {
 
@@ -43,7 +44,7 @@ describe('addFriendValidationMiddleware', () => {
         addFriendValidationMiddleware(request, response, next);
 
         expect.assertions(3)
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "userId" fails because ["userId" is required]'
         });
@@ -67,7 +68,7 @@ describe('addFriendValidationMiddleware', () => {
         addFriendValidationMiddleware(request, response, next);
 
         expect.assertions(3)
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "userId" fails because ["userId" must be a string]'
         });
@@ -91,7 +92,7 @@ describe('addFriendValidationMiddleware', () => {
         addFriendValidationMiddleware(request, response, next);
 
         expect.assertions(3)
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "friendId" fails because ["friendId" is required]'
         });
@@ -115,7 +116,7 @@ describe('addFriendValidationMiddleware', () => {
         addFriendValidationMiddleware(request, response, next);
 
         expect.assertions(3)
-        expect(status).toHaveBeenCalledWith(422);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "friendId" fails because ["friendId" must be a string]'
         });
@@ -207,7 +208,7 @@ describe(`userExistsValidationMiddleware`, () => {
         middleware(request as Request, response as Response, next as NextFunction);
 
         expect.assertions(2);
-        expect(status).toHaveBeenCalledWith(400);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
         expect(send).toBeCalledWith({ message: mockErrorMessage });
     });
 
@@ -381,8 +382,9 @@ describe('sendFriendAddedSuccessMessageMiddleware', () => {
     test('that response sends success message inside of object', () => {
         const successMessage = 'success'
         const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
         const formattedFriends = [{ userName: 'abc' }]
-        const response: any = { send, locals: { formattedFriends } };
+        const response: any = { status, locals: { formattedFriends } };
 
         const request: any = {}
         const next = jest.fn();
@@ -390,8 +392,9 @@ describe('sendFriendAddedSuccessMessageMiddleware', () => {
         const middleware = getSendFriendAddedSuccessMessageMiddleware(successMessage)
         middleware(request, response, next);
 
-        expect.assertions(2);
+        expect.assertions(3);
         expect(next).not.toBeCalled()
+        expect(status).toBeCalledWith(ResponseCodes.success)
         expect(send).toBeCalledWith({ message: successMessage, friends: formattedFriends })
     })
 
@@ -402,7 +405,8 @@ describe('sendFriendAddedSuccessMessageMiddleware', () => {
         const send = jest.fn(() => {
             throw new Error(ERROR_MESSAGE)
         })
-        const response: any = { send, locals: { formattedFriends } };
+        const status = jest.fn(() => ({ send }))
+        const response: any = { status, locals: { formattedFriends } };
 
         const request: any = {}
         const next = jest.fn();

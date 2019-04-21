@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { getValidationErrorMessageSenderMiddleware } from "./validationErrorMessageSenderMiddleware";
+import { ResponseCodes } from "../Server/responseCodes";
 
 describe(`validationErrorMessageSenderMiddleware`, () => {
   test("calls 'next' middleware if all params are correct ", () => {
@@ -50,12 +51,12 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
     middleware(new Error(paramNotAllowedError));
 
     expect.assertions(3);
-    expect(status).toHaveBeenCalledWith(400);
+    expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
     expect(send).toBeCalledWith({ message: paramNotAllowedError });
     expect(next).not.toBeCalled();
   });
 
-  test("returns '422' if value of one of the parameters is not correct", () => {
+  test(`returns ${ResponseCodes.unprocessableEntity} if value of one of the parameters is missing`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -77,7 +78,7 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
     middleware(new Error('other error'));
 
     expect.assertions(3);
-    expect(status).toHaveBeenCalledWith(422);
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({ message: otherError });
     expect(next).not.toBeCalled();
   });

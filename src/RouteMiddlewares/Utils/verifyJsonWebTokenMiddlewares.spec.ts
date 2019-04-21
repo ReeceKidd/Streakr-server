@@ -14,8 +14,7 @@ import {
 } from './verifyJsonWebTokenMiddlewares'
 
 import { SupportedHeaders } from '../../Server/headers';
-import { AuthResponseObject } from "../../Server/response";
-import { ErrorStatusCodes } from '../../Server/statusCodes';
+import { ResponseCodes } from '../../Server/responseCodes'
 
 describe('retreiveJsonWebTokenMiddleware', () => {
     test('should set response.locals.jsonWebToken', () => {
@@ -65,7 +64,7 @@ describe(`jsonWebTokenDoesNotExistResponseMiddleware`, () => {
         const request: any = {}
         const next = jest.fn();
 
-        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject, ErrorStatusCodes.missingJsonWebToken);
+        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject, ResponseCodes.unautohorized);
         middleware(request, response, next)
 
         expect.assertions(1);
@@ -79,7 +78,7 @@ describe(`jsonWebTokenDoesNotExistResponseMiddleware`, () => {
         const request: any = {}
         const next = jest.fn();
 
-        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject, ErrorStatusCodes.missingJsonWebToken);
+        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject, ResponseCodes.unautohorized);
         middleware(request, response, next)
 
         expect.assertions(3);
@@ -99,7 +98,7 @@ describe(`jsonWebTokenDoesNotExistResponseMiddleware`, () => {
         const request: any = {}
         const next = jest.fn();
 
-        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject, ErrorStatusCodes.missingJsonWebToken);
+        const middleware = getJsonWebTokenDoesNotExistResponseMiddleware(mockJsonWebTokenValidationErrorObject, ResponseCodes.unautohorized);
         middleware(request, response, next)
 
         expect.assertions(1);
@@ -202,7 +201,7 @@ describe(`jsonWebTokenErrorResponseMiddleware`, () => {
         const request: any = {}
         const next = jest.fn();
 
-        const jsonWebTokenErrorResponse: AuthResponseObject = {
+        const jsonWebTokenErrorResponse = {
             message: errorMessage,
             auth: false
         }
