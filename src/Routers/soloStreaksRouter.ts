@@ -4,23 +4,25 @@ import { verifyJsonWebTokenMiddlewares } from "../RouteMiddlewares/Utils/verifyJ
 import { getSoloStreaksMiddlewares } from "../RouteMiddlewares/SoloStreak/getSoloStreaksMiddlewares";
 import { createSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakMiddlewares";
 
-export const SoloStreaksPaths = {
-    create: "create",
-};
-
-const userId = 'userId'
+export enum SoloStreakProperties {
+    id = 'id'
+}
 
 const soloStreaksRouter = Router();
 
 soloStreaksRouter.use('*', ...verifyJsonWebTokenMiddlewares)
 
 soloStreaksRouter.get(
-    `/:${userId}`,
+    `/`,
     ...getSoloStreaksMiddlewares
 );
 
+// soloStreaksRouter.get(
+//     `/:${id}`
+// )
+
 soloStreaksRouter.post(
-    `/${SoloStreaksPaths.create}`,
+    `/`,
     ...createSoloStreakMiddlewares
 );
 

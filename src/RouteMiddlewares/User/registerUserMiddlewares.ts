@@ -3,9 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 import { hash } from 'bcryptjs';
 
-
 import { userModel } from '../../Models/User';
-
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { generateAlreadyExistsMessage } from '../../Utils/generateAlreadyExistsMessage';
 import { emailKey, userNameKey } from '../../Constants/Keys/keys';

@@ -1,22 +1,22 @@
 import * as request from 'supertest'
 
-import server, { ApiVersions } from '../../../src/app'
-import { RouteCategories } from '../../../src/versions/v1'
+import server from '../../../src/app'
+import { ApiVersions } from '../../../src/Server/versions'
+import { RouteCategories } from '../../../src/routeCategories'
 import { userModel } from '../../../src/Models/User';
-import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
-import { SoloStreaksPaths } from '../../../src/Routers/soloStreaksRouter';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
+import { GetSoloStreaksQueryParamaters } from '../../../src/RouteMiddlewares/SoloStreak/getSoloStreaksMiddlewares';
 
 const registeredEmail = "get-solo-streaks@gmail.com"
 const registeredPassword = "12345678"
 const registeredUserName = 'get-solo-streaks-user'
 
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
+const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
-const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${SoloStreaksPaths.create}`
-const getSoloStreaksRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/`
+const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
+const getSoloStreaksRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
 
 const soloStreakName = "Daily Spanish"
 const soloStreakDescription = "Each day I must do the insame amount 50xp of Duolingo"
@@ -65,9 +65,9 @@ describe(getSoloStreaksRoute, () => {
 
     test(`that solo streaks can be retreived for user`, async () => {
         expect.assertions(11)
-        const getSoloStreaksRouteWithUserId = `${getSoloStreaksRoute}/${userId}`
+        const getSoloStreaksRouteWithQueryParamater = `${getSoloStreaksRoute}?userId=${userId}`
         const response = await request(server)
-            .get(getSoloStreaksRouteWithUserId)
+            .get(getSoloStreaksRouteWithQueryParamater)
             .set({ 'x-access-token': jsonWebToken })
         expect(response.status).toEqual(ResponseCodes.success)
         expect(response.type).toEqual('application/json')

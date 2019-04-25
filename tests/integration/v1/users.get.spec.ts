@@ -1,10 +1,9 @@
 import * as request from 'supertest'
 
-import server, { ApiVersions } from '../../../src/app'
-import { RouteCategories } from '../../../src/versions/v1'
+import server from '../../../src/app'
+import { ApiVersions } from '../../../src/Server/versions'
+import { RouteCategories } from '../../../src/routeCategories'
 import { userModel } from '../../../src/Models/User';
-import { UserPaths } from '../../../src/Routers/userRouter';
-import { UsersPaths } from '../../../src/Routers/usersRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 
@@ -18,16 +17,14 @@ const searchableUserUserName = 'other-user'
 
 const searchQueryKey = "searchQuery"
 
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
+const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
 
 describe('/users', () => {
 
     let jsonWebToken: string
-    let getUsersByRegexSearchRoute
 
     beforeAll(async () => {
-        getUsersByRegexSearchRoute = `/${ApiVersions.v1}/${RouteCategories.users}/${UsersPaths.getUsersByRegexSearch}`
         await request(server)
             .post(registrationRoute)
             .send({
@@ -35,12 +32,14 @@ describe('/users', () => {
                 email: registeredEmail,
                 password: registeredPassword
             })
+
         const loginResponse = await request(server)
             .post(loginRoute)
             .send({
                 email: registeredEmail,
                 password: registeredPassword
             })
+
         jsonWebToken = loginResponse.body.jsonWebToken
         await request(server)
             .post(registrationRoute)
@@ -58,7 +57,7 @@ describe('/users', () => {
 
     test(`that request returns searchAbleUser when full searchTerm is uaed`, async () => {
         expect.assertions(10)
-        const getUsersByRegexSearchRouteWithSearchQueryRoute = `${getUsersByRegexSearchRoute}?${searchQueryKey}=${searchableUserUserName}`
+        const getUsersByRegexSearchRouteWithSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${searchableUserUserName}`
         const response = await request(server)
             .get(getUsersByRegexSearchRouteWithSearchQueryRoute)
             .set({ 'x-access-token': jsonWebToken })
@@ -78,7 +77,7 @@ describe('/users', () => {
     test('that request returns searchAble user when partial searchTerm is used', async () => {
         expect.assertions(10)
         const partialSearchQuery = `${searchableUserUserName[0]}${searchableUserUserName[1]}${searchableUserUserName[2]}`
-        const getUsersByRegexSearchWithPartialSearchQueryRoute = `${getUsersByRegexSearchRoute}?${searchQueryKey}=${partialSearchQuery}`
+        const getUsersByRegexSearchWithPartialSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${partialSearchQuery}`
         const response = await request(server)
             .get(getUsersByRegexSearchWithPartialSearchQueryRoute)
             .set({ 'x-access-token': jsonWebToken })

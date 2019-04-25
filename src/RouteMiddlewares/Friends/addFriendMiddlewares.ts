@@ -8,19 +8,29 @@ import { MessageCategories } from "../../Messages/messageCategories";
 import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { SuccessMessageKeys } from "../../Messages/successMessages";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { SupportedHeaders } from "../../Server/headers";
+import { ApiVersions } from "../../server/versions";
+import { RouteCategories, UserProperties } from "../../routeCategories";
 
-const addFriendValidationSchema = {
-    userId: Joi.string().required(),
+const addFriendParamsValidationSchema = {
+    userId: Joi.string().required()
+}
+
+export const addFriendParamsValidationMiddleware = (request: Request, response: Response, next: NextFunction) => {
+    Joi.validate(request.params, addFriendParamsValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next))
+}
+
+const addFriendBodyValidationSchema = {
     friendId: Joi.string().required()
 }
 
-export const addFriendValidationMiddleware = (request: Request, response: Response, next: NextFunction) => {
-    Joi.validate(request.body, addFriendValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next))
+export const addFriendBodyValidationMiddleware = (request: Request, response: Response, next: NextFunction) => {
+    Joi.validate(request.body, addFriendBodyValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next))
 }
 
 export const getRetreiveUserMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { userId } = request.body;
+        const { userId } = request.params;
         const user = await userModel.findOne({ _id: userId });
         response.locals.user = user;
         next();
@@ -51,7 +61,8 @@ export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(
 
 export const getAddFriendMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { userId, friendId } = request.body
+        const { userId } = request.params
+        const { friendId } = request.body
         const updatedUser = await userModel.findOneAndUpdate({ _id: userId }, { $addToSet: { friends: friendId } })
         response.locals.updatedUser = updatedUser
         next()
@@ -90,7 +101,32 @@ export const formatFriendsMiddleware = (request: Request, response: Response, ne
     }
 }
 
-export const getSendFriendAddedSuccessMessageMiddleware = addFriendSuccessMessage => (request: Request, response: Response, next: NextFunction) => {
+export const getDefineLocationPathMiddleware = (apiVersion: string, userCategory: string, friendsProperty: string) => (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { userId } = request.params
+        const { friendId } = request.body
+        response.locals.locationPath = `/${apiVersion}/${userCategory}/${userId}/${friendsProperty}/${friendId}`
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const defineLocationPathMiddleware = getDefineLocationPathMiddleware(ApiVersions.v1, RouteCategories.users, UserProperties.friends)
+
+export const getSetLocationHeaderMiddleware = (locationHeader: string) => (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { locationPath } = response.locals
+        response.setHeader(locationHeader, locationPath)
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const setLocationHeaderMiddleware = getSetLocationHeaderMiddleware(SupportedHeaders.location)
+
+export const getSendFriendAddedSuccessMessageMiddleware = (addFriendSuccessMessage: string) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { formattedFriends } = response.locals
         response.status(ResponseCodes.created).send({ message: addFriendSuccessMessage, friends: formattedFriends })
@@ -104,11 +140,14 @@ const localisedSuccessfullyAddedFriendMessage = getLocalisedString(MessageCatego
 export const sendFriendAddedSuccessMessageMiddleware = getSendFriendAddedSuccessMessageMiddleware(localisedSuccessfullyAddedFriendMessage)
 
 export const addFriendMiddlewares = [
-    addFriendValidationMiddleware,
+    addFriendParamsValidationMiddleware,
+    addFriendBodyValidationMiddleware,
     retreiveUserMiddleware,
     userExistsValidationMiddleware,
     addFriendMiddleware,
     retreiveFriendsDetailsMiddleware,
     formatFriendsMiddleware,
+    defineLocationPathMiddleware,
+    setLocationHeaderMiddleware,
     sendFriendAddedSuccessMessageMiddleware
 ]

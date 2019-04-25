@@ -1,9 +1,9 @@
 import * as request from 'supertest'
 
-import server, { ApiVersions } from '../../../src/app'
-import { RouteCategories } from '../../../src/versions/v1'
+import server from '../../../src/app'
+import { ApiVersions } from '../../../src/Server/versions'
+import { RouteCategories } from '../../../src/routeCategories'
 import { userModel } from '../../../src/Models/User';
-import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { TestPaths } from '../../../src/Routers/testRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
@@ -12,7 +12,7 @@ const registeredEmail = "jsonwebtoken@gmail.com"
 const registeredPassword = "12345678"
 const registeredUserName = "json-web-token-user"
 
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
+const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
 const verifyJsonWebTokenRoute = `/${ApiVersions.v1}/${RouteCategories.test}/${TestPaths.verifyJsonWebToken}`
 

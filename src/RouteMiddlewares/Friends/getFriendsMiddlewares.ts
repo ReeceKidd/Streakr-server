@@ -18,8 +18,8 @@ export const getFriendsValidationMiddleware = (request: Request, response: Respo
 
 export const getRetreiveUserMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { _id } = response.locals.minimumUserData as IMinimumUserData
-        const user = await userModel.findOne({ _id })
+        const { userId } = request.params
+        const user = await userModel.findOne({ _id: userId })
         response.locals.user = user
         next()
     } catch (err) {

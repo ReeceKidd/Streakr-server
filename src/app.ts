@@ -6,10 +6,8 @@ import * as passport from 'passport';
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
-
+import { ApiVersions } from './Server/versions'
 import v1Router from "./versions/v1";
-
-
 
 const app = express()
 app.use(bodyParser.json())
@@ -29,10 +27,6 @@ mongoose
     { useNewUrlParser: true }
   )
   .catch(err => console.log(err.message));
-
-export enum ApiVersions {
-  v1 = 'v1'
-}
 
 app.use(`/${ApiVersions.v1}`, v1Router)
 

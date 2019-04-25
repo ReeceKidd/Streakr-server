@@ -1,3 +1,4 @@
 export enum SupportedHeaders {
-    xAccessToken = 'x-access-token'
+    xAccessToken = 'x-access-token',
+    location = 'Location'
 }

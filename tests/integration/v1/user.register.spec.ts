@@ -1,12 +1,12 @@
 import * as request from 'supertest'
 
-import server, { ApiVersions } from '../../../src/app'
-import { RouteCategories } from '../../../src/versions/v1'
+import server from '../../../src/app'
+import { ApiVersions } from '../../../src/Server/versions'
+import { RouteCategories } from '../../../src/routeCategories'
 import { userModel } from '../../../src/Models/User';
-import { UserPaths } from '../../../src/Routers/userRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 
-const userRegistationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
+const userRegistationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 
 describe(userRegistationRoute, () => {
 

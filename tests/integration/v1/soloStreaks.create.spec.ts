@@ -1,12 +1,11 @@
 import * as request from 'supertest'
 
-import server, { ApiVersions } from '../../../src/app'
-import { RouteCategories } from '../../../src/versions/v1'
+import server from '../../../src/app'
+import { ApiVersions } from '../../../src/Server/versions'
+import { RouteCategories } from '../../../src/routeCategories'
 import { userModel } from '../../../src/Models/User';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
-import { SoloStreaksPaths } from '../../../src/Routers/soloStreaksRouter';
-import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 
@@ -14,9 +13,9 @@ const registeredEmail = "create-solo-streak-user@gmail.com"
 const registeredPassword = "12345678"
 const registeredUserName = 'create-solo-streak-user'
 
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
+const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
-const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${SoloStreaksPaths.create}`
+const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
 
 
 describe(createSoloStreakRoute, () => {

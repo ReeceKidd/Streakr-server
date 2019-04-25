@@ -9,7 +9,7 @@ describe('getSoloStreaksValidationMiddleware', () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            params: { userId: '1234' }
+            query: { userId: '1234' }
         };
         const response: any = {
             status
@@ -28,7 +28,7 @@ describe('getSoloStreaksValidationMiddleware', () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            params: {}
+            query: {}
         };
         const response: any = {
             status
@@ -51,7 +51,7 @@ describe('getSoloStreaksValidationMiddleware', () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            params: { userId: 123 }
+            query: { userId: 123 }
         };
         const response: any = {
             status
@@ -76,7 +76,7 @@ describe('findSoloStreaksMiddleware', () => {
         const soloStreakModel = {
             find
         }
-        const request: any = { params: { userId: '1234' } };
+        const request: any = { query: { userId: '1234' } };
         const response: any = { locals: {} };
         const next = jest.fn();
 
@@ -96,7 +96,7 @@ describe('findSoloStreaksMiddleware', () => {
         const soloStreakModel = {
             find
         }
-        const request: any = { params: { userId: '1234' } };
+        const request: any = { query: { userId: '1234' } };
         const response: any = { locals: {} };
         const next = jest.fn();
 

@@ -1,11 +1,11 @@
 import * as request from 'supertest'
 
-import server, { ApiVersions } from '../../../src/app'
-import { RouteCategories } from '../../../src/versions/v1'
+import server from '../../../src/app'
+import { ApiVersions } from '../../../src/Server/versions'
+import { RouteCategories } from '../../../src/routeCategories'
 import { userModel } from '../../../src/Models/User';
-import { UserPaths } from '../../../src/Routers/userRouter';
 import { AuthPaths } from '../../../src/Routers/authRouter';
-import { FriendsPaths } from '../../../src/Routers/friendsRouter';
+import { UserProperties } from '../../../src/Routers/usersRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 
 const userRegisteredEmail = "add-friend-user@gmail.com"
@@ -16,12 +16,12 @@ const friendRegisteredEmail = 'add-friend-friend@gmail.com'
 const friendRegisteredPassword = '2345678b'
 const friendRegisteredUserName = 'add-friend-friend'
 
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.user}/${UserPaths.register}`
+
+const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
-const addFriendRoute = `/${ApiVersions.v1}/${RouteCategories.friends}/${FriendsPaths.add}`
 
 
-describe(addFriendRoute, () => {
+describe('/v1/users/:userId/friends', () => {
 
     let jsonWebToken: string
     let userId: string
@@ -66,11 +66,11 @@ describe(addFriendRoute, () => {
 
     test(`that user can add a friend`, async () => {
         expect.assertions(4)
-        const addFriendRouteWithUserId = `${addFriendRoute}/${userId}`
+
+        const addFriendRouteWithUserId = `/${ApiVersions.v1}/${RouteCategories.users}/${userId}/${UserProperties.friends}`
         const response = await request(server)
             .put(addFriendRouteWithUserId)
             .send({
-                userId,
                 friendId
             })
             .set({ 'x-access-token': jsonWebToken })
