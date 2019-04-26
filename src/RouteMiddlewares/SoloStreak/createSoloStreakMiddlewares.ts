@@ -1,11 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 
+import agenda from '../../../config/Agenda'
+
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
 import { IUser } from "../../Models/User";
 import { ISoloStreak, soloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from '../../Server/responseCodes';
+import { AgendaJobs } from '../../agendaJobs';
 
 export interface SoloStreakRegistrationRequestBody {
     userId: string,
@@ -59,6 +62,19 @@ export const saveSoloStreakToDatabaseMiddleware = async (
     }
 };
 
+export const createDailySoloStreakCompleteChecker = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const agendaSoloStreakTracker = agenda.create(AgendaJobs.soloStreakTracker)
+        console.log(agendaSoloStreakTracker)
+        await agenda.start()
+        await agendaSoloStreakTracker.repeatEvery('10 seconds')
+        next()
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
+}
+
 export const sendFormattedSoloStreakMiddleware = (
     request: Request,
     response: Response,
@@ -76,5 +92,6 @@ export const createSoloStreakMiddlewares = [
     soloStreakRegistrationValidationMiddleware,
     createSoloStreakFromRequestMiddleware,
     saveSoloStreakToDatabaseMiddleware,
+    createDailySoloStreakCompleteChecker,
     sendFormattedSoloStreakMiddleware
 ];
