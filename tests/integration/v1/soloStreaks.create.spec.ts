@@ -57,7 +57,7 @@ describe(createSoloStreakRoute, () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail })
         await soloStreakModel.deleteOne({ name })
-        await agendaJobModel.deleteOne({ name: AgendaJobs.soloStreakTracker })
+        await agendaJobModel.deleteOne({ name: AgendaJobs.soloStreakCompleteTracker })
     })
 
     test(`that request passes when correct solo streak information is passed`, async () => {
@@ -83,10 +83,9 @@ describe(createSoloStreakRoute, () => {
         expect(response.body).toHaveProperty('createdAt')
         expect(response.body).toHaveProperty('updatedAt')
         const endOfDay = moment().tz(londonTimezone).endOf('day').toDate()
-        const agendaJob = await agendaJobModel.findOne({ name: AgendaJobs.soloStreakTracker })
+        const agendaJob = await agendaJobModel.findOne({ name: AgendaJobs.soloStreakCompleteTracker })
         expect((agendaJob.data as any).userId).toEqual(userId)
         expect(agendaJob.nextRunAt).toEqual(endOfDay)
-
     })
 
 })

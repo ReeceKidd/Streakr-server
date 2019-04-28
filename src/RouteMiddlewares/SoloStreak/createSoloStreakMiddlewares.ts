@@ -134,7 +134,7 @@ export const getCreateDailySoloStreakCompleteChecker = agenda => async (request:
         const { endOfDay } = response.locals
         const { userId } = request.body
         await agenda.start()
-        await agenda.schedule(endOfDay, AgendaJobs.soloStreakTracker, { userId })
+        await agenda.schedule(endOfDay, AgendaJobs.soloStreakCompleteTracker, { userId })
         await agenda.processEvery('1 days')
         next()
     } catch (err) {

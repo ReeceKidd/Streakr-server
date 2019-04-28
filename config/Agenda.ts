@@ -14,10 +14,10 @@ const agenda = new Agenda({
 })
 
 export enum AgendaJobs {
-    soloStreakTracker = 'soloStreakTracker'
+    soloStreakCompleteTracker = 'soloStreakCompleteTracker'
 }
 
-agenda.define(AgendaJobs.soloStreakTracker, (job, done) => {
+agenda.define(AgendaJobs.soloStreakCompleteTracker, (job, done) => {
     done()
 })
 
