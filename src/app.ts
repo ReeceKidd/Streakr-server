@@ -3,7 +3,6 @@ import * as bodyParser from "body-parser";
 import * as mongoose from "mongoose";
 import * as morgan from "morgan";
 import * as passport from 'passport';
-import * as Agenda from 'agenda'
 
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
@@ -28,8 +27,6 @@ mongoose
     { useNewUrlParser: true }
   )
   .catch(err => console.log(err.message));
-
-
 
 app.use(`/${ApiVersions.v1}`, v1Router)
 

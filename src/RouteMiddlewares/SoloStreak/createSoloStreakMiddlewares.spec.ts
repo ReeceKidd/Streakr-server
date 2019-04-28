@@ -6,6 +6,7 @@ import {
     saveSoloStreakToDatabaseMiddleware,
     sendFormattedSoloStreakMiddleware,
     SoloStreakResponseLocals,
+    createDailySoloStreakCompleteChecker,
 } from './createSoloStreakMiddlewares'
 
 import { userModel } from "../../Models/User";
@@ -288,6 +289,12 @@ describe(`saveSoloStreakToDatabaseMiddleware`, () => {
 
 });
 
+describe('createDailySoloStreakCompleteChecker', () => {
+    test('that agenda job is created successfully', () => {
+
+    })
+})
+
 describe(`sendFormattedSoloStreakMiddleware`, () => {
     const ERROR_MESSAGE = "error";
 
@@ -335,10 +342,11 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
 
 describe(`createSoloStreakMiddlewares`, () => {
     test("that createSoloStreak middlewares are defined in the correct order", async () => {
-        expect.assertions(4);
+        expect.assertions(5);
         expect(createSoloStreakMiddlewares[0]).toBe(soloStreakRegistrationValidationMiddleware)
         expect(createSoloStreakMiddlewares[1]).toBe(createSoloStreakFromRequestMiddleware)
         expect(createSoloStreakMiddlewares[2]).toBe(saveSoloStreakToDatabaseMiddleware)
-        expect(createSoloStreakMiddlewares[3]).toBe(sendFormattedSoloStreakMiddleware)
+        expect(createSoloStreakMiddlewares[3]).toBe(createDailySoloStreakCompleteChecker)
+        expect(createSoloStreakMiddlewares[4]).toBe(sendFormattedSoloStreakMiddleware)
     });
 });

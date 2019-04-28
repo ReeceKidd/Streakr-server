@@ -2,7 +2,7 @@ import { verifyJsonWebTokenMiddlewaresWithResponse } from './verifyJsonWebTokenM
 import { verifyJsonWebTokenMiddlewares } from './verifyJsonWebTokenMiddlewares';
 import { jsonWebTokenVerificationSuccessfulMiddleware } from './verifyJsonWebTokenMiddlewaresWithResponse';
 
-import { getJsonWebTokenVerificationSuccessfulMiddleware, SuccessfulJsonWebTokenVerificationResponse } from "./verifyJsonWebTokenMiddlewaresWithResponse";
+import { getJsonWebTokenVerificationSuccessfulMiddleware } from "./verifyJsonWebTokenMiddlewaresWithResponse";
 import { DecodedJsonWebToken, VerifyJsonWebTokenResponseLocals } from './verifyJsonWebTokenMiddlewares'
 
 describe(`jsonWebTokenVerificationSuccessfulMiddleware`, () => {
@@ -27,7 +27,7 @@ describe(`jsonWebTokenVerificationSuccessfulMiddleware`, () => {
         const request: any = {}
         const next = jest.fn();
 
-        const successfulResponse: SuccessfulJsonWebTokenVerificationResponse = {
+        const successfulResponse = {
             auth: true, message: loginSuccessMessage, decodedJsonWebToken: mockToken
         }
 

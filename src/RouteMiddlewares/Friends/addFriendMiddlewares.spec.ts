@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 
 import { addFriendMiddlewares, addFriendBodyValidationMiddleware, retreiveUserMiddleware, userExistsValidationMiddleware, getAddFriendMiddleware, addFriendMiddleware, getRetreiveUserMiddleware, getUserExistsValidationMiddleware, sendFriendAddedSuccessMessageMiddleware, getSendFriendAddedSuccessMessageMiddleware, getRetreiveFriendsDetailsMiddleware, retreiveFriendsDetailsMiddleware, formatFriendsMiddleware, setLocationHeaderMiddleware, getSetLocationHeaderMiddleware, addFriendParamsValidationMiddleware, defineLocationPathMiddleware, getDefineLocationPathMiddleware } from "./addFriendMiddlewares";
 import { ResponseCodes } from '../../Server/responseCodes';
-import { SupportedHeaders } from '../../Server/headers';
+import { SupportedResponseHeaders } from '../../Server/headers';
 
 describe('addFriendParamsValidationMiddleware', () => {
 
@@ -444,11 +444,11 @@ describe('setLocationHeaderMiddleware', () => {
         const next = jest.fn();
 
 
-        const middleware = getSetLocationHeaderMiddleware(SupportedHeaders.location)
+        const middleware = getSetLocationHeaderMiddleware(SupportedResponseHeaders.location)
         middleware(request, response, next);
 
         expect.assertions(2);
-        expect(setHeader).toHaveBeenCalledWith(SupportedHeaders.location, locationPath)
+        expect(setHeader).toHaveBeenCalledWith(SupportedResponseHeaders.location, locationPath)
         expect(next).toBeCalled();
     })
 
@@ -460,7 +460,7 @@ describe('setLocationHeaderMiddleware', () => {
         };
         const next = jest.fn();
 
-        const middleware = getSetLocationHeaderMiddleware(SupportedHeaders.location)
+        const middleware = getSetLocationHeaderMiddleware(SupportedResponseHeaders.location)
 
         middleware(request, response, next);
 

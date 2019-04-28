@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 
 import { jwtSecret } from '../../../secret/jwt-secret';
-import { SupportedHeaders } from '../../Server/headers'
+import { SupportedRequestHeaders } from '../../Server/headers'
 import { getLocalisedString } from '../../Messages/getLocalisedString';
 import { MessageCategories } from '../../Messages/messageCategories';
 import { FailureMessageKeys } from '../../Messages/failureMessages';
@@ -28,7 +28,7 @@ export const getRetreiveJsonWebTokenMiddleware = (jsonWebTokenHeader: string) =>
     }
 };
 
-export const retreiveJsonWebTokenMiddleware = getRetreiveJsonWebTokenMiddleware(SupportedHeaders.xAccessToken);
+export const retreiveJsonWebTokenMiddleware = getRetreiveJsonWebTokenMiddleware(SupportedRequestHeaders.xAccessToken);
 
 
 export const getJsonWebTokenDoesNotExistResponseMiddleware = (jsonWebTokenValidationErrorObject: { auth: boolean, message: string }, unauthorizedStatusCode: number) => (request: Request, response: Response, next: NextFunction) => {

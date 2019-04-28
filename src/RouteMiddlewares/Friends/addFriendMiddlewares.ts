@@ -8,7 +8,7 @@ import { MessageCategories } from "../../Messages/messageCategories";
 import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { SuccessMessageKeys } from "../../Messages/successMessages";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { SupportedHeaders } from "../../Server/headers";
+import { SupportedResponseHeaders } from "../../Server/headers";
 import { ApiVersions } from "../../server/versions";
 import { RouteCategories, UserProperties } from "../../routeCategories";
 
@@ -124,7 +124,7 @@ export const getSetLocationHeaderMiddleware = (locationHeader: string) => (reque
     }
 }
 
-export const setLocationHeaderMiddleware = getSetLocationHeaderMiddleware(SupportedHeaders.location)
+export const setLocationHeaderMiddleware = getSetLocationHeaderMiddleware(SupportedResponseHeaders.location)
 
 export const getSendFriendAddedSuccessMessageMiddleware = (addFriendSuccessMessage: string) => (request: Request, response: Response, next: NextFunction) => {
     try {

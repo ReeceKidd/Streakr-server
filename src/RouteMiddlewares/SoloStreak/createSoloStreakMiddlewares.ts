@@ -1,14 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
+import * as moment from 'moment-timezone'
 
-import agenda from '../../../config/Agenda'
+import agenda, { AgendaJobs } from '../../../config/Agenda'
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
 import { IUser } from "../../Models/User";
 import { ISoloStreak, soloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from '../../Server/responseCodes';
-import { AgendaJobs } from '../../agendaJobs';
+import { SupportedRequestHeaders } from '../../Server/headers';
+import { getLocalisedString } from '../../Messages/getLocalisedString';
+import { MessageCategories } from '../../Messages/messageCategories';
+import { FailureMessageKeys } from '../../Messages/failureMessages';
 
 export interface SoloStreakRegistrationRequestBody {
     userId: string,
@@ -34,6 +38,52 @@ const soloStreakRegisterstrationValidationSchema = {
 export const soloStreakRegistrationValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     Joi.validate(request.body, soloStreakRegisterstrationValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
 };
+
+const localisedMissingTimeZoneHeaderMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.missingTimeZoneHeaderMessage)
+
+export const getRetreiveTimeZoneHeaderMiddleware = localisedErrorMessage => (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const timeZone = request.header(SupportedRequestHeaders.xTimeZone)
+        if (!timeZone) {
+            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedErrorMessage })
+        }
+        response.locals.timeZone = timeZone
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+const retreiveTimeZoneHeaderMiddleware = getRetreiveTimeZoneHeaderMiddleware(localisedMissingTimeZoneHeaderMessage)
+
+export const getValidateTimeZoneMiddleware = localisedErrorMessage => (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { timeZone } = response.locals
+        const validTimeZone = moment.tz.zone(timeZone)
+        if (!validTimeZone) {
+            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedErrorMessage })
+        }
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+const localisedInvalidTimeZoneMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.invalidTimeZoneMessage)
+
+export const validateTimeZoneMiddleware = getValidateTimeZoneMiddleware(localisedInvalidTimeZoneMessage)
+
+export const setEndOfDayMiddleware = (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { timeZone } = response.locals
+        const currentTime = moment().tz(timeZone)
+        const endOfDay = currentTime.endOf('day').toDate()
+        response.locals.endOfDay = endOfDay
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
 
 export const getCreateSoloStreakFromRequestMiddleware = soloStreak => (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -62,18 +112,19 @@ export const saveSoloStreakToDatabaseMiddleware = async (
     }
 };
 
-export const createDailySoloStreakCompleteChecker = async (request: Request, response: Response, next: NextFunction) => {
+export const getCreateDailySoloStreakCompleteChecker = agenda => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const agendaSoloStreakTracker = agenda.create(AgendaJobs.soloStreakTracker)
-        console.log(agendaSoloStreakTracker)
+        const { endOfDay } = response.locals
         await agenda.start()
-        await agendaSoloStreakTracker.repeatEvery('10 seconds')
+        await agenda.schedule(endOfDay, AgendaJobs.soloStreakTracker)
+        await agenda.processEvery('1 days')
         next()
     } catch (err) {
-        console.log(err)
         next(err)
     }
 }
+
+export const createDailySoloStreakCompleteChecker = getCreateDailySoloStreakCompleteChecker(agenda)
 
 export const sendFormattedSoloStreakMiddleware = (
     request: Request,
@@ -90,6 +141,9 @@ export const sendFormattedSoloStreakMiddleware = (
 
 export const createSoloStreakMiddlewares = [
     soloStreakRegistrationValidationMiddleware,
+    retreiveTimeZoneHeaderMiddleware,
+    validateTimeZoneMiddleware,
+    setEndOfDayMiddleware,
     createSoloStreakFromRequestMiddleware,
     saveSoloStreakToDatabaseMiddleware,
     createDailySoloStreakCompleteChecker,

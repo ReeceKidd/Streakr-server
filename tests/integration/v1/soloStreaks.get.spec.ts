@@ -8,6 +8,7 @@ import { AuthPaths } from '../../../src/Routers/authRouter';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 import { GetSoloStreaksQueryParamaters } from '../../../src/RouteMiddlewares/SoloStreak/getSoloStreaksMiddlewares';
+import { SupportedRequestHeaders } from 'Server/headers';
 
 const registeredEmail = "get-solo-streaks@gmail.com"
 const registeredPassword = "12345678"
@@ -21,7 +22,7 @@ const getSoloStreaksRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
 const soloStreakName = "Daily Spanish"
 const soloStreakDescription = "Each day I must do the insame amount 50xp of Duolingo"
 
-const accessToken = 'x-access-token'
+const londonTimezone = "Europe/London"
 
 describe(getSoloStreaksRoute, () => {
 
@@ -55,7 +56,8 @@ describe(getSoloStreaksRoute, () => {
                 name: soloStreakName,
                 description: soloStreakDescription,
             })
-            .set({ [accessToken]: jsonWebToken })
+            .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
+            .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
     })
 
     afterAll(async () => {
@@ -68,7 +70,7 @@ describe(getSoloStreaksRoute, () => {
         const getSoloStreaksRouteWithQueryParamater = `${getSoloStreaksRoute}?userId=${userId}`
         const response = await request(server)
             .get(getSoloStreaksRouteWithQueryParamater)
-            .set({ 'x-access-token': jsonWebToken })
+            .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
         expect(response.status).toEqual(ResponseCodes.success)
         expect(response.type).toEqual('application/json')
         expect(response.body.soloStreaks.length).toEqual(1)

@@ -7,6 +7,7 @@ import { userModel } from '../../../src/Models/User';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { TestPaths } from '../../../src/Routers/testRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
+import { SupportedRequestHeaders } from '../../../src/Server/headers';
 
 const registeredEmail = "jsonwebtoken@gmail.com"
 const registeredPassword = "12345678"
@@ -46,7 +47,7 @@ describe(verifyJsonWebTokenRoute, () => {
         expect.assertions(3)
         const response = await request(server)
             .post(verifyJsonWebTokenRoute)
-            .set({ 'x-access-token': jsonWebToken })
+            .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
         expect(response.status).toEqual(ResponseCodes.success)
         expect(response.body.auth).toBe(true)
         expect(response.type).toEqual('application/json')
@@ -57,7 +58,7 @@ describe(verifyJsonWebTokenRoute, () => {
         expect.assertions(3)
         const response = await request(server)
             .post(verifyJsonWebTokenRoute)
-            .set({ 'x-access-token': invalidJsonWebToken })
+            .set({ [SupportedRequestHeaders.xAccessToken]: invalidJsonWebToken })
         expect(response.status).toEqual(ResponseCodes.unautohorized)
         expect(response.body.auth).toBe(false)
         expect(response.type).toEqual('application/json')
@@ -68,7 +69,7 @@ describe(verifyJsonWebTokenRoute, () => {
         expect.assertions(3)
         const response = await request(server)
             .post(verifyJsonWebTokenRoute)
-            .set({ 'x-access-token': outOfDateToken })
+            .set({ [SupportedRequestHeaders.xAccessToken]: outOfDateToken })
         expect(response.status).toEqual(ResponseCodes.unautohorized)
         expect(response.body.auth).toBe(false)
         expect(response.type).toEqual('application/json')

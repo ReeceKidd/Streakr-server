@@ -12,9 +12,8 @@ import {
     VerifyJsonWebTokenResponseLocals,
     setMinimumUserDataOnResponseLocals,
 } from './verifyJsonWebTokenMiddlewares'
-
-import { SupportedHeaders } from '../../Server/headers';
 import { ResponseCodes } from '../../Server/responseCodes'
+import { SupportedRequestHeaders } from '../../Server/headers';
 
 describe('retreiveJsonWebTokenMiddleware', () => {
     test('should set response.locals.jsonWebToken', () => {
@@ -22,10 +21,10 @@ describe('retreiveJsonWebTokenMiddleware', () => {
         const jsonWebTokenHeaderNameMock = 123;
 
         const response: any = { locals: {} };
-        const request: any = { headers: { [SupportedHeaders.xAccessToken]: jsonWebTokenHeaderNameMock } };
+        const request: any = { headers: { [SupportedRequestHeaders.xAccessToken]: jsonWebTokenHeaderNameMock } };
         const next = jest.fn();
 
-        const middleware = getRetreiveJsonWebTokenMiddleware(SupportedHeaders.xAccessToken);
+        const middleware = getRetreiveJsonWebTokenMiddleware(SupportedRequestHeaders.xAccessToken);
         middleware(request, response, next);
 
         expect.assertions(2);
@@ -39,7 +38,7 @@ describe('retreiveJsonWebTokenMiddleware', () => {
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getRetreiveJsonWebTokenMiddleware(SupportedHeaders.xAccessToken);
+        const middleware = getRetreiveJsonWebTokenMiddleware(SupportedRequestHeaders.xAccessToken);
         middleware(request, response, next);
 
         expect.assertions(1);
