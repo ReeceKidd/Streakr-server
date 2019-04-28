@@ -1,4 +1,5 @@
 export enum Models {
     User = 'User',
-    SoloStreak = 'SoloStreak'
+    SoloStreak = 'SoloStreak',
+    AgendaJob = 'AgendaJob'
 }

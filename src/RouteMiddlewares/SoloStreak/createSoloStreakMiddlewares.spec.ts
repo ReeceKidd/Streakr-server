@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from 'express'
 import {
     createSoloStreakMiddlewares,
     soloStreakRegistrationValidationMiddleware,
@@ -10,11 +11,15 @@ import {
     retreiveTimeZoneHeaderMiddleware,
     validateTimeZoneMiddleware,
     setEndOfDayMiddleware,
+    sendMissingTimeZoneErrorResponseMiddleware,
+    sendInvalidTimeZoneErrorResponseMiddleware,
+    getSendMissingTimeZoneErrorResponseMiddleware,
 } from './createSoloStreakMiddlewares'
 
 import { userModel } from "../../Models/User";
 import { soloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from '../../Server/responseCodes';
+import { SupportedRequestHeaders } from '../../Server/headers';
 
 describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
@@ -192,167 +197,299 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
 });
 
-describe(`createSoloStreakFromRequestMiddleware`, () => {
-    test("should define response.locals.newSoloStreak", async () => {
+describe('retreiveTimeZoneHeaderMiddleware', () => {
 
-        const userId = 'abcdefg';
-        const name = 'streak name'
-        const description = 'mock streak description'
-
-        class SoloStreak {
-            userId: string;
-            name: string;
-            description: string;
-
-            constructor({ userId, name, description }) {
-                this.userId = userId;
-                this.name = name;
-                this.description = description
-            }
-        }
-
-        const response: any = { locals: {} };
-        const request: any = { body: { userId, name, description } };
+    test('should define response.locals.timeZone', () => {
+        const londonTimeZone = 'Europe/London'
+        const header = jest.fn(() => londonTimeZone)
+        const request: any = {
+            headers: { [SupportedRequestHeaders.xTimeZone]: londonTimeZone }, header
+        };
+        const response: any = {
+            locals: {}
+        };
         const next = jest.fn();
 
-        const middleware = getCreateSoloStreakFromRequestMiddleware(SoloStreak)
-
-        middleware(request, response, next);
-
-        expect.assertions(2);
-        const newSoloStreak = new SoloStreak({ userId, name, description })
-        expect(response.locals.newSoloStreak).toEqual(newSoloStreak)
-        expect(next).toBeCalledWith()
-    });
-
-    test('should call next with error message on error', () => {
-
-        const userId = 'abcdefg';
-        const name = 'streak name'
-        const description = 'mock streak description'
-
-        const response: any = { locals: {} };
-        const request: any = { body: { userId, name, description } };
-        const next = jest.fn();
-
-        const middleware = getCreateSoloStreakFromRequestMiddleware({})
-
-        middleware(request, response, next);
-
-        expect.assertions(1);
-        expect(next).toBeCalledWith(new TypeError("soloStreak is not a constructor"))
-    })
-
-});
-
-describe(`saveSoloStreakToDatabaseMiddleware`, () => {
-
-    const ERROR_MESSAGE = "error";
-
-    test("should set response.locals.savedSoloStreak", async () => {
-        const save = jest.fn(() => {
-            return Promise.resolve(mockSoloStreak)
-        });
-
-        const mockSoloStreak = {
-            userId: 'abcdefg',
-            email: 'user@gmail.com',
-            password: 'password',
-            save
-        }
-
-
-        const response: any = { locals: { newSoloStreak: mockSoloStreak } };
-        const request: any = {}
-        const next = jest.fn();
-
-        await saveSoloStreakToDatabaseMiddleware(request, response, next);
+        retreiveTimeZoneHeaderMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(save).toBeCalled();
-        expect(response.locals.savedSoloStreak).toBeDefined()
-        expect(next).toBeCalled();
-    });
+        expect(header).toBeCalledWith(SupportedRequestHeaders.xTimeZone)
+        expect(response.locals.timeZone).toEqual(londonTimeZone)
+        expect(next).toBeCalledWith();
+    })
 
-    test("should call next() with err paramater if save call fails", async () => {
-        const save = jest.fn(() => {
-            return Promise.reject(ERROR_MESSAGE)
-        });
-
-        const request: any = {};
-        const response: any = { locals: { newSoloStreak: { save } } };
+    test('if timeZone header is missing response.locals.timeZone should be undefined', () => {
+        const header = jest.fn()
+        const request: any = {
+            headers: {}, header
+        };
+        const response: any = {
+            locals: {}
+        };
         const next = jest.fn();
 
-        await saveSoloStreakToDatabaseMiddleware(request, response, next);
+        retreiveTimeZoneHeaderMiddleware(request, response, next);
+
+        expect.assertions(2);
+        expect(response.locals.timeZone).toEqual(undefined)
+        expect(next).toBeCalledWith();
+    })
+
+    test('should call next with error on failure', () => {
+        const request: any = {
+        };
+        const response: any = {
+            locals: {}
+        };
+        const next = jest.fn();
+
+        retreiveTimeZoneHeaderMiddleware(request, response, next);
 
         expect.assertions(1);
-        expect(next).toBeCalledWith(ERROR_MESSAGE);
-
-    });
-
-});
-
-describe('createDailySoloStreakCompleteChecker', () => {
-    test('that agenda job is created successfully', () => {
-
+        expect(next).toBeCalledWith(new TypeError('request.header is not a function'));
     })
 })
 
-describe(`sendFormattedSoloStreakMiddleware`, () => {
-    const ERROR_MESSAGE = "error";
+describe('sendMissingTimeZoneErrorResponseMiddleware', () => {
 
-    const user = new userModel({ userName: 'userName', email: 'username@gmail.com' })
-    const name = 'name'
-    const description = 'description'
-    const savedSoloStreak = new soloStreakModel({ user, name, description })
-    test("should send user in response with password undefined", () => {
+    const londonTimeZone = 'Europe/London'
 
-        const send = jest.fn()
-        const status = jest.fn(() => ({ send }))
-        const soloStreakResponseLocals: SoloStreakResponseLocals = { savedSoloStreak }
-        const response: any = { locals: soloStreakResponseLocals, status };
+    test('that next() is called when timeZone is defined', () => {
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
 
-        const request: any = {}
+        const request: any = {
+        };
+        const response: any = {
+            status, locals: { timeZone: londonTimeZone }
+        };
         const next = jest.fn();
 
-        sendFormattedSoloStreakMiddleware(request, response, next);
-
-        expect.assertions(4);
-        expect(response.locals.user).toBeUndefined()
-        expect(next).not.toBeCalled()
-        expect(status).toBeCalledWith(ResponseCodes.created)
-        expect(send).toBeCalledWith(savedSoloStreak)
-    });
-
-    test("should call next with an error on failure", () => {
-
-        const send = jest.fn(() => {
-            throw new Error(ERROR_MESSAGE)
-        })
-        const status = jest.fn(() => ({ send }))
-        const response: any = { locals: { savedSoloStreak }, status };
-
-        const request: any = {}
-        const next = jest.fn();
-
-        sendFormattedSoloStreakMiddleware(request, response, next);
+        const localisedErrorMessage = 'Error'
+        const middleware = getSendMissingTimeZoneErrorResponseMiddleware(localisedErrorMessage)
+        middleware(request, response, next)
 
         expect.assertions(1);
-        expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))
+        expect(next).toBeCalled();
     })
 
-});
+    test('that error response is sent when timeZone is not defined', () => {
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+
+        const request: any = {
+        };
+        const response: any = {
+            status, locals: {}
+        };
+        const next = jest.fn();
+
+        const localisedErrorMessage = 'Error'
+        const middleware = getSendMissingTimeZoneErrorResponseMiddleware(localisedErrorMessage)
+        middleware(request, response, next)
+
+        expect.assertions(3);
+        expect(status).toBeCalledWith(ResponseCodes.unprocessableEntity)
+        expect(send).toBeCalledWith({ message: localisedErrorMessage })
+        expect(next).not.toBeCalled()
+    })
+
+    test('that next() is called with error on error', () => {
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+
+        const request: any = {
+        };
+        const response: any = {
+            status
+        };
+        const next = jest.fn();
+
+        const localisedErrorMessage = 'Error'
+        const middleware = getSendMissingTimeZoneErrorResponseMiddleware(localisedErrorMessage)
+        middleware(request, response, next)
+
+        expect.assertions(1);
+        expect(next).toBeCalledWith(new TypeError("Cannot destructure property `timeZone` of 'undefined' or 'null'."))
+    })
+
+})
+
+describe('validateTimeZoneMiddleware', () => {
+
+})
+
+// describe('sendInvalidTimeZoneErrorResponseMiddleware', () => {
+
+// })
+
+// describe('setEndOfDayMiddleware', () => {
+
+// })
+
+// describe(`createSoloStreakFromRequestMiddleware`, () => {
+//     test("should define response.locals.newSoloStreak", async () => {
+
+//         const userId = 'abcdefg';
+//         const name = 'streak name'
+//         const description = 'mock streak description'
+
+//         class SoloStreak {
+//             userId: string;
+//             name: string;
+//             description: string;
+
+//             constructor({ userId, name, description }) {
+//                 this.userId = userId;
+//                 this.name = name;
+//                 this.description = description
+//             }
+//         }
+
+//         const response: any = { locals: {} };
+//         const request: any = { body: { userId, name, description } };
+//         const next = jest.fn();
+
+//         const middleware = getCreateSoloStreakFromRequestMiddleware(SoloStreak)
+
+//         middleware(request, response, next);
+
+//         expect.assertions(2);
+//         const newSoloStreak = new SoloStreak({ userId, name, description })
+//         expect(response.locals.newSoloStreak).toEqual(newSoloStreak)
+//         expect(next).toBeCalledWith()
+//     });
+
+//     test('should call next with error message on error', () => {
+
+//         const userId = 'abcdefg';
+//         const name = 'streak name'
+//         const description = 'mock streak description'
+
+//         const response: any = { locals: {} };
+//         const request: any = { body: { userId, name, description } };
+//         const next = jest.fn();
+
+//         const middleware = getCreateSoloStreakFromRequestMiddleware({})
+
+//         middleware(request, response, next);
+
+//         expect.assertions(1);
+//         expect(next).toBeCalledWith(new TypeError("soloStreak is not a constructor"))
+//     })
+
+// });
+
+// describe(`saveSoloStreakToDatabaseMiddleware`, () => {
+
+//     const ERROR_MESSAGE = "error";
+
+//     test("should set response.locals.savedSoloStreak", async () => {
+//         const save = jest.fn(() => {
+//             return Promise.resolve(mockSoloStreak)
+//         });
+
+//         const mockSoloStreak = {
+//             userId: 'abcdefg',
+//             email: 'user@gmail.com',
+//             password: 'password',
+//             save
+//         }
+
+
+//         const response: any = { locals: { newSoloStreak: mockSoloStreak } };
+//         const request: any = {}
+//         const next = jest.fn();
+
+//         await saveSoloStreakToDatabaseMiddleware(request, response, next);
+
+//         expect.assertions(3);
+//         expect(save).toBeCalled();
+//         expect(response.locals.savedSoloStreak).toBeDefined()
+//         expect(next).toBeCalled();
+//     });
+
+//     test("should call next() with err paramater if save call fails", async () => {
+//         const save = jest.fn(() => {
+//             return Promise.reject(ERROR_MESSAGE)
+//         });
+
+//         const request: any = {};
+//         const response: any = { locals: { newSoloStreak: { save } } };
+//         const next = jest.fn();
+
+//         await saveSoloStreakToDatabaseMiddleware(request, response, next);
+
+//         expect.assertions(1);
+//         expect(next).toBeCalledWith(ERROR_MESSAGE);
+
+//     });
+
+// });
+
+// describe('createDailySoloStreakCompleteChecker', () => {
+//     test('that agenda job is created successfully', () => {
+
+//     })
+// })
+
+// describe(`sendFormattedSoloStreakMiddleware`, () => {
+//     const ERROR_MESSAGE = "error";
+
+//     const user = new userModel({ userName: 'userName', email: 'username@gmail.com' })
+//     const name = 'name'
+//     const description = 'description'
+//     const savedSoloStreak = new soloStreakModel({ user, name, description })
+//     test("should send user in response with password undefined", () => {
+
+//         const send = jest.fn()
+//         const status = jest.fn(() => ({ send }))
+//         const soloStreakResponseLocals: SoloStreakResponseLocals = { savedSoloStreak }
+//         const response: any = { locals: soloStreakResponseLocals, status };
+
+//         const request: any = {}
+//         const next = jest.fn();
+
+//         sendFormattedSoloStreakMiddleware(request, response, next);
+
+//         expect.assertions(4);
+//         expect(response.locals.user).toBeUndefined()
+//         expect(next).not.toBeCalled()
+//         expect(status).toBeCalledWith(ResponseCodes.created)
+//         expect(send).toBeCalledWith(savedSoloStreak)
+//     });
+
+//     test("should call next with an error on failure", () => {
+
+//         const send = jest.fn(() => {
+//             throw new Error(ERROR_MESSAGE)
+//         })
+//         const status = jest.fn(() => ({ send }))
+//         const response: any = { locals: { savedSoloStreak }, status };
+
+//         const request: any = {}
+//         const next = jest.fn();
+
+//         sendFormattedSoloStreakMiddleware(request, response, next);
+
+//         expect.assertions(1);
+//         expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))
+//     })
+
+// });
 
 describe(`createSoloStreakMiddlewares`, () => {
     test("that createSoloStreak middlewares are defined in the correct order", async () => {
-        expect.assertions(8);
+        expect.assertions(10);
         expect(createSoloStreakMiddlewares[0]).toBe(soloStreakRegistrationValidationMiddleware)
         expect(createSoloStreakMiddlewares[1]).toBe(retreiveTimeZoneHeaderMiddleware)
-        expect(createSoloStreakMiddlewares[2]).toBe(validateTimeZoneMiddleware)
-        expect(createSoloStreakMiddlewares[3]).toBe(setEndOfDayMiddleware)
-        expect(createSoloStreakMiddlewares[4]).toBe(createSoloStreakFromRequestMiddleware)
-        expect(createSoloStreakMiddlewares[5]).toBe(saveSoloStreakToDatabaseMiddleware)
-        expect(createSoloStreakMiddlewares[6]).toBe(createDailySoloStreakCompleteChecker)
-        expect(createSoloStreakMiddlewares[7]).toBe(sendFormattedSoloStreakMiddleware)
+        expect(createSoloStreakMiddlewares[2]).toBe(sendMissingTimeZoneErrorResponseMiddleware)
+        expect(createSoloStreakMiddlewares[3]).toBe(validateTimeZoneMiddleware)
+        expect(createSoloStreakMiddlewares[4]).toBe(sendInvalidTimeZoneErrorResponseMiddleware)
+        expect(createSoloStreakMiddlewares[5]).toBe(setEndOfDayMiddleware)
+        expect(createSoloStreakMiddlewares[6]).toBe(createSoloStreakFromRequestMiddleware)
+        expect(createSoloStreakMiddlewares[7]).toBe(saveSoloStreakToDatabaseMiddleware)
+        expect(createSoloStreakMiddlewares[8]).toBe(createDailySoloStreakCompleteChecker)
+        expect(createSoloStreakMiddlewares[9]).toBe(sendFormattedSoloStreakMiddleware)
     });
 });
