@@ -1,5 +1,4 @@
 import * as mongoose from 'mongoose';
-import { IUser } from './User';
 import { Collections } from './Collections';
 import { Models } from './Models';
 

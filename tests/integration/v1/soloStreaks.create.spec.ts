@@ -1,14 +1,17 @@
 import * as request from 'supertest'
+import * as moment from 'moment-timezone'
 
 import server from '../../../src/app'
 import { ApiVersions } from '../../../src/Server/versions'
 import { RouteCategories } from '../../../src/routeCategories'
 import { userModel } from '../../../src/Models/User';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
+import { agendaJobModel } from '../../../src/Models/AgendaJob';
 
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 import { SupportedRequestHeaders } from '../../../src/Server/headers';
+import { AgendaJobs } from '../../../config/Agenda';
 
 const registeredEmail = "create-solo-streak-user@gmail.com"
 const registeredPassword = "12345678"
@@ -54,10 +57,11 @@ describe(createSoloStreakRoute, () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail })
         await soloStreakModel.deleteOne({ name })
+        await agendaJobModel.deleteOne({ name: AgendaJobs.soloStreakTracker })
     })
 
     test(`that request passes when correct solo streak information is passed`, async () => {
-        expect.assertions(11)
+        expect.assertions(13)
         const response = await request(server)
             .post(createSoloStreakRoute)
             .send({
@@ -78,6 +82,11 @@ describe(createSoloStreakRoute, () => {
         expect(response.body.userId).toBe(userId)
         expect(response.body).toHaveProperty('createdAt')
         expect(response.body).toHaveProperty('updatedAt')
+        const endOfDay = moment().tz(londonTimezone).endOf('day').toDate()
+        const agendaJob = await agendaJobModel.findOne({ name: AgendaJobs.soloStreakTracker })
+        expect((agendaJob.data as any).userId).toEqual(userId)
+        expect(agendaJob.nextRunAt).toEqual(endOfDay)
+
     })
 
 })

@@ -1,10 +1,10 @@
 import * as mongoose from 'mongoose'
 import { Models } from './Models';
-import { AgendaJobs } from '../../config/Agenda';
+import { Collections } from './Collections';
 
 export interface IAgendaJob extends mongoose.Document {
     _id: string;
-    name: AgendaJobs;
+    name: string;
     data: object;
     type: string;
     nextRunAt: Date,
@@ -37,6 +37,8 @@ export const agendaJobSchema = new mongoose.Schema(
             index: true
         },
         lastFinishedAt: Date
+    }, {
+        collection: Collections.AgendaJobs
     });
 
 export const agendaJobModel: mongoose.Model<IAgendaJob> = mongoose.model<IAgendaJob>(Models.AgendaJob, agendaJobSchema);

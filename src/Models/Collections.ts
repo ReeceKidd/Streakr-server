@@ -1,4 +1,5 @@
 export enum Collections {
     Users = 'Users',
-    SoloStreaks = 'SoloStreaks'
+    SoloStreaks = 'SoloStreaks',
+    AgendaJobs = 'AgendaJobs'
 }

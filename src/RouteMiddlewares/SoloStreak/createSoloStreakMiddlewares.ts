@@ -132,8 +132,9 @@ export const saveSoloStreakToDatabaseMiddleware = async (
 export const getCreateDailySoloStreakCompleteChecker = agenda => async (request: Request, response: Response, next: NextFunction) => {
     try {
         const { endOfDay } = response.locals
+        const { userId } = request.body
         await agenda.start()
-        await agenda.schedule(endOfDay, AgendaJobs.soloStreakTracker)
+        await agenda.schedule(endOfDay, AgendaJobs.soloStreakTracker, { userId })
         await agenda.processEvery('1 days')
         next()
     } catch (err) {
