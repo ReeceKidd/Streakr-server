@@ -8,6 +8,7 @@ import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
+import { SupportedRequestHeaders } from '../../../src/Server/headers';
 
 const registeredEmail = "create-solo-streak-user@gmail.com"
 const registeredPassword = "12345678"
@@ -16,6 +17,8 @@ const registeredUserName = 'create-solo-streak-user'
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
 const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
+
+const londonTimezone = "Europe/London"
 
 
 describe(createSoloStreakRoute, () => {
@@ -62,7 +65,8 @@ describe(createSoloStreakRoute, () => {
                 name,
                 description
             })
-            .set({ 'x-access-token': jsonWebToken })
+            .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
+            .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
         expect(response.status).toEqual(ResponseCodes.created)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('_id')

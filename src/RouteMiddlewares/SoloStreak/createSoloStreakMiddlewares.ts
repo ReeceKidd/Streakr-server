@@ -54,7 +54,7 @@ export const getRetreiveTimeZoneHeaderMiddleware = localisedErrorMessage => (req
     }
 }
 
-const retreiveTimeZoneHeaderMiddleware = getRetreiveTimeZoneHeaderMiddleware(localisedMissingTimeZoneHeaderMessage)
+export const retreiveTimeZoneHeaderMiddleware = getRetreiveTimeZoneHeaderMiddleware(localisedMissingTimeZoneHeaderMessage)
 
 export const getValidateTimeZoneMiddleware = localisedErrorMessage => (request: Request, response: Response, next: NextFunction) => {
     try {
