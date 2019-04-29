@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 import * as moment from 'moment-timezone'
 
-import agenda, { AgendaJobs } from '../../../config/Agenda'
+import agenda, { AgendaJobs, AgendaProcessTimes, AgendaTimeRanges } from '../../../config/Agenda'
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
@@ -64,15 +64,17 @@ export const getSendMissingTimeZoneErrorResponseMiddleware = localisedErrorMessa
 
 export const sendMissingTimeZoneErrorResponseMiddleware = getSendMissingTimeZoneErrorResponseMiddleware(localisedMissingTimeZoneHeaderMessage)
 
-export const validateTimeZoneMiddleware = (request: Request, response: Response, next: NextFunction) => {
+export const getValidateTimeZoneMiddleware = isValidTimeZone => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { timeZone } = response.locals
-        response.locals.validTimeZone = moment.tz.zone(timeZone)
+        response.locals.validTimeZone = isValidTimeZone(timeZone)
         next()
     } catch (err) {
         next(err)
     }
 }
+
+export const validateTimeZoneMiddleware = getValidateTimeZoneMiddleware(moment.tz.zone)
 
 export const getSendInvalidTimeZoneErrorResponseMiddleware = localisedErrorMessage => (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -90,17 +92,17 @@ const localisedInvalidTimeZoneMessage = getLocalisedString(MessageCategories.fai
 
 export const sendInvalidTimeZoneErrorResponseMiddleware = getSendInvalidTimeZoneErrorResponseMiddleware(localisedInvalidTimeZoneMessage)
 
-export const setEndOfDayMiddleware = (request: Request, response: Response, next: NextFunction) => {
+export const getSetEndOfDayMiddleware = moment => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { timeZone } = response.locals
-        const currentTime = moment().tz(timeZone)
-        const endOfDay = currentTime.endOf('day').toDate()
-        response.locals.endOfDay = endOfDay
+        response.locals.endOfDay = moment().tz(timeZone).endOf(AgendaTimeRanges.day).toDate()
         next()
     } catch (err) {
         next(err)
     }
 }
+
+export const setEndOfDayMiddleware = getSetEndOfDayMiddleware(moment)
 
 export const getCreateSoloStreakFromRequestMiddleware = soloStreak => (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -135,7 +137,7 @@ export const getCreateDailySoloStreakCompleteChecker = agenda => async (request:
         const { userId } = request.body
         await agenda.start()
         await agenda.schedule(endOfDay, AgendaJobs.soloStreakCompleteTracker, { userId })
-        await agenda.processEvery('1 days')
+        await agenda.processEvery(AgendaProcessTimes.oneDays)
         next()
     } catch (err) {
         next(err)
