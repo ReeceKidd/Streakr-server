@@ -57,7 +57,7 @@ describe(createSoloStreakRoute, () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail })
         await soloStreakModel.deleteOne({ name })
-        await agendaJobModel.deleteOne({ name: AgendaJobs.soloStreakCompleteTracker })
+        await agendaJobModel.deleteOne({ "data.userId": userId })
     })
 
     test(`that request passes when correct solo streak information is passed`, async () => {
