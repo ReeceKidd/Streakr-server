@@ -4,10 +4,12 @@ import server from '../../../src/app'
 import { ApiVersions } from '../../../src/Server/versions'
 import { RouteCategories } from '../../../src/routeCategories'
 import { userModel } from '../../../src/Models/User';
-import { AuthPaths } from '../../../src/Routers/authRouter';
+import { agendaJobModel } from '../../../src/Models/AgendaJob';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
+import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 import { SupportedRequestHeaders } from '../../../src/Server/headers';
+
 
 const registeredEmail = "get-solo-streaks@gmail.com"
 const registeredPassword = "12345678"
@@ -62,6 +64,7 @@ describe(getSoloStreaksRoute, () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail });
         await soloStreakModel.deleteOne({ name: soloStreakName });
+        await agendaJobModel.deleteOne({ "data.userId": userId })
     })
 
     test(`that solo streaks can be retreived for user`, async () => {
