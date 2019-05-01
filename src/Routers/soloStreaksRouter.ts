@@ -3,10 +3,10 @@ import { Router } from "express";
 import { verifyJsonWebTokenMiddlewares } from "../RouteMiddlewares/Utils/verifyJsonWebTokenMiddlewares";
 import { getSoloStreaksMiddlewares } from "../RouteMiddlewares/SoloStreak/getSoloStreaksMiddlewares";
 import { createSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakMiddlewares";
-import { createSoloStreakTaskMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakTaskMiddlewares";
+import { createSoloStreakTaskCompleteMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakTaskCompleteMiddlewares";
 
 export enum SoloStreakProperties {
-    task = 'task'
+    calendar = 'calendar'
 }
 
 export const soloStreakId = 'soloStreakId'
@@ -26,7 +26,7 @@ soloStreaksRouter.post(
 );
 
 soloStreaksRouter.post(
-    `/:${soloStreakId}/${SoloStreakProperties.task}`, ...createSoloStreakTaskMiddlewares
+    `/:${soloStreakId}/${SoloStreakProperties.calendar}`, ...createSoloStreakTaskCompleteMiddlewares
 )
 
 export default soloStreaksRouter;

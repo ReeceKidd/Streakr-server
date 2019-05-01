@@ -2,12 +2,16 @@ import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
 
+export interface ITaskComplete {
+    date: Date
+}
+
 export interface ISoloStreak extends mongoose.Document {
     userId: string;
     streakName: string;
     streakDescription: string;
     startDate: Date;
-    calendar?: object[];
+    calendar?: ITaskComplete[];
 }
 
 export const soloStreakSchema = new mongoose.Schema({
