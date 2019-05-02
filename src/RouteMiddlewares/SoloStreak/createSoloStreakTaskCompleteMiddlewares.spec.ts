@@ -2,7 +2,7 @@ import { createSoloStreakTaskCompleteMiddlewares, soloStreakTaskCompletedParamsV
 
 describe(`createSoloStreakTaskCompleteMiddlewares`, () => {
     test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
-        expect.assertions(9);
+        expect.assertions(10);
         expect(createSoloStreakTaskCompleteMiddlewares[0]).toBe(soloStreakTaskCompletedParamsValidationMiddleware)
         expect(createSoloStreakTaskCompleteMiddlewares[1]).toBe(retreiveTimeZoneHeaderMiddleware)
         expect(createSoloStreakTaskCompleteMiddlewares[2]).toBe(sendMissingTimeZoneErrorResponseMiddleware)
