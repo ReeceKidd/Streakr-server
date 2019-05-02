@@ -2,8 +2,11 @@ import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
 
-export interface ITaskComplete {
-    date: Date
+export interface ITask {
+    wasCompleted: boolean,
+    taskCompleteTime?: Date,
+    dayTaskWasCompleted?: Date,
+    dayTaskWasFailed?: Date,
 }
 
 export interface ISoloStreak extends mongoose.Document {
@@ -11,7 +14,7 @@ export interface ISoloStreak extends mongoose.Document {
     streakName: string;
     streakDescription: string;
     startDate: Date;
-    calendar?: ITaskComplete[];
+    calendar?: ITask[];
 }
 
 export const soloStreakSchema = new mongoose.Schema({

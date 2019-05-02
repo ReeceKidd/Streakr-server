@@ -1,4 +1,4 @@
-import { createSoloStreakTaskCompleteMiddlewares, soloStreakTaskCompletedParamsValidationMiddleware, retreiveTimeZoneHeaderMiddleware, sendMissingTimeZoneErrorResponseMiddleware, validateTimeZoneMiddleware, sendInvalidTimeZoneErrorResponseMiddleware, hasTaskAlreadyBeenCompletedTodayMiddleware, sendTaskAlreadyCompletedTodayErrorMiddleware, retreiveSoloStreakMiddleware, sendSoloStreakDoesNotExistErrorMiddleware } from "./createSoloStreakTaskCompleteMiddlewares";
+import { createSoloStreakTaskCompleteMiddlewares, soloStreakTaskCompletedParamsValidationMiddleware, retreiveTimeZoneHeaderMiddleware, sendMissingTimeZoneErrorResponseMiddleware, validateTimeZoneMiddleware, sendInvalidTimeZoneErrorResponseMiddleware, hasTaskAlreadyBeenCompletedTodayMiddleware, sendTaskAlreadyCompletedTodayErrorMiddleware, retreiveSoloStreakMiddleware, sendSoloStreakDoesNotExistErrorMiddleware, setCurrentTimeMiddleware, setDayTaskWasCompletedMiddleware, addTaskCompleteToSoloStreakMiddleware, sendUpdatedSoloStreakMiddleware } from "./createSoloStreakTaskCompleteMiddlewares";
 
 describe(`createSoloStreakTaskCompleteMiddlewares`, () => {
     test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
@@ -10,7 +10,11 @@ describe(`createSoloStreakTaskCompleteMiddlewares`, () => {
         expect(createSoloStreakTaskCompleteMiddlewares[4]).toBe(sendInvalidTimeZoneErrorResponseMiddleware)
         expect(createSoloStreakTaskCompleteMiddlewares[5]).toBe(retreiveSoloStreakMiddleware)
         expect(createSoloStreakTaskCompleteMiddlewares[6]).toBe(sendSoloStreakDoesNotExistErrorMiddleware)
+        expect(createSoloStreakTaskCompleteMiddlewares[7]).toBe(setCurrentTimeMiddleware)
+        expect(createSoloStreakTaskCompleteMiddlewares[8]).toBe(setDayTaskWasCompletedMiddleware)
         expect(createSoloStreakTaskCompleteMiddlewares[7]).toBe(hasTaskAlreadyBeenCompletedTodayMiddleware)
         expect(createSoloStreakTaskCompleteMiddlewares[8]).toBe(sendTaskAlreadyCompletedTodayErrorMiddleware)
+        expect(createSoloStreakTaskCompleteMiddlewares[7]).toBe(addTaskCompleteToSoloStreakMiddleware)
+        expect(createSoloStreakTaskCompleteMiddlewares[8]).toBe(sendUpdatedSoloStreakMiddleware)
     });
 });
