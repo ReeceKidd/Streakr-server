@@ -8,7 +8,8 @@ import { MessageCategories } from '../../Messages/messageCategories';
 import { FailureMessageKeys } from '../../Messages/failureMessages';
 import { SupportedRequestHeaders } from '../../Server/headers';
 import { ResponseCodes } from '../../Server/responseCodes';
-import { soloStreakModel, ITask } from '../../Models/SoloStreak';
+import { soloStreakModel } from '../../Models/SoloStreak';
+import { ITask } from '../../Models/User'
 
 const soloStreakTaskValidationSchema = {
     soloStreakId: Joi.string().required(),

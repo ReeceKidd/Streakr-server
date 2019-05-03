@@ -6,6 +6,13 @@ import { ISoloStreak } from './SoloStreak';
 
 export const SALT_ROUNDS = 10;
 
+export interface ITask {
+  wasCompleted: boolean,
+  taskCompleteTime?: Date,
+  dayTaskWasCompleted?: Date,
+  dayTaskWasFailed?: Date,
+}
+
 enum UserTypes {
   user = 'user',
   admin = 'admin',
@@ -25,6 +32,7 @@ export interface IUser extends mongoose.Document {
   modifiedAt: Date;
   role: string;
   preferredLanguage: string;
+  calendar: ITask[];
   soloStreaks?: ISoloStreak[];
   profilePicture?: {
     type: String,
@@ -51,6 +59,10 @@ export const userSchema = new mongoose.Schema(
     password: {
       required: true,
       type: String
+    },
+    calendar: {
+      type: Array,
+      default: []
     },
     role: {
       type: String,

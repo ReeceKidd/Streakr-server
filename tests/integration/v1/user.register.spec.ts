@@ -19,7 +19,7 @@ describe(userRegistationRoute, () => {
     });
 
     test('user can register successfully', async () => {
-        expect.assertions(9)
+        expect.assertions(10)
         const response = await request(server).post(userRegistationRoute).send(
             {
                 userName,
@@ -30,6 +30,7 @@ describe(userRegistationRoute, () => {
         expect(response.status).toEqual(ResponseCodes.created)
         expect(response.type).toEqual('application/json')
         expect(response.body).toHaveProperty('streaks')
+        expect(response.body).toHaveProperty('calendar')
         expect(response.body).toHaveProperty('role')
         expect(response.body).toHaveProperty('_id')
         expect(response.body).toHaveProperty('email')
