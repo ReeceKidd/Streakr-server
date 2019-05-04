@@ -3,7 +3,7 @@ import { Router } from "express";
 import { verifyJsonWebTokenMiddlewares } from "../RouteMiddlewares/Utils/verifyJsonWebTokenMiddlewares";
 import { getSoloStreaksMiddlewares } from "../RouteMiddlewares/SoloStreak/getSoloStreaksMiddlewares";
 import { createSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakMiddlewares";
-import { createSoloStreakCompleteTaskMiddlewares } from "RouteMiddlewares/SoloStreak/createSoloStreakCompleteTaskMiddlewares";
+import { createSoloStreakCompleteTaskMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakCompleteTaskMiddlewares";
 
 export enum SoloStreakProperties {
     completeTasks = 'complete-tasks'
