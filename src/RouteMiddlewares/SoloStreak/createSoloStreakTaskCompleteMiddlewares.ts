@@ -1,23 +1,53 @@
 import { Request, Response, NextFunction } from 'express'
-import * as Joi from 'joi'
 import * as moment from 'moment-timezone'
+import * as Joi from 'joi'
 
-import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { getLocalisedString } from '../../Messages/getLocalisedString';
 import { MessageCategories } from '../../Messages/messageCategories';
 import { FailureMessageKeys } from '../../Messages/failureMessages';
 import { SupportedRequestHeaders } from '../../Server/headers';
 import { ResponseCodes } from '../../Server/responseCodes';
-import { soloStreakModel } from '../../Models/SoloStreak';
-import { ITask } from '../../Models/User'
+import { ITask, userModel } from '../../Models/User'
+import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
+import { soloStreakModel, ISoloStreak } from '../../Models/SoloStreak';
 
-const soloStreakTaskValidationSchema = {
-    soloStreakId: Joi.string().required(),
-};
 
-export const soloStreakTaskCompletedParamsValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
-    Joi.validate(request.params, soloStreakTaskValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
-};
+export const soloStreakTaskCompleteParamsValidationSchema = {
+    soloStreakId: Joi.string().required()
+}
+
+export const soloStreakTaskCompleteParamsValidationMiddleware = (request: Request, response: Response, next: NextFunction) => {
+    Joi.validate(request.params, soloStreakTaskCompleteParamsValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next))
+}
+
+export const getSoloStreakExistsMiddleware = soloStreakModel => async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { soloStreakId } = request.params
+        const soloStreak = await soloStreakModel.findOne({ _id: soloStreakId })
+        response.locals.soloStreak = soloStreak
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const soloStreakExistsMiddleware = getSoloStreakExistsMiddleware(soloStreakModel)
+
+export const getSendSoloStreakDoesNotExistErrorMessageMiddleware = (unprocessableEntityStatusCode: number, localisedSoloStreakDoesNotExistErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { soloStreak } = response.locals
+        if (!soloStreak) {
+            return response.status(unprocessableEntityStatusCode).send({ message: localisedSoloStreakDoesNotExistErrorMessage })
+        }
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+const localisedSoloStreakDoesNotExistMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.soloStreakDoesNotExist)
+
+export const sendSoloStreakDoesNotExistErrorMessageMiddleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(ResponseCodes.unprocessableEntity, localisedSoloStreakDoesNotExistMessage)
 
 export const retreiveTimeZoneHeaderMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -72,24 +102,24 @@ const localisedInvalidTimeZoneMessage = getLocalisedString(MessageCategories.fai
 
 export const sendInvalidTimeZoneErrorResponseMiddleware = getSendInvalidTimeZoneErrorResponseMiddleware(localisedInvalidTimeZoneMessage)
 
-export const getRetreiveSoloStreakMiddleware = soloStreakModel => async (request: Request, response: Response, next: NextFunction) => {
+export const getRetreiveUserCalendarMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { soloStreakId } = request.params
-        const soloStreak = await soloStreakModel.findOne({ _id: soloStreakId }).lean()
-        response.locals.soloStreak = soloStreak
+        const { minimumUserData } = response.locals
+        const user = await userModel.findOne({ _id: minimumUserData._id }).lean()
+        response.locals.calendar = user.calendar
         next()
     } catch (err) {
         next(err)
     }
 }
 
-export const retreiveSoloStreakMiddleware = getRetreiveSoloStreakMiddleware(soloStreakModel)
+export const retreiveUserCalendarMiddleware = getRetreiveUserCalendarMiddleware(userModel)
 
-export const getSendSoloStreakDoesNotExistErrorMiddlware = (localisedSoloStreakDoesNotExistErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
+export const getUserCalendarDoesNotExistErrorMiddlware = (localisedCalendarDoesNotExistErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { soloStreak } = response.locals
-        if (!soloStreak) {
-            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedSoloStreakDoesNotExistErrorMessage })
+        const { calendar } = response.locals
+        if (!calendar) {
+            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedCalendarDoesNotExistErrorMessage })
         }
         next()
     } catch (err) {
@@ -97,9 +127,9 @@ export const getSendSoloStreakDoesNotExistErrorMiddlware = (localisedSoloStreakD
     }
 }
 
-const localisedSoloStreakDoesNotExistErrorMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.soloStreakDoesNotExistMessage)
+const localisedCalendarDoesNotExistErrorMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.calendarDoesNotExistMessage)
 
-export const sendSoloStreakDoesNotExistErrorMiddleware = getSendSoloStreakDoesNotExistErrorMiddlware(localisedSoloStreakDoesNotExistErrorMessage)
+export const sendUserCalendarDoesNotExistErrorMiddleware = getUserCalendarDoesNotExistErrorMiddlware(localisedCalendarDoesNotExistErrorMessage)
 
 export const getSetTaskCompleteTimeMiddleware = moment => (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -131,9 +161,11 @@ export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddlew
 
 export const hasTaskAlreadyBeenCompletedTodayMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { soloStreak, dayTaskWasCompleted } = response.locals
-        const taskAlreadyCompletedToday = soloStreak.calendar.find(completeTask => {
-            return completeTask.dayTaskWasCompleted === dayTaskWasCompleted
+        const calendar = response.locals.calendar as ITask[]
+        const soloStreak = response.locals.soloStreak as ISoloStreak
+        const { dayTaskWasCompleted } = response.locals
+        const taskAlreadyCompletedToday = calendar.find(completeTask => {
+            return completeTask.dayTaskWasCompleted === dayTaskWasCompleted && completeTask.streakId === soloStreak.id
         })
         response.locals.taskAlreadyCompletedToday = taskAlreadyCompletedToday
         next()
@@ -158,49 +190,78 @@ const localisedTaskAlreadyCompletedTodayErrorMessage = getLocalisedString(Messag
 
 export const sendTaskAlreadyCompletedTodayErrorMiddleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(localisedTaskAlreadyCompletedTodayErrorMessage)
 
-export const getAddTaskCompleteToSoloStreakMiddleware = (soloStreakModel) => async (request: Request, response: Response, next: NextFunction) => {
+export const defineTaskCompleteMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
         const { soloStreakId } = request.params
         const { taskCompleteTime, dayTaskWasCompleted } = response.locals
         const taskComplete: ITask = {
+            streakId: soloStreakId,
             taskCompleteTime: taskCompleteTime.toDate(),
-            dayTaskWasCompleted,
-            wasCompleted: true
+            dayTaskWasCompleted
         }
-        response.locals.updatedSoloStreak = await soloStreakModel.findOneAndUpdate(
-            { _id: soloStreakId },
-            { $push: { calendar: taskComplete } },
-            { new: true })
-            .lean()
+        response.locals.taskComplete = taskComplete
         next()
     } catch (err) {
         next(err)
     }
 }
 
-export const addTaskCompleteToSoloStreakMiddleware = getAddTaskCompleteToSoloStreakMiddleware(soloStreakModel)
-
-export const sendUpdatedSoloStreakMiddleware = (request: Request, response: Response, next: NextFunction) => {
+export const getAddTaskCompleteToUserCalendarMiddleware = (userModel) => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { updatedSoloStreak } = response.locals
-        return response.status(ResponseCodes.success).send(updatedSoloStreak)
+        const { taskComplete, minimumUserData } = response.locals
+        await userModel.updateOne(
+            { _id: minimumUserData._id },
+            { $push: { calendar: taskComplete } }
+        )
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const addTaskCompleteToUserCalendarMiddleware = getAddTaskCompleteToUserCalendarMiddleware(userModel)
+
+export const getAddTaskCompleteToSoloStreakActivityLogMiddleware = (soloStreakModel) => async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { soloStreakId } = request.params
+        const { taskComplete } = response.locals
+        await soloStreakModel.updateOne(
+            { _id: soloStreakId },
+            { $push: { activityLog: taskComplete } }
+        )
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const addTaskCompleteToSoloStreakActivityLogMiddleware = getAddTaskCompleteToSoloStreakActivityLogMiddleware(soloStreakModel)
+
+export const sendTaskCompleteResponseMiddleware = (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { taskComplete } = response.locals
+        return response.status(ResponseCodes.success).send(taskComplete)
     } catch (err) {
         next(err)
     }
 }
 
 export const createSoloStreakTaskCompleteMiddlewares = [
-    soloStreakTaskCompletedParamsValidationMiddleware,
+    soloStreakTaskCompleteParamsValidationMiddleware,
+    soloStreakExistsMiddleware,
+    sendSoloStreakDoesNotExistErrorMessageMiddleware,
     retreiveTimeZoneHeaderMiddleware,
     sendMissingTimeZoneErrorResponseMiddleware,
     validateTimeZoneMiddleware,
     sendInvalidTimeZoneErrorResponseMiddleware,
-    retreiveSoloStreakMiddleware,
-    sendSoloStreakDoesNotExistErrorMiddleware,
+    retreiveUserCalendarMiddleware,
+    sendUserCalendarDoesNotExistErrorMiddleware,
     setCurrentTimeMiddleware,
     setDayTaskWasCompletedMiddleware,
     hasTaskAlreadyBeenCompletedTodayMiddleware,
     sendTaskAlreadyCompletedTodayErrorMiddleware,
-    addTaskCompleteToSoloStreakMiddleware,
-    sendUpdatedSoloStreakMiddleware
+    defineTaskCompleteMiddleware,
+    addTaskCompleteToUserCalendarMiddleware,
+    addTaskCompleteToSoloStreakActivityLogMiddleware,
+    sendTaskCompleteResponseMiddleware
 ]

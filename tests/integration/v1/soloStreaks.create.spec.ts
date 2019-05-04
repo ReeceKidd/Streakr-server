@@ -61,7 +61,7 @@ describe(createSoloStreakRoute, () => {
     })
 
     test(`that request passes when correct solo streak information is passed`, async () => {
-        expect.assertions(12)
+        expect.assertions(11)
         const response = await request(server)
             .post(createSoloStreakRoute)
             .send({
@@ -73,13 +73,12 @@ describe(createSoloStreakRoute, () => {
             .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
         expect(response.status).toEqual(ResponseCodes.created)
         expect(response.type).toEqual('application/json')
+        expect(response.body.name).toEqual(name)
+        expect(response.body.description).toEqual(description)
+        expect(response.body.userId).toEqual(userId)
+        expect(response.body.activityLog).toEqual([])
         expect(response.body).toHaveProperty('_id')
         expect(response.body).toHaveProperty('startDate')
-        expect(response.body).toHaveProperty('calendar')
-        expect(response.body).toHaveProperty('name')
-        expect(response.body.name).toBe(name)
-        expect(response.body.description).toBe(description)
-        expect(response.body.userId).toBe(userId)
         expect(response.body).toHaveProperty('createdAt')
         expect(response.body).toHaveProperty('updatedAt')
         const endOfDay = moment().tz(londonTimezone).endOf('day').toDate()

@@ -7,7 +7,7 @@ import { ISoloStreak } from './SoloStreak';
 export const SALT_ROUNDS = 10;
 
 export interface ITask {
-  wasCompleted: boolean,
+  streakId: String
   taskCompleteTime?: Date,
   dayTaskWasCompleted?: Date,
   dayTaskWasFailed?: Date,

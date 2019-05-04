@@ -6,7 +6,7 @@ import { createSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/crea
 import { createSoloStreakTaskCompleteMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakTaskCompleteMiddlewares";
 
 export enum SoloStreakProperties {
-    calendar = 'calendar'
+    completeTasks = 'complete-tasks'
 }
 
 export const soloStreakId = 'soloStreakId'
@@ -26,7 +26,7 @@ soloStreaksRouter.post(
 );
 
 soloStreaksRouter.post(
-    `/:${soloStreakId}/${SoloStreakProperties.calendar}`, ...createSoloStreakTaskCompleteMiddlewares
+    `/:${soloStreakId}/${SoloStreakProperties.completeTasks}`, ...createSoloStreakTaskCompleteMiddlewares
 )
 
 export default soloStreaksRouter;
