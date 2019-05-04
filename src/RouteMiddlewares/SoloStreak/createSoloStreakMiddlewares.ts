@@ -6,8 +6,8 @@ import agenda, { AgendaJobs, AgendaProcessTimes, AgendaTimeRanges } from '../../
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
-import { IUser } from "../../Models/User";
-import { ISoloStreak, soloStreakModel } from "../../Models/SoloStreak";
+import { User } from "../../Models/User";
+import { SoloStreak, soloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from '../../Server/responseCodes';
 import { SupportedRequestHeaders } from '../../Server/headers';
 import { getLocalisedString } from '../../Messages/getLocalisedString';
@@ -23,9 +23,9 @@ export interface SoloStreakRegistrationRequestBody {
 }
 
 export interface SoloStreakResponseLocals {
-    user?: IUser,
-    newSoloStreak?: ISoloStreak,
-    savedSoloStreak?: ISoloStreak,
+    user?: User,
+    newSoloStreak?: SoloStreak,
+    savedSoloStreak?: SoloStreak,
 }
 
 
@@ -123,7 +123,7 @@ export const saveSoloStreakToDatabaseMiddleware = async (
     next: NextFunction,
 ) => {
     try {
-        const newSoloStreak: ISoloStreak = response.locals.newSoloStreak;
+        const newSoloStreak: SoloStreak = response.locals.newSoloStreak;
         response.locals.savedSoloStreak = await newSoloStreak.save();
         next();
     } catch (err) {

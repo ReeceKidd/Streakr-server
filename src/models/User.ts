@@ -2,15 +2,16 @@ import * as mongoose from 'mongoose';
 import { SupportedLanguages } from '../Messages/supportedLanguages';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { ISoloStreak } from './SoloStreak';
+import { SoloStreak } from './SoloStreak';
 
 export const SALT_ROUNDS = 10;
 
 export interface ITask {
   streakId: String
   taskCompleteTime?: Date,
-  dayTaskWasCompleted?: Date,
-  dayTaskWasFailed?: Date,
+  taskFailedTime?: String,
+  taskCompleteDay?: String,
+  taskFailedDay?: String,
 }
 
 enum UserTypes {
@@ -23,7 +24,7 @@ export interface IMinimumUserData {
   userName: string
 }
 
-export interface IUser extends mongoose.Document {
+export interface User extends mongoose.Document {
   _id: string;
   userName: string;
   email: string;
@@ -33,7 +34,7 @@ export interface IUser extends mongoose.Document {
   role: string;
   preferredLanguage: string;
   calendar: ITask[];
-  soloStreaks?: ISoloStreak[];
+  soloStreaks?: SoloStreak[];
   profilePicture?: {
     type: String,
   };
@@ -95,4 +96,4 @@ mongoose.set('useCreateIndex', true);
 userSchema.index({ userName: 'text' });
 userSchema.index({ email: 'text' });
 
-export const userModel: mongoose.Model<IUser> = mongoose.model<IUser>(Models.User, userSchema);
+export const userModel: mongoose.Model<User> = mongoose.model<User>(Models.User, userSchema);

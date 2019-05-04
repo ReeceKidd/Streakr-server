@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose'
 import { Models } from './Models';
 import { Collections } from './Collections';
 
-export interface IAgendaJob extends mongoose.Document {
+export interface AgendaJob extends mongoose.Document {
     _id: string;
     name: string;
     data: object;
@@ -41,4 +41,4 @@ export const agendaJobSchema = new mongoose.Schema(
         collection: Collections.AgendaJobs
     });
 
-export const agendaJobModel: mongoose.Model<IAgendaJob> = mongoose.model<IAgendaJob>(Models.AgendaJob, agendaJobSchema);
+export const agendaJobModel: mongoose.Model<AgendaJob> = mongoose.model<AgendaJob>(Models.AgendaJob, agendaJobSchema);

@@ -21,7 +21,7 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { SupportedRequestHeaders } from '../../Server/headers';
 import { AgendaJobs, AgendaProcessTimes, AgendaTimeRanges } from '../../../config/Agenda';
-import { ISoloStreak } from 'Models/SoloStreak';
+import { SoloStreak } from 'Models/SoloStreak';
 
 describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
@@ -628,7 +628,7 @@ describe('createDailySoloStreakCompleteChecker', () => {
 
 describe(`sendFormattedSoloStreakMiddleware`, () => {
     const ERROR_MESSAGE = "error";
-    const savedSoloStreak = { userId: 'abc', streakName: 'Daily Spanish', streakDescription: 'Practice spanish every day', startDate: new Date() } as ISoloStreak
+    const savedSoloStreak = { userId: 'abc', streakName: 'Daily Spanish', streakDescription: 'Practice spanish every day', startDate: new Date() } as SoloStreak
 
     test("should send user in response with password undefined", () => {
 

@@ -9,7 +9,7 @@ import { SupportedRequestHeaders } from '../../Server/headers';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ITask, userModel } from '../../Models/User'
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
-import { soloStreakModel, ISoloStreak } from '../../Models/SoloStreak';
+import { soloStreakModel, SoloStreak } from '../../Models/SoloStreak';
 
 
 export const soloStreakTaskCompleteParamsValidationSchema = {
@@ -147,8 +147,8 @@ export const setCurrentTimeMiddleware = getSetTaskCompleteTimeMiddleware(moment)
 export const getSetDayTaskWasCompletedMiddleware = (dayFormat) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { taskCompleteTime } = response.locals
-        const dayTaskWasCompleted = taskCompleteTime.format(dayFormat)
-        response.locals.dayTaskWasCompleted = dayTaskWasCompleted
+        const taskCompleteDay = taskCompleteTime.format(dayFormat)
+        response.locals.taskCompleteDay = taskCompleteDay
         next()
     } catch (err) {
         next(err)
@@ -162,10 +162,10 @@ export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddlew
 export const hasTaskAlreadyBeenCompletedTodayMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
         const calendar = response.locals.calendar as ITask[]
-        const soloStreak = response.locals.soloStreak as ISoloStreak
-        const { dayTaskWasCompleted } = response.locals
+        const soloStreak = response.locals.soloStreak as SoloStreak
+        const { taskCompleteDay } = response.locals
         const taskAlreadyCompletedToday = calendar.find(completeTask => {
-            return completeTask.dayTaskWasCompleted === dayTaskWasCompleted && completeTask.streakId === soloStreak.id
+            return completeTask.taskCompleteDay === taskCompleteDay && completeTask.streakId === soloStreak.id
         })
         response.locals.taskAlreadyCompletedToday = taskAlreadyCompletedToday
         next()
@@ -193,11 +193,11 @@ export const sendTaskAlreadyCompletedTodayErrorMiddleware = getSendTaskAlreadyCo
 export const defineTaskCompleteMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
         const { soloStreakId } = request.params
-        const { taskCompleteTime, dayTaskWasCompleted } = response.locals
+        const { taskCompleteTime, taskCompleteDay } = response.locals
         const taskComplete: ITask = {
             streakId: soloStreakId,
             taskCompleteTime: taskCompleteTime.toDate(),
-            dayTaskWasCompleted
+            taskCompleteDay
         }
         response.locals.taskComplete = taskComplete
         next()
@@ -211,7 +211,7 @@ export const getAddTaskCompleteToUserCalendarMiddleware = (userModel) => async (
         const { taskComplete, minimumUserData } = response.locals
         await userModel.updateOne(
             { _id: minimumUserData._id },
-            { $push: { calendar: taskComplete } }
+            { $push: { calendar: { ...taskComplete } } }
         )
         next()
     } catch (err) {
@@ -227,7 +227,7 @@ export const getAddTaskCompleteToSoloStreakActivityLogMiddleware = (soloStreakMo
         const { taskComplete } = response.locals
         await soloStreakModel.updateOne(
             { _id: soloStreakId },
-            { $push: { activityLog: taskComplete } }
+            { $push: { activityLog: { ...taskComplete } } }
         )
         next()
     } catch (err) {

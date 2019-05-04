@@ -3,7 +3,7 @@ import { Collections } from './Collections';
 import { Models } from './Models';
 import { ITask } from './User';
 
-export interface ISoloStreak extends mongoose.Document {
+export interface SoloStreak extends mongoose.Document {
     userId: string;
     streakName: string;
     streakDescription: string;
@@ -40,4 +40,4 @@ export const soloStreakSchema = new mongoose.Schema({
     },
 );
 
-export const soloStreakModel: mongoose.Model<ISoloStreak> = mongoose.model<ISoloStreak>(Models.SoloStreak, soloStreakSchema);
+export const soloStreakModel: mongoose.Model<SoloStreak> = mongoose.model<SoloStreak>(Models.SoloStreak, soloStreakSchema);
