@@ -246,7 +246,7 @@ export const sendTaskCompleteResponseMiddleware = (request: Request, response: R
     }
 }
 
-export const createSoloStreakTaskCompleteMiddlewares = [
+export const createSoloStreakCompleteTaskMiddlewares = [
     soloStreakTaskCompleteParamsValidationMiddleware,
     soloStreakExistsMiddleware,
     sendSoloStreakDoesNotExistErrorMessageMiddleware,
