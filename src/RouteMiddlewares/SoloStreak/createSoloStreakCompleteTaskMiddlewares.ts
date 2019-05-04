@@ -2,14 +2,14 @@ import { Request, Response, NextFunction } from 'express'
 import * as moment from 'moment-timezone'
 import * as Joi from 'joi'
 
-import { getLocalisedString } from 'Messages/getLocalisedString';
-import { MessageCategories } from 'Messages/messageCategories';
-import { FailureMessageKeys } from 'Messages/failureMessages';
-import { SupportedRequestHeaders } from 'Server/headers';
-import { ResponseCodes } from 'Server/responseCodes';
-import { ITask, userModel } from 'Models/User'
-import { getValidationErrorMessageSenderMiddleware } from 'SharedMiddleware/validationErrorMessageSenderMiddleware';
-import { soloStreakModel, SoloStreak } from 'Models/SoloStreak';
+import { getLocalisedString } from '../../Messages/getLocalisedString';
+import { MessageCategories } from '../../Messages/messageCategories';
+import { FailureMessageKeys } from '../../Messages/failureMessages';
+import { SupportedRequestHeaders } from '../../Server/headers';
+import { ResponseCodes } from '../../Server/responseCodes';
+import { ITask, userModel } from '../../Models/User'
+import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
+import { soloStreakModel, SoloStreak } from '../../Models/SoloStreak';
 
 
 export const soloStreakTaskCompleteParamsValidationSchema = {

@@ -22,7 +22,7 @@ import {
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
     test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
         expect.assertions(17);
-        expect([0]).toBe(soloStreakTaskCompleteParamsValidationMiddleware)
+        expect(createSoloStreakCompleteTaskMiddlewares[0]).toBe(soloStreakTaskCompleteParamsValidationMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[2]).toBe(sendSoloStreakDoesNotExistErrorMessageMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[3]).toBe(retreiveTimeZoneHeaderMiddleware)
