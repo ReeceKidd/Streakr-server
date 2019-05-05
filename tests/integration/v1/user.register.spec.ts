@@ -19,7 +19,7 @@ describe(userRegistationRoute, () => {
     });
 
     test('user can register successfully', async () => {
-        expect.assertions(10)
+        expect.assertions(9)
         const response = await request(server).post(userRegistationRoute).send(
             {
                 userName,
