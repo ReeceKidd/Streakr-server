@@ -1,14 +1,12 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { ITask } from './User';
 
 export interface SoloStreak extends mongoose.Document {
     userId: string;
     streakName: string;
     streakDescription: string;
     startDate: Date;
-    activityLog: ITask[]
 }
 
 export const soloStreakSchema = new mongoose.Schema({
@@ -30,10 +28,6 @@ export const soloStreakSchema = new mongoose.Schema({
         type: Date,
         default: new Date(),
     },
-    activityLog: {
-        type: Array,
-        default: []
-    }
 }, {
         timestamps: true,
         collection: Collections.SoloStreaks,
