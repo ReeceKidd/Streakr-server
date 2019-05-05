@@ -4,12 +4,17 @@ import { Collections } from './Collections';
 
 export interface CompleteTask extends mongoose.Document {
     streakId: string,
+    userId: string,
     taskCompleteTime: Date,
     taskCompleteDay: string
 }
 
 export const completeTaskSchema = new mongoose.Schema({
     streakId: {
+        required: true,
+        type: String
+    },
+    userId: {
         required: true,
         type: String
     },
@@ -25,6 +30,8 @@ export const completeTaskSchema = new mongoose.Schema({
         timestamps: true,
         collection: Collections.CompleteTasks,
     })
+
+completeTaskSchema.index({ userId: 1, streakId: 1, taskCompleteDay: 1 }, { unique: true })
 
 export const completeTaskModel: mongoose.Model<CompleteTask> = mongoose.model<CompleteTask>(Models.CompleteTask, completeTaskSchema)
 
