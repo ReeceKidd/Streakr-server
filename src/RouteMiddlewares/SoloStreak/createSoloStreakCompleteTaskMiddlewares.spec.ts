@@ -6,22 +6,21 @@ import {
     sendInvalidTimeZoneErrorResponseMiddleware,
     hasTaskAlreadyBeenCompletedTodayMiddleware,
     sendTaskAlreadyCompletedTodayErrorMiddleware,
-    retreiveUserCalendarMiddleware,
-    sendUserCalendarDoesNotExistErrorMiddleware,
+    retreiveUserMiddleware,
+    sendUserDoesNotExistErrorMiddleware,
     setCurrentTimeMiddleware,
     setDayTaskWasCompletedMiddleware,
-    addTaskCompleteToUserCalendarMiddleware,
     sendTaskCompleteResponseMiddleware,
     defineTaskCompleteMiddleware,
     soloStreakTaskCompleteParamsValidationMiddleware,
     soloStreakExistsMiddleware,
     sendSoloStreakDoesNotExistErrorMessageMiddleware,
-    addTaskCompleteToSoloStreakActivityLogMiddleware
+    saveTaskCompleteMiddleware,
 } from "./createSoloStreakCompleteTaskMiddlewares";
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
     test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
-        expect.assertions(17);
+        expect.assertions(16);
         expect(createSoloStreakCompleteTaskMiddlewares[0]).toBe(soloStreakTaskCompleteParamsValidationMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[2]).toBe(sendSoloStreakDoesNotExistErrorMessageMiddleware)
@@ -29,15 +28,14 @@ describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
         expect(createSoloStreakCompleteTaskMiddlewares[4]).toBe(sendMissingTimeZoneErrorResponseMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[5]).toBe(validateTimeZoneMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[6]).toBe(sendInvalidTimeZoneErrorResponseMiddleware)
-        expect(createSoloStreakCompleteTaskMiddlewares[7]).toBe(retreiveUserCalendarMiddleware)
-        expect(createSoloStreakCompleteTaskMiddlewares[8]).toBe(sendUserCalendarDoesNotExistErrorMiddleware)
+        expect(createSoloStreakCompleteTaskMiddlewares[7]).toBe(retreiveUserMiddleware)
+        expect(createSoloStreakCompleteTaskMiddlewares[8]).toBe(sendUserDoesNotExistErrorMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[9]).toBe(setCurrentTimeMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[10]).toBe(setDayTaskWasCompletedMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[11]).toBe(hasTaskAlreadyBeenCompletedTodayMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[12]).toBe(sendTaskAlreadyCompletedTodayErrorMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[13]).toBe(defineTaskCompleteMiddleware)
-        expect(createSoloStreakCompleteTaskMiddlewares[14]).toBe(addTaskCompleteToUserCalendarMiddleware)
-        expect(createSoloStreakCompleteTaskMiddlewares[15]).toBe(addTaskCompleteToSoloStreakActivityLogMiddleware)
-        expect(createSoloStreakCompleteTaskMiddlewares[16]).toBe(sendTaskCompleteResponseMiddleware)
+        expect(createSoloStreakCompleteTaskMiddlewares[14]).toBe(saveTaskCompleteMiddleware)
+        expect(createSoloStreakCompleteTaskMiddlewares[15]).toBe(sendTaskCompleteResponseMiddleware)
     });
 });
