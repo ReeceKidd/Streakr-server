@@ -7,9 +7,10 @@ import { MessageCategories } from '../../Messages/messageCategories';
 import { FailureMessageKeys } from '../../Messages/failureMessages';
 import { SupportedRequestHeaders } from '../../Server/headers';
 import { ResponseCodes } from '../../Server/responseCodes';
-import { ITask, userModel } from '../../Models/User'
-import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
+import { userModel } from '../../Models/User'
 import { soloStreakModel, SoloStreak } from '../../Models/SoloStreak';
+import { completeTaskModel } from '../../Models/CompleteTask';
+import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
 
 export const soloStreakTaskCompleteParamsValidationSchema = {
@@ -102,24 +103,24 @@ const localisedInvalidTimeZoneMessage = getLocalisedString(MessageCategories.fai
 
 export const sendInvalidTimeZoneErrorResponseMiddleware = getSendInvalidTimeZoneErrorResponseMiddleware(localisedInvalidTimeZoneMessage)
 
-export const getRetreiveUserCalendarMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
+export const getRetreiveUserMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
         const { minimumUserData } = response.locals
         const user = await userModel.findOne({ _id: minimumUserData._id }).lean()
-        response.locals.calendar = user.calendar
+        response.locals.user = user
         next()
     } catch (err) {
         next(err)
     }
 }
 
-export const retreiveUserCalendarMiddleware = getRetreiveUserCalendarMiddleware(userModel)
+export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel)
 
-export const getUserCalendarDoesNotExistErrorMiddlware = (localisedCalendarDoesNotExistErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
+export const getUserDoesNotExistErrorMiddlware = (localisedUserDoesNotExistErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { calendar } = response.locals
-        if (!calendar) {
-            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedCalendarDoesNotExistErrorMessage })
+        const { user } = response.locals
+        if (!user) {
+            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedUserDoesNotExistErrorMessage })
         }
         next()
     } catch (err) {
@@ -127,9 +128,9 @@ export const getUserCalendarDoesNotExistErrorMiddlware = (localisedCalendarDoesN
     }
 }
 
-const localisedCalendarDoesNotExistErrorMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.calendarDoesNotExistMessage)
+const localisedUserDoesNotExistErrorMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.userDoesNotExistMessage)
 
-export const sendUserCalendarDoesNotExistErrorMiddleware = getUserCalendarDoesNotExistErrorMiddlware(localisedCalendarDoesNotExistErrorMessage)
+export const sendUserDoesNotExistErrorMiddleware = getUserDoesNotExistErrorMiddlware(localisedUserDoesNotExistErrorMessage)
 
 export const getSetTaskCompleteTimeMiddleware = moment => (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -159,20 +160,19 @@ const dayFormat = "YYYY-MM-DD"
 
 export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddleware(dayFormat)
 
-export const hasTaskAlreadyBeenCompletedTodayMiddleware = (request: Request, response: Response, next: NextFunction) => {
+export const getHasTaskAlreadyBeenCompletedTodayMiddleware = completeTaskModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const calendar = response.locals.calendar as ITask[]
         const soloStreak = response.locals.soloStreak as SoloStreak
-        const { taskCompleteDay } = response.locals
-        const taskAlreadyCompletedToday = calendar.find(completeTask => {
-            return completeTask.taskCompleteDay === taskCompleteDay && completeTask.streakId === soloStreak.id
-        })
+        const { taskCompleteDay, user } = response.locals
+        const taskAlreadyCompletedToday = await completeTaskModel.findOne({ userId: user._id, streakId: soloStreak.id, taskCompleteDay })
         response.locals.taskAlreadyCompletedToday = taskAlreadyCompletedToday
         next()
     } catch (err) {
         next(err)
     }
 }
+
+export const hasTaskAlreadyBeenCompletedTodayMiddleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(completeTaskModel)
 
 export const getSendTaskAlreadyCompletedTodayErrorMiddleware = (localisedTaskAlreadyCompletedTodayErrorMiddlewareMessage) => (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -193,54 +193,37 @@ export const sendTaskAlreadyCompletedTodayErrorMiddleware = getSendTaskAlreadyCo
 export const defineTaskCompleteMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
         const { soloStreakId } = request.params
-        const { taskCompleteTime, taskCompleteDay } = response.locals
-        const taskComplete: ITask = {
+        const { taskCompleteTime, taskCompleteDay, user } = response.locals
+        const completeTaskDefinition = {
+            userId: user._id,
             streakId: soloStreakId,
             taskCompleteTime: taskCompleteTime.toDate(),
             taskCompleteDay
         }
-        response.locals.taskComplete = taskComplete
+        response.locals.completeTaskDefinition = completeTaskDefinition
         next()
     } catch (err) {
         next(err)
     }
 }
 
-export const getAddTaskCompleteToUserCalendarMiddleware = (userModel) => async (request: Request, response: Response, next: NextFunction) => {
+export const getSaveTaskCompleteMiddleware = (completeTaskModel) => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { taskComplete, minimumUserData } = response.locals
-        await userModel.updateOne(
-            { _id: minimumUserData._id },
-            { $push: { calendar: { ...taskComplete } } }
-        )
+        const { completeTaskDefinition } = response.locals
+        const completeTask = await new completeTaskModel(completeTaskDefinition).save()
+        response.locals.completeTask = completeTask
         next()
     } catch (err) {
         next(err)
     }
 }
 
-export const addTaskCompleteToUserCalendarMiddleware = getAddTaskCompleteToUserCalendarMiddleware(userModel)
-
-export const getAddTaskCompleteToSoloStreakActivityLogMiddleware = (soloStreakModel) => async (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { soloStreakId } = request.params
-        const { taskComplete } = response.locals
-        await soloStreakModel.updateOne(
-            { _id: soloStreakId },
-            { $push: { activityLog: { ...taskComplete } } }
-        )
-        next()
-    } catch (err) {
-        next(err)
-    }
-}
-
-export const addTaskCompleteToSoloStreakActivityLogMiddleware = getAddTaskCompleteToSoloStreakActivityLogMiddleware(soloStreakModel)
+export const saveTaskCompleteMiddleware = getSaveTaskCompleteMiddleware(completeTaskModel)
 
 export const sendTaskCompleteResponseMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { taskComplete } = response.locals
-        return response.status(ResponseCodes.success).send(taskComplete)
+        const { completeTask } = response.locals
+        return response.status(ResponseCodes.success).send(completeTask)
     } catch (err) {
         next(err)
     }
@@ -254,14 +237,13 @@ export const createSoloStreakCompleteTaskMiddlewares = [
     sendMissingTimeZoneErrorResponseMiddleware,
     validateTimeZoneMiddleware,
     sendInvalidTimeZoneErrorResponseMiddleware,
-    retreiveUserCalendarMiddleware,
-    sendUserCalendarDoesNotExistErrorMiddleware,
+    retreiveUserMiddleware,
+    sendUserDoesNotExistErrorMiddleware,
     setCurrentTimeMiddleware,
     setDayTaskWasCompletedMiddleware,
     hasTaskAlreadyBeenCompletedTodayMiddleware,
     sendTaskAlreadyCompletedTodayErrorMiddleware,
     defineTaskCompleteMiddleware,
-    addTaskCompleteToUserCalendarMiddleware,
-    addTaskCompleteToSoloStreakActivityLogMiddleware,
+    saveTaskCompleteMiddleware,
     sendTaskCompleteResponseMiddleware
 ]

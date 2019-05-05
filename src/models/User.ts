@@ -6,14 +6,6 @@ import { SoloStreak } from './SoloStreak';
 
 export const SALT_ROUNDS = 10;
 
-export interface ITask {
-  streakId: String
-  taskCompleteTime?: Date,
-  taskFailedTime?: String,
-  taskCompleteDay?: String,
-  taskFailedDay?: String,
-}
-
 enum UserTypes {
   user = 'user',
   admin = 'admin',
