@@ -33,7 +33,6 @@ export interface User extends mongoose.Document {
   modifiedAt: Date;
   role: string;
   preferredLanguage: string;
-  calendar: ITask[];
   soloStreaks?: SoloStreak[];
   profilePicture?: {
     type: String,
@@ -60,10 +59,6 @@ export const userSchema = new mongoose.Schema(
     password: {
       required: true,
       type: String
-    },
-    calendar: {
-      type: Array,
-      default: []
     },
     role: {
       type: String,
