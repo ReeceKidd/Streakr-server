@@ -17,14 +17,20 @@ import {
     sendSoloStreakDoesNotExistErrorMessageMiddleware,
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
+    getSoloStreakExistsMiddleware,
+    getSendSoloStreakDoesNotExistErrorMessageMiddleware,
+    getRetreiveTimeZoneHeaderMiddleware,
+    getSendMissingTimeZoneErrorResponseMiddleware,
 } from "./createSoloStreakCompleteTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { getValidateTimeZoneMiddleware } from "./createSoloStreakMiddlewares";
 
-describe(`soloStreakTaskCompleteParamsValidaionMiddleware`, () => {
+describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
 
     const soloStreakId = '12345678'
 
     test("that next() is called when correct params are supplied", () => {
+        expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
 
@@ -37,13 +43,12 @@ describe(`soloStreakTaskCompleteParamsValidaionMiddleware`, () => {
         const next = jest.fn();
 
         soloStreakTaskCompleteParamsValidationMiddleware(request, response, next);
-
-        expect.assertions(1);
         expect(next).toBeCalled();
     });
 
 
     test("that correct response is sent when soloStreakId is missing", () => {
+        expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
 
@@ -57,7 +62,6 @@ describe(`soloStreakTaskCompleteParamsValidaionMiddleware`, () => {
 
         soloStreakTaskCompleteParamsValidationMiddleware(request, response, next);
 
-        expect.assertions(3);
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "soloStreakId" fails because ["soloStreakId" is required]'
@@ -66,6 +70,7 @@ describe(`soloStreakTaskCompleteParamsValidaionMiddleware`, () => {
     });
 
     test("that error response is sent when soloStreakId is not a string", () => {
+        expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
 
@@ -79,7 +84,6 @@ describe(`soloStreakTaskCompleteParamsValidaionMiddleware`, () => {
 
         soloStreakTaskCompleteParamsValidationMiddleware(request, response, next);
 
-        expect.assertions(3);
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "soloStreakId" fails because ["soloStreakId" must be a string]'
@@ -88,6 +92,201 @@ describe(`soloStreakTaskCompleteParamsValidaionMiddleware`, () => {
     });
 
 });
+
+describe('soloStreakExistsMiddleware', () => {
+
+    test('that response.locals.soloStreak is defined and next() is called', async () => {
+        expect.assertions(3)
+        const soloStreakId = 'abc'
+        const request: any = {
+            params: { soloStreakId }
+        }
+        const response: any = { locals: {} }
+        const next = jest.fn()
+
+        const findOne = jest.fn(() => Promise.resolve(true))
+        const soloStreakModel = { findOne }
+
+        const middleware = getSoloStreakExistsMiddleware(soloStreakModel)
+        await middleware(request, response, next)
+
+        expect(findOne).toBeCalledWith({ _id: soloStreakId })
+        expect(response.locals.soloStreak).toBeDefined()
+        expect(next).toBeCalledWith()
+    })
+
+    test('on error next() is called with error', async () => {
+        expect.assertions(1)
+        const request: any = {
+        }
+        const response: any = { locals: {} }
+        const next = jest.fn()
+
+        const findOne = jest.fn(() => Promise.resolve(true))
+        const soloStreakModel = { findOne }
+
+        const middleware = getSoloStreakExistsMiddleware(soloStreakModel)
+        await middleware(request, response, next)
+
+        expect(next).toBeCalledWith(new TypeError("Cannot destructure property `soloStreakId` of 'undefined' or 'null'."))
+    })
+
+})
+
+describe('sendSoloStreakDoesNotExistErrorMessageMiddleware', () => {
+    test('that error response is sent when response.locals.soloStreak is not defined', async () => {
+        expect.assertions(3)
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const request: any = {
+        }
+        const response: any = { locals: {}, status }
+        const next = jest.fn()
+
+        const unprocessableEntityStatus = 402
+        const localisedErrorMessage = 'error'
+
+        const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(unprocessableEntityStatus, localisedErrorMessage)
+        middleware(request, response, next)
+        expect(status).toBeCalledWith(unprocessableEntityStatus)
+        expect(send).toBeCalledWith({ message: localisedErrorMessage })
+        expect(next).not.toBeCalledWith()
+    })
+
+    test('that next() is called when response.locals.soloStreak is defined', async () => {
+        expect.assertions(1)
+        const soloStreak = {
+            soloStreakName: 'Test soloStreak'
+        }
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const request: any = {
+        }
+        const response: any = { locals: { soloStreak }, status }
+        const next = jest.fn()
+
+        const unprocessableEntityStatus = 402
+        const localisedErrorMessage = 'error'
+
+        const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(unprocessableEntityStatus, localisedErrorMessage)
+        middleware(request, response, next)
+        expect(next).toBeCalledWith()
+    })
+
+    test('that next is called with error on error', () => {
+        expect.assertions(1)
+        const request: any = {
+        }
+        const response: any = { locals: {} }
+        const next = jest.fn()
+
+        const unprocessableEntityStatus = 402
+        const localisedErrorMessage = 'error'
+
+        const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(unprocessableEntityStatus, localisedErrorMessage)
+        middleware(request, response, next)
+
+        expect(next).toBeCalledWith(new TypeError("response.status is not a function"))
+    })
+})
+
+describe('retreiveTimeZoneHeaderMiddleware', () => {
+
+    test('that response.locals.timeZone is defined and next() is called', () => {
+        expect.assertions(3)
+        const header = jest.fn(() => true)
+        const timeZoneHeader = 'Europe/London'
+        const request: any = {
+            header
+        }
+        const response: any = {
+            locals: {}
+        }
+        const next = jest.fn()
+        const middleware = getRetreiveTimeZoneHeaderMiddleware(timeZoneHeader)
+        middleware(request, response, next)
+        expect(header).toBeCalledWith(timeZoneHeader)
+        expect(response.locals.timeZone).toBeDefined()
+        expect(next).toBeCalledWith()
+    })
+
+    test('on error that next is called with error', () => {
+        expect.assertions(1)
+        const timeZoneHeader = 'Europe/London'
+        const request: any = {
+        }
+        const response: any = {
+            locals: {}
+        }
+        const next = jest.fn()
+        const middleware = getRetreiveTimeZoneHeaderMiddleware(timeZoneHeader)
+        middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("request.header is not a function"))
+    })
+})
+
+describe('sendMissingTimeZoneErrorResponseMiddleware', () => {
+
+    test('that error response is sent correctly when timeZone is not defined', () => {
+        expect.assertions(3)
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const request: any = {}
+        const response: any = { status, locals: {} }
+        const next = jest.fn()
+        const unprocessableEntityCode = 422
+        const localisedError = 'error'
+        const middleware = getSendMissingTimeZoneErrorResponseMiddleware(unprocessableEntityCode, localisedError)
+        middleware(request, response, next)
+        expect(status).toBeCalledWith(unprocessableEntityCode)
+        expect(send).toBeCalledWith({ message: localisedError })
+        expect(next).not.toBeCalled()
+    })
+
+    test('that next() is called when timeZone is defined', () => {
+        expect.assertions(1)
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const timeZone = 'Europe/London'
+        const request: any = {}
+        const response: any = { status, locals: { timeZone } }
+        const next = jest.fn()
+        const unprocessableEntityCode = 422
+        const localisedError = 'error'
+        const middleware = getSendMissingTimeZoneErrorResponseMiddleware(unprocessableEntityCode, localisedError)
+        middleware(request, response, next)
+        expect(next).toBeCalledWith()
+    })
+})
+
+describe('validateTimeZoneMiddleware', () => {
+
+    test('that response.locals.validTimeZone is defined and next() is called', () => {
+        expect.assertions(3)
+        const timeZone = 'Europe/London'
+        const request: any = {}
+        const response: any = { locals: { timeZone } }
+        const next = jest.fn()
+        const isValidTimeZone = jest.fn(() => true)
+        const middleware = getValidateTimeZoneMiddleware(isValidTimeZone)
+        middleware(request, response, next)
+        expect(response.locals.validTimeZone).toBeDefined()
+        expect(isValidTimeZone).toBeCalledWith(timeZone)
+        expect(next).toBeCalledWith()
+    })
+
+    test('that on error next is called with error', () => {
+        expect.assertions(1)
+        const timeZone = 'Europe/London'
+        const request: any = {}
+        const response: any = { locals: { timeZone } }
+        const next = jest.fn()
+        const middleware = getValidateTimeZoneMiddleware(null)
+        middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("isValidTimeZone is not a function"))
+    })
+
+})
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
     test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {

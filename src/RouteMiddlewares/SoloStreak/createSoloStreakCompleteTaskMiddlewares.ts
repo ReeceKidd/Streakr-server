@@ -50,20 +50,22 @@ const localisedSoloStreakDoesNotExistMessage = getLocalisedString(MessageCategor
 
 export const sendSoloStreakDoesNotExistErrorMessageMiddleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(ResponseCodes.unprocessableEntity, localisedSoloStreakDoesNotExistMessage)
 
-export const retreiveTimeZoneHeaderMiddleware = (request: Request, response: Response, next: NextFunction) => {
+export const getRetreiveTimeZoneHeaderMiddleware = timeZoneHeader => (request: Request, response: Response, next: NextFunction) => {
     try {
-        response.locals.timeZone = request.header(SupportedRequestHeaders.xTimeZone)
+        response.locals.timeZone = request.header(timeZoneHeader)
         next()
     } catch (err) {
         next(err)
     }
 }
 
-export const getSendMissingTimeZoneErrorResponseMiddleware = localisedErrorMessage => (request: Request, response: Response, next: NextFunction) => {
+export const retreiveTimeZoneHeaderMiddleware = getRetreiveTimeZoneHeaderMiddleware(SupportedRequestHeaders.xTimeZone)
+
+export const getSendMissingTimeZoneErrorResponseMiddleware = (unprocessableEntityCode, localisedErrorMessage) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { timeZone } = response.locals
         if (!timeZone) {
-            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedErrorMessage })
+            return response.status(unprocessableEntityCode).send({ message: localisedErrorMessage })
         }
         next()
     } catch (err) {
@@ -73,7 +75,7 @@ export const getSendMissingTimeZoneErrorResponseMiddleware = localisedErrorMessa
 
 const localisedMissingTimeZoneHeaderMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.missingTimeZoneHeaderMessage)
 
-export const sendMissingTimeZoneErrorResponseMiddleware = getSendMissingTimeZoneErrorResponseMiddleware(localisedMissingTimeZoneHeaderMessage)
+export const sendMissingTimeZoneErrorResponseMiddleware = getSendMissingTimeZoneErrorResponseMiddleware(ResponseCodes.unprocessableEntity, localisedMissingTimeZoneHeaderMessage)
 
 export const getValidateTimeZoneMiddleware = isValidTimeZone => (request: Request, response: Response, next: NextFunction) => {
     try {
