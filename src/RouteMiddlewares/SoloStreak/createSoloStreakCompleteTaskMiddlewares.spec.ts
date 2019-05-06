@@ -18,6 +18,76 @@ import {
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
 } from "./createSoloStreakCompleteTaskMiddlewares";
+import { ResponseCodes } from "../../Server/responseCodes";
+
+describe(`soloStreakTaskCompleteParamsValidaionMiddleware`, () => {
+
+    const soloStreakId = '12345678'
+
+    test("that next() is called when correct params are supplied", () => {
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+
+        const request: any = {
+            params: { soloStreakId }
+        };
+        const response: any = {
+            status
+        };
+        const next = jest.fn();
+
+        soloStreakTaskCompleteParamsValidationMiddleware(request, response, next);
+
+        expect.assertions(1);
+        expect(next).toBeCalled();
+    });
+
+
+    test("that correct response is sent when soloStreakId is missing", () => {
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+
+        const request: any = {
+            params: {}
+        };
+        const response: any = {
+            status
+        };
+        const next = jest.fn();
+
+        soloStreakTaskCompleteParamsValidationMiddleware(request, response, next);
+
+        expect.assertions(3);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "soloStreakId" fails because ["soloStreakId" is required]'
+        });
+        expect(next).not.toBeCalled();
+    });
+
+    test("that error response is sent when soloStreakId is not a string", () => {
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+
+        const request: any = {
+            params: { soloStreakId: 1234 }
+        };
+        const response: any = {
+            status
+        };
+        const next = jest.fn();
+
+        soloStreakTaskCompleteParamsValidationMiddleware(request, response, next);
+
+        expect.assertions(3);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "soloStreakId" fails because ["soloStreakId" must be a string]'
+        });
+        expect(next).not.toBeCalled();
+    });
+
+});
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
     test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
