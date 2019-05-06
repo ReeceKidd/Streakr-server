@@ -16,11 +16,12 @@ import {
     soloStreakExistsMiddleware,
     sendSoloStreakDoesNotExistErrorMessageMiddleware,
     saveTaskCompleteMiddleware,
+    streakMaintainedMiddleware,
 } from "./createSoloStreakCompleteTaskMiddlewares";
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
     test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
-        expect.assertions(16);
+        expect.assertions(17);
         expect(createSoloStreakCompleteTaskMiddlewares[0]).toBe(soloStreakTaskCompleteParamsValidationMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[2]).toBe(sendSoloStreakDoesNotExistErrorMessageMiddleware)
@@ -36,6 +37,7 @@ describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
         expect(createSoloStreakCompleteTaskMiddlewares[12]).toBe(sendTaskAlreadyCompletedTodayErrorMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[13]).toBe(defineTaskCompleteMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[14]).toBe(saveTaskCompleteMiddleware)
-        expect(createSoloStreakCompleteTaskMiddlewares[15]).toBe(sendTaskCompleteResponseMiddleware)
+        expect(createSoloStreakCompleteTaskMiddlewares[15]).toBe(streakMaintainedMiddleware)
+        expect(createSoloStreakCompleteTaskMiddlewares[16]).toBe(sendTaskCompleteResponseMiddleware)
     });
 });

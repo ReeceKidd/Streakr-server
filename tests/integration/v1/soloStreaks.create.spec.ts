@@ -61,7 +61,7 @@ describe(createSoloStreakRoute, () => {
     })
 
     test(`that request passes when correct solo streak information is passed`, async () => {
-        expect.assertions(10)
+        expect.assertions(13)
         const response = await request(server)
             .post(createSoloStreakRoute)
             .send({
@@ -77,6 +77,9 @@ describe(createSoloStreakRoute, () => {
         expect(response.body.description).toEqual(description)
         expect(response.body.userId).toEqual(userId)
         expect(response.body).toHaveProperty('_id')
+        expect(response.body.currentStreak).toHaveProperty('startDate')
+        expect(response.body.currentStreak).toHaveProperty('numberOfDaysInARow')
+        expect(response.body.currentStreak).toHaveProperty('endDate')
         expect(response.body).toHaveProperty('startDate')
         expect(response.body).toHaveProperty('createdAt')
         expect(response.body).toHaveProperty('updatedAt')

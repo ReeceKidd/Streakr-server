@@ -9,7 +9,7 @@ import { FailureMessageKeys } from '../../Messages/failureMessages';
 import { SuccessMessageKeys } from '../../Messages/successMessages';
 import { getLocalisedString } from '../../Messages/getLocalisedString';
 import { MessageCategories } from '../../Messages/messageCategories';
-import { IUser, IMinimumUserData } from "../../Models/User";
+import { User, IMinimumUserData } from "../../Models/User";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware"
 import { userModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -21,7 +21,7 @@ export interface LoginRequestBody {
 }
 
 export interface LoginResponseLocals {
-  user?: IUser,
+  user?: User,
   passwordMatchesHash?: boolean;
   minimumUserData?: IMinimumUserData;
   jsonWebToken?: string;

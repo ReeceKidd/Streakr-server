@@ -218,6 +218,18 @@ export const getSaveTaskCompleteMiddleware = (completeTaskModel) => async (reque
     }
 }
 
+export const getStreakMaintainedMiddleware = soloStreakModel => async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { soloStreakId } = request.params
+        await soloStreakModel.updateOne({ _id: soloStreakId }, { completedToday: true, $inc: { "currentStreak.numberOfDaysInARow": 1 } })
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(soloStreakModel)
+
 export const saveTaskCompleteMiddleware = getSaveTaskCompleteMiddleware(completeTaskModel)
 
 export const sendTaskCompleteResponseMiddleware = (request: Request, response: Response, next: NextFunction) => {
@@ -245,5 +257,6 @@ export const createSoloStreakCompleteTaskMiddlewares = [
     sendTaskAlreadyCompletedTodayErrorMiddleware,
     defineTaskCompleteMiddleware,
     saveTaskCompleteMiddleware,
+    streakMaintainedMiddleware,
     sendTaskCompleteResponseMiddleware
 ]
