@@ -9,7 +9,7 @@ import { SupportedRequestHeaders } from '../../Server/headers';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { userModel } from '../../Models/User'
 import { soloStreakModel, SoloStreak } from '../../Models/SoloStreak';
-import { completeTaskModel } from '../../Models/CompleteTask';
+import { completeTaskModel, TypesOfStreak } from '../../Models/CompleteTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
 
@@ -198,7 +198,8 @@ export const defineTaskCompleteMiddleware = (request: Request, response: Respons
             userId: user._id,
             streakId: soloStreakId,
             taskCompleteTime: taskCompleteTime.toDate(),
-            taskCompleteDay
+            taskCompleteDay,
+            streakType: TypesOfStreak.soloStreak
         }
         response.locals.completeTaskDefinition = completeTaskDefinition
         next()

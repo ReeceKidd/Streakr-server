@@ -2,11 +2,17 @@ import * as mongoose from 'mongoose';
 import { Models } from './Models';
 import { Collections } from './Collections';
 
+
+export enum TypesOfStreak {
+    soloStreak = 'solo-streak'
+}
+
 export interface CompleteTask extends mongoose.Document {
     streakId: string,
     userId: string,
     taskCompleteTime: Date,
     taskCompleteDay: string
+    streakType: TypesOfStreak
 }
 
 export const completeTaskSchema = new mongoose.Schema({
@@ -26,6 +32,10 @@ export const completeTaskSchema = new mongoose.Schema({
         required: true,
         type: String
     },
+    streakType: {
+        required: true,
+        type: String,
+    }
 }, {
         timestamps: true,
         collection: Collections.CompleteTasks,
