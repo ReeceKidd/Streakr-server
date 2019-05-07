@@ -89,11 +89,11 @@ export const getValidateTimeZoneMiddleware = isValidTimeZone => (request: Reques
 
 export const validateTimeZoneMiddleware = getValidateTimeZoneMiddleware(moment.tz.zone)
 
-export const getSendInvalidTimeZoneErrorResponseMiddleware = localisedErrorMessage => (request: Request, response: Response, next: NextFunction) => {
+export const getSendInvalidTimeZoneErrorResponseMiddleware = (unprocessableEntityCode: number, localisedErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { validTimeZone } = response.locals
         if (!validTimeZone) {
-            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedErrorMessage })
+            return response.status(unprocessableEntityCode).send({ message: localisedErrorMessage })
         }
         next()
     } catch (err) {
@@ -103,7 +103,7 @@ export const getSendInvalidTimeZoneErrorResponseMiddleware = localisedErrorMessa
 
 const localisedInvalidTimeZoneMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.invalidTimeZoneMessage)
 
-export const sendInvalidTimeZoneErrorResponseMiddleware = getSendInvalidTimeZoneErrorResponseMiddleware(localisedInvalidTimeZoneMessage)
+export const sendInvalidTimeZoneErrorResponseMiddleware = getSendInvalidTimeZoneErrorResponseMiddleware(ResponseCodes.unprocessableEntity, localisedInvalidTimeZoneMessage)
 
 export const getRetreiveUserMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -158,7 +158,7 @@ export const getSetDayTaskWasCompletedMiddleware = (dayFormat) => (request: Requ
     }
 }
 
-const dayFormat = "YYYY-MM-DD"
+export const dayFormat = "YYYY-MM-DD"
 
 export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddleware(dayFormat)
 

@@ -9,14 +9,18 @@ import {
     createDailySoloStreakCompleteChecker,
     retreiveTimeZoneHeaderMiddleware,
     validateTimeZoneMiddleware,
-    setEndOfDayMiddleware,
     sendMissingTimeZoneErrorResponseMiddleware,
     sendInvalidTimeZoneErrorResponseMiddleware,
     getSendMissingTimeZoneErrorResponseMiddleware,
     getValidateTimeZoneMiddleware,
     getSendInvalidTimeZoneErrorResponseMiddleware,
-    getSetEndOfDayMiddleware,
     getCreateDailySoloStreakCompleteChecker,
+    defineEndOfDayMiddleware,
+    defineCurrentTimeMiddleware,
+    defineStartDayMiddleware,
+    getDefineCurrentTimeMiddleware,
+    getDefineStartDayMiddleware,
+    getDefineEndOfDayMiddleware,
 } from './createSoloStreakMiddlewares'
 import { ResponseCodes } from '../../Server/responseCodes';
 import { SupportedRequestHeaders } from '../../Server/headers';
@@ -437,54 +441,108 @@ describe('sendInvalidTimeZoneErrorResponseMiddleware', () => {
 
 })
 
-describe('setEndOfDayMiddleware', () => {
+describe('defineCurrentTimeMiddleware', () => {
+    test('that response.locals.currentTime is defined and next is called', () => {
+        expect.assertions(4)
+        const timeZone = 'Europe/London'
+        const tz = jest.fn(() => true)
+        const moment = jest.fn(() => ({ tz }))
+        const request: any = {}
+        const response: any = { locals: { timeZone } }
+        const next = jest.fn()
+        const middleware = getDefineCurrentTimeMiddleware(moment)
+        middleware(request, response, next)
+        expect(moment).toBeCalledWith()
+        expect(tz).toBeCalledWith(timeZone)
+        expect(response.locals.currentTime).toBeDefined()
+        expect(next).toBeCalledWith()
+    })
 
-    const londonTimeZone = 'Europe/London'
+    test('that on error next is called with error', () => {
+        expect.assertions(1)
+        const moment = jest.fn(() => ({}))
+        const request: any = {}
+        const response: any = { locals: {} }
+        const next = jest.fn()
+        const middleware = getDefineCurrentTimeMiddleware(moment)
+        middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("moment(...).tz is not a function"))
+    })
+})
+
+describe('defineStartDayMiddleware', () => {
+
+    test('that response.locals.startDay is defined and next() is called', () => {
+        expect.assertions(3)
+        const dayFormat = 'DD/MM/YYYY'
+        const format = jest.fn(() => true)
+        const currentTime = {
+            format
+        }
+        const request: any = {}
+        const response: any = { locals: { currentTime } }
+        const next = jest.fn()
+        const middleware = getDefineStartDayMiddleware(dayFormat)
+        middleware(request, response, next)
+        expect(response.locals.startDay).toBeDefined()
+        expect(format).toBeCalledWith(dayFormat)
+        expect(next).toBeCalledWith()
+    })
+
+    test('that on error next is called with error', () => {
+        expect.assertions(1)
+        const dayFormat = 'DD/MM/YYYY'
+        const currentTime = {
+        }
+        const request: any = {}
+        const response: any = { locals: { currentTime } }
+        const next = jest.fn()
+        const middleware = getDefineStartDayMiddleware(dayFormat)
+        middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("currentTime.format is not a function"))
+    })
+})
+
+describe('defineEndOfDayMiddleware', () => {
 
     test('that response.locals.endOfDay is defined', () => {
-        expect.assertions(5);
+        expect.assertions(4);
+        const toDate = jest.fn(() => (new Date()))
+        const endOf = jest.fn(() => ({ toDate }))
+        const currentTime = {
+            endOf
+        }
         const request: any = {
         };
         const response: any = {
-            locals: { timeZone: londonTimeZone }
+            locals: { currentTime }
         };
         const next = jest.fn();
-
-        const newEndOfDayDate = new Date()
-
-        const toDate = jest.fn(() => (newEndOfDayDate))
-        const endOf = jest.fn(() => ({ toDate }))
-        const tz = jest.fn(() => ({ endOf }))
-        const moment = jest.fn(() => ({ tz }))
-
-        const middleware = getSetEndOfDayMiddleware(moment)
+        const dayTimeRange = 'day'
+        const middleware = getDefineEndOfDayMiddleware(dayTimeRange)
         middleware(request, response, next)
-
-        expect(moment).toBeCalledWith();
-        expect(tz).toBeCalledWith(londonTimeZone)
-        expect(endOf).toBeCalledWith(AgendaTimeRanges.day)
-        expect(toDate).toBeCalledWith()
-        expect(next).toBeCalledWith();
+        expect(response.locals.endOfDay).toBeDefined()
+        expect(endOf).toBeCalledWith(dayTimeRange)
+        expect(toDate).toBeCalled()
+        expect(next).toBeCalledWith()
     })
 
     test('that next is called with error on failure', () => {
         expect.assertions(1);
+        const endOf = jest.fn(() => ({}))
+        const currentTime = {
+            endOf
+        }
         const request: any = {
         };
         const response: any = {
+            locals: { currentTime }
         };
         const next = jest.fn();
-
-        const newEndOfDayDate = new Date()
-
-        const toDate = jest.fn(() => (newEndOfDayDate))
-        const endOf = jest.fn(() => ({ toDate }))
-        const tz = jest.fn(() => ({ endOf }))
-        const moment = jest.fn(() => ({ tz }))
-
-        const middleware = getSetEndOfDayMiddleware(moment)
+        const dayTimeRange = 'day'
+        const middleware = getDefineEndOfDayMiddleware(dayTimeRange)
         middleware(request, response, next)
-        expect(next).toBeCalledWith(new TypeError("Cannot destructure property `timeZone` of 'undefined' or 'null'."));
+        expect(next).toBeCalledWith(new TypeError('currentTime.endOf(...).toDate is not a function'))
     })
 
 })
@@ -669,16 +727,18 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
 
 describe(`createSoloStreakMiddlewares`, () => {
     test("that createSoloStreak middlewares are defined in the correct order", async () => {
-        expect.assertions(10);
+        expect.assertions(12);
         expect(createSoloStreakMiddlewares[0]).toBe(soloStreakRegistrationValidationMiddleware)
         expect(createSoloStreakMiddlewares[1]).toBe(retreiveTimeZoneHeaderMiddleware)
         expect(createSoloStreakMiddlewares[2]).toBe(sendMissingTimeZoneErrorResponseMiddleware)
         expect(createSoloStreakMiddlewares[3]).toBe(validateTimeZoneMiddleware)
         expect(createSoloStreakMiddlewares[4]).toBe(sendInvalidTimeZoneErrorResponseMiddleware)
-        expect(createSoloStreakMiddlewares[5]).toBe(setEndOfDayMiddleware)
-        expect(createSoloStreakMiddlewares[6]).toBe(createSoloStreakFromRequestMiddleware)
-        expect(createSoloStreakMiddlewares[7]).toBe(saveSoloStreakToDatabaseMiddleware)
-        expect(createSoloStreakMiddlewares[8]).toBe(createDailySoloStreakCompleteChecker)
-        expect(createSoloStreakMiddlewares[9]).toBe(sendFormattedSoloStreakMiddleware)
+        expect(createSoloStreakMiddlewares[5]).toBe(defineCurrentTimeMiddleware)
+        expect(createSoloStreakMiddlewares[6]).toBe(defineStartDayMiddleware)
+        expect(createSoloStreakMiddlewares[7]).toBe(defineEndOfDayMiddleware)
+        expect(createSoloStreakMiddlewares[8]).toBe(createSoloStreakFromRequestMiddleware)
+        expect(createSoloStreakMiddlewares[9]).toBe(saveSoloStreakToDatabaseMiddleware)
+        expect(createSoloStreakMiddlewares[10]).toBe(createDailySoloStreakCompleteChecker)
+        expect(createSoloStreakMiddlewares[11]).toBe(sendFormattedSoloStreakMiddleware)
     });
 });

@@ -42,7 +42,7 @@ export const soloStreakSchema = new mongoose.Schema({
     currentStreak: {
         startDate: {
             type: String,
-            default: new Date()
+            default: null
         },
         numberOfDaysInARow: {
             type: Number,

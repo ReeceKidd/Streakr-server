@@ -13,6 +13,7 @@ import { SupportedRequestHeaders } from '../../Server/headers';
 import { getLocalisedString } from '../../Messages/getLocalisedString';
 import { MessageCategories } from '../../Messages/messageCategories';
 import { FailureMessageKeys } from '../../Messages/failureMessages';
+import { dayFormat } from './createSoloStreakCompleteTaskMiddlewares';
 
 export interface SoloStreakRegistrationRequestBody {
     userId: string,
@@ -92,17 +93,43 @@ const localisedInvalidTimeZoneMessage = getLocalisedString(MessageCategories.fai
 
 export const sendInvalidTimeZoneErrorResponseMiddleware = getSendInvalidTimeZoneErrorResponseMiddleware(localisedInvalidTimeZoneMessage)
 
-export const getSetEndOfDayMiddleware = moment => (request: Request, response: Response, next: NextFunction) => {
+export const getDefineCurrentTimeMiddleware = moment => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { timeZone } = response.locals
-        response.locals.endOfDay = moment().tz(timeZone).endOf(AgendaTimeRanges.day).toDate()
+        const currentTime = moment().tz(timeZone)
+        response.locals.currentTime = currentTime
         next()
     } catch (err) {
         next(err)
     }
 }
 
-export const setEndOfDayMiddleware = getSetEndOfDayMiddleware(moment)
+export const defineCurrentTimeMiddleware = getDefineCurrentTimeMiddleware(moment)
+
+export const getDefineStartDayMiddleware = (dayFormat: string) => (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { currentTime } = response.locals
+        const startDay = currentTime.format(dayFormat)
+        response.locals.startDay = startDay
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const defineStartDayMiddleware = getDefineStartDayMiddleware(dayFormat)
+
+export const getDefineEndOfDayMiddleware = (dayTimeRange: string) => (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { currentTime } = response.locals
+        response.locals.endOfDay = currentTime.endOf(dayTimeRange).toDate()
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const defineEndOfDayMiddleware = getDefineEndOfDayMiddleware(AgendaTimeRanges.day)
 
 export const getCreateSoloStreakFromRequestMiddleware = soloStreak => (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -165,7 +192,9 @@ export const createSoloStreakMiddlewares = [
     sendMissingTimeZoneErrorResponseMiddleware,
     validateTimeZoneMiddleware,
     sendInvalidTimeZoneErrorResponseMiddleware,
-    setEndOfDayMiddleware,
+    defineCurrentTimeMiddleware,
+    defineStartDayMiddleware,
+    defineEndOfDayMiddleware,
     createSoloStreakFromRequestMiddleware,
     saveSoloStreakToDatabaseMiddleware,
     createDailySoloStreakCompleteChecker,

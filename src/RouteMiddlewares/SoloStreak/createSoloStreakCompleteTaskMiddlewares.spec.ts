@@ -7,6 +7,8 @@ import {
     hasTaskAlreadyBeenCompletedTodayMiddleware,
     sendTaskAlreadyCompletedTodayErrorMiddleware,
     retreiveUserMiddleware,
+    getValidateTimeZoneMiddleware,
+    getSendInvalidTimeZoneErrorResponseMiddleware,
     sendUserDoesNotExistErrorMiddleware,
     setCurrentTimeMiddleware,
     setDayTaskWasCompletedMiddleware,
@@ -21,9 +23,9 @@ import {
     getSendSoloStreakDoesNotExistErrorMessageMiddleware,
     getRetreiveTimeZoneHeaderMiddleware,
     getSendMissingTimeZoneErrorResponseMiddleware,
+    getRetreiveUserMiddleware,
 } from "./createSoloStreakCompleteTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { getValidateTimeZoneMiddleware } from "./createSoloStreakMiddlewares";
 
 describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
 
@@ -286,6 +288,84 @@ describe('validateTimeZoneMiddleware', () => {
         expect(next).toBeCalledWith(new TypeError("isValidTimeZone is not a function"))
     })
 
+})
+
+describe('sendInvalidTimeZoneErrorResponseMiddleware', () => {
+
+    test('that error response is sent correctly when validTimeZone is not defined', () => {
+        expect.assertions(3)
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const request: any = {}
+        const response: any = { locals: {}, status }
+        const next = jest.fn()
+        const unprocessableEntityCode = 422
+        const localisedError = 'error'
+        const middleware = getSendInvalidTimeZoneErrorResponseMiddleware(unprocessableEntityCode, localisedError)
+        middleware(request, response, next)
+        expect(status).toBeCalledWith(unprocessableEntityCode)
+        expect(send).toBeCalledWith({ message: localisedError })
+        expect(next).not.toBeCalled()
+    })
+
+    test('that error response is sent correctly when timeZone is missing', () => {
+        expect.assertions(3)
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const request: any = {}
+        const validTimeZone = 'Europe/London'
+        const response: any = { locals: { validTimeZone } }
+        const next = jest.fn()
+        const unprocessableEntityCode = 422
+        const localisedError = 'error'
+        const middleware = getSendInvalidTimeZoneErrorResponseMiddleware(unprocessableEntityCode, localisedError)
+        middleware(request, response, next)
+        expect(status).not.toBeCalled()
+        expect(send).not.toBeCalled()
+        expect(next).toBeCalledWith()
+    })
+
+    test('that on failure next is called with error', () => {
+
+    })
+
+})
+
+describe('retreiveUserMiddleware', () => {
+
+    test('that response.locals.user is defined and next() is called', async () => {
+        expect.assertions(4)
+        const _id = 'abcd'
+        const minimumUserData = { _id }
+        const lean = jest.fn(() => true)
+        const findOne = jest.fn(() => ({ lean }))
+        const userModel = { findOne }
+        const request: any = {}
+        const response: any = { locals: { minimumUserData } }
+        const next = jest.fn()
+        const middleware = getRetreiveUserMiddleware(userModel)
+        await middleware(request, response, next)
+        expect(response.locals.user).toBeDefined()
+        expect(findOne).toBeCalledWith({ _id: minimumUserData._id })
+        expect(lean).toBeCalledWith()
+        expect(next).toBeCalledWith()
+    })
+
+    test('on error next is called with error', async () => {
+        expect.assertions(1)
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const _id = 'abcd'
+        const minimumUserData = { _id }
+        const findOne = jest.fn(() => ({}))
+        const userModel = { findOne }
+        const request: any = {}
+        const response: any = { status, locals: { minimumUserData } }
+        const next = jest.fn()
+        const middleware = getRetreiveUserMiddleware(userModel)
+        await middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("userModel.findOne(...).lean is not a function"))
+    })
 })
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
