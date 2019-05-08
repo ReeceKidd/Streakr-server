@@ -118,11 +118,11 @@ export const getRetreiveUserMiddleware = userModel => async (request: Request, r
 
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel)
 
-export const getUserDoesNotExistErrorMiddlware = (localisedUserDoesNotExistErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
+export const getSendUserDoesNotExistErrorMiddlware = (unprocessableEntityCode: number, localisedUserDoesNotExistErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { user } = response.locals
         if (!user) {
-            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedUserDoesNotExistErrorMessage })
+            return response.status(unprocessableEntityCode).send({ message: localisedUserDoesNotExistErrorMessage })
         }
         next()
     } catch (err) {
@@ -132,7 +132,7 @@ export const getUserDoesNotExistErrorMiddlware = (localisedUserDoesNotExistError
 
 const localisedUserDoesNotExistErrorMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.userDoesNotExistMessage)
 
-export const sendUserDoesNotExistErrorMiddleware = getUserDoesNotExistErrorMiddlware(localisedUserDoesNotExistErrorMessage)
+export const sendUserDoesNotExistErrorMiddleware = getSendUserDoesNotExistErrorMiddlware(ResponseCodes.unprocessableEntity, localisedUserDoesNotExistErrorMessage)
 
 export const getSetTaskCompleteTimeMiddleware = moment => (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -145,7 +145,7 @@ export const getSetTaskCompleteTimeMiddleware = moment => (request: Request, res
     }
 }
 
-export const setCurrentTimeMiddleware = getSetTaskCompleteTimeMiddleware(moment)
+export const setTaskCompleteTimeMiddleware = getSetTaskCompleteTimeMiddleware(moment)
 
 export const getSetDayTaskWasCompletedMiddleware = (dayFormat) => (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -164,9 +164,9 @@ export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddlew
 
 export const getHasTaskAlreadyBeenCompletedTodayMiddleware = completeTaskModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const soloStreak = response.locals.soloStreak as SoloStreak
+        const { soloStreakId } = request.params
         const { taskCompleteDay, user } = response.locals
-        const taskAlreadyCompletedToday = await completeTaskModel.findOne({ userId: user._id, streakId: soloStreak.id, taskCompleteDay })
+        const taskAlreadyCompletedToday = await completeTaskModel.findOne({ userId: user._id, streakId: soloStreakId, taskCompleteDay })
         response.locals.taskAlreadyCompletedToday = taskAlreadyCompletedToday
         next()
     } catch (err) {
@@ -176,11 +176,11 @@ export const getHasTaskAlreadyBeenCompletedTodayMiddleware = completeTaskModel =
 
 export const hasTaskAlreadyBeenCompletedTodayMiddleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(completeTaskModel)
 
-export const getSendTaskAlreadyCompletedTodayErrorMiddleware = (localisedTaskAlreadyCompletedTodayErrorMiddlewareMessage) => (request: Request, response: Response, next: NextFunction) => {
+export const getSendTaskAlreadyCompletedTodayErrorMiddleware = (unprocessableEntityResponseCode: number, localisedTaskAlreadyCompletedTodayErrorMiddlewareMessage: string) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { taskAlreadyCompletedToday } = response.locals
         if (taskAlreadyCompletedToday) {
-            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedTaskAlreadyCompletedTodayErrorMiddlewareMessage })
+            return response.status(unprocessableEntityResponseCode).send({ message: localisedTaskAlreadyCompletedTodayErrorMiddlewareMessage })
         }
         next()
     } catch (err) {
@@ -190,7 +190,7 @@ export const getSendTaskAlreadyCompletedTodayErrorMiddleware = (localisedTaskAlr
 
 const localisedTaskAlreadyCompletedTodayErrorMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.taskAlreadyCompleted)
 
-export const sendTaskAlreadyCompletedTodayErrorMiddleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(localisedTaskAlreadyCompletedTodayErrorMessage)
+export const sendTaskAlreadyCompletedTodayErrorMiddleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(ResponseCodes.unprocessableEntity, localisedTaskAlreadyCompletedTodayErrorMessage)
 
 export const defineTaskCompleteMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -254,7 +254,7 @@ export const createSoloStreakCompleteTaskMiddlewares = [
     sendInvalidTimeZoneErrorResponseMiddleware,
     retreiveUserMiddleware,
     sendUserDoesNotExistErrorMiddleware,
-    setCurrentTimeMiddleware,
+    setTaskCompleteTimeMiddleware,
     setDayTaskWasCompletedMiddleware,
     hasTaskAlreadyBeenCompletedTodayMiddleware,
     sendTaskAlreadyCompletedTodayErrorMiddleware,
