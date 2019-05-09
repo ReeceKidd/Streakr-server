@@ -13,7 +13,7 @@ import {
     setTaskCompleteTimeMiddleware,
     setDayTaskWasCompletedMiddleware,
     sendTaskCompleteResponseMiddleware,
-    defineTaskCompleteMiddleware,
+    createCompleteTaskDefinitionMiddleware,
     soloStreakTaskCompleteParamsValidationMiddleware,
     soloStreakExistsMiddleware,
     sendSoloStreakDoesNotExistErrorMessageMiddleware,
@@ -29,9 +29,12 @@ import {
     getSetTaskCompleteTimeMiddleware,
     getHasTaskAlreadyBeenCompletedTodayMiddleware,
     getSendTaskAlreadyCompletedTodayErrorMiddleware,
+    getCreateCompleteTaskDefinitionMiddleware,
+    dayFormat,
+    getSaveTaskCompleteMiddleware,
+    getStreakMaintainedMiddleware,
 } from "./createSoloStreakCompleteTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { not } from "joi";
 
 describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
 
@@ -539,45 +542,221 @@ describe('hasTaskAlreadyBeenCompletedTodayMiddleware', () => {
 
 })
 
-// describe('sendTaskAlreadyCompletedTodayErrorMiddleware', () => {
+describe('sendTaskAlreadyCompletedTodayErrorMiddleware', () => {
 
-//     test('that error response is sent when response.locals.taskAlreadyCompletedToday is not defined', () => {
-//         expect.assertions(3)
-//         const send = jest.fn(() => true)
-//         const status = jest.fn(() => ({ send }))
-//         const taskAlreadyCompletedToday = false
-//         const unprocessableEntityCode = 422
-//         const localisedTaskAlreadyCompletedTodayErrorMessage = 'error'
-//         const middleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(unprocessableEntityCode, localisedTaskAlreadyCompletedTodayErrorMessage)
-//         const request: any = {}
-//         const response: any = { locals: taskAlreadyCompletedToday, status }
-//         const next = jest.fn()
-//         middleware(request, response, next)
-//         expect(status).toBeCalledWith(unprocessableEntityCode)
-//         expect(send).toBeCalledWith({ message: localisedTaskAlreadyCompletedTodayErrorMessage })
-//         expect(next).not.toBeCalled()
-//     })
+    test('that error response is sent when response.locals.taskAlreadyCompletedToday is defined', () => {
+        expect.assertions(3)
+        const send = jest.fn(() => true)
+        const status = jest.fn(() => ({ send }))
+        const taskAlreadyCompletedToday = true
+        const unprocessableEntityCode = 422
+        const localisedTaskAlreadyCompletedTodayErrorMessage = 'error'
+        const middleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(unprocessableEntityCode, localisedTaskAlreadyCompletedTodayErrorMessage)
+        const request: any = {}
+        const response: any = { locals: { taskAlreadyCompletedToday }, status }
+        const next = jest.fn()
+        middleware(request, response, next)
+        expect(status).toBeCalledWith(unprocessableEntityCode)
+        expect(send).toBeCalledWith({ message: localisedTaskAlreadyCompletedTodayErrorMessage })
+        expect(next).not.toBeCalled()
+    })
 
-//     test('that next is called when response.locals.taskAlreadyCompleted is defined', () => {
-//         expect.assertions(1)
-//         const send = jest.fn(() => true)
-//         const status = jest.fn(() => ({ send }))
-//         const taskAlreadyCompletedToday = true
-//         const unprocessableEntityCode = 422
-//         const localisedTaskAlreadyCompletedTodayErrorMessage = 'error'
-//         const middleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(unprocessableEntityCode, localisedTaskAlreadyCompletedTodayErrorMessage)
-//         const request: any = {}
-//         const response: any = { locals: taskAlreadyCompletedToday, status }
-//         const next = jest.fn()
-//         middleware(request, response, next)
-//         expect(next).toBeCalled()
-//     })
+    test('that next is called when response.locals.taskAlreadyCompleted is defined', () => {
+        expect.assertions(1)
+        const taskAlreadyCompletedToday = false
+        const unprocessableEntityCode = 422
+        const localisedTaskAlreadyCompletedTodayErrorMessage = 'error'
+        const middleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(unprocessableEntityCode, localisedTaskAlreadyCompletedTodayErrorMessage)
+        const request: any = {}
+        const response: any = { locals: { taskAlreadyCompletedToday } }
+        const next = jest.fn()
+        middleware(request, response, next)
+        expect(next).toBeCalledWith()
+    })
 
-//     test('that on error next is called with error', () => {
+    test('that on error next is called with error', () => {
+        expect.assertions(1)
+        const taskAlreadyCompletedToday = true
+        const unprocessableEntityCode = 422
+        const localisedTaskAlreadyCompletedTodayErrorMessage = 'error'
+        const middleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(unprocessableEntityCode, localisedTaskAlreadyCompletedTodayErrorMessage)
+        const request: any = {}
+        const response: any = { locals: { taskAlreadyCompletedToday } }
+        const next = jest.fn()
+        middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("response.status is not a function"))
+    })
 
-//     })
+})
 
-// })
+describe('createCompleteTaskDefinitionMiddleware', () => {
+
+    test('that completeTaskDefinition is defined and next is called', () => {
+        expect.assertions(3)
+        const soloStreakId = 'abcd123'
+        const toDate = jest.fn(() => '27/03/2019')
+        const taskCompleteTime = {
+            toDate
+        }
+        const taskCompleteDay = '09/05/2019'
+        const _id = '777ff'
+        const user = {
+            _id
+        }
+        const request: any = {
+            params: { soloStreakId }
+        }
+        const response: any = {
+            locals: {
+                taskCompleteTime,
+                taskCompleteDay,
+                user
+            }
+        }
+        const next = jest.fn()
+        const streakType = 'soloStreak'
+        const middleware = getCreateCompleteTaskDefinitionMiddleware(streakType)
+        middleware(request, response, next)
+        expect(response.locals.completeTaskDefinition).toEqual({
+            userId: user._id,
+            streakId: soloStreakId,
+            taskCompleteTime: taskCompleteTime.toDate(),
+            taskCompleteDay,
+            streakType
+        })
+        expect(toDate).toBeCalledWith()
+        expect(next).toBeCalledWith()
+    })
+
+    test('that on error next is called with error', () => {
+        expect.assertions(1)
+        const soloStreakId = 'abcd123'
+        const taskCompleteTime = {
+
+        }
+        const taskCompleteDay = '09/05/2019'
+        const _id = '777ff'
+        const user = {
+            _id
+        }
+        const request: any = {
+            params: { soloStreakId }
+        }
+        const response: any = {
+            locals: {
+                taskCompleteTime,
+                taskCompleteDay,
+                user
+            }
+        }
+        const next = jest.fn()
+        const streakType = 'soloStreak'
+        const middleware = getCreateCompleteTaskDefinitionMiddleware(streakType)
+        middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("taskCompleteTime.toDate is not a function"))
+    })
+
+})
+
+describe(`saveTaskCompleteMiddleware`, () => {
+    test(' that response.locals.completeTask is defined and next() is called', async () => {
+        expect.assertions(3)
+        const userId = 'abcd'
+        const streakId = '1234'
+        const taskCompleteTime = new Date()
+        const taskCompleteDay = '09/05/2019'
+        const streakType = 'soloStreak'
+        const completeTaskDefinition = {
+            userId,
+            streakId,
+            taskCompleteTime,
+            taskCompleteDay,
+            streakType
+        }
+        const save = jest.fn(() => (Promise.resolve(true)))
+        class completeTaskModel {
+
+            userId: string
+            streakId: string
+            taskCompleteTime: Date
+            taskCompleteDay: string
+            streakType: string
+
+            constructor(userId, streakId, taskCompleteTime, taskCompleteDay, streakType) {
+                this.userId = userId;
+                this.streakId = streakId,
+                    this.taskCompleteTime = taskCompleteTime
+                this.taskCompleteDay = taskCompleteDay
+                this.streakType = streakType
+            }
+
+            save() { return save() }
+        }
+        const request: any = {}
+        const response: any = { locals: { completeTaskDefinition } }
+        const next = jest.fn()
+        const middleware = getSaveTaskCompleteMiddleware(completeTaskModel)
+        await middleware(request, response, next)
+        expect(response.locals.completeTask).toBeDefined()
+        expect(save).toBeCalledWith()
+        expect(next).toBeCalledWith()
+    })
+
+    test("that on error next is called with eror", async () => {
+        expect.assertions(1)
+        const userId = 'abcd'
+        const streakId = '1234'
+        const taskCompleteTime = new Date()
+        const taskCompleteDay = '09/05/2019'
+        const streakType = 'soloStreak'
+        const completeTaskDefinition = {
+            userId,
+            streakId,
+            taskCompleteTime,
+            taskCompleteDay,
+            streakType
+        }
+        const save = jest.fn(() => (Promise.resolve(true)))
+        const request: any = {}
+        const response: any = { locals: { completeTaskDefinition } }
+        const next = jest.fn()
+        const middleware = getSaveTaskCompleteMiddleware({})
+        await middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("completeTaskModel is not a constructor"))
+    })
+})
+
+describe("streakMaintainedMiddleware", () => {
+    test("that soloStreakModel is updated and that next() is called", async () => {
+        expect.assertions(2)
+        const soloStreakId = '123abc'
+        const updateOne = jest.fn(() => (Promise.resolve(true)))
+        const soloStreakModel = {
+            updateOne
+        }
+        const request: any = { params: { soloStreakId } }
+        const response: any = {}
+        const next = jest.fn()
+        const middleware = getStreakMaintainedMiddleware(soloStreakModel)
+        await middleware(request, response, next)
+        expect(updateOne).toBeCalledWith({ _id: soloStreakId }, { completedToday: true, $inc: { "currentStreak.numberOfDaysInARow": 1 } })
+        expect(next).toBeCalledWith()
+    })
+
+    test("that on error next is called with error", async () => {
+        expect.assertions(1)
+        const soloStreakId = '123abc'
+        const soloStreakModel = {
+
+        }
+        const request: any = { params: { soloStreakId } }
+        const response: any = {}
+        const next = jest.fn()
+        const middleware = getStreakMaintainedMiddleware(soloStreakModel)
+        await middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("soloStreakModel.updateOne is not a function"))
+    })
+})
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
     test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
@@ -595,7 +774,7 @@ describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
         expect(createSoloStreakCompleteTaskMiddlewares[10]).toBe(setDayTaskWasCompletedMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[11]).toBe(hasTaskAlreadyBeenCompletedTodayMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[12]).toBe(sendTaskAlreadyCompletedTodayErrorMiddleware)
-        expect(createSoloStreakCompleteTaskMiddlewares[13]).toBe(defineTaskCompleteMiddleware)
+        expect(createSoloStreakCompleteTaskMiddlewares[13]).toBe(createCompleteTaskDefinitionMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[14]).toBe(saveTaskCompleteMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[15]).toBe(streakMaintainedMiddleware)
         expect(createSoloStreakCompleteTaskMiddlewares[16]).toBe(sendTaskCompleteResponseMiddleware)

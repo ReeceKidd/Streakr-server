@@ -176,11 +176,11 @@ export const getHasTaskAlreadyBeenCompletedTodayMiddleware = completeTaskModel =
 
 export const hasTaskAlreadyBeenCompletedTodayMiddleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(completeTaskModel)
 
-export const getSendTaskAlreadyCompletedTodayErrorMiddleware = (unprocessableEntityResponseCode: number, localisedTaskAlreadyCompletedTodayErrorMiddlewareMessage: string) => (request: Request, response: Response, next: NextFunction) => {
+export const getSendTaskAlreadyCompletedTodayErrorMiddleware = (unprocessableEntityResponseCode: number, localisedTaskAlreadyCompletedTodayErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { taskAlreadyCompletedToday } = response.locals
         if (taskAlreadyCompletedToday) {
-            return response.status(unprocessableEntityResponseCode).send({ message: localisedTaskAlreadyCompletedTodayErrorMiddlewareMessage })
+            return response.status(unprocessableEntityResponseCode).send({ message: localisedTaskAlreadyCompletedTodayErrorMessage })
         }
         next()
     } catch (err) {
@@ -192,7 +192,7 @@ const localisedTaskAlreadyCompletedTodayErrorMessage = getLocalisedString(Messag
 
 export const sendTaskAlreadyCompletedTodayErrorMiddleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(ResponseCodes.unprocessableEntity, localisedTaskAlreadyCompletedTodayErrorMessage)
 
-export const defineTaskCompleteMiddleware = (request: Request, response: Response, next: NextFunction) => {
+export const getCreateCompleteTaskDefinitionMiddleware = (streakType: string) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { soloStreakId } = request.params
         const { taskCompleteTime, taskCompleteDay, user } = response.locals
@@ -201,7 +201,7 @@ export const defineTaskCompleteMiddleware = (request: Request, response: Respons
             streakId: soloStreakId,
             taskCompleteTime: taskCompleteTime.toDate(),
             taskCompleteDay,
-            streakType: TypesOfStreak.soloStreak
+            streakType
         }
         response.locals.completeTaskDefinition = completeTaskDefinition
         next()
@@ -209,6 +209,8 @@ export const defineTaskCompleteMiddleware = (request: Request, response: Respons
         next(err)
     }
 }
+
+export const createCompleteTaskDefinitionMiddleware = getCreateCompleteTaskDefinitionMiddleware(TypesOfStreak.soloStreak)
 
 export const getSaveTaskCompleteMiddleware = (completeTaskModel) => async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -220,6 +222,8 @@ export const getSaveTaskCompleteMiddleware = (completeTaskModel) => async (reque
         next(err)
     }
 }
+
+export const saveTaskCompleteMiddleware = getSaveTaskCompleteMiddleware(completeTaskModel)
 
 export const getStreakMaintainedMiddleware = soloStreakModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -233,7 +237,7 @@ export const getStreakMaintainedMiddleware = soloStreakModel => async (request: 
 
 export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(soloStreakModel)
 
-export const saveTaskCompleteMiddleware = getSaveTaskCompleteMiddleware(completeTaskModel)
+
 
 export const sendTaskCompleteResponseMiddleware = (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -258,7 +262,7 @@ export const createSoloStreakCompleteTaskMiddlewares = [
     setDayTaskWasCompletedMiddleware,
     hasTaskAlreadyBeenCompletedTodayMiddleware,
     sendTaskAlreadyCompletedTodayErrorMiddleware,
-    defineTaskCompleteMiddleware,
+    createCompleteTaskDefinitionMiddleware,
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
     sendTaskCompleteResponseMiddleware
