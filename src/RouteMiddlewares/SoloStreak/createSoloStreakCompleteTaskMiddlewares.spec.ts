@@ -33,6 +33,7 @@ import {
     dayFormat,
     getSaveTaskCompleteMiddleware,
     getStreakMaintainedMiddleware,
+    getSendTaskCompleteResponseMiddleware,
 } from "./createSoloStreakCompleteTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 
@@ -267,6 +268,21 @@ describe('sendMissingTimeZoneErrorResponseMiddleware', () => {
         const middleware = getSendMissingTimeZoneErrorResponseMiddleware(unprocessableEntityCode, localisedError)
         middleware(request, response, next)
         expect(next).toBeCalledWith()
+    })
+
+    test('that on error next() is called with error', () => {
+        expect.assertions(1)
+        expect.assertions(1)
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const request: any = {}
+        const response: any = { status }
+        const next = jest.fn()
+        const unprocessableEntityCode = 422
+        const localisedError = 'error'
+        const middleware = getSendMissingTimeZoneErrorResponseMiddleware(unprocessableEntityCode, localisedError)
+        middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("Cannot destructure property `timeZone` of 'undefined' or 'null'."))
     })
 })
 
@@ -756,6 +772,51 @@ describe("streakMaintainedMiddleware", () => {
         await middleware(request, response, next)
         expect(next).toBeCalledWith(new TypeError("soloStreakModel.updateOne is not a function"))
     })
+})
+
+describe("sendTaskCompleteResponseMiddleware", () => {
+
+    test("that completeTask response is sent and next is not called", () => {
+        expect.assertions(3)
+        const send = jest.fn(() => true)
+        const status = jest.fn(() => ({ send }))
+        const completeTask = {
+            userId: 'abcd',
+            streakId: '1234',
+            taskCompleteTime: new Date(),
+            taskCompleteDay: '10/05/2019',
+            streakType: 'solo-streak'
+        }
+        const successResponseCode = 200
+        const middleware = getSendTaskCompleteResponseMiddleware(successResponseCode)
+        const request: any = {}
+        const response: any = { locals: { completeTask }, status }
+        const next = jest.fn()
+        middleware(request, response, next)
+        expect(status).toBeCalledWith(successResponseCode)
+        expect(send).toBeCalledWith({ completeTask })
+        expect(next).not.toBeCalled()
+    })
+
+    test("that on error next is called with error", () => {
+        expect.assertions(1)
+        const completeTask = {
+            userId: 'abcd',
+            streakId: '1234',
+            taskCompleteTime: new Date(),
+            taskCompleteDay: '10/05/2019',
+            streakType: 'solo-streak'
+        }
+        const successResponseCode = 200
+        const middleware = getSendTaskCompleteResponseMiddleware(successResponseCode)
+        const request: any = {}
+        const response: any = { locals: { completeTask } }
+        const next = jest.fn()
+        middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError('response.status is not a function'))
+    })
+
+
 })
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {

@@ -2,6 +2,7 @@ export enum RouteCategories {
     users = 'users',
     auth = 'auth',
     soloStreaks = 'solo-streaks',
+    completeTasks = 'complete-tasks',
     test = 'test'
 }
 

@@ -237,16 +237,16 @@ export const getStreakMaintainedMiddleware = soloStreakModel => async (request: 
 
 export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(soloStreakModel)
 
-
-
-export const sendTaskCompleteResponseMiddleware = (request: Request, response: Response, next: NextFunction) => {
+export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { completeTask } = response.locals
-        return response.status(ResponseCodes.success).send(completeTask)
+        return response.status(resourceCreatedResponseCode).send({ completeTask })
     } catch (err) {
         next(err)
     }
 }
+
+export const sendTaskCompleteResponseMiddleware = getSendTaskCompleteResponseMiddleware(ResponseCodes.created)
 
 export const createSoloStreakCompleteTaskMiddlewares = [
     soloStreakTaskCompleteParamsValidationMiddleware,
