@@ -20,6 +20,19 @@ soloStreaksRouter.get(
     ...getSoloStreaksMiddlewares
 );
 
+soloStreaksRouter.get(
+    `/:${soloStreakId}`
+
+)
+
+soloStreaksRouter.put(
+    `/:${soloStreakId}`
+)
+
+soloStreaksRouter.delete(
+    `/;${soloStreakId}`
+)
+
 soloStreaksRouter.post(
     `/`,
     ...createSoloStreakMiddlewares
