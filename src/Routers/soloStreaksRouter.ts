@@ -4,6 +4,7 @@ import { verifyJsonWebTokenMiddlewares } from "../RouteMiddlewares/Utils/verifyJ
 import { getSoloStreaksMiddlewares } from "../RouteMiddlewares/SoloStreak/getSoloStreaksMiddlewares";
 import { createSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakMiddlewares";
 import { createSoloStreakCompleteTaskMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakCompleteTaskMiddlewares";
+import { getSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/getSoloStreakMiddlewares";
 
 export enum SoloStreakProperties {
     completeTasks = 'complete-tasks'
@@ -21,8 +22,8 @@ soloStreaksRouter.get(
 );
 
 soloStreaksRouter.get(
-    `/:${soloStreakId}`
-
+    `/:${soloStreakId}`,
+    ...getSoloStreakMiddlewares
 )
 
 soloStreaksRouter.put(

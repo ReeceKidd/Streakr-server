@@ -16,13 +16,12 @@ export const getSoloStreakParamsValidationMiddleware = (request: Request, respon
 export const getRetreiveSoloStreakMiddleware = soloStreakModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
         const { soloStreakId } = request.params
-        response.locals.soloStreak = await soloStreakModel.findOne({ _id: soloStreakId })
+        response.locals.soloStreak = await soloStreakModel.findOne({ _id: soloStreakId }).lean()
         next()
     } catch (err) {
         next(err)
     }
 }
-
 
 export const retreiveSoloStreakMiddleware = getRetreiveSoloStreakMiddleware(soloStreakModel)
 

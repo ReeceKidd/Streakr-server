@@ -72,7 +72,8 @@ describe(`getSoloStreakParamsValidationMiddleware`, () => {
 describe('retreiveSoloStreakMiddleware', () => {
     test('that response.locals.soloStreak is defined and next() is called', async () => {
         expect.assertions(3)
-        const findOne = jest.fn(() => Promise.resolve(true))
+        const lean = jest.fn(() => Promise.resolve(true))
+        const findOne = jest.fn(() => ({ lean }))
         const soloStreakModel = {
             findOne
         }
@@ -90,7 +91,8 @@ describe('retreiveSoloStreakMiddleware', () => {
     test('that on error next() is called with error', async () => {
         expect.assertions(1)
         const errorMessage = 'error'
-        const findOne = jest.fn(() => Promise.reject(errorMessage))
+        const lean = jest.fn(() => Promise.reject(errorMessage))
+        const findOne = jest.fn(() => ({ lean }))
         const soloStreakModel = {
             findOne
         }
