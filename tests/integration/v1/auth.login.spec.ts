@@ -67,12 +67,11 @@ describe(loginRoute, () => {
         expect(response.body).toHaveProperty('message')
         const localisedFailureMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
         expect(response.body.message).toEqual(localisedFailureMessage)
-        expect(response.body.expiry.expiresIn).not.toBeDefined()
-        expect(response.body.expiry.unitOfTime).not.toEqual('seconds')
+        expect(response.body.expiry).not.toBeDefined()
     })
 
     test('that response is correct when invalid email and correct password is used', async () => {
-        expect.assertions(7)
+        expect.assertions(6)
         const response = await request(server).post(loginRoute).send(
             {
                 email: 'invalidemail@gmail.com',
@@ -85,12 +84,11 @@ describe(loginRoute, () => {
         expect(response.body).toHaveProperty('message')
         const localisedFailureMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
         expect(response.body.message).toEqual(localisedFailureMessage)
-        expect(response.body.expiry.expiresIn).not.toBeDefined()
-        expect(response.body.expiry.unitOfTime).not.toEqual('seconds')
+        expect(response.body.expiry).not.toBeDefined()
     })
 
     test('that response is correct when valid email and incorrect password is used', async () => {
-        expect.assertions(7)
+        expect.assertions(6)
         const response = await request(server).post(loginRoute).send(
             {
                 email: registeredEmail,
@@ -103,8 +101,7 @@ describe(loginRoute, () => {
         expect(response.body).toHaveProperty('message')
         const localisedFailureMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
         expect(response.body.message).toEqual(localisedFailureMessage)
-        expect(response.body.expiry.expiresIn).not.toBeDefined()
-        expect(response.body.expiry.unitOfTime).not.toEqual('seconds')
+        expect(response.body.expiry).not.toBeDefined()
     })
 
     test('fails because nothing is sent with request', async () => {
