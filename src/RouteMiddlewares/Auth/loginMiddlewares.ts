@@ -25,6 +25,10 @@ export interface LoginResponseLocals {
   passwordMatchesHash?: boolean;
   minimumUserData?: IMinimumUserData;
   jsonWebToken?: string;
+  expiry?: {
+    expiresIn: number,
+    unitOfTime: string
+  }
 }
 
 const loginValidationSchema = {
@@ -136,14 +140,32 @@ export const setMinimumUserDataMiddleware = (
   }
 };
 
+export const getSetJsonWebTokenExpiryInfoMiddleware = (expiresIn: number, unitOfTime: string) => (request: Request, response: Response, next: NextFunction) => {
+  try {
+    response.locals.expiry = {
+      expiresIn,
+      unitOfTime
+    }
+    next()
+  } catch (err) {
+    next(err)
+  }
+}
 
-export const getSetJsonWebTokenMiddleware = (signToken: Function, jwtSecret: string, jwtOptions: object) => (
+const oneMonthInSeconds = 2629746
+const unitOfTime = 'seconds'
+
+export const setJsonWebTokenExpiryInfoMiddleware = getSetJsonWebTokenExpiryInfoMiddleware(oneMonthInSeconds, unitOfTime)
+
+
+export const getSetJsonWebTokenMiddleware = (signToken: Function, jwtSecret: string) => (
   request: Request,
   response: Response,
   next: NextFunction,
 ) => {
   try {
-    const { minimumUserData } = response.locals as LoginResponseLocals
+    const { minimumUserData, expiry } = response.locals as LoginResponseLocals
+    const jwtOptions = { expiresIn: expiry.expiresIn }
     const jsonWebToken: string = signToken({ minimumUserData }, jwtSecret, jwtOptions);
     (response.locals as LoginResponseLocals).jsonWebToken = jsonWebToken;
     next();
@@ -152,8 +174,7 @@ export const getSetJsonWebTokenMiddleware = (signToken: Function, jwtSecret: str
   }
 };
 
-export const setJsonWebTokenMiddleware = getSetJsonWebTokenMiddleware(jwt.sign, jwtSecret, { expiresIn: '7d' });
-
+export const setJsonWebTokenMiddleware = getSetJsonWebTokenMiddleware(jwt.sign, jwtSecret);
 
 export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) => (
   request: Request,
@@ -161,8 +182,8 @@ export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) => (
   next: NextFunction,
 ) => {
   try {
-    const { jsonWebToken } = response.locals as LoginResponseLocals;
-    return response.status(ResponseCodes.success).send({ jsonWebToken, message: loginSuccessMessage });
+    const { jsonWebToken, expiry } = response.locals as LoginResponseLocals;
+    return response.status(ResponseCodes.success).send({ jsonWebToken, message: loginSuccessMessage, expiry });
   } catch (err) {
     next(err);
   }
@@ -179,6 +200,7 @@ export const loginMiddlewares = [
   compareRequestPasswordToUserHashedPasswordMiddleware,
   passwordsMatchValidationMiddleware,
   setMinimumUserDataMiddleware,
+  setJsonWebTokenExpiryInfoMiddleware,
   setJsonWebTokenMiddleware,
   loginSuccessfulMiddleware
 ];

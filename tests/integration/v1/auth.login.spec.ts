@@ -35,7 +35,7 @@ describe(loginRoute, () => {
     })
 
     test('user can login successfully and receives jsonWebToken in response', async () => {
-        expect.assertions(6)
+        expect.assertions(8)
         const response = await request(server).post(loginRoute).send(
             {
                 email: registeredEmail,
@@ -49,10 +49,12 @@ describe(loginRoute, () => {
         expect(response.body.jsonWebToken.length).toBeGreaterThan(20)
         expect(response.body).toHaveProperty('message')
         expect(response.body.message).toEqual(localisedLoginSuccessMessage)
+        expect(response.body.expiry.expiresIn).toBeDefined()
+        expect(response.body.expiry.unitOfTime).toEqual('seconds')
     })
 
     test('that response is correct when incorrect email and password is used', async () => {
-        expect.assertions(5)
+        expect.assertions(7)
         const response = await request(server).post(loginRoute).send(
             {
                 email: 'invalidemail@gmail.com',
@@ -65,10 +67,12 @@ describe(loginRoute, () => {
         expect(response.body).toHaveProperty('message')
         const localisedFailureMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
         expect(response.body.message).toEqual(localisedFailureMessage)
+        expect(response.body.expiry.expiresIn).not.toBeDefined()
+        expect(response.body.expiry.unitOfTime).not.toEqual('seconds')
     })
 
     test('that response is correct when invalid email and correct password is used', async () => {
-        expect.assertions(5)
+        expect.assertions(7)
         const response = await request(server).post(loginRoute).send(
             {
                 email: 'invalidemail@gmail.com',
@@ -81,10 +85,12 @@ describe(loginRoute, () => {
         expect(response.body).toHaveProperty('message')
         const localisedFailureMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
         expect(response.body.message).toEqual(localisedFailureMessage)
+        expect(response.body.expiry.expiresIn).not.toBeDefined()
+        expect(response.body.expiry.unitOfTime).not.toEqual('seconds')
     })
 
     test('that response is correct when valid email and incorrect password is used', async () => {
-        expect.assertions(5)
+        expect.assertions(7)
         const response = await request(server).post(loginRoute).send(
             {
                 email: registeredEmail,
@@ -97,6 +103,8 @@ describe(loginRoute, () => {
         expect(response.body).toHaveProperty('message')
         const localisedFailureMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage)
         expect(response.body.message).toEqual(localisedFailureMessage)
+        expect(response.body.expiry.expiresIn).not.toBeDefined()
+        expect(response.body.expiry.unitOfTime).not.toEqual('seconds')
     })
 
     test('fails because nothing is sent with request', async () => {

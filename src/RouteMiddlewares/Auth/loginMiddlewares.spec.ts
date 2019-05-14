@@ -14,7 +14,9 @@ import {
   setJsonWebTokenMiddleware,
   getSetJsonWebTokenMiddleware,
   loginSuccessfulMiddleware,
-  getLoginSuccessfulMiddleware
+  getLoginSuccessfulMiddleware,
+  getSetJsonWebTokenExpiryInfoMiddleware,
+  setJsonWebTokenExpiryInfoMiddleware
 } from './loginMiddlewares'
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -449,23 +451,53 @@ describe(`setMinimumUserDataMiddleware`, () => {
 
 });
 
+describe('setJsonWebTokenExpiryInfoMiddleware', () => {
+
+  test('response.locals.expiry should be populated with next called', () => {
+    expect.assertions(3)
+    const expiresIn = 233993
+    const unitOfTime = 'seconds'
+    const request: any = {}
+    const response: any = { locals: {} }
+    const next = jest.fn()
+    const middleware = getSetJsonWebTokenExpiryInfoMiddleware(expiresIn, unitOfTime)
+    middleware(request, response, next)
+    expect(response.locals.expiry.expiresIn).toEqual(expiresIn)
+    expect(response.locals.expiry.unitOfTime).toEqual(unitOfTime)
+    expect(next).toBeCalledWith()
+  })
+
+  test('that on error next is called with error', () => {
+    expect.assertions(1)
+    const expiresIn = 233993
+    const unitOfTime = 'seconds'
+    const request: any = {}
+    const response: any = {}
+    const next = jest.fn()
+    const middleware = getSetJsonWebTokenExpiryInfoMiddleware(expiresIn, unitOfTime)
+    middleware(request, response, next)
+    expect(next).toBeCalledWith(new TypeError("Cannot set property 'expiry' of undefined"))
+  })
+
+})
+
 describe('setJsonWebTokenMiddleware', () => {
 
   const ERROR_MESSAGE = 'error';
   test('should set response.locals.token', () => {
     const minimumUserData = { userName: 'user' };
+    const expiry = { expiresIn: 123 }
     const signTokenMock = jest.fn(() => true);
     const jwtSecretMock = '1234';
-    const jwtOptionsMock = {};
-    const response: any = { locals: { minimumUserData } };
+    const response: any = { locals: { minimumUserData, expiry } };
     const request: any = {};
     const next = jest.fn();
 
-    const middleware = getSetJsonWebTokenMiddleware(signTokenMock, jwtSecretMock, jwtOptionsMock);
+    const middleware = getSetJsonWebTokenMiddleware(signTokenMock, jwtSecretMock);
     middleware(request, response, next);
 
     expect.assertions(3);
-    expect(signTokenMock).toBeCalledWith({ minimumUserData }, jwtSecretMock, jwtOptionsMock);
+    expect(signTokenMock).toBeCalledWith({ minimumUserData }, jwtSecretMock, { expiresIn: expiry.expiresIn });
     expect(response.locals.jsonWebToken).toBeDefined();
     expect(next).toBeCalled();
   });
@@ -475,15 +507,15 @@ describe('setJsonWebTokenMiddleware', () => {
     const signTokenMock = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
+    const expiry = { expiresIn: 123 }
     const minimumUserData = { userName: 'user' };
     const jwtSecretMock = '1234';
-    const jwtOptionsMock = {};
 
-    const response: any = { locals: { minimumUserData } };
+    const response: any = { locals: { minimumUserData, expiry } };
     const request: any = {};
     const next = jest.fn();
 
-    const middleware = getSetJsonWebTokenMiddleware(signTokenMock, jwtSecretMock, jwtOptionsMock);
+    const middleware = getSetJsonWebTokenMiddleware(signTokenMock, jwtSecretMock);
     middleware(request, response, next);
 
     expect.assertions(1);
@@ -540,15 +572,16 @@ describe(`loginSuccessfulMiddleware`, () => {
 
 describe(`loginMiddlewares`, () => {
   test("that login middlewares are defined in the correct order", async () => {
-    expect.assertions(8);
+    expect.assertions(9);
     expect(loginMiddlewares[0]).toBe(loginRequestValidationMiddleware)
     expect(loginMiddlewares[1]).toBe(retreiveUserWithEmailMiddleware)
     expect(loginMiddlewares[2]).toBe(userExistsValidationMiddleware)
     expect(loginMiddlewares[3]).toBe(compareRequestPasswordToUserHashedPasswordMiddleware)
     expect(loginMiddlewares[4]).toBe(passwordsMatchValidationMiddleware)
     expect(loginMiddlewares[5]).toBe(setMinimumUserDataMiddleware)
-    expect(loginMiddlewares[6]).toBe(setJsonWebTokenMiddleware)
-    expect(loginMiddlewares[7]).toBe(loginSuccessfulMiddleware)
+    expect(loginMiddlewares[6]).toBe(setJsonWebTokenExpiryInfoMiddleware)
+    expect(loginMiddlewares[7]).toBe(setJsonWebTokenMiddleware)
+    expect(loginMiddlewares[8]).toBe(loginSuccessfulMiddleware)
   });
 
 });
