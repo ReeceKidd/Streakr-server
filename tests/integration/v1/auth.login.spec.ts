@@ -54,7 +54,7 @@ describe(loginRoute, () => {
     })
 
     test('that response is correct when incorrect email and password is used', async () => {
-        expect.assertions(7)
+        expect.assertions(6)
         const response = await request(server).post(loginRoute).send(
             {
                 email: 'invalidemail@gmail.com',
