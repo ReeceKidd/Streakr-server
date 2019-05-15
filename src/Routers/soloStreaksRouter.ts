@@ -5,6 +5,7 @@ import { getSoloStreaksMiddlewares } from "../RouteMiddlewares/SoloStreak/getSol
 import { createSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakMiddlewares";
 import { createSoloStreakCompleteTaskMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakCompleteTaskMiddlewares";
 import { getSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/getSoloStreakMiddlewares";
+import { patchSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/patchSoloStreakMiddlewares";
 
 export enum SoloStreakProperties {
     completeTasks = 'complete-tasks'
@@ -21,23 +22,24 @@ soloStreaksRouter.get(
     ...getSoloStreaksMiddlewares
 );
 
+soloStreaksRouter.post(
+    `/`,
+    ...createSoloStreakMiddlewares
+);
+
 soloStreaksRouter.get(
     `/:${soloStreakId}`,
     ...getSoloStreakMiddlewares
 )
 
-soloStreaksRouter.put(
-    `/:${soloStreakId}`
+soloStreaksRouter.patch(
+    `/:${soloStreakId}`,
+    ...patchSoloStreakMiddlewares
 )
 
 soloStreaksRouter.delete(
     `/;${soloStreakId}`
 )
-
-soloStreaksRouter.post(
-    `/`,
-    ...createSoloStreakMiddlewares
-);
 
 soloStreaksRouter.post(
     `/:${soloStreakId}/${SoloStreakProperties.completeTasks}`, ...createSoloStreakCompleteTaskMiddlewares
