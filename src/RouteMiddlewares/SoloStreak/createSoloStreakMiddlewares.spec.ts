@@ -33,7 +33,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
     const name = 'Spanish Streak'
     const description = ' Do the insane amount of XP for Duolingo each day'
 
-    test("that minimum amount of information needed for a sterak passes", () => {
+    test("that minimum amount of information needed for a streak passes", () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
 
