@@ -7,6 +7,14 @@ import { getLocalisedString } from '../../Messages/getLocalisedString';
 import { MessageCategories } from '../../Messages/messageCategories';
 import { FailureMessageKeys } from '../../Messages/failureMessages';
 
+const soloStreakParamsValidationSchema = {
+    soloStreakId: Joi.string().required()
+}
+
+export const soloStreakParamsValidationMiddleware = (request: Request, response: Response, next: NextFunction) => {
+    Joi.validate(request.params, soloStreakParamsValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next))
+}
+
 const soloStreakBodyValidationSchema = {
     userId: Joi.string(),
     name: Joi.string(),
@@ -60,6 +68,7 @@ export const sendUpdatedSoloStreakMiddleware = getSendUpdatedSoloStreakMiddlewar
 export const patchSoloStreakMiddleware = getPatchSoloStreakMiddleware(soloStreakModel)
 
 export const patchSoloStreakMiddlewares = [
+    soloStreakParamsValidationMiddleware,
     soloStreakRequestBodyValidationMiddleware,
     patchSoloStreakMiddleware,
     soloStreakDoesNotExistErrorMessageMiddleware,

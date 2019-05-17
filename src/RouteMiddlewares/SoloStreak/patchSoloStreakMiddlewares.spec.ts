@@ -1,5 +1,53 @@
-import { patchSoloStreakMiddlewares, soloStreakRequestBodyValidationMiddleware, getPatchSoloStreakMiddleware, patchSoloStreakMiddleware, sendUpdatedSoloStreakMiddleware, soloStreakDoesNotExistErrorMessageMiddleware, getSoloStreakDoesNotExistErrorMessageMiddleware, getSendUpdatedSoloStreakMiddleware } from "./patchSoloStreakMiddlewares";
+import { patchSoloStreakMiddlewares, soloStreakRequestBodyValidationMiddleware, getPatchSoloStreakMiddleware, patchSoloStreakMiddleware, sendUpdatedSoloStreakMiddleware, soloStreakDoesNotExistErrorMessageMiddleware, getSoloStreakDoesNotExistErrorMessageMiddleware, getSendUpdatedSoloStreakMiddleware, soloStreakParamsValidationMiddleware } from "./patchSoloStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
+
+describe('soloStreakParamsValidationMiddleware', () => {
+
+    test('that correct response is sent when soloStreakId is not defined', () => {
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+
+        const request: any = {
+            params: {}
+        };
+        const response: any = {
+            status
+        };
+        const next = jest.fn();
+
+        soloStreakParamsValidationMiddleware(request, response, next);
+
+        expect.assertions(3);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: "child \"soloStreakId\" fails because [\"soloStreakId\" is required]"
+        });
+        expect(next).not.toBeCalled();
+    })
+
+    test('that correct response is sent when soloStreakId is not a string', () => {
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+
+        const request: any = {
+            params: { soloStreakId: 123 }
+        };
+        const response: any = {
+            status
+        };
+        const next = jest.fn();
+
+        soloStreakParamsValidationMiddleware(request, response, next);
+
+        expect.assertions(3);
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: "child \"soloStreakId\" fails because [\"soloStreakId\" must be a string]"
+        });
+        expect(next).not.toBeCalled();
+    })
+
+})
 
 describe('soloStreakRequestBodyValidationMiddleware', () => {
 
@@ -277,11 +325,12 @@ describe('sendUpdatedPatchMiddleware', () => {
 describe('patchSoloStreakMiddlewares', () => {
 
     test('that patchSoloStreakMiddlewares are defined in the correct order', () => {
-        expect.assertions(4)
-        expect(patchSoloStreakMiddlewares[0]).toBe(soloStreakRequestBodyValidationMiddleware)
-        expect(patchSoloStreakMiddlewares[1]).toBe(patchSoloStreakMiddleware)
-        expect(patchSoloStreakMiddlewares[2]).toBe(soloStreakDoesNotExistErrorMessageMiddleware)
-        expect(patchSoloStreakMiddlewares[3]).toBe(sendUpdatedSoloStreakMiddleware)
+        expect.assertions(5)
+        expect(patchSoloStreakMiddlewares[0]).toBe(soloStreakParamsValidationMiddleware)
+        expect(patchSoloStreakMiddlewares[1]).toBe(soloStreakRequestBodyValidationMiddleware)
+        expect(patchSoloStreakMiddlewares[2]).toBe(patchSoloStreakMiddleware)
+        expect(patchSoloStreakMiddlewares[3]).toBe(soloStreakDoesNotExistErrorMessageMiddleware)
+        expect(patchSoloStreakMiddlewares[4]).toBe(sendUpdatedSoloStreakMiddleware)
     })
 
 })
