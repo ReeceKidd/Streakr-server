@@ -50,8 +50,7 @@ export const soloStreakNotFoundMiddleware = getSoloStreakNotFoundMiddleware(Resp
 
 export const getSendSoloStreakDeletedResponseMiddleware = (successfulDeletetionResponseCode, localisedSuccessfulDeletionMessage) => (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { deletedSoloStreak } = response.locals
-        return response.send(deletedSoloStreak)
+        return response.status(successfulDeletetionResponseCode).send({ message: localisedSuccessfulDeletionMessage })
     } catch (err) {
         next(err)
     }
@@ -62,7 +61,6 @@ export const sendSoloStreakDeletedResponseMiddleware = getSendSoloStreakDeletedR
 export const deleteSoloStreakMiddlewares = [
     soloStreakParamsValidationMiddleware,
     deleteSoloStreakMiddleware,
-    //soloStreakNotFoundMiddleware
+    soloStreakNotFoundMiddleware,
     sendSoloStreakDeletedResponseMiddleware
-
 ]
