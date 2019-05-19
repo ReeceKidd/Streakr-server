@@ -134,29 +134,26 @@ describe('soloStreakNotFoundMiddleware', () => {
 describe('sendSoloStreakDeletedResponseMiddleware', () => {
 
     test('that on deletion correct response is sent', () => {
-        expect.assertions(3)
+        expect.assertions(2)
         const successfulDeletionResponseCode = 204
-        const localisedSuccessfulDeletionMessage = 'Successfully deleted solo streak'
         const send = jest.fn()
         const status = jest.fn(() => ({ send }))
         const request: any = {}
         const response: any = { status }
         const next = jest.fn()
-        const middleware = getSendSoloStreakDeletedResponseMiddleware(successfulDeletionResponseCode, localisedSuccessfulDeletionMessage)
+        const middleware = getSendSoloStreakDeletedResponseMiddleware(successfulDeletionResponseCode)
         middleware(request, response, next)
         expect(status).toBeCalledWith(successfulDeletionResponseCode)
-        expect(send).toBeCalledWith({ message: localisedSuccessfulDeletionMessage })
         expect(next).not.toBeCalled()
     })
 
     test('that on error next is called with error', () => {
         expect.assertions(1)
         const successfulDeletionResponseCode = 204
-        const localisedSuccessfulDeletionMessage = 'Successfully deleted solo streak'
         const request: any = {}
         const response: any = {}
         const next = jest.fn()
-        const middleware = getSendSoloStreakDeletedResponseMiddleware(successfulDeletionResponseCode, localisedSuccessfulDeletionMessage)
+        const middleware = getSendSoloStreakDeletedResponseMiddleware(successfulDeletionResponseCode)
         middleware(request, response, next)
         expect(next).toBeCalledWith(new TypeError('response.status is not a function'))
     })
@@ -173,6 +170,3 @@ describe('deleteSoloStreakMiddlewares', () => {
         expect(deleteSoloStreakMiddlewares[3]).toEqual(sendSoloStreakDeletedResponseMiddleware)
     })
 })
-
-// Finish unit tests, intergration tests, get agenda time zone checks and then get this 
-// thing on elastic beanstalk. 

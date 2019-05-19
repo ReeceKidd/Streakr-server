@@ -46,15 +46,15 @@ const localisedSoloStreakDoesNotExistErrorMessage = getLocalisedString(MessageCa
 
 export const soloStreakNotFoundMiddleware = getSoloStreakNotFoundMiddleware(ResponseCodes.badRequest, localisedSoloStreakDoesNotExistErrorMessage)
 
-export const getSendSoloStreakDeletedResponseMiddleware = (successfulDeletetionResponseCode, localisedSuccessfulDeletionMessage) => (request: Request, response: Response, next: NextFunction) => {
+export const getSendSoloStreakDeletedResponseMiddleware = (successfulDeletetionResponseCode) => (request: Request, response: Response, next: NextFunction) => {
     try {
-        return response.status(successfulDeletetionResponseCode).send({ message: localisedSuccessfulDeletionMessage })
+        return response.status(successfulDeletetionResponseCode).send()
     } catch (err) {
         next(err)
     }
 }
 
-export const sendSoloStreakDeletedResponseMiddleware = getSendSoloStreakDeletedResponseMiddleware(ResponseCodes.deleted, 'MEssage')
+export const sendSoloStreakDeletedResponseMiddleware = getSendSoloStreakDeletedResponseMiddleware(ResponseCodes.deleted)
 
 export const deleteSoloStreakMiddlewares = [
     soloStreakParamsValidationMiddleware,

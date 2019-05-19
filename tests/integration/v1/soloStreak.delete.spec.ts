@@ -11,6 +11,7 @@ import { agendaJobModel } from '../../../src/Models/AgendaJob';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 import { SupportedRequestHeaders } from '../../../src/Server/headers';
+import { AgendaJobs } from '../../../config/Agenda';
 
 const registeredEmail = "create-solo-streak-user@gmail.com"
 const registeredPassword = "12345678"
@@ -22,7 +23,8 @@ const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
 
 const londonTimezone = "Europe/London"
 
-describe(`PATCH ${soloStreakRoute}`, () => {
+
+describe(`DELETE ${soloStreakRoute}`, () => {
 
     let jsonWebToken: string
     let userId: string
@@ -69,30 +71,12 @@ describe(`PATCH ${soloStreakRoute}`, () => {
         await agendaJobModel.deleteOne({ "data.userId": userId })
     })
 
-    test(`that request passes when solo streak is patched with correct keys`, async () => {
-        expect.assertions(12)
-        const updatedName = 'Intermittent fasting'
-        const updatedDescription = 'Cannot eat till 1pm everyday'
+    test(`that solo streak can be deleted`, async () => {
+        expect.assertions(1)
         const response = await request(server)
-            .patch(`${soloStreakRoute}/${soloStreakId}`)
-            .send({
-                name: updatedName,
-                description: updatedDescription
-            })
+            .delete(`${soloStreakRoute}/${soloStreakId}`)
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
-        expect(response.status).toEqual(ResponseCodes.success)
-        expect(response.type).toEqual('application/json')
-        expect(response.body.data.name).toEqual(updatedName)
-        expect(response.body.data.description).toEqual(updatedDescription)
-        expect(response.body.data.userId).toEqual(userId)
-        expect(response.body.data).toHaveProperty('_id')
-        expect(response.body.data.currentStreak).toHaveProperty('startDate')
-        expect(response.body.data.currentStreak).toHaveProperty('numberOfDaysInARow')
-        expect(response.body.data.currentStreak).toHaveProperty('endDate')
-        expect(response.body.data).toHaveProperty('startDate')
-        expect(response.body.data).toHaveProperty('createdAt')
-        expect(response.body.data).toHaveProperty('updatedAt')
+        expect(response.status).toEqual(ResponseCodes.deleted)
     })
 
 })

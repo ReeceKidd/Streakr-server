@@ -1,4 +1,4 @@
-import { getSoloStreakMiddlewares, retreiveSoloStreakMiddleware, getRetreiveSoloStreakMiddleware, sendSoloStreakMiddleware, getSoloStreakParamsValidationMiddleware, getSendSoloStreakMiddleware } from "./getSoloStreakMiddlewares";
+import { getSoloStreakMiddlewares, retreiveSoloStreakMiddleware, getRetreiveSoloStreakMiddleware, sendSoloStreakMiddleware, getSoloStreakParamsValidationMiddleware, getSendSoloStreakMiddleware, getSendSoloStreakDoesNotExistErrorMessageMiddleware, sendSoloStreakDoesNotExistErrorMessageMiddleware } from "./getSoloStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 
 describe(`getSoloStreakParamsValidationMiddleware`, () => {
@@ -106,6 +106,51 @@ describe('retreiveSoloStreakMiddleware', () => {
     })
 })
 
+describe('sendSoloStreakDoesNotExistErrorResponse', () => {
+    test('that correct error response is sent whem soloStreak is not defined', () => {
+        expect.assertions(3)
+        const doesNotExistErrorResponseCode = 404
+        const localisedSoloStreakDoesNotExistMessage = 'Localised solo streak does not exist'
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const request: any = {}
+        const response: any = { locals: {}, status }
+        const next = jest.fn()
+        const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(doesNotExistErrorResponseCode, localisedSoloStreakDoesNotExistMessage)
+        middleware(request, response, next)
+        expect(status).toBeCalledWith(doesNotExistErrorResponseCode)
+        expect(send).toBeCalledWith({ message: localisedSoloStreakDoesNotExistMessage })
+        expect(next).not.toBeCalled()
+    })
+
+    test('that next is called when soloStreak is defined', () => {
+        expect.assertions(1)
+        const doesNotExistErrorResponseCode = 404
+        const localisedSoloStreakDoesNotExistMessage = 'Localised solo streak does not exist'
+        const send = jest.fn()
+        const status = jest.fn(() => ({ send }))
+        const request: any = {}
+        const soloStreak = true
+        const response: any = { locals: { soloStreak }, status }
+        const next = jest.fn()
+        const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(doesNotExistErrorResponseCode, localisedSoloStreakDoesNotExistMessage)
+        middleware(request, response, next)
+        expect(next).toBeCalledWith()
+    })
+
+    test('that on error next is called with error', () => {
+        expect.assertions(1)
+        const doesNotExistErrorResponseCode = 404
+        const localisedSoloStreakDoesNotExistMessage = 'Localised solo streak does not exist'
+        const request: any = {}
+        const response: any = {}
+        const next = jest.fn()
+        const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(doesNotExistErrorResponseCode, localisedSoloStreakDoesNotExistMessage)
+        middleware(request, response, next)
+        expect(next).toBeCalledWith(new TypeError("Cannot destructure property `soloStreak` of 'undefined' or 'null'."))
+    })
+})
+
 describe('sendSoloStreakMiddleware', () => {
     test('that soloStreak is sent correctly', () => {
         expect.assertions(3);
@@ -144,10 +189,11 @@ describe('sendSoloStreakMiddleware', () => {
 describe('getSoloStreakMiddlewares', () => {
 
     test('that getSoloStreakMiddlewares are defined in the correct order', () => {
-        expect(getSoloStreakMiddlewares).toEqual([
-            getSoloStreakParamsValidationMiddleware,
-            retreiveSoloStreakMiddleware,
-            sendSoloStreakMiddleware
-        ])
+        expect.assertions(5)
+        expect(getSoloStreakMiddlewares.length).toEqual(4)
+        expect(getSoloStreakMiddlewares[0]).toEqual(getSoloStreakParamsValidationMiddleware)
+        expect(getSoloStreakMiddlewares[1]).toEqual(retreiveSoloStreakMiddleware)
+        expect(getSoloStreakMiddlewares[2]).toEqual(sendSoloStreakDoesNotExistErrorMessageMiddleware)
+        expect(getSoloStreakMiddlewares[3]).toEqual(sendSoloStreakMiddleware)
     })
 })
