@@ -6,6 +6,7 @@ import { ApiVersions } from '../../../src/Server/versions'
 import { RouteCategories } from '../../../src/routeCategories'
 import { userModel } from '../../../src/Models/User';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
+import { agendaJobModel } from '../../../src/Models/AgendaJob';
 
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
@@ -26,6 +27,7 @@ describe(`PATCH ${soloStreakRoute}`, () => {
     let jsonWebToken: string
     let userId: string
     let soloStreakId: string
+    let updatedName: string
 
     const name = "Keto"
     const description = "I will follow the keto diet every day"
@@ -64,12 +66,13 @@ describe(`PATCH ${soloStreakRoute}`, () => {
 
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail })
-        await soloStreakModel.deleteOne({ name })
+        await soloStreakModel.deleteOne({ name: updatedName })
+        await agendaJobModel.deleteOne({ "data.userId": userId })
     })
 
     test(`that request passes when solo streak is patched with correct keys`, async () => {
         expect.assertions(12)
-        const updatedName = 'Intermittent fasting'
+        updatedName = 'Intermittent fasting'
         const updatedDescription = 'Cannot eat till 1pm everyday'
         const response = await request(server)
             .patch(`${soloStreakRoute}/${soloStreakId}`)
