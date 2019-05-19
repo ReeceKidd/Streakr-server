@@ -19,10 +19,8 @@ export const soloStreakParamsValidationMiddleware = (request: Request, response:
 export const getDeleteSoloStreakMiddleware = (soloStreakModel) => async (request: Request, response: Response, next: NextFunction) => {
     try {
         const { soloStreakId } = request.params
-        console.log(soloStreakId)
         const deletedSoloStreak = await soloStreakModel.findByIdAndDelete(soloStreakId)
         response.locals.deletedSoloStreak = deletedSoloStreak
-        console.log(deletedSoloStreak)
         next()
     } catch (err) {
         next(err)
