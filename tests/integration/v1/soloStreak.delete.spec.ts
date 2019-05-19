@@ -11,11 +11,10 @@ import { agendaJobModel } from '../../../src/Models/AgendaJob';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 import { SupportedRequestHeaders } from '../../../src/Server/headers';
-import { AgendaJobs } from '../../../config/Agenda';
 
-const registeredEmail = "create-solo-streak-user@gmail.com"
+const registeredEmail = "delete-solo-streak-user@gmail.com"
 const registeredPassword = "12345678"
-const registeredUserName = 'create-solo-streak-user'
+const registeredUserName = 'delete-solo-streak-user'
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
@@ -30,8 +29,8 @@ describe(`DELETE ${soloStreakRoute}`, () => {
     let userId: string
     let soloStreakId: string
 
-    const name = "Keto"
-    const description = "I will follow the keto diet every day"
+    const name = "Reading"
+    const description = "I will read 30 minutes every day"
 
     beforeAll(async () => {
         const registrationResponse = await request(server)
@@ -68,7 +67,6 @@ describe(`DELETE ${soloStreakRoute}`, () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail })
         await soloStreakModel.deleteOne({ name })
-        await agendaJobModel.deleteOne({ "data.userId": userId })
     })
 
     test(`that solo streak can be deleted`, async () => {

@@ -6,7 +6,6 @@ import { ApiVersions } from '../../../src/Server/versions'
 import { RouteCategories } from '../../../src/routeCategories'
 import { userModel } from '../../../src/Models/User';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
-import { agendaJobModel } from '../../../src/Models/AgendaJob';
 
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
@@ -66,7 +65,6 @@ describe(`PATCH ${soloStreakRoute}`, () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail })
         await soloStreakModel.deleteOne({ name })
-        await agendaJobModel.deleteOne({ "data.userId": userId })
     })
 
     test(`that request passes when solo streak is patched with correct keys`, async () => {
