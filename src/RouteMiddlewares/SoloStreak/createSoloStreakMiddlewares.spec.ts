@@ -22,10 +22,11 @@ import {
     getDefineStartDayMiddleware,
     getDefineEndOfDayMiddleware,
     doesTimezoneAlreadyExistMiddleware,
+    getDoesTimezoneAlreadyExistMiddleware,
 } from './createSoloStreakMiddlewares'
 import { ResponseCodes } from '../../Server/responseCodes';
 import { SupportedRequestHeaders } from '../../Server/headers';
-import { AgendaJobs, AgendaProcessTimes, AgendaTimeRanges } from '../../../config/Agenda';
+import { AgendaJobs, AgendaProcessTimes } from '../../../config/Agenda';
 import { SoloStreak } from 'Models/SoloStreak';
 
 describe(`soloStreakRegistrationValidationMiddlware`, () => {
@@ -650,10 +651,44 @@ describe(`saveSoloStreakToDatabaseMiddleware`, () => {
 
 describe('doesTimezoneAlreadyExistMiddleware', () => {
 
-    test('that response.locals.doesTimezoneAlreadyExists is defined when timezone exists', () => {
+    test('that response.locals.doesTimezoneAlreadyExists is defined when timezone exists', async () => {
+        expect.assertions(3)
+        const timezone = 'Europe/London'
+        const findOne = jest.fn(() => Promise.resolve(true));
+        const agendaJobModel = {
+            findOne
+        }
+        const request: any = {}
+        const response: any = { locals: { timezone } }
+        const next = jest.fn()
 
+        const middleware = getDoesTimezoneAlreadyExistMiddleware(agendaJobModel)
+        await middleware(request, response, next)
+
+        expect(findOne).toBeCalledWith({ "data.timezone": timezone })
+        expect(response.locals.doesTimezoneAlreadyExist).toBeDefined()
+        expect(next).toBeCalledWith()
     })
 
+    test('that on error next is called with error', async () => {
+        expect.assertions(3)
+        const timezone = 'Europe/London'
+        const errorMessage = 'error'
+        const findOne = jest.fn(() => Promise.reject(errorMessage));
+        const agendaJobModel = {
+            findOne
+        }
+        const request: any = {}
+        const response: any = { locals: { timezone } }
+        const next = jest.fn()
+
+        const middleware = getDoesTimezoneAlreadyExistMiddleware(agendaJobModel)
+        await middleware(request, response, next)
+
+        expect(findOne).toBeCalledWith({ "data.timezone": timezone })
+        expect(response.locals.doesTimezoneAlreadyExist).not.toBeDefined()
+        expect(next).toBeCalledWith(errorMessage)
+    })
 
 })
 
