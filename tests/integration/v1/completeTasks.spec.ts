@@ -61,7 +61,7 @@ describe(createSoloStreakRoute, () => {
                 description
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
+            .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
         soloStreakId = createSoloStreakResponse.body._id
     })
 
@@ -81,7 +81,7 @@ describe(createSoloStreakRoute, () => {
             const completeTaskResponse = await request(server)
                 .post(`/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}/${RouteCategories.completeTasks}`)
                 .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-                .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
+                .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
             expect(completeTaskResponse.status).toEqual(ResponseCodes.created)
             expect(completeTaskResponse.body.completeTask._id).toBeDefined()
             expect(completeTaskResponse.body.completeTask.taskCompleteTime).toBeDefined()
@@ -99,16 +99,16 @@ describe(createSoloStreakRoute, () => {
                     description
                 })
                 .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-                .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
+                .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
             secondSoloStreakId = secondaryCreateSoloStreakResponse.body._id
             await request(server)
                 .post(`/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}/${RouteCategories.completeTasks}`)
                 .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-                .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
+                .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
             const secondCompleteTaskResponse = await request(server)
                 .post(`/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}/${RouteCategories.completeTasks}`)
                 .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-                .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
+                .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
             expect(secondCompleteTaskResponse.status).toEqual(ResponseCodes.unprocessableEntity)
             expect(secondCompleteTaskResponse.body.message).toEqual('Task has already been completed today')
 

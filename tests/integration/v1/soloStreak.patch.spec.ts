@@ -60,7 +60,7 @@ describe(`PATCH ${soloStreakRoute}`, () => {
                 description
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
+            .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
         soloStreakId = createSoloStreakResponse.body._id
     })
 
@@ -81,7 +81,7 @@ describe(`PATCH ${soloStreakRoute}`, () => {
                 description: updatedDescription
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
+            .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
         expect(response.status).toEqual(ResponseCodes.success)
         expect(response.type).toEqual('application/json')
         expect(response.body.data.name).toEqual(updatedName)

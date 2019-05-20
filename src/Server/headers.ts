@@ -1,6 +1,6 @@
 export enum SupportedRequestHeaders {
     xAccessToken = 'x-access-token',
-    xTimeZone = 'x-time-zone'
+    xTimezone = 'x-time-zone'
 }
 
 export enum SupportedResponseHeaders {

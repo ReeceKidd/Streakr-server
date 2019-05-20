@@ -8,8 +8,8 @@ export enum FailureMessageKeys {
         soloStreakDoesNotExist = 'soloStreakDoesNotExist',
         invalidTokenMessage = 'invalidTokenMessage',
         missingJsonWebTokenMessage = 'missingJsonWebTokenMessage',
-        missingTimeZoneHeaderMessage = 'missingTimeZoneMessage',
-        invalidTimeZoneMessage = 'invalidTimeZoneMessage',
+        missingTimezoneHeaderMessage = 'missingTimezoneMessage',
+        invalidTimezoneMessage = 'invalidTimezoneMessage',
         unauthorisedMessage = 'Unauthorized',
         friendAlreadyExists = 'friendAlreadyExists'
 }
@@ -21,8 +21,8 @@ export const failureMessages = {
                 [FailureMessageKeys.loginUnsuccessfulMessage]: 'Login unsuccessful',
                 [FailureMessageKeys.userDoesNotExistMessage]: 'User does not exist',
                 [FailureMessageKeys.soloStreakDoesNotExist]: 'Solo streak does not exsit',
-                [FailureMessageKeys.missingTimeZoneHeaderMessage]: `Missing ${SupportedRequestHeaders.xTimeZone} header in request`,
-                [FailureMessageKeys.invalidTimeZoneMessage]: `Timezone is invalid`,
+                [FailureMessageKeys.missingTimezoneHeaderMessage]: `Missing ${SupportedRequestHeaders.xTimezone} header in request`,
+                [FailureMessageKeys.invalidTimezoneMessage]: `Timezone is invalid`,
                 [FailureMessageKeys.invalidTokenMessage]: 'Invalid token',
                 [FailureMessageKeys.missingJsonWebTokenMessage]: 'JSON web token is missing from header',
                 [FailureMessageKeys.friendAlreadyExists]: 'Friend already exists'

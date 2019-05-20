@@ -60,7 +60,7 @@ describe(`DELETE ${soloStreakRoute}`, () => {
                 description
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
+            .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
         soloStreakId = createSoloStreakResponse.body._id
     })
 

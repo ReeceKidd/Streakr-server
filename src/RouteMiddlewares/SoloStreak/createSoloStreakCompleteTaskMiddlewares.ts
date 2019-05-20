@@ -50,21 +50,21 @@ const localisedSoloStreakDoesNotExistMessage = getLocalisedString(MessageCategor
 
 export const sendSoloStreakDoesNotExistErrorMessageMiddleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(ResponseCodes.unprocessableEntity, localisedSoloStreakDoesNotExistMessage)
 
-export const getRetreiveTimeZoneHeaderMiddleware = timeZoneHeader => (request: Request, response: Response, next: NextFunction) => {
+export const getRetreiveTimezoneHeaderMiddleware = timezoneHeader => (request: Request, response: Response, next: NextFunction) => {
     try {
-        response.locals.timeZone = request.header(timeZoneHeader)
+        response.locals.timezone = request.header(timezoneHeader)
         next()
     } catch (err) {
         next(err)
     }
 }
 
-export const retreiveTimeZoneHeaderMiddleware = getRetreiveTimeZoneHeaderMiddleware(SupportedRequestHeaders.xTimeZone)
+export const retreiveTimezoneHeaderMiddleware = getRetreiveTimezoneHeaderMiddleware(SupportedRequestHeaders.xTimezone)
 
-export const getSendMissingTimeZoneErrorResponseMiddleware = (unprocessableEntityCode, localisedErrorMessage) => (request: Request, response: Response, next: NextFunction) => {
+export const getSendMissingTimezoneErrorResponseMiddleware = (unprocessableEntityCode, localisedErrorMessage) => (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { timeZone } = response.locals
-        if (!timeZone) {
+        const { timezone } = response.locals
+        if (!timezone) {
             return response.status(unprocessableEntityCode).send({ message: localisedErrorMessage })
         }
         next()
@@ -73,26 +73,26 @@ export const getSendMissingTimeZoneErrorResponseMiddleware = (unprocessableEntit
     }
 }
 
-const localisedMissingTimeZoneHeaderMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.missingTimeZoneHeaderMessage)
+const localisedMissingTimezoneHeaderMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.missingTimezoneHeaderMessage)
 
-export const sendMissingTimeZoneErrorResponseMiddleware = getSendMissingTimeZoneErrorResponseMiddleware(ResponseCodes.unprocessableEntity, localisedMissingTimeZoneHeaderMessage)
+export const sendMissingTimezoneErrorResponseMiddleware = getSendMissingTimezoneErrorResponseMiddleware(ResponseCodes.unprocessableEntity, localisedMissingTimezoneHeaderMessage)
 
-export const getValidateTimeZoneMiddleware = isValidTimeZone => (request: Request, response: Response, next: NextFunction) => {
+export const getValidateTimezoneMiddleware = isValidTimezone => (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { timeZone } = response.locals
-        response.locals.validTimeZone = isValidTimeZone(timeZone)
+        const { timezone } = response.locals
+        response.locals.validTimezone = isValidTimezone(timezone)
         next()
     } catch (err) {
         next(err)
     }
 }
 
-export const validateTimeZoneMiddleware = getValidateTimeZoneMiddleware(moment.tz.zone)
+export const validateTimezoneMiddleware = getValidateTimezoneMiddleware(moment.tz.zone)
 
-export const getSendInvalidTimeZoneErrorResponseMiddleware = (unprocessableEntityCode: number, localisedErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
+export const getSendInvalidTimezoneErrorResponseMiddleware = (unprocessableEntityCode: number, localisedErrorMessage: string) => (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { validTimeZone } = response.locals
-        if (!validTimeZone) {
+        const { validTimezone } = response.locals
+        if (!validTimezone) {
             return response.status(unprocessableEntityCode).send({ message: localisedErrorMessage })
         }
         next()
@@ -101,9 +101,9 @@ export const getSendInvalidTimeZoneErrorResponseMiddleware = (unprocessableEntit
     }
 }
 
-const localisedInvalidTimeZoneMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.invalidTimeZoneMessage)
+const localisedInvalidTimezoneMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.invalidTimezoneMessage)
 
-export const sendInvalidTimeZoneErrorResponseMiddleware = getSendInvalidTimeZoneErrorResponseMiddleware(ResponseCodes.unprocessableEntity, localisedInvalidTimeZoneMessage)
+export const sendInvalidTimezoneErrorResponseMiddleware = getSendInvalidTimezoneErrorResponseMiddleware(ResponseCodes.unprocessableEntity, localisedInvalidTimezoneMessage)
 
 export const getRetreiveUserMiddleware = userModel => async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -136,8 +136,8 @@ export const sendUserDoesNotExistErrorMiddleware = getSendUserDoesNotExistErrorM
 
 export const getSetTaskCompleteTimeMiddleware = moment => (request: Request, response: Response, next: NextFunction) => {
     try {
-        const { timeZone } = response.locals
-        const taskCompleteTime = moment().tz(timeZone)
+        const { timezone } = response.locals
+        const taskCompleteTime = moment().tz(timezone)
         response.locals.taskCompleteTime = taskCompleteTime
         next()
     } catch (err) {
@@ -252,10 +252,10 @@ export const createSoloStreakCompleteTaskMiddlewares = [
     soloStreakTaskCompleteParamsValidationMiddleware,
     soloStreakExistsMiddleware,
     sendSoloStreakDoesNotExistErrorMessageMiddleware,
-    retreiveTimeZoneHeaderMiddleware,
-    sendMissingTimeZoneErrorResponseMiddleware,
-    validateTimeZoneMiddleware,
-    sendInvalidTimeZoneErrorResponseMiddleware,
+    retreiveTimezoneHeaderMiddleware,
+    sendMissingTimezoneErrorResponseMiddleware,
+    validateTimezoneMiddleware,
+    sendInvalidTimezoneErrorResponseMiddleware,
     retreiveUserMiddleware,
     sendUserDoesNotExistErrorMiddleware,
     setTaskCompleteTimeMiddleware,

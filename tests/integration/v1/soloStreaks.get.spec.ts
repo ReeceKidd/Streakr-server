@@ -58,7 +58,7 @@ describe(getSoloStreaksRoute, () => {
                 description: soloStreakDescription,
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimeZone]: londonTimezone })
+            .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
     })
 
     afterAll(async () => {
