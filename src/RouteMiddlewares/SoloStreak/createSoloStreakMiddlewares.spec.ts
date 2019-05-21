@@ -558,20 +558,23 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
         const userId = 'abcdefg';
         const name = 'streak name'
         const description = 'mock streak description'
+        const timezone = 'Europe/London'
 
         class SoloStreak {
             userId: string;
             name: string;
             description: string;
+            timezone: string
 
-            constructor({ userId, name, description }) {
+            constructor({ userId, name, description, timezone }) {
                 this.userId = userId;
                 this.name = name;
-                this.description = description
+                this.description = description;
+                this.timezone = timezone
             }
         }
 
-        const response: any = { locals: {} };
+        const response: any = { locals: { timezone } };
         const request: any = { body: { userId, name, description } };
         const next = jest.fn();
 
@@ -580,18 +583,19 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
         middleware(request, response, next);
 
         expect.assertions(2);
-        const newSoloStreak = new SoloStreak({ userId, name, description })
+        const newSoloStreak = new SoloStreak({ userId, name, description, timezone })
         expect(response.locals.newSoloStreak).toEqual(newSoloStreak)
         expect(next).toBeCalledWith()
     });
 
     test('should call next with error message on error', () => {
 
+        const timezone = 'Europe/London'
         const userId = 'abcdefg';
         const name = 'streak name'
         const description = 'mock streak description'
 
-        const response: any = { locals: {} };
+        const response: any = { locals: { timezone } };
         const request: any = { body: { userId, name, description } };
         const next = jest.fn();
 

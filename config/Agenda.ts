@@ -27,8 +27,9 @@ export enum AgendaTimeRanges {
 }
 
 agenda.define(AgendaJobs.soloStreakCompleteTrackerForTimezone, async (job, done) => {
-    const { userId } = job.attrs.data
-    const soloStreak = await soloStreakModel.findOne({ userId })
+    const { timeZone } = job.attrs.data
+    const soloStreaksForTimezone = await soloStreakModel.find({ timeZone })
+
     // I need to check if the calendar has been maintained for that day. 
     // This means I need a new Rest resource to say that a user has completed
     // their task for the day. Maybe task will be the name of the resource. 

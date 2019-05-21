@@ -134,8 +134,9 @@ export const defineEndOfDayMiddleware = getDefineEndOfDayMiddleware(AgendaTimeRa
 
 export const getCreateSoloStreakFromRequestMiddleware = soloStreak => (request: Request, response: Response, next: NextFunction) => {
     try {
+        const { timezone } = response.locals
         const { name, description, userId } = request.body
-        response.locals.newSoloStreak = new soloStreak({ name, description, userId });
+        response.locals.newSoloStreak = new soloStreak({ name, description, userId, timezone });
         next();
     } catch (err) {
         next(err)
