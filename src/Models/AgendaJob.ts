@@ -41,4 +41,7 @@ export const agendaJobSchema = new mongoose.Schema(
         collection: Collections.AgendaJobs
     });
 
+mongoose.set('useCreateIndex', true);
+agendaJobSchema.index({ 'data.timezone': 'text' });
+
 export const agendaJobModel: mongoose.Model<AgendaJob> = mongoose.model<AgendaJob>(Models.AgendaJob, agendaJobSchema);
