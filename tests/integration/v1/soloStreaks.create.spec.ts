@@ -84,7 +84,7 @@ describe(createSoloStreakRoute, () => {
         expect(response.body).toHaveProperty('createdAt')
         expect(response.body).toHaveProperty('updatedAt')
         const endOfDay = moment().tz(londonTimezone).endOf('day').toDate()
-        const agendaJob = await agendaJobModel.findOne({ name: AgendaJobs.soloStreakCompleteTrackerForTimezone })
+        const agendaJob = await agendaJobModel.findOne({ "data.timezone": londonTimezone })
         expect(agendaJob.nextRunAt).toEqual(endOfDay)
     })
 
