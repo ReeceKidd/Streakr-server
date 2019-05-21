@@ -20,7 +20,7 @@ const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
 const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
 
-const londonTimezone = "Europe/London"
+const budapestTimezone = "Europe/Budapest"
 
 
 describe(`DELETE ${soloStreakRoute}`, () => {
@@ -60,14 +60,14 @@ describe(`DELETE ${soloStreakRoute}`, () => {
                 description
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
+            .set({ [SupportedRequestHeaders.xTimezone]: budapestTimezone })
         soloStreakId = createSoloStreakResponse.body._id
     })
 
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail })
         await soloStreakModel.deleteOne({ name })
-        await agendaJobModel.deleteOne({ "data.userId": userId })
+        await agendaJobModel.deleteOne({ "data.timezone": userId })
     })
 
     test(`that solo streak can be deleted`, async () => {

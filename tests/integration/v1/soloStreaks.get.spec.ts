@@ -23,7 +23,7 @@ const getSoloStreaksRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
 const soloStreakName = "Daily Spanish"
 const soloStreakDescription = "Each day I must do the insame amount 50xp of Duolingo"
 
-const londonTimezone = "Europe/London"
+const parisTimezone = "Europe/Paris"
 
 describe(getSoloStreaksRoute, () => {
 
@@ -50,7 +50,7 @@ describe(getSoloStreaksRoute, () => {
                 }
             )
         jsonWebToken = loginResponse.body.jsonWebToken
-        const createSoloStreak = await request(server)
+        await request(server)
             .post(createSoloStreakRoute)
             .send({
                 userId,
@@ -58,13 +58,13 @@ describe(getSoloStreaksRoute, () => {
                 description: soloStreakDescription,
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
+            .set({ [SupportedRequestHeaders.xTimezone]: parisTimezone })
     })
 
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail });
         await soloStreakModel.deleteOne({ name: soloStreakName });
-        await agendaJobModel.deleteOne({ "data.userId": userId })
+        await agendaJobModel.deleteOne({ "data.timezone": parisTimezone })
     })
 
     test(`that solo streaks can be retreived for user`, async () => {

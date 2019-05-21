@@ -20,7 +20,8 @@ const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
 const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
 
-const londonTimezone = "Europe/London"
+const romeTimezone = "Europe/Rome"
+const berlinTimeZone = 'Europe/Berlin'
 
 describe(`PATCH ${soloStreakRoute}`, () => {
 
@@ -60,14 +61,15 @@ describe(`PATCH ${soloStreakRoute}`, () => {
                 description
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
+            .set({ [SupportedRequestHeaders.xTimezone]: romeTimezone })
         soloStreakId = createSoloStreakResponse.body._id
     })
 
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail })
         await soloStreakModel.deleteOne({ name: updatedName })
-        await agendaJobModel.deleteOne({ "data.userId": userId })
+        await agendaJobModel.deleteOne({ "data.timezone": romeTimezone })
+        await agendaJobModel.deleteOne({ "data.timezone": berlinTimeZone })
     })
 
     test(`that request passes when solo streak is patched with correct keys`, async () => {
@@ -81,7 +83,7 @@ describe(`PATCH ${soloStreakRoute}`, () => {
                 description: updatedDescription
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone })
+            .set({ [SupportedRequestHeaders.xTimezone]: berlinTimeZone })
         expect(response.status).toEqual(ResponseCodes.success)
         expect(response.type).toEqual('application/json')
         expect(response.body.data.name).toEqual(updatedName)
