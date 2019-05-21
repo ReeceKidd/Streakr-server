@@ -15,7 +15,7 @@ const agenda = new Agenda({
 })
 
 export enum AgendaJobs {
-    soloStreakCompleteTracker = 'soloStreakCompleteTracker'
+    soloStreakCompleteTrackerForTimezone = 'soloStreakCompleteTrackerForTimezone'
 }
 
 export enum AgendaProcessTimes {
@@ -26,7 +26,7 @@ export enum AgendaTimeRanges {
     day = 'day'
 }
 
-agenda.define(AgendaJobs.soloStreakCompleteTracker, async (job, done) => {
+agenda.define(AgendaJobs.soloStreakCompleteTrackerForTimezone, async (job, done) => {
     const { userId } = job.attrs.data
     const soloStreak = await soloStreakModel.findOne({ userId })
     // I need to check if the calendar has been maintained for that day. 

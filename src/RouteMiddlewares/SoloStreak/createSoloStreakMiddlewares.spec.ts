@@ -6,7 +6,7 @@ import {
     saveSoloStreakToDatabaseMiddleware,
     sendFormattedSoloStreakMiddleware,
     SoloStreakResponseLocals,
-    createDailySoloStreakCompleteChecker,
+    createDailySoloStreakCompleteCheckerForTimezoneMiddleware,
     retreiveTimezoneHeaderMiddleware,
     validateTimezoneMiddleware,
     sendMissingTimezoneErrorResponseMiddleware,
@@ -14,7 +14,7 @@ import {
     getSendMissingTimezoneErrorResponseMiddleware,
     getValidateTimezoneMiddleware,
     getSendInvalidTimezoneErrorResponseMiddleware,
-    getCreateDailySoloStreakCompleteChecker,
+    getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware,
     defineEndOfDayMiddleware,
     defineCurrentTimeMiddleware,
     defineStartDayMiddleware,
@@ -27,7 +27,10 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { SupportedRequestHeaders } from '../../Server/headers';
 import { AgendaJobs, AgendaProcessTimes } from '../../../config/Agenda';
-import { SoloStreak } from 'Models/SoloStreak';
+import { SoloStreak, soloStreakSchema } from 'Models/SoloStreak';
+import { updateLocale } from 'moment';
+import soloStreaksRouter from 'Routers/soloStreaksRouter';
+import { soloStreakNotFoundMiddleware } from './deleteSoloStreakMiddlewares';
 
 describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
@@ -692,57 +695,59 @@ describe('doesTimezoneAlreadyExistMiddleware', () => {
 
 })
 
-describe('createDailySoloStreakCompleteChecker', () => {
+describe('createDailySoloStreakCompleteCheckerForTimezoneMiddleware', () => {
 
     test('that agenda job is created successfully when timezone does not already exist', async () => {
         expect.assertions(4)
-        const userId = 'abc'
-        const request: any = { body: { userId } }
+        const timezone = 'Europe/London'
+        const request: any = {}
         const endOfDay = new Date()
         const doesTimezoneAlreadyExist = null
-        const response: any = { locals: { endOfDay, doesTimezoneAlreadyExist } }
+        const response: any = { locals: { endOfDay, doesTimezoneAlreadyExist, timezone } }
         const next = jest.fn()
         const start = jest.fn(() => Promise.resolve(true))
         const schedule = jest.fn(() => Promise.resolve(true))
         const processEvery = jest.fn(() => Promise.resolve(true))
         const agenda = { start, schedule, processEvery }
+        const soloStreakCompleteTrackerForTimezoneJobName = 'soloStreakComplete'
 
-        const middleware = getCreateDailySoloStreakCompleteChecker(agenda)
+        const middleware = getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware(agenda, soloStreakCompleteTrackerForTimezoneJobName)
         await middleware(request, response, next)
 
+        expect(schedule).toBeCalledWith(endOfDay, soloStreakCompleteTrackerForTimezoneJobName, { timezone })
         expect(start).toBeCalledWith()
-        expect(schedule).toBeCalledWith(endOfDay, AgendaJobs.soloStreakCompleteTracker, { userId })
         expect(processEvery).toBeCalledWith(AgendaProcessTimes.oneDays)
         expect(next).toBeCalledWith()
     })
 
     test('that agenda job is not created when timezone already exists', async () => {
         expect.assertions(1)
-        const userId = 'abc'
-        const request: any = { body: { userId } }
+        const timezone = 'Europe/London'
         const endOfDay = new Date()
         const doesTimezoneAlreadyExist = true
-        const response: any = { locals: { endOfDay, doesTimezoneAlreadyExist } }
+        const request: any = {}
+        const response: any = { locals: { endOfDay, doesTimezoneAlreadyExist, timezone } }
         const next = jest.fn()
         const agenda = {}
+        const soloStreakCompleteTrackerForTimezoneJobName = 'soloStreakComplete'
 
-        const middleware = getCreateDailySoloStreakCompleteChecker(agenda)
+        const middleware = getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware(agenda, soloStreakCompleteTrackerForTimezoneJobName)
         await middleware(request, response, next)
+
         expect(next).toBeCalledWith()
     })
 
     test('that next is called with error message on failure', async () => {
         expect.assertions(1)
-        const userId = 'abc'
-        const request: any = { body: { userId } }
+        const request: any = {}
         const endOfDay = new Date()
         const response: any = { locals: { endOfDay } }
         const next = jest.fn()
         const agenda = {}
+        const soloStreakCompleteTrackerForTimezoneJobName = 'soloStreakComplete'
 
-        const middleware = getCreateDailySoloStreakCompleteChecker(agenda)
+        const middleware = getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware(agenda, soloStreakCompleteTrackerForTimezoneJobName)
         await middleware(request, response, next)
-
         expect(next).toBeCalledWith(new TypeError("agenda.start is not a function"))
     })
 })
@@ -803,7 +808,7 @@ describe(`createSoloStreakMiddlewares`, () => {
         expect(createSoloStreakMiddlewares[8]).toBe(createSoloStreakFromRequestMiddleware)
         expect(createSoloStreakMiddlewares[9]).toBe(saveSoloStreakToDatabaseMiddleware)
         expect(createSoloStreakMiddlewares[10]).toBe(doesTimezoneAlreadyExistMiddleware)
-        expect(createSoloStreakMiddlewares[11]).toBe(createDailySoloStreakCompleteChecker)
+        expect(createSoloStreakMiddlewares[11]).toBe(createDailySoloStreakCompleteCheckerForTimezoneMiddleware)
         expect(createSoloStreakMiddlewares[12]).toBe(sendFormattedSoloStreakMiddleware)
     });
 });
