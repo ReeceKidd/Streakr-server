@@ -67,7 +67,7 @@ describe(`DELETE ${soloStreakRoute}`, () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail })
         await soloStreakModel.deleteOne({ name })
-        await agendaJobModel.deleteOne({ "data.timezone": userId })
+        await agendaJobModel.deleteOne({ "data.timezone": budapestTimezone })
     })
 
     test(`that solo streak can be deleted`, async () => {
