@@ -720,7 +720,7 @@ describe('createDailySoloStreakCompleteCheckerForTimezoneMiddleware', () => {
 
         expect(schedule).toBeCalledWith(endOfDay, soloStreakCompleteTrackerForTimezoneJobName, { timezone })
         expect(start).toBeCalledWith()
-        expect(processEvery).toBeCalledWith(AgendaProcessTimes.oneDays)
+        expect(processEvery).toBeCalledWith(AgendaProcessTimes.day)
         expect(next).toBeCalledWith()
     })
 

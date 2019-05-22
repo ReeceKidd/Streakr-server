@@ -179,7 +179,7 @@ export const getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware = (age
         if (!doesTimezoneAlreadyExist) {
             await agenda.start()
             await agenda.schedule(endOfDay, soloStreakCompleteTrackerForTimezoneJobName, { timezone })
-            await agenda.processEvery(AgendaProcessTimes.oneDays)
+            await agenda.every(AgendaProcessTimes.day)
         }
         next()
     } catch (err) {

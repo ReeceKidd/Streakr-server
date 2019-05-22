@@ -11,7 +11,8 @@ const agenda = new Agenda({
         options: {
             useNewUrlParser: true
         }
-    }
+    },
+    processEvery: '30 seconds'
 })
 
 export enum AgendaJobs {
@@ -19,7 +20,7 @@ export enum AgendaJobs {
 }
 
 export enum AgendaProcessTimes {
-    oneDays = '1 days'
+    day = '24 hours'
 }
 
 export enum AgendaTimeRanges {
@@ -27,18 +28,23 @@ export enum AgendaTimeRanges {
 }
 
 agenda.define(AgendaJobs.soloStreakCompleteTrackerForTimezone, async (job, done) => {
+    console.log('ENTERED')
     const { timeZone } = job.attrs.data
-    const soloStreaksForTimezone = await soloStreakModel.find({ timeZone })
-
-    // I need to check if the calendar has been maintained for that day. 
-    // This means I need a new Rest resource to say that a user has completed
-    // their task for the day. Maybe task will be the name of the resource. 
-    // and it will take the name of the streak. Or is it simply that the user
-    // has to update the soloStreakActivity? Might need to ask Bruno. 
-
-    // If the user has not updated their streak that day it should be moved into 
-    // their past streaks on the UserModel. Don't delete the streak but do delete the 
-    // agenda job that checks it each day. 
+    const defaultCurrentStreak = {
+        startDate: null,
+        numberOfDaysInARow: 0,
+        endDate: null
+    }
+    const soloStreaksToBeUpdated = await soloStreakModel.find({ timeZone, completedToday: false })
+    soloStreaksToBeUpdated.forEach(async soloStreak => {
+        await soloStreakModel.findOneAndUpdate({ _id: soloStreak._id },
+            {
+                currentStreak: defaultCurrentStreak,
+                $push: { pastStreaks: soloStreak.currentStreak }
+            })
+    })
+    console.log('SUCCESS')
+    // NEED TO FIND A WAY TO MAKE SURE AGENDA RUNS AT THE SAME TIME EVERY DAY
     done()
 })
 
