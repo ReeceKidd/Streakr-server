@@ -751,7 +751,7 @@ describe('createDailySoloStreakCompleteCheckerForTimezoneMiddleware', () => {
 
         const middleware = getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware(agenda, soloStreakCompleteTrackerForTimezoneJobName)
         await middleware(request, response, next)
-        expect(next).toBeCalledWith(new TypeError("agenda.schedule is not a function"))
+        expect(next).toBeCalledWith(new TypeError("agenda.start is not a function"))
     })
 })
 
