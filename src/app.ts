@@ -24,7 +24,7 @@ const databseURL = DATABASE_CONFIG[process.env.NODE_ENV]
 mongoose
   .connect(
     databseURL,
-    { useNewUrlParser: true }
+    { useNewUrlParser: true, useFindAndModify: false }
   )
   .catch(err => console.log(err.message));
 
