@@ -79,3 +79,5 @@ describe(`DELETE ${soloStreakRoute}`, () => {
     })
 
 })
+
+jest.setTimeout(30000)

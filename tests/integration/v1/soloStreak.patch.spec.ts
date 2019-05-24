@@ -99,3 +99,5 @@ describe(`PATCH ${soloStreakRoute}`, () => {
     })
 
 })
+
+jest.setTimeout(30000)

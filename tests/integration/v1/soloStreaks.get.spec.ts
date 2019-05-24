@@ -86,3 +86,5 @@ describe(getSoloStreaksRoute, () => {
     })
 
 })
+
+jest.setTimeout(30000)
