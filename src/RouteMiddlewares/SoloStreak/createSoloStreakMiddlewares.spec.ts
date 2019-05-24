@@ -26,7 +26,7 @@ import {
 } from './createSoloStreakMiddlewares'
 import { ResponseCodes } from '../../Server/responseCodes';
 import { SupportedRequestHeaders } from '../../Server/headers';
-import { AgendaProcessTimes } from '../../../config/Agenda';
+import { AgendaProcessTimes } from 'Agenda/agenda';
 import { SoloStreak } from 'Models/SoloStreak';
 
 describe(`soloStreakRegistrationValidationMiddlware`, () => {

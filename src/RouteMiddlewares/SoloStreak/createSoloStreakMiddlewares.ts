@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 import * as moment from 'moment-timezone'
 
-import agenda, { AgendaJobs, AgendaProcessTimes, AgendaTimeRanges } from '../../../config/Agenda'
+import agenda, { AgendaJobs, AgendaProcessTimes, AgendaTimeRanges } from '../../Agenda/agenda'
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
@@ -188,7 +188,7 @@ export const getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware = (age
     }
 }
 
-export const createDailySoloStreakCompleteCheckerForTimezoneMiddleware = getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware(agenda, AgendaJobs.soloStreakCompleteTrackerForTimezone)
+export const createDailySoloStreakCompleteCheckerForTimezoneMiddleware = getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware(agenda, AgendaJobs.soloStreakCompleteForTimezoneTracker)
 
 export const sendFormattedSoloStreakMiddleware = (
     request: Request,
