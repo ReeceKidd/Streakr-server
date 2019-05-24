@@ -11,7 +11,6 @@ import { agendaJobModel } from '../../../src/Models/AgendaJob';
 import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 import { SupportedRequestHeaders } from '../../../src/Server/headers';
-import { AgendaJobs } from '../../../config/Agenda';
 
 const registeredEmail = "create-solo-streak-user@gmail.com"
 const registeredPassword = "12345678"

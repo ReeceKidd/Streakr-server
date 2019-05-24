@@ -12,9 +12,9 @@ import { AuthPaths } from '../../../src/Routers/authRouter';
 import { ResponseCodes } from '../../../src/Server/responseCodes';
 import { SupportedRequestHeaders } from '../../../src/Server/headers';
 
-const registeredEmail = "create-solo-streak-user@gmail.com"
+const registeredEmail = "patch-solo-streak-user@gmail.com"
 const registeredPassword = "12345678"
-const registeredUserName = 'create-solo-streak-user'
+const registeredUserName = 'patch-solo-streak-user'
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
