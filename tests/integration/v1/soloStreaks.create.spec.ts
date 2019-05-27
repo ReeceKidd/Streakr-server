@@ -78,7 +78,6 @@ describe(createSoloStreakRoute, () => {
         expect(response.body).toHaveProperty('_id')
         expect(response.body.currentStreak).toHaveProperty('startDate')
         expect(response.body.currentStreak).toHaveProperty('numberOfDaysInARow')
-        expect(response.body.currentStreak).toHaveProperty('endDate')
         expect(response.body).toHaveProperty('startDate')
         expect(response.body).toHaveProperty('createdAt')
         expect(response.body).toHaveProperty('updatedAt')

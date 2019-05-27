@@ -92,7 +92,6 @@ describe(`PATCH ${soloStreakRoute}`, () => {
         expect(response.body.data).toHaveProperty('_id')
         expect(response.body.data.currentStreak).toHaveProperty('startDate')
         expect(response.body.data.currentStreak).toHaveProperty('numberOfDaysInARow')
-        expect(response.body.data.currentStreak).toHaveProperty('endDate')
         expect(response.body.data).toHaveProperty('startDate')
         expect(response.body.data).toHaveProperty('createdAt')
         expect(response.body.data).toHaveProperty('updatedAt')
