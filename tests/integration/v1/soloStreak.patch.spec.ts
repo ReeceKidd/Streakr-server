@@ -73,7 +73,7 @@ describe(`PATCH ${soloStreakRoute}`, () => {
     })
 
     test(`that request passes when solo streak is patched with correct keys`, async () => {
-        expect.assertions(12)
+        expect.assertions(11)
         updatedName = 'Intermittent fasting'
         const updatedDescription = 'Cannot eat till 1pm everyday'
         const response = await request(server)

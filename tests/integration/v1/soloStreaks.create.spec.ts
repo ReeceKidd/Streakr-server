@@ -60,7 +60,7 @@ describe(createSoloStreakRoute, () => {
     })
 
     test(`that request passes when correct solo streak information is passed`, async () => {
-        expect.assertions(13)
+        expect.assertions(12)
         const response = await request(server)
             .post(createSoloStreakRoute)
             .send({
