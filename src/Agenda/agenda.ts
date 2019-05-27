@@ -32,8 +32,7 @@ agenda.define(AgendaJobs.soloStreakCompleteForTimezoneTracker, async (job, done)
     const { timeZone } = job.attrs.data
     const defaultCurrentStreak = {
         startDate: null,
-        numberOfDaysInARow: 0,
-        endDate: null
+        numberOfDaysInARow: 0
     }
     await manageSoloStreaksForTimezone(timeZone, soloStreakModel, defaultCurrentStreak, new Date())
     done()

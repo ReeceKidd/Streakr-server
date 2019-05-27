@@ -4,8 +4,7 @@ describe('manageSoloStreaksForTimezone', () => {
 
     const defaultCurrentStreak = {
         startDate: null,
-        numberOfDaysInARow: 0,
-        endDate: null
+        numberOfDaysInARow: 0
     }
     const endDate = new Date()
 

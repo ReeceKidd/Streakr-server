@@ -1,6 +1,6 @@
-export const manageSoloStreaksForTimezone = async (timezone: string, soloStreakModel, defaultCurrentStreak, endDate: Date) => {
+export const manageSoloStreaksForTimezone = async (timezone: string, soloStreakModel, defaultCurrentStreak: { startDate: Date, numberOfDaysInARow: number }, endDate: Date) => {
     const soloStreaksToBeUpdated = await soloStreakModel.find({ timezone, completedToday: false }).lean()
-    await Promise.all(soloStreaksToBeUpdated.map(soloStreak => {
+    return Promise.all(soloStreaksToBeUpdated.map(soloStreak => {
         const endedStreak = {
             ...soloStreak.currentStreak,
             endDate
