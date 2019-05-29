@@ -4,6 +4,7 @@ import * as mongoose from "mongoose";
 import * as morgan from "morgan";
 import * as passport from 'passport';
 
+
 import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
 import { Environments } from '../config/ENVIRONMENT_CONFIG'
 import { ApiVersions } from './Server/versions'
@@ -13,9 +14,15 @@ const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }));
 
+
+app.get(`/health`, (request, response, next) => {
+  return response.status(200).send({ message: 'success' })
+})
+
 if (process.env.NODE_ENV !== Environments.TEST) {
   app.use(morgan('common'))
 }
+
 
 app.use(passport.initialize())
 app.use(passport.session())
