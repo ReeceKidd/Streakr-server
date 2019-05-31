@@ -95,3 +95,5 @@ describe('/users', () => {
     })
 
 })
+
+jest.setTimeout(30000)
