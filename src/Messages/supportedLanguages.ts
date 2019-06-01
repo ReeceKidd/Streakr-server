@@ -1,9 +1,9 @@
 
 export enum SupportedLanguages {
-    EN = 'english'
+    EN = "english"
 }
 
 export const supportedLanguages = {
     EN: SupportedLanguages.EN
-}
+};
 

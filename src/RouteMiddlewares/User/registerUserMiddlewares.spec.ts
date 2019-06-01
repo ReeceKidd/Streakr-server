@@ -18,7 +18,7 @@ import {
     saveUserToDatabaseMiddleware,
     sendFormattedUserMiddleware,
     setUserNameToLowercaseMiddleware
-} from './registerUserMiddlewares'
+} from "./registerUserMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 
 
@@ -206,7 +206,7 @@ describe(`doesUserEmailExistMiddleware`, () => {
         const findOne = jest.fn(() => Promise.resolve(true));
         const UserModel = {
             findOne
-        }
+        };
         const request: any = { body: { email: mockEmail } };
         const response: any = { locals: {} };
         const next = jest.fn();
@@ -225,7 +225,7 @@ describe(`doesUserEmailExistMiddleware`, () => {
         const findOne = jest.fn(() => Promise.resolve(false));
         const UserModel = {
             findOne
-        }
+        };
         const request: any = { body: { email: mockEmail } };
         const response: any = { locals: {} };
         const next = jest.fn();
@@ -244,7 +244,7 @@ describe(`doesUserEmailExistMiddleware`, () => {
         const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
         const UserModel = {
             findOne
-        }
+        };
         const request: any = { body: { email: mockEmail } };
         const response: any = { locals: {} };
         const next = jest.fn();
@@ -263,8 +263,8 @@ describe(`doesUserEmailExistMiddleware`, () => {
 describe(`emailExistsValidationMiddleware `, () => {
 
     const mockEmail = "test@gmail.com";
-    const emailKey = 'email'
-    const subject = 'subject'
+    const emailKey = "email";
+    const subject = "subject";
     test("check that error response is returned correctly when email already exists", async () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -314,8 +314,8 @@ describe(`emailExistsValidationMiddleware `, () => {
     });
 
     test("check that when error is thrown next is called with err", () => {
-        const errorMessage = 'error'
-        const send = jest.fn(() => { throw new Error(errorMessage) });
+        const errorMessage = "error";
+        const send = jest.fn(() => { throw new Error(errorMessage); });
         const status = jest.fn(() => ({ send }));
         const generateAlreadyExistsMessage = jest.fn();
 
@@ -337,33 +337,33 @@ describe(`emailExistsValidationMiddleware `, () => {
     });
 });
 
-describe('setUserNameToLowercaseMiddleware', () => {
+describe("setUserNameToLowercaseMiddleware", () => {
     const mockUsername = "Testname";
     const mockLowerCaseUsername = "testname";
 
     test("it should set userName to lowercase version of itself", () => {
-        const request: any = { body: { userName: mockUsername } }
-        const response: any = { locals: {} }
-        const next = jest.fn()
+        const request: any = { body: { userName: mockUsername } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
 
-        setUserNameToLowercaseMiddleware(request, response, next)
+        setUserNameToLowercaseMiddleware(request, response, next);
 
-        expect.assertions(2)
-        expect(response.locals.lowerCaseUserName).toBe(mockLowerCaseUsername)
-        expect(next).toBeCalledWith()
-    })
+        expect.assertions(2);
+        expect(response.locals.lowerCaseUserName).toBe(mockLowerCaseUsername);
+        expect(next).toBeCalledWith();
+    });
 
     test("it should call next with err on failure", () => {
-        const request: any = { body: { userName: { toLowerCase: () => { throw new Error() } } } }
-        const response: any = {}
-        const next = jest.fn()
+        const request: any = { body: { userName: { toLowerCase: () => { throw new Error(); } } } };
+        const response: any = {};
+        const next = jest.fn();
 
-        setUserNameToLowercaseMiddleware(request, response, next)
+        setUserNameToLowercaseMiddleware(request, response, next);
 
-        expect.assertions(1)
-        expect(next).toBeCalledWith(new Error())
-    })
-})
+        expect.assertions(1);
+        expect(next).toBeCalledWith(new Error());
+    });
+});
 
 
 describe(`doesUserNameExistMiddleware`, () => {
@@ -375,7 +375,7 @@ describe(`doesUserNameExistMiddleware`, () => {
         const findOne = jest.fn(() => Promise.resolve(true));
         const UserModel = {
             findOne
-        }
+        };
         const request: any = {};
         const response: any = { locals: { lowerCaseUserName: mockUserName } };
         const next = jest.fn();
@@ -394,7 +394,7 @@ describe(`doesUserNameExistMiddleware`, () => {
         const findOne = jest.fn(() => Promise.resolve(false));
         const UserModel = {
             findOne
-        }
+        };
         const request: any = {};
         const response: any = { locals: { lowerCaseUserName: mockUserName } };
         const next = jest.fn();
@@ -413,7 +413,7 @@ describe(`doesUserNameExistMiddleware`, () => {
         const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
         const UserModel = {
             findOne
-        }
+        };
         const request: any = { body: {} };
         const response: any = { locals: { lowerCaseUserName: mockUserName } };
         const next = jest.fn();
@@ -432,8 +432,8 @@ describe(`doesUserNameExistMiddleware`, () => {
 describe(`userNameExistsValidationMiddleware`, () => {
 
     const mockUserName = "testName";
-    const userNameKey = 'userName'
-    const subject = 'subject'
+    const userNameKey = "userName";
+    const subject = "subject";
 
     test("check that error response is returned correctly when userName already exists", () => {
         const send = jest.fn();
@@ -485,8 +485,8 @@ describe(`userNameExistsValidationMiddleware`, () => {
     });
 
     test("check that when error is thrown next is called with err", () => {
-        const errorMessage = 'error'
-        const send = jest.fn(() => { throw new Error(errorMessage) });
+        const errorMessage = "error";
+        const send = jest.fn(() => { throw new Error(errorMessage); });
         const status = jest.fn(() => ({ send }));
         const generateAlreadyExistsMessage = jest.fn();
 
@@ -557,8 +557,8 @@ describe(`hashPasswordMiddleware`, () => {
 describe(`createUserFromRequestMiddleware`, () => {
     test("should define response.locals.newUser", async () => {
         const hashedPassword = "12$4354";
-        const userName = 'user'
-        const email = 'user@gmail.com'
+        const userName = "user";
+        const email = "user@gmail.com";
 
         class User {
             userName: string;
@@ -568,7 +568,7 @@ describe(`createUserFromRequestMiddleware`, () => {
             constructor({ userName, email, password }) {
                 this.userName = userName;
                 this.email = email;
-                this.password = password
+                this.password = password;
             }
         }
 
@@ -576,30 +576,30 @@ describe(`createUserFromRequestMiddleware`, () => {
         const request: any = { body: { email } };
         const next = jest.fn();
 
-        const middleware = getCreateUserFromRequestMiddleware(User)
+        const middleware = getCreateUserFromRequestMiddleware(User);
 
         await middleware(request, response, next);
 
         expect.assertions(1);
-        const newUser = new User({ userName, email, password: hashedPassword })
-        expect(response.locals.newUser).toEqual(newUser)
+        const newUser = new User({ userName, email, password: hashedPassword });
+        expect(response.locals.newUser).toEqual(newUser);
     });
 
-    test('should call next with error message on error', () => {
+    test("should call next with error message on error", () => {
 
-        const user = { userName: 'userName', email: 'username@gmail.com' };
+        const user = { userName: "userName", email: "username@gmail.com" };
 
         const response: any = { locals: { user } };
         const request: any = { body: {} };
         const next = jest.fn();
 
-        const middleware = getCreateUserFromRequestMiddleware({})
+        const middleware = getCreateUserFromRequestMiddleware({});
 
         middleware(request, response, next);
 
         expect.assertions(1);
-        expect(next).toBeCalledWith(new TypeError("user is not a constructor"))
-    })
+        expect(next).toBeCalledWith(new TypeError("user is not a constructor"));
+    });
 
 });
 
@@ -609,30 +609,30 @@ describe(`saveUserToDatabaseMiddleware`, () => {
 
     test("should set response.locals.savedUser", async () => {
         const save = jest.fn(() => {
-            return Promise.resolve(mockUser)
+            return Promise.resolve(mockUser);
         });
         const mockUser = {
-            userName: 'User',
-            email: 'user@gmail.com',
-            password: 'password',
+            userName: "User",
+            email: "user@gmail.com",
+            password: "password",
             save
-        }
+        };
 
         const response: any = { locals: { newUser: mockUser } };
-        const request: any = {}
+        const request: any = {};
         const next = jest.fn();
 
         await saveUserToDatabaseMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(save).toBeCalled();
-        expect(response.locals.savedUser).toBeDefined()
+        expect(response.locals.savedUser).toBeDefined();
         expect(next).toBeCalled();
     });
 
     test("should call next() with err paramater if save call fails", async () => {
         const save = jest.fn(() => {
-            return Promise.reject(ERROR_MESSAGE)
+            return Promise.reject(ERROR_MESSAGE);
         });
 
         const request: any = {};
@@ -654,47 +654,47 @@ describe(`sendFormattedUserMiddleware`, () => {
 
     test("should send user in response with password undefined", () => {
 
-        const mockUserName = 'abc'
-        const mockEmail = 'email@gmail.com'
-        const mockPassword = '12345678'
+        const mockUserName = "abc";
+        const mockEmail = "email@gmail.com";
+        const mockPassword = "12345678";
 
-        const savedUser = { userName: mockUserName, email: mockEmail, password: mockPassword }
-        const send = jest.fn()
-        const status = jest.fn(() => ({ send }))
+        const savedUser = { userName: mockUserName, email: mockEmail, password: mockPassword };
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
         const response: any = { locals: { savedUser }, status };
 
-        const request: any = {}
+        const request: any = {};
         const next = jest.fn();
 
         sendFormattedUserMiddleware(request, response, next);
 
         expect.assertions(4);
-        expect(response.locals.savedUser.password).toBeUndefined()
-        expect(next).not.toBeCalled()
-        expect(status).toBeCalledWith(ResponseCodes.created)
-        expect(send).toBeCalledWith({ userName: mockUserName, email: mockEmail })
+        expect(response.locals.savedUser.password).toBeUndefined();
+        expect(next).not.toBeCalled();
+        expect(status).toBeCalledWith(ResponseCodes.created);
+        expect(send).toBeCalledWith({ userName: mockUserName, email: mockEmail });
     });
 
     test("should call next with an error on failure", () => {
-        const mockUserName = 'abc'
-        const mockEmail = 'email@gmail.com'
-        const mockPassword = '12345678'
+        const mockUserName = "abc";
+        const mockEmail = "email@gmail.com";
+        const mockPassword = "12345678";
 
-        const savedUser = { userName: mockUserName, email: mockEmail, password: mockPassword }
+        const savedUser = { userName: mockUserName, email: mockEmail, password: mockPassword };
         const send = jest.fn(() => {
-            throw new Error(ERROR_MESSAGE)
-        })
-        const status = jest.fn(() => ({ send }))
+            throw new Error(ERROR_MESSAGE);
+        });
+        const status = jest.fn(() => ({ send }));
         const response: any = { locals: { savedUser }, status };
 
-        const request: any = {}
+        const request: any = {};
         const next = jest.fn();
 
         sendFormattedUserMiddleware(request, response, next);
 
         expect.assertions(1);
-        expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))
-    })
+        expect(next).toBeCalledWith(new Error(ERROR_MESSAGE));
+    });
 
 
 });
@@ -702,15 +702,15 @@ describe(`sendFormattedUserMiddleware`, () => {
 describe(`verifyJsonWebTokenMiddlewaresWithResponse`, () => {
     test("that verfiyJsonWebToken middlewares are defined in the correct order", () => {
         expect.assertions(10);
-        expect(registerUserMiddlewares[0]).toBe(userRegistrationValidationMiddleware)
-        expect(registerUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware)
-        expect(registerUserMiddlewares[2]).toBe(emailExistsValidationMiddleware)
-        expect(registerUserMiddlewares[3]).toBe(setUserNameToLowercaseMiddleware)
-        expect(registerUserMiddlewares[4]).toBe(doesUserNameExistMiddleware)
-        expect(registerUserMiddlewares[5]).toBe(userNameExistsValidationMiddleware)
-        expect(registerUserMiddlewares[6]).toBe(hashPasswordMiddleware)
-        expect(registerUserMiddlewares[7]).toBe(createUserFromRequestMiddleware)
-        expect(registerUserMiddlewares[8]).toBe(saveUserToDatabaseMiddleware)
-        expect(registerUserMiddlewares[9]).toBe(sendFormattedUserMiddleware)
+        expect(registerUserMiddlewares[0]).toBe(userRegistrationValidationMiddleware);
+        expect(registerUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware);
+        expect(registerUserMiddlewares[2]).toBe(emailExistsValidationMiddleware);
+        expect(registerUserMiddlewares[3]).toBe(setUserNameToLowercaseMiddleware);
+        expect(registerUserMiddlewares[4]).toBe(doesUserNameExistMiddleware);
+        expect(registerUserMiddlewares[5]).toBe(userNameExistsValidationMiddleware);
+        expect(registerUserMiddlewares[6]).toBe(hashPasswordMiddleware);
+        expect(registerUserMiddlewares[7]).toBe(createUserFromRequestMiddleware);
+        expect(registerUserMiddlewares[8]).toBe(saveUserToDatabaseMiddleware);
+        expect(registerUserMiddlewares[9]).toBe(sendFormattedUserMiddleware);
     });
 });

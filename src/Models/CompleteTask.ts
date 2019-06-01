@@ -1,18 +1,18 @@
-import * as mongoose from 'mongoose';
-import { Models } from './Models';
-import { Collections } from './Collections';
+import * as mongoose from "mongoose";
+import { Models } from "./Models";
+import { Collections } from "./Collections";
 
 
 export enum TypesOfStreak {
-    soloStreak = 'solo-streak'
+    soloStreak = "solo-streak"
 }
 
 export interface CompleteTask extends mongoose.Document {
-    streakId: string,
-    userId: string,
-    taskCompleteTime: Date,
-    taskCompleteDay: string
-    streakType: TypesOfStreak
+    streakId: string;
+    userId: string;
+    taskCompleteTime: Date;
+    taskCompleteDay: string;
+    streakType: TypesOfStreak;
 }
 
 export const completeTaskSchema = new mongoose.Schema({
@@ -39,9 +39,9 @@ export const completeTaskSchema = new mongoose.Schema({
 }, {
         timestamps: true,
         collection: Collections.CompleteTasks,
-    })
+    });
 
-completeTaskSchema.index({ userId: 1, streakId: 1, taskCompleteDay: 1 }, { unique: true })
+completeTaskSchema.index({ userId: 1, streakId: 1, taskCompleteDay: 1 }, { unique: true });
 
-export const completeTaskModel: mongoose.Model<CompleteTask> = mongoose.model<CompleteTask>(Models.CompleteTask, completeTaskSchema)
+export const completeTaskModel: mongoose.Model<CompleteTask> = mongoose.model<CompleteTask>(Models.CompleteTask, completeTaskSchema);
 

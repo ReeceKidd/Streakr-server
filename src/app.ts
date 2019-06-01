@@ -1,33 +1,31 @@
-import * as express from "express";
+import express from "express";
 import * as bodyParser from "body-parser";
-import * as mongoose from "mongoose";
-import * as morgan from "morgan";
-import * as passport from 'passport';
+import mongoose from "mongoose";
+import passport from "passport";
 
 
-import DATABASE_CONFIG from '../config/DATABASE_CONFIG'
-import { Environments } from '../config/ENVIRONMENT_CONFIG'
-import { ApiVersions } from './Server/versions'
+import DATABASE_CONFIG from "../config/DATABASE_CONFIG";
+import { Environments } from "../config/ENVIRONMENT_CONFIG";
+import { ApiVersions } from "./Server/versions";
 import v1Router from "./versions/v1";
 
-const app = express()
-app.use(bodyParser.json())
+const app = express();
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
 app.get(`/health`, (request, response, next) => {
-  return response.status(200).send({ message: 'success' })
-})
+  return response.status(200).send({ message: "success" });
+});
 
-if (process.env.NODE_ENV !== Environments.TEST) {
-  app.use(morgan('common'))
+app.use(passport.initialize());
+app.use(passport.session());
+
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = Environments.PROD;
 }
 
-
-app.use(passport.initialize())
-app.use(passport.session())
-
-const databseURL = DATABASE_CONFIG[process.env.NODE_ENV]
+const databseURL = DATABASE_CONFIG[process.env.NODE_ENV];
 mongoose
   .connect(
     databseURL,
@@ -35,6 +33,8 @@ mongoose
   )
   .catch(err => console.log(err.message));
 
-app.use(`/${ApiVersions.v1}`, v1Router)
+mongoose.set("useCreateIndex", true);
 
-export default app
+app.use(`/${ApiVersions.v1}`, v1Router);
+
+export default app;

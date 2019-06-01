@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from 'express';
-import { ResponseCodes } from '../Server/responseCodes';
+import { NextFunction, Request, Response } from "express";
+import { ResponseCodes } from "../Server/responseCodes";
 
 const notAllowedParameterErrorRegExp = /is not allowed/;
 

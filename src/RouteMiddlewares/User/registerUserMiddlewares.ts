@@ -1,14 +1,14 @@
 
-import { Request, Response, NextFunction } from 'express';
-import * as Joi from 'joi';
-import { hash } from 'bcryptjs';
+import { Request, Response, NextFunction } from "express";
+import * as Joi from "joi";
+import { hash } from "bcryptjs";
 
-import { userModel } from '../../Models/User';
-import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
-import { generateAlreadyExistsMessage } from '../../Utils/generateAlreadyExistsMessage';
-import { emailKey, userNameKey } from '../../Constants/Keys/keys';
-import { saltRounds } from '../../Constants/Auth/saltRounds';
-import { ResponseCodes } from '../../Server/responseCodes';
+import { userModel } from "../../Models/User";
+import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
+import { generateAlreadyExistsMessage } from "../../Utils/generateAlreadyExistsMessage";
+import { emailKey, userNameKey } from "../../Constants/Keys/keys";
+import { saltRounds } from "../../Constants/Auth/saltRounds";
+import { ResponseCodes } from "../../Server/responseCodes";
 
 const registerValidationSchema = {
   userName: Joi.string().required(),
@@ -40,7 +40,7 @@ export const getDoesUserEmailExistMiddleware = userModel => async (
 export const doesUserEmailExistMiddleware = getDoesUserEmailExistMiddleware(userModel);
 
 interface GenerateEmailAlreadyExistsMessage {
-  (userSubject: string, userEmail: string, userKey: string): string
+  (userSubject: string, userEmail: string, userKey: string): string;
 }
 
 export const getEmailExistsValidationMiddleware = (emailAlreadyExistsMessage: GenerateEmailAlreadyExistsMessage, subject: string, emailKey: string) => (
@@ -66,17 +66,17 @@ export const getEmailExistsValidationMiddleware = (emailAlreadyExistsMessage: Ge
   }
 };
 
-export const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(generateAlreadyExistsMessage, 'User', emailKey);
+export const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(generateAlreadyExistsMessage, "User", emailKey);
 
 export const setUserNameToLowercaseMiddleware = (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userName } = request.body
-    response.locals.lowerCaseUserName = userName.toLowerCase()
-    next()
+    const { userName } = request.body;
+    response.locals.lowerCaseUserName = userName.toLowerCase();
+    next();
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 export const getDoesUserNameExistMiddleware = userModel => async (
   request: Request,
@@ -98,7 +98,7 @@ export const getDoesUserNameExistMiddleware = userModel => async (
 export const doesUserNameExistMiddleware = getDoesUserNameExistMiddleware(userModel);
 
 interface GenerateUserNameAlreadyExistsMessage {
-  (userSubject: string, userName: string, userKey: string): string
+  (userSubject: string, userName: string, userKey: string): string;
 }
 
 export const getUserNameExistsValidationMiddleware = (generateAlreadyExistsMessage: GenerateUserNameAlreadyExistsMessage, subject: string, userNameKey) => (
@@ -123,7 +123,7 @@ export const getUserNameExistsValidationMiddleware = (generateAlreadyExistsMessa
   }
 };
 
-export const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(generateAlreadyExistsMessage, 'User', userNameKey);
+export const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(generateAlreadyExistsMessage, "User", userNameKey);
 
 export const getHashPasswordMiddleware = (hash, salt) => async (
   request: Request,
@@ -148,7 +148,7 @@ export const getCreateUserFromRequestMiddleware = user => (request: Request, res
     response.locals.newUser = new user({ userName: lowerCaseUserName, email, password: hashedPassword });
     next();
   } catch (err) {
-    next(err)
+    next(err);
   }
 };
 

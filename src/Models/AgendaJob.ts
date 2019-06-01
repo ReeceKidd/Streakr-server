@@ -1,16 +1,16 @@
-import * as mongoose from 'mongoose'
-import { Models } from './Models';
-import { Collections } from './Collections';
+import mongoose from "mongoose";
+import { Models } from "./Models";
+import { Collections } from "./Collections";
 
 export interface AgendaJob extends mongoose.Document {
     _id: string;
     name: string;
     data: object;
     type: string;
-    nextRunAt: Date,
-    lastModifiedBy: string,
-    lockedAt: string,
-    lastFinishedAt: Date
+    nextRunAt: Date;
+    lastModifiedBy: string;
+    lockedAt: string;
+    lastFinishedAt: Date;
 }
 
 export const agendaJobSchema = new mongoose.Schema(
@@ -41,7 +41,6 @@ export const agendaJobSchema = new mongoose.Schema(
         collection: Collections.AgendaJobs
     });
 
-mongoose.set('useCreateIndex', true);
-agendaJobSchema.index({ 'data.timezone': 'text' });
+agendaJobSchema.index({ "data.timezone": "text" });
 
 export const agendaJobModel: mongoose.Model<AgendaJob> = mongoose.model<AgendaJob>(Models.AgendaJob, agendaJobSchema);

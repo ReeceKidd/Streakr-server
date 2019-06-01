@@ -1,11 +1,11 @@
 
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 import { verifyJsonWebTokenMiddlewares } from "./verifyJsonWebTokenMiddlewares";
 
-import { SuccessMessageKeys } from '../../Messages/successMessages';
-import { getLocalisedString } from '../../Messages/getLocalisedString';
-import { MessageCategories } from '../../Messages/messageCategories';
-import { VerifyJsonWebTokenResponseLocals } from './verifyJsonWebTokenMiddlewares';
+import { SuccessMessageKeys } from "../../Messages/successMessages";
+import { getLocalisedString } from "../../Messages/getLocalisedString";
+import { MessageCategories } from "../../Messages/messageCategories";
+import { VerifyJsonWebTokenResponseLocals } from "./verifyJsonWebTokenMiddlewares";
 
 export const getJsonWebTokenVerificationSuccessfulMiddleware = (jsonWebTokenVerificationSuccessfulMessage: string) => (
     request: Request,
@@ -13,15 +13,15 @@ export const getJsonWebTokenVerificationSuccessfulMiddleware = (jsonWebTokenVeri
     next: NextFunction,
 ) => {
     try {
-        const { decodedJsonWebToken } = response.locals as VerifyJsonWebTokenResponseLocals
-        const jsonWebTokenVerificationSuccessfulResponse = { decodedJsonWebToken, message: jsonWebTokenVerificationSuccessfulMessage, auth: true }
+        const { decodedJsonWebToken } = response.locals as VerifyJsonWebTokenResponseLocals;
+        const jsonWebTokenVerificationSuccessfulResponse = { decodedJsonWebToken, message: jsonWebTokenVerificationSuccessfulMessage, auth: true };
         return response.send(jsonWebTokenVerificationSuccessfulResponse);
     } catch (err) {
         next(err);
     }
 };
 
-const localisedJsonWebTokenVerificationSuccessMessage = getLocalisedString(MessageCategories.successMessages, SuccessMessageKeys.jsonWebTokenVerificationSuccessfulMessage)
+const localisedJsonWebTokenVerificationSuccessMessage = getLocalisedString(MessageCategories.successMessages, SuccessMessageKeys.jsonWebTokenVerificationSuccessfulMessage);
 
 export const jsonWebTokenVerificationSuccessfulMiddleware = getJsonWebTokenVerificationSuccessfulMiddleware(localisedJsonWebTokenVerificationSuccessMessage);
 
@@ -29,4 +29,4 @@ export const jsonWebTokenVerificationSuccessfulMiddleware = getJsonWebTokenVerif
 export const verifyJsonWebTokenMiddlewaresWithResponse = [
     verifyJsonWebTokenMiddlewares,
     jsonWebTokenVerificationSuccessfulMiddleware
-]
+];

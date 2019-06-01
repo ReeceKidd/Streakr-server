@@ -1,41 +1,42 @@
-import * as Agenda from 'agenda'
-import DATABASE_CONFIG from '../../config/DATABASE_CONFIG'
-import { soloStreakModel } from '../Models/SoloStreak'
-import { manageSoloStreaksForTimezone } from './manageSoloStreaksForTimezone';
+import Agenda from "agenda";
+import DATABASE_CONFIG from "../../config/DATABASE_CONFIG";
+import { soloStreakModel } from "../Models/SoloStreak";
+import { manageSoloStreaksForTimezone } from "./manageSoloStreaksForTimezone";
+import { Environments } from "../../config/ENVIRONMENT_CONFIG";
 
-const databseURL = DATABASE_CONFIG[process.env.NODE_ENV]
+const databseURL = DATABASE_CONFIG[process.env.NODE_ENV || Environments.PROD];
 
 const agenda = new Agenda({
     db: {
         address: databseURL,
-        collection: 'AgendaJobs',
+        collection: "AgendaJobs",
         options: {
             useNewUrlParser: true
         }
     },
-    processEvery: '30 seconds'
-})
+    processEvery: "30 seconds"
+});
 
 export enum AgendaJobs {
-    soloStreakCompleteForTimezoneTracker = 'soloStreakCompleteForTimezoneTracker'
+    soloStreakCompleteForTimezoneTracker = "soloStreakCompleteForTimezoneTracker"
 }
 
 export enum AgendaProcessTimes {
-    day = '24 hours'
+    day = "24 hours"
 }
 
 export enum AgendaTimeRanges {
-    day = 'day'
+    day = "day"
 }
 
 agenda.define(AgendaJobs.soloStreakCompleteForTimezoneTracker, async (job, done) => {
-    const { timeZone } = job.attrs.data
+    const { timeZone } = job.attrs.data;
     const defaultCurrentStreak = {
-        startDate: null,
+        startDate: undefined,
         numberOfDaysInARow: 0
-    }
-    await manageSoloStreaksForTimezone(timeZone, soloStreakModel, defaultCurrentStreak, new Date())
-    done()
-})
+    };
+    await manageSoloStreaksForTimezone(timeZone, soloStreakModel, defaultCurrentStreak, new Date());
+    done();
+});
 
-export default agenda
+export default agenda;

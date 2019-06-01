@@ -10,7 +10,7 @@ const testRouter = Router();
 
 testRouter.post(
     `/${TestPaths.verifyJsonWebToken}`,
-    ...verifyJsonWebTokenMiddlewaresWithResponse)
+    ...verifyJsonWebTokenMiddlewaresWithResponse);
 
 
 export default testRouter;

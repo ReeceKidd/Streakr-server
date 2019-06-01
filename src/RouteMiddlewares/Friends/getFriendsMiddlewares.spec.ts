@@ -11,7 +11,7 @@ describe(`getFriendsValidationMiddleware`, () => {
         const status = jest.fn(() => ({ send }));
 
         const request: any = {
-            params: { userId: '1234' }
+            params: { userId: "1234" }
         };
         const response: any = {
             status
@@ -24,7 +24,7 @@ describe(`getFriendsValidationMiddleware`, () => {
     });
 
     test("check that request with no params fails", () => {
-        expect.assertions(3)
+        expect.assertions(3);
 
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -44,10 +44,10 @@ describe(`getFriendsValidationMiddleware`, () => {
             message: 'child "userId" fails because ["userId" is required]'
         });
         expect(next).not.toBeCalled();
-    })
+    });
 
     test("check that userId cannot be a number", () => {
-        expect.assertions(3)
+        expect.assertions(3);
 
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -67,8 +67,8 @@ describe(`getFriendsValidationMiddleware`, () => {
             message: 'child "userId" fails because ["userId" must be a string]'
         });
         expect(next).not.toBeCalled();
-    })
-})
+    });
+});
 
 describe(`retreiveUserMiddleware`, () => {
 
@@ -81,7 +81,7 @@ describe(`retreiveUserMiddleware`, () => {
         const findOne = jest.fn(() => Promise.resolve(true));
         const UserModel = {
             findOne
-        }
+        };
         const request: any = {
             params: {
                 userId: mockUserId
@@ -105,8 +105,8 @@ describe(`retreiveUserMiddleware`, () => {
         const findOne = jest.fn(() => Promise.resolve(undefined));
         const UserModel = {
             findOne
-        }
-        const nonExistantUserId = 'xcv'
+        };
+        const nonExistantUserId = "xcv";
         const request: any = {
             params:
             {
@@ -131,7 +131,7 @@ describe(`retreiveUserMiddleware`, () => {
         const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
         const UserModel = {
             findOne
-        }
+        };
         const request: any = {
             params: {
                 userId: mockUserId
@@ -151,7 +151,7 @@ describe(`retreiveUserMiddleware`, () => {
 });
 
 describe(`userExistsValidationMiddleware`, () => {
-    const mockErrorMessage = 'User does not exist'
+    const mockErrorMessage = "User does not exist";
 
     test("check that error response is returned correctly when user wasn't found", async () => {
         expect.assertions(2);
@@ -199,8 +199,8 @@ describe(`userExistsValidationMiddleware`, () => {
     test("check that next is called with err on send failure", () => {
         expect.assertions(1);
 
-        const errorMessage = 'error'
-        const send = jest.fn(() => { throw new Error(errorMessage) });
+        const errorMessage = "error";
+        const send = jest.fn(() => { throw new Error(errorMessage); });
         const status = jest.fn(() => ({ send }));
         const request: any = {};
         const response: any = {
@@ -217,62 +217,62 @@ describe(`userExistsValidationMiddleware`, () => {
     });
 });
 
-describe('getRetreiveFriendsMiddleware', () => {
-    test('check that friends are retreived correctly', async () => {
+describe("getRetreiveFriendsMiddleware", () => {
+    test("check that friends are retreived correctly", async () => {
         expect.assertions(3);
 
         const findOne = jest.fn(() => Promise.resolve(true));
         const UserModel = {
             findOne
-        }
+        };
         const request: any = {};
-        const response: any = { locals: { user: { friends: ['123', '124', '125'] } } };
+        const response: any = { locals: { user: { friends: ["123", "124", "125"] } } };
         const next = jest.fn();
 
         const middleware = getRetreiveFriendsMiddleware(UserModel);
 
         await middleware(request, response, next);
 
-        expect(findOne).toBeCalledTimes(3)
+        expect(findOne).toBeCalledTimes(3);
         expect(response.locals.friends).toEqual([true, true, true]);
         expect(next).toBeCalledWith();
-    })
+    });
 
-    test('checks that next is called with error if database call fails', async () => {
+    test("checks that next is called with error if database call fails", async () => {
         expect.assertions(2);
 
-        const ERROR_MESSAGE = 'error'
+        const ERROR_MESSAGE = "error";
         const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
         const UserModel = {
             findOne
-        }
+        };
         const request: any = {};
-        const response: any = { locals: { user: { friends: ['123', '124', '125'] } } };
+        const response: any = { locals: { user: { friends: ["123", "124", "125"] } } };
         const next = jest.fn();
 
         const middleware = getRetreiveFriendsMiddleware(UserModel);
 
         await middleware(request, response, next);
 
-        expect(response.locals.friends).toBe(undefined)
+        expect(response.locals.friends).toBe(undefined);
         expect(next).toBeCalledWith(ERROR_MESSAGE);
-    })
-})
+    });
+});
 
 describe(`formatFriendsMiddleware`, () => {
 
-    test('checks that response.locals.formattedFriends contains a correctly formatted user', () => {
+    test("checks that response.locals.formattedFriends contains a correctly formatted user", () => {
         expect.assertions(2);
 
         const mockFriend = {
-            _id: '1234',
-            userName: 'test',
-            email: 'test@test.com',
-            password: '12345678',
-            role: 'Admin',
-            preferredLanguage: 'English'
+            _id: "1234",
+            userName: "test",
+            email: "test@test.com",
+            password: "12345678",
+            role: "Admin",
+            preferredLanguage: "English"
 
-        }
+        };
 
         const request: any = {};
         const response: any = { locals: { friends: [mockFriend] } };
@@ -283,11 +283,11 @@ describe(`formatFriendsMiddleware`, () => {
 
         expect(response.locals.formattedFriends[0]).toEqual({
             userName: mockFriend.userName
-        })
+        });
         expect(next).toBeCalledWith();
-    })
+    });
 
-    test('checks that errors are passed into the next middleware', () => {
+    test("checks that errors are passed into the next middleware", () => {
         expect.assertions(2);
 
         const request: any = {};
@@ -296,56 +296,56 @@ describe(`formatFriendsMiddleware`, () => {
 
         formatFriendsMiddleware(request, response, next);
 
-        expect(response.locals.formattedFriends).toBe(undefined)
-        expect(next).toBeCalledWith(new TypeError(`Cannot read property 'map' of undefined`))
-    })
-})
+        expect(response.locals.formattedFriends).toBe(undefined);
+        expect(next).toBeCalledWith(new TypeError(`Cannot read property 'map' of undefined`));
+    });
+});
 
-describe('sendFormattedFriendsMiddleware', () => {
+describe("sendFormattedFriendsMiddleware", () => {
     test("should send formattedFriends in response", () => {
 
-        const send = jest.fn()
-        const status = jest.fn(() => ({ send }))
-        const request: any = {}
-        const formattedFriends = ['friend']
-        const response: any = { locals: { formattedFriends }, status }
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {};
+        const formattedFriends = ["friend"];
+        const response: any = { locals: { formattedFriends }, status };
         const next = jest.fn();
 
         sendFormattedFriendsMiddleware(request, response, next);
 
         expect.assertions(3);
-        expect(next).not.toBeCalled()
-        expect(status).toBeCalledWith(ResponseCodes.success)
-        expect(send).toBeCalledWith({ friends: formattedFriends })
+        expect(next).not.toBeCalled();
+        expect(status).toBeCalledWith(ResponseCodes.success);
+        expect(send).toBeCalledWith({ friends: formattedFriends });
     });
 
     test("should call next with an error on failure", () => {
 
-        const ERROR_MESSAGE = 'sendFormattedFriendsMiddleware error'
+        const ERROR_MESSAGE = "sendFormattedFriendsMiddleware error";
         const send = jest.fn(() => {
-            throw new Error(ERROR_MESSAGE)
-        })
-        const status = jest.fn(() => ({ send }))
+            throw new Error(ERROR_MESSAGE);
+        });
+        const status = jest.fn(() => ({ send }));
         const response: any = { locals: {}, status };
 
-        const request: any = {}
+        const request: any = {};
         const next = jest.fn();
 
         sendFormattedFriendsMiddleware(request, response, next);
 
         expect.assertions(1);
-        expect(next).toBeCalledWith(new Error(ERROR_MESSAGE))
-    })
-})
+        expect(next).toBeCalledWith(new Error(ERROR_MESSAGE));
+    });
+});
 
 describe(`getFriendsMiddlewares`, () => {
     test("that getFriendsMiddlewares are defined in the correct order", () => {
         expect.assertions(6);
-        expect(getFriendsMiddlewares[0]).toBe(getFriendsValidationMiddleware)
-        expect(getFriendsMiddlewares[1]).toBe(retreiveUserMiddleware)
-        expect(getFriendsMiddlewares[2]).toBe(userExistsValidationMiddleware)
-        expect(getFriendsMiddlewares[3]).toBe(retreiveFriendsMiddleware)
-        expect(getFriendsMiddlewares[4]).toBe(formatFriendsMiddleware)
-        expect(getFriendsMiddlewares[5]).toBe(sendFormattedFriendsMiddleware)
+        expect(getFriendsMiddlewares[0]).toBe(getFriendsValidationMiddleware);
+        expect(getFriendsMiddlewares[1]).toBe(retreiveUserMiddleware);
+        expect(getFriendsMiddlewares[2]).toBe(userExistsValidationMiddleware);
+        expect(getFriendsMiddlewares[3]).toBe(retreiveFriendsMiddleware);
+        expect(getFriendsMiddlewares[4]).toBe(formatFriendsMiddleware);
+        expect(getFriendsMiddlewares[5]).toBe(sendFormattedFriendsMiddleware);
     });
 });

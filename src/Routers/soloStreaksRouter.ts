@@ -9,14 +9,14 @@ import { patchSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/patch
 import { deleteSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/deleteSoloStreakMiddlewares";
 
 export enum SoloStreakProperties {
-    completeTasks = 'complete-tasks'
+    completeTasks = "complete-tasks"
 }
 
-export const soloStreakId = 'soloStreakId'
+export const soloStreakId = "soloStreakId";
 
 const soloStreaksRouter = Router();
 
-soloStreaksRouter.use('*', ...verifyJsonWebTokenMiddlewares)
+soloStreaksRouter.use("*", ...verifyJsonWebTokenMiddlewares);
 
 soloStreaksRouter.get(
     `/`,
@@ -31,20 +31,20 @@ soloStreaksRouter.post(
 soloStreaksRouter.get(
     `/:${soloStreakId}`,
     ...getSoloStreakMiddlewares
-)
+);
 
 soloStreaksRouter.patch(
     `/:${soloStreakId}`,
     ...patchSoloStreakMiddlewares
-)
+);
 
 soloStreaksRouter.delete(
     `/:${soloStreakId}`,
     ...deleteSoloStreakMiddlewares
-)
+);
 
 soloStreaksRouter.post(
     `/:${soloStreakId}/${SoloStreakProperties.completeTasks}`, ...createSoloStreakCompleteTaskMiddlewares
-)
+);
 
 export default soloStreaksRouter;

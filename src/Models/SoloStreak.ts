@@ -1,19 +1,19 @@
-import * as mongoose from 'mongoose';
-import { Collections } from './Collections';
-import { Models } from './Models';
+import * as mongoose from "mongoose";
+import { Collections } from "./Collections";
+import { Models } from "./Models";
 
 export interface SoloStreak extends mongoose.Document {
     userId: string;
     streakName: string;
     streakDescription: string;
     startDate: Date;
-    completedToday: boolean
+    completedToday: boolean;
     currentStreak: {
         startDate: Date,
         numberOfDaysInARow: number
-    }
-    pastStreaks: [],
-    timezone: string
+    };
+    pastStreaks: [];
+    timezone: string;
 }
 
 export const soloStreakSchema = new mongoose.Schema({
@@ -46,7 +46,7 @@ export const soloStreakSchema = new mongoose.Schema({
     currentStreak: {
         startDate: {
             type: String,
-            default: null
+            default: undefined
         },
         numberOfDaysInARow: {
             type: Number,

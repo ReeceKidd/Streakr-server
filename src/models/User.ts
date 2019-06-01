@@ -1,19 +1,19 @@
-import * as mongoose from 'mongoose';
-import { SupportedLanguages } from '../Messages/supportedLanguages';
-import { Collections } from './Collections';
-import { Models } from './Models';
-import { SoloStreak } from './SoloStreak';
+import * as mongoose from "mongoose";
+import { SupportedLanguages } from "../Messages/supportedLanguages";
+import { Collections } from "./Collections";
+import { Models } from "./Models";
+import { SoloStreak } from "./SoloStreak";
 
 export const SALT_ROUNDS = 10;
 
 enum UserTypes {
-  user = 'user',
-  admin = 'admin',
+  user = "user",
+  admin = "admin",
 }
 
 export interface IMinimumUserData {
-  _id: string,
-  userName: string
+  _id: string;
+  userName: string;
 }
 
 export interface User extends mongoose.Document {
@@ -78,9 +78,7 @@ export const userSchema = new mongoose.Schema(
     collection: Collections.Users,
   },
 );
-
-mongoose.set('useCreateIndex', true);
-userSchema.index({ userName: 'text' });
-userSchema.index({ email: 'text' });
+userSchema.index({ userName: "text" });
+userSchema.index({ email: "text" });
 
 export const userModel: mongoose.Model<User> = mongoose.model<User>(Models.User, userSchema);

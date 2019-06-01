@@ -21,7 +21,7 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
       next as NextFunction
     );
 
-    middleware(null);
+    middleware(undefined);
 
     expect.assertions(3);
     expect(status).not.toHaveBeenCalled();
@@ -35,7 +35,7 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
 
     const request = {
       query: { param: true }
-    }
+    };
     const response: any = {
       status
     };
@@ -74,8 +74,8 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
       next as NextFunction
     );
 
-    const otherError = 'other error'
-    middleware(new Error('other error'));
+    const otherError = "other error";
+    middleware(new Error("other error"));
 
     expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);

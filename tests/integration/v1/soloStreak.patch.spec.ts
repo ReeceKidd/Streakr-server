@@ -1,37 +1,36 @@
-import * as request from 'supertest'
-import * as moment from 'moment-timezone'
+import request from "supertest";
 
-import server from '../../../src/app'
-import { ApiVersions } from '../../../src/Server/versions'
-import { RouteCategories } from '../../../src/routeCategories'
-import { userModel } from '../../../src/Models/User';
-import { soloStreakModel } from '../../../src/Models/SoloStreak';
-import { agendaJobModel } from '../../../src/Models/AgendaJob';
+import server from "../../../src/app";
+import { ApiVersions } from "../../../src/Server/versions";
+import { RouteCategories } from "../../../src/routeCategories";
+import { userModel } from "../../../src/Models/User";
+import { soloStreakModel } from "../../../src/Models/SoloStreak";
+import { agendaJobModel } from "../../../src/Models/AgendaJob";
 
-import { AuthPaths } from '../../../src/Routers/authRouter';
-import { ResponseCodes } from '../../../src/Server/responseCodes';
-import { SupportedRequestHeaders } from '../../../src/Server/headers';
+import { AuthPaths } from "../../../src/Routers/authRouter";
+import { ResponseCodes } from "../../../src/Server/responseCodes";
+import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
-const registeredEmail = "patch-solo-streak-user@gmail.com"
-const registeredPassword = "12345678"
-const registeredUserName = 'patch-solo-streak-user'
+const registeredEmail = "patch-solo-streak-user@gmail.com";
+const registeredPassword = "12345678";
+const registeredUserName = "patch-solo-streak-user";
 
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`
-const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`
-const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
+const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
+const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
+const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
-const romeTimezone = "Europe/Rome"
-const berlinTimeZone = 'Europe/Berlin'
+const romeTimezone = "Europe/Rome";
+const berlinTimeZone = "Europe/Berlin";
 
 describe(`PATCH ${soloStreakRoute}`, () => {
 
-    let jsonWebToken: string
-    let userId: string
-    let soloStreakId: string
-    let updatedName: string
+    let jsonWebToken: string;
+    let userId: string;
+    let soloStreakId: string;
+    let updatedName: string;
 
-    const name = "Keto"
-    const description = "I will follow the keto diet every day"
+    const name = "Keto";
+    const description = "I will follow the keto diet every day";
 
     beforeAll(async () => {
         const registrationResponse = await request(server)
@@ -42,8 +41,8 @@ describe(`PATCH ${soloStreakRoute}`, () => {
                     email: registeredEmail,
                     password: registeredPassword
                 }
-            )
-        userId = registrationResponse.body._id
+            );
+        userId = registrationResponse.body._id;
         const loginResponse = await request(server)
             .post(loginRoute)
             .send(
@@ -51,8 +50,8 @@ describe(`PATCH ${soloStreakRoute}`, () => {
                     email: registeredEmail,
                     password: registeredPassword
                 }
-            )
-        jsonWebToken = loginResponse.body.jsonWebToken
+            );
+        jsonWebToken = loginResponse.body.jsonWebToken;
         const createSoloStreakResponse = await request(server)
             .post(soloStreakRoute)
             .send({
@@ -61,21 +60,21 @@ describe(`PATCH ${soloStreakRoute}`, () => {
                 description
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimezone]: romeTimezone })
-        soloStreakId = createSoloStreakResponse.body._id
-    })
+            .set({ [SupportedRequestHeaders.xTimezone]: romeTimezone });
+        soloStreakId = createSoloStreakResponse.body._id;
+    });
 
     afterAll(async () => {
-        await userModel.deleteOne({ email: registeredEmail })
-        await soloStreakModel.deleteOne({ name: updatedName })
-        await agendaJobModel.deleteOne({ "data.timezone": romeTimezone })
-        await agendaJobModel.deleteOne({ "data.timezone": berlinTimeZone })
-    })
+        await userModel.deleteOne({ email: registeredEmail });
+        await soloStreakModel.deleteOne({ name: updatedName });
+        await agendaJobModel.deleteOne({ "data.timezone": romeTimezone });
+        await agendaJobModel.deleteOne({ "data.timezone": berlinTimeZone });
+    });
 
     test(`that request passes when solo streak is patched with correct keys`, async () => {
-        expect.assertions(11)
-        updatedName = 'Intermittent fasting'
-        const updatedDescription = 'Cannot eat till 1pm everyday'
+        expect.assertions(10);
+        updatedName = "Intermittent fasting";
+        const updatedDescription = "Cannot eat till 1pm everyday";
         const response = await request(server)
             .patch(`${soloStreakRoute}/${soloStreakId}`)
             .send({
@@ -83,20 +82,19 @@ describe(`PATCH ${soloStreakRoute}`, () => {
                 description: updatedDescription
             })
             .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimezone]: berlinTimeZone })
-        expect(response.status).toEqual(ResponseCodes.success)
-        expect(response.type).toEqual('application/json')
-        expect(response.body.data.name).toEqual(updatedName)
-        expect(response.body.data.description).toEqual(updatedDescription)
-        expect(response.body.data.userId).toEqual(userId)
-        expect(response.body.data).toHaveProperty('_id')
-        expect(response.body.data.currentStreak).toHaveProperty('startDate')
-        expect(response.body.data.currentStreak).toHaveProperty('numberOfDaysInARow')
-        expect(response.body.data).toHaveProperty('startDate')
-        expect(response.body.data).toHaveProperty('createdAt')
-        expect(response.body.data).toHaveProperty('updatedAt')
-    })
+            .set({ [SupportedRequestHeaders.xTimezone]: berlinTimeZone });
+        expect(response.status).toEqual(ResponseCodes.success);
+        expect(response.type).toEqual("application/json");
+        expect(response.body.data.name).toEqual(updatedName);
+        expect(response.body.data.description).toEqual(updatedDescription);
+        expect(response.body.data.userId).toEqual(userId);
+        expect(response.body.data).toHaveProperty("_id");
+        expect(response.body.data.currentStreak).toHaveProperty("numberOfDaysInARow");
+        expect(response.body.data).toHaveProperty("startDate");
+        expect(response.body.data).toHaveProperty("createdAt");
+        expect(response.body.data).toHaveProperty("updatedAt");
+    });
 
-})
+});
 
-jest.setTimeout(30000)
+jest.setTimeout(30000);

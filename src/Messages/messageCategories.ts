@@ -1,4 +1,4 @@
 export enum MessageCategories {
-    successMessages = 'successMessages',
-    failureMessages = 'failureMessages'
+    successMessages = "successMessages",
+    failureMessages = "failureMessages"
 }
