@@ -7,6 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -15,7 +18,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const moment = __importStar(require("moment-timezone"));
+const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const Joi = __importStar(require("joi"));
 const getLocalisedString_1 = require("../../Messages/getLocalisedString");
 const messageCategories_1 = require("../../Messages/messageCategories");
@@ -92,7 +95,7 @@ exports.getValidateTimezoneMiddleware = isValidTimezone => (request, response, n
         next(err);
     }
 };
-exports.validateTimezoneMiddleware = exports.getValidateTimezoneMiddleware(moment.tz.zone);
+exports.validateTimezoneMiddleware = exports.getValidateTimezoneMiddleware(moment_timezone_1.default.tz.zone);
 exports.getSendInvalidTimezoneErrorResponseMiddleware = (unprocessableEntityCode, localisedErrorMessage) => (request, response, next) => {
     try {
         const { validTimezone } = response.locals;
@@ -144,7 +147,7 @@ exports.getSetTaskCompleteTimeMiddleware = moment => (request, response, next) =
         next(err);
     }
 };
-exports.setTaskCompleteTimeMiddleware = exports.getSetTaskCompleteTimeMiddleware(moment);
+exports.setTaskCompleteTimeMiddleware = exports.getSetTaskCompleteTimeMiddleware(moment_timezone_1.default);
 exports.getSetDayTaskWasCompletedMiddleware = (dayFormat) => (request, response, next) => {
     try {
         const { taskCompleteTime } = response.locals;

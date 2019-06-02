@@ -12,11 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const agenda_1 = __importDefault(require("agenda"));
-const DATABASE_CONFIG_1 = __importDefault(require("../../config/DATABASE_CONFIG"));
 const SoloStreak_1 = require("../Models/SoloStreak");
 const manageSoloStreaksForTimezone_1 = require("./manageSoloStreaksForTimezone");
-const ENVIRONMENT_CONFIG_1 = require("../../config/ENVIRONMENT_CONFIG");
-const databseURL = DATABASE_CONFIG_1.default[process.env.NODE_ENV || ENVIRONMENT_CONFIG_1.Environments.PROD];
+const DATABASE_CONFIG_1 = require("../../config/DATABASE_CONFIG");
+const databseURL = DATABASE_CONFIG_1.DATABASE_URLS[process.env.NODE_ENV] || DATABASE_CONFIG_1.DATABASE_URLS.PROD;
+console.log(`AGENDA DATABASE: ${databseURL}`);
 const agenda = new agenda_1.default({
     db: {
         address: databseURL,

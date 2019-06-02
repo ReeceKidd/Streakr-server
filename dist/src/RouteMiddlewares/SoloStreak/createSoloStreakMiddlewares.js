@@ -14,9 +14,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Joi = __importStar(require("joi"));
-const moment = __importStar(require("moment-timezone"));
+const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const agenda_1 = __importStar(require("../../Agenda/agenda"));
 const validationErrorMessageSenderMiddleware_1 = require("../../SharedMiddleware/validationErrorMessageSenderMiddleware");
 const SoloStreak_1 = require("../../Models/SoloStreak");
@@ -68,7 +71,7 @@ exports.getValidateTimezoneMiddleware = isValidTimezone => (request, response, n
         next(err);
     }
 };
-exports.validateTimezoneMiddleware = exports.getValidateTimezoneMiddleware(moment.tz.zone);
+exports.validateTimezoneMiddleware = exports.getValidateTimezoneMiddleware(moment_timezone_1.default.tz.zone);
 exports.getSendInvalidTimezoneErrorResponseMiddleware = localisedErrorMessage => (request, response, next) => {
     try {
         const { validTimezone } = response.locals;
@@ -94,7 +97,7 @@ exports.getDefineCurrentTimeMiddleware = moment => (request, response, next) => 
         next(err);
     }
 };
-exports.defineCurrentTimeMiddleware = exports.getDefineCurrentTimeMiddleware(moment);
+exports.defineCurrentTimeMiddleware = exports.getDefineCurrentTimeMiddleware(moment_timezone_1.default);
 exports.getDefineStartDayMiddleware = (dayFormat) => (request, response, next) => {
     try {
         const { currentTime } = response.locals;

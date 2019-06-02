@@ -3,9 +3,9 @@ import * as bodyParser from "body-parser";
 import mongoose from "mongoose";
 import passport from "passport";
 
-
-import DATABASE_CONFIG from "../config/DATABASE_CONFIG";
 import { Environments } from "../config/ENVIRONMENT_CONFIG";
+import { DATABASE_URLS } from "../config/DATABASE_CONFIG";
+
 import { ApiVersions } from "./Server/versions";
 import v1Router from "./versions/v1";
 
@@ -25,7 +25,12 @@ if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = Environments.PROD;
 }
 
-const databseURL = DATABASE_CONFIG[process.env.NODE_ENV];
+console.log(`ENVIRONMENT: ${process.env.NODE_ENV}`);
+
+const databseURL = DATABASE_URLS[process.env.NODE_ENV];
+
+console.log(`DATABASE ${databseURL}`);
+
 mongoose
   .connect(
     databseURL,

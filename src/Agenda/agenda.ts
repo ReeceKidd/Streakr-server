@@ -1,10 +1,9 @@
 import Agenda from "agenda";
-import DATABASE_CONFIG from "../../config/DATABASE_CONFIG";
 import { soloStreakModel } from "../Models/SoloStreak";
 import { manageSoloStreaksForTimezone } from "./manageSoloStreaksForTimezone";
-import { Environments } from "../../config/ENVIRONMENT_CONFIG";
+import { DATABASE_URLS } from "../../config/DATABASE_CONFIG";
 
-const databseURL = DATABASE_CONFIG[process.env.NODE_ENV || Environments.PROD];
+const databseURL = DATABASE_URLS[process.env.NODE_ENV] || DATABASE_URLS.PROD;
 
 const agenda = new Agenda({
     db: {
