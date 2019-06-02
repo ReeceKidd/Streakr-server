@@ -25,11 +25,7 @@ if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = Environments.PROD;
 }
 
-console.log(`ENVIRONMENT: ${process.env.NODE_ENV}`);
-
 const databseURL = DATABASE_URLS[process.env.NODE_ENV];
-
-console.log(`DATABASE ${databseURL}`);
 
 mongoose
   .connect(
