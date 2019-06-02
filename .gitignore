@@ -3,5 +3,6 @@ node_modules/
 coverage/
 secret/
 config/
+dist/
 server.zip
 credentials.ts
