@@ -29,9 +29,7 @@ app.use(passport_1.default.session());
 if (!process.env.NODE_ENV) {
     process.env.NODE_ENV = ENVIRONMENT_CONFIG_1.Environments.PROD;
 }
-console.log(`ENVIRONMENT: ${process.env.NODE_ENV}`);
 const databseURL = DATABASE_CONFIG_1.DATABASE_URLS[process.env.NODE_ENV];
-console.log(`DATABASE ${databseURL}`);
 mongoose_1.default
     .connect(databseURL, { useNewUrlParser: true, useFindAndModify: false })
     .catch(err => console.log(err.message));

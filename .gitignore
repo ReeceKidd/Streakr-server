@@ -4,3 +4,4 @@ coverage/
 secret/
 config/
 server.zip
+credentials.ts
