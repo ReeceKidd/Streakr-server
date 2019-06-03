@@ -15,9 +15,9 @@ const bodyParser = __importStar(require("body-parser"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const passport_1 = __importDefault(require("passport"));
 const ENVIRONMENT_CONFIG_1 = require("../config/ENVIRONMENT_CONFIG");
-const DATABASE_CONFIG_1 = require("../config/DATABASE_CONFIG");
 const versions_1 = require("./Server/versions");
 const v1_1 = __importDefault(require("./versions/v1"));
+const credentials_1 = require("../config/credentials");
 const app = express_1.default();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -29,9 +29,9 @@ app.use(passport_1.default.session());
 if (!process.env.NODE_ENV) {
     process.env.NODE_ENV = ENVIRONMENT_CONFIG_1.Environments.PROD;
 }
-const databseURL = DATABASE_CONFIG_1.DATABASE_URLS[process.env.NODE_ENV];
+const connectionString = `mongodb+srv://${credentials_1.databaseUsername}:${credentials_1.databasePassword}@cluster0-kxrys.mongodb.net/test?retryWrites=true&w=majority`;
 mongoose_1.default
-    .connect(databseURL, { useNewUrlParser: true, useFindAndModify: false })
+    .connect(connectionString, { useNewUrlParser: true, useFindAndModify: false })
     .catch(err => console.log(err.message));
 mongoose_1.default.set("useCreateIndex", true);
 app.use(`/${versions_1.ApiVersions.v1}`, v1_1.default);

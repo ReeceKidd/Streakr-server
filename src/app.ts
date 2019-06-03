@@ -4,10 +4,11 @@ import mongoose from "mongoose";
 import passport from "passport";
 
 import { Environments } from "../config/ENVIRONMENT_CONFIG";
-import { DATABASE_URLS } from "../config/DATABASE_CONFIG";
+
 
 import { ApiVersions } from "./Server/versions";
 import v1Router from "./versions/v1";
+import { databaseConnectionString } from "../config/databaseConnectionString";
 
 const app = express();
 app.use(bodyParser.json());
@@ -25,11 +26,9 @@ if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = Environments.PROD;
 }
 
-const databseURL = DATABASE_URLS[process.env.NODE_ENV];
-
 mongoose
   .connect(
-    databseURL,
+    databaseConnectionString,
     { useNewUrlParser: true, useFindAndModify: false }
   )
   .catch(err => console.log(err.message));

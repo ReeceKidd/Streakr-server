@@ -4,5 +4,5 @@ coverage/
 secret/
 config/
 dist/
-server.zip
+dist.zip
 credentials.ts
