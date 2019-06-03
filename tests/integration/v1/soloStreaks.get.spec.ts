@@ -24,7 +24,7 @@ const soloStreakDescription = "Each day I must do the insame amount 50xp of Duol
 
 const parisTimezone = "Europe/Paris";
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
 
 describe(getSoloStreaksRoute, () => {
 

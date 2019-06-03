@@ -1,7 +1,7 @@
 import Agenda from "agenda";
 import { soloStreakModel } from "../Models/SoloStreak";
 import { manageSoloStreaksForTimezone } from "./manageSoloStreaksForTimezone";
-import { databaseConnectionString } from "../../config/databaseConnectionString";
+import databaseConnectionString from "../../config/databaseConnectionString";
 
 const agenda = new Agenda({
     db: {

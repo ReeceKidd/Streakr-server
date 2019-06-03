@@ -23,7 +23,7 @@ const romeTimezone = "Europe/Rome";
 const berlinTimeZone = "Europe/Berlin";
 
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
 
 describe(`PATCH ${soloStreakRoute}`, () => {
 

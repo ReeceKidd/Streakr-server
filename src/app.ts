@@ -8,7 +8,7 @@ import { Environments } from "../config/ENVIRONMENT_CONFIG";
 
 import { ApiVersions } from "./Server/versions";
 import v1Router from "./versions/v1";
-import { databaseConnectionString } from "../config/databaseConnectionString";
+import databaseConnectionString from "../config/databaseConnectionString";
 
 const app = express();
 app.use(bodyParser.json());

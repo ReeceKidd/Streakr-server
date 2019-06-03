@@ -21,7 +21,7 @@ const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 const budapestTimezone = "Europe/Budapest";
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
 
 describe(`DELETE ${soloStreakRoute}`, () => {
 

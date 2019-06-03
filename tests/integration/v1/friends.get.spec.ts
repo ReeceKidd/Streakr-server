@@ -19,7 +19,7 @@ const friendRegisteredUserName = "get-friends-friend";
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
 
 describe("getFriendsRoute", () => {
 
