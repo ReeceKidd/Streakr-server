@@ -10,6 +10,7 @@
     "prod": "npm run build && npm start",
     "unit-tests": "set NODE_ENV=LOCAL&& jest --watchAll --coverage --config=./jest.unit.config.js",
     "intergration-tests": "set NODE_ENV=LOCAL&& jest --watchAll --coverage --config=./jest.intergration.config.js",
+    "local-test": "set NODE_ENV=LOCAL&& jest --config=./jest.test.config.js",
     "test": "set NODE_ENV=TEST&& jest --config=./jest.test.config.js "
   },
   "keywords": [],
