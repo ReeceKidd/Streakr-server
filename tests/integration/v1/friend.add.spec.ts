@@ -20,6 +20,7 @@ const friendRegisteredUserName = "add-friend-friend";
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
 
+jest.setTimeout(60000);
 
 describe("/v1/users/:userId/friends", () => {
 

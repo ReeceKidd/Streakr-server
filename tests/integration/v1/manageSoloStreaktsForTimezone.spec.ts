@@ -21,6 +21,8 @@ const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 const bucharestTimezone = "Europe/Bucharest";
 
+jest.setTimeout(60000);
+
 describe(`AGENDA manageSoloStreaksForTimezone`, () => {
 
     let jsonWebToken: string;
@@ -82,4 +84,3 @@ describe(`AGENDA manageSoloStreaksForTimezone`, () => {
 
 });
 
-jest.setTimeout(30000);

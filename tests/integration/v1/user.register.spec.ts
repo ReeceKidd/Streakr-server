@@ -8,6 +8,8 @@ import { ResponseCodes } from "../../../src/Server/responseCodes";
 
 const userRegistationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 
+jest.setTimeout(60000);
+
 describe(userRegistationRoute, () => {
 
     const userName = "tester1";

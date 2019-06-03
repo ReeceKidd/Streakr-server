@@ -24,6 +24,8 @@ const soloStreakDescription = "Each day I must do the insame amount 50xp of Duol
 
 const parisTimezone = "Europe/Paris";
 
+jest.setTimeout(60000);
+
 describe(getSoloStreaksRoute, () => {
 
     let jsonWebToken: string;
@@ -86,4 +88,3 @@ describe(getSoloStreaksRoute, () => {
 
 });
 
-jest.setTimeout(30000);

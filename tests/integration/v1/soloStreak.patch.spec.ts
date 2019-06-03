@@ -22,6 +22,9 @@ const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 const romeTimezone = "Europe/Rome";
 const berlinTimeZone = "Europe/Berlin";
 
+
+jest.setTimeout(60000);
+
 describe(`PATCH ${soloStreakRoute}`, () => {
 
     let jsonWebToken: string;
@@ -96,5 +99,3 @@ describe(`PATCH ${soloStreakRoute}`, () => {
     });
 
 });
-
-jest.setTimeout(30000);

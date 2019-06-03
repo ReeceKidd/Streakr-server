@@ -17,6 +17,7 @@ const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
 const verifyJsonWebTokenRoute = `/${ApiVersions.v1}/${RouteCategories.test}/${TestPaths.verifyJsonWebToken}`;
 
+jest.setTimeout(60000);
 
 describe(verifyJsonWebTokenRoute, () => {
 

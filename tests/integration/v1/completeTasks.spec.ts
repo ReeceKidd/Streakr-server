@@ -22,6 +22,7 @@ const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}
 
 const londonTimezone = "Europe/London";
 
+jest.setTimeout(60000);
 
 describe(createSoloStreakRoute, () => {
 
@@ -119,4 +120,3 @@ describe(createSoloStreakRoute, () => {
 
 });
 
-jest.setTimeout(30000);

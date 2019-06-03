@@ -18,6 +18,8 @@ const registeredEmail = "register@gmail.com";
 const registeredUserName = "registeredUser";
 const registeredPassword = "12345678";
 
+jest.setTimeout(60000);
+
 describe(loginRoute, () => {
 
     beforeAll(async () => {

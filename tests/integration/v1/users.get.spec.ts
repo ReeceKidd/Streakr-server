@@ -20,6 +20,8 @@ const searchQueryKey = "searchQuery";
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
 
+jest.setTimeout(60000);
+
 describe("/users", () => {
 
     let jsonWebToken: string;
@@ -96,4 +98,3 @@ describe("/users", () => {
 
 });
 
-jest.setTimeout(30000);
