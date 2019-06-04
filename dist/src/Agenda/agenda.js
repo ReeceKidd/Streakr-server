@@ -14,11 +14,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const agenda_1 = __importDefault(require("agenda"));
 const SoloStreak_1 = require("../Models/SoloStreak");
 const manageSoloStreaksForTimezone_1 = require("./manageSoloStreaksForTimezone");
-const DATABASE_CONFIG_1 = require("../../config/DATABASE_CONFIG");
-const databseURL = DATABASE_CONFIG_1.DATABASE_URLS[process.env.NODE_ENV] || DATABASE_CONFIG_1.DATABASE_URLS.PROD;
+const databaseConnectionString_1 = __importDefault(require("../../config/databaseConnectionString"));
 const agenda = new agenda_1.default({
     db: {
-        address: databseURL,
+        address: databaseConnectionString_1.default,
         collection: "AgendaJobs",
         options: {
             useNewUrlParser: true
