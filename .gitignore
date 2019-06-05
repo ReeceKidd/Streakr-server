@@ -4,5 +4,10 @@ coverage/
 secret/
 config/
 dist/
+dist
 dist.zip
 credentials.ts
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
