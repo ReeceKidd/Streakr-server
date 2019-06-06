@@ -1,7 +1,3 @@
 node_modules/
 coverage/
 dist
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
