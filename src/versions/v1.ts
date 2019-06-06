@@ -13,6 +13,4 @@ v1Router.use(`/${RouteCategories.users}`, usersRouter);
 v1Router.use(`/${RouteCategories.auth}`, authRouter);
 v1Router.use(`/${RouteCategories.test}`, testRouter);
 
-
-
 export default v1Router;

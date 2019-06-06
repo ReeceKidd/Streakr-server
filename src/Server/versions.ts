@@ -1,5 +1,5 @@
-enum ApiVersions {
-    v1 = "v1"
-}
+const ApiVersions = {
+    v1: "v1"
+};
 
 export default ApiVersions;
