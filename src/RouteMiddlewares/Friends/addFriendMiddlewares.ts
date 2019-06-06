@@ -9,7 +9,7 @@ import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { SuccessMessageKeys } from "../../Messages/successMessages";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { SupportedResponseHeaders } from "../../Server/headers";
-import { ApiVersions } from "../../server/versions";
+import ApiVersions from "../../server/versions";
 import { RouteCategories, UserProperties } from "../../routeCategories";
 
 const addFriendParamsValidationSchema = {

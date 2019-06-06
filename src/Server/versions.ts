@@ -1,3 +1,5 @@
-export enum ApiVersions {
+enum ApiVersions {
     v1 = "v1"
 }
+
+export default ApiVersions;

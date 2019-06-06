@@ -1,7 +1,7 @@
 import request from "supertest";
 
 import server from "../../../src/app";
-import { ApiVersions } from "../../../src/Server/versions";
+import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
 import { soloStreakModel } from "../../../src/Models/SoloStreak";
