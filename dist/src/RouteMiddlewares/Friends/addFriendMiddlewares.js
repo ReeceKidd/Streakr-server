@@ -14,6 +14,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Joi = __importStar(require("joi"));
 const validationErrorMessageSenderMiddleware_1 = require("../../SharedMiddleware/validationErrorMessageSenderMiddleware");
@@ -24,8 +27,8 @@ const failureMessages_1 = require("../../Messages/failureMessages");
 const successMessages_1 = require("../../Messages/successMessages");
 const responseCodes_1 = require("../../Server/responseCodes");
 const headers_1 = require("../../Server/headers");
-const versions_1 = require("../../server/versions");
 const routeCategories_1 = require("../../routeCategories");
+const versions_1 = __importDefault(require("../../Server/versions"));
 const addFriendParamsValidationSchema = {
     userId: Joi.string().required()
 };
@@ -116,7 +119,7 @@ exports.getDefineLocationPathMiddleware = (apiVersion, userCategory, friendsProp
         next(err);
     }
 };
-exports.defineLocationPathMiddleware = exports.getDefineLocationPathMiddleware(versions_1.ApiVersions.v1, routeCategories_1.RouteCategories.users, routeCategories_1.UserProperties.friends);
+exports.defineLocationPathMiddleware = exports.getDefineLocationPathMiddleware(versions_1.default.v1, routeCategories_1.RouteCategories.users, routeCategories_1.UserProperties.friends);
 exports.getSetLocationHeaderMiddleware = (locationHeader) => (request, response, next) => {
     try {
         const { locationPath } = response.locals;
