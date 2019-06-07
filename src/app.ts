@@ -25,6 +25,8 @@ if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = Environments.PROD;
 }
 
+console.log(`ENV: ${process.env.NODE_ENV}`);
+
 mongoose
   .connect(
     databaseConnectionString,
