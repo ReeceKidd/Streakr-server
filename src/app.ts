@@ -21,12 +21,6 @@ app.get(`/health`, (request, response, next) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-if (!process.env.NODE_ENV) {
-  process.env.NODE_ENV = Environments.PROD;
-}
-
-console.log(`ENV: ${process.env.NODE_ENV}`);
-
 mongoose
   .connect(
     databaseConnectionString,
