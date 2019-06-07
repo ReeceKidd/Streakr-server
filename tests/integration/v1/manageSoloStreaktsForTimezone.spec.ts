@@ -78,6 +78,7 @@ describe(`AGENDA manageSoloStreaksForTimezone`, () => {
         const endDate = new Date();
         await manageSoloStreaksForTimezone(bucharestTimezone, soloStreakModel, defaultCurrentStreak, endDate);
         const updatedSoloStreak = await soloStreakModel.findById(soloStreakId).lean();
+        console.log(`Updated soloStreak ${updatedSoloStreak}`);
         expect(updatedSoloStreak.currentStreak).toEqual(defaultCurrentStreak);
         expect(updatedSoloStreak.pastStreaks).toEqual([{ ...defaultCurrentStreak, endDate }]);
     });
