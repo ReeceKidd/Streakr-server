@@ -9,7 +9,7 @@ import { agendaJobModel } from "../../../src/Models/AgendaJob";
 
 import { AuthPaths } from "../../../src/Routers/authRouter";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
-import { manageSoloStreaksForTimezone } from "../../../src/Agenda/manageSoloStreaksForTimezone";
+import { resetSoloStreaksThatWereNotCompletedTodayByTimezone } from "../../../src/Agenda/resetSoloStreaksThatWereNotCompletedTodayByTimezone";
 
 const registeredEmail = "manage-solo-streak-user@gmail.com";
 const registeredPassword = "12345678";
@@ -23,7 +23,7 @@ const bucharestTimezone = "Europe/Bucharest";
 
 jest.setTimeout(120000);
 
-describe(`AGENDA manageSoloStreaksForTimezone`, () => {
+describe(`AGENDA resetSoloStreaksThatWereNotCompletedTodayByTimezone `, () => {
 
     let jsonWebToken: string;
     let userId: string;
@@ -76,10 +76,9 @@ describe(`AGENDA manageSoloStreaksForTimezone`, () => {
             numberOfDaysInARow: 0
         };
         const endDate = new Date();
-        const databaseUpdate = await manageSoloStreaksForTimezone(bucharestTimezone, soloStreakModel, defaultCurrentStreak, endDate);
-        const updatedSoloStreak = await soloStreakModel.findById(soloStreakId).lean();
-        expect(updatedSoloStreak.currentStreak).toEqual(defaultCurrentStreak);
-        expect(updatedSoloStreak.pastStreaks).toEqual([{ ...defaultCurrentStreak, endDate }]);
+        const updatedSoloStreaks = await resetSoloStreaksThatWereNotCompletedTodayByTimezone(bucharestTimezone, soloStreakModel, defaultCurrentStreak, endDate);
+        expect((updatedSoloStreaks[0] as any).currentStreak).toEqual(defaultCurrentStreak);
+        expect((updatedSoloStreaks[0] as any).pastStreaks).toEqual([{ ...defaultCurrentStreak, endDate }]);
     });
 
 });

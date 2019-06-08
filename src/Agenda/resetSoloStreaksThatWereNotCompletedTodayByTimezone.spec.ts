@@ -1,6 +1,6 @@
-import { manageSoloStreaksForTimezone } from "./manageSoloStreaksForTimezone";
+import { resetSoloStreaksThatWereNotCompletedTodayByTimezone } from "./resetSoloStreaksThatWereNotCompletedTodayByTimezone";
 
-describe("manageSoloStreaksForTimezone", () => {
+describe("resetSoloStreaksThatWereNotCompletedTodayByTimezone ", () => {
 
     const defaultCurrentStreak = {
         startDate: undefined,
@@ -53,7 +53,7 @@ describe("manageSoloStreaksForTimezone", () => {
             find,
             findByIdAndUpdate
         };
-        await manageSoloStreaksForTimezone(timezone, soloStreakModel, defaultCurrentStreak, endDate);
+        await resetSoloStreaksThatWereNotCompletedTodayByTimezone(timezone, soloStreakModel, defaultCurrentStreak, endDate);
         expect(find).toBeCalledWith({ timezone, completedToday: false });
         expect(lean).toBeCalledWith();
         expect(findByIdAndUpdate).toBeCalledTimes(soloStreaks.length);
@@ -88,7 +88,7 @@ describe("manageSoloStreaksForTimezone", () => {
             find,
             findByIdAndUpdate
         };
-        await manageSoloStreaksForTimezone(timezone, soloStreakModel, defaultCurrentStreak, endDate);
+        await resetSoloStreaksThatWereNotCompletedTodayByTimezone(timezone, soloStreakModel, defaultCurrentStreak, endDate);
         expect(find).toBeCalledWith({ timezone, completedToday: false });
         expect(lean).toBeCalledWith();
         expect(findByIdAndUpdate).toBeCalledWith(soloStreaks[0]._id, { currentStreak: defaultCurrentStreak, $push: { pastStreaks: { ...soloStreaks[0].currentStreak, endDate } } });

@@ -1,6 +1,6 @@
 import Agenda from "agenda";
 import { soloStreakModel } from "../Models/SoloStreak";
-import { manageSoloStreaksForTimezone } from "./manageSoloStreaksForTimezone";
+import { resetSoloStreaksThatWereNotCompletedTodayByTimezone } from "./resetSoloStreaksThatWereNotCompletedTodayByTimezone";
 import databaseConnectionString from "../../config/databaseConnectionString";
 
 const agenda = new Agenda({
@@ -32,7 +32,7 @@ agenda.define(AgendaJobs.soloStreakCompleteForTimezoneTracker, async (job, done)
         startDate: undefined,
         numberOfDaysInARow: 0
     };
-    await manageSoloStreaksForTimezone(timeZone, soloStreakModel, defaultCurrentStreak, new Date());
+    await resetSoloStreaksThatWereNotCompletedTodayByTimezone(timeZone, soloStreakModel, defaultCurrentStreak, new Date());
     done();
 });
 

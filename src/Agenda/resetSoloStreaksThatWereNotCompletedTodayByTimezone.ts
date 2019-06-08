@@ -1,4 +1,4 @@
-export const manageSoloStreaksForTimezone = async (timezone: string, soloStreakModel, defaultCurrentStreak: { numberOfDaysInARow: number }, endDate: Date) => {
+export const resetSoloStreaksThatWereNotCompletedTodayByTimezone = async (timezone: string, soloStreakModel, defaultCurrentStreak: { numberOfDaysInARow: number }, endDate: Date) => {
     const soloStreaksToBeUpdated = await soloStreakModel.find({ timezone, completedToday: false }).lean();
     return Promise.all(soloStreaksToBeUpdated.map(soloStreak => {
         const endedStreak = {
@@ -9,6 +9,6 @@ export const manageSoloStreaksForTimezone = async (timezone: string, soloStreakM
             {
                 currentStreak: defaultCurrentStreak,
                 $push: { pastStreaks: endedStreak }
-            });
+            }, { new: true }).lean();
     }));
 };
