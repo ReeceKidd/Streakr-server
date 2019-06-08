@@ -23,7 +23,7 @@ const bucharestTimezone = "Europe/Bucharest";
 
 jest.setTimeout(120000);
 
-describe(`AGENDA resetSoloStreaksThatWereNotCompletedTodayByTimezone `, () => {
+describe(`AGENDA resetSoloStreaksThatWereNotCompletedTodayByTimezone`, () => {
 
     let jsonWebToken: string;
     let userId: string;
