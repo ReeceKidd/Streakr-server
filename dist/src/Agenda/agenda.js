@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const agenda_1 = __importDefault(require("agenda"));
 const SoloStreak_1 = require("../Models/SoloStreak");
-const manageSoloStreaksForTimezone_1 = require("./manageSoloStreaksForTimezone");
+const resetSoloStreaksThatWereNotCompletedTodayByTimezone_1 = require("./resetSoloStreaksThatWereNotCompletedTodayByTimezone");
 const databaseConnectionString_1 = __importDefault(require("../../config/databaseConnectionString"));
 const agenda = new agenda_1.default({
     db: {
@@ -43,7 +43,7 @@ agenda.define(AgendaJobs.soloStreakCompleteForTimezoneTracker, (job, done) => __
         startDate: undefined,
         numberOfDaysInARow: 0
     };
-    yield manageSoloStreaksForTimezone_1.manageSoloStreaksForTimezone(timeZone, SoloStreak_1.soloStreakModel, defaultCurrentStreak, new Date());
+    yield resetSoloStreaksThatWereNotCompletedTodayByTimezone_1.resetSoloStreaksThatWereNotCompletedTodayByTimezone(timeZone, SoloStreak_1.soloStreakModel, defaultCurrentStreak, new Date());
     done();
 }));
 exports.default = agenda;

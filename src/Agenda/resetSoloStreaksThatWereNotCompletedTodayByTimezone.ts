@@ -9,6 +9,6 @@ export const resetSoloStreaksThatWereNotCompletedTodayByTimezone = async (timezo
             {
                 currentStreak: defaultCurrentStreak,
                 $push: { pastStreaks: endedStreak }
-            }, { new: true }).lean();
+            }, { new: true });
     }));
 };

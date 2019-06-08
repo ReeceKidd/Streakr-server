@@ -77,8 +77,8 @@ describe(`AGENDA resetSoloStreaksThatWereNotCompletedTodayByTimezone`, () => {
         };
         const endDate = new Date();
         const updatedSoloStreaks = await resetSoloStreaksThatWereNotCompletedTodayByTimezone(bucharestTimezone, soloStreakModel, defaultCurrentStreak, endDate);
-        expect((updatedSoloStreaks[0] as any).currentStreak).toEqual(defaultCurrentStreak);
-        expect((updatedSoloStreaks[0] as any).pastStreaks).toEqual([{ ...defaultCurrentStreak, endDate }]);
+        expect((updatedSoloStreaks[0] as any).toJSON().currentStreak).toEqual(defaultCurrentStreak);
+        expect((updatedSoloStreaks[0] as any).toJSON().pastStreaks).toEqual([{ ...defaultCurrentStreak, endDate }]);
     });
 
 });

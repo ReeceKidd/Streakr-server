@@ -91,6 +91,8 @@ describe("resetSoloStreaksThatWereNotCompletedTodayByTimezone ", () => {
         await resetSoloStreaksThatWereNotCompletedTodayByTimezone(timezone, soloStreakModel, defaultCurrentStreak, endDate);
         expect(find).toBeCalledWith({ timezone, completedToday: false });
         expect(lean).toBeCalledWith();
-        expect(findByIdAndUpdate).toBeCalledWith(soloStreaks[0]._id, { currentStreak: defaultCurrentStreak, $push: { pastStreaks: { ...soloStreaks[0].currentStreak, endDate } } });
+        expect(findByIdAndUpdate).toBeCalledWith(soloStreaks[0]._id, {
+            currentStreak: defaultCurrentStreak, $push: { pastStreaks: { ...soloStreaks[0].currentStreak, endDate } }
+        }, { new: true });
     });
 });
