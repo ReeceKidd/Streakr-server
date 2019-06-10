@@ -22,6 +22,7 @@
   "dependencies": {
     "@types/yargs": "^13.0.0",
     "agenda": "^2.0.2",
+    "aws-sdk": "^2.471.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "config": "^2.0.1",
