@@ -1,1 +1,1 @@
-export const jwtSecret = '5tWh/R1]]*LB[0W>R#E5hRl77FB!90'
+export const jwtSecret = "5tWh/R1]]*LB[0W>R#E5hRl77FB!90";

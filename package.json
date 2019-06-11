@@ -9,6 +9,7 @@
     "dist": "sh ./scripts/dist.sh",
     "dev": "set NODE_ENV=DEV&& nodemon --exec ts-node -- ./src/server.ts",
     "prod": "npm run build && npm start",
+    "lint": "tslint --project tsconfig.json",
     "local-unit-tests": "set NODE_ENV=LOCAL&& jest --watchAll --coverage --config=./jest.unit.config.js",
     "local-intergration-tests": "set NODE_ENV=LOCAL&& jest --watchAll --coverage --config=./jest.intergration.config.js",
     "local-test": "set NODE_ENV=LOCAL&& jest --config=./jest.test.config.js",
