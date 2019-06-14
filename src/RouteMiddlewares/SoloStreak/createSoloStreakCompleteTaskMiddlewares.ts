@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import moment from "moment-timezone";
 import * as Joi from "joi";
+import * as mongoose from "mongoose";
 
 import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { MessageCategories } from "../../Messages/messageCategories";
@@ -147,6 +148,22 @@ export const getSetTaskCompleteTimeMiddleware = moment => (request: Request, res
 
 export const setTaskCompleteTimeMiddleware = getSetTaskCompleteTimeMiddleware(moment);
 
+export const getSetStreakStartDateMiddleware = (soloStreakModel: mongoose.Model<SoloStreak>) => async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        const taskCompleteTime = response.locals.taskCompleteTime;
+        if (!soloStreak.startDate) {
+            const { soloStreakId } = request.params;
+            soloStreakModel.findByIdAndUpdate(soloStreakId, { startDate: taskCompleteTime });
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const setStreakStartDateMiddleware = getSetStreakStartDateMiddleware(soloStreakModel);
+
 export const getSetDayTaskWasCompletedMiddleware = (dayFormat) => (request: Request, response: Response, next: NextFunction) => {
     try {
         const { taskCompleteTime } = response.locals;
@@ -259,6 +276,7 @@ export const createSoloStreakCompleteTaskMiddlewares = [
     retreiveUserMiddleware,
     sendUserDoesNotExistErrorMiddleware,
     setTaskCompleteTimeMiddleware,
+    setStreakStartDateMiddleware,
     setDayTaskWasCompletedMiddleware,
     hasTaskAlreadyBeenCompletedTodayMiddleware,
     sendTaskAlreadyCompletedTodayErrorMiddleware,

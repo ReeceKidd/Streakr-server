@@ -15,7 +15,8 @@
     "local-test": "set NODE_ENV=LOCAL&& jest --config=./jest.test.config.js",
     "unit-tests": "set NODE_ENV=TEST&& jest --watchAll --config=./jest.unit.config.js",
     "intergration-tests": "set NODE_ENV=TEST&& jest --watchAll --config=./jest.intergration.config.js",
-    "test": "set NODE_ENV=TEST&& jest --config=./jest.test.config.js "
+    "test": "set NODE_ENV=TEST&& jest --config=./jest.test.config.js",
+    "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
   },
   "keywords": [],
   "author": "Reece Kidd",

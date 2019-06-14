@@ -10,9 +10,14 @@ export interface SoloStreak extends mongoose.Document {
     completedToday: boolean;
     currentStreak: {
         startDate: Date,
-        numberOfDaysInARow: number
+        numberOfDaysInARow: number,
+        endDate: Date
     };
-    pastStreaks: [];
+    pastStreaks: Array<{
+        endDate: Date,
+        startDate: Date,
+        numberOfDaysInARow: number
+    }>;
     timezone: string;
 }
 
@@ -45,12 +50,16 @@ export const soloStreakSchema = new mongoose.Schema({
     },
     currentStreak: {
         startDate: {
-            type: String,
+            type: Date,
             default: undefined
         },
         numberOfDaysInARow: {
             type: Number,
             default: 0
+        },
+        endDate: {
+            type: Date,
+            default: undefined
         }
     },
     pastStreaks: [],

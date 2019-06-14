@@ -39,12 +39,16 @@ exports.soloStreakSchema = new mongoose.Schema({
     },
     currentStreak: {
         startDate: {
-            type: String,
+            type: Date,
             default: undefined
         },
         numberOfDaysInARow: {
             type: Number,
             default: 0
+        },
+        endDate: {
+            type: Date,
+            default: undefined
         }
     },
     pastStreaks: [],
