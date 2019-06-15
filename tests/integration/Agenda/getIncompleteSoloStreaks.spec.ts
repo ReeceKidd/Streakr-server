@@ -27,7 +27,7 @@ describe("getIncompleteSoloStreaks", () => {
     let soloStreakId;
     const name = "Intermittent fasting";
     const description = "I will fast until 1pm everyday";
-    const timezone = "Europe/London";
+    const timezone = "Africa/Banjul";
 
     beforeAll(async () => {
         const registrationResponse = await request(server)

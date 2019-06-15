@@ -28,7 +28,7 @@ describe("resetIncompleteSoloStreaks", () => {
     let soloStreakId;
     const name = "Daily Programming";
     const description = "I will program for one hour everyday";
-    const timezone = "Europe/London";
+    const timezone = "Africa/Banjul";
 
     beforeAll(async () => {
         const registrationResponse = await request(server)
