@@ -9,7 +9,6 @@ import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { userModel } from "../../../src/Models/User";
 import { agendaJobModel } from "../../../src/Models/AgendaJob";
 import { getIncompleteSoloStreaks } from "../../../src/Agenda/getIncompleteSoloStreaks";
-import { dayFormat } from "../../../src/RouteMiddlewares/SoloStreak/createSoloStreakCompleteTaskMiddlewares";
 
 const registeredUserName = "getIncompleteSoloStreaksUsername";
 const registeredEmail = "getIncompleteSoloStreaksRegisteredEmail@gmail.com";
@@ -75,7 +74,7 @@ describe("getIncompleteSoloStreaks", () => {
       considered incomplete as they haven't been started
       */
         await soloStreakModel.findByIdAndUpdate(soloStreakId, { startDate: new Date() });
-        const incompleteSoloStreaks = await getIncompleteSoloStreaks(soloStreakModel, timezone);
+        const incompleteSoloStreaks = await getIncompleteSoloStreaks(soloStreakModel, timezone) as any;
         const incompleteStreak = incompleteSoloStreaks.find(streak => streak.name = name);
         expect(incompleteStreak.name).toEqual(name);
     });

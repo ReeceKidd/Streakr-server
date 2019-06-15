@@ -6,7 +6,7 @@ describe("getIncompleteSoloStreaks ", async () => {
         const find = jest.fn(() => Promise.resolve(true));
         const soloStreakModel = {
             find
-        };
+        } as any;
         const timezone = "Europe/London";
         await getIncompleteSoloStreaks(soloStreakModel, timezone);
         expect(find).toBeCalledWith({ timezone, completedToday: false, startDate: { $exists: true } });
