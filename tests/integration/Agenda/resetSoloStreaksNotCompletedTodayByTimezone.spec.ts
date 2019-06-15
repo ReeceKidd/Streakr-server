@@ -29,7 +29,7 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
     let soloStreakId;
     const name = "Intermittent fasting";
     const description = "I will fast until 1pm everyday";
-    const timezone = "Africa/Banjul";
+    const timezone = "America/Mexico_City";
 
     beforeAll(async () => {
         const registrationResponse = await request(server)
