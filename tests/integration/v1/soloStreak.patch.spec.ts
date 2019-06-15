@@ -75,7 +75,7 @@ describe(`PATCH ${soloStreakRoute}`, () => {
     });
 
     test(`that request passes when solo streak is patched with correct keys`, async () => {
-        expect.assertions(10);
+        expect.assertions(9);
         updatedName = "Intermittent fasting";
         const updatedDescription = "Cannot eat till 1pm everyday";
         const response = await request(server)
@@ -93,7 +93,6 @@ describe(`PATCH ${soloStreakRoute}`, () => {
         expect(response.body.data.userId).toEqual(userId);
         expect(response.body.data).toHaveProperty("_id");
         expect(response.body.data.currentStreak).toHaveProperty("numberOfDaysInARow");
-        expect(response.body.data).toHaveProperty("startDate");
         expect(response.body.data).toHaveProperty("createdAt");
         expect(response.body.data).toHaveProperty("updatedAt");
     });

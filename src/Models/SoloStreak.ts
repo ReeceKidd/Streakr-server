@@ -42,7 +42,7 @@ export const soloStreakSchema = new mongoose.Schema({
     },
     startDate: {
         type: Date,
-        default: new Date(),
+        default: undefined,
     },
     completedToday: {
         type: Boolean,

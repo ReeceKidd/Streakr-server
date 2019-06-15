@@ -154,7 +154,7 @@ export const getSetStreakStartDateMiddleware = (soloStreakModel: mongoose.Model<
         const taskCompleteTime = response.locals.taskCompleteTime;
         if (!soloStreak.startDate) {
             const { soloStreakId } = request.params;
-            soloStreakModel.findByIdAndUpdate(soloStreakId, { startDate: taskCompleteTime });
+            await soloStreakModel.findByIdAndUpdate(soloStreakId, { startDate: taskCompleteTime });
         }
         next();
     } catch (err) {

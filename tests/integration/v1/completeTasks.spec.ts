@@ -78,7 +78,7 @@ describe(createSoloStreakRoute, () => {
 
     describe("/v1/solo-streaks/{id}/complete-tasks", () => {
         test("that user can say that a task has been completed for the day", async () => {
-            expect.assertions(5);
+            expect.assertions(6);
             const completeTaskResponse = await request(server)
                 .post(`/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}/${RouteCategories.completeTasks}`)
                 .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
@@ -88,6 +88,8 @@ describe(createSoloStreakRoute, () => {
             expect(completeTaskResponse.body.completeTask.taskCompleteTime).toBeDefined();
             expect(completeTaskResponse.body.completeTask.userId).toEqual(userId);
             expect(completeTaskResponse.body.completeTask.streakId).toEqual(soloStreakId);
+            const soloStreak = await soloStreakModel.findById(soloStreakId);
+            expect(soloStreak.startDate).toBeDefined();
         });
 
         test("that user cannot complete the same task in the same day", async () => {

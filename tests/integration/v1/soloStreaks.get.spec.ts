@@ -69,7 +69,7 @@ describe(getSoloStreaksRoute, () => {
     });
 
     test(`that solo streaks can be retreived for user`, async () => {
-        expect.assertions(10);
+        expect.assertions(9);
         const getSoloStreaksRouteWithQueryParamater = `${getSoloStreaksRoute}?userId=${userId}`;
         const response = await request(server)
             .get(getSoloStreaksRouteWithQueryParamater)
@@ -81,7 +81,6 @@ describe(getSoloStreaksRoute, () => {
         expect(response.body.soloStreaks[0].description).toEqual(soloStreakDescription);
         expect(response.body.soloStreaks[0].userId).toEqual(userId);
         expect(response.body.soloStreaks[0]).toHaveProperty("_id");
-        expect(response.body.soloStreaks[0]).toHaveProperty("startDate");
         expect(response.body.soloStreaks[0]).toHaveProperty("createdAt");
         expect(response.body.soloStreaks[0]).toHaveProperty("updatedAt");
     });
