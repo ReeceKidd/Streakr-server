@@ -5,7 +5,6 @@ import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
 import { soloStreakModel } from "../../../src/Models/SoloStreak";
-import { agendaJobModel } from "../../../src/Models/AgendaJob";
 
 import { AuthPaths } from "../../../src/Routers/authRouter";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
@@ -67,7 +66,6 @@ describe(`DELETE ${soloStreakRoute}`, () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail });
         await soloStreakModel.deleteOne({ name });
-        await agendaJobModel.deleteOne({ "data.timezone": budapestTimezone });
     });
 
     test(`that solo streak can be deleted`, async () => {

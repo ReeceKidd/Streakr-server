@@ -5,7 +5,6 @@ import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
 import { soloStreakModel } from "../../../src/Models/SoloStreak";
-import { agendaJobModel } from "../../../src/Models/AgendaJob";
 import { completeTaskModel } from "../../../src/Models/CompleteTask";
 
 import { AuthPaths } from "../../../src/Routers/authRouter";
@@ -70,8 +69,6 @@ describe(createSoloStreakRoute, () => {
         await userModel.deleteOne({ email: registeredEmail });
         await soloStreakModel.deleteOne({ _id: soloStreakId });
         await soloStreakModel.deleteOne({ _id: secondSoloStreakId });
-        await agendaJobModel.deleteOne({ "data.timezone": londonTimezone });
-        await agendaJobModel.deleteOne({ "data.timezone": londonTimezone });
         await completeTaskModel.deleteOne({ userId, streakId: soloStreakId });
         await completeTaskModel.deleteOne({ userId, streakId: secondSoloStreakId });
     });

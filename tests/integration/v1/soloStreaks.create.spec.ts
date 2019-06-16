@@ -6,7 +6,6 @@ import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
 import { soloStreakModel } from "../../../src/Models/SoloStreak";
-import { agendaJobModel } from "../../../src/Models/AgendaJob";
 
 import { AuthPaths } from "../../../src/Routers/authRouter";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
@@ -57,11 +56,10 @@ describe(createSoloStreakRoute, () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail });
         await soloStreakModel.deleteOne({ name });
-        await agendaJobModel.deleteOne({ "data.timezone": londonTimezone });
     });
 
     test(`that request passes when correct solo streak information is passed`, async () => {
-        expect.assertions(10);
+        expect.assertions(9);
         const response = await request(server)
             .post(createSoloStreakRoute)
             .send({
@@ -80,9 +78,6 @@ describe(createSoloStreakRoute, () => {
         expect(response.body.currentStreak).toHaveProperty("numberOfDaysInARow");
         expect(response.body).toHaveProperty("createdAt");
         expect(response.body).toHaveProperty("updatedAt");
-        const endOfDay = moment().tz(londonTimezone).endOf("day").toDate();
-        const agendaJob = await agendaJobModel.findOne({ "data.timezone": londonTimezone });
-        expect(agendaJob.nextRunAt).toEqual(endOfDay);
     });
 
 });

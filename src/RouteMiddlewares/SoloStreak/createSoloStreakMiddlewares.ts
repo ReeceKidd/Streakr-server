@@ -2,13 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
 import moment from "moment-timezone";
 
-import agenda, { AgendaJobs, AgendaProcessTimes, AgendaTimeRanges } from "../../Agenda/agenda";
+import { AgendaTimeRanges } from "../../Agenda/agenda";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
 import { User } from "../../Models/User";
 import { SoloStreak, soloStreakModel } from "../../Models/SoloStreak";
-import { agendaJobModel } from "../../Models/AgendaJob";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { SupportedRequestHeaders } from "../../Server/headers";
 import { getLocalisedString } from "../../Messages/getLocalisedString";
@@ -160,36 +159,6 @@ export const saveSoloStreakToDatabaseMiddleware = async (
     }
 };
 
-export const getDoesTimezoneAlreadyExistMiddleware = agendaJobModel => async (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { timezone } = response.locals;
-        const doesTimezoneAlreadyExist = await agendaJobModel.findOne({ "data.timezone": timezone });
-        response.locals.doesTimezoneAlreadyExist = doesTimezoneAlreadyExist;
-        next();
-    } catch (err) {
-        next(err);
-    }
-};
-
-export const doesTimezoneAlreadyExistMiddleware = getDoesTimezoneAlreadyExistMiddleware(agendaJobModel);
-
-export const getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware = (agenda, soloStreakCompleteTrackerForTimezoneJobName) => async (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { endOfDay, timezone, doesTimezoneAlreadyExist } = response.locals;
-        if (!doesTimezoneAlreadyExist) {
-            await agenda.start();
-            const job = await agenda.schedule(endOfDay, soloStreakCompleteTrackerForTimezoneJobName, { timezone });
-            await job.repeatEvery(AgendaProcessTimes.day);
-            await job.save();
-        }
-        next();
-    } catch (err) {
-        next(err);
-    }
-};
-
-export const createDailySoloStreakCompleteCheckerForTimezoneMiddleware = getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware(agenda, AgendaJobs.soloStreakCompleteForTimezoneTracker);
-
 export const sendFormattedSoloStreakMiddleware = (
     request: Request,
     response: Response,
@@ -214,7 +183,5 @@ export const createSoloStreakMiddlewares = [
     defineEndOfDayMiddleware,
     createSoloStreakFromRequestMiddleware,
     saveSoloStreakToDatabaseMiddleware,
-    doesTimezoneAlreadyExistMiddleware,
-    createDailySoloStreakCompleteCheckerForTimezoneMiddleware,
     sendFormattedSoloStreakMiddleware
 ];

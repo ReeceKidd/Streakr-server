@@ -7,7 +7,6 @@ import { RouteCategories } from "../../../src/routeCategories";
 import { AuthPaths } from "../../../src/Routers/authRouter";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { userModel } from "../../../src/Models/User";
-import { agendaJobModel } from "../../../src/Models/AgendaJob";
 import { getIncompleteSoloStreaks } from "../../../src/Agenda/getIncompleteSoloStreaks";
 import { resetIncompleteSoloStreaks } from "../../../src/Agenda/resetIncompleteSoloStreaks";
 
@@ -65,7 +64,6 @@ describe("resetIncompleteSoloStreaks", () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail });
         await soloStreakModel.deleteOne({ _id: soloStreakId });
-        await agendaJobModel.deleteOne({ "data.timezone": timezone });
     });
 
     test("that resetIncompleteSoloStreaks updates the current and past values of a streak", async () => {

@@ -6,7 +6,6 @@ import {
     saveSoloStreakToDatabaseMiddleware,
     sendFormattedSoloStreakMiddleware,
     SoloStreakResponseLocals,
-    createDailySoloStreakCompleteCheckerForTimezoneMiddleware,
     retreiveTimezoneHeaderMiddleware,
     validateTimezoneMiddleware,
     sendMissingTimezoneErrorResponseMiddleware,
@@ -14,15 +13,12 @@ import {
     getSendMissingTimezoneErrorResponseMiddleware,
     getValidateTimezoneMiddleware,
     getSendInvalidTimezoneErrorResponseMiddleware,
-    getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware,
     defineEndOfDayMiddleware,
     defineCurrentTimeMiddleware,
     defineStartDayMiddleware,
     getDefineCurrentTimeMiddleware,
     getDefineStartDayMiddleware,
     getDefineEndOfDayMiddleware,
-    doesTimezoneAlreadyExistMiddleware,
-    getDoesTimezoneAlreadyExistMiddleware,
 } from "./createSoloStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { SupportedRequestHeaders } from "../../Server/headers";
@@ -653,108 +649,6 @@ describe(`saveSoloStreakToDatabaseMiddleware`, () => {
 
 });
 
-describe("doesTimezoneAlreadyExistMiddleware", () => {
-
-    test("that response.locals.doesTimezoneAlreadyExists is defined when timezone exists", async () => {
-        expect.assertions(3);
-        const timezone = "Europe/London";
-        const findOne = jest.fn(() => Promise.resolve(true));
-        const agendaJobModel = {
-            findOne
-        };
-        const request: any = {};
-        const response: any = { locals: { timezone } };
-        const next = jest.fn();
-
-        const middleware = getDoesTimezoneAlreadyExistMiddleware(agendaJobModel);
-        await middleware(request, response, next);
-
-        expect(findOne).toBeCalledWith({ "data.timezone": timezone });
-        expect(response.locals.doesTimezoneAlreadyExist).toBeDefined();
-        expect(next).toBeCalledWith();
-    });
-
-    test("that on error next is called with error", async () => {
-        expect.assertions(3);
-        const timezone = "Europe/London";
-        const errorMessage = "error";
-        const findOne = jest.fn(() => Promise.reject(errorMessage));
-        const agendaJobModel = {
-            findOne
-        };
-        const request: any = {};
-        const response: any = { locals: { timezone } };
-        const next = jest.fn();
-
-        const middleware = getDoesTimezoneAlreadyExistMiddleware(agendaJobModel);
-        await middleware(request, response, next);
-
-        expect(findOne).toBeCalledWith({ "data.timezone": timezone });
-        expect(response.locals.doesTimezoneAlreadyExist).not.toBeDefined();
-        expect(next).toBeCalledWith(errorMessage);
-    });
-
-});
-
-describe("createDailySoloStreakCompleteCheckerForTimezoneMiddleware", () => {
-
-    test("that agenda job is created successfully when timezone does not already exist", async () => {
-        expect.assertions(5);
-        const timezone = "Europe/London";
-        const request: any = {};
-        const endOfDay = new Date();
-        const doesTimezoneAlreadyExist = undefined;
-        const response: any = { locals: { endOfDay, doesTimezoneAlreadyExist, timezone } };
-        const next = jest.fn();
-        const start = jest.fn(() => Promise.resolve(true));
-        const repeatEvery = jest.fn(() => Promise.resolve(true));
-        const save = jest.fn(() => Promise.resolve(true));
-        const schedule = jest.fn(() => Promise.resolve({ save, repeatEvery }));
-        const agenda = { start, schedule, save };
-        const soloStreakCompleteTrackerForTimezoneJobName = "soloStreakComplete";
-
-        const middleware = getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware(agenda, soloStreakCompleteTrackerForTimezoneJobName);
-        await middleware(request, response, next);
-
-        expect(schedule).toBeCalledWith(endOfDay, soloStreakCompleteTrackerForTimezoneJobName, { timezone });
-        expect(start).toBeCalledWith();
-        expect(repeatEvery).toBeCalledWith(AgendaProcessTimes.day);
-        expect(save).toBeCalledWith();
-        expect(next).toBeCalledWith();
-    });
-
-    test("that agenda job is not created when timezone already exists", async () => {
-        expect.assertions(1);
-        const timezone = "Europe/London";
-        const endOfDay = new Date();
-        const doesTimezoneAlreadyExist = true;
-        const request: any = {};
-        const response: any = { locals: { endOfDay, doesTimezoneAlreadyExist, timezone } };
-        const next = jest.fn();
-        const agenda = {};
-        const soloStreakCompleteTrackerForTimezoneJobName = "soloStreakComplete";
-
-        const middleware = getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware(agenda, soloStreakCompleteTrackerForTimezoneJobName);
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith();
-    });
-
-    test("that next is called with error message on failure", async () => {
-        expect.assertions(1);
-        const request: any = {};
-        const endOfDay = new Date();
-        const response: any = { locals: { endOfDay } };
-        const next = jest.fn();
-        const agenda = {};
-        const soloStreakCompleteTrackerForTimezoneJobName = "soloStreakComplete";
-
-        const middleware = getCreateDailySoloStreakCompleteCheckerForTimezoneMiddleware(agenda, soloStreakCompleteTrackerForTimezoneJobName);
-        await middleware(request, response, next);
-        expect(next).toBeCalledWith(new TypeError("agenda.start is not a function"));
-    });
-});
-
 describe(`sendFormattedSoloStreakMiddleware`, () => {
     const ERROR_MESSAGE = "error";
     const savedSoloStreak = { userId: "abc", streakName: "Daily Spanish", streakDescription: "Practice spanish every day", startDate: new Date() } as SoloStreak;
@@ -798,8 +692,8 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
 
 describe(`createSoloStreakMiddlewares`, () => {
     test("that createSoloStreak middlewares are defined in the correct order", async () => {
-        expect.assertions(14);
-        expect(createSoloStreakMiddlewares.length).toEqual(13);
+        expect.assertions(12);
+        expect(createSoloStreakMiddlewares.length).toEqual(11);
         expect(createSoloStreakMiddlewares[0]).toBe(soloStreakRegistrationValidationMiddleware);
         expect(createSoloStreakMiddlewares[1]).toBe(retreiveTimezoneHeaderMiddleware);
         expect(createSoloStreakMiddlewares[2]).toBe(sendMissingTimezoneErrorResponseMiddleware);
@@ -810,8 +704,6 @@ describe(`createSoloStreakMiddlewares`, () => {
         expect(createSoloStreakMiddlewares[7]).toBe(defineEndOfDayMiddleware);
         expect(createSoloStreakMiddlewares[8]).toBe(createSoloStreakFromRequestMiddleware);
         expect(createSoloStreakMiddlewares[9]).toBe(saveSoloStreakToDatabaseMiddleware);
-        expect(createSoloStreakMiddlewares[10]).toBe(doesTimezoneAlreadyExistMiddleware);
-        expect(createSoloStreakMiddlewares[11]).toBe(createDailySoloStreakCompleteCheckerForTimezoneMiddleware);
-        expect(createSoloStreakMiddlewares[12]).toBe(sendFormattedSoloStreakMiddleware);
+        expect(createSoloStreakMiddlewares[10]).toBe(sendFormattedSoloStreakMiddleware);
     });
 });

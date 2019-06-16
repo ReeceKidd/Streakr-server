@@ -4,7 +4,6 @@ import server from "../../../src/app";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
-import { agendaJobModel } from "../../../src/Models/AgendaJob";
 import { soloStreakModel } from "../../../src/Models/SoloStreak";
 import { AuthPaths } from "../../../src/Routers/authRouter";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
@@ -65,7 +64,6 @@ describe(getSoloStreaksRoute, () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail });
         await soloStreakModel.deleteOne({ name: soloStreakName });
-        await agendaJobModel.deleteOne({ "data.timezone": parisTimezone });
     });
 
     test(`that solo streaks can be retreived for user`, async () => {

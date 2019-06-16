@@ -7,7 +7,6 @@ import { RouteCategories } from "../../../src/routeCategories";
 import { AuthPaths } from "../../../src/Routers/authRouter";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { userModel } from "../../../src/Models/User";
-import { agendaJobModel } from "../../../src/Models/AgendaJob";
 import { getIncompleteSoloStreaks } from "../../../src/Agenda/getIncompleteSoloStreaks";
 import { resetSoloStreaksNotCompletedTodayByTimezone } from "../../../src/Agenda/resetSoloStreaksNotCompletedTodayByTimezone";
 import { resetIncompleteSoloStreaks } from "../../../src/Agenda/resetIncompleteSoloStreaks";
@@ -66,7 +65,6 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
     afterAll(async () => {
         await userModel.deleteOne({ email: registeredEmail });
         await soloStreakModel.deleteOne({ _id: soloStreakId });
-        await agendaJobModel.deleteOne({ "data.timezone": timezone });
     });
 
     test("that getIncompleteSoloStreaks returns solo streaks that were not completed today", async () => {
@@ -81,7 +79,8 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
             numberOfDaysInARow: 0
         };
         const endDate = new Date();
-        await resetSoloStreaksNotCompletedTodayByTimezone(soloStreakModel, getIncompleteSoloStreaks, resetIncompleteSoloStreaks, timezone, defaultCurrentStreak, endDate);
+        const resetSoloStreaksPromises = await resetSoloStreaksNotCompletedTodayByTimezone(soloStreakModel, getIncompleteSoloStreaks, resetIncompleteSoloStreaks, timezone, defaultCurrentStreak, endDate);
+        await Promise.all(resetSoloStreaksPromises);
         const updatedSoloStreak = await soloStreakModel.findById(soloStreakId);
         expect(updatedSoloStreak.currentStreak.endDate).toBeUndefined();
         expect(updatedSoloStreak.pastStreaks.length).toBe(1);
