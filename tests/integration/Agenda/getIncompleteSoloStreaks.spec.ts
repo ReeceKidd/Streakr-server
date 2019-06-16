@@ -1,4 +1,8 @@
-import { soloStreakModel, soloStreakSchema } from "../../../src/Models/SoloStreak";
+import {
+  soloStreakModel,
+  soloStreakSchema,
+  SoloStreak
+} from "../../../src/Models/SoloStreak";
 import request from "supertest";
 
 import server from "../../../src/app";
@@ -20,60 +24,62 @@ const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 jest.setTimeout(120000);
 
 describe("getIncompleteSoloStreaks", () => {
+  let userId: string;
+  let jsonWebToken: string;
+  let soloStreakId: string;
+  const name = "Intermittent fasting";
+  const description = "I will fast until 1pm everyday";
+  const timezone = "America/Los_Angeles";
 
-    let userId;
-    let jsonWebToken;
-    let soloStreakId;
-    const name = "Intermittent fasting";
-    const description = "I will fast until 1pm everyday";
-    const timezone = "America/Los_Angeles";
+  beforeAll(async () => {
+    const registrationResponse = await request(server)
+      .post(registrationRoute)
+      .send({
+        userName: registeredUserName,
+        email: registeredEmail,
+        password: registeredPassword
+      });
+    userId = registrationResponse.body._id;
+    const loginResponse = await request(server)
+      .post(loginRoute)
+      .send({
+        email: registeredEmail,
+        password: registeredPassword
+      });
+    jsonWebToken = loginResponse.body.jsonWebToken;
+    const createSoloStreakResponse = await request(server)
+      .post(soloStreakRoute)
+      .send({
+        userId,
+        name,
+        description
+      })
+      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
+      .set({ [SupportedRequestHeaders.xTimezone]: timezone });
+    soloStreakId = createSoloStreakResponse.body._id;
+  });
 
-    beforeAll(async () => {
-        const registrationResponse = await request(server)
-            .post(registrationRoute)
-            .send(
-                {
-                    userName: registeredUserName,
-                    email: registeredEmail,
-                    password: registeredPassword
-                }
-            );
-        userId = registrationResponse.body._id;
-        const loginResponse = await request(server)
-            .post(loginRoute)
-            .send(
-                {
-                    email: registeredEmail,
-                    password: registeredPassword
-                }
-            );
-        jsonWebToken = loginResponse.body.jsonWebToken;
-        const createSoloStreakResponse = await request(server)
-            .post(soloStreakRoute)
-            .send({
-                userId,
-                name,
-                description
-            })
-            .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimezone]: timezone });
-        soloStreakId = createSoloStreakResponse.body._id;
-    });
+  afterAll(async () => {
+    await userModel.deleteOne({ email: registeredEmail });
+    await soloStreakModel.deleteOne({ _id: soloStreakId });
+  });
 
-    afterAll(async () => {
-        await userModel.deleteOne({ email: registeredEmail });
-        await soloStreakModel.deleteOne({ _id: soloStreakId });
-    });
-
-    test("that getIncompleteSoloStreaks returns solo streaks that were not completed today", async () => {
-        expect.assertions(1);
-        /*
+  test("that getIncompleteSoloStreaks returns solo streaks that were not completed today", async () => {
+    expect.assertions(1);
+    /*
       Have to force soloStreak to have new date because streaks without a new date aren't
       considered incomplete as they haven't been started
       */
-        await soloStreakModel.findByIdAndUpdate(soloStreakId, { startDate: new Date() });
-        const incompleteSoloStreaks = await getIncompleteSoloStreaks(soloStreakModel, timezone) as any;
-        const incompleteStreak = incompleteSoloStreaks.find(streak => streak.name = name);
-        expect(incompleteStreak.name).toEqual(name);
+    await soloStreakModel.findByIdAndUpdate(soloStreakId, {
+      startDate: new Date()
     });
+    const incompleteSoloStreaks = (await getIncompleteSoloStreaks(
+      soloStreakModel,
+      timezone
+    )) as any;
+    const incompleteStreak = incompleteSoloStreaks.find(
+      (streak: SoloStreak) => (streak.streakName = name)
+    );
+    expect(incompleteStreak.name).toEqual(name);
+  });
 });

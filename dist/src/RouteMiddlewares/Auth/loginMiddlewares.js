@@ -119,7 +119,7 @@ exports.getCompareRequestPasswordToUserHashedPasswordMiddleware = compare => (
   __awaiter(this, void 0, void 0, function*() {
     try {
       const requestPassword = request.body.password;
-      const { password } = response.locals;
+      const { password } = response.locals.user;
       response.locals.passwordMatchesHash = yield compare(
         requestPassword,
         password

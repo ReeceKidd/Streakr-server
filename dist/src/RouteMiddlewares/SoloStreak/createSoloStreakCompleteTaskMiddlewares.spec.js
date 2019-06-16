@@ -30,7 +30,6 @@ var __awaiter =
 Object.defineProperty(exports, "__esModule", { value: true });
 const createSoloStreakCompleteTaskMiddlewares_1 = require("./createSoloStreakCompleteTaskMiddlewares");
 const responseCodes_1 = require("../../Server/responseCodes");
-const headers_1 = require("../../Server/headers");
 describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
   const soloStreakId = "12345678";
   test("that next() is called when correct params are supplied", () => {
@@ -200,7 +199,7 @@ describe("sendSoloStreakDoesNotExistErrorMessageMiddleware", () => {
 describe("retreiveTimezoneHeaderMiddleware", () => {
   test("that response.locals.timezone is defined and next() is called", () => {
     expect.assertions(3);
-    const header = jest.fn(() => true);
+    const header = jest.fn(() => timezoneHeader);
     const timezoneHeader = "Europe/London";
     const request = {
       header
@@ -210,7 +209,7 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
     };
     const next = jest.fn();
     const middleware = createSoloStreakCompleteTaskMiddlewares_1.getRetreiveTimezoneHeaderMiddleware(
-      headers_1.SupportedRequestHeaders.xTimezone
+      timezoneHeader
     );
     middleware(request, response, next);
     expect(header).toBeCalledWith(timezoneHeader);
