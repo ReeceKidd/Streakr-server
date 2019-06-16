@@ -98,7 +98,7 @@ export const getCompareRequestPasswordToUserHashedPasswordMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const requestPassword = request.body.password;
-    const { password } = response.locals;
+    const { password } = response.locals.user;
     response.locals.passwordMatchesHash = await compare(
       requestPassword,
       password
@@ -117,7 +117,7 @@ export const getPasswordsMatchValidationMiddleware = (
   loginUnsuccessfulMessage: string
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { passwordMatchesHash } = response.locals as LoginResponseLocals;
+    const { passwordMatchesHash } = response.locals;
     if (!passwordMatchesHash) {
       return response.status(ResponseCodes.badRequest).send({
         message: loginUnsuccessfulMessage
