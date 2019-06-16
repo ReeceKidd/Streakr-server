@@ -8,9 +8,13 @@ import { MessageCategories } from "../../Messages/messageCategories";
 import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { SupportedRequestHeaders } from "../../Server/headers";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { userModel } from "../../Models/User";
+import { userModel, User } from "../../Models/User";
 import { soloStreakModel, SoloStreak } from "../../Models/SoloStreak";
-import { completeTaskModel, TypesOfStreak } from "../../Models/CompleteTask";
+import {
+  completeTaskModel,
+  TypesOfStreak,
+  CompleteTask
+} from "../../Models/CompleteTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
 export const soloStreakTaskCompleteParamsValidationSchema = {
@@ -73,11 +77,9 @@ export const sendSoloStreakDoesNotExistErrorMessageMiddleware = getSendSoloStrea
   localisedSoloStreakDoesNotExistMessage
 );
 
-export const getRetreiveTimezoneHeaderMiddleware = timezoneHeader => (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const getRetreiveTimezoneHeaderMiddleware = (
+  timezoneHeader: SupportedRequestHeaders
+) => (request: Request, response: Response, next: NextFunction) => {
   try {
     response.locals.timezone = request.header(timezoneHeader);
     next();
@@ -91,8 +93,8 @@ export const retreiveTimezoneHeaderMiddleware = getRetreiveTimezoneHeaderMiddlew
 );
 
 export const getSendMissingTimezoneErrorResponseMiddleware = (
-  unprocessableEntityCode,
-  localisedErrorMessage
+  unprocessableEntityCode: ResponseCodes,
+  localisedErrorMessage: string
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
@@ -117,7 +119,7 @@ export const sendMissingTimezoneErrorResponseMiddleware = getSendMissingTimezone
   localisedMissingTimezoneHeaderMessage
 );
 
-export const getValidateTimezoneMiddleware = isValidTimezone => (
+export const getValidateTimezoneMiddleware = (isValidTimezone: Function) => (
   request: Request,
   response: Response,
   next: NextFunction
@@ -162,11 +164,9 @@ export const sendInvalidTimezoneErrorResponseMiddleware = getSendInvalidTimezone
   localisedInvalidTimezoneMessage
 );
 
-export const getRetreiveUserMiddleware = userModel => async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const getRetreiveUserMiddleware = (
+  userModel: mongoose.Model<User>
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { minimumUserData } = response.locals;
     const user = await userModel.findOne({ _id: minimumUserData._id }).lean();
@@ -206,7 +206,7 @@ export const sendUserDoesNotExistErrorMiddleware = getSendUserDoesNotExistErrorM
   localisedUserDoesNotExistErrorMessage
 );
 
-export const getSetTaskCompleteTimeMiddleware = moment => (
+export const getSetTaskCompleteTimeMiddleware = (moment: any) => (
   request: Request,
   response: Response,
   next: NextFunction
@@ -247,7 +247,7 @@ export const setStreakStartDateMiddleware = getSetStreakStartDateMiddleware(
   soloStreakModel
 );
 
-export const getSetDayTaskWasCompletedMiddleware = dayFormat => (
+export const getSetDayTaskWasCompletedMiddleware = (dayFormat: string) => (
   request: Request,
   response: Response,
   next: NextFunction
@@ -268,11 +268,9 @@ export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddlew
   dayFormat
 );
 
-export const getHasTaskAlreadyBeenCompletedTodayMiddleware = completeTaskModel => async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
+  completeTaskModel: mongoose.Model<CompleteTask>
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { soloStreakId } = request.params;
     const { taskCompleteDay, user } = response.locals;
@@ -343,11 +341,9 @@ export const createCompleteTaskDefinitionMiddleware = getCreateCompleteTaskDefin
   TypesOfStreak.soloStreak
 );
 
-export const getSaveTaskCompleteMiddleware = completeTaskModel => async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const getSaveTaskCompleteMiddleware = (
+  completeTaskModel: mongoose.Model<CompleteTask>
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { completeTaskDefinition } = response.locals;
     const completeTask = await new completeTaskModel(
@@ -364,11 +360,9 @@ export const saveTaskCompleteMiddleware = getSaveTaskCompleteMiddleware(
   completeTaskModel
 );
 
-export const getStreakMaintainedMiddleware = soloStreakModel => async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const getStreakMaintainedMiddleware = (
+  soloStreakModel: mongoose.Model<SoloStreak>
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { soloStreakId } = request.params;
     await soloStreakModel.updateOne(

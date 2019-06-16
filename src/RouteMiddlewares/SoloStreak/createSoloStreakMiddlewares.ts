@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
 import moment from "moment-timezone";
+import * as mongoose from "mongoose";
 
 import { AgendaTimeRanges } from "../../Agenda/agenda";
 
@@ -16,172 +17,233 @@ import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { dayFormat } from "./createSoloStreakCompleteTaskMiddlewares";
 
 export interface SoloStreakRegistrationRequestBody {
-    userId: string;
-    name: string;
-    description: string;
-    createdAt: Date;
-    modifiedAt: Date;
+  userId: string;
+  name: string;
+  description: string;
+  createdAt: Date;
+  modifiedAt: Date;
 }
 
 export interface SoloStreakResponseLocals {
-    user?: User;
-    newSoloStreak?: SoloStreak;
-    savedSoloStreak?: SoloStreak;
+  user?: User;
+  newSoloStreak?: SoloStreak;
+  savedSoloStreak?: SoloStreak;
 }
 
-
 const soloStreakRegisterstrationValidationSchema = {
-    userId: Joi.string().required(),
-    name: Joi.string().required(),
-    description: Joi.string().required(),
+  userId: Joi.string().required(),
+  name: Joi.string().required(),
+  description: Joi.string().required()
 };
 
-export const soloStreakRegistrationValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
-    Joi.validate(request.body, soloStreakRegisterstrationValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
+export const soloStreakRegistrationValidationMiddleware = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+): void => {
+  Joi.validate(
+    request.body,
+    soloStreakRegisterstrationValidationSchema,
+    getValidationErrorMessageSenderMiddleware(request, response, next)
+  );
 };
 
-const localisedMissingTimezoneHeaderMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.missingTimezoneHeaderMessage);
+const localisedMissingTimezoneHeaderMessage = getLocalisedString(
+  MessageCategories.failureMessages,
+  FailureMessageKeys.missingTimezoneHeaderMessage
+);
 
-export const retreiveTimezoneHeaderMiddleware = (request: Request, response: Response, next: NextFunction) => {
-    try {
-        response.locals.timezone = request.header(SupportedRequestHeaders.xTimezone);
-        next();
-    } catch (err) {
-        next(err);
+export const retreiveTimezoneHeaderMiddleware = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    response.locals.timezone = request.header(
+      SupportedRequestHeaders.xTimezone
+    );
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getSendMissingTimezoneErrorResponseMiddleware = (
+  localisedErrorMessage: string
+) => (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { timezone } = response.locals;
+    if (!timezone) {
+      return response
+        .status(ResponseCodes.unprocessableEntity)
+        .send({ message: localisedErrorMessage });
     }
+    next();
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const getSendMissingTimezoneErrorResponseMiddleware = localisedErrorMessage => (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { timezone } = response.locals;
-        if (!timezone) {
-            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedErrorMessage });
-        }
-        next();
-    } catch (err) {
-        next(err);
-    }
+export const sendMissingTimezoneErrorResponseMiddleware = getSendMissingTimezoneErrorResponseMiddleware(
+  localisedMissingTimezoneHeaderMessage
+);
+
+export const getValidateTimezoneMiddleware = (isValidTimezone: Function) => (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { timezone } = response.locals;
+    response.locals.validTimezone = isValidTimezone(timezone);
+    next();
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const sendMissingTimezoneErrorResponseMiddleware = getSendMissingTimezoneErrorResponseMiddleware(localisedMissingTimezoneHeaderMessage);
+export const validateTimezoneMiddleware = getValidateTimezoneMiddleware(
+  moment.tz.zone
+);
 
-export const getValidateTimezoneMiddleware = isValidTimezone => (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { timezone } = response.locals;
-        response.locals.validTimezone = isValidTimezone(timezone);
-        next();
-    } catch (err) {
-        next(err);
+export const getSendInvalidTimezoneErrorResponseMiddleware = (
+  localisedErrorMessage: string
+) => (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { validTimezone } = response.locals;
+    if (!validTimezone) {
+      return response
+        .status(ResponseCodes.unprocessableEntity)
+        .send({ message: localisedErrorMessage });
     }
+    next();
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const validateTimezoneMiddleware = getValidateTimezoneMiddleware(moment.tz.zone);
+const localisedInvalidTimezoneMessage = getLocalisedString(
+  MessageCategories.failureMessages,
+  FailureMessageKeys.invalidTimezoneMessage
+);
 
-export const getSendInvalidTimezoneErrorResponseMiddleware = localisedErrorMessage => (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { validTimezone } = response.locals;
-        if (!validTimezone) {
-            return response.status(ResponseCodes.unprocessableEntity).send({ message: localisedErrorMessage });
-        }
-        next();
-    } catch (err) {
-        next(err);
-    }
+export const sendInvalidTimezoneErrorResponseMiddleware = getSendInvalidTimezoneErrorResponseMiddleware(
+  localisedInvalidTimezoneMessage
+);
+
+export const getDefineCurrentTimeMiddleware = (moment: any) => (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { timezone } = response.locals;
+    const currentTime = moment().tz(timezone);
+    response.locals.currentTime = currentTime;
+    next();
+  } catch (err) {
+    next(err);
+  }
 };
 
-const localisedInvalidTimezoneMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.invalidTimezoneMessage);
+export const defineCurrentTimeMiddleware = getDefineCurrentTimeMiddleware(
+  moment
+);
 
-export const sendInvalidTimezoneErrorResponseMiddleware = getSendInvalidTimezoneErrorResponseMiddleware(localisedInvalidTimezoneMessage);
-
-export const getDefineCurrentTimeMiddleware = moment => (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { timezone } = response.locals;
-        const currentTime = moment().tz(timezone);
-        response.locals.currentTime = currentTime;
-        next();
-    } catch (err) {
-        next(err);
-    }
-};
-
-export const defineCurrentTimeMiddleware = getDefineCurrentTimeMiddleware(moment);
-
-export const getDefineStartDayMiddleware = (dayFormat: string) => (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { currentTime } = response.locals;
-        const startDay = currentTime.format(dayFormat);
-        response.locals.startDay = startDay;
-        next();
-    } catch (err) {
-        next(err);
-    }
+export const getDefineStartDayMiddleware = (dayFormat: string) => (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { currentTime } = response.locals;
+    const startDay = currentTime.format(dayFormat);
+    response.locals.startDay = startDay;
+    next();
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const defineStartDayMiddleware = getDefineStartDayMiddleware(dayFormat);
 
-export const getDefineEndOfDayMiddleware = (dayTimeRange: string) => (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { currentTime } = response.locals;
-        response.locals.endOfDay = currentTime.endOf(dayTimeRange).toDate();
-        next();
-    } catch (err) {
-        next(err);
-    }
+export const getDefineEndOfDayMiddleware = (dayTimeRange: string) => (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { currentTime } = response.locals;
+    response.locals.endOfDay = currentTime.endOf(dayTimeRange).toDate();
+    next();
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const defineEndOfDayMiddleware = getDefineEndOfDayMiddleware(AgendaTimeRanges.day);
+export const defineEndOfDayMiddleware = getDefineEndOfDayMiddleware(
+  AgendaTimeRanges.day
+);
 
-export const getCreateSoloStreakFromRequestMiddleware = soloStreak => (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const { timezone } = response.locals;
-        const { name, description, userId } = request.body;
-        response.locals.newSoloStreak = new soloStreak({ name, description, userId, timezone });
-        next();
-    } catch (err) {
-        next(err);
-    }
+export const getCreateSoloStreakFromRequestMiddleware = (
+  soloStreak: mongoose.Model<SoloStreak>
+) => (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { timezone } = response.locals;
+    const { name, description, userId } = request.body;
+    response.locals.newSoloStreak = new soloStreak({
+      name,
+      description,
+      userId,
+      timezone
+    });
+    next();
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const createSoloStreakFromRequestMiddleware = getCreateSoloStreakFromRequestMiddleware(soloStreakModel);
-
+export const createSoloStreakFromRequestMiddleware = getCreateSoloStreakFromRequestMiddleware(
+  soloStreakModel
+);
 
 export const saveSoloStreakToDatabaseMiddleware = async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
+  request: Request,
+  response: Response,
+  next: NextFunction
 ) => {
-    try {
-        const newSoloStreak: SoloStreak = response.locals.newSoloStreak;
-        response.locals.savedSoloStreak = await newSoloStreak.save();
-        next();
-    } catch (err) {
-        next(err);
-    }
+  try {
+    const newSoloStreak: SoloStreak = response.locals.newSoloStreak;
+    response.locals.savedSoloStreak = await newSoloStreak.save();
+    next();
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const sendFormattedSoloStreakMiddleware = (
-    request: Request,
-    response: Response,
-    next: NextFunction,
+  request: Request,
+  response: Response,
+  next: NextFunction
 ) => {
-    try {
-        const { savedSoloStreak } = response.locals as SoloStreakResponseLocals;
-        return response.status(ResponseCodes.created).send(savedSoloStreak);
-    } catch (err) {
-        next(err);
-    }
+  try {
+    const { savedSoloStreak } = response.locals as SoloStreakResponseLocals;
+    return response.status(ResponseCodes.created).send(savedSoloStreak);
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const createSoloStreakMiddlewares = [
-    soloStreakRegistrationValidationMiddleware,
-    retreiveTimezoneHeaderMiddleware,
-    sendMissingTimezoneErrorResponseMiddleware,
-    validateTimezoneMiddleware,
-    sendInvalidTimezoneErrorResponseMiddleware,
-    defineCurrentTimeMiddleware,
-    defineStartDayMiddleware,
-    defineEndOfDayMiddleware,
-    createSoloStreakFromRequestMiddleware,
-    saveSoloStreakToDatabaseMiddleware,
-    sendFormattedSoloStreakMiddleware
+  soloStreakRegistrationValidationMiddleware,
+  retreiveTimezoneHeaderMiddleware,
+  sendMissingTimezoneErrorResponseMiddleware,
+  validateTimezoneMiddleware,
+  sendInvalidTimezoneErrorResponseMiddleware,
+  defineCurrentTimeMiddleware,
+  defineStartDayMiddleware,
+  defineEndOfDayMiddleware,
+  createSoloStreakFromRequestMiddleware,
+  saveSoloStreakToDatabaseMiddleware,
+  sendFormattedSoloStreakMiddleware
 ];

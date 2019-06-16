@@ -38,6 +38,7 @@ import {
   getSetStreakStartDateMiddleware
 } from "./createSoloStreakCompleteTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { SupportedRequestHeaders } from "../../Server/headers";
 
 describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
   const soloStreakId = "12345678";
@@ -223,7 +224,9 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
       locals: {}
     };
     const next = jest.fn();
-    const middleware = getRetreiveTimezoneHeaderMiddleware(timezoneHeader);
+    const middleware = getRetreiveTimezoneHeaderMiddleware(
+      SupportedRequestHeaders.xTimezone
+    );
     middleware(request, response, next);
     expect(header).toBeCalledWith(timezoneHeader);
     expect(response.locals.timezone).toBeDefined();
@@ -238,7 +241,9 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
       locals: {}
     };
     const next = jest.fn();
-    const middleware = getRetreiveTimezoneHeaderMiddleware(timezoneHeader);
+    const middleware = getRetreiveTimezoneHeaderMiddleware(
+      timezoneHeader as any
+    );
     middleware(request, response, next);
     expect(next).toBeCalledWith(
       new TypeError("request.header is not a function")
@@ -328,7 +333,7 @@ describe("validateTimezoneMiddleware", () => {
     const request: any = {};
     const response: any = { locals: { timezone } };
     const next = jest.fn();
-    const middleware = getValidateTimezoneMiddleware(undefined);
+    const middleware = getValidateTimezoneMiddleware(undefined as any);
     middleware(request, response, next);
     expect(next).toBeCalledWith(
       new TypeError("isValidTimezone is not a function")
@@ -407,7 +412,7 @@ describe("retreiveUserMiddleware", () => {
     const request: any = {};
     const response: any = { locals: { minimumUserData } };
     const next = jest.fn();
-    const middleware = getRetreiveUserMiddleware(userModel);
+    const middleware = getRetreiveUserMiddleware(userModel as any);
     await middleware(request, response, next);
     expect(response.locals.user).toBeDefined();
     expect(findOne).toBeCalledWith({ _id: minimumUserData._id });
@@ -426,7 +431,7 @@ describe("retreiveUserMiddleware", () => {
     const request: any = {};
     const response: any = { status, locals: { minimumUserData } };
     const next = jest.fn();
-    const middleware = getRetreiveUserMiddleware(userModel);
+    const middleware = getRetreiveUserMiddleware(userModel as any);
     await middleware(request, response, next);
     expect(next).toBeCalledWith(
       new TypeError("userModel.findOne(...).lean is not a function")
@@ -556,7 +561,7 @@ describe("setStreakStartDateMiddleware", () => {
     const request: any = {};
     const response: any = {};
     const next = jest.fn();
-    const middleware = getSetStreakStartDateMiddleware(undefined);
+    const middleware = getSetStreakStartDateMiddleware(undefined as any);
     middleware(request, response, next);
     expect(next).toBeCalledWith(
       new TypeError("Cannot read property 'soloStreak' of undefined")
@@ -611,7 +616,7 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     const response: any = { locals: { taskCompleteDay, user } };
     const next = jest.fn();
     const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
-      completeTaskModel
+      completeTaskModel as any
     );
     await middleware(request, response, next);
     expect(findOne).toBeCalledWith({
@@ -638,7 +643,7 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     const response: any = { locals: { taskCompleteDay, user } };
     const next = jest.fn();
     const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
-      completeTaskModel
+      completeTaskModel as any
     );
     await middleware(request, response, next);
     expect(next).toBeCalledWith(errorMessage);
@@ -794,11 +799,11 @@ describe(`saveTaskCompleteMiddleware`, () => {
       streakType: string;
 
       constructor(
-        userId,
-        streakId,
-        taskCompleteTime,
-        taskCompleteDay,
-        streakType
+        userId: string,
+        streakId: string,
+        taskCompleteTime: Date,
+        taskCompleteDay: string,
+        streakType: string
       ) {
         this.userId = userId;
         (this.streakId = streakId), (this.taskCompleteTime = taskCompleteTime);
@@ -813,7 +818,7 @@ describe(`saveTaskCompleteMiddleware`, () => {
     const request: any = {};
     const response: any = { locals: { completeTaskDefinition } };
     const next = jest.fn();
-    const middleware = getSaveTaskCompleteMiddleware(CompleteTaskModel);
+    const middleware = getSaveTaskCompleteMiddleware(CompleteTaskModel as any);
     await middleware(request, response, next);
     expect(response.locals.completeTask).toBeDefined();
     expect(save).toBeCalledWith();
@@ -838,7 +843,7 @@ describe(`saveTaskCompleteMiddleware`, () => {
     const request: any = {};
     const response: any = { locals: { completeTaskDefinition } };
     const next = jest.fn();
-    const middleware = getSaveTaskCompleteMiddleware({});
+    const middleware = getSaveTaskCompleteMiddleware({} as any);
     await middleware(request, response, next);
     expect(next).toBeCalledWith(
       new TypeError("completeTaskModel is not a constructor")
@@ -857,7 +862,7 @@ describe("streakMaintainedMiddleware", () => {
     const request: any = { params: { soloStreakId } };
     const response: any = {};
     const next = jest.fn();
-    const middleware = getStreakMaintainedMiddleware(soloStreakModel);
+    const middleware = getStreakMaintainedMiddleware(soloStreakModel as any);
     await middleware(request, response, next);
     expect(updateOne).toBeCalledWith(
       { _id: soloStreakId },
@@ -873,7 +878,7 @@ describe("streakMaintainedMiddleware", () => {
     const request: any = { params: { soloStreakId } };
     const response: any = {};
     const next = jest.fn();
-    const middleware = getStreakMaintainedMiddleware(soloStreakModel);
+    const middleware = getStreakMaintainedMiddleware(soloStreakModel as any);
     await middleware(request, response, next);
     expect(next).toBeCalledWith(
       new TypeError("soloStreakModel.updateOne is not a function")
