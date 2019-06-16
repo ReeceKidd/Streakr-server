@@ -1,4 +1,3 @@
-
 import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
 import { compare } from "bcryptjs";
@@ -13,7 +12,7 @@ import { User, IMinimumUserData } from "../../Models/User";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { userModel } from "../../Models/User";
 import { ResponseCodes } from "../../Server/responseCodes";
-
+import * as mongoose from "mongoose";
 
 export interface LoginRequestBody {
   email: string;
@@ -26,49 +25,57 @@ export interface LoginResponseLocals {
   minimumUserData?: IMinimumUserData;
   jsonWebToken?: string;
   expiry?: {
-    expiresIn: number,
-    unitOfTime: string
+    expiresIn: number;
+    unitOfTime: string;
   };
 }
 
 const loginValidationSchema = {
-  email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(),
+  email: Joi.string()
+    .email()
+    .required(),
+  password: Joi.string()
+    .min(6)
+    .required()
 };
 
-export const loginRequestValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
-  Joi.validate(request.body, loginValidationSchema, getValidationErrorMessageSenderMiddleware(request, response, next));
-};
-
-
-export const getRetreiveUserWithEmailMiddleware = userModel => async (
+export const loginRequestValidationMiddleware = (
   request: Request,
   response: Response,
-  next: NextFunction,
-) => {
+  next: NextFunction
+): void => {
+  Joi.validate(
+    request.body,
+    loginValidationSchema,
+    getValidationErrorMessageSenderMiddleware(request, response, next)
+  );
+};
+
+export const getRetreiveUserWithEmailMiddleware = (
+  userModel: mongoose.Model<User>
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { email } = request.body as LoginRequestBody;
     const user = await userModel.findOne({ email });
-    (response.locals as LoginResponseLocals).user = user;
+    response.locals.user = user;
     next();
   } catch (err) {
     next(err);
   }
 };
 
-export const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(userModel);
+export const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddleware(
+  userModel
+);
 
-
-export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
-  request: Request,
-  response: Response,
-  next: NextFunction,
-) => {
+export const getUserExistsValidationMiddleware = (
+  userDoesNotExistMessage: string
+) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { user } = response.locals as LoginResponseLocals;
     if (!user) {
       return response.status(ResponseCodes.badRequest).send({
-        message: userDoesNotExistMessage,
+        message: userDoesNotExistMessage
       });
     }
     next();
@@ -77,39 +84,43 @@ export const getUserExistsValidationMiddleware = userDoesNotExistMessage => (
   }
 };
 
-const localisedUserDoesNotExistMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage);
+const localisedUserDoesNotExistMessage = getLocalisedString(
+  MessageCategories.failureMessages,
+  FailureMessageKeys.loginUnsuccessfulMessage
+);
 
-export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(localisedUserDoesNotExistMessage);
+export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(
+  localisedUserDoesNotExistMessage
+);
 
-
-export const getCompareRequestPasswordToUserHashedPasswordMiddleware = compare => async (
-  request: Request,
-  response: Response,
-  next: NextFunction,
-) => {
+export const getCompareRequestPasswordToUserHashedPasswordMiddleware = (
+  compare: Function
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const requestPassword = (request.body as LoginRequestBody).password;
-    const { password } = (response.locals as LoginResponseLocals).user;
-    response.locals.passwordMatchesHash = await compare(requestPassword, password);
+    const requestPassword = request.body.password;
+    const { password } = response.locals;
+    response.locals.passwordMatchesHash = await compare(
+      requestPassword,
+      password
+    );
     next();
   } catch (err) {
     next(err);
   }
 };
 
-export const compareRequestPasswordToUserHashedPasswordMiddleware = getCompareRequestPasswordToUserHashedPasswordMiddleware(compare);
+export const compareRequestPasswordToUserHashedPasswordMiddleware = getCompareRequestPasswordToUserHashedPasswordMiddleware(
+  compare
+);
 
-
-export const getPasswordsMatchValidationMiddleware = loginUnsuccessfulMessage => (
-  request: Request,
-  response: Response,
-  next: NextFunction,
-) => {
+export const getPasswordsMatchValidationMiddleware = (
+  loginUnsuccessfulMessage: string
+) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { passwordMatchesHash } = response.locals as LoginResponseLocals;
     if (!passwordMatchesHash) {
       return response.status(ResponseCodes.badRequest).send({
-        message: loginUnsuccessfulMessage,
+        message: loginUnsuccessfulMessage
       });
     }
     next();
@@ -118,20 +129,25 @@ export const getPasswordsMatchValidationMiddleware = loginUnsuccessfulMessage =>
   }
 };
 
-const localisedLoginUnsuccessfulMessage = getLocalisedString(MessageCategories.failureMessages, FailureMessageKeys.loginUnsuccessfulMessage);
+const localisedLoginUnsuccessfulMessage = getLocalisedString(
+  MessageCategories.failureMessages,
+  FailureMessageKeys.loginUnsuccessfulMessage
+);
 
-export const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware(localisedLoginUnsuccessfulMessage);
+export const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware(
+  localisedLoginUnsuccessfulMessage
+);
 
 export const setMinimumUserDataMiddleware = (
   request: Request,
   response: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
-    const { user } = response.locals as LoginResponseLocals;
+    const { user } = response.locals;
     const minimumUserData: IMinimumUserData = {
       _id: user._id,
-      userName: user.userName,
+      userName: user.userName
     };
     response.locals.minimumUserData = minimumUserData;
     next();
@@ -140,7 +156,10 @@ export const setMinimumUserDataMiddleware = (
   }
 };
 
-export const getSetJsonWebTokenExpiryInfoMiddleware = (expiresIn: number, unitOfTime: string) => (request: Request, response: Response, next: NextFunction) => {
+export const getSetJsonWebTokenExpiryInfoMiddleware = (
+  expiresIn: number,
+  unitOfTime: string
+) => (request: Request, response: Response, next: NextFunction) => {
   try {
     response.locals.expiry = {
       expiresIn,
@@ -155,18 +174,23 @@ export const getSetJsonWebTokenExpiryInfoMiddleware = (expiresIn: number, unitOf
 const oneMonthInSeconds = 2629746;
 const unitOfTime = "seconds";
 
-export const setJsonWebTokenExpiryInfoMiddleware = getSetJsonWebTokenExpiryInfoMiddleware(oneMonthInSeconds, unitOfTime);
+export const setJsonWebTokenExpiryInfoMiddleware = getSetJsonWebTokenExpiryInfoMiddleware(
+  oneMonthInSeconds,
+  unitOfTime
+);
 
-
-export const getSetJsonWebTokenMiddleware = (signToken: Function, jwtSecret: string) => (
-  request: Request,
-  response: Response,
-  next: NextFunction,
-) => {
+export const getSetJsonWebTokenMiddleware = (
+  signToken: Function,
+  jwtSecret: string
+) => (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { minimumUserData, expiry } = response.locals as LoginResponseLocals;
+    const { minimumUserData, expiry } = response.locals;
     const jwtOptions = { expiresIn: expiry.expiresIn };
-    const jsonWebToken: string = signToken({ minimumUserData }, jwtSecret, jwtOptions);
+    const jsonWebToken: string = signToken(
+      { minimumUserData },
+      jwtSecret,
+      jwtOptions
+    );
     (response.locals as LoginResponseLocals).jsonWebToken = jsonWebToken;
     next();
   } catch (err) {
@@ -174,24 +198,34 @@ export const getSetJsonWebTokenMiddleware = (signToken: Function, jwtSecret: str
   }
 };
 
-export const setJsonWebTokenMiddleware = getSetJsonWebTokenMiddleware(jwt.sign, jwtSecret);
+export const setJsonWebTokenMiddleware = getSetJsonWebTokenMiddleware(
+  jwt.sign,
+  jwtSecret
+);
 
 export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) => (
   request: Request,
   response: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     const { jsonWebToken, expiry } = response.locals as LoginResponseLocals;
-    return response.status(ResponseCodes.success).send({ jsonWebToken, message: loginSuccessMessage, expiry });
+    return response
+      .status(ResponseCodes.success)
+      .send({ jsonWebToken, message: loginSuccessMessage, expiry });
   } catch (err) {
     next(err);
   }
 };
 
-const localisedLoginSuccessMessage = getLocalisedString(MessageCategories.successMessages, SuccessMessageKeys.loginSuccessMessage);
+const localisedLoginSuccessMessage = getLocalisedString(
+  MessageCategories.successMessages,
+  SuccessMessageKeys.loginSuccessMessage
+);
 
-export const loginSuccessfulMiddleware = getLoginSuccessfulMiddleware(localisedLoginSuccessMessage);
+export const loginSuccessfulMiddleware = getLoginSuccessfulMiddleware(
+  localisedLoginSuccessMessage
+);
 
 export const loginMiddlewares = [
   loginRequestValidationMiddleware,
@@ -204,5 +238,3 @@ export const loginMiddlewares = [
   setJsonWebTokenMiddleware,
   loginSuccessfulMiddleware
 ];
-
-

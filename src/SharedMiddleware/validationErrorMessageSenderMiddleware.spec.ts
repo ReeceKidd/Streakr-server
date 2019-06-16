@@ -21,7 +21,7 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
       next as NextFunction
     );
 
-    middleware(undefined);
+    middleware(undefined as any);
 
     expect.assertions(3);
     expect(status).not.toHaveBeenCalled();
@@ -82,5 +82,4 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
     expect(send).toBeCalledWith({ message: otherError });
     expect(next).not.toBeCalled();
   });
-
 });
