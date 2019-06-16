@@ -215,7 +215,7 @@ describe("sendSoloStreakDoesNotExistErrorMessageMiddleware", () => {
 describe("retreiveTimezoneHeaderMiddleware", () => {
   test("that response.locals.timezone is defined and next() is called", () => {
     expect.assertions(3);
-    const header = jest.fn(() => true);
+    const header = jest.fn(() => timezoneHeader);
     const timezoneHeader = "Europe/London";
     const request: any = {
       header
@@ -225,7 +225,7 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
     };
     const next = jest.fn();
     const middleware = getRetreiveTimezoneHeaderMiddleware(
-      SupportedRequestHeaders.xTimezone
+      timezoneHeader as any
     );
     middleware(request, response, next);
     expect(header).toBeCalledWith(timezoneHeader);
