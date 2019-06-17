@@ -1,42 +1,53 @@
 import Agenda from "agenda";
 import { soloStreakModel } from "../Models/SoloStreak";
 import { resetSoloStreaksNotCompletedTodayByTimezone } from "./resetSoloStreaksNotCompletedTodayByTimezone";
-import databaseConnectionString from "../../config/databaseConnectionString";
 import { getIncompleteSoloStreaks } from "./getIncompleteSoloStreaks";
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
+import { getServiceConfig } from "../getServiceConfig";
 
+const { DATABASE_URI } = getServiceConfig();
 const agenda = new Agenda({
-    db: {
-        address: databaseConnectionString,
-        collection: "AgendaJobs",
-        options: {
-            useNewUrlParser: true
-        }
-    },
-    processEvery: "30 seconds"
+  db: {
+    address: DATABASE_URI,
+    collection: "AgendaJobs",
+    options: {
+      useNewUrlParser: true
+    }
+  },
+  processEvery: "30 seconds"
 });
 
 export enum AgendaJobs {
-    soloStreakCompleteForTimezoneTracker = "soloStreakCompleteForTimezoneTracker"
+  soloStreakCompleteForTimezoneTracker = "soloStreakCompleteForTimezoneTracker"
 }
 
 export enum AgendaProcessTimes {
-    day = "24 hours"
+  day = "24 hours"
 }
 
 export enum AgendaTimeRanges {
-    day = "day"
+  day = "day"
 }
 
-agenda.define(AgendaJobs.soloStreakCompleteForTimezoneTracker, async (job, done) => {
+agenda.define(
+  AgendaJobs.soloStreakCompleteForTimezoneTracker,
+  async (job, done) => {
     const { timezone } = job.attrs.data;
     const defaultCurrentStreak = {
-        startDate: undefined,
-        numberOfDaysInARow: 0
+      startDate: undefined,
+      numberOfDaysInARow: 0
     };
     const endDate = new Date();
-    await resetSoloStreaksNotCompletedTodayByTimezone(soloStreakModel, getIncompleteSoloStreaks, resetIncompleteSoloStreaks, timezone, defaultCurrentStreak, endDate);
+    await resetSoloStreaksNotCompletedTodayByTimezone(
+      soloStreakModel,
+      getIncompleteSoloStreaks,
+      resetIncompleteSoloStreaks,
+      timezone,
+      defaultCurrentStreak,
+      endDate
+    );
     done();
-});
+  }
+);
 
 export default agenda;

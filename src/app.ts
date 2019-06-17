@@ -4,7 +4,11 @@ import mongoose from "mongoose";
 import passport from "passport";
 import ApiVersions from "./Server/versions";
 import v1Router from "./versions/v1";
-import databaseConnectionString from "../config/databaseConnectionString";
+import dotenv from "dotenv";
+import { getServiceConfig } from "./getServiceConfig";
+dotenv.config();
+
+const { DATABASE_URI } = getServiceConfig();
 
 const app = express();
 app.use(bodyParser.json());
@@ -18,10 +22,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 mongoose
-  .connect(
-    databaseConnectionString,
-    { useNewUrlParser: true, useFindAndModify: false }
-  )
+  .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false })
   .catch(err => console.log(err.message));
 
 mongoose.set("useCreateIndex", true);

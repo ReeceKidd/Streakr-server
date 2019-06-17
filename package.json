@@ -22,6 +22,7 @@
   "author": "Reece Kidd",
   "license": "ISC",
   "dependencies": {
+    "@types/dotenv": "^6.1.1",
     "@types/yargs": "^13.0.0",
     "agenda": "^2.0.2",
     "aws-sdk": "^2.471.0",

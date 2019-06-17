@@ -9,5 +9,3 @@ let databaseConnectionString = `mongodb+srv://${databaseUsername}:${databasePass
 if (process.env.NODE_ENV === Environments.LOCAL) {
   databaseConnectionString = `mongodb://localhost:27017/streakoid`;
 }
-
-export default databaseConnectionString;
