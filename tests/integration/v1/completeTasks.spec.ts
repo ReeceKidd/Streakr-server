@@ -10,7 +10,6 @@ import { completeTaskModel } from "../../../src/Models/CompleteTask";
 import { AuthPaths } from "../../../src/Routers/authRouter";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
-import { setupMaster } from "cluster";
 
 const registeredEmail = "create-complete-tasks-user@gmail.com";
 const registeredPassword = "12345678";
