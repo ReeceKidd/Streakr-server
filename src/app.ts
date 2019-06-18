@@ -6,6 +6,7 @@ import ApiVersions from "./Server/versions";
 import v1Router from "./versions/v1";
 import dotenv from "dotenv";
 import { getServiceConfig } from "./getServiceConfig";
+import { errorHandler } from "./errorHandler";
 dotenv.config();
 
 const { DATABASE_URI } = getServiceConfig();
@@ -28,5 +29,7 @@ mongoose
 mongoose.set("useCreateIndex", true);
 
 app.use(`/${ApiVersions.v1}`, v1Router);
+
+app.use(errorHandler);
 
 export default app;
