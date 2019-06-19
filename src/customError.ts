@@ -2,7 +2,7 @@ import { ResponseCodes } from "./Server/responseCodes";
 
 export enum ErrorType {
   InternalServerError,
-  InvalidTimezone
+  InvalidTimezoneError
 }
 
 interface ErrorBody {
@@ -13,42 +13,33 @@ interface ErrorBody {
 export class CustomError extends Error {
   public body: ErrorBody;
   public httpStatusCode: ResponseCodes;
-  public localisedErrorMessage: string;
 
-  constructor(
-    type: ErrorType,
-    httpStatusCode: ResponseCodes,
-    localisedErrorMessage: string,
-    ...params: any[]
-  ) {
+  constructor(type: ErrorType, ...params: any[]) {
     super(...params);
-    const { body } = this.createCustomErrorData(type, httpStatusCode);
-    if (!localisedErrorMessage) {
-      localisedErrorMessage = body.message;
-    }
+    const { body, httpStatusCode } = this.createCustomErrorData(type);
     this.httpStatusCode = httpStatusCode;
     this.body = body;
-    this.localisedErrorMessage = localisedErrorMessage;
   }
 
-  private createCustomErrorData(type: ErrorType, httpStatusCode: Number) {
+  private createCustomErrorData(type: ErrorType) {
     switch (type) {
-      case ErrorType.InvalidTimezone:
+      case ErrorType.InvalidTimezoneError:
         return {
           body: {
-            code: `${httpStatusCode}-02`,
-            message: "Timezone is invalid"
-          }
+            code: `${ResponseCodes.badRequest}-01`,
+            message: "Timezone is invalid."
+          },
+          httpStatusCode: ResponseCodes.badRequest
         };
 
       case ErrorType.InternalServerError:
       default:
         return {
           body: {
-            code: `${httpStatusCode}-01`,
-            message: "Internal Server Error"
+            code: `${ResponseCodes.warning}-01`,
+            message: "Internal Server Error."
           },
-          httpStatusCode
+          httpStatusCode: ResponseCodes.warning
         };
     }
   }
