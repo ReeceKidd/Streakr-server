@@ -13,6 +13,7 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 import { userModel } from "../../Models/User";
 import { ResponseCodes } from "../../Server/responseCodes";
 import * as mongoose from "mongoose";
+import { CustomError, ErrorType } from "../../customError";
 
 export interface LoginRequestBody {
   email: string;
@@ -57,6 +58,9 @@ export const getRetreiveUserWithEmailMiddleware = (
   try {
     const { email } = request.body as LoginRequestBody;
     const user = await userModel.findOne({ email });
+    if (!user) {
+      throw new CustomError(ErrorType.UserDoesNotExistError);
+    }
     response.locals.user = user;
     next();
   } catch (err) {
@@ -68,41 +72,16 @@ export const retreiveUserWithEmailMiddleware = getRetreiveUserWithEmailMiddlewar
   userModel
 );
 
-export const getUserExistsValidationMiddleware = (
-  userDoesNotExistMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { user } = response.locals as LoginResponseLocals;
-    if (!user) {
-      return response.status(ResponseCodes.badRequest).send({
-        message: userDoesNotExistMessage
-      });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedUserDoesNotExistMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.loginUnsuccessfulMessage
-);
-
-export const userExistsValidationMiddleware = getUserExistsValidationMiddleware(
-  localisedUserDoesNotExistMessage
-);
-
 export const getCompareRequestPasswordToUserHashedPasswordMiddleware = (
   compare: Function
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const requestPassword = request.body.password;
     const { password } = response.locals.user;
-    response.locals.passwordMatchesHash = await compare(
-      requestPassword,
-      password
-    );
+    const passwordMatchesHash = await compare(requestPassword, password);
+    if (!passwordMatchesHash) {
+      throw new CustomError(ErrorType.PasswordDoesNotMatchHash);
+    }
     next();
   } catch (err) {
     next(err);
@@ -111,31 +90,6 @@ export const getCompareRequestPasswordToUserHashedPasswordMiddleware = (
 
 export const compareRequestPasswordToUserHashedPasswordMiddleware = getCompareRequestPasswordToUserHashedPasswordMiddleware(
   compare
-);
-
-export const getPasswordsMatchValidationMiddleware = (
-  loginUnsuccessfulMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { passwordMatchesHash } = response.locals;
-    if (!passwordMatchesHash) {
-      return response.status(ResponseCodes.badRequest).send({
-        message: loginUnsuccessfulMessage
-      });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedLoginUnsuccessfulMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.loginUnsuccessfulMessage
-);
-
-export const passwordsMatchValidationMiddleware = getPasswordsMatchValidationMiddleware(
-  localisedLoginUnsuccessfulMessage
 );
 
 export const setMinimumUserDataMiddleware = (
@@ -230,9 +184,7 @@ export const loginSuccessfulMiddleware = getLoginSuccessfulMiddleware(
 export const loginMiddlewares = [
   loginRequestValidationMiddleware,
   retreiveUserWithEmailMiddleware,
-  userExistsValidationMiddleware,
   compareRequestPasswordToUserHashedPasswordMiddleware,
-  passwordsMatchValidationMiddleware,
   setMinimumUserDataMiddleware,
   setJsonWebTokenExpiryInfoMiddleware,
   setJsonWebTokenMiddleware,

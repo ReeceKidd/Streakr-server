@@ -2,7 +2,9 @@ import { ResponseCodes } from "./Server/responseCodes";
 
 export enum ErrorType {
   InternalServerError,
-  InvalidTimezoneError
+  InvalidTimezoneError,
+  UserDoesNotExistError,
+  PasswordDoesNotMatchHash
 }
 
 interface ErrorBody {
@@ -31,6 +33,25 @@ export class CustomError extends Error {
           },
           httpStatusCode: ResponseCodes.badRequest
         };
+
+      case ErrorType.UserDoesNotExistError:
+        return {
+          body: {
+            code: `${ResponseCodes.badRequest}-02`,
+            message: "User does not exist."
+          },
+          httpStatusCode: ResponseCodes.badRequest
+        };
+
+      case ErrorType.PasswordDoesNotMatchHash: {
+        return {
+          body: {
+            code: `${ResponseCodes.badRequest}-03`,
+            message: "Password does not match hash"
+          },
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
 
       case ErrorType.InternalServerError:
       default:
