@@ -4,4 +4,9 @@ Make sure all unit tests use as Request, as Response as NextFunction when mockin
 Make sure all errors are thrown with the custom error logic. 
 No computed values in unit tests as it couples the code. Very tightly couples the code. 
 No test that structure code should make sense reading the describe and test block together. 
-Define a general error for each of the middlewares to make it easy to debug what is going wrong. 
+Define a general error for each of the middlewares to make it easy to debug what is going wrong.
+Add instance of custom error unit test to all middlewares. 
+Need to ge the elastic beanstalk and code ship env setup done correctly so changes are being deployed. 
+Need to use cognito to handle user JWT tokens. 
+
+Todays task is to make three of the routes use the CustomError logic. 

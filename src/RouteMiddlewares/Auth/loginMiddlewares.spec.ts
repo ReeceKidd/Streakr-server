@@ -189,12 +189,10 @@ describe(`retreiveUserWithEmailMiddleware`, () => {
 
     await middleware(request, response, next);
     expect(findOne).toBeCalledWith({ email: "mock@gmail.com" });
-    expect(next).toBeCalledWith(
-      new CustomError(ErrorType.UserDoesNotExistError)
-    );
+    expect(next).toBeCalledWith(new CustomError(ErrorType.UserDoesNotExist));
   });
 
-  test("scalls next() with err if database call fails", async () => {
+  test("calls next() with RetreiveUserWithEmailMiddlewareError if middleware fails", async () => {
     const findOne = jest.fn(() => Promise.reject("error"));
     const UserModel = {
       findOne
@@ -210,7 +208,10 @@ describe(`retreiveUserWithEmailMiddleware`, () => {
     expect.assertions(3);
     expect(findOne).toBeCalledWith({ email: "mock@gmail.com" });
     expect(response.locals.emailExists).toBe(undefined);
-    expect(next).toBeCalledWith("error");
+    // How do you unit test the call then?
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.RetreiveUserWithEmailMiddlewareError)
+    );
   });
 });
 
@@ -254,26 +255,6 @@ describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.PasswordDoesNotMatchHash)
     );
-  });
-
-  test("calls next() with err paramater if compare fails", async () => {
-    const compare = jest.fn(() => {
-      return Promise.reject("error");
-    });
-
-    const middleware = getCompareRequestPasswordToUserHashedPasswordMiddleware(
-      compare
-    );
-    const response: any = { locals: { user: { password: "1234" } } };
-    const request: any = { body: { password: "1234" } };
-    const next = jest.fn();
-
-    await middleware(request, response, next);
-
-    expect.assertions(3);
-    expect(compare).toBeCalledWith("1234", "1234");
-    expect(response.locals.passwordMatchesHash).not.toBeDefined();
-    expect(next).toBeCalledWith("error");
   });
 });
 

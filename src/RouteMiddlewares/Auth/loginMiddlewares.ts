@@ -3,8 +3,6 @@ import * as Joi from "joi";
 import { compare } from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 import { jwtSecret } from "../../../secret/jwt-secret";
-
-import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { SuccessMessageKeys } from "../../Messages/successMessages";
 import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { MessageCategories } from "../../Messages/messageCategories";
@@ -59,12 +57,15 @@ export const getRetreiveUserWithEmailMiddleware = (
     const { email } = request.body as LoginRequestBody;
     const user = await userModel.findOne({ email });
     if (!user) {
-      throw new CustomError(ErrorType.UserDoesNotExistError);
+      throw new CustomError(ErrorType.UserDoesNotExist);
     }
     response.locals.user = user;
     next();
   } catch (err) {
-    next(err);
+    console.log(err);
+    // FIX THE UER DOES NOT EXIST ERROR THAT'S HAPPENING HERE.
+    if (err instanceof CustomError) next(err);
+    next(new CustomError(ErrorType.RetreiveUserWithEmailMiddlewareError));
   }
 };
 
@@ -84,6 +85,7 @@ export const getCompareRequestPasswordToUserHashedPasswordMiddleware = (
     }
     next();
   } catch (err) {
+    if (err instanceof CustomError) next(err);
     next(err);
   }
 };
