@@ -70,6 +70,7 @@ describe("getIncompleteSoloStreaks", () => {
       Have to force soloStreak to have new date because streaks without a new date aren't
       considered incomplete as they haven't been started
       */
+    console.log(`soloStreakId: ${soloStreakId}`);
     await soloStreakModel.findByIdAndUpdate(soloStreakId, {
       startDate: new Date()
     });
@@ -77,6 +78,10 @@ describe("getIncompleteSoloStreaks", () => {
       soloStreakModel,
       timezone
     )) as any;
+    console.log(
+      `incompleteSoloStreaks length: ${incompleteSoloStreaks.length}`
+    );
+    console.log(incompleteSoloStreaks);
     const incompleteStreak = incompleteSoloStreaks.find(
       (streak: SoloStreak) => (streak.streakName = name)
     );
