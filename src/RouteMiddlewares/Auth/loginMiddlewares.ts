@@ -83,7 +83,7 @@ export const getCompareRequestPasswordToUserHashedPasswordMiddleware = (
     }
     next();
   } catch (err) {
-    if (err instanceof CustomError) next(err);
+    if (err instanceof CustomError) return next(err);
     next(
       new CustomError(
         ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
@@ -110,7 +110,7 @@ export const setMinimumUserDataMiddleware = (
     response.locals.minimumUserData = minimumUserData;
     next();
   } catch (err) {
-    if (err instanceof CustomError) next(err);
+    if (err instanceof CustomError) return next(err);
     next(new CustomError(ErrorType.SetMinimumUserDataMiddleware));
   }
 };
@@ -126,7 +126,7 @@ export const getSetJsonWebTokenExpiryInfoMiddleware = (
     };
     next();
   } catch (err) {
-    if (err instanceof CustomError) next(err);
+    if (err instanceof CustomError) return next(err);
     next(new CustomError(ErrorType.SetJsonWebTokenExpiryInfoMiddleware));
   }
 };
@@ -154,7 +154,7 @@ export const getSetJsonWebTokenMiddleware = (
     (response.locals as LoginResponseLocals).jsonWebToken = jsonWebToken;
     next();
   } catch (err) {
-    if (err instanceof CustomError) next(err);
+    if (err instanceof CustomError) return next(err);
     next(new CustomError(ErrorType.SetJsonWebTokenMiddleware));
   }
 };
@@ -175,7 +175,7 @@ export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) => (
       .status(ResponseCodes.success)
       .send({ jsonWebToken, message: loginSuccessMessage, expiry });
   } catch (err) {
-    if (err instanceof CustomError) next(err);
+    if (err instanceof CustomError) return next(err);
     next(new CustomError(ErrorType.LoginSuccessfulMiddleware));
   }
 };
