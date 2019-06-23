@@ -3,7 +3,10 @@ import * as Joi from "joi";
 import { compare } from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 import { jwtSecret } from "../../../secret/jwt-secret";
-import { SuccessMessageKeys } from "../../Messages/successMessages";
+import {
+  SuccessMessageKeys,
+  successMessages
+} from "../../Messages/successMessages";
 import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { MessageCategories } from "../../Messages/messageCategories";
 import { User, IMinimumUserData } from "../../Models/User";
@@ -62,9 +65,7 @@ export const getRetreiveUserWithEmailMiddleware = (
     response.locals.user = user;
     next();
   } catch (err) {
-    console.log(err);
-    // FIX THE UER DOES NOT EXIST ERROR THAT'S HAPPENING HERE.
-    if (err instanceof CustomError) next(err);
+    if (err instanceof CustomError) return next(err);
     next(new CustomError(ErrorType.RetreiveUserWithEmailMiddlewareError));
   }
 };
@@ -86,7 +87,11 @@ export const getCompareRequestPasswordToUserHashedPasswordMiddleware = (
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
-    next(err);
+    next(
+      new CustomError(
+        ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+      )
+    );
   }
 };
 
@@ -108,7 +113,8 @@ export const setMinimumUserDataMiddleware = (
     response.locals.minimumUserData = minimumUserData;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    next(new CustomError(ErrorType.SetMinimumUserDataMiddleware));
   }
 };
 
@@ -123,7 +129,8 @@ export const getSetJsonWebTokenExpiryInfoMiddleware = (
     };
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    next(new CustomError(ErrorType.SetJsonWebTokenExpiryInfoMiddleware));
   }
 };
 
@@ -150,7 +157,8 @@ export const getSetJsonWebTokenMiddleware = (
     (response.locals as LoginResponseLocals).jsonWebToken = jsonWebToken;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    next(new CustomError(ErrorType.SetJsonWebTokenMiddleware));
   }
 };
 
@@ -170,17 +178,18 @@ export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) => (
       .status(ResponseCodes.success)
       .send({ jsonWebToken, message: loginSuccessMessage, expiry });
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    next(new CustomError(ErrorType.LoginSuccessfulMiddleware));
   }
 };
 
-const localisedLoginSuccessMessage = getLocalisedString(
+const loginSuccessMessage = getLocalisedString(
   MessageCategories.successMessages,
   SuccessMessageKeys.loginSuccessMessage
 );
 
 export const loginSuccessfulMiddleware = getLoginSuccessfulMiddleware(
-  localisedLoginSuccessMessage
+  loginSuccessMessage
 );
 
 export const loginMiddlewares = [

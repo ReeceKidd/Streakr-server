@@ -5,7 +5,12 @@ export enum ErrorType {
   InvalidTimezone,
   UserDoesNotExist,
   PasswordDoesNotMatchHash,
-  RetreiveUserWithEmailMiddlewareError
+  RetreiveUserWithEmailMiddlewareError,
+  CompareRequestPasswordToUserHashedPasswordMiddleware,
+  SetMinimumUserDataMiddleware,
+  SetJsonWebTokenExpiryInfoMiddleware,
+  SetJsonWebTokenMiddleware,
+  LoginSuccessfulMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -51,7 +56,47 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.warning}-02`,
           message: internalServerMessage,
-          httpStatusCode: 500
+          httpStatusCode: ResponseCodes.warning
+        };
+      }
+
+      case ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware: {
+        return {
+          code: `${ResponseCodes.warning}-03`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+      }
+
+      case ErrorType.SetMinimumUserDataMiddleware: {
+        return {
+          code: `${ResponseCodes.warning}-04`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+      }
+
+      case ErrorType.SetJsonWebTokenExpiryInfoMiddleware: {
+        return {
+          code: `${ResponseCodes.warning}-05`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+      }
+
+      case ErrorType.SetJsonWebTokenMiddleware: {
+        return {
+          code: `${ResponseCodes.warning}-06`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+      }
+
+      case ErrorType.LoginSuccessfulMiddleware: {
+        return {
+          code: `${ResponseCodes.warning}-07`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
         };
       }
 

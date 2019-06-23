@@ -9,4 +9,5 @@ Add instance of custom error unit test to all middlewares.
 Need to ge the elastic beanstalk and code ship env setup done correctly so changes are being deployed. 
 Need to use cognito to handle user JWT tokens. 
 
-Todays task is to make three of the routes use the CustomError logic. 
+Update unit tests of loginMiddlewares, try to force a middleware error to see
+if the error persists to see if new CustomError(ErrorType.xxx, err) is required.  
