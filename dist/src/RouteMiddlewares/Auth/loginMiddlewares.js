@@ -114,7 +114,7 @@ exports.getCompareRequestPasswordToUserHashedPasswordMiddleware = compare => (
       }
       next();
     } catch (err) {
-      if (err instanceof customError_1.CustomError) next(err);
+      if (err instanceof customError_1.CustomError) return next(err);
       next(
         new customError_1.CustomError(
           customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
@@ -135,7 +135,7 @@ exports.setMinimumUserDataMiddleware = (request, response, next) => {
     response.locals.minimumUserData = minimumUserData;
     next();
   } catch (err) {
-    if (err instanceof customError_1.CustomError) next(err);
+    if (err instanceof customError_1.CustomError) return next(err);
     next(
       new customError_1.CustomError(
         customError_1.ErrorType.SetMinimumUserDataMiddleware
@@ -155,7 +155,7 @@ exports.getSetJsonWebTokenExpiryInfoMiddleware = (expiresIn, unitOfTime) => (
     };
     next();
   } catch (err) {
-    if (err instanceof customError_1.CustomError) next(err);
+    if (err instanceof customError_1.CustomError) return next(err);
     next(
       new customError_1.CustomError(
         customError_1.ErrorType.SetJsonWebTokenExpiryInfoMiddleware
@@ -181,7 +181,7 @@ exports.getSetJsonWebTokenMiddleware = (signToken, jwtSecret) => (
     response.locals.jsonWebToken = jsonWebToken;
     next();
   } catch (err) {
-    if (err instanceof customError_1.CustomError) next(err);
+    if (err instanceof customError_1.CustomError) return next(err);
     next(
       new customError_1.CustomError(
         customError_1.ErrorType.SetJsonWebTokenMiddleware
@@ -204,7 +204,7 @@ exports.getLoginSuccessfulMiddleware = loginSuccessMessage => (
       .status(responseCodes_1.ResponseCodes.success)
       .send({ jsonWebToken, message: loginSuccessMessage, expiry });
   } catch (err) {
-    if (err instanceof customError_1.CustomError) next(err);
+    if (err instanceof customError_1.CustomError) return next(err);
     next(
       new customError_1.CustomError(
         customError_1.ErrorType.LoginSuccessfulMiddleware

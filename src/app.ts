@@ -10,9 +10,12 @@ import v1Router from "./versions/v1";
 
 import { getServiceConfig } from "./getServiceConfig";
 import { errorHandler } from "./errorHandler";
+import { initialiseStreakTimezoneCheckerJobs } from "./scripts/initaliseSoloStreakTimezoneCheckers";
 dotenv.config();
 
 const { DATABASE_URI } = getServiceConfig();
+
+initialiseStreakTimezoneCheckerJobs;
 
 const app = express();
 app.use(cors());
