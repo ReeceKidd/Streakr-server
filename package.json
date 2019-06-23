@@ -11,7 +11,7 @@
     "prod": "npm run build && npm start",
     "lint": "tslint --project tsconfig.json",
     "unit-tests": "jest --watchAll --config=./jest.unit.config.js",
-    "intergration-tests": "jest --watchAll --config=./jest.intergration.config.js",
+    "intergration-tests": "jest --watchAll --config=./jest.intergration.config.js --runInBand",
     "test": "jest --config=./jest.test.config.js",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
   },
