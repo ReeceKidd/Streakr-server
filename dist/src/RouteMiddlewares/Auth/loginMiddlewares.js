@@ -43,13 +43,13 @@ const Joi = __importStar(require("joi"));
 const bcryptjs_1 = require("bcryptjs");
 const jwt = __importStar(require("jsonwebtoken"));
 const jwt_secret_1 = require("../../../secret/jwt-secret");
-const failureMessages_1 = require("../../Messages/failureMessages");
 const successMessages_1 = require("../../Messages/successMessages");
 const getLocalisedString_1 = require("../../Messages/getLocalisedString");
 const messageCategories_1 = require("../../Messages/messageCategories");
 const validationErrorMessageSenderMiddleware_1 = require("../../SharedMiddleware/validationErrorMessageSenderMiddleware");
 const User_1 = require("../../Models/User");
 const responseCodes_1 = require("../../Server/responseCodes");
+const customError_1 = require("../../customError");
 const loginValidationSchema = {
   email: Joi.string()
     .email()
@@ -78,38 +78,24 @@ exports.getRetreiveUserWithEmailMiddleware = userModel => (
     try {
       const { email } = request.body;
       const user = yield userModel.findOne({ email });
+      if (!user) {
+        throw new customError_1.CustomError(
+          customError_1.ErrorType.UserDoesNotExist
+        );
+      }
       response.locals.user = user;
       next();
     } catch (err) {
-      next(err);
+      if (err instanceof customError_1.CustomError) return next(err);
+      next(
+        new customError_1.CustomError(
+          customError_1.ErrorType.RetreiveUserWithEmailMiddlewareError
+        )
+      );
     }
   });
 exports.retreiveUserWithEmailMiddleware = exports.getRetreiveUserWithEmailMiddleware(
   User_1.userModel
-);
-exports.getUserExistsValidationMiddleware = userDoesNotExistMessage => (
-  request,
-  response,
-  next
-) => {
-  try {
-    const { user } = response.locals;
-    if (!user) {
-      return response.status(responseCodes_1.ResponseCodes.badRequest).send({
-        message: userDoesNotExistMessage
-      });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-const localisedUserDoesNotExistMessage = getLocalisedString_1.getLocalisedString(
-  messageCategories_1.MessageCategories.failureMessages,
-  failureMessages_1.FailureMessageKeys.loginUnsuccessfulMessage
-);
-exports.userExistsValidationMiddleware = exports.getUserExistsValidationMiddleware(
-  localisedUserDoesNotExistMessage
 );
 exports.getCompareRequestPasswordToUserHashedPasswordMiddleware = compare => (
   request,
@@ -120,41 +106,24 @@ exports.getCompareRequestPasswordToUserHashedPasswordMiddleware = compare => (
     try {
       const requestPassword = request.body.password;
       const { password } = response.locals.user;
-      response.locals.passwordMatchesHash = yield compare(
-        requestPassword,
-        password
-      );
+      const passwordMatchesHash = yield compare(requestPassword, password);
+      if (!passwordMatchesHash) {
+        throw new customError_1.CustomError(
+          customError_1.ErrorType.PasswordDoesNotMatchHash
+        );
+      }
       next();
     } catch (err) {
-      next(err);
+      if (err instanceof customError_1.CustomError) next(err);
+      next(
+        new customError_1.CustomError(
+          customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+        )
+      );
     }
   });
 exports.compareRequestPasswordToUserHashedPasswordMiddleware = exports.getCompareRequestPasswordToUserHashedPasswordMiddleware(
   bcryptjs_1.compare
-);
-exports.getPasswordsMatchValidationMiddleware = loginUnsuccessfulMessage => (
-  request,
-  response,
-  next
-) => {
-  try {
-    const { passwordMatchesHash } = response.locals;
-    if (!passwordMatchesHash) {
-      return response.status(responseCodes_1.ResponseCodes.badRequest).send({
-        message: loginUnsuccessfulMessage
-      });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-const localisedLoginUnsuccessfulMessage = getLocalisedString_1.getLocalisedString(
-  messageCategories_1.MessageCategories.failureMessages,
-  failureMessages_1.FailureMessageKeys.loginUnsuccessfulMessage
-);
-exports.passwordsMatchValidationMiddleware = exports.getPasswordsMatchValidationMiddleware(
-  localisedLoginUnsuccessfulMessage
 );
 exports.setMinimumUserDataMiddleware = (request, response, next) => {
   try {
@@ -166,7 +135,12 @@ exports.setMinimumUserDataMiddleware = (request, response, next) => {
     response.locals.minimumUserData = minimumUserData;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof customError_1.CustomError) next(err);
+    next(
+      new customError_1.CustomError(
+        customError_1.ErrorType.SetMinimumUserDataMiddleware
+      )
+    );
   }
 };
 exports.getSetJsonWebTokenExpiryInfoMiddleware = (expiresIn, unitOfTime) => (
@@ -181,7 +155,12 @@ exports.getSetJsonWebTokenExpiryInfoMiddleware = (expiresIn, unitOfTime) => (
     };
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof customError_1.CustomError) next(err);
+    next(
+      new customError_1.CustomError(
+        customError_1.ErrorType.SetJsonWebTokenExpiryInfoMiddleware
+      )
+    );
   }
 };
 const oneMonthInSeconds = 2629746;
@@ -202,7 +181,12 @@ exports.getSetJsonWebTokenMiddleware = (signToken, jwtSecret) => (
     response.locals.jsonWebToken = jsonWebToken;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof customError_1.CustomError) next(err);
+    next(
+      new customError_1.CustomError(
+        customError_1.ErrorType.SetJsonWebTokenMiddleware
+      )
+    );
   }
 };
 exports.setJsonWebTokenMiddleware = exports.getSetJsonWebTokenMiddleware(
@@ -220,22 +204,25 @@ exports.getLoginSuccessfulMiddleware = loginSuccessMessage => (
       .status(responseCodes_1.ResponseCodes.success)
       .send({ jsonWebToken, message: loginSuccessMessage, expiry });
   } catch (err) {
-    next(err);
+    if (err instanceof customError_1.CustomError) next(err);
+    next(
+      new customError_1.CustomError(
+        customError_1.ErrorType.LoginSuccessfulMiddleware
+      )
+    );
   }
 };
-const localisedLoginSuccessMessage = getLocalisedString_1.getLocalisedString(
+const loginSuccessMessage = getLocalisedString_1.getLocalisedString(
   messageCategories_1.MessageCategories.successMessages,
   successMessages_1.SuccessMessageKeys.loginSuccessMessage
 );
 exports.loginSuccessfulMiddleware = exports.getLoginSuccessfulMiddleware(
-  localisedLoginSuccessMessage
+  loginSuccessMessage
 );
 exports.loginMiddlewares = [
   exports.loginRequestValidationMiddleware,
   exports.retreiveUserWithEmailMiddleware,
-  exports.userExistsValidationMiddleware,
   exports.compareRequestPasswordToUserHashedPasswordMiddleware,
-  exports.passwordsMatchValidationMiddleware,
   exports.setMinimumUserDataMiddleware,
   exports.setJsonWebTokenExpiryInfoMiddleware,
   exports.setJsonWebTokenMiddleware,

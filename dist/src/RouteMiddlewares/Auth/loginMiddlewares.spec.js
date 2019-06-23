@@ -30,6 +30,7 @@ var __awaiter =
 Object.defineProperty(exports, "__esModule", { value: true });
 const loginMiddlewares_1 = require("./loginMiddlewares");
 const responseCodes_1 = require("../../Server/responseCodes");
+const customError_1 = require("../../customError");
 describe(`loginRequestValidationMiddlware`, () => {
   const mockEmail = "mock@gmail.com";
   const mockPassword = "12345678";
@@ -175,15 +176,13 @@ describe(`loginRequestValidationMiddlware`, () => {
   });
 });
 describe(`retreiveUserWithEmailMiddleware`, () => {
-  const mockEmail = "test@gmail.com";
-  const ERROR_MESSAGE = "error";
   test("should define response.locals.user when user is found", () =>
     __awaiter(this, void 0, void 0, function*() {
       const findOne = jest.fn(() => Promise.resolve(true));
       const UserModel = {
         findOne
       };
-      const request = { body: { email: mockEmail } };
+      const request = { body: { email: "mock@gmail.com" } };
       const response = { locals: {} };
       const next = jest.fn();
       const middleware = loginMiddlewares_1.getRetreiveUserWithEmailMiddleware(
@@ -191,113 +190,59 @@ describe(`retreiveUserWithEmailMiddleware`, () => {
       );
       yield middleware(request, response, next);
       expect.assertions(3);
-      expect(findOne).toBeCalledWith({ email: mockEmail });
+      expect(findOne).toBeCalledWith({ email: "mock@gmail.com" });
       expect(response.locals.user).toBe(true);
       expect(next).toBeCalled();
     }));
-  test("should not define response.locals.user when user doesn't exist", () =>
+  test("throws error when user doesn't exist", () =>
     __awaiter(this, void 0, void 0, function*() {
+      expect.assertions(2);
       const findOne = jest.fn(() => Promise.resolve(false));
       const UserModel = {
         findOne
       };
-      const request = { body: { email: mockEmail } };
+      const request = { body: { email: "mock@gmail.com" } };
       const response = { locals: {} };
       const next = jest.fn();
       const middleware = loginMiddlewares_1.getRetreiveUserWithEmailMiddleware(
         UserModel
       );
       yield middleware(request, response, next);
-      expect.assertions(3);
-      expect(findOne).toBeCalledWith({ email: mockEmail });
-      expect(response.locals.emailExists).toBe(undefined);
-      expect(next).toBeCalledWith();
+      expect(findOne).toBeCalledWith({ email: "mock@gmail.com" });
+      expect(next).toBeCalledWith(
+        new customError_1.CustomError(customError_1.ErrorType.UserDoesNotExist)
+      );
     }));
-  test("should call next() with err paramater if database call fails", () =>
+  test("calls next() with RetreiveUserWithEmailMiddlewareError if middleware fails", () =>
     __awaiter(this, void 0, void 0, function*() {
-      const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
+      expect.assertions(4);
+      const findOne = jest.fn(() => Promise.reject("error"));
       const UserModel = {
         findOne
       };
-      const request = { body: { email: mockEmail } };
+      const request = {};
       const response = { locals: {} };
       const next = jest.fn();
       const middleware = loginMiddlewares_1.getRetreiveUserWithEmailMiddleware(
         UserModel
       );
       yield middleware(request, response, next);
-      expect.assertions(3);
-      expect(findOne).toBeCalledWith({ email: mockEmail });
-      expect(response.locals.emailExists).toBe(undefined);
-      expect(next).toBeCalledWith(ERROR_MESSAGE);
-    }));
-});
-describe(`userExistsValidationMiddleware`, () => {
-  const mockErrorMessage = "User does not exist";
-  test("check that error response is returned correctly when user wasn't found", () =>
-    __awaiter(this, void 0, void 0, function*() {
-      const send = jest.fn();
-      const status = jest.fn(() => ({ send }));
-      const request = {};
-      const response = {
-        locals: {},
-        status
-      };
-      const next = jest.fn();
-      const middleware = loginMiddlewares_1.getUserExistsValidationMiddleware(
-        mockErrorMessage
+      const errorCode = next.mock.calls[0][0].code;
+      const errorMessage = next.mock.calls[0][0].message;
+      const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
+      expect(next).toBeCalledWith(
+        new customError_1.CustomError(
+          customError_1.ErrorType.RetreiveUserWithEmailMiddlewareError,
+          new Error("error")
+        )
       );
-      middleware(request, response, next);
-      expect.assertions(2);
-      expect(status).toHaveBeenCalledWith(
-        responseCodes_1.ResponseCodes.badRequest
-      );
-      expect(send).toBeCalledWith({ message: mockErrorMessage });
+      expect(errorCode).toEqual("500-02");
+      expect(errorMessage).toEqual("Internal Server Error.");
+      expect(httpStatusCode).toEqual(500);
     }));
-  test("check that next is called when user is defined on response.locals", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request = {};
-    const response = {
-      locals: { user: true },
-      status
-    };
-    const next = jest.fn();
-    const middleware = loginMiddlewares_1.getUserExistsValidationMiddleware(
-      mockErrorMessage
-    );
-    middleware(request, response, next);
-    expect.assertions(3);
-    expect(status).not.toHaveBeenCalled();
-    expect(send).not.toBeCalled();
-    expect(next).toBeCalled();
-  });
-  test("check that next is called with err on send failure", () => {
-    const errorMessage = "error";
-    const send = jest.fn(() => {
-      throw new Error(errorMessage);
-    });
-    const status = jest.fn(() => ({ send }));
-    const generateAlreadyExistsMessage = jest.fn();
-    const request = {};
-    const response = {
-      locals: { user: false },
-      status
-    };
-    const next = jest.fn();
-    const middleware = loginMiddlewares_1.getUserExistsValidationMiddleware(
-      mockErrorMessage
-    );
-    middleware(request, response, next);
-    expect.assertions(1);
-    expect(next).toBeCalledWith(new Error(errorMessage));
-  });
 });
 describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
-  const ERROR_MESSAGE = "error";
-  const mockedPassword = "password";
-  const mockedHash = "1234";
-  test("should set response.locals.passwordMatchesHash to true when the request password matches the user hash", () =>
+  test("sets response.locals.passwordMatchesHash to true when the request password matches the user hash", () =>
     __awaiter(this, void 0, void 0, function*() {
       const compare = jest.fn(() => {
         return Promise.resolve(true);
@@ -305,16 +250,15 @@ describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
       const middleware = loginMiddlewares_1.getCompareRequestPasswordToUserHashedPasswordMiddleware(
         compare
       );
-      const response = { locals: { user: { password: mockedHash } } };
-      const request = { body: { password: mockedPassword } };
+      const response = { locals: { user: { password: "1234" } } };
+      const request = { body: { password: "1234" } };
       const next = jest.fn();
       yield middleware(request, response, next);
-      expect.assertions(3);
-      expect(compare).toBeCalledWith(mockedPassword, mockedHash);
-      expect(response.locals.passwordMatchesHash).toBe(true);
+      expect.assertions(2);
+      expect(compare).toBeCalledWith("1234", "1234");
       expect(next).toBeCalled();
     }));
-  test("should set response.locals.passwordMatchesHash to false when the request password does not match the user hash", () =>
+  test("calls next with PasswordDoesNotMatchHash error when the password doesn't match the hash", () =>
     __awaiter(this, void 0, void 0, function*() {
       const compare = jest.fn(() => {
         return Promise.resolve(false);
@@ -322,92 +266,44 @@ describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
       const middleware = loginMiddlewares_1.getCompareRequestPasswordToUserHashedPasswordMiddleware(
         compare
       );
-      const response = { locals: { user: { password: mockedHash } } };
-      const request = { body: { password: mockedPassword } };
+      const response = { locals: { user: { password: "abcd" } } };
+      const request = { body: { password: "1234" } };
       const next = jest.fn();
       yield middleware(request, response, next);
       expect.assertions(3);
-      expect(compare).toBeCalledWith(mockedPassword, mockedHash);
-      expect(response.locals.passwordMatchesHash).toBe(false);
-      expect(next).toBeCalled();
+      expect(compare).toBeCalledWith("1234", "abcd");
+      expect(response.locals.passwordMatchesHash).toBe(undefined);
+      expect(next).toBeCalledWith(
+        new customError_1.CustomError(
+          customError_1.ErrorType.PasswordDoesNotMatchHash
+        )
+      );
     }));
-  test("should call next() with err paramater if compare fails", () =>
+  test("calls next() with CompareRequestPasswordToUserHashedPasswordMiddleware error if middleware fails", () =>
     __awaiter(this, void 0, void 0, function*() {
+      expect.assertions(4);
       const compare = jest.fn(() => {
-        return Promise.reject(ERROR_MESSAGE);
+        return Promise.resolve(true);
       });
       const middleware = loginMiddlewares_1.getCompareRequestPasswordToUserHashedPasswordMiddleware(
         compare
       );
-      const response = { locals: { user: { password: mockedHash } } };
-      const request = { body: { password: mockedPassword } };
-      const next = jest.fn();
-      yield middleware(request, response, next);
-      expect.assertions(3);
-      expect(compare).toBeCalledWith(mockedPassword, mockedHash);
-      expect(response.locals.passwordMatchesHash).not.toBeDefined();
-      expect(next).toBeCalledWith(ERROR_MESSAGE);
-    }));
-});
-describe(`passwordsMatchValidationMiddleware`, () => {
-  const loginError = "login details are incorrect";
-  const errorMessage = "error";
-  test("check that error response is returned correctly when passwords don't match", () =>
-    __awaiter(this, void 0, void 0, function*() {
-      const send = jest.fn();
-      const status = jest.fn(() => ({ send }));
+      const response = { locals: { user: { password: "abcd" } } };
       const request = {};
-      const response = {
-        locals: { passwordMatchesHash: false },
-        status
-      };
       const next = jest.fn();
-      const middleware = loginMiddlewares_1.getPasswordsMatchValidationMiddleware(
-        loginError
-      );
       yield middleware(request, response, next);
-      expect.assertions(2);
-      expect(status).toHaveBeenCalledWith(
-        responseCodes_1.ResponseCodes.badRequest
+      const errorCode = next.mock.calls[0][0].code;
+      const errorMessage = next.mock.calls[0][0].message;
+      const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
+      expect(next).toHaveBeenCalledWith(
+        new customError_1.CustomError(
+          customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+        )
       );
-      expect(send).toBeCalledWith({ message: loginError });
+      expect(errorCode).toBe("500-03");
+      expect(errorMessage).toBe("Internal Server Error.");
+      expect(httpStatusCode).toBe(500);
     }));
-  test("check that next is called when passwordMatchesHash is true", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request = {};
-    const response = {
-      locals: { passwordMatchesHash: true },
-      status
-    };
-    const next = jest.fn();
-    const middleware = loginMiddlewares_1.getPasswordsMatchValidationMiddleware(
-      loginError
-    );
-    middleware(request, response, next);
-    expect.assertions(3);
-    expect(status).not.toHaveBeenCalled();
-    expect(send).not.toBeCalled();
-    expect(next).toBeCalled();
-  });
-  test("check that when error is thrown next is called with err", () => {
-    const send = jest.fn(() => {
-      throw new Error(errorMessage);
-    });
-    const status = jest.fn(() => ({ send }));
-    const request = {};
-    const response = {
-      locals: { passwordMatchesHash: false },
-      status
-    };
-    const next = jest.fn();
-    const middleware = loginMiddlewares_1.getPasswordsMatchValidationMiddleware(
-      loginError
-    );
-    middleware(request, response, next);
-    expect.assertions(1);
-    expect(next).toBeCalledWith(new Error(errorMessage));
-  });
 });
 describe(`setMinimumUserDataMiddleware`, () => {
   test("should set response.locals.minimumUserData", () => {
@@ -424,16 +320,25 @@ describe(`setMinimumUserDataMiddleware`, () => {
     expect(response.locals.minimumUserData.userName).toBeDefined();
     expect(next).toBeCalled();
   });
-  test("should call next with an error on failure because response.locals.user is not defined", () => {
-    const response = { locals: {} };
-    const request = {};
-    const next = jest.fn();
-    loginMiddlewares_1.setMinimumUserDataMiddleware(request, response, next);
-    expect.assertions(1);
-    expect(next).toBeCalledWith(
-      new TypeError(`Cannot read property '_id' of undefined`)
-    );
-  });
+  test("calls next() with SetMinimumUserDataMiddleware error if middleware fails", () =>
+    __awaiter(this, void 0, void 0, function*() {
+      expect.assertions(4);
+      const response = {};
+      const request = {};
+      const next = jest.fn();
+      loginMiddlewares_1.setMinimumUserDataMiddleware(request, response, next);
+      const errorCode = next.mock.calls[0][0].code;
+      const errorMessage = next.mock.calls[0][0].message;
+      const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
+      expect(next).toHaveBeenCalledWith(
+        new customError_1.CustomError(
+          customError_1.ErrorType.SetMinimumUserDataMiddleware
+        )
+      );
+      expect(errorCode).toBe("500-04");
+      expect(errorMessage).toBe("Internal Server Error.");
+      expect(httpStatusCode).toBe(500);
+    }));
 });
 describe("setJsonWebTokenExpiryInfoMiddleware", () => {
   test("response.locals.expiry should be populated with next called", () => {
@@ -452,8 +357,8 @@ describe("setJsonWebTokenExpiryInfoMiddleware", () => {
     expect(response.locals.expiry.unitOfTime).toEqual(unitOfTime);
     expect(next).toBeCalledWith();
   });
-  test("that on error next is called with error", () => {
-    expect.assertions(1);
+  test("calls next with SetJsonWebTokenExpiryInfoMiddleware error on middleware failure", () => {
+    expect.assertions(4);
     const expiresIn = 233993;
     const unitOfTime = "seconds";
     const request = {};
@@ -464,9 +369,17 @@ describe("setJsonWebTokenExpiryInfoMiddleware", () => {
       unitOfTime
     );
     middleware(request, response, next);
-    expect(next).toBeCalledWith(
-      new TypeError("Cannot set property 'expiry' of undefined")
+    const errorCode = next.mock.calls[0][0].code;
+    const errorMessage = next.mock.calls[0][0].message;
+    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
+    expect(next).toHaveBeenCalledWith(
+      new customError_1.CustomError(
+        customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+      )
     );
+    expect(errorCode).toBe("500-05");
+    expect(errorMessage).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
   });
 });
 describe("setJsonWebTokenMiddleware", () => {
@@ -491,7 +404,8 @@ describe("setJsonWebTokenMiddleware", () => {
     expect(response.locals.jsonWebToken).toBeDefined();
     expect(next).toBeCalled();
   });
-  test("should call next with an error on failure", () => {
+  test("calls next SetJsonWebTokenMiddleware error on middleware failure", () => {
+    expect.assertions(4);
     const signTokenMock = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
@@ -506,8 +420,17 @@ describe("setJsonWebTokenMiddleware", () => {
       jwtSecretMock
     );
     middleware(request, response, next);
-    expect.assertions(1);
-    expect(next).toBeCalledWith(new Error(ERROR_MESSAGE));
+    const errorCode = next.mock.calls[0][0].code;
+    const errorMessage = next.mock.calls[0][0].message;
+    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
+    expect(next).toHaveBeenCalledWith(
+      new customError_1.CustomError(
+        customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+      )
+    );
+    expect(errorCode).toBe("500-06");
+    expect(errorMessage).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
   });
 });
 describe(`loginSuccessfulMiddleware`, () => {
@@ -532,7 +455,8 @@ describe(`loginSuccessfulMiddleware`, () => {
       jsonWebToken: mockToken
     });
   });
-  test("should call next with an error on failure", () => {
+  test("should call next with LoginSuccessfullMiddleware error on middleware failure", () => {
+    expect.assertions(4);
     const mockToken = "1234";
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
@@ -545,14 +469,23 @@ describe(`loginSuccessfulMiddleware`, () => {
       loginSuccessMessage
     );
     middleware(request, response, next);
-    expect.assertions(1);
-    expect(next).toBeCalledWith(new Error(ERROR_MESSAGE));
+    const errorCode = next.mock.calls[0][0].code;
+    const errorMessage = next.mock.calls[0][0].message;
+    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
+    expect(next).toHaveBeenCalledWith(
+      new customError_1.CustomError(
+        customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+      )
+    );
+    expect(errorCode).toBe("500-07");
+    expect(errorMessage).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
   });
 });
 describe(`loginMiddlewares`, () => {
   test("that login middlewares are defined in the correct order", () =>
     __awaiter(this, void 0, void 0, function*() {
-      expect.assertions(9);
+      expect.assertions(7);
       expect(loginMiddlewares_1.loginMiddlewares[0]).toBe(
         loginMiddlewares_1.loginRequestValidationMiddleware
       );
@@ -560,24 +493,18 @@ describe(`loginMiddlewares`, () => {
         loginMiddlewares_1.retreiveUserWithEmailMiddleware
       );
       expect(loginMiddlewares_1.loginMiddlewares[2]).toBe(
-        loginMiddlewares_1.userExistsValidationMiddleware
-      );
-      expect(loginMiddlewares_1.loginMiddlewares[3]).toBe(
         loginMiddlewares_1.compareRequestPasswordToUserHashedPasswordMiddleware
       );
-      expect(loginMiddlewares_1.loginMiddlewares[4]).toBe(
-        loginMiddlewares_1.passwordsMatchValidationMiddleware
-      );
-      expect(loginMiddlewares_1.loginMiddlewares[5]).toBe(
+      expect(loginMiddlewares_1.loginMiddlewares[3]).toBe(
         loginMiddlewares_1.setMinimumUserDataMiddleware
       );
-      expect(loginMiddlewares_1.loginMiddlewares[6]).toBe(
+      expect(loginMiddlewares_1.loginMiddlewares[4]).toBe(
         loginMiddlewares_1.setJsonWebTokenExpiryInfoMiddleware
       );
-      expect(loginMiddlewares_1.loginMiddlewares[7]).toBe(
+      expect(loginMiddlewares_1.loginMiddlewares[5]).toBe(
         loginMiddlewares_1.setJsonWebTokenMiddleware
       );
-      expect(loginMiddlewares_1.loginMiddlewares[8]).toBe(
+      expect(loginMiddlewares_1.loginMiddlewares[6]).toBe(
         loginMiddlewares_1.loginSuccessfulMiddleware
       );
     }));

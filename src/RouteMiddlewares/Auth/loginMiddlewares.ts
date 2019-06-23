@@ -3,10 +3,7 @@ import * as Joi from "joi";
 import { compare } from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 import { jwtSecret } from "../../../secret/jwt-secret";
-import {
-  SuccessMessageKeys,
-  successMessages
-} from "../../Messages/successMessages";
+import { SuccessMessageKeys } from "../../Messages/successMessages";
 import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { MessageCategories } from "../../Messages/messageCategories";
 import { User, IMinimumUserData } from "../../Models/User";
