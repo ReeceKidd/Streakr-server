@@ -15,8 +15,6 @@ dotenv.config();
 
 const { DATABASE_URI } = getServiceConfig();
 
-initialiseStreakTimezoneCheckerJobs;
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
