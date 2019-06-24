@@ -17,7 +17,7 @@ const registeredPassword = "12345678";
 jest.setTimeout(120000);
 
 describe(loginRoute, () => {
-  beforeAll(async () => {
+  beforeAll(async done => {
     await request(server)
       .post(registrationRoute)
       .send({
@@ -25,13 +25,15 @@ describe(loginRoute, () => {
         email: registeredEmail,
         password: registeredPassword
       });
+    done();
   });
 
-  afterAll(async () => {
+  afterAll(async done => {
     await userModel.deleteOne({ email: registeredEmail });
+    done();
   });
 
-  test("user can login successfully and receives jsonWebToken in response", async () => {
+  test("user can login successfully and receives jsonWebToken in response", async done => {
     expect.assertions(7);
     const response = await request(server)
       .post(loginRoute)
@@ -46,9 +48,10 @@ describe(loginRoute, () => {
     expect(response.body).toHaveProperty("message");
     expect(response.body.expiry.expiresIn).toBeDefined();
     expect(response.body.expiry.unitOfTime).toEqual("seconds");
+    done();
   });
 
-  test("response is correct when incorrect email and password is used", async () => {
+  test("response is correct when incorrect email and password is used", async done => {
     expect.assertions(6);
     const response = await request(server)
       .post(loginRoute)
@@ -62,9 +65,10 @@ describe(loginRoute, () => {
     expect(response.body.message).toEqual("User does not exist.");
     expect(response.body.code).toEqual("400-02");
     expect(response.body.httpStatusCode).toEqual(400);
+    done();
   });
 
-  test("response is correct when invalid email and correct password is used", async () => {
+  test("response is correct when invalid email and correct password is used", async done => {
     expect.assertions(6);
     const response = await request(server)
       .post(loginRoute)
@@ -78,9 +82,10 @@ describe(loginRoute, () => {
     expect(response.body.message).toEqual("User does not exist.");
     expect(response.body.code).toEqual("400-02");
     expect(response.body.httpStatusCode).toEqual(400);
+    done();
   });
 
-  test("response is correct when valid email and incorrect password is used", async () => {
+  test("response is correct when valid email and incorrect password is used", async done => {
     expect.assertions(6);
     const response = await request(server)
       .post(loginRoute)
@@ -94,9 +99,10 @@ describe(loginRoute, () => {
     expect(response.body.message).toEqual("Password does not match hash.");
     expect(response.body.code).toEqual("400-03");
     expect(response.body.httpStatusCode).toEqual(400);
+    done();
   });
 
-  test("fails because nothing is sent with request", async () => {
+  test("fails because nothing is sent with request", async done => {
     expect.assertions(4);
     const response = await request(server).post(loginRoute);
     expect(response.status).toEqual(ResponseCodes.unprocessableEntity);
@@ -105,9 +111,10 @@ describe(loginRoute, () => {
     expect(response.body.message).toEqual(
       'child "email" fails because ["email" is required]'
     );
+    done();
   });
 
-  test("fails because email is missing from request", async () => {
+  test("fails because email is missing from request", async done => {
     expect.assertions(4);
     const response = await request(server)
       .post(loginRoute)
@@ -120,9 +127,10 @@ describe(loginRoute, () => {
     expect(response.body.message).toEqual(
       'child "email" fails because ["email" is required]'
     );
+    done();
   });
 
-  test("fails because email is invalid", async () => {
+  test("fails because email is invalid", async done => {
     expect.assertions(4);
 
     const response = await request(server)
@@ -137,9 +145,10 @@ describe(loginRoute, () => {
     expect(response.body.message).toEqual(
       `child \"email\" fails because [\"email\" must be a valid email]`
     );
+    done();
   });
 
-  test("fails because password is missing from request", async () => {
+  test("fails because password is missing from request", async done => {
     expect.assertions(4);
     const response = await request(server)
       .post(loginRoute)
@@ -152,9 +161,10 @@ describe(loginRoute, () => {
     expect(response.body.message).toEqual(
       'child "password" fails because ["password" is required]'
     );
+    done();
   });
 
-  test("fails because password is less than 6 characters long", async () => {
+  test("fails because password is less than 6 characters long", async done => {
     expect.assertions(4);
     const response = await request(server)
       .post(loginRoute)
@@ -168,9 +178,10 @@ describe(loginRoute, () => {
     expect(response.body.message).toEqual(
       'child "password" fails because ["password" length must be at least 6 characters long]'
     );
+    done();
   });
 
-  test("fails because password is not a string", async () => {
+  test("fails because password is not a string", async done => {
     expect.assertions(4);
     const response = await request(server)
       .post(loginRoute)
@@ -184,5 +195,6 @@ describe(loginRoute, () => {
     expect(response.body.message).toEqual(
       'child "password" fails because ["password" must be a string]'
     );
+    done();
   });
 });

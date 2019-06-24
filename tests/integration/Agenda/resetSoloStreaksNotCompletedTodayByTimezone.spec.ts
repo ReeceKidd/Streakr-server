@@ -33,7 +33,7 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
   const description = "I will fast until 1pm everyday";
   const timezone = "America/Mexico_City";
 
-  beforeAll(async () => {
+  beforeAll(async done => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
@@ -59,14 +59,16 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
       .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: timezone });
     soloStreakId = createSoloStreakResponse.body._id;
+    done();
   });
 
-  afterAll(async () => {
+  afterAll(async done => {
     await userModel.deleteOne({ email: registeredEmail });
     await soloStreakModel.deleteOne({ _id: soloStreakId });
+    done();
   });
 
-  test("that getIncompleteSoloStreaks returns solo streaks that were not completed today", async () => {
+  test("that getIncompleteSoloStreaks returns solo streaks that were not completed today", async done => {
     expect.assertions(3);
     /*
       Have to force soloStreak to have new date because streaks without a new date aren't
@@ -95,5 +97,6 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
     expect(updatedSoloStreak.currentStreak.endDate).toBeUndefined();
     expect(updatedSoloStreak.pastStreaks.length).toBe(1);
     expect(updatedSoloStreak.pastStreaks[0].endDate).toEqual(endDate);
+    done();
   });
 });

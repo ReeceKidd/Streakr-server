@@ -32,7 +32,7 @@ describe(createSoloStreakRoute, () => {
   const name = "Intermittent Fastings";
   const description = "I will not eat until 1pm everyday";
 
-  beforeAll(async () => {
+  beforeAll(async done => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
@@ -58,18 +58,20 @@ describe(createSoloStreakRoute, () => {
       .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
     soloStreakId = createSoloStreakResponse.body._id;
+    done();
   });
 
-  afterAll(async () => {
+  afterAll(async done => {
     await userModel.deleteOne({ email: registeredEmail });
     await soloStreakModel.deleteOne({ _id: soloStreakId });
     await soloStreakModel.deleteOne({ _id: secondSoloStreakId });
     await completeTaskModel.deleteOne({ userId, streakId: soloStreakId });
     await completeTaskModel.deleteOne({ userId, streakId: secondSoloStreakId });
+    done();
   });
 
   describe("/v1/solo-streaks/{id}/complete-tasks", () => {
-    test("that user can say that a task has been completed for the day", async () => {
+    test("that user can say that a task has been completed for the day", async done => {
       expect.assertions(6);
       const completeTaskResponse = await request(server)
         .post(
@@ -90,9 +92,10 @@ describe(createSoloStreakRoute, () => {
         soloStreakId
       )) as SoloStreak;
       expect(soloStreak.startDate).toBeDefined();
+      done();
     });
 
-    test("that user cannot complete the same task in the same day", async () => {
+    test("that user cannot complete the same task in the same day", async done => {
       expect.assertions(2);
       const secondaryCreateSoloStreakResponse = await request(server)
         .post(createSoloStreakRoute)
@@ -122,6 +125,7 @@ describe(createSoloStreakRoute, () => {
       expect(secondCompleteTaskResponse.body.message).toEqual(
         "Task has already been completed today"
       );
+      done();
     });
   });
 });

@@ -32,7 +32,7 @@ describe(`PATCH ${soloStreakRoute}`, () => {
   const name = "Keto";
   const description = "I will follow the keto diet every day";
 
-  beforeAll(async () => {
+  beforeAll(async done => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
@@ -58,14 +58,16 @@ describe(`PATCH ${soloStreakRoute}`, () => {
       .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: romeTimezone });
     soloStreakId = createSoloStreakResponse.body._id;
+    done();
   });
 
-  afterAll(async () => {
+  afterAll(async done => {
     await userModel.deleteOne({ email: registeredEmail });
     await soloStreakModel.deleteOne({ _id: soloStreakId });
+    done();
   });
 
-  test(`that request passes when solo streak is patched with correct keys`, async () => {
+  test(`that request passes when solo streak is patched with correct keys`, async done => {
     expect.assertions(9);
     updatedName = "Intermittent fasting";
     const updatedDescription = "Cannot eat till 1pm everyday";
@@ -88,5 +90,6 @@ describe(`PATCH ${soloStreakRoute}`, () => {
     );
     expect(response.body.data).toHaveProperty("createdAt");
     expect(response.body.data).toHaveProperty("updatedAt");
+    done();
   });
 });

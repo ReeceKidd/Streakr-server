@@ -20,69 +20,75 @@ const verifyJsonWebTokenRoute = `/${ApiVersions.v1}/${RouteCategories.test}/${Te
 jest.setTimeout(120000);
 
 describe(verifyJsonWebTokenRoute, () => {
+  let jsonWebToken: string;
 
-    let jsonWebToken: string;
+  beforeAll(async done => {
+    await request(server)
+      .post(registrationRoute)
+      .send({
+        userName: registeredUserName,
+        email: registeredEmail,
+        password: registeredPassword
+      });
+    const loginResponse = await request(server)
+      .post(loginRoute)
+      .send({
+        email: registeredEmail,
+        password: registeredPassword
+      });
+    jsonWebToken = loginResponse.body.jsonWebToken;
+    done();
+  });
 
-    beforeAll(async () => {
-        await request(server).post(registrationRoute).send(
-            {
-                userName: registeredUserName,
-                email: registeredEmail,
-                password: registeredPassword
-            }
-        );
-        const loginResponse = await request(server).post(loginRoute).send(
-            {
-                email: registeredEmail,
-                password: registeredPassword
-            }
-        );
-        jsonWebToken = loginResponse.body.jsonWebToken;
-    });
+  afterAll(async done => {
+    await userModel.deleteOne({ email: registeredEmail });
+    done();
+  });
 
-    afterAll(async () => {
-        await userModel.deleteOne({ email: registeredEmail });
-    });
+  test(`that request passes when json web token is valid`, async done => {
+    expect.assertions(3);
+    const response = await request(server)
+      .post(verifyJsonWebTokenRoute)
+      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken });
+    expect(response.status).toEqual(ResponseCodes.success);
+    expect(response.body.auth).toBe(true);
+    expect(response.type).toEqual("application/json");
+    done();
+  });
 
-    test(`that request passes when json web token is valid`, async () => {
-        expect.assertions(3);
-        const response = await request(server)
-            .post(verifyJsonWebTokenRoute)
-            .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken });
-        expect(response.status).toEqual(ResponseCodes.success);
-        expect(response.body.auth).toBe(true);
-        expect(response.type).toEqual("application/json");
-    });
+  test("that request fails when json web token is invalid", async done => {
+    const invalidJsonWebToken =
+      "OiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtaW5pbXVtVXNlckRhdGEiOnsiX2lkIjoiNWMzNTExNjA1OWY3YmExOWU0ZTI0OGE5IiwidXNlck5hbWUiOiJ0ZXN0ZXIifSwiaWF0IjoxNTQ3MDE0NTM5LCJleHAiOjE1NDc2MTkzMzl9.tGUQo9W8SOgktnaVvGQn6i33wUmUQPbnUDDTllIzPLw";
+    expect.assertions(3);
+    const response = await request(server)
+      .post(verifyJsonWebTokenRoute)
+      .set({ [SupportedRequestHeaders.xAccessToken]: invalidJsonWebToken });
+    expect(response.status).toEqual(ResponseCodes.unautohorized);
+    expect(response.body.auth).toBe(false);
+    expect(response.type).toEqual("application/json");
+    done();
+  });
 
-    test("that request fails when json web token is invalid", async () => {
-        const invalidJsonWebToken = "OiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtaW5pbXVtVXNlckRhdGEiOnsiX2lkIjoiNWMzNTExNjA1OWY3YmExOWU0ZTI0OGE5IiwidXNlck5hbWUiOiJ0ZXN0ZXIifSwiaWF0IjoxNTQ3MDE0NTM5LCJleHAiOjE1NDc2MTkzMzl9.tGUQo9W8SOgktnaVvGQn6i33wUmUQPbnUDDTllIzPLw";
-        expect.assertions(3);
-        const response = await request(server)
-            .post(verifyJsonWebTokenRoute)
-            .set({ [SupportedRequestHeaders.xAccessToken]: invalidJsonWebToken });
-        expect(response.status).toEqual(ResponseCodes.unautohorized);
-        expect(response.body.auth).toBe(false);
-        expect(response.type).toEqual("application/json");
-    });
+  test(`that request fails when json web token is out of date.`, async done => {
+    const outOfDateToken =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtaW5pbXVtVXNlckRhdGEiOnsiX2lkIjoiNWMzNTExNjA1OWY3YmExOWU0ZTI0OGE5IiwidXNlck5hbWUiOiJ0ZXN0ZXIifSwiaWF0IjoxNTQ3MDE0NTM5LCJleHAiOjE1NDc2MTkzMzl9.tGUQo9W8SOgktnaVvGQn6i33wUmUQPbnUDDTllIzPLw";
+    expect.assertions(3);
+    const response = await request(server)
+      .post(verifyJsonWebTokenRoute)
+      .set({ [SupportedRequestHeaders.xAccessToken]: outOfDateToken });
+    expect(response.status).toEqual(ResponseCodes.unautohorized);
+    expect(response.body.auth).toBe(false);
+    expect(response.type).toEqual("application/json");
+    done();
+  });
 
-    test(`that request fails when json web token is out of date.`, async () => {
-        const outOfDateToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtaW5pbXVtVXNlckRhdGEiOnsiX2lkIjoiNWMzNTExNjA1OWY3YmExOWU0ZTI0OGE5IiwidXNlck5hbWUiOiJ0ZXN0ZXIifSwiaWF0IjoxNTQ3MDE0NTM5LCJleHAiOjE1NDc2MTkzMzl9.tGUQo9W8SOgktnaVvGQn6i33wUmUQPbnUDDTllIzPLw";
-        expect.assertions(3);
-        const response = await request(server)
-            .post(verifyJsonWebTokenRoute)
-            .set({ [SupportedRequestHeaders.xAccessToken]: outOfDateToken });
-        expect(response.status).toEqual(ResponseCodes.unautohorized);
-        expect(response.body.auth).toBe(false);
-        expect(response.type).toEqual("application/json");
-    });
-
-
-    test(`that request fails when json web token is missing from header`, async () => {
-        expect.assertions(4);
-        const response = await request(server).post(verifyJsonWebTokenRoute);
-        expect(response.status).toEqual(ResponseCodes.unautohorized);
-        expect(response.body.auth).toBe(false);
-        expect(response.body.message).toBe("JSON web token is missing from header");
-        expect(response.type).toEqual("application/json");
-    });
+  test(`that request fails when json web token is missing from header`, async done => {
+    expect.assertions(4);
+    const response = await request(server).post(verifyJsonWebTokenRoute);
+    expect(response.status).toEqual(ResponseCodes.unautohorized);
+    expect(response.body.auth).toBe(false);
+    expect(response.body.message).toBe("JSON web token is missing from header");
+    expect(response.type).toEqual("application/json");
+    done();
+  });
 });

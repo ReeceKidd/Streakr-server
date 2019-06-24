@@ -28,7 +28,7 @@ describe("resetIncompleteSoloStreaks", () => {
   const description = "I will program for one hour everyday";
   const timezone = "America/Louisville";
 
-  beforeAll(async () => {
+  beforeAll(async done => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
@@ -54,14 +54,16 @@ describe("resetIncompleteSoloStreaks", () => {
       .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: timezone });
     soloStreakId = createSoloStreakResponse.body._id;
+    done();
   });
 
-  afterAll(async () => {
+  afterAll(async done => {
     await userModel.deleteOne({ email: registeredEmail });
     await soloStreakModel.deleteOne({ _id: soloStreakId });
+    done();
   });
 
-  test("that resetIncompleteSoloStreaks updates the current and past values of a streak", async () => {
+  test("that resetIncompleteSoloStreaks updates the current and past values of a streak", async done => {
     expect.assertions(3);
     /*
         Have to force soloStreak to have new date because streaks without a new date aren't
@@ -92,5 +94,6 @@ describe("resetIncompleteSoloStreaks", () => {
     expect(updatedSoloStreak.currentStreak.endDate).toBeUndefined();
     expect(updatedSoloStreak.pastStreaks.length).toBe(1);
     expect(updatedSoloStreak.pastStreaks[0].endDate).toEqual(endDate);
+    done();
   });
 });

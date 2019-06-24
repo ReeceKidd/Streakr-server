@@ -23,58 +23,54 @@ const budapestTimezone = "Europe/Budapest";
 jest.setTimeout(120000);
 
 describe(`DELETE ${soloStreakRoute}`, () => {
+  let jsonWebToken: string;
+  let userId: string;
+  let soloStreakId: string;
 
-    let jsonWebToken: string;
-    let userId: string;
-    let soloStreakId: string;
+  const name = "Reading";
+  const description = "I will read 30 minutes every day";
 
-    const name = "Reading";
-    const description = "I will read 30 minutes every day";
+  beforeAll(async done => {
+    const registrationResponse = await request(server)
+      .post(registrationRoute)
+      .send({
+        userName: registeredUserName,
+        email: registeredEmail,
+        password: registeredPassword
+      });
+    userId = registrationResponse.body._id;
+    const loginResponse = await request(server)
+      .post(loginRoute)
+      .send({
+        email: registeredEmail,
+        password: registeredPassword
+      });
+    jsonWebToken = loginResponse.body.jsonWebToken;
+    const createSoloStreakResponse = await request(server)
+      .post(soloStreakRoute)
+      .send({
+        userId,
+        name,
+        description
+      })
+      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
+      .set({ [SupportedRequestHeaders.xTimezone]: budapestTimezone });
+    soloStreakId = createSoloStreakResponse.body._id;
+    done();
+  });
 
-    beforeAll(async () => {
-        const registrationResponse = await request(server)
-            .post(registrationRoute)
-            .send(
-                {
-                    userName: registeredUserName,
-                    email: registeredEmail,
-                    password: registeredPassword
-                }
-            );
-        userId = registrationResponse.body._id;
-        const loginResponse = await request(server)
-            .post(loginRoute)
-            .send(
-                {
-                    email: registeredEmail,
-                    password: registeredPassword
-                }
-            );
-        jsonWebToken = loginResponse.body.jsonWebToken;
-        const createSoloStreakResponse = await request(server)
-            .post(soloStreakRoute)
-            .send({
-                userId,
-                name,
-                description
-            })
-            .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-            .set({ [SupportedRequestHeaders.xTimezone]: budapestTimezone });
-        soloStreakId = createSoloStreakResponse.body._id;
-    });
+  afterAll(async done => {
+    await userModel.deleteOne({ email: registeredEmail });
+    await soloStreakModel.deleteOne({ name });
+    done();
+  });
 
-    afterAll(async () => {
-        await userModel.deleteOne({ email: registeredEmail });
-        await soloStreakModel.deleteOne({ name });
-    });
-
-    test(`that solo streak can be deleted`, async () => {
-        expect.assertions(1);
-        const response = await request(server)
-            .delete(`${soloStreakRoute}/${soloStreakId}`)
-            .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken });
-        expect(response.status).toEqual(ResponseCodes.deleted);
-    });
-
+  test(`that solo streak can be deleted`, async done => {
+    expect.assertions(1);
+    const response = await request(server)
+      .delete(`${soloStreakRoute}/${soloStreakId}`)
+      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken });
+    expect(response.status).toEqual(ResponseCodes.deleted);
+    done();
+  });
 });
-
