@@ -47,8 +47,8 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
     jsonWebToken = loginResponse.body.jsonWebToken;
     const createSoloStreakResponse = await request(server)
       .post(soloStreakRoute)
-      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
-      .set({ [SupportedRequestHeaders.xTimezone]: timezone })
+      .set({ "x-access-token": jsonWebToken })
+      .set({ "x-timezone": timezone })
       .send({
         userId,
         name,
