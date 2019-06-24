@@ -37,7 +37,6 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
         email: registeredEmail,
         password: registeredPassword
       });
-    console.log("MADE IT PAST REGISTRATION");
     userId = registrationResponse.body._id;
     const loginResponse = await request(server)
       .post(loginRoute)
@@ -45,7 +44,6 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
         email: registeredEmail,
         password: registeredPassword
       });
-    console.log("MADE IT PAST LOGIN");
     jsonWebToken = loginResponse.body.jsonWebToken;
     const createSoloStreakResponse = await request(server)
       .post(soloStreakRoute)
@@ -57,8 +55,7 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
         description
       });
     soloStreakId = createSoloStreakResponse.body._id;
-    console.log(createSoloStreakResponse.body);
-    console.log(createSoloStreakResponse.status);
+    console.log(createSoloStreakResponse);
     done();
   });
 

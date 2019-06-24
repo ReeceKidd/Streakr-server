@@ -8,11 +8,8 @@ export const errorHandler = (
   response: Response,
   next: NextFunction
 ) => {
-  console.log("MADE IT TO ERROR handler");
-  console.log(`httpStatus: ${error.httpStatusCode}`);
   if (error.httpStatusCode) {
-    response.status(error.httpStatusCode).send(error);
-  } else {
-    response.status(ResponseCodes.warning).send(error);
+    return response.status(error.httpStatusCode).send(error);
   }
+  return response.status(ResponseCodes.warning).send(error);
 };
