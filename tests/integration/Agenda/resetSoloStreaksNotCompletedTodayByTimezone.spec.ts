@@ -55,8 +55,6 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
         description
       });
     soloStreakId = createSoloStreakResponse.body._id;
-    console.log(`Solo streak id: ${soloStreakId}`);
-    console.log(createSoloStreakResponse);
     done();
   });
 
@@ -90,8 +88,6 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
     );
     await Promise.all(resetSoloStreaksPromises);
     const updatedSoloStreak: any = await soloStreakModel.findById(soloStreakId);
-    console.log("Updated solo streak");
-    console.log(updatedSoloStreak);
     expect(updatedSoloStreak.currentStreak.endDate).toBeUndefined();
     expect(updatedSoloStreak.pastStreaks.length).toBe(1);
     expect(updatedSoloStreak.pastStreaks[0].endDate).toEqual(endDate);
