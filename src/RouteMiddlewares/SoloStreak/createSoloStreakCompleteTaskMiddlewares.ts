@@ -231,10 +231,10 @@ export const getSetStreakStartDateMiddleware = (
   try {
     const soloStreak: SoloStreak = response.locals.soloStreak;
     const taskCompleteTime = response.locals.taskCompleteTime;
-    if (!soloStreak.startDate) {
+    if (!soloStreak.currentStreak.startDate) {
       const { soloStreakId } = request.params;
       await soloStreakModel.findByIdAndUpdate(soloStreakId, {
-        startDate: taskCompleteTime
+        currentStreak: { startDate: taskCompleteTime }
       });
     }
     next();

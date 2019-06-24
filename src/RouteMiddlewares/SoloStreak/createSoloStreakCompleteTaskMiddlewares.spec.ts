@@ -543,7 +543,9 @@ describe("setStreakStartDateMiddleware", () => {
     const taskCompleteTime = new Date();
     const soloStreakId = 1;
     const soloStreak = {
-      startDate: undefined
+      currentStreak: {
+        startDate: undefined
+      }
     };
     const request: any = { params: { soloStreakId } };
     const response: any = { locals: { soloStreak, taskCompleteTime } };
@@ -551,7 +553,7 @@ describe("setStreakStartDateMiddleware", () => {
     const middleware = await getSetStreakStartDateMiddleware(soloStreakModel);
     await middleware(request, response, next);
     expect(findByIdAndUpdate).toBeCalledWith(soloStreakId, {
-      startDate: taskCompleteTime
+      currentStreak: { startDate: taskCompleteTime }
     });
     expect(next).toBeCalledWith();
   });

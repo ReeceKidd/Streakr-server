@@ -3,70 +3,69 @@ import { Collections } from "./Collections";
 import { Models } from "./Models";
 
 export interface SoloStreak extends mongoose.Document {
-    userId: string;
-    streakName: string;
-    streakDescription: string;
+  userId: string;
+  streakName: string;
+  streakDescription: string;
+  completedToday: boolean;
+  currentStreak: {
     startDate: Date;
-    completedToday: boolean;
-    currentStreak: {
-        startDate: Date,
-        numberOfDaysInARow: number,
-        endDate: Date
-    };
-    pastStreaks: Array<{
-        endDate: Date,
-        startDate: Date,
-        numberOfDaysInARow: number
-    }>;
-    timezone: string;
+    numberOfDaysInARow: number;
+    endDate: Date;
+  };
+  pastStreaks: Array<{
+    endDate: Date;
+    startDate: Date;
+    numberOfDaysInARow: number;
+  }>;
+  timezone: string;
 }
 
-export const soloStreakSchema = new mongoose.Schema({
+export const soloStreakSchema = new mongoose.Schema(
+  {
     userId: {
-        required: true,
-        type: String,
-        index: true
+      required: true,
+      type: String,
+      index: true
     },
     name: {
-        required: true,
-        type: String,
-        index: true,
+      required: true,
+      type: String,
+      index: true
     },
     description: {
-        required: true,
-        type: String,
+      required: true,
+      type: String
     },
     timezone: {
-        required: true,
-        type: String
-    },
-    startDate: {
-        type: Date,
-        default: undefined,
+      required: true,
+      type: String
     },
     completedToday: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false
     },
     currentStreak: {
-        startDate: {
-            type: Date,
-            default: undefined
-        },
-        numberOfDaysInARow: {
-            type: Number,
-            default: 0
-        },
-        endDate: {
-            type: Date,
-            default: undefined
-        }
+      startDate: {
+        type: Date,
+        default: undefined
+      },
+      numberOfDaysInARow: {
+        type: Number,
+        default: 0
+      },
+      endDate: {
+        type: Date,
+        default: undefined
+      }
     },
-    pastStreaks: [],
-}, {
-        timestamps: true,
-        collection: Collections.SoloStreaks,
-    },
+    pastStreaks: []
+  },
+  {
+    timestamps: true,
+    collection: Collections.SoloStreaks
+  }
 );
 
-export const soloStreakModel: mongoose.Model<SoloStreak> = mongoose.model<SoloStreak>(Models.SoloStreak, soloStreakSchema);
+export const soloStreakModel: mongoose.Model<SoloStreak> = mongoose.model<
+  SoloStreak
+>(Models.SoloStreak, soloStreakSchema);

@@ -70,8 +70,9 @@ describe("resetSoloStreaksNotCompletedTodayByTimezone", () => {
       Have to force soloStreak to have new date because streaks without a new date aren't
       considered incomplete as they haven't been started
       */
+    // Why am I doing this can I not just complete this task for today?
     await soloStreakModel.findByIdAndUpdate(soloStreakId, {
-      startDate: new Date()
+      currentStreak: { startDate: new Date() }
     });
     const defaultCurrentStreak = {
       startDate: undefined,

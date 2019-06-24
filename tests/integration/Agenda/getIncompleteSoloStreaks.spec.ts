@@ -29,7 +29,7 @@ describe("getIncompleteSoloStreaks", () => {
   let soloStreakId: string;
   const name = "Intermittent fasting";
   const description = "I will fast until 1pm everyday";
-  const timezone = "America/Los_Angeles";
+  const timezone = "Europe/London";
 
   beforeAll(async done => {
     const registrationResponse = await request(server)
@@ -73,7 +73,7 @@ describe("getIncompleteSoloStreaks", () => {
       considered incomplete as they haven't been started
       */
     await soloStreakModel.findByIdAndUpdate(soloStreakId, {
-      startDate: new Date()
+      currentStreak: { startDate: new Date() }
     });
     const incompleteSoloStreaks = (await getIncompleteSoloStreaks(
       soloStreakModel,

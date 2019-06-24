@@ -91,7 +91,7 @@ describe(createSoloStreakRoute, () => {
       const soloStreak = (await soloStreakModel.findById(
         soloStreakId
       )) as SoloStreak;
-      expect(soloStreak.startDate).toBeDefined();
+      expect(soloStreak.currentStreak.startDate).toBeDefined();
       done();
     });
 
