@@ -5,14 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "set NODE_ENV=PROD&& node dist/src/server.js",
+    "start": "node dist/src/server.js",
     "dist": "sh ./scripts/dist.sh",
-    "dev": "set NODE_ENV=DEV&& nodemon --exec ts-node -- ./src/server.ts",
-    "prod": "npm run build && npm start",
+    "dev": "nodemon --exec ts-node -- ./src/server.ts",
     "lint": "tslint --project tsconfig.json",
-    "unit-tests": "jest --watchAll --config=./jest.unit.config.js",
-    "intergration-tests": "jest --watchAll --config=./jest.intergration.config.js --runInBand",
-    "test": "jest --config=./jest.test.config.js --runInBand",
+    "unit-tests": "jest --config=./jest.unit.config.js",
+    "intergration-tests": "jest --config=./jest.intergration.config.js --runInBand",
+    "test": "npm run unit-tests && npm run intergration-tests",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
   },
   "keywords": [],
@@ -66,7 +65,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint&& pretty-quick --staged --verbose",
-      "pre-push": "npm run test"
+      "pre-push": "npm run unit-tests"
     }
   }
 }

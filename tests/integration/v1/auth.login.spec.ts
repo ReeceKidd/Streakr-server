@@ -50,7 +50,6 @@ describe(loginRoute, () => {
 
   test("response is correct when incorrect email and password is used", async () => {
     expect.assertions(6);
-    jest.spyOn(global.console, "error").mockImplementation(() => jest.fn());
     const response = await request(server)
       .post(loginRoute)
       .send({
