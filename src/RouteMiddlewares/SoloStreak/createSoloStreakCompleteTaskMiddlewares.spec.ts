@@ -165,7 +165,7 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("on error that next is called with error", () => {
+  test("throws RetreiveTimezoneHeaderMiddleware when middleware fails", () => {
     expect.assertions(1);
     const timezoneHeader = "Europe/London";
     const request: any = {};
@@ -178,7 +178,10 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
     );
     middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("request.header is not a function")
+      new CustomError(
+        ErrorType.RetreiveTimezoneHeaderMiddleware,
+        expect.any(Error)
+      )
     );
   });
 });

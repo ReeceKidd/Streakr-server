@@ -59,10 +59,15 @@ export const getRetreiveTimezoneHeaderMiddleware = (
   timezoneHeader: SupportedRequestHeaders
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
-    response.locals.timezone = request.header(timezoneHeader);
+    const timezone = request.header(timezoneHeader);
+    if (!timezone) {
+      throw new CustomError(ErrorType.MissingTimezoneHeader);
+    }
+    response.locals.timezone = timezone;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.RetreiveTimezoneHeaderMiddleware, err));
   }
 };
 
