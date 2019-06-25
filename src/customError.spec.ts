@@ -28,6 +28,15 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to SoloStreakDoesNotExist`, () => {
+    expect.assertions(3);
+    const customerError = new CustomError(ErrorType.PasswordDoesNotMatchHash);
+    const { code, message, httpStatusCode } = customerError;
+    expect(code).toBe(`400-04`);
+    expect(message).toBe("Solo streak does not exist.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to RetreiveUserWithEmailMiddlewareError`, () => {
     expect.assertions(3);
     const customerError = new CustomError(
@@ -86,6 +95,15 @@ describe("customError", () => {
     const customerError = new CustomError(ErrorType.LoginSuccessfulMiddleware);
     const { code, message, httpStatusCode } = customerError;
     expect(code).toBe(`500-07`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SoloStreakExistsMiddleware`, () => {
+    expect.assertions(3);
+    const customerError = new CustomError(ErrorType.SoloStreakExistsMiddleware);
+    const { code, message, httpStatusCode } = customerError;
+    expect(code).toBe(`500-08`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });

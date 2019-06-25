@@ -16,6 +16,7 @@ import {
   CompleteTask
 } from "../../Models/CompleteTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
+import { CustomError, ErrorType } from "../../customError";
 
 export const soloStreakTaskCompleteParamsValidationSchema = {
   soloStreakId: Joi.string().required()
@@ -39,42 +40,19 @@ export const getSoloStreakExistsMiddleware = (
   try {
     const { soloStreakId } = request.params;
     const soloStreak = await soloStreakModel.findOne({ _id: soloStreakId });
+    if (!soloStreak) {
+      throw new CustomError(ErrorType.SoloStreakDoesNotExist);
+    }
     response.locals.soloStreak = soloStreak;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.SoloStreakExistsMiddleware, err));
   }
 };
 
 export const soloStreakExistsMiddleware = getSoloStreakExistsMiddleware(
   soloStreakModel
-);
-
-export const getSendSoloStreakDoesNotExistErrorMessageMiddleware = (
-  unprocessableEntityStatusCode: number,
-  localisedSoloStreakDoesNotExistErrorMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { soloStreak } = response.locals;
-    if (!soloStreak) {
-      return response
-        .status(unprocessableEntityStatusCode)
-        .send({ message: localisedSoloStreakDoesNotExistErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedSoloStreakDoesNotExistMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.soloStreakDoesNotExist
-);
-
-export const sendSoloStreakDoesNotExistErrorMessageMiddleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(
-  ResponseCodes.unprocessableEntity,
-  localisedSoloStreakDoesNotExistMessage
 );
 
 export const getRetreiveTimezoneHeaderMiddleware = (
@@ -397,7 +375,6 @@ export const sendTaskCompleteResponseMiddleware = getSendTaskCompleteResponseMid
 export const createSoloStreakCompleteTaskMiddlewares = [
   soloStreakTaskCompleteParamsValidationMiddleware,
   soloStreakExistsMiddleware,
-  sendSoloStreakDoesNotExistErrorMessageMiddleware,
   retreiveTimezoneHeaderMiddleware,
   sendMissingTimezoneErrorResponseMiddleware,
   validateTimezoneMiddleware,

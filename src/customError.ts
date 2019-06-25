@@ -10,7 +10,9 @@ export enum ErrorType {
   SetMinimumUserDataMiddleware,
   SetJsonWebTokenExpiryInfoMiddleware,
   SetJsonWebTokenMiddleware,
-  LoginSuccessfulMiddleware
+  LoginSuccessfulMiddleware,
+  SoloStreakDoesNotExist,
+  SoloStreakExistsMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -48,6 +50,14 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-03`,
           message: "Password does not match hash.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.SoloStreakDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-04`,
+          message: "Solo streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -95,6 +105,14 @@ export class CustomError extends Error {
       case ErrorType.LoginSuccessfulMiddleware: {
         return {
           code: `${ResponseCodes.warning}-07`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+      }
+
+      case ErrorType.SoloStreakExistsMiddleware: {
+        return {
+          code: `${ResponseCodes.warning}-08`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

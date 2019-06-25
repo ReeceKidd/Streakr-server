@@ -62,8 +62,11 @@ export const getRetreiveUserWithEmailMiddleware = (
     response.locals.user = user;
     next();
   } catch (err) {
-    if (err instanceof CustomError) return next(err);
-    next(new CustomError(ErrorType.RetreiveUserWithEmailMiddlewareError));
+    if (err instanceof CustomError) next(err);
+    else
+      next(
+        new CustomError(ErrorType.RetreiveUserWithEmailMiddlewareError, err)
+      );
   }
 };
 
@@ -83,12 +86,14 @@ export const getCompareRequestPasswordToUserHashedPasswordMiddleware = (
     }
     next();
   } catch (err) {
-    if (err instanceof CustomError) return next(err);
-    next(
-      new CustomError(
-        ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
-      )
-    );
+    if (err instanceof CustomError) next(err);
+    else
+      next(
+        new CustomError(
+          ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware,
+          err
+        )
+      );
   }
 };
 
@@ -110,8 +115,7 @@ export const setMinimumUserDataMiddleware = (
     response.locals.minimumUserData = minimumUserData;
     next();
   } catch (err) {
-    if (err instanceof CustomError) return next(err);
-    next(new CustomError(ErrorType.SetMinimumUserDataMiddleware));
+    next(new CustomError(ErrorType.SetMinimumUserDataMiddleware, err));
   }
 };
 
@@ -126,8 +130,7 @@ export const getSetJsonWebTokenExpiryInfoMiddleware = (
     };
     next();
   } catch (err) {
-    if (err instanceof CustomError) return next(err);
-    next(new CustomError(ErrorType.SetJsonWebTokenExpiryInfoMiddleware));
+    next(new CustomError(ErrorType.SetJsonWebTokenExpiryInfoMiddleware, err));
   }
 };
 
@@ -154,8 +157,7 @@ export const getSetJsonWebTokenMiddleware = (
     (response.locals as LoginResponseLocals).jsonWebToken = jsonWebToken;
     next();
   } catch (err) {
-    if (err instanceof CustomError) return next(err);
-    next(new CustomError(ErrorType.SetJsonWebTokenMiddleware));
+    next(new CustomError(ErrorType.SetJsonWebTokenMiddleware, err));
   }
 };
 
@@ -175,8 +177,7 @@ export const getLoginSuccessfulMiddleware = (loginSuccessMessage: string) => (
       .status(ResponseCodes.success)
       .send({ jsonWebToken, message: loginSuccessMessage, expiry });
   } catch (err) {
-    if (err instanceof CustomError) return next(err);
-    next(new CustomError(ErrorType.LoginSuccessfulMiddleware));
+    next(new CustomError(ErrorType.LoginSuccessfulMiddleware, err));
   }
 };
 

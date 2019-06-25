@@ -16,11 +16,9 @@ import {
   createCompleteTaskDefinitionMiddleware,
   soloStreakTaskCompleteParamsValidationMiddleware,
   soloStreakExistsMiddleware,
-  sendSoloStreakDoesNotExistErrorMessageMiddleware,
   saveTaskCompleteMiddleware,
   streakMaintainedMiddleware,
   getSoloStreakExistsMiddleware,
-  getSendSoloStreakDoesNotExistErrorMessageMiddleware,
   getRetreiveTimezoneHeaderMiddleware,
   getSendMissingTimezoneErrorResponseMiddleware,
   getRetreiveUserMiddleware,
@@ -143,71 +141,6 @@ describe("soloStreakExistsMiddleware", () => {
       new TypeError(
         "Cannot destructure property `soloStreakId` of 'undefined' or 'null'."
       )
-    );
-  });
-});
-
-describe("sendSoloStreakDoesNotExistErrorMessageMiddleware", () => {
-  test("that error response is sent when response.locals.soloStreak is not defined", async () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const response: any = { locals: {}, status };
-    const next = jest.fn();
-
-    const unprocessableEntityStatus = 402;
-    const localisedErrorMessage = "error";
-
-    const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(
-      unprocessableEntityStatus,
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-    expect(status).toBeCalledWith(unprocessableEntityStatus);
-    expect(send).toBeCalledWith({ message: localisedErrorMessage });
-    expect(next).not.toBeCalledWith();
-  });
-
-  test("that next() is called when response.locals.soloStreak is defined", async () => {
-    expect.assertions(1);
-    const soloStreak = {
-      soloStreakName: "Test soloStreak"
-    };
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const response: any = { locals: { soloStreak }, status };
-    const next = jest.fn();
-
-    const unprocessableEntityStatus = 402;
-    const localisedErrorMessage = "error";
-
-    const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(
-      unprocessableEntityStatus,
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-    expect(next).toBeCalledWith();
-  });
-
-  test("that next is called with error on error", () => {
-    expect.assertions(1);
-    const request: any = {};
-    const response: any = { locals: {} };
-    const next = jest.fn();
-
-    const unprocessableEntityStatus = 402;
-    const localisedErrorMessage = "error";
-
-    const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(
-      unprocessableEntityStatus,
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-
-    expect(next).toBeCalledWith(
-      new TypeError("response.status is not a function")
     );
   });
 });
@@ -946,51 +879,48 @@ describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
       soloStreakExistsMiddleware
     );
     expect(createSoloStreakCompleteTaskMiddlewares[2]).toBe(
-      sendSoloStreakDoesNotExistErrorMessageMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[3]).toBe(
       retreiveTimezoneHeaderMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[4]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[3]).toBe(
       sendMissingTimezoneErrorResponseMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[5]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[4]).toBe(
       validateTimezoneMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[6]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[5]).toBe(
       sendInvalidTimezoneErrorResponseMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[7]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[6]).toBe(
       retreiveUserMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[8]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[7]).toBe(
       sendUserDoesNotExistErrorMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[9]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[8]).toBe(
       setTaskCompleteTimeMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[10]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[9]).toBe(
       setStreakStartDateMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[11]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[10]).toBe(
       setDayTaskWasCompletedMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[12]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[11]).toBe(
       hasTaskAlreadyBeenCompletedTodayMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[13]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[12]).toBe(
       sendTaskAlreadyCompletedTodayErrorMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[14]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[13]).toBe(
       createCompleteTaskDefinitionMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[15]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[14]).toBe(
       saveTaskCompleteMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[16]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[15]).toBe(
       streakMaintainedMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[17]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[16]).toBe(
       sendTaskCompleteResponseMiddleware
     );
   });

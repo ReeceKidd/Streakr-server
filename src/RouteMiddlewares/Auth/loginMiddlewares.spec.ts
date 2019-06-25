@@ -192,7 +192,7 @@ describe(`retreiveUserWithEmailMiddleware`, () => {
   });
 
   test("calls next() with RetreiveUserWithEmailMiddlewareError if middleware fails", async () => {
-    expect.assertions(4);
+    expect.assertions(1);
     const findOne = jest.fn(() => Promise.reject("error"));
     const UserModel = {
       findOne
@@ -204,18 +204,12 @@ describe(`retreiveUserWithEmailMiddleware`, () => {
 
     await middleware(request, response, next);
 
-    const errorCode = next.mock.calls[0][0].code;
-    const errorMessage = next.mock.calls[0][0].message;
-    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.RetreiveUserWithEmailMiddlewareError,
-        new Error("error")
+        expect.any(Error)
       )
     );
-    expect(errorCode).toEqual("500-02");
-    expect(errorMessage).toEqual("Internal Server Error.");
-    expect(httpStatusCode).toEqual(500);
   });
 });
 
@@ -262,7 +256,7 @@ describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
   });
 
   test("calls next() with CompareRequestPasswordToUserHashedPasswordMiddleware error if middleware fails", async () => {
-    expect.assertions(4);
+    expect.assertions(1);
     const compare = jest.fn(() => {
       return Promise.resolve(true);
     });
@@ -276,17 +270,12 @@ describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
 
     await middleware(request, response, next);
 
-    const errorCode = next.mock.calls[0][0].code;
-    const errorMessage = next.mock.calls[0][0].message;
-    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
     expect(next).toHaveBeenCalledWith(
       new CustomError(
-        ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+        ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware,
+        expect.any(Error)
       )
     );
-    expect(errorCode).toBe("500-03");
-    expect(errorMessage).toBe("Internal Server Error.");
-    expect(httpStatusCode).toBe(500);
   });
 });
 
@@ -311,7 +300,7 @@ describe(`setMinimumUserDataMiddleware`, () => {
   });
 
   test("calls next() with SetMinimumUserDataMiddleware error if middleware fails", async () => {
-    expect.assertions(4);
+    expect.assertions(1);
 
     const response: any = {};
     const request: any = {};
@@ -319,15 +308,9 @@ describe(`setMinimumUserDataMiddleware`, () => {
 
     setMinimumUserDataMiddleware(request, response, next);
 
-    const errorCode = next.mock.calls[0][0].code;
-    const errorMessage = next.mock.calls[0][0].message;
-    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
     expect(next).toHaveBeenCalledWith(
-      new CustomError(ErrorType.SetMinimumUserDataMiddleware)
+      new CustomError(ErrorType.SetMinimumUserDataMiddleware, expect.any(Error))
     );
-    expect(errorCode).toBe("500-04");
-    expect(errorMessage).toBe("Internal Server Error.");
-    expect(httpStatusCode).toBe(500);
   });
 });
 
@@ -350,7 +333,7 @@ describe("setJsonWebTokenExpiryInfoMiddleware", () => {
   });
 
   test("calls next with SetJsonWebTokenExpiryInfoMiddleware error on middleware failure", () => {
-    expect.assertions(4);
+    expect.assertions(1);
     const expiresIn = 233993;
     const unitOfTime = "seconds";
     const request: any = {};
@@ -361,17 +344,13 @@ describe("setJsonWebTokenExpiryInfoMiddleware", () => {
       unitOfTime
     );
     middleware(request, response, next);
-    const errorCode = next.mock.calls[0][0].code;
-    const errorMessage = next.mock.calls[0][0].message;
-    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
+
     expect(next).toHaveBeenCalledWith(
       new CustomError(
-        ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+        ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware,
+        expect.any(Error)
       )
     );
-    expect(errorCode).toBe("500-05");
-    expect(errorMessage).toBe("Internal Server Error.");
-    expect(httpStatusCode).toBe(500);
   });
 });
 
@@ -402,7 +381,7 @@ describe("setJsonWebTokenMiddleware", () => {
   });
 
   test("calls next SetJsonWebTokenMiddleware error on middleware failure", () => {
-    expect.assertions(4);
+    expect.assertions(1);
     const signTokenMock = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
@@ -420,17 +399,12 @@ describe("setJsonWebTokenMiddleware", () => {
     );
     middleware(request, response, next);
 
-    const errorCode = next.mock.calls[0][0].code;
-    const errorMessage = next.mock.calls[0][0].message;
-    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
     expect(next).toHaveBeenCalledWith(
       new CustomError(
-        ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+        ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware,
+        expect.any(Error)
       )
     );
-    expect(errorCode).toBe("500-06");
-    expect(errorMessage).toBe("Internal Server Error.");
-    expect(httpStatusCode).toBe(500);
   });
 });
 
@@ -460,7 +434,7 @@ describe(`loginSuccessfulMiddleware`, () => {
   });
 
   test("should call next with LoginSuccessfullMiddleware error on middleware failure", () => {
-    expect.assertions(4);
+    expect.assertions(1);
     const mockToken = "1234";
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
@@ -474,17 +448,12 @@ describe(`loginSuccessfulMiddleware`, () => {
     const middleware = getLoginSuccessfulMiddleware(loginSuccessMessage);
     middleware(request, response, next);
 
-    const errorCode = next.mock.calls[0][0].code;
-    const errorMessage = next.mock.calls[0][0].message;
-    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
     expect(next).toHaveBeenCalledWith(
       new CustomError(
-        ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+        ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware,
+        expect.any(Error)
       )
     );
-    expect(errorCode).toBe("500-07");
-    expect(errorMessage).toBe("Internal Server Error.");
-    expect(httpStatusCode).toBe(500);
   });
 });
 
