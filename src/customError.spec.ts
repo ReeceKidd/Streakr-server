@@ -30,7 +30,7 @@ describe("customError", () => {
 
   test(`creates correct error when type is set to SoloStreakDoesNotExist`, () => {
     expect.assertions(3);
-    const customerError = new CustomError(ErrorType.PasswordDoesNotMatchHash);
+    const customerError = new CustomError(ErrorType.SoloStreakDoesNotExist);
     const { code, message, httpStatusCode } = customerError;
     expect(code).toBe(`400-04`);
     expect(message).toBe("Solo streak does not exist.");

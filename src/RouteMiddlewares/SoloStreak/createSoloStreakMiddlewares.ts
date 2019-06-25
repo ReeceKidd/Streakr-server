@@ -15,7 +15,6 @@ import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { MessageCategories } from "../../Messages/messageCategories";
 import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { dayFormat } from "./createSoloStreakCompleteTaskMiddlewares";
-import { CustomError, ErrorType } from "../../customError";
 
 export interface SoloStreakRegistrationRequestBody {
   userId: string;

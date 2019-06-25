@@ -37,6 +37,7 @@ import {
 } from "./createSoloStreakCompleteTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { SupportedRequestHeaders } from "../../Server/headers";
+import { CustomError, ErrorType } from "../../customError";
 
 describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
   const soloStreakId = "12345678";
@@ -125,7 +126,7 @@ describe("soloStreakExistsMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("on error next() is called with error", async () => {
+  test("throws SoloStreakExistsMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const request: any = {};
     const response: any = { locals: {} };
@@ -138,9 +139,7 @@ describe("soloStreakExistsMiddleware", () => {
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
-      new TypeError(
-        "Cannot destructure property `soloStreakId` of 'undefined' or 'null'."
-      )
+      new CustomError(ErrorType.SoloStreakExistsMiddleware, expect.any(Error))
     );
   });
 });
@@ -871,7 +870,7 @@ describe("sendTaskCompleteResponseMiddleware", () => {
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
   test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
-    expect.assertions(18);
+    expect.assertions(17);
     expect(createSoloStreakCompleteTaskMiddlewares[0]).toBe(
       soloStreakTaskCompleteParamsValidationMiddleware
     );
