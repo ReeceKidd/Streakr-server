@@ -1,15 +1,10 @@
 import {
   createSoloStreakCompleteTaskMiddlewares,
   retreiveTimezoneHeaderMiddleware,
-  sendMissingTimezoneErrorResponseMiddleware,
   validateTimezoneMiddleware,
-  sendInvalidTimezoneErrorResponseMiddleware,
   hasTaskAlreadyBeenCompletedTodayMiddleware,
-  sendTaskAlreadyCompletedTodayErrorMiddleware,
   retreiveUserMiddleware,
   getValidateTimezoneMiddleware,
-  getSendInvalidTimezoneErrorResponseMiddleware,
-  sendUserDoesNotExistErrorMiddleware,
   setTaskCompleteTimeMiddleware,
   setDayTaskWasCompletedMiddleware,
   sendTaskCompleteResponseMiddleware,
@@ -20,15 +15,11 @@ import {
   streakMaintainedMiddleware,
   getSoloStreakExistsMiddleware,
   getRetreiveTimezoneHeaderMiddleware,
-  getSendMissingTimezoneErrorResponseMiddleware,
   getRetreiveUserMiddleware,
-  getSendUserDoesNotExistErrorMiddlware,
   getSetDayTaskWasCompletedMiddleware,
   getSetTaskCompleteTimeMiddleware,
   getHasTaskAlreadyBeenCompletedTodayMiddleware,
-  getSendTaskAlreadyCompletedTodayErrorMiddleware,
   getCreateCompleteTaskDefinitionMiddleware,
-  dayFormat,
   getSaveTaskCompleteMiddleware,
   getStreakMaintainedMiddleware,
   getSendTaskCompleteResponseMiddleware,
@@ -36,7 +27,6 @@ import {
   getSetStreakStartDateMiddleware
 } from "./createSoloStreakCompleteTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { SupportedRequestHeaders } from "../../Server/headers";
 import { CustomError, ErrorType } from "../../customError";
 
 describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
@@ -126,6 +116,26 @@ describe("soloStreakExistsMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
+  test("throws SoloStreakDoesNotExist error when solo streak does not exist", async () => {
+    expect.assertions(1);
+    const soloStreakId = "abc";
+    const request: any = {
+      params: { soloStreakId }
+    };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+
+    const findOne = jest.fn(() => Promise.resolve(false));
+    const soloStreakModel = { findOne };
+
+    const middleware = getSoloStreakExistsMiddleware(soloStreakModel as any);
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.SoloStreakDoesNotExist)
+    );
+  });
+
   test("throws SoloStreakExistsMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const request: any = {};
@@ -165,6 +175,28 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
+  test("throws MissingTimezoneHeader error when timezone is missing", () => {
+    expect.assertions(1);
+    const header = jest.fn(() => timezoneHeader);
+    const timezoneHeader = undefined;
+    const request: any = {
+      header
+    };
+    const response: any = {
+      locals: {}
+    };
+    const next = jest.fn();
+    const middleware = getRetreiveTimezoneHeaderMiddleware(
+      timezoneHeader as any
+    );
+
+    middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.MissingTimezoneHeader)
+    );
+  });
+
   test("throws RetreiveTimezoneHeaderMiddleware when middleware fails", () => {
     expect.assertions(1);
     const timezoneHeader = "Europe/London";
@@ -186,67 +218,6 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
   });
 });
 
-describe("sendMissingTimezoneErrorResponseMiddleware", () => {
-  test("that error response is sent correctly when timezone is not defined", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const response: any = { status, locals: {} };
-    const next = jest.fn();
-    const unprocessableEntityCode = 422;
-    const localisedError = "error";
-    const middleware = getSendMissingTimezoneErrorResponseMiddleware(
-      unprocessableEntityCode,
-      localisedError
-    );
-    middleware(request, response, next);
-    expect(status).toBeCalledWith(unprocessableEntityCode);
-    expect(send).toBeCalledWith({ message: localisedError });
-    expect(next).not.toBeCalled();
-  });
-
-  test("that next() is called when timezone is defined", () => {
-    expect.assertions(1);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const timezone = "Europe/London";
-    const request: any = {};
-    const response: any = { status, locals: { timezone } };
-    const next = jest.fn();
-    const unprocessableEntityCode = 422;
-    const localisedError = "error";
-    const middleware = getSendMissingTimezoneErrorResponseMiddleware(
-      unprocessableEntityCode,
-      localisedError
-    );
-    middleware(request, response, next);
-    expect(next).toBeCalledWith();
-  });
-
-  test("that on error next() is called with error", () => {
-    expect.assertions(1);
-    expect.assertions(1);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const response: any = { status };
-    const next = jest.fn();
-    const unprocessableEntityCode = 422;
-    const localisedError = "error";
-    const middleware = getSendMissingTimezoneErrorResponseMiddleware(
-      unprocessableEntityCode,
-      localisedError
-    );
-    middleware(request, response, next);
-    expect(next).toBeCalledWith(
-      new TypeError(
-        "Cannot destructure property `timezone` of 'undefined' or 'null'."
-      )
-    );
-  });
-});
-
 describe("validateTimezoneMiddleware", () => {
   test("that response.locals.validTimezone is defined and next() is called", () => {
     expect.assertions(3);
@@ -262,7 +233,21 @@ describe("validateTimezoneMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next is called with error", () => {
+  test("throws InvalidTimezone error when timezone is invalid", () => {
+    expect.assertions(1);
+    const timezone = "Invalid";
+    const request: any = {};
+    const response: any = { locals: { timezone } };
+    const next = jest.fn();
+    const isValidTimezone = jest.fn(() => false);
+    const middleware = getValidateTimezoneMiddleware(isValidTimezone);
+
+    middleware(request, response, next);
+
+    expect(next).toBeCalledWith(new CustomError(ErrorType.InvalidTimezone));
+  });
+
+  test("throws ValidateTimezoneMiddleware error on middleware failure", () => {
     expect.assertions(1);
     const timezone = "Europe/London";
     const request: any = {};
@@ -271,67 +256,7 @@ describe("validateTimezoneMiddleware", () => {
     const middleware = getValidateTimezoneMiddleware(undefined as any);
     middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("isValidTimezone is not a function")
-    );
-  });
-});
-
-describe("sendInvalidTimezoneErrorResponseMiddleware", () => {
-  test("that error response is sent correctly when validTimezone is not defined", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const response: any = { locals: {}, status };
-    const next = jest.fn();
-    const unprocessableEntityCode = 422;
-    const localisedError = "error";
-    const middleware = getSendInvalidTimezoneErrorResponseMiddleware(
-      unprocessableEntityCode,
-      localisedError
-    );
-    middleware(request, response, next);
-    expect(status).toBeCalledWith(unprocessableEntityCode);
-    expect(send).toBeCalledWith({ message: localisedError });
-    expect(next).not.toBeCalled();
-  });
-
-  test("that error response is sent correctly when timezone is missing", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const validTimezone = "Europe/London";
-    const response: any = { locals: { validTimezone } };
-    const next = jest.fn();
-    const unprocessableEntityCode = 422;
-    const localisedError = "error";
-    const middleware = getSendInvalidTimezoneErrorResponseMiddleware(
-      unprocessableEntityCode,
-      localisedError
-    );
-    middleware(request, response, next);
-    expect(status).not.toBeCalled();
-    expect(send).not.toBeCalled();
-    expect(next).toBeCalledWith();
-  });
-
-  test("that on failure next is called with error", () => {
-    expect.assertions(1);
-    const request: any = {};
-    const response: any = {};
-    const next = jest.fn();
-    const unprocessableEntityCode = 422;
-    const localisedError = "error";
-    const middleware = getSendInvalidTimezoneErrorResponseMiddleware(
-      unprocessableEntityCode,
-      localisedError
-    );
-    middleware(request, response, next);
-    expect(next).toBeCalledWith(
-      new TypeError(
-        "Cannot destructure property `validTimezone` of 'undefined' or 'null'."
-      )
+      new CustomError(ErrorType.ValidateTimezoneMiddleware, expect.any(Error))
     );
   });
 });
@@ -355,7 +280,7 @@ describe("retreiveUserMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("on error next is called with error", async () => {
+  test("throws RetreiveUserMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -370,66 +295,6 @@ describe("retreiveUserMiddleware", () => {
     await middleware(request, response, next);
     expect(next).toBeCalledWith(
       new TypeError("userModel.findOne(...).lean is not a function")
-    );
-  });
-});
-
-describe(`sendUserDoesNotExistErrorMiddleware`, () => {
-  test("that error response is sent when response.locals.user is undefined", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const response: any = { status, locals: {} };
-    const next = jest.fn();
-    const unprocessableEntityCode = 422;
-    const localisedError = "error";
-    const middleware = getSendUserDoesNotExistErrorMiddlware(
-      unprocessableEntityCode,
-      localisedError
-    );
-    middleware(request, response, next);
-    expect(status).toBeCalledWith(unprocessableEntityCode);
-    expect(send).toBeCalledWith({ message: localisedError });
-    expect(next).not.toBeCalled();
-  });
-
-  test("that next is called when user is defined", () => {
-    expect.assertions(3);
-    const user = {
-      userName: "Tester"
-    };
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const response: any = { status, locals: { user } };
-    const next = jest.fn();
-    const unprocessableEntityCode = 422;
-    const localisedError = "error";
-    const middleware = getSendUserDoesNotExistErrorMiddlware(
-      unprocessableEntityCode,
-      localisedError
-    );
-    middleware(request, response, next);
-    expect(status).not.toBeCalled();
-    expect(send).not.toBeCalled();
-    expect(next).toBeCalledWith();
-  });
-
-  test("that on error next is called with error", () => {
-    expect.assertions(1);
-    const request: any = {};
-    const response: any = { locals: {} };
-    const next = jest.fn();
-    const unprocessableEntityCode = 422;
-    const localisedError = "error";
-    const middleware = getSendUserDoesNotExistErrorMiddlware(
-      unprocessableEntityCode,
-      localisedError
-    );
-    middleware(request, response, next);
-    expect(next).toBeCalledWith(
-      new TypeError("response.status is not a function")
     );
   });
 });
@@ -584,64 +449,6 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     );
     await middleware(request, response, next);
     expect(next).toBeCalledWith(errorMessage);
-  });
-});
-
-describe("sendTaskAlreadyCompletedTodayErrorMiddleware", () => {
-  test("that error response is sent when response.locals.taskAlreadyCompletedToday is defined", () => {
-    expect.assertions(3);
-    const send = jest.fn(() => true);
-    const status = jest.fn(() => ({ send }));
-    const taskAlreadyCompletedToday = true;
-    const unprocessableEntityCode = 422;
-    const localisedTaskAlreadyCompletedTodayErrorMessage = "error";
-    const middleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(
-      unprocessableEntityCode,
-      localisedTaskAlreadyCompletedTodayErrorMessage
-    );
-    const request: any = {};
-    const response: any = { locals: { taskAlreadyCompletedToday }, status };
-    const next = jest.fn();
-    middleware(request, response, next);
-    expect(status).toBeCalledWith(unprocessableEntityCode);
-    expect(send).toBeCalledWith({
-      message: localisedTaskAlreadyCompletedTodayErrorMessage
-    });
-    expect(next).not.toBeCalled();
-  });
-
-  test("that next is called when response.locals.taskAlreadyCompleted is defined", () => {
-    expect.assertions(1);
-    const taskAlreadyCompletedToday = false;
-    const unprocessableEntityCode = 422;
-    const localisedTaskAlreadyCompletedTodayErrorMessage = "error";
-    const middleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(
-      unprocessableEntityCode,
-      localisedTaskAlreadyCompletedTodayErrorMessage
-    );
-    const request: any = {};
-    const response: any = { locals: { taskAlreadyCompletedToday } };
-    const next = jest.fn();
-    middleware(request, response, next);
-    expect(next).toBeCalledWith();
-  });
-
-  test("that on error next is called with error", () => {
-    expect.assertions(1);
-    const taskAlreadyCompletedToday = true;
-    const unprocessableEntityCode = 422;
-    const localisedTaskAlreadyCompletedTodayErrorMessage = "error";
-    const middleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(
-      unprocessableEntityCode,
-      localisedTaskAlreadyCompletedTodayErrorMessage
-    );
-    const request: any = {};
-    const response: any = { locals: { taskAlreadyCompletedToday } };
-    const next = jest.fn();
-    middleware(request, response, next);
-    expect(next).toBeCalledWith(
-      new TypeError("response.status is not a function")
-    );
   });
 });
 
@@ -873,7 +680,7 @@ describe("sendTaskCompleteResponseMiddleware", () => {
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
   test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
-    expect.assertions(17);
+    expect.assertions(13);
     expect(createSoloStreakCompleteTaskMiddlewares[0]).toBe(
       soloStreakTaskCompleteParamsValidationMiddleware
     );
@@ -884,45 +691,33 @@ describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
       retreiveTimezoneHeaderMiddleware
     );
     expect(createSoloStreakCompleteTaskMiddlewares[3]).toBe(
-      sendMissingTimezoneErrorResponseMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[4]).toBe(
       validateTimezoneMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[5]).toBe(
-      sendInvalidTimezoneErrorResponseMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[6]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[4]).toBe(
       retreiveUserMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[7]).toBe(
-      sendUserDoesNotExistErrorMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[8]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[5]).toBe(
       setTaskCompleteTimeMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[9]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[6]).toBe(
       setStreakStartDateMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[10]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[7]).toBe(
       setDayTaskWasCompletedMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[11]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[8]).toBe(
       hasTaskAlreadyBeenCompletedTodayMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[12]).toBe(
-      sendTaskAlreadyCompletedTodayErrorMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[13]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[9]).toBe(
       createCompleteTaskDefinitionMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[14]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[10]).toBe(
       saveTaskCompleteMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[15]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[11]).toBe(
       streakMaintainedMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[16]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[12]).toBe(
       sendTaskCompleteResponseMiddleware
     );
   });

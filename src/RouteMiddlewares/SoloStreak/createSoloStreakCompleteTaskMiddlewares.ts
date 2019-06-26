@@ -3,9 +3,6 @@ import moment from "moment-timezone";
 import * as Joi from "joi";
 import * as mongoose from "mongoose";
 
-import { getLocalisedString } from "../../Messages/getLocalisedString";
-import { MessageCategories } from "../../Messages/messageCategories";
-import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { SupportedRequestHeaders } from "../../Server/headers";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { userModel, User } from "../../Models/User";
@@ -75,33 +72,6 @@ export const retreiveTimezoneHeaderMiddleware = getRetreiveTimezoneHeaderMiddlew
   SupportedRequestHeaders.xTimezone
 );
 
-export const getSendMissingTimezoneErrorResponseMiddleware = (
-  unprocessableEntityCode: ResponseCodes,
-  localisedErrorMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { timezone } = response.locals;
-    if (!timezone) {
-      return response
-        .status(unprocessableEntityCode)
-        .send({ message: localisedErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedMissingTimezoneHeaderMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.missingTimezoneHeaderMessage
-);
-
-export const sendMissingTimezoneErrorResponseMiddleware = getSendMissingTimezoneErrorResponseMiddleware(
-  ResponseCodes.unprocessableEntity,
-  localisedMissingTimezoneHeaderMessage
-);
-
 export const getValidateTimezoneMiddleware = (isValidTimezone: Function) => (
   request: Request,
   response: Response,
@@ -109,42 +79,19 @@ export const getValidateTimezoneMiddleware = (isValidTimezone: Function) => (
 ) => {
   try {
     const { timezone } = response.locals;
-    response.locals.validTimezone = isValidTimezone(timezone);
+    const validTimezone = isValidTimezone(timezone);
+    if (!validTimezone) {
+      throw new CustomError(ErrorType.InvalidTimezone);
+    }
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.ValidateTimezoneMiddleware, err));
   }
 };
 
 export const validateTimezoneMiddleware = getValidateTimezoneMiddleware(
   moment.tz.zone
-);
-
-export const getSendInvalidTimezoneErrorResponseMiddleware = (
-  unprocessableEntityCode: number,
-  localisedErrorMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { validTimezone } = response.locals;
-    if (!validTimezone) {
-      return response
-        .status(unprocessableEntityCode)
-        .send({ message: localisedErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedInvalidTimezoneMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.invalidTimezoneMessage
-);
-
-export const sendInvalidTimezoneErrorResponseMiddleware = getSendInvalidTimezoneErrorResponseMiddleware(
-  ResponseCodes.unprocessableEntity,
-  localisedInvalidTimezoneMessage
 );
 
 export const getRetreiveUserMiddleware = (
@@ -153,41 +100,18 @@ export const getRetreiveUserMiddleware = (
   try {
     const { minimumUserData } = response.locals;
     const user = await userModel.findOne({ _id: minimumUserData._id }).lean();
+    if (!user) {
+      throw new CustomError(ErrorType.UserDoesNotExist);
+    }
     response.locals.user = user;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.RetreiveUserMiddleware, err));
   }
 };
 
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
-
-export const getSendUserDoesNotExistErrorMiddlware = (
-  unprocessableEntityCode: number,
-  localisedUserDoesNotExistErrorMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { user } = response.locals;
-    if (!user) {
-      return response
-        .status(unprocessableEntityCode)
-        .send({ message: localisedUserDoesNotExistErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedUserDoesNotExistErrorMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.userDoesNotExistMessage
-);
-
-export const sendUserDoesNotExistErrorMiddleware = getSendUserDoesNotExistErrorMiddlware(
-  ResponseCodes.unprocessableEntity,
-  localisedUserDoesNotExistErrorMessage
-);
 
 export const getSetTaskCompleteTimeMiddleware = (moment: any) => (
   request: Request,
@@ -200,7 +124,7 @@ export const getSetTaskCompleteTimeMiddleware = (moment: any) => (
     response.locals.taskCompleteTime = taskCompleteTime;
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SetTaskCompleteTimeMiddleware, err));
   }
 };
 
@@ -222,7 +146,7 @@ export const getSetStreakStartDateMiddleware = (
     }
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SetStreakStartDateMiddleware, err));
   }
 };
 
@@ -241,7 +165,7 @@ export const getSetDayTaskWasCompletedMiddleware = (dayFormat: string) => (
     response.locals.taskCompleteDay = taskCompleteDay;
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SetDayTaskWasCompletedMiddleware, err));
   }
 };
 
@@ -262,42 +186,25 @@ export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
       streakId: soloStreakId,
       taskCompleteDay
     });
+    if (taskAlreadyCompletedToday) {
+      throw new CustomError(ErrorType.TaskAlreadyCompletedToday);
+    }
     response.locals.taskAlreadyCompletedToday = taskAlreadyCompletedToday;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else
+      next(
+        new CustomError(
+          ErrorType.HasTaskAlreadyBeenCompletedTodayMiddleware,
+          err
+        )
+      );
   }
 };
 
 export const hasTaskAlreadyBeenCompletedTodayMiddleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
   completeTaskModel
-);
-
-export const getSendTaskAlreadyCompletedTodayErrorMiddleware = (
-  unprocessableEntityResponseCode: number,
-  localisedTaskAlreadyCompletedTodayErrorMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { taskAlreadyCompletedToday } = response.locals;
-    if (taskAlreadyCompletedToday) {
-      return response
-        .status(unprocessableEntityResponseCode)
-        .send({ message: localisedTaskAlreadyCompletedTodayErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedTaskAlreadyCompletedTodayErrorMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.taskAlreadyCompleted
-);
-
-export const sendTaskAlreadyCompletedTodayErrorMiddleware = getSendTaskAlreadyCompletedTodayErrorMiddleware(
-  ResponseCodes.unprocessableEntity,
-  localisedTaskAlreadyCompletedTodayErrorMessage
 );
 
 export const getCreateCompleteTaskDefinitionMiddleware = (
@@ -316,7 +223,9 @@ export const getCreateCompleteTaskDefinitionMiddleware = (
     response.locals.completeTaskDefinition = completeTaskDefinition;
     next();
   } catch (err) {
-    next(err);
+    next(
+      new CustomError(ErrorType.CreateCompleteTaskDefinitionMiddleware, err)
+    );
   }
 };
 
@@ -335,7 +244,7 @@ export const getSaveTaskCompleteMiddleware = (
     response.locals.completeTask = completeTask;
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SaveTaskCompleteMiddleware, err));
   }
 };
 
@@ -354,7 +263,7 @@ export const getStreakMaintainedMiddleware = (
     );
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.StreakMaintainedMiddleware, err));
   }
 };
 
@@ -369,7 +278,7 @@ export const getSendTaskCompleteResponseMiddleware = (
     const { completeTask } = response.locals;
     return response.status(resourceCreatedResponseCode).send({ completeTask });
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SendTaskCompleteResponseMiddleware, err));
   }
 };
 
@@ -381,16 +290,12 @@ export const createSoloStreakCompleteTaskMiddlewares = [
   soloStreakTaskCompleteParamsValidationMiddleware,
   soloStreakExistsMiddleware,
   retreiveTimezoneHeaderMiddleware,
-  sendMissingTimezoneErrorResponseMiddleware,
   validateTimezoneMiddleware,
-  sendInvalidTimezoneErrorResponseMiddleware,
   retreiveUserMiddleware,
-  sendUserDoesNotExistErrorMiddleware,
   setTaskCompleteTimeMiddleware,
   setStreakStartDateMiddleware,
   setDayTaskWasCompletedMiddleware,
   hasTaskAlreadyBeenCompletedTodayMiddleware,
-  sendTaskAlreadyCompletedTodayErrorMiddleware,
   createCompleteTaskDefinitionMiddleware,
   saveTaskCompleteMiddleware,
   streakMaintainedMiddleware,

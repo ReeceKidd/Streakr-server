@@ -8,6 +8,7 @@ Define a general error for each of the middlewares to make it easy to debug what
 Add instance of custom error unit test to all middlewares. 
 Need to ge the elastic beanstalk and code ship env setup done correctly so changes are being deployed. 
 Need to use cognito to handle user JWT tokens. 
+Need to go through all error messages and make sure the test block sentences make sense
+Need to start branching off a base project when its in a good working state. 
+Need to make sure all unit tests are spaced correctly with the AAA structure. 
 
-Update unit tests of loginMiddlewares, try to force a middleware error to see
-if the error persists to see if new CustomError(ErrorType.xxx, err) is required.  
