@@ -445,7 +445,7 @@ describe("setDayTaskWasCompletedMiddleware", () => {
 
 describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
   test("checks task has not already been completed today", async () => {
-    expect.assertions(3);
+    expect.assertions(2);
     const findOne = jest.fn(() => Promise.resolve(false));
     const completeTaskModel = { findOne };
     const soloStreakId = "abcd";
