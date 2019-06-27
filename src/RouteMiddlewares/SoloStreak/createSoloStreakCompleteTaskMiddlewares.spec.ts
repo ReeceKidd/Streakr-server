@@ -32,7 +32,7 @@ import { CustomError, ErrorType } from "../../customError";
 describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
   const soloStreakId = "12345678";
 
-  test("that next() is called when correct params are supplied", () => {
+  test("calls next() when correct params are supplied", () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -49,7 +49,7 @@ describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
     expect(next).toBeCalled();
   });
 
-  test("that correct response is sent when soloStreakId is missing", () => {
+  test("sends correct error response when soloStreakId is missing", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -71,7 +71,7 @@ describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that error response is sent when soloStreakId is not a string", () => {
+  test("sends correct error response when soloStreakId is not a string", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -96,7 +96,7 @@ describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
 });
 
 describe("soloStreakExistsMiddleware", () => {
-  test("that response.locals.soloStreak is defined and next() is called", async () => {
+  test("sets response.locals.soloStreak and calls next()", async () => {
     expect.assertions(3);
     const soloStreakId = "abc";
     const request: any = {
@@ -155,7 +155,7 @@ describe("soloStreakExistsMiddleware", () => {
 });
 
 describe("retreiveTimezoneHeaderMiddleware", () => {
-  test("that response.locals.timezone is defined and next() is called", () => {
+  test("sets response.locals.timezone and calls next()", () => {
     expect.assertions(3);
     const header = jest.fn(() => timezoneHeader);
     const timezoneHeader = "Europe/London";
@@ -219,7 +219,7 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
 });
 
 describe("validateTimezoneMiddleware", () => {
-  test("that response.locals.validTimezone is defined and next() is called", () => {
+  test("sets response.locals.validTimezone and calls next()", () => {
     expect.assertions(2);
     const timezone = "Europe/London";
     const request: any = {};
@@ -261,7 +261,7 @@ describe("validateTimezoneMiddleware", () => {
 });
 
 describe("retreiveUserMiddleware", () => {
-  test("that response.locals.user is defined and next() is called", async () => {
+  test("sets response.locals.user and calls next()", async () => {
     expect.assertions(4);
     const _id = "abcd";
     const minimumUserData = { _id };
@@ -314,7 +314,7 @@ describe("retreiveUserMiddleware", () => {
 });
 
 describe("setTaskCompleteTimeMiddleware", () => {
-  test("that response.locals.taskCompleteTime is defined and next is called", () => {
+  test("sets response.locals.taskCompleteTime and calls next()", () => {
     expect.assertions(4);
     const timezone = "Europe/London";
     const tz = jest.fn(() => true);
@@ -349,7 +349,7 @@ describe("setTaskCompleteTimeMiddleware", () => {
 });
 
 describe("setStreakStartDateMiddleware", () => {
-  test("that soloStreak.startDate becomes equal to taskCompleteTime if it's undefined", async () => {
+  test("sets soloStreak.startDate to taskCompleteTime if it's undefined and calls next()", async () => {
     expect.assertions(2);
     const findByIdAndUpdate = jest.fn();
     const soloStreakModel: any = {
@@ -373,7 +373,7 @@ describe("setStreakStartDateMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test(" doesn't update soloStreak currentStreak.startDate if it's already set", async () => {
+  test("doesn't update soloStreak currentStreak.startDate if it's already set", async () => {
     expect.assertions(2);
     const findByIdAndUpdate = jest.fn();
     const soloStreakModel: any = {
@@ -409,7 +409,7 @@ describe("setStreakStartDateMiddleware", () => {
 });
 
 describe("setDayTaskWasCompletedMiddleware", () => {
-  test("that response.locals.taskCompleteTime is defined and next is called", () => {
+  test("sets response.locals.taskCompleteTime and calls next()", () => {
     expect.assertions(3);
     const dayFormat = "DD/MM/YYYY";
     const format = jest.fn(() => true);
@@ -444,7 +444,7 @@ describe("setDayTaskWasCompletedMiddleware", () => {
 });
 
 describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
-  test("that response.locals.taskAlreadyCompletedToday is defined and next is called", async () => {
+  test("checks task has not already been completed today", async () => {
     expect.assertions(3);
     const findOne = jest.fn(() => Promise.resolve(false));
     const completeTaskModel = { findOne };
@@ -466,13 +466,11 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
       streakId: soloStreakId,
       taskCompleteDay
     });
-    expect(response.locals.taskAlreadyCompletedToday).toBeDefined();
     expect(next).toBeCalledWith();
   });
 
   test("throws TaskAlreadyCompletedToday error if task has already been completed today", async () => {
     expect.assertions(1);
-    const errorMessage = "error";
     const findOne = jest.fn(() => Promise.resolve(true));
     const completeTaskModel = { findOne };
     const soloStreakId = "abcd";
@@ -520,7 +518,7 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
 });
 
 describe("createCompleteTaskDefinitionMiddleware", () => {
-  test("that completeTaskDefinition is defined and next is called", () => {
+  test("sets completeTaskDefinition and calls next()", () => {
     expect.assertions(3);
     const soloStreakId = "abcd123";
     const toDate = jest.fn(() => "27/03/2019");
@@ -700,7 +698,7 @@ describe("streakMaintainedMiddleware", () => {
 });
 
 describe("sendTaskCompleteResponseMiddleware", () => {
-  test("that completeTask response is sent and next is not called", () => {
+  test("sends completeTask response", () => {
     expect.assertions(3);
     const send = jest.fn(() => true);
     const status = jest.fn(() => ({ send }));
@@ -751,7 +749,7 @@ describe("sendTaskCompleteResponseMiddleware", () => {
 });
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
-  test("that createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
+  test("checks createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
     expect.assertions(13);
     expect(createSoloStreakCompleteTaskMiddlewares[0]).toBe(
       soloStreakTaskCompleteParamsValidationMiddleware

@@ -191,7 +191,6 @@ export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
     if (taskAlreadyCompletedToday) {
       throw new CustomError(ErrorType.TaskAlreadyCompletedToday);
     }
-    response.locals.taskAlreadyCompletedToday = taskAlreadyCompletedToday;
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
