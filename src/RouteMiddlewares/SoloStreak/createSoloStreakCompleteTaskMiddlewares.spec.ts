@@ -220,7 +220,7 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
 
 describe("validateTimezoneMiddleware", () => {
   test("that response.locals.validTimezone is defined and next() is called", () => {
-    expect.assertions(3);
+    expect.assertions(2);
     const timezone = "Europe/London";
     const request: any = {};
     const response: any = { locals: { timezone } };
@@ -228,7 +228,6 @@ describe("validateTimezoneMiddleware", () => {
     const isValidTimezone = jest.fn(() => true);
     const middleware = getValidateTimezoneMiddleware(isValidTimezone);
     middleware(request, response, next);
-    expect(response.locals.validTimezone).toBeDefined();
     expect(isValidTimezone).toBeCalledWith(timezone);
     expect(next).toBeCalledWith();
   });
@@ -280,6 +279,21 @@ describe("retreiveUserMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
+  test("throws UserDoesNotExistError when user does not exist", async () => {
+    expect.assertions(1);
+    const _id = "abcd";
+    const minimumUserData = { _id };
+    const lean = jest.fn(() => false);
+    const findOne = jest.fn(() => ({ lean }));
+    const userModel = { findOne };
+    const request: any = {};
+    const response: any = { locals: { minimumUserData } };
+    const next = jest.fn();
+    const middleware = getRetreiveUserMiddleware(userModel as any);
+    await middleware(request, response, next);
+    expect(next).toBeCalledWith(new CustomError(ErrorType.UserDoesNotExist));
+  });
+
   test("throws RetreiveUserMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const send = jest.fn();
@@ -294,7 +308,7 @@ describe("retreiveUserMiddleware", () => {
     const middleware = getRetreiveUserMiddleware(userModel as any);
     await middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("userModel.findOne(...).lean is not a function")
+      new CustomError(ErrorType.RetreiveUserMiddleware, expect.any(Error))
     );
   });
 });
@@ -316,7 +330,7 @@ describe("setTaskCompleteTimeMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next is called with error", () => {
+  test("throws SetTaskCompleteTimeMiddlewre error on middleware failure", () => {
     expect.assertions(1);
     const tz = jest.fn(() => true);
     const moment = jest.fn(() => ({ tz }));
@@ -326,8 +340,9 @@ describe("setTaskCompleteTimeMiddleware", () => {
     const middleware = getSetTaskCompleteTimeMiddleware(moment);
     middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError(
-        "Cannot destructure property `timezone` of 'undefined' or 'null'."
+      new CustomError(
+        ErrorType.SetTaskCompleteTimeMiddleware,
+        expect.any(Error)
       )
     );
   });
@@ -358,7 +373,29 @@ describe("setStreakStartDateMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next is called with error", () => {
+  test(" doesn't update soloStreak currentStreak.startDate if it's already set", async () => {
+    expect.assertions(2);
+    const findByIdAndUpdate = jest.fn();
+    const soloStreakModel: any = {
+      findByIdAndUpdate
+    };
+    const taskCompleteTime = new Date();
+    const soloStreakId = 1;
+    const soloStreak = {
+      currentStreak: {
+        startDate: new Date()
+      }
+    };
+    const request: any = { params: { soloStreakId } };
+    const response: any = { locals: { soloStreak, taskCompleteTime } };
+    const next: any = jest.fn();
+    const middleware = await getSetStreakStartDateMiddleware(soloStreakModel);
+    await middleware(request, response, next);
+    expect(findByIdAndUpdate).not.toBeCalled();
+    expect(next).toBeCalledWith();
+  });
+
+  test("throws SetStreakStartDateMiddleware on middleware failure", () => {
     expect.assertions(1);
     const request: any = {};
     const response: any = {};
@@ -366,7 +403,7 @@ describe("setStreakStartDateMiddleware", () => {
     const middleware = getSetStreakStartDateMiddleware(undefined as any);
     middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("Cannot read property 'soloStreak' of undefined")
+      new CustomError(ErrorType.SetStreakStartDateMiddleware, expect.any(Error))
     );
   });
 });
@@ -389,7 +426,7 @@ describe("setDayTaskWasCompletedMiddleware", () => {
     expect(next).toBeDefined();
   });
 
-  test("that on error next is called with error", () => {
+  test("throws setDayTaskWasCompletedMiddleware error on middleware failure", () => {
     expect.assertions(1);
     const dayFormat = "DD/MM/YYYY";
     const request: any = {};
@@ -398,7 +435,10 @@ describe("setDayTaskWasCompletedMiddleware", () => {
     const middleware = getSetDayTaskWasCompletedMiddleware(dayFormat);
     middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("Cannot read property 'format' of undefined")
+      new CustomError(
+        ErrorType.SetDayTaskWasCompletedMiddleware,
+        expect.any(Error)
+      )
     );
   });
 });
@@ -406,7 +446,7 @@ describe("setDayTaskWasCompletedMiddleware", () => {
 describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
   test("that response.locals.taskAlreadyCompletedToday is defined and next is called", async () => {
     expect.assertions(3);
-    const findOne = jest.fn(() => Promise.resolve(true));
+    const findOne = jest.fn(() => Promise.resolve(false));
     const completeTaskModel = { findOne };
     const soloStreakId = "abcd";
     const taskCompleteDay = "26/04/2012";
@@ -430,10 +470,10 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next is called with error", async () => {
+  test("throws TaskAlreadyCompletedToday error if task has already been completed today", async () => {
     expect.assertions(1);
     const errorMessage = "error";
-    const findOne = jest.fn(() => Promise.reject(errorMessage));
+    const findOne = jest.fn(() => Promise.resolve(true));
     const completeTaskModel = { findOne };
     const soloStreakId = "abcd";
     const taskCompleteDay = "26/04/2012";
@@ -448,7 +488,34 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
       completeTaskModel as any
     );
     await middleware(request, response, next);
-    expect(next).toBeCalledWith(errorMessage);
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.TaskAlreadyCompletedToday)
+    );
+  });
+
+  test("throws HasTaskAlreadyBeenCompletedTodayMiddleware error on middleware failure", async () => {
+    expect.assertions(1);
+    const findOne = jest.fn(() => Promise.resolve(true));
+    const completeTaskModel = { findOne };
+    const soloStreakId = "abcd";
+    const taskCompleteDay = "26/04/2012";
+    const _id = "a1b2";
+    const user = {
+      _id
+    };
+    const request: any = {};
+    const response: any = { locals: { taskCompleteDay, user } };
+    const next = jest.fn();
+    const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
+      completeTaskModel as any
+    );
+    await middleware(request, response, next);
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.HasTaskAlreadyBeenCompletedTodayMiddleware,
+        expect.any(Error)
+      )
+    );
   });
 });
 
@@ -490,7 +557,7 @@ describe("createCompleteTaskDefinitionMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next is called with error", () => {
+  test("throws CreateCompleteTaskDefinitionMiddlware error on middleware failure", () => {
     expect.assertions(1);
     const soloStreakId = "abcd123";
     const taskCompleteTime = {};
@@ -514,13 +581,16 @@ describe("createCompleteTaskDefinitionMiddleware", () => {
     const middleware = getCreateCompleteTaskDefinitionMiddleware(streakType);
     middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("taskCompleteTime.toDate is not a function")
+      new CustomError(
+        ErrorType.CreateCompleteTaskDefinitionMiddleware,
+        expect.any(Error)
+      )
     );
   });
 });
 
 describe(`saveTaskCompleteMiddleware`, () => {
-  test(" that response.locals.completeTask is defined and next() is called", async () => {
+  test("sets response.locals.completeTask and calls next", async () => {
     expect.assertions(3);
     const userId = "abcd";
     const streakId = "1234";
@@ -569,7 +639,7 @@ describe(`saveTaskCompleteMiddleware`, () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next is called with eror", async () => {
+  test("throws SaveTaskCompleteMiddleware error on Middleware failure", async () => {
     expect.assertions(1);
     const userId = "abcd";
     const streakId = "1234";
@@ -583,20 +653,19 @@ describe(`saveTaskCompleteMiddleware`, () => {
       taskCompleteDay,
       streakType
     };
-    const save = jest.fn(() => Promise.resolve(true));
     const request: any = {};
     const response: any = { locals: { completeTaskDefinition } };
     const next = jest.fn();
     const middleware = getSaveTaskCompleteMiddleware({} as any);
     await middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("completeTaskModel is not a constructor")
+      new CustomError(ErrorType.SaveTaskCompleteMiddleware, expect.any(Error))
     );
   });
 });
 
 describe("streakMaintainedMiddleware", () => {
-  test("that soloStreakModel is updated and that next() is called", async () => {
+  test("updates streak completedToday, increments number of days and calls next", async () => {
     expect.assertions(2);
     const soloStreakId = "123abc";
     const updateOne = jest.fn(() => Promise.resolve(true));
@@ -615,7 +684,7 @@ describe("streakMaintainedMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next is called with error", async () => {
+  test("throws StreakMaintainedMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const soloStreakId = "123abc";
     const soloStreakModel = {};
@@ -625,7 +694,7 @@ describe("streakMaintainedMiddleware", () => {
     const middleware = getStreakMaintainedMiddleware(soloStreakModel as any);
     await middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("soloStreakModel.updateOne is not a function")
+      new CustomError(ErrorType.StreakMaintainedMiddleware, expect.any(Error))
     );
   });
 });
@@ -655,7 +724,7 @@ describe("sendTaskCompleteResponseMiddleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that on error next is called with error", () => {
+  test("throws SendTaskCompleteResponseMiddleware error on middleware failure", () => {
     expect.assertions(1);
     const completeTask = {
       userId: "abcd",
@@ -673,7 +742,10 @@ describe("sendTaskCompleteResponseMiddleware", () => {
     const next = jest.fn();
     middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("response.status is not a function")
+      new CustomError(
+        ErrorType.SendTaskCompleteResponseMiddleware,
+        expect.any(Error)
+      )
     );
   });
 });

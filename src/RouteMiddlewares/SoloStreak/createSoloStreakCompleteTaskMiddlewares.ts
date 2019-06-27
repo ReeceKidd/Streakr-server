@@ -5,6 +5,7 @@ import * as mongoose from "mongoose";
 
 import { SupportedRequestHeaders } from "../../Server/headers";
 import { ResponseCodes } from "../../Server/responseCodes";
+
 import { userModel, User } from "../../Models/User";
 import { soloStreakModel, SoloStreak } from "../../Models/SoloStreak";
 import {
@@ -13,6 +14,7 @@ import {
   CompleteTask
 } from "../../Models/CompleteTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
+
 import { CustomError, ErrorType } from "../../customError";
 
 export const soloStreakTaskCompleteParamsValidationSchema = {
