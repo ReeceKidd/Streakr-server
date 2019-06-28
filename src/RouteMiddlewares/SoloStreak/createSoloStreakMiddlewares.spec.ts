@@ -5,14 +5,6 @@ import {
   getCreateSoloStreakFromRequestMiddleware,
   saveSoloStreakToDatabaseMiddleware,
   sendFormattedSoloStreakMiddleware,
-  SoloStreakResponseLocals,
-  retreiveTimezoneHeaderMiddleware,
-  validateTimezoneMiddleware,
-  sendMissingTimezoneErrorResponseMiddleware,
-  sendInvalidTimezoneErrorResponseMiddleware,
-  getSendMissingTimezoneErrorResponseMiddleware,
-  getValidateTimezoneMiddleware,
-  getSendInvalidTimezoneErrorResponseMiddleware,
   defineEndOfDayMiddleware,
   defineCurrentTimeMiddleware,
   defineStartDayMiddleware,
@@ -22,8 +14,6 @@ import {
 } from "./createSoloStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { SupportedRequestHeaders } from "../../Server/headers";
-import { AgendaProcessTimes } from "../../Agenda/agenda";
-import { SoloStreak } from "../../Models/SoloStreak";
 
 describe(`soloStreakRegistrationValidationMiddlware`, () => {
   const userId = "12345678";
@@ -197,260 +187,6 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
         'child "description" fails because ["description" must be a string]'
     });
     expect(next).not.toBeCalled();
-  });
-});
-
-describe("retreiveTimezoneHeaderMiddleware", () => {
-  test("should define response.locals.timezone", () => {
-    const londonTimezone = "Europe/London";
-    const header = jest.fn(() => londonTimezone);
-    const request: any = {
-      headers: { [SupportedRequestHeaders.xTimezone]: londonTimezone },
-      header
-    };
-    const response: any = {
-      locals: {}
-    };
-    const next = jest.fn();
-
-    retreiveTimezoneHeaderMiddleware(request, response, next);
-
-    expect.assertions(3);
-    expect(header).toBeCalledWith(SupportedRequestHeaders.xTimezone);
-    expect(response.locals.timezone).toEqual(londonTimezone);
-    expect(next).toBeCalledWith();
-  });
-
-  test("if timezone header is missing response.locals.timezone should be undefined", () => {
-    const header = jest.fn();
-    const request: any = {
-      headers: {},
-      header
-    };
-    const response: any = {
-      locals: {}
-    };
-    const next = jest.fn();
-
-    retreiveTimezoneHeaderMiddleware(request, response, next);
-
-    expect.assertions(2);
-    expect(response.locals.timezone).toEqual(undefined);
-    expect(next).toBeCalledWith();
-  });
-
-  test("should call next with error on failure", () => {
-    const request: any = {};
-    const response: any = {
-      locals: {}
-    };
-    const next = jest.fn();
-
-    retreiveTimezoneHeaderMiddleware(request, response, next);
-
-    expect.assertions(1);
-    expect(next).toBeCalledWith(
-      new TypeError("request.header is not a function")
-    );
-  });
-});
-
-describe("sendMissingTimezoneErrorResponseMiddleware", () => {
-  const londonTimezone = "Europe/London";
-
-  test("that next() is called when timezone is defined", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-
-    const request: any = {};
-    const response: any = {
-      status,
-      locals: { timezone: londonTimezone }
-    };
-    const next = jest.fn();
-
-    const localisedErrorMessage = "Error";
-    const middleware = getSendMissingTimezoneErrorResponseMiddleware(
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-
-    expect.assertions(1);
-    expect(next).toBeCalled();
-  });
-
-  test("that error response is sent when timezone is not defined", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-
-    const request: any = {};
-    const response: any = {
-      status,
-      locals: {}
-    };
-    const next = jest.fn();
-
-    const localisedErrorMessage = "Error";
-    const middleware = getSendMissingTimezoneErrorResponseMiddleware(
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-
-    expect.assertions(3);
-    expect(status).toBeCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({ message: localisedErrorMessage });
-    expect(next).not.toBeCalled();
-  });
-
-  test("that next() is called with error on error", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-
-    const request: any = {};
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    const localisedErrorMessage = "Error";
-    const middleware = getSendMissingTimezoneErrorResponseMiddleware(
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-
-    expect.assertions(1);
-    expect(next).toBeCalledWith(
-      new TypeError(
-        "Cannot destructure property `timezone` of 'undefined' or 'null'."
-      )
-    );
-  });
-});
-
-describe("validateTimezoneMiddleware", () => {
-  const londonTimezone = "Europe/London";
-
-  test("that response.locals.validTimezone is defined when timezone exists", () => {
-    expect.assertions(3);
-    const isValidTimezone = jest.fn(() => true);
-
-    const request: any = {};
-    const response: any = {
-      locals: { timezone: londonTimezone }
-    };
-    const next = jest.fn();
-
-    const middleware = getValidateTimezoneMiddleware(isValidTimezone);
-    middleware(request, response, next);
-
-    expect(isValidTimezone).toBeCalledWith(londonTimezone);
-    expect(response.locals.validTimezone).toEqual(true);
-    expect(next).toBeCalledWith();
-  });
-
-  test("that response.locals.validTimezone is null if timezone does not exist", () => {
-    expect.assertions(3);
-    const isValidTimezone = jest.fn(() => undefined);
-
-    const request: any = {};
-    const response: any = {
-      locals: { timezone: londonTimezone }
-    };
-    const next = jest.fn();
-
-    const middleware = getValidateTimezoneMiddleware(isValidTimezone);
-    middleware(request, response, next);
-
-    expect(isValidTimezone).toBeCalledWith(londonTimezone);
-    expect(response.locals.validTimezone).toEqual(undefined);
-    expect(next).toBeCalledWith();
-  });
-
-  test("that next() is called with error on error", () => {
-    expect.assertions(1);
-    const isValidTimezone = jest.fn(() => undefined);
-
-    const request: any = {};
-    const response: any = {};
-    const next = jest.fn();
-
-    const middleware = getValidateTimezoneMiddleware(isValidTimezone);
-    middleware(request, response, next);
-    expect(next).toBeCalledWith(
-      new TypeError(
-        "Cannot destructure property `timezone` of 'undefined' or 'null'."
-      )
-    );
-  });
-});
-
-describe("sendInvalidTimezoneErrorResponseMiddleware", () => {
-  test("that next() is called when time zone is valid", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-
-    const request: any = {};
-    const response: any = {
-      status,
-      locals: { validTimezone: true }
-    };
-    const next = jest.fn();
-
-    const localisedErrorMessage = "Error";
-    const middleware = getSendInvalidTimezoneErrorResponseMiddleware(
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-
-    expect.assertions(1);
-    expect(next).toBeCalled();
-  });
-
-  test("that error response is sent when time zone is invalid", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-
-    const request: any = {};
-    const response: any = {
-      status,
-      locals: { validTimezone: undefined }
-    };
-    const next = jest.fn();
-
-    const localisedErrorMessage = "Error";
-    const middleware = getSendInvalidTimezoneErrorResponseMiddleware(
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-
-    expect.assertions(3);
-    expect(status).toBeCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({ message: localisedErrorMessage });
-    expect(next).not.toBeCalled();
-  });
-
-  test("that next() is called with error on error", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-
-    const request: any = {};
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    const localisedErrorMessage = "Error";
-    const middleware = getSendInvalidTimezoneErrorResponseMiddleware(
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-
-    expect.assertions(1);
-    expect(next).toBeCalledWith(
-      new TypeError(
-        "Cannot destructure property `validTimezone` of 'undefined' or 'null'."
-      )
-    );
   });
 });
 
@@ -673,12 +409,12 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
     streakName: "Daily Spanish",
     streakDescription: "Practice spanish every day",
     startDate: new Date()
-  } as SoloStreak;
+  };
 
   test("should send user in response with password undefined", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-    const soloStreakResponseLocals: SoloStreakResponseLocals = {
+    const soloStreakResponseLocals = {
       savedSoloStreak
     };
     const response: any = { locals: soloStreakResponseLocals, status };
@@ -714,31 +450,21 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
 
 describe(`createSoloStreakMiddlewares`, () => {
   test("that createSoloStreak middlewares are defined in the correct order", async () => {
-    expect.assertions(12);
-    expect(createSoloStreakMiddlewares.length).toEqual(11);
+    expect.assertions(8);
+    expect(createSoloStreakMiddlewares.length).toEqual(7);
     expect(createSoloStreakMiddlewares[0]).toBe(
       soloStreakRegistrationValidationMiddleware
     );
-    expect(createSoloStreakMiddlewares[1]).toBe(
-      retreiveTimezoneHeaderMiddleware
-    );
-    expect(createSoloStreakMiddlewares[2]).toBe(
-      sendMissingTimezoneErrorResponseMiddleware
-    );
-    expect(createSoloStreakMiddlewares[3]).toBe(validateTimezoneMiddleware);
+    expect(createSoloStreakMiddlewares[1]).toBe(defineCurrentTimeMiddleware);
+    expect(createSoloStreakMiddlewares[2]).toBe(defineStartDayMiddleware);
+    expect(createSoloStreakMiddlewares[3]).toBe(defineEndOfDayMiddleware);
     expect(createSoloStreakMiddlewares[4]).toBe(
-      sendInvalidTimezoneErrorResponseMiddleware
-    );
-    expect(createSoloStreakMiddlewares[5]).toBe(defineCurrentTimeMiddleware);
-    expect(createSoloStreakMiddlewares[6]).toBe(defineStartDayMiddleware);
-    expect(createSoloStreakMiddlewares[7]).toBe(defineEndOfDayMiddleware);
-    expect(createSoloStreakMiddlewares[8]).toBe(
       createSoloStreakFromRequestMiddleware
     );
-    expect(createSoloStreakMiddlewares[9]).toBe(
+    expect(createSoloStreakMiddlewares[5]).toBe(
       saveSoloStreakToDatabaseMiddleware
     );
-    expect(createSoloStreakMiddlewares[10]).toBe(
+    expect(createSoloStreakMiddlewares[6]).toBe(
       sendFormattedSoloStreakMiddleware
     );
   });

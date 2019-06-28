@@ -15,6 +15,7 @@ import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { MessageCategories } from "../../Messages/messageCategories";
 import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { dayFormat } from "./createSoloStreakCompleteTaskMiddlewares";
+import { CustomError, ErrorType } from "../../customError";
 
 export interface SoloStreakRegistrationRequestBody {
   userId: string;
@@ -47,89 +48,6 @@ export const soloStreakRegistrationValidationMiddleware = (
     getValidationErrorMessageSenderMiddleware(request, response, next)
   );
 };
-
-const localisedMissingTimezoneHeaderMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.missingTimezoneHeaderMessage
-);
-
-export const retreiveTimezoneHeaderMiddleware = (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    response.locals.timezone = request.header(
-      SupportedRequestHeaders.xTimezone
-    );
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const getSendMissingTimezoneErrorResponseMiddleware = (
-  localisedErrorMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { timezone } = response.locals;
-    if (!timezone) {
-      return response
-        .status(ResponseCodes.unprocessableEntity)
-        .send({ message: localisedErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const sendMissingTimezoneErrorResponseMiddleware = getSendMissingTimezoneErrorResponseMiddleware(
-  localisedMissingTimezoneHeaderMessage
-);
-
-export const getValidateTimezoneMiddleware = (isValidTimezone: Function) => (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const { timezone } = response.locals;
-    response.locals.validTimezone = isValidTimezone(timezone);
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const validateTimezoneMiddleware = getValidateTimezoneMiddleware(
-  moment.tz.zone
-);
-
-export const getSendInvalidTimezoneErrorResponseMiddleware = (
-  localisedErrorMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { validTimezone } = response.locals;
-    if (!validTimezone) {
-      return response
-        .status(ResponseCodes.unprocessableEntity)
-        .send({ message: localisedErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedInvalidTimezoneMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.invalidTimezoneMessage
-);
-
-export const sendInvalidTimezoneErrorResponseMiddleware = getSendInvalidTimezoneErrorResponseMiddleware(
-  localisedInvalidTimezoneMessage
-);
 
 export const getDefineCurrentTimeMiddleware = (moment: any) => (
   request: Request,
@@ -236,10 +154,6 @@ export const sendFormattedSoloStreakMiddleware = (
 
 export const createSoloStreakMiddlewares = [
   soloStreakRegistrationValidationMiddleware,
-  retreiveTimezoneHeaderMiddleware,
-  sendMissingTimezoneErrorResponseMiddleware,
-  validateTimezoneMiddleware,
-  sendInvalidTimezoneErrorResponseMiddleware,
   defineCurrentTimeMiddleware,
   defineStartDayMiddleware,
   defineEndOfDayMiddleware,

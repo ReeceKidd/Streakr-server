@@ -55,6 +55,7 @@ const getLocalisedString_1 = require("../../Messages/getLocalisedString");
 const messageCategories_1 = require("../../Messages/messageCategories");
 const failureMessages_1 = require("../../Messages/failureMessages");
 const createSoloStreakCompleteTaskMiddlewares_1 = require("./createSoloStreakCompleteTaskMiddlewares");
+const customError_1 = require("../../customError");
 const soloStreakRegisterstrationValidationSchema = {
   userId: Joi.string().required(),
   name: Joi.string().required(),
@@ -75,10 +76,6 @@ exports.soloStreakRegistrationValidationMiddleware = (
     )
   );
 };
-const localisedMissingTimezoneHeaderMessage = getLocalisedString_1.getLocalisedString(
-  messageCategories_1.MessageCategories.failureMessages,
-  failureMessages_1.FailureMessageKeys.missingTimezoneHeaderMessage
-);
 exports.retreiveTimezoneHeaderMiddleware = (request, response, next) => {
   try {
     response.locals.timezone = request.header(
@@ -89,7 +86,7 @@ exports.retreiveTimezoneHeaderMiddleware = (request, response, next) => {
     next(err);
   }
 };
-exports.getSendMissingTimezoneErrorResponseMiddleware = localisedErrorMessage => (
+exports.sendMissingTimezoneErrorResponseMiddleware = (
   request,
   response,
   next
@@ -97,18 +94,15 @@ exports.getSendMissingTimezoneErrorResponseMiddleware = localisedErrorMessage =>
   try {
     const { timezone } = response.locals;
     if (!timezone) {
-      return response
-        .status(responseCodes_1.ResponseCodes.unprocessableEntity)
-        .send({ message: localisedErrorMessage });
+      throw new customError_1.CustomError(
+        customError_1.ErrorType.CreateSoloStreakMissingTimezoneHeader
+      );
     }
     next();
   } catch (err) {
     next(err);
   }
 };
-exports.sendMissingTimezoneErrorResponseMiddleware = exports.getSendMissingTimezoneErrorResponseMiddleware(
-  localisedMissingTimezoneHeaderMessage
-);
 exports.getValidateTimezoneMiddleware = isValidTimezone => (
   request,
   response,

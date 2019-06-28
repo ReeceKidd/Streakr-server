@@ -34,10 +34,6 @@ exports.soloStreakSchema = new mongoose.Schema(
       required: true,
       type: String
     },
-    startDate: {
-      type: Date,
-      default: undefined
-    },
     completedToday: {
       type: Boolean,
       default: false

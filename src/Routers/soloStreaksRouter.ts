@@ -7,44 +7,33 @@ import { createSoloStreakCompleteTaskMiddlewares } from "../RouteMiddlewares/Sol
 import { getSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/getSoloStreakMiddlewares";
 import { patchSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/patchSoloStreakMiddlewares";
 import { deleteSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/deleteSoloStreakMiddlewares";
+import { timezoneMiddlewares } from "../SharedMiddleware/timezoneMiddleware";
 
 export enum SoloStreakProperties {
-    completeTasks = "complete-tasks"
+  completeTasks = "complete-tasks"
 }
 
 export const soloStreakId = "soloStreakId";
 
 const soloStreaksRouter = Router();
 
-soloStreaksRouter.use("*", ...verifyJsonWebTokenMiddlewares);
+soloStreaksRouter.use(...verifyJsonWebTokenMiddlewares);
 
-soloStreaksRouter.get(
-    `/`,
-    ...getSoloStreaksMiddlewares
-);
+soloStreaksRouter.get(`/`, ...getSoloStreaksMiddlewares);
 
-soloStreaksRouter.post(
-    `/`,
-    ...createSoloStreakMiddlewares
-);
+soloStreaksRouter.get(`/:${soloStreakId}`, ...getSoloStreakMiddlewares);
 
-soloStreaksRouter.get(
-    `/:${soloStreakId}`,
-    ...getSoloStreakMiddlewares
-);
+soloStreaksRouter.use(...timezoneMiddlewares);
 
-soloStreaksRouter.patch(
-    `/:${soloStreakId}`,
-    ...patchSoloStreakMiddlewares
-);
+soloStreaksRouter.post(`/`, ...createSoloStreakMiddlewares);
 
-soloStreaksRouter.delete(
-    `/:${soloStreakId}`,
-    ...deleteSoloStreakMiddlewares
-);
+soloStreaksRouter.patch(`/:${soloStreakId}`, ...patchSoloStreakMiddlewares);
+
+soloStreaksRouter.delete(`/:${soloStreakId}`, ...deleteSoloStreakMiddlewares);
 
 soloStreaksRouter.post(
-    `/:${soloStreakId}/${SoloStreakProperties.completeTasks}`, ...createSoloStreakCompleteTaskMiddlewares
+  `/:${soloStreakId}/${SoloStreakProperties.completeTasks}`,
+  ...createSoloStreakCompleteTaskMiddlewares
 );
 
 export default soloStreaksRouter;

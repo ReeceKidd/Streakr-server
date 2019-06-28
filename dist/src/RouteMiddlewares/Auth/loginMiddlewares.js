@@ -78,7 +78,9 @@ exports.getRetreiveUserWithEmailMiddleware = userModel => (
     try {
       const { email } = request.body;
       const user = yield userModel.findOne({ email });
+      console.log("HERE");
       if (!user) {
+        console.log("Entered");
         throw new customError_1.CustomError(
           customError_1.ErrorType.UserDoesNotExist
         );
@@ -86,12 +88,15 @@ exports.getRetreiveUserWithEmailMiddleware = userModel => (
       response.locals.user = user;
       next();
     } catch (err) {
-      if (err instanceof customError_1.CustomError) return next(err);
-      next(
-        new customError_1.CustomError(
-          customError_1.ErrorType.RetreiveUserWithEmailMiddlewareError
-        )
-      );
+      console.log(err);
+      if (err instanceof customError_1.CustomError) next(err);
+      else
+        next(
+          new customError_1.CustomError(
+            customError_1.ErrorType.RetreiveUserWithEmailMiddlewareError,
+            err
+          )
+        );
     }
   });
 exports.retreiveUserWithEmailMiddleware = exports.getRetreiveUserWithEmailMiddleware(
@@ -114,12 +119,14 @@ exports.getCompareRequestPasswordToUserHashedPasswordMiddleware = compare => (
       }
       next();
     } catch (err) {
-      if (err instanceof customError_1.CustomError) return next(err);
-      next(
-        new customError_1.CustomError(
-          customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
-        )
-      );
+      if (err instanceof customError_1.CustomError) next(err);
+      else
+        next(
+          new customError_1.CustomError(
+            customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware,
+            err
+          )
+        );
     }
   });
 exports.compareRequestPasswordToUserHashedPasswordMiddleware = exports.getCompareRequestPasswordToUserHashedPasswordMiddleware(
@@ -135,10 +142,10 @@ exports.setMinimumUserDataMiddleware = (request, response, next) => {
     response.locals.minimumUserData = minimumUserData;
     next();
   } catch (err) {
-    if (err instanceof customError_1.CustomError) return next(err);
     next(
       new customError_1.CustomError(
-        customError_1.ErrorType.SetMinimumUserDataMiddleware
+        customError_1.ErrorType.SetMinimumUserDataMiddleware,
+        err
       )
     );
   }
@@ -155,10 +162,10 @@ exports.getSetJsonWebTokenExpiryInfoMiddleware = (expiresIn, unitOfTime) => (
     };
     next();
   } catch (err) {
-    if (err instanceof customError_1.CustomError) return next(err);
     next(
       new customError_1.CustomError(
-        customError_1.ErrorType.SetJsonWebTokenExpiryInfoMiddleware
+        customError_1.ErrorType.SetJsonWebTokenExpiryInfoMiddleware,
+        err
       )
     );
   }
@@ -181,10 +188,10 @@ exports.getSetJsonWebTokenMiddleware = (signToken, jwtSecret) => (
     response.locals.jsonWebToken = jsonWebToken;
     next();
   } catch (err) {
-    if (err instanceof customError_1.CustomError) return next(err);
     next(
       new customError_1.CustomError(
-        customError_1.ErrorType.SetJsonWebTokenMiddleware
+        customError_1.ErrorType.SetJsonWebTokenMiddleware,
+        err
       )
     );
   }
@@ -204,10 +211,10 @@ exports.getLoginSuccessfulMiddleware = loginSuccessMessage => (
       .status(responseCodes_1.ResponseCodes.success)
       .send({ jsonWebToken, message: loginSuccessMessage, expiry });
   } catch (err) {
-    if (err instanceof customError_1.CustomError) return next(err);
     next(
       new customError_1.CustomError(
-        customError_1.ErrorType.LoginSuccessfulMiddleware
+        customError_1.ErrorType.LoginSuccessfulMiddleware,
+        err
       )
     );
   }

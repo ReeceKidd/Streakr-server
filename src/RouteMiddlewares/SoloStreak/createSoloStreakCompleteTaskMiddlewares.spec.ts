@@ -1,10 +1,7 @@
 import {
   createSoloStreakCompleteTaskMiddlewares,
-  retreiveTimezoneHeaderMiddleware,
-  validateTimezoneMiddleware,
   hasTaskAlreadyBeenCompletedTodayMiddleware,
   retreiveUserMiddleware,
-  getValidateTimezoneMiddleware,
   setTaskCompleteTimeMiddleware,
   setDayTaskWasCompletedMiddleware,
   sendTaskCompleteResponseMiddleware,
@@ -14,7 +11,6 @@ import {
   saveTaskCompleteMiddleware,
   streakMaintainedMiddleware,
   getSoloStreakExistsMiddleware,
-  getRetreiveTimezoneHeaderMiddleware,
   getRetreiveUserMiddleware,
   getSetDayTaskWasCompletedMiddleware,
   getSetTaskCompleteTimeMiddleware,
@@ -150,112 +146,6 @@ describe("soloStreakExistsMiddleware", () => {
 
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.SoloStreakExistsMiddleware, expect.any(Error))
-    );
-  });
-});
-
-describe("retreiveTimezoneHeaderMiddleware", () => {
-  test("sets response.locals.timezone and calls next()", () => {
-    expect.assertions(3);
-    const header = jest.fn(() => timezoneHeader);
-    const timezoneHeader = "Europe/London";
-    const request: any = {
-      header
-    };
-    const response: any = {
-      locals: {}
-    };
-    const next = jest.fn();
-    const middleware = getRetreiveTimezoneHeaderMiddleware(
-      timezoneHeader as any
-    );
-    middleware(request, response, next);
-    expect(header).toBeCalledWith(timezoneHeader);
-    expect(response.locals.timezone).toBeDefined();
-    expect(next).toBeCalledWith();
-  });
-
-  test("throws MissingTimezoneHeader error when timezone is missing", () => {
-    expect.assertions(1);
-    const header = jest.fn(() => timezoneHeader);
-    const timezoneHeader = undefined;
-    const request: any = {
-      header
-    };
-    const response: any = {
-      locals: {}
-    };
-    const next = jest.fn();
-    const middleware = getRetreiveTimezoneHeaderMiddleware(
-      timezoneHeader as any
-    );
-
-    middleware(request, response, next);
-
-    expect(next).toBeCalledWith(
-      new CustomError(ErrorType.MissingTimezoneHeader)
-    );
-  });
-
-  test("throws RetreiveTimezoneHeaderMiddleware when middleware fails", () => {
-    expect.assertions(1);
-    const timezoneHeader = "Europe/London";
-    const request: any = {};
-    const response: any = {
-      locals: {}
-    };
-    const next = jest.fn();
-    const middleware = getRetreiveTimezoneHeaderMiddleware(
-      timezoneHeader as any
-    );
-    middleware(request, response, next);
-    expect(next).toBeCalledWith(
-      new CustomError(
-        ErrorType.RetreiveTimezoneHeaderMiddleware,
-        expect.any(Error)
-      )
-    );
-  });
-});
-
-describe("validateTimezoneMiddleware", () => {
-  test("sets response.locals.validTimezone and calls next()", () => {
-    expect.assertions(2);
-    const timezone = "Europe/London";
-    const request: any = {};
-    const response: any = { locals: { timezone } };
-    const next = jest.fn();
-    const isValidTimezone = jest.fn(() => true);
-    const middleware = getValidateTimezoneMiddleware(isValidTimezone);
-    middleware(request, response, next);
-    expect(isValidTimezone).toBeCalledWith(timezone);
-    expect(next).toBeCalledWith();
-  });
-
-  test("throws InvalidTimezone error when timezone is invalid", () => {
-    expect.assertions(1);
-    const timezone = "Invalid";
-    const request: any = {};
-    const response: any = { locals: { timezone } };
-    const next = jest.fn();
-    const isValidTimezone = jest.fn(() => false);
-    const middleware = getValidateTimezoneMiddleware(isValidTimezone);
-
-    middleware(request, response, next);
-
-    expect(next).toBeCalledWith(new CustomError(ErrorType.InvalidTimezone));
-  });
-
-  test("throws ValidateTimezoneMiddleware error on middleware failure", () => {
-    expect.assertions(1);
-    const timezone = "Europe/London";
-    const request: any = {};
-    const response: any = { locals: { timezone } };
-    const next = jest.fn();
-    const middleware = getValidateTimezoneMiddleware(undefined as any);
-    middleware(request, response, next);
-    expect(next).toBeCalledWith(
-      new CustomError(ErrorType.ValidateTimezoneMiddleware, expect.any(Error))
     );
   });
 });
@@ -750,7 +640,7 @@ describe("sendTaskCompleteResponseMiddleware", () => {
 
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
   test("checks createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
-    expect.assertions(13);
+    expect.assertions(11);
     expect(createSoloStreakCompleteTaskMiddlewares[0]).toBe(
       soloStreakTaskCompleteParamsValidationMiddleware
     );
@@ -758,36 +648,30 @@ describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
       soloStreakExistsMiddleware
     );
     expect(createSoloStreakCompleteTaskMiddlewares[2]).toBe(
-      retreiveTimezoneHeaderMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[3]).toBe(
-      validateTimezoneMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[4]).toBe(
       retreiveUserMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[5]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[3]).toBe(
       setTaskCompleteTimeMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[6]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[4]).toBe(
       setStreakStartDateMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[7]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[5]).toBe(
       setDayTaskWasCompletedMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[8]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[6]).toBe(
       hasTaskAlreadyBeenCompletedTodayMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[9]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[7]).toBe(
       createCompleteTaskDefinitionMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[10]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[8]).toBe(
       saveTaskCompleteMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[11]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[9]).toBe(
       streakMaintainedMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[12]).toBe(
+    expect(createSoloStreakCompleteTaskMiddlewares[10]).toBe(
       sendTaskCompleteResponseMiddleware
     );
   });

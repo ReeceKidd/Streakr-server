@@ -46,15 +46,13 @@ var __importStar =
 Object.defineProperty(exports, "__esModule", { value: true });
 const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const Joi = __importStar(require("joi"));
-const getLocalisedString_1 = require("../../Messages/getLocalisedString");
-const messageCategories_1 = require("../../Messages/messageCategories");
-const failureMessages_1 = require("../../Messages/failureMessages");
 const headers_1 = require("../../Server/headers");
 const responseCodes_1 = require("../../Server/responseCodes");
 const User_1 = require("../../Models/User");
 const SoloStreak_1 = require("../../Models/SoloStreak");
 const CompleteTask_1 = require("../../Models/CompleteTask");
 const validationErrorMessageSenderMiddleware_1 = require("../../SharedMiddleware/validationErrorMessageSenderMiddleware");
+const customError_1 = require("../../customError");
 exports.soloStreakTaskCompleteParamsValidationSchema = {
   soloStreakId: Joi.string().required()
 };
@@ -82,38 +80,26 @@ exports.getSoloStreakExistsMiddleware = soloStreakModel => (
     try {
       const { soloStreakId } = request.params;
       const soloStreak = yield soloStreakModel.findOne({ _id: soloStreakId });
+      if (!soloStreak) {
+        throw new customError_1.CustomError(
+          customError_1.ErrorType.SoloStreakDoesNotExist
+        );
+      }
       response.locals.soloStreak = soloStreak;
       next();
     } catch (err) {
-      next(err);
+      if (err instanceof customError_1.CustomError) next(err);
+      else
+        next(
+          new customError_1.CustomError(
+            customError_1.ErrorType.SoloStreakExistsMiddleware,
+            err
+          )
+        );
     }
   });
 exports.soloStreakExistsMiddleware = exports.getSoloStreakExistsMiddleware(
   SoloStreak_1.soloStreakModel
-);
-exports.getSendSoloStreakDoesNotExistErrorMessageMiddleware = (
-  unprocessableEntityStatusCode,
-  localisedSoloStreakDoesNotExistErrorMessage
-) => (request, response, next) => {
-  try {
-    const { soloStreak } = response.locals;
-    if (!soloStreak) {
-      return response
-        .status(unprocessableEntityStatusCode)
-        .send({ message: localisedSoloStreakDoesNotExistErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-const localisedSoloStreakDoesNotExistMessage = getLocalisedString_1.getLocalisedString(
-  messageCategories_1.MessageCategories.failureMessages,
-  failureMessages_1.FailureMessageKeys.soloStreakDoesNotExist
-);
-exports.sendSoloStreakDoesNotExistErrorMessageMiddleware = exports.getSendSoloStreakDoesNotExistErrorMessageMiddleware(
-  responseCodes_1.ResponseCodes.unprocessableEntity,
-  localisedSoloStreakDoesNotExistMessage
 );
 exports.getRetreiveTimezoneHeaderMiddleware = timezoneHeader => (
   request,
@@ -121,38 +107,27 @@ exports.getRetreiveTimezoneHeaderMiddleware = timezoneHeader => (
   next
 ) => {
   try {
-    response.locals.timezone = request.header(timezoneHeader);
+    const timezone = request.header(timezoneHeader);
+    if (!timezone) {
+      throw new customError_1.CustomError(
+        customError_1.ErrorType.InvalidTimezone
+      );
+    }
+    response.locals.timezone = timezone;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof customError_1.CustomError) next(err);
+    else
+      next(
+        new customError_1.CustomError(
+          customError_1.ErrorType.RetreiveTimezoneHeaderMiddleware,
+          err
+        )
+      );
   }
 };
 exports.retreiveTimezoneHeaderMiddleware = exports.getRetreiveTimezoneHeaderMiddleware(
   headers_1.SupportedRequestHeaders.xTimezone
-);
-exports.getSendMissingTimezoneErrorResponseMiddleware = (
-  unprocessableEntityCode,
-  localisedErrorMessage
-) => (request, response, next) => {
-  try {
-    const { timezone } = response.locals;
-    if (!timezone) {
-      return response
-        .status(unprocessableEntityCode)
-        .send({ message: localisedErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-const localisedMissingTimezoneHeaderMessage = getLocalisedString_1.getLocalisedString(
-  messageCategories_1.MessageCategories.failureMessages,
-  failureMessages_1.FailureMessageKeys.missingTimezoneHeaderMessage
-);
-exports.sendMissingTimezoneErrorResponseMiddleware = exports.getSendMissingTimezoneErrorResponseMiddleware(
-  responseCodes_1.ResponseCodes.unprocessableEntity,
-  localisedMissingTimezoneHeaderMessage
 );
 exports.getValidateTimezoneMiddleware = isValidTimezone => (
   request,
@@ -161,76 +136,52 @@ exports.getValidateTimezoneMiddleware = isValidTimezone => (
 ) => {
   try {
     const { timezone } = response.locals;
-    response.locals.validTimezone = isValidTimezone(timezone);
+    const validTimezone = isValidTimezone(timezone);
+    if (!validTimezone) {
+      throw new customError_1.CustomError(
+        customError_1.ErrorType.InvalidTimezone
+      );
+    }
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof customError_1.CustomError) next(err);
+    else
+      next(
+        new customError_1.CustomError(
+          customError_1.ErrorType.ValidateTimezoneMiddleware,
+          err
+        )
+      );
   }
 };
 exports.validateTimezoneMiddleware = exports.getValidateTimezoneMiddleware(
   moment_timezone_1.default.tz.zone
-);
-exports.getSendInvalidTimezoneErrorResponseMiddleware = (
-  unprocessableEntityCode,
-  localisedErrorMessage
-) => (request, response, next) => {
-  try {
-    const { validTimezone } = response.locals;
-    if (!validTimezone) {
-      return response
-        .status(unprocessableEntityCode)
-        .send({ message: localisedErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-const localisedInvalidTimezoneMessage = getLocalisedString_1.getLocalisedString(
-  messageCategories_1.MessageCategories.failureMessages,
-  failureMessages_1.FailureMessageKeys.invalidTimezoneMessage
-);
-exports.sendInvalidTimezoneErrorResponseMiddleware = exports.getSendInvalidTimezoneErrorResponseMiddleware(
-  responseCodes_1.ResponseCodes.unprocessableEntity,
-  localisedInvalidTimezoneMessage
 );
 exports.getRetreiveUserMiddleware = userModel => (request, response, next) =>
   __awaiter(this, void 0, void 0, function*() {
     try {
       const { minimumUserData } = response.locals;
       const user = yield userModel.findOne({ _id: minimumUserData._id }).lean();
+      if (!user) {
+        throw new customError_1.CustomError(
+          customError_1.ErrorType.UserDoesNotExist
+        );
+      }
       response.locals.user = user;
       next();
     } catch (err) {
-      next(err);
+      if (err instanceof customError_1.CustomError) next(err);
+      else
+        next(
+          new customError_1.CustomError(
+            customError_1.ErrorType.RetreiveUserMiddleware,
+            err
+          )
+        );
     }
   });
 exports.retreiveUserMiddleware = exports.getRetreiveUserMiddleware(
   User_1.userModel
-);
-exports.getSendUserDoesNotExistErrorMiddlware = (
-  unprocessableEntityCode,
-  localisedUserDoesNotExistErrorMessage
-) => (request, response, next) => {
-  try {
-    const { user } = response.locals;
-    if (!user) {
-      return response
-        .status(unprocessableEntityCode)
-        .send({ message: localisedUserDoesNotExistErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-const localisedUserDoesNotExistErrorMessage = getLocalisedString_1.getLocalisedString(
-  messageCategories_1.MessageCategories.failureMessages,
-  failureMessages_1.FailureMessageKeys.userDoesNotExistMessage
-);
-exports.sendUserDoesNotExistErrorMiddleware = exports.getSendUserDoesNotExistErrorMiddlware(
-  responseCodes_1.ResponseCodes.unprocessableEntity,
-  localisedUserDoesNotExistErrorMessage
 );
 exports.getSetTaskCompleteTimeMiddleware = moment => (
   request,
@@ -243,7 +194,12 @@ exports.getSetTaskCompleteTimeMiddleware = moment => (
     response.locals.taskCompleteTime = taskCompleteTime;
     next();
   } catch (err) {
-    next(err);
+    next(
+      new customError_1.CustomError(
+        customError_1.ErrorType.SetTaskCompleteTimeMiddleware,
+        err
+      )
+    );
   }
 };
 exports.setTaskCompleteTimeMiddleware = exports.getSetTaskCompleteTimeMiddleware(
@@ -258,15 +214,20 @@ exports.getSetStreakStartDateMiddleware = soloStreakModel => (
     try {
       const soloStreak = response.locals.soloStreak;
       const taskCompleteTime = response.locals.taskCompleteTime;
-      if (!soloStreak.startDate) {
+      if (!soloStreak.currentStreak.startDate) {
         const { soloStreakId } = request.params;
         yield soloStreakModel.findByIdAndUpdate(soloStreakId, {
-          startDate: taskCompleteTime
+          currentStreak: { startDate: taskCompleteTime }
         });
       }
       next();
     } catch (err) {
-      next(err);
+      next(
+        new customError_1.CustomError(
+          customError_1.ErrorType.SetStreakStartDateMiddleware,
+          err
+        )
+      );
     }
   });
 exports.setStreakStartDateMiddleware = exports.getSetStreakStartDateMiddleware(
@@ -283,7 +244,12 @@ exports.getSetDayTaskWasCompletedMiddleware = dayFormat => (
     response.locals.taskCompleteDay = taskCompleteDay;
     next();
   } catch (err) {
-    next(err);
+    next(
+      new customError_1.CustomError(
+        customError_1.ErrorType.SetDayTaskWasCompletedMiddleware,
+        err
+      )
+    );
   }
 };
 exports.dayFormat = "YYYY-MM-DD";
@@ -304,38 +270,25 @@ exports.getHasTaskAlreadyBeenCompletedTodayMiddleware = completeTaskModel => (
         streakId: soloStreakId,
         taskCompleteDay
       });
-      response.locals.taskAlreadyCompletedToday = taskAlreadyCompletedToday;
+      if (taskAlreadyCompletedToday) {
+        throw new customError_1.CustomError(
+          customError_1.ErrorType.TaskAlreadyCompletedToday
+        );
+      }
       next();
     } catch (err) {
-      next(err);
+      if (err instanceof customError_1.CustomError) next(err);
+      else
+        next(
+          new customError_1.CustomError(
+            customError_1.ErrorType.HasTaskAlreadyBeenCompletedTodayMiddleware,
+            err
+          )
+        );
     }
   });
 exports.hasTaskAlreadyBeenCompletedTodayMiddleware = exports.getHasTaskAlreadyBeenCompletedTodayMiddleware(
   CompleteTask_1.completeTaskModel
-);
-exports.getSendTaskAlreadyCompletedTodayErrorMiddleware = (
-  unprocessableEntityResponseCode,
-  localisedTaskAlreadyCompletedTodayErrorMessage
-) => (request, response, next) => {
-  try {
-    const { taskAlreadyCompletedToday } = response.locals;
-    if (taskAlreadyCompletedToday) {
-      return response
-        .status(unprocessableEntityResponseCode)
-        .send({ message: localisedTaskAlreadyCompletedTodayErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-const localisedTaskAlreadyCompletedTodayErrorMessage = getLocalisedString_1.getLocalisedString(
-  messageCategories_1.MessageCategories.failureMessages,
-  failureMessages_1.FailureMessageKeys.taskAlreadyCompleted
-);
-exports.sendTaskAlreadyCompletedTodayErrorMiddleware = exports.getSendTaskAlreadyCompletedTodayErrorMiddleware(
-  responseCodes_1.ResponseCodes.unprocessableEntity,
-  localisedTaskAlreadyCompletedTodayErrorMessage
 );
 exports.getCreateCompleteTaskDefinitionMiddleware = streakType => (
   request,
@@ -355,7 +308,12 @@ exports.getCreateCompleteTaskDefinitionMiddleware = streakType => (
     response.locals.completeTaskDefinition = completeTaskDefinition;
     next();
   } catch (err) {
-    next(err);
+    next(
+      new customError_1.CustomError(
+        customError_1.ErrorType.CreateCompleteTaskDefinitionMiddleware,
+        err
+      )
+    );
   }
 };
 exports.createCompleteTaskDefinitionMiddleware = exports.getCreateCompleteTaskDefinitionMiddleware(
@@ -375,7 +333,12 @@ exports.getSaveTaskCompleteMiddleware = completeTaskModel => (
       response.locals.completeTask = completeTask;
       next();
     } catch (err) {
-      next(err);
+      next(
+        new customError_1.CustomError(
+          customError_1.ErrorType.SaveTaskCompleteMiddleware,
+          err
+        )
+      );
     }
   });
 exports.saveTaskCompleteMiddleware = exports.getSaveTaskCompleteMiddleware(
@@ -398,7 +361,12 @@ exports.getStreakMaintainedMiddleware = soloStreakModel => (
       );
       next();
     } catch (err) {
-      next(err);
+      next(
+        new customError_1.CustomError(
+          customError_1.ErrorType.StreakMaintainedMiddleware,
+          err
+        )
+      );
     }
   });
 exports.streakMaintainedMiddleware = exports.getStreakMaintainedMiddleware(
@@ -413,7 +381,12 @@ exports.getSendTaskCompleteResponseMiddleware = resourceCreatedResponseCode => (
     const { completeTask } = response.locals;
     return response.status(resourceCreatedResponseCode).send({ completeTask });
   } catch (err) {
-    next(err);
+    next(
+      new customError_1.CustomError(
+        customError_1.ErrorType.SendTaskCompleteResponseMiddleware,
+        err
+      )
+    );
   }
 };
 exports.sendTaskCompleteResponseMiddleware = exports.getSendTaskCompleteResponseMiddleware(
@@ -422,18 +395,13 @@ exports.sendTaskCompleteResponseMiddleware = exports.getSendTaskCompleteResponse
 exports.createSoloStreakCompleteTaskMiddlewares = [
   exports.soloStreakTaskCompleteParamsValidationMiddleware,
   exports.soloStreakExistsMiddleware,
-  exports.sendSoloStreakDoesNotExistErrorMessageMiddleware,
   exports.retreiveTimezoneHeaderMiddleware,
-  exports.sendMissingTimezoneErrorResponseMiddleware,
   exports.validateTimezoneMiddleware,
-  exports.sendInvalidTimezoneErrorResponseMiddleware,
   exports.retreiveUserMiddleware,
-  exports.sendUserDoesNotExistErrorMiddleware,
   exports.setTaskCompleteTimeMiddleware,
   exports.setStreakStartDateMiddleware,
   exports.setDayTaskWasCompletedMiddleware,
   exports.hasTaskAlreadyBeenCompletedTodayMiddleware,
-  exports.sendTaskAlreadyCompletedTodayErrorMiddleware,
   exports.createCompleteTaskDefinitionMiddleware,
   exports.saveTaskCompleteMiddleware,
   exports.streakMaintainedMiddleware,

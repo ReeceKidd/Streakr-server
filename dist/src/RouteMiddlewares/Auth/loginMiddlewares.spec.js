@@ -215,7 +215,7 @@ describe(`retreiveUserWithEmailMiddleware`, () => {
     }));
   test("calls next() with RetreiveUserWithEmailMiddlewareError if middleware fails", () =>
     __awaiter(this, void 0, void 0, function*() {
-      expect.assertions(4);
+      expect.assertions(1);
       const findOne = jest.fn(() => Promise.reject("error"));
       const UserModel = {
         findOne
@@ -227,18 +227,12 @@ describe(`retreiveUserWithEmailMiddleware`, () => {
         UserModel
       );
       yield middleware(request, response, next);
-      const errorCode = next.mock.calls[0][0].code;
-      const errorMessage = next.mock.calls[0][0].message;
-      const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
       expect(next).toBeCalledWith(
         new customError_1.CustomError(
           customError_1.ErrorType.RetreiveUserWithEmailMiddlewareError,
-          new Error("error")
+          expect.any(Error)
         )
       );
-      expect(errorCode).toEqual("500-02");
-      expect(errorMessage).toEqual("Internal Server Error.");
-      expect(httpStatusCode).toEqual(500);
     }));
 });
 describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
@@ -281,7 +275,7 @@ describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
     }));
   test("calls next() with CompareRequestPasswordToUserHashedPasswordMiddleware error if middleware fails", () =>
     __awaiter(this, void 0, void 0, function*() {
-      expect.assertions(4);
+      expect.assertions(1);
       const compare = jest.fn(() => {
         return Promise.resolve(true);
       });
@@ -292,17 +286,12 @@ describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
       const request = {};
       const next = jest.fn();
       yield middleware(request, response, next);
-      const errorCode = next.mock.calls[0][0].code;
-      const errorMessage = next.mock.calls[0][0].message;
-      const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
       expect(next).toHaveBeenCalledWith(
         new customError_1.CustomError(
-          customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+          customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware,
+          expect.any(Error)
         )
       );
-      expect(errorCode).toBe("500-03");
-      expect(errorMessage).toBe("Internal Server Error.");
-      expect(httpStatusCode).toBe(500);
     }));
 });
 describe(`setMinimumUserDataMiddleware`, () => {
@@ -322,22 +311,17 @@ describe(`setMinimumUserDataMiddleware`, () => {
   });
   test("calls next() with SetMinimumUserDataMiddleware error if middleware fails", () =>
     __awaiter(this, void 0, void 0, function*() {
-      expect.assertions(4);
+      expect.assertions(1);
       const response = {};
       const request = {};
       const next = jest.fn();
       loginMiddlewares_1.setMinimumUserDataMiddleware(request, response, next);
-      const errorCode = next.mock.calls[0][0].code;
-      const errorMessage = next.mock.calls[0][0].message;
-      const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
       expect(next).toHaveBeenCalledWith(
         new customError_1.CustomError(
-          customError_1.ErrorType.SetMinimumUserDataMiddleware
+          customError_1.ErrorType.SetMinimumUserDataMiddleware,
+          expect.any(Error)
         )
       );
-      expect(errorCode).toBe("500-04");
-      expect(errorMessage).toBe("Internal Server Error.");
-      expect(httpStatusCode).toBe(500);
     }));
 });
 describe("setJsonWebTokenExpiryInfoMiddleware", () => {
@@ -358,7 +342,7 @@ describe("setJsonWebTokenExpiryInfoMiddleware", () => {
     expect(next).toBeCalledWith();
   });
   test("calls next with SetJsonWebTokenExpiryInfoMiddleware error on middleware failure", () => {
-    expect.assertions(4);
+    expect.assertions(1);
     const expiresIn = 233993;
     const unitOfTime = "seconds";
     const request = {};
@@ -369,17 +353,12 @@ describe("setJsonWebTokenExpiryInfoMiddleware", () => {
       unitOfTime
     );
     middleware(request, response, next);
-    const errorCode = next.mock.calls[0][0].code;
-    const errorMessage = next.mock.calls[0][0].message;
-    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
     expect(next).toHaveBeenCalledWith(
       new customError_1.CustomError(
-        customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+        customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware,
+        expect.any(Error)
       )
     );
-    expect(errorCode).toBe("500-05");
-    expect(errorMessage).toBe("Internal Server Error.");
-    expect(httpStatusCode).toBe(500);
   });
 });
 describe("setJsonWebTokenMiddleware", () => {
@@ -405,7 +384,7 @@ describe("setJsonWebTokenMiddleware", () => {
     expect(next).toBeCalled();
   });
   test("calls next SetJsonWebTokenMiddleware error on middleware failure", () => {
-    expect.assertions(4);
+    expect.assertions(1);
     const signTokenMock = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
@@ -420,17 +399,12 @@ describe("setJsonWebTokenMiddleware", () => {
       jwtSecretMock
     );
     middleware(request, response, next);
-    const errorCode = next.mock.calls[0][0].code;
-    const errorMessage = next.mock.calls[0][0].message;
-    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
     expect(next).toHaveBeenCalledWith(
       new customError_1.CustomError(
-        customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+        customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware,
+        expect.any(Error)
       )
     );
-    expect(errorCode).toBe("500-06");
-    expect(errorMessage).toBe("Internal Server Error.");
-    expect(httpStatusCode).toBe(500);
   });
 });
 describe(`loginSuccessfulMiddleware`, () => {
@@ -456,7 +430,7 @@ describe(`loginSuccessfulMiddleware`, () => {
     });
   });
   test("should call next with LoginSuccessfullMiddleware error on middleware failure", () => {
-    expect.assertions(4);
+    expect.assertions(1);
     const mockToken = "1234";
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
@@ -469,17 +443,12 @@ describe(`loginSuccessfulMiddleware`, () => {
       loginSuccessMessage
     );
     middleware(request, response, next);
-    const errorCode = next.mock.calls[0][0].code;
-    const errorMessage = next.mock.calls[0][0].message;
-    const httpStatusCode = next.mock.calls[0][0].httpStatusCode;
     expect(next).toHaveBeenCalledWith(
       new customError_1.CustomError(
-        customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware
+        customError_1.ErrorType.CompareRequestPasswordToUserHashedPasswordMiddleware,
+        expect.any(Error)
       )
     );
-    expect(errorCode).toBe("500-07");
-    expect(errorMessage).toBe("Internal Server Error.");
-    expect(httpStatusCode).toBe(500);
   });
 });
 describe(`loginMiddlewares`, () => {

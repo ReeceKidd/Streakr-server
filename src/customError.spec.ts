@@ -37,12 +37,12 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to MissingTimezoneHeader`, () => {
+  test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
     expect.assertions(3);
-    const customError = new CustomError(ErrorType.MissingTimezoneHeader);
+    const customError = new CustomError(ErrorType.TaskAlreadyCompletedToday);
     const { code, message, httpStatusCode } = customError;
-    expect(code).toBe(`400-05`);
-    expect(message).toBe("Missing x-timezone header.");
+    expect(code).toBe(`400-06`);
+    expect(message).toBe("Task already completed today.");
     expect(httpStatusCode).toBe(400);
   });
 
