@@ -10,10 +10,6 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 import { User } from "../../Models/User";
 import { SoloStreak, soloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { SupportedRequestHeaders } from "../../Server/headers";
-import { getLocalisedString } from "../../Messages/getLocalisedString";
-import { MessageCategories } from "../../Messages/messageCategories";
-import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { dayFormat } from "./createSoloStreakCompleteTaskMiddlewares";
 import { CustomError, ErrorType } from "../../customError";
 
@@ -60,7 +56,7 @@ export const getDefineCurrentTimeMiddleware = (moment: any) => (
     response.locals.currentTime = currentTime;
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.DefineCurrentTimeMiddleware, err));
   }
 };
 
@@ -79,7 +75,7 @@ export const getDefineStartDayMiddleware = (dayFormat: string) => (
     response.locals.startDay = startDay;
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.DefineStartDayMiddleware, err));
   }
 };
 
@@ -95,7 +91,7 @@ export const getDefineEndOfDayMiddleware = (dayTimeRange: string) => (
     response.locals.endOfDay = currentTime.endOf(dayTimeRange).toDate();
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.DefineEndOfDayMiddleware, err));
   }
 };
 
@@ -117,7 +113,7 @@ export const getCreateSoloStreakFromRequestMiddleware = (
     });
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.CreateSoloStreakFromRequestMiddleware, err));
   }
 };
 
@@ -135,7 +131,7 @@ export const saveSoloStreakToDatabaseMiddleware = async (
     response.locals.savedSoloStreak = await newSoloStreak.save();
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SaveSoloStreakToDatabase, err));
   }
 };
 
@@ -148,7 +144,7 @@ export const sendFormattedSoloStreakMiddleware = (
     const { savedSoloStreak } = response.locals as SoloStreakResponseLocals;
     return response.status(ResponseCodes.created).send(savedSoloStreak);
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SendFormattedSoloStreakMiddleware, err));
   }
 };
 

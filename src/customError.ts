@@ -25,7 +25,13 @@ export enum ErrorType {
   SaveTaskCompleteMiddleware,
   StreakMaintainedMiddleware,
   SendTaskCompleteResponseMiddleware,
-  SetDayTaskWasCompletedMiddleware
+  SetDayTaskWasCompletedMiddleware,
+  DefineCurrentTimeMiddleware,
+  DefineStartDayMiddleware,
+  DefineEndOfDayMiddleware,
+  CreateSoloStreakFromRequestMiddleware,
+  SaveSoloStreakToDatabase,
+  SendFormattedSoloStreakMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -226,6 +232,49 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
       }
+
+      case ErrorType.DefineCurrentTimeMiddleware: {
+        return {
+          code: `${ResponseCodes.warning}-20`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+      }
+
+      case ErrorType.DefineStartDayMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-21`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DefineEndOfDayMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-22`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateSoloStreakFromRequestMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-23`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SaveSoloStreakToDatabase:
+        return {
+          code: `${ResponseCodes.warning}-24`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendFormattedSoloStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-25`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
 
       case ErrorType.InternalServerError:
       default:
