@@ -75,17 +75,9 @@ export class CustomError extends Error {
         };
       }
 
-      case ErrorType.MissingTimezoneHeader: {
-        return {
-          code: `${ResponseCodes.badRequest}-05`,
-          message: "Missing x-timezone header.",
-          httpStatusCode: ResponseCodes.badRequest
-        };
-      }
-
       case ErrorType.TaskAlreadyCompletedToday: {
         return {
-          code: `${ResponseCodes.badRequest}-06`,
+          code: `${ResponseCodes.badRequest}-05`,
           message: "Task already completed today.",
           httpStatusCode: ResponseCodes.badRequest
         };
