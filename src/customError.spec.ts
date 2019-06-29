@@ -46,6 +46,15 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to NoSoloStreakToDeleteFound`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.NoSoloStreakToDeleteFound);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`400-06`);
+    expect(message).toBe("No solo streak found.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to RetreiveUserWithEmailMiddlewareError`, () => {
     expect.assertions(3);
     const customError = new CustomError(
@@ -271,6 +280,37 @@ describe("customError", () => {
     );
     const { code, message, httpStatusCode } = customError;
     expect(code).toBe(`500-24`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendFormattedSoloStreakMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.SendFormattedSoloStreakMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-25`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to DeleteSoloStreakMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.DeleteSoloStreakMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-26`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendSoloStreakDeletedResponseMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.SendSoloStreakDeletedResponseMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-27`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });

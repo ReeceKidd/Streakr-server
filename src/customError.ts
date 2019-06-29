@@ -31,7 +31,10 @@ export enum ErrorType {
   DefineEndOfDayMiddleware,
   CreateSoloStreakFromRequestMiddleware,
   SaveSoloStreakToDatabaseMiddleware,
-  SendFormattedSoloStreakMiddleware
+  SendFormattedSoloStreakMiddleware,
+  NoSoloStreakToDeleteFound,
+  DeleteSoloStreakMiddleware,
+  SendSoloStreakDeletedResponseMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -85,6 +88,14 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-05`,
           message: "Task already completed today.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoSoloStreakToDeleteFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-06`,
+          message: "No solo streak found.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -272,6 +283,20 @@ export class CustomError extends Error {
       case ErrorType.SendFormattedSoloStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-25`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteSoloStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-26`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendSoloStreakDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-27`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

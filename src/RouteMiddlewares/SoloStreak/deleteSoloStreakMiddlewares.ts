@@ -8,6 +8,7 @@ import { ResponseCodes } from "../../Server/responseCodes";
 import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { MessageCategories } from "../../Messages/messageCategories";
 import { FailureMessageKeys } from "../../Messages/failureMessages";
+import { CustomError, ErrorType } from "../../customError";
 
 const soloStreakParamsValidationSchema = {
   soloStreakId: Joi.string().required()
@@ -33,42 +34,19 @@ export const getDeleteSoloStreakMiddleware = (
     const deletedSoloStreak = await soloStreakModel.findByIdAndDelete(
       soloStreakId
     );
+    if (!deletedSoloStreak) {
+      throw new CustomError(ErrorType.NoSoloStreakToDeleteFound);
+    }
     response.locals.deletedSoloStreak = deletedSoloStreak;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.DeleteSoloStreakMiddleware, err));
   }
 };
 
 export const deleteSoloStreakMiddleware = getDeleteSoloStreakMiddleware(
   soloStreakModel
-);
-
-export const getSoloStreakNotFoundMiddleware = (
-  badRequestResponseCode: ResponseCodes,
-  localisedSoloStreakDoesNotExistErrorMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { deletedSoloStreak } = response.locals;
-    if (!deletedSoloStreak) {
-      return response
-        .status(badRequestResponseCode)
-        .send({ message: localisedSoloStreakDoesNotExistErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedSoloStreakDoesNotExistErrorMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.soloStreakDoesNotExist
-);
-
-export const soloStreakNotFoundMiddleware = getSoloStreakNotFoundMiddleware(
-  ResponseCodes.badRequest,
-  localisedSoloStreakDoesNotExistErrorMessage
 );
 
 export const getSendSoloStreakDeletedResponseMiddleware = (
@@ -77,7 +55,9 @@ export const getSendSoloStreakDeletedResponseMiddleware = (
   try {
     return response.status(successfulDeletetionResponseCode).send();
   } catch (err) {
-    next(err);
+    next(
+      new CustomError(ErrorType.SendSoloStreakDeletedResponseMiddleware, err)
+    );
   }
 };
 
@@ -88,6 +68,5 @@ export const sendSoloStreakDeletedResponseMiddleware = getSendSoloStreakDeletedR
 export const deleteSoloStreakMiddlewares = [
   soloStreakParamsValidationMiddleware,
   deleteSoloStreakMiddleware,
-  soloStreakNotFoundMiddleware,
   sendSoloStreakDeletedResponseMiddleware
 ];
