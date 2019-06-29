@@ -66,6 +66,15 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to UpdatedSoloStreakNotFound`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.UpdatedSoloStreakNotFound);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`400-08`);
+    expect(message).toBe("No solo streak found.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to RetreiveUserWithEmailMiddlewareError`, () => {
     expect.assertions(3);
     const customError = new CustomError(
@@ -358,6 +367,26 @@ describe("customError", () => {
     const customError = new CustomError(ErrorType.SendSoloStreaksMiddleware);
     const { code, message, httpStatusCode } = customError;
     expect(code).toBe(`500-31`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to PatchSoloStreakMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.PatchSoloStreakMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-32`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendUpdatedSoloStreakMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.SendUpdatedSoloStreakMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-33`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });

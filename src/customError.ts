@@ -39,7 +39,10 @@ export enum ErrorType {
   RetreiveSoloStreakMiddleware,
   SendSoloStreakMiddleware,
   FindSoloStreaksMiddleware,
-  SendSoloStreaksMiddleware
+  SendSoloStreaksMiddleware,
+  UpdatedSoloStreakNotFound,
+  PatchSoloStreakMiddleware,
+  SendUpdatedSoloStreakMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -108,6 +111,14 @@ export class CustomError extends Error {
       case ErrorType.GetSoloStreakNoSoloStreakFound: {
         return {
           code: `${ResponseCodes.badRequest}-07`,
+          message: "No solo streak found.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.UpdatedSoloStreakNotFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-08`,
           message: "No solo streak found.",
           httpStatusCode: ResponseCodes.badRequest
         };
@@ -338,6 +349,20 @@ export class CustomError extends Error {
       case ErrorType.SendSoloStreaksMiddleware:
         return {
           code: `${ResponseCodes.warning}-31`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.PatchSoloStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-32`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendUpdatedSoloStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-33`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

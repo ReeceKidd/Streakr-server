@@ -4,15 +4,14 @@ import {
   getPatchSoloStreakMiddleware,
   patchSoloStreakMiddleware,
   sendUpdatedSoloStreakMiddleware,
-  soloStreakDoesNotExistErrorMessageMiddleware,
-  getSoloStreakDoesNotExistErrorMessageMiddleware,
   getSendUpdatedSoloStreakMiddleware,
   soloStreakParamsValidationMiddleware
 } from "./patchSoloStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { CustomError, ErrorType } from "../../customError";
 
 describe("soloStreakParamsValidationMiddleware", () => {
-  test("that correct response is sent when soloStreakId is not defined", () => {
+  test("sends correct error response when soloStreakId is not defined", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -34,7 +33,7 @@ describe("soloStreakParamsValidationMiddleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that correct response is sent when soloStreakId is not a string", () => {
+  test("sends correct error response when soloStreakId is not a string", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -59,7 +58,7 @@ describe("soloStreakParamsValidationMiddleware", () => {
 });
 
 describe("soloStreakRequestBodyValidationMiddleware", () => {
-  test("that unsupported key cannot be sent in body", () => {
+  test("sends correct error response when unsupported key is sent", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -81,7 +80,7 @@ describe("soloStreakRequestBodyValidationMiddleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that correct response is sent when userId is not a string", () => {
+  test("sends correct error response when userId is not a string", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -103,7 +102,7 @@ describe("soloStreakRequestBodyValidationMiddleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that correct response is sent when name is not a string", () => {
+  test("sends correct error when name is not a string", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -125,7 +124,7 @@ describe("soloStreakRequestBodyValidationMiddleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that correct response is sent when description is not a string", () => {
+  test("sends correct response is sent when description is not a string", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -148,7 +147,7 @@ describe("soloStreakRequestBodyValidationMiddleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that correct response is sent when completedToday is not a boolean", () => {
+  test("sends correct response when completedToday is not a boolean", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -173,7 +172,7 @@ describe("soloStreakRequestBodyValidationMiddleware", () => {
 });
 
 describe("patchSoloStreakMiddleware", () => {
-  test("that response.locals.updatedSoloStreak is defined and next is called", async () => {
+  test("sets response.locals.updatedSoloStreak", async () => {
     expect.assertions(3);
     const soloStreakId = "abc123";
     const userId = "123cde";
@@ -204,7 +203,34 @@ describe("patchSoloStreakMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next is called with error", async () => {
+  test("throws UpdatedSoloStreakNotFound error when solo streak is not found", async () => {
+    expect.assertions(1);
+    const soloStreakId = "abc123";
+    const userId = "123cde";
+    const name = "Daily programming";
+    const description = "Do one hour of programming each day";
+    const request: any = {
+      params: { soloStreakId },
+      body: {
+        userId,
+        name,
+        description
+      }
+    };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const findByIdAndUpdate = jest.fn(() => Promise.resolve(false));
+    const soloStreakModel = {
+      findByIdAndUpdate
+    };
+    const middleware = getPatchSoloStreakMiddleware(soloStreakModel as any);
+    await middleware(request, response, next);
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.UpdatedSoloStreakNotFound)
+    );
+  });
+
+  test("calls next with PatchSoloStreakMiddleware on middleware failure", async () => {
     expect.assertions(1);
     const soloStreakId = "abc123";
     const userId = "123cde";
@@ -227,71 +253,8 @@ describe("patchSoloStreakMiddleware", () => {
     };
     const middleware = getPatchSoloStreakMiddleware(soloStreakModel as any);
     await middleware(request, response, next);
-    expect(next).toBeCalledWith(errorMessage);
-  });
-});
-
-describe("soloStreakDoesNotExistErrorMessageMiddleware", () => {
-  test("that error response is sent when response.locals.updatedSoloStreak is not defined", async () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const response: any = { locals: {}, status };
-    const next = jest.fn();
-
-    const unprocessableEntityStatus = 404;
-    const localisedErrorMessage = "error";
-
-    const middleware = getSoloStreakDoesNotExistErrorMessageMiddleware(
-      unprocessableEntityStatus,
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-    expect(status).toBeCalledWith(unprocessableEntityStatus);
-    expect(send).toBeCalledWith({ message: localisedErrorMessage });
-    expect(next).not.toBeCalledWith();
-  });
-
-  test("that next() is called when response.locals.updatedSoloStreak is defined", async () => {
-    expect.assertions(1);
-    const updatedSoloStreak = {
-      soloStreakName: "Test soloStreak"
-    };
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const response: any = { locals: { updatedSoloStreak }, status };
-    const next = jest.fn();
-
-    const unprocessableEntityStatus = 402;
-    const localisedErrorMessage = "error";
-
-    const middleware = getSoloStreakDoesNotExistErrorMessageMiddleware(
-      unprocessableEntityStatus,
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-    expect(next).toBeCalledWith();
-  });
-
-  test("that next is called with error on error", () => {
-    expect.assertions(1);
-    const request: any = {};
-    const response: any = { locals: {} };
-    const next = jest.fn();
-
-    const unprocessableEntityStatus = 402;
-    const localisedErrorMessage = "error";
-
-    const middleware = getSoloStreakDoesNotExistErrorMessageMiddleware(
-      unprocessableEntityStatus,
-      localisedErrorMessage
-    );
-    middleware(request, response, next);
-
     expect(next).toBeCalledWith(
-      new TypeError("response.status is not a function")
+      new CustomError(ErrorType.PatchSoloStreakMiddleware)
     );
   });
 });
@@ -305,7 +268,7 @@ describe("sendUpdatedPatchMiddleware", () => {
     startDate: new Date()
   };
 
-  test("should send user in response with password undefined", () => {
+  test("sends updatedSoloStreak", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const soloStreakResponseLocals = { updatedSoloStreak };
@@ -328,7 +291,7 @@ describe("sendUpdatedPatchMiddleware", () => {
     expect(send).toBeCalledWith({ data: updatedSoloStreak });
   });
 
-  test("should call next with an error on failure", () => {
+  test("calls next with SendUpdatedSoloStreakMiddleware error on middleware failure", () => {
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
@@ -346,13 +309,19 @@ describe("sendUpdatedPatchMiddleware", () => {
     middleware(request, response, next);
 
     expect.assertions(1);
-    expect(next).toBeCalledWith(new Error(ERROR_MESSAGE));
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.SendUpdatedSoloStreakMiddleware,
+        expect.any(Error)
+      )
+    );
   });
 });
 
 describe("patchSoloStreakMiddlewares", () => {
-  test("that patchSoloStreakMiddlewares are defined in the correct order", () => {
+  test("are defined in the correct order", () => {
     expect.assertions(5);
+    expect(patchSoloStreakMiddlewares.length).toBe(4);
     expect(patchSoloStreakMiddlewares[0]).toBe(
       soloStreakParamsValidationMiddleware
     );
@@ -360,9 +329,6 @@ describe("patchSoloStreakMiddlewares", () => {
       soloStreakRequestBodyValidationMiddleware
     );
     expect(patchSoloStreakMiddlewares[2]).toBe(patchSoloStreakMiddleware);
-    expect(patchSoloStreakMiddlewares[3]).toBe(
-      soloStreakDoesNotExistErrorMessageMiddleware
-    );
-    expect(patchSoloStreakMiddlewares[4]).toBe(sendUpdatedSoloStreakMiddleware);
+    expect(patchSoloStreakMiddlewares[3]).toBe(sendUpdatedSoloStreakMiddleware);
   });
 });

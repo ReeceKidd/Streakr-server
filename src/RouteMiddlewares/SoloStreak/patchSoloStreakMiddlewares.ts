@@ -5,9 +5,7 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { soloStreakModel, SoloStreak } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { getLocalisedString } from "../../Messages/getLocalisedString";
-import { MessageCategories } from "../../Messages/messageCategories";
-import { FailureMessageKeys } from "../../Messages/failureMessages";
+import { CustomError, ErrorType } from "../../customError";
 
 const soloStreakParamsValidationSchema = {
   soloStreakId: Joi.string().required()
@@ -55,38 +53,19 @@ export const getPatchSoloStreakMiddleware = (
       { ...keysToUpdate },
       { new: true }
     );
+    if (!updatedSoloStreak) {
+      throw new CustomError(ErrorType.UpdatedSoloStreakNotFound);
+    }
     response.locals.updatedSoloStreak = updatedSoloStreak;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.PatchSoloStreakMiddleware, err));
   }
 };
 
-export const getSoloStreakDoesNotExistErrorMessageMiddleware = (
-  badRequestReponseCode: number,
-  localisedSoloStreakDoesNotExistErrorMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { updatedSoloStreak } = response.locals;
-    if (!updatedSoloStreak) {
-      return response
-        .status(badRequestReponseCode)
-        .send({ message: localisedSoloStreakDoesNotExistErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedSoloStreakDoesNotExistErrorMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.soloStreakDoesNotExist
-);
-
-export const soloStreakDoesNotExistErrorMessageMiddleware = getSoloStreakDoesNotExistErrorMessageMiddleware(
-  ResponseCodes.badRequest,
-  localisedSoloStreakDoesNotExistErrorMessage
+export const patchSoloStreakMiddleware = getPatchSoloStreakMiddleware(
+  soloStreakModel
 );
 
 export const getSendUpdatedSoloStreakMiddleware = (
@@ -98,7 +77,7 @@ export const getSendUpdatedSoloStreakMiddleware = (
       .status(updatedResourceResponseCode)
       .send({ data: updatedSoloStreak });
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SendUpdatedSoloStreakMiddleware, err));
   }
 };
 
@@ -106,14 +85,9 @@ export const sendUpdatedSoloStreakMiddleware = getSendUpdatedSoloStreakMiddlewar
   ResponseCodes.success
 );
 
-export const patchSoloStreakMiddleware = getPatchSoloStreakMiddleware(
-  soloStreakModel
-);
-
 export const patchSoloStreakMiddlewares = [
   soloStreakParamsValidationMiddleware,
   soloStreakRequestBodyValidationMiddleware,
   patchSoloStreakMiddleware,
-  soloStreakDoesNotExistErrorMessageMiddleware,
   sendUpdatedSoloStreakMiddleware
 ];
