@@ -226,6 +226,55 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
+  test(`creates correct error when type is set to DefineCurrentTimeMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.DefineCurrentTimeMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-20`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to DefineStartDayMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.DefineStartDayMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-21`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to DefineEndDayMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.DefineEndOfDayMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-22`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to CreateSoloStreakFromRequestMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.CreateSoloStreakFromRequestMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-23`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SaveSoloStreakToDatabase`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.SaveSoloStreakToDatabaseMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-24`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
   test(`creates correct error when type is set to InternalServerError`, () => {
     expect.assertions(3);
     const customError = new CustomError(ErrorType.InternalServerError);

@@ -131,7 +131,7 @@ export const saveSoloStreakToDatabaseMiddleware = async (
     response.locals.savedSoloStreak = await newSoloStreak.save();
     next();
   } catch (err) {
-    next(new CustomError(ErrorType.SaveSoloStreakToDatabase, err));
+    next(new CustomError(ErrorType.SaveSoloStreakToDatabaseMiddleware, err));
   }
 };
 

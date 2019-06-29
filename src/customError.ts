@@ -30,7 +30,7 @@ export enum ErrorType {
   DefineStartDayMiddleware,
   DefineEndOfDayMiddleware,
   CreateSoloStreakFromRequestMiddleware,
-  SaveSoloStreakToDatabase,
+  SaveSoloStreakToDatabaseMiddleware,
   SendFormattedSoloStreakMiddleware
 }
 
@@ -262,7 +262,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SaveSoloStreakToDatabase:
+      case ErrorType.SaveSoloStreakToDatabaseMiddleware:
         return {
           code: `${ResponseCodes.warning}-24`,
           message: internalServerMessage,

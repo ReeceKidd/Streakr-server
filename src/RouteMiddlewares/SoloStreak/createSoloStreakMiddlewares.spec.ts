@@ -13,14 +13,14 @@ import {
   getDefineEndOfDayMiddleware
 } from "./createSoloStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { SupportedRequestHeaders } from "../../Server/headers";
+import { CustomError, ErrorType } from "../../customError";
 
 describe(`soloStreakRegistrationValidationMiddlware`, () => {
   const userId = "12345678";
   const name = "Spanish Streak";
   const description = " Do the insane amount of XP for Duolingo each day";
 
-  test("that minimum amount of information needed for a streak passes", () => {
+  test("valid request passes validation", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -38,25 +38,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
     expect(next).toBeCalled();
   });
 
-  test("that solo streak can be created", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-
-    const request: any = {
-      body: { userId, name, description }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    soloStreakRegistrationValidationMiddleware(request, response, next);
-
-    expect.assertions(1);
-    expect(next).toBeCalled();
-  });
-
-  test("that correct response is sent when userId is missing", () => {
+  test("sends userId is missing error", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -78,7 +60,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that error response is sent when userId is not a string", () => {
+  test("sends userId is not a string error", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -100,7 +82,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that correct response is sent when name is missing", () => {
+  test("sends name is missing error", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -122,7 +104,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that error response is sent when name is not a string", () => {
+  test("sends name is not a string error", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -144,7 +126,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that correct response is sent when description is missing", () => {
+  test("sends description is missing error", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -166,7 +148,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that error response is sent when description is not a string", () => {
+  test("sends description is not a string error", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -191,7 +173,7 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 });
 
 describe("defineCurrentTimeMiddleware", () => {
-  test("that response.locals.currentTime is defined and next is called", () => {
+  test("sets response.locals.currentTime", () => {
     expect.assertions(4);
     const timezone = "Europe/London";
     const tz = jest.fn(() => true);
@@ -207,7 +189,7 @@ describe("defineCurrentTimeMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next is called with error", () => {
+  test("calls next with DefineCurrentTimeMiddleware error on middleware failure", () => {
     expect.assertions(1);
     const moment = jest.fn(() => ({}));
     const request: any = {};
@@ -216,13 +198,13 @@ describe("defineCurrentTimeMiddleware", () => {
     const middleware = getDefineCurrentTimeMiddleware(moment);
     middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("moment(...).tz is not a function")
+      new CustomError(ErrorType.DefineCurrentTimeMiddleware, expect.any(Error))
     );
   });
 });
 
 describe("defineStartDayMiddleware", () => {
-  test("that response.locals.startDay is defined and next() is called", () => {
+  test("sets response.locals.startDay", () => {
     expect.assertions(3);
     const dayFormat = "DD/MM/YYYY";
     const format = jest.fn(() => true);
@@ -239,7 +221,7 @@ describe("defineStartDayMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next is called with error", () => {
+  test("calls next with DefineStartDayMiddleware on middleware failure", () => {
     expect.assertions(1);
     const dayFormat = "DD/MM/YYYY";
     const currentTime = {};
@@ -249,13 +231,13 @@ describe("defineStartDayMiddleware", () => {
     const middleware = getDefineStartDayMiddleware(dayFormat);
     middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("currentTime.format is not a function")
+      new CustomError(ErrorType.DefineStartDayMiddleware)
     );
   });
 });
 
 describe("defineEndOfDayMiddleware", () => {
-  test("that response.locals.endOfDay is defined", () => {
+  test("sets response.locals.endOfDay", () => {
     expect.assertions(4);
     const toDate = jest.fn(() => new Date());
     const endOf = jest.fn(() => ({ toDate }));
@@ -276,7 +258,7 @@ describe("defineEndOfDayMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that next is called with error on failure", () => {
+  test("calls next with DefineEndOfDayMiddleware on middleware failure", () => {
     expect.assertions(1);
     const endOf = jest.fn(() => ({}));
     const currentTime = {
@@ -291,13 +273,13 @@ describe("defineEndOfDayMiddleware", () => {
     const middleware = getDefineEndOfDayMiddleware(dayTimeRange);
     middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError("currentTime.endOf(...).toDate is not a function")
+      new CustomError(ErrorType.DefineEndOfDayMiddleware)
     );
   });
 });
 
 describe(`createSoloStreakFromRequestMiddleware`, () => {
-  test("should define response.locals.newSoloStreak", async () => {
+  test("sets response.locals.newSoloStreak", async () => {
     const userId = "abcdefg";
     const name = "streak name";
     const description = "mock streak description";
@@ -338,7 +320,7 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
     expect(next).toBeCalledWith();
   });
 
-  test("should call next with error message on error", () => {
+  test("calls next with CreateSoloStreakFromRequestMiddleware error on middleware failure", () => {
     const timezone = "Europe/London";
     const userId = "abcdefg";
     const name = "streak name";
@@ -354,7 +336,10 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
 
     expect.assertions(1);
     expect(next).toBeCalledWith(
-      new TypeError("soloStreak is not a constructor")
+      new CustomError(
+        ErrorType.CreateSoloStreakFromRequestMiddleware,
+        expect.any(Error)
+      )
     );
   });
 });
@@ -362,7 +347,7 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
 describe(`saveSoloStreakToDatabaseMiddleware`, () => {
   const ERROR_MESSAGE = "error";
 
-  test("should set response.locals.savedSoloStreak", async () => {
+  test("sets response.locals.savedSoloStreak", async () => {
     const save = jest.fn(() => {
       return Promise.resolve(true);
     });
@@ -386,7 +371,7 @@ describe(`saveSoloStreakToDatabaseMiddleware`, () => {
     expect(next).toBeCalled();
   });
 
-  test("should call next() with err paramater if save call fails", async () => {
+  test("calls next with SaveSoloStreakToDatabaseMiddleware error on middleware failure", async () => {
     const save = jest.fn(() => {
       return Promise.reject(ERROR_MESSAGE);
     });
@@ -398,7 +383,12 @@ describe(`saveSoloStreakToDatabaseMiddleware`, () => {
     await saveSoloStreakToDatabaseMiddleware(request, response, next);
 
     expect.assertions(1);
-    expect(next).toBeCalledWith(ERROR_MESSAGE);
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.SaveSoloStreakToDatabaseMiddleware,
+        expect.any(Error)
+      )
+    );
   });
 });
 
@@ -411,7 +401,7 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
     startDate: new Date()
   };
 
-  test("should send user in response with password undefined", () => {
+  test("responds with status 201 with soloStreak", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const soloStreakResponseLocals = {
@@ -431,7 +421,7 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
     expect(send).toBeCalledWith(savedSoloStreak);
   });
 
-  test("should call next with an error on failure", () => {
+  test("calls next with SendFormattedSoloStreakMiddleware error on middleware failure", () => {
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
@@ -444,7 +434,12 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
     sendFormattedSoloStreakMiddleware(request, response, next);
 
     expect.assertions(1);
-    expect(next).toBeCalledWith(new Error(ERROR_MESSAGE));
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.SendFormattedSoloStreakMiddleware,
+        expect.any(Error)
+      )
+    );
   });
 });
 
