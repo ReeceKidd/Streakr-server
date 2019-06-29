@@ -344,6 +344,24 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
+  test(`creates correct error when type is set to FindSoloStreaksMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.FindSoloStreaksMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-30`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendSoloStreaksMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.SendSoloStreaksMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-31`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
   test(`creates correct error when type is set to InternalServerError`, () => {
     expect.assertions(3);
     const customError = new CustomError(ErrorType.InternalServerError);

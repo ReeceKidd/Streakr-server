@@ -5,6 +5,7 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { soloStreakModel, SoloStreak } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { CustomError, ErrorType } from "../../customError";
 
 export enum GetSoloStreaksQueryParamaters {
   userId = "userId"
@@ -36,7 +37,7 @@ export const getFindSoloStreaksMiddleware = (
     });
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.FindSoloStreaksMiddleware, err));
   }
 };
 
@@ -53,7 +54,7 @@ export const sendSoloStreaksMiddleware = (
     const { soloStreaks } = response.locals;
     response.status(ResponseCodes.success).send({ soloStreaks });
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SendSoloStreaksMiddleware, err));
   }
 };
 

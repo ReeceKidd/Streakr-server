@@ -6,9 +6,10 @@ import {
   sendSoloStreaksMiddleware
 } from "./getSoloStreaksMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { CustomError, ErrorType } from "../../customError";
 
 describe("getSoloStreaksValidationMiddleware", () => {
-  test("check that valid request passes", () => {
+  test("passes valid request", () => {
     expect.assertions(1);
 
     const send = jest.fn();
@@ -27,7 +28,7 @@ describe("getSoloStreaksValidationMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("check that request with no params fails", () => {
+  test("sends error when request has no params", () => {
     expect.assertions(3);
 
     const send = jest.fn();
@@ -50,7 +51,7 @@ describe("getSoloStreaksValidationMiddleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  test("check that userId cannot be a number", () => {
+  test("sends userId cannot be a number error", () => {
     expect.assertions(3);
 
     const send = jest.fn();
@@ -75,7 +76,7 @@ describe("getSoloStreaksValidationMiddleware", () => {
 });
 
 describe("findSoloStreaksMiddleware", () => {
-  test("check that soloStreaks are retreived correctly", async () => {
+  test("sets response.locals.soloStreaks", async () => {
     expect.assertions(2);
 
     const find = jest.fn(() => Promise.resolve(true));
@@ -94,8 +95,8 @@ describe("findSoloStreaksMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("checks that next is called with error if database call fails", async () => {
-    expect.assertions(2);
+  test("calls next with FindSoloStreaksMiddleware error on middleware failure", async () => {
+    expect.assertions(1);
 
     const ERROR_MESSAGE = "error";
     const find = jest.fn(() => Promise.reject(ERROR_MESSAGE));
@@ -110,13 +111,14 @@ describe("findSoloStreaksMiddleware", () => {
 
     await middleware(request, response, next);
 
-    expect(response.locals.friends).toBe(undefined);
-    expect(next).toBeCalledWith(ERROR_MESSAGE);
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.FindSoloStreaksMiddleware, expect.any(Error))
+    );
   });
 });
 
 describe("sendSoloStreaksMiddleware", () => {
-  test("should send soloStreaks in response", () => {
+  test("sends soloStreaks in response", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {};
@@ -139,7 +141,7 @@ describe("sendSoloStreaksMiddleware", () => {
     expect(send).toBeCalledWith({ soloStreaks });
   });
 
-  test("should call next with an error on failure", () => {
+  test("calls next with SendSoloStreaksMiddleware on middleware failure", () => {
     const ERROR_MESSAGE = "sendSoloStreaks error";
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
@@ -153,7 +155,9 @@ describe("sendSoloStreaksMiddleware", () => {
     sendSoloStreaksMiddleware(request, response, next);
 
     expect.assertions(1);
-    expect(next).toBeCalledWith(new Error(ERROR_MESSAGE));
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.SendSoloStreaksMiddleware, expect.any(Error))
+    );
   });
 });
 

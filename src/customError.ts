@@ -37,7 +37,9 @@ export enum ErrorType {
   SendSoloStreakDeletedResponseMiddleware,
   GetSoloStreakNoSoloStreakFound,
   RetreiveSoloStreakMiddleware,
-  SendSoloStreakMiddleware
+  SendSoloStreakMiddleware,
+  FindSoloStreaksMiddleware,
+  SendSoloStreaksMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -322,6 +324,20 @@ export class CustomError extends Error {
       case ErrorType.SendSoloStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-29`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.FindSoloStreaksMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-30`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendSoloStreaksMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-31`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
