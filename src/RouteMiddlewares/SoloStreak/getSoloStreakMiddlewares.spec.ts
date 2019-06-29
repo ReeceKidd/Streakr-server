@@ -4,16 +4,15 @@ import {
   getRetreiveSoloStreakMiddleware,
   sendSoloStreakMiddleware,
   getSoloStreakParamsValidationMiddleware,
-  getSendSoloStreakMiddleware,
-  getSendSoloStreakDoesNotExistErrorMessageMiddleware,
-  sendSoloStreakDoesNotExistErrorMessageMiddleware
+  getSendSoloStreakMiddleware
 } from "./getSoloStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { ErrorType, CustomError } from "../../customError";
 
 describe(`getSoloStreakParamsValidationMiddleware`, () => {
   const soloStreakId = "12345678";
 
-  test("that next() is called when correct params are supplied", () => {
+  test("calls next() when correct params are supplied", () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -30,7 +29,7 @@ describe(`getSoloStreakParamsValidationMiddleware`, () => {
     expect(next).toBeCalled();
   });
 
-  test("that correct response is sent when soloStreakId is missing", () => {
+  test("sends error response when soloStreakId is missing", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -52,7 +51,7 @@ describe(`getSoloStreakParamsValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("that error response is sent when soloStreakId is not a string", () => {
+  test("sends error response when soloStreakId is not a string", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -77,7 +76,7 @@ describe(`getSoloStreakParamsValidationMiddleware`, () => {
 });
 
 describe("retreiveSoloStreakMiddleware", () => {
-  test("that response.locals.soloStreak is defined and next() is called", async () => {
+  test("sets response.locals.soloStreak", async () => {
     expect.assertions(3);
     const lean = jest.fn(() => Promise.resolve(true));
     const findOne = jest.fn(() => ({ lean }));
@@ -95,7 +94,25 @@ describe("retreiveSoloStreakMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that on error next() is called with error", async () => {
+  test("throws GetSoloStreakNoSoloStreakFound when solo streak is not found", async () => {
+    expect.assertions(1);
+    const lean = jest.fn(() => Promise.resolve(false));
+    const findOne = jest.fn(() => ({ lean }));
+    const soloStreakModel = {
+      findOne
+    };
+    const soloStreakId = "abcd";
+    const request: any = { params: { soloStreakId } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getRetreiveSoloStreakMiddleware(soloStreakModel as any);
+    await middleware(request, response, next);
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.GetSoloStreakNoSoloStreakFound)
+    );
+  });
+
+  test("calls next with RetreiveSoloStreakMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const errorMessage = "error";
     const lean = jest.fn(() => Promise.reject(errorMessage));
@@ -109,75 +126,14 @@ describe("retreiveSoloStreakMiddleware", () => {
     const next = jest.fn();
     const middleware = getRetreiveSoloStreakMiddleware(soloStreakModel as any);
     await middleware(request, response, next);
-    expect(next).toBeCalledWith(errorMessage);
-  });
-});
-
-describe("sendSoloStreakDoesNotExistErrorResponse", () => {
-  test("that correct error response is sent whem soloStreak is not defined", () => {
-    expect.assertions(3);
-    const doesNotExistErrorResponseCode = 404;
-    const localisedSoloStreakDoesNotExistMessage =
-      "Localised solo streak does not exist";
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const response: any = { locals: {}, status };
-    const next = jest.fn();
-    const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(
-      doesNotExistErrorResponseCode,
-      localisedSoloStreakDoesNotExistMessage
-    );
-    middleware(request, response, next);
-    expect(status).toBeCalledWith(doesNotExistErrorResponseCode);
-    expect(send).toBeCalledWith({
-      message: localisedSoloStreakDoesNotExistMessage
-    });
-    expect(next).not.toBeCalled();
-  });
-
-  test("that next is called when soloStreak is defined", () => {
-    expect.assertions(1);
-    const doesNotExistErrorResponseCode = 404;
-    const localisedSoloStreakDoesNotExistMessage =
-      "Localised solo streak does not exist";
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const soloStreak = true;
-    const response: any = { locals: { soloStreak }, status };
-    const next = jest.fn();
-    const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(
-      doesNotExistErrorResponseCode,
-      localisedSoloStreakDoesNotExistMessage
-    );
-    middleware(request, response, next);
-    expect(next).toBeCalledWith();
-  });
-
-  test("that on error next is called with error", () => {
-    expect.assertions(1);
-    const doesNotExistErrorResponseCode = 404;
-    const localisedSoloStreakDoesNotExistMessage =
-      "Localised solo streak does not exist";
-    const request: any = {};
-    const response: any = {};
-    const next = jest.fn();
-    const middleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(
-      doesNotExistErrorResponseCode,
-      localisedSoloStreakDoesNotExistMessage
-    );
-    middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError(
-        "Cannot destructure property `soloStreak` of 'undefined' or 'null'."
-      )
+      new CustomError(ErrorType.RetreiveSoloStreakMiddleware, expect.any(Error))
     );
   });
 });
 
 describe("sendSoloStreakMiddleware", () => {
-  test("that soloStreak is sent correctly", () => {
+  test("sends soloStreak", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -195,7 +151,7 @@ describe("sendSoloStreakMiddleware", () => {
     expect(send).toBeCalledWith({ ...soloStreak });
   });
 
-  test("that on error next is called with error", async () => {
+  test("calls next with SendSoloStreakMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const request: any = {};
     const error = "error";
@@ -207,24 +163,19 @@ describe("sendSoloStreakMiddleware", () => {
     const middleware = getSendSoloStreakMiddleware(resourceCreatedResponseCode);
     await middleware(request, response, next);
     expect(next).toBeCalledWith(
-      new TypeError(
-        "Cannot destructure property `soloStreak` of 'undefined' or 'null'."
-      )
+      new CustomError(ErrorType.SendSoloStreakMiddleware, expect.any(Error))
     );
   });
 });
 
 describe("getSoloStreakMiddlewares", () => {
   test("that getSoloStreakMiddlewares are defined in the correct order", () => {
-    expect.assertions(5);
-    expect(getSoloStreakMiddlewares.length).toEqual(4);
+    expect.assertions(4);
+    expect(getSoloStreakMiddlewares.length).toEqual(3);
     expect(getSoloStreakMiddlewares[0]).toEqual(
       getSoloStreakParamsValidationMiddleware
     );
     expect(getSoloStreakMiddlewares[1]).toEqual(retreiveSoloStreakMiddleware);
-    expect(getSoloStreakMiddlewares[2]).toEqual(
-      sendSoloStreakDoesNotExistErrorMessageMiddleware
-    );
-    expect(getSoloStreakMiddlewares[3]).toEqual(sendSoloStreakMiddleware);
+    expect(getSoloStreakMiddlewares[2]).toEqual(sendSoloStreakMiddleware);
   });
 });

@@ -8,6 +8,7 @@ import { ResponseCodes } from "../../Server/responseCodes";
 import { getLocalisedString } from "../../Messages/getLocalisedString";
 import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { MessageCategories } from "../../Messages/messageCategories";
+import { CustomError, ErrorType } from "../../customError";
 
 const getSoloStreakParamsValidationSchema = {
   soloStreakId: Joi.string().required()
@@ -30,44 +31,22 @@ export const getRetreiveSoloStreakMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { soloStreakId } = request.params;
-    response.locals.soloStreak = await soloStreakModel
+    const soloStreak = await soloStreakModel
       .findOne({ _id: soloStreakId })
       .lean();
+    if (!soloStreak) {
+      throw new CustomError(ErrorType.GetSoloStreakNoSoloStreakFound);
+    }
+    response.locals.soloStreak = soloStreak;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.RetreiveSoloStreakMiddleware, err));
   }
 };
 
 export const retreiveSoloStreakMiddleware = getRetreiveSoloStreakMiddleware(
   soloStreakModel
-);
-
-export const getSendSoloStreakDoesNotExistErrorMessageMiddleware = (
-  doesNotExistErrorResponseCode: number,
-  localisedSoloStreakDoesNotExistErrorMessage: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { soloStreak } = response.locals;
-    if (!soloStreak) {
-      return response
-        .status(doesNotExistErrorResponseCode)
-        .send({ message: localisedSoloStreakDoesNotExistErrorMessage });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedSoloStreakDoesNotExistErrorMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.soloStreakDoesNotExist
-);
-
-export const sendSoloStreakDoesNotExistErrorMessageMiddleware = getSendSoloStreakDoesNotExistErrorMessageMiddleware(
-  ResponseCodes.badRequest,
-  localisedSoloStreakDoesNotExistErrorMessage
 );
 
 export const getSendSoloStreakMiddleware = (
@@ -77,7 +56,7 @@ export const getSendSoloStreakMiddleware = (
     const { soloStreak } = response.locals;
     return response.status(resourceCreatedResponseCode).send({ ...soloStreak });
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SendSoloStreakMiddleware, err));
   }
 };
 
@@ -88,6 +67,5 @@ export const sendSoloStreakMiddleware = getSendSoloStreakMiddleware(
 export const getSoloStreakMiddlewares = [
   getSoloStreakParamsValidationMiddleware,
   retreiveSoloStreakMiddleware,
-  sendSoloStreakDoesNotExistErrorMessageMiddleware,
   sendSoloStreakMiddleware
 ];
