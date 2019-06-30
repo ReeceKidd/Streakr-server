@@ -5,10 +5,9 @@ import { Model } from "mongoose";
 
 import { userModel, User } from "../../Models/User";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { generateAlreadyExistsMessage } from "../../Utils/generateAlreadyExistsMessage";
-import { emailKey, userNameKey } from "../../Constants/Keys/keys";
 import { saltRounds } from "../../Constants/Auth/saltRounds";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { CustomError, ErrorType } from "../../customError";
 
 const registerValidationSchema = {
   userName: Joi.string().required(),
@@ -39,11 +38,12 @@ export const getDoesUserEmailExistMiddleware = (
     const { email } = request.body;
     const user = await userModel.findOne({ email });
     if (user) {
-      response.locals.emailExists = true;
+      throw new CustomError(ErrorType.UserEmailAlreadyExists);
     }
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.DoesUserEmailExistMiddleware, err));
   }
 };
 
@@ -51,36 +51,7 @@ export const doesUserEmailExistMiddleware = getDoesUserEmailExistMiddleware(
   userModel
 );
 
-interface GenerateEmailAlreadyExistsMessage {
-  (userSubject: string, userEmail: string, userKey: string): string;
-}
-
-export const getEmailExistsValidationMiddleware = (
-  emailAlreadyExistsMessage: GenerateEmailAlreadyExistsMessage,
-  subject: string,
-  emailKey: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { emailExists } = response.locals;
-    const { email } = request.body;
-    if (emailExists) {
-      return response.status(ResponseCodes.badRequest).send({
-        message: emailAlreadyExistsMessage(subject, emailKey, email)
-      });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const emailExistsValidationMiddleware = getEmailExistsValidationMiddleware(
-  generateAlreadyExistsMessage,
-  "User",
-  emailKey
-);
-
-export const setUserNameToLowercaseMiddleware = (
+export const setUsernameToLowercaseMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
@@ -90,59 +61,28 @@ export const setUserNameToLowercaseMiddleware = (
     response.locals.lowerCaseUserName = userName.toLowerCase();
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SetUsernameToLowercaseMiddleware, err));
   }
 };
 
-export const getDoesUserNameExistMiddleware = (
+export const getDoesUsernameExistMiddleware = (
   userModel: Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { lowerCaseUserName } = response.locals;
     const user = await userModel.findOne({ userName: lowerCaseUserName });
     if (user) {
-      response.locals.userNameExists = true;
+      throw new CustomError(ErrorType.UsernameAlreadyExists);
     }
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.DoesUsernameAlreadyExistMiddleware));
   }
 };
 
-export const doesUserNameExistMiddleware = getDoesUserNameExistMiddleware(
+export const doesUsernameExistMiddleware = getDoesUsernameExistMiddleware(
   userModel
-);
-
-interface GenerateUserNameAlreadyExistsMessage {
-  (userSubject: string, userName: string, userKey: string): string;
-}
-
-export const getUserNameExistsValidationMiddleware = (
-  generateAlreadyExistsMessage: GenerateUserNameAlreadyExistsMessage,
-  subject: string,
-  userNameKey: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { userNameExists, lowerCaseUserName } = response.locals;
-    if (userNameExists) {
-      return response.status(ResponseCodes.badRequest).send({
-        message: generateAlreadyExistsMessage(
-          subject,
-          userNameKey,
-          lowerCaseUserName
-        )
-      });
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const userNameExistsValidationMiddleware = getUserNameExistsValidationMiddleware(
-  generateAlreadyExistsMessage,
-  "User",
-  userNameKey
 );
 
 export const getHashPasswordMiddleware = (
@@ -154,7 +94,7 @@ export const getHashPasswordMiddleware = (
     response.locals.hashedPassword = await hash(password, saltRounds);
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.HashPasswordMiddleware, err));
   }
 };
 
@@ -178,7 +118,7 @@ export const getCreateUserFromRequestMiddleware = (user: Model<User>) => (
     });
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.CreateUserFromRequestMiddleware, err));
   }
 };
 
@@ -196,7 +136,7 @@ export const saveUserToDatabaseMiddleware = async (
     response.locals.savedUser = await newUser.save();
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SaveUserToDatabaseMiddleware, err));
   }
 };
 
@@ -210,17 +150,15 @@ export const sendFormattedUserMiddleware = (
     savedUser.password = undefined;
     return response.status(ResponseCodes.created).send(savedUser);
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SendFormattedUserMiddleware, err));
   }
 };
 
 export const registerUserMiddlewares = [
   userRegistrationValidationMiddleware,
   doesUserEmailExistMiddleware,
-  emailExistsValidationMiddleware,
-  setUserNameToLowercaseMiddleware,
-  doesUserNameExistMiddleware,
-  userNameExistsValidationMiddleware,
+  setUsernameToLowercaseMiddleware,
+  doesUsernameExistMiddleware,
   hashPasswordMiddleware,
   createUserFromRequestMiddleware,
   saveUserToDatabaseMiddleware,

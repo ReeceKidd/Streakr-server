@@ -75,6 +75,24 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to UserEmailAlreadyExists`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.UserEmailAlreadyExists);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`400-09`);
+    expect(message).toBe("User email already exists.");
+    expect(httpStatusCode).toBe(400);
+  });
+
+  test(`creates correct error when type is set to UsernameAlreadyExists`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.UsernameAlreadyExists);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`400-10`);
+    expect(message).toBe("Username already exists.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to RetreiveUserWithEmailMiddlewareError`, () => {
     expect.assertions(3);
     const customError = new CustomError(
@@ -418,6 +436,84 @@ describe("customError", () => {
     const customError = new CustomError(ErrorType.FormatUsersMiddleware);
     const { code, message, httpStatusCode } = customError;
     expect(code).toBe(`500-36`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendFormattedUsersMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.SendFormattedUsersMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-37`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to DoesUserEmailExistMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.DoesUserEmailExistMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-38`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SetUsernmaeToLowercaseMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.SetUsernameToLowercaseMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-39`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to DoesUsernameAlreadyExistMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.DoesUsernameAlreadyExistMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-40`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to HashPasswordMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.HashPasswordMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-41`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to CreateUserFromRequestMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.CreateUserFromRequestMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-42`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SaveUserToDatabaseMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.SaveUserToDatabaseMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-43`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendFormattedUserMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.SendFormattedUserMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-44`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });

@@ -46,7 +46,16 @@ export enum ErrorType {
   SetSearchQueryToLowercaseMiddleware,
   RetreiveUsersByUsernameRegexSearchMiddleware,
   FormatUsersMiddleware,
-  SendFormattedUsersMiddleware
+  SendFormattedUsersMiddleware,
+  UserEmailAlreadyExists,
+  DoesUserEmailExistMiddleware,
+  SetUsernameToLowercaseMiddleware,
+  UsernameAlreadyExists,
+  DoesUsernameAlreadyExistMiddleware,
+  HashPasswordMiddleware,
+  CreateUserFromRequestMiddleware,
+  SaveUserToDatabaseMiddleware,
+  SendFormattedUserMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -124,6 +133,22 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-08`,
           message: "No solo streak found.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.UserEmailAlreadyExists: {
+        return {
+          code: `${ResponseCodes.badRequest}-09`,
+          message: "User email already exists.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.UsernameAlreadyExists: {
+        return {
+          code: `${ResponseCodes.badRequest}-10`,
+          message: "Username already exists.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -395,6 +420,55 @@ export class CustomError extends Error {
       case ErrorType.SendFormattedUsersMiddleware:
         return {
           code: `${ResponseCodes.warning}-37`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DoesUserEmailExistMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-38`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SetUsernameToLowercaseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-39`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DoesUsernameAlreadyExistMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-40`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.HashPasswordMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-41`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateUserFromRequestMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-42`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SaveUserToDatabaseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-43`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendFormattedUserMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-44`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
