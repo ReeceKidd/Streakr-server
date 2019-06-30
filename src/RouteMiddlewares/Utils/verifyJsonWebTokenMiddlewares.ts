@@ -3,11 +3,8 @@ import * as jwt from "jsonwebtoken";
 
 import { jwtSecret } from "../../../secret/jwt-secret";
 import { SupportedRequestHeaders } from "../../Server/headers";
-import { getLocalisedString } from "../../Messages/getLocalisedString";
-import { MessageCategories } from "../../Messages/messageCategories";
-import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { IMinimumUserData } from "../../Models/User";
-import { ResponseCodes } from "../../Server/responseCodes";
+import { CustomError, ErrorType } from "../../customError";
 
 export interface VerifyJsonWebTokenResponseLocals {
   jsonWebToken?: string;
@@ -20,43 +17,19 @@ export const getRetreiveJsonWebTokenMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const requestJsonWebTokenHeader = request.headers[jsonWebTokenHeader];
+    if (!requestJsonWebTokenHeader) {
+      throw new CustomError(ErrorType.MissingAccessTokenHeader);
+    }
     response.locals.jsonWebToken = requestJsonWebTokenHeader;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.RetreiveJsonWebTokenMiddleware, err));
   }
 };
 
 export const retreiveJsonWebTokenMiddleware = getRetreiveJsonWebTokenMiddleware(
   SupportedRequestHeaders.xAccessToken
-);
-
-export const getJsonWebTokenDoesNotExistResponseMiddleware = (
-  jsonWebTokenValidationErrorObject: { auth: boolean; message: string },
-  unauthorizedStatusCode: number
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const {
-      jsonWebToken
-    } = response.locals as VerifyJsonWebTokenResponseLocals;
-    if (!jsonWebToken)
-      return response
-        .status(unauthorizedStatusCode)
-        .send(jsonWebTokenValidationErrorObject);
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedMissingJsonWebTokenMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.missingJsonWebTokenMessage
-);
-
-export const jsonWebTokenDoesNotExistResponseMiddleware = getJsonWebTokenDoesNotExistResponseMiddleware(
-  { auth: false, message: localisedMissingJsonWebTokenMessage },
-  ResponseCodes.unautohorized
 );
 
 export interface DecodedJsonWebToken {
@@ -72,17 +45,14 @@ export const getDecodeJsonWebTokenMiddleware = (
       jsonWebToken
     } = response.locals as VerifyJsonWebTokenResponseLocals;
     try {
-      (response.locals as VerifyJsonWebTokenResponseLocals).decodedJsonWebToken = verify(
-        jsonWebToken,
-        jsonWebTokenSecret
-      );
+      const decodedJsonWebToken = verify(jsonWebToken, jsonWebTokenSecret);
+      response.locals.minimumUserData = decodedJsonWebToken.minimumUserData;
       next();
     } catch (err) {
-      (response.locals as VerifyJsonWebTokenResponseLocals).jsonWebTokenError = err;
-      next();
+      next(new CustomError(ErrorType.VerifyJsonWebTokenError, err));
     }
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.DecodeJsonWebTokenMiddleware, err));
   }
 };
 
@@ -91,56 +61,7 @@ export const decodeJsonWebTokenMiddleware = getDecodeJsonWebTokenMiddleware(
   jwtSecret
 );
 
-export const getJsonWebTokenErrorResponseMiddleware = (
-  unauthorizedErrorMessage: string,
-  unauthorizedStatusCode: number
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const {
-      jsonWebTokenError
-    } = response.locals as VerifyJsonWebTokenResponseLocals;
-    if (jsonWebTokenError) {
-      const jsonWebTokenErrorResponse = {
-        message: unauthorizedErrorMessage,
-        auth: false
-      };
-      return response
-        .status(unauthorizedStatusCode)
-        .send(jsonWebTokenErrorResponse);
-    }
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-const localisedUnauthorizedErrorMessage = getLocalisedString(
-  MessageCategories.failureMessages,
-  FailureMessageKeys.unauthorisedMessage
-);
-export const jsonWebTokenErrorResponseMiddleware = getJsonWebTokenErrorResponseMiddleware(
-  localisedUnauthorizedErrorMessage,
-  ResponseCodes.unautohorized
-);
-
-export const setMinimumUserDataOnResponseLocals = (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    response.locals.minimumUserData =
-      response.locals.decodedJsonWebToken.minimumUserData;
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
 export const verifyJsonWebTokenMiddlewares = [
   retreiveJsonWebTokenMiddleware,
-  jsonWebTokenDoesNotExistResponseMiddleware,
-  decodeJsonWebTokenMiddleware,
-  jsonWebTokenErrorResponseMiddleware,
-  setMinimumUserDataOnResponseLocals
+  decodeJsonWebTokenMiddleware
 ];

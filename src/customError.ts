@@ -55,7 +55,12 @@ export enum ErrorType {
   HashPasswordMiddleware,
   CreateUserFromRequestMiddleware,
   SaveUserToDatabaseMiddleware,
-  SendFormattedUserMiddleware
+  SendFormattedUserMiddleware,
+  RetreiveJsonWebTokenMiddleware,
+  MissingAccessTokenHeader,
+  VerifyJsonWebTokenError,
+  DecodeJsonWebTokenMiddleware,
+  SetMinimumUserDataOnResponseLocals
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -75,6 +80,22 @@ export class CustomError extends Error {
 
   private createCustomErrorData(type: ErrorType) {
     switch (type) {
+      case ErrorType.MissingAccessTokenHeader: {
+        return {
+          code: `${ResponseCodes.unautohorized}-01`,
+          message: "Missing x-access-token header.",
+          httpStatusCode: ResponseCodes.unautohorized
+        };
+      }
+
+      case ErrorType.VerifyJsonWebTokenError: {
+        return {
+          code: `${ResponseCodes.unautohorized}-02`,
+          message: "Verification of JWT failed.",
+          httpStatusCode: ResponseCodes.unautohorized
+        };
+      }
+
       case ErrorType.InvalidTimezone:
         return {
           code: `${ResponseCodes.badRequest}-01`,
@@ -469,6 +490,20 @@ export class CustomError extends Error {
       case ErrorType.SendFormattedUserMiddleware:
         return {
           code: `${ResponseCodes.warning}-44`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveJsonWebTokenMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-45`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DecodeJsonWebTokenMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-46`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
