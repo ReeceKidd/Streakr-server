@@ -9,11 +9,12 @@ import {
   setSearchQueryToLowercaseMiddleware
 } from "./getUsersMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { CustomError, ErrorType } from "../../customError";
 
 describe(`getUsersValidationMiddleware`, () => {
   const mockSearchQuery = "searchQuery";
 
-  test("check that valid request passes", () => {
+  test("valid request passes", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -31,7 +32,7 @@ describe(`getUsersValidationMiddleware`, () => {
     expect(next).toBeCalledWith();
   });
 
-  test("check that correct response is sent when searchQuery is missing", () => {
+  test("sends correct error response when searchQuery is missing", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -53,7 +54,7 @@ describe(`getUsersValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("check that correct response is sent when searchQuery length is too short", () => {
+  test("sends correct response when searchQuery length is too short", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -78,7 +79,7 @@ describe(`getUsersValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test(`check that correct response is sent when searchQuery length is longer than ${maximumSearchQueryLength}`, () => {
+  test(`sends correct response when searchQuery length is longer than ${maximumSearchQueryLength}`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -104,7 +105,7 @@ describe(`getUsersValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test(`check that correct response is sent when searchQuery is not a string`, () => {
+  test(`sends correct response when searchQuery is not a string`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -134,7 +135,7 @@ describe("setSearchQueryToLowerCaseMiddleware", () => {
   const mockSearchQuery = "Search";
   const mockLowerCaseSearchQuery = "search";
 
-  test("it should set userName to lowercase version of itself", () => {
+  test("sets userName to lowercase", () => {
     const request: any = { query: { searchQuery: mockSearchQuery } };
     const response: any = { locals: {} };
     const next = jest.fn();
@@ -146,7 +147,7 @@ describe("setSearchQueryToLowerCaseMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("it should call next with err on failure", () => {
+  test("calls next with SetSearchQueryToLowercaseMiddleware error on middleware failure", () => {
     const request: any = {
       query: {
         searchQuery: {
@@ -162,12 +163,17 @@ describe("setSearchQueryToLowerCaseMiddleware", () => {
     setSearchQueryToLowercaseMiddleware(request, response, next);
 
     expect.assertions(1);
-    expect(next).toBeCalledWith(new Error());
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.SetSearchQueryToLowercaseMiddleware,
+        expect.any(Error)
+      )
+    );
   });
 });
 
 describe("getUsersByUsernameRegexSearchMiddleware", () => {
-  test("that response.locals.users is populated and next is called", async () => {
+  test("sets response.locals.users", async () => {
     const mockSearchQuery = "searchQuery";
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -194,7 +200,7 @@ describe("getUsersByUsernameRegexSearchMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("that next is called with err on failure", async () => {
+  test("calls next with RetreiveUsersByUsernameRegexSearchMiddleware error on middleware failure", async () => {
     const errorMessage = "error";
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -217,12 +223,17 @@ describe("getUsersByUsernameRegexSearchMiddleware", () => {
 
     expect.assertions(2);
     expect(response.locals.users).not.toBeDefined();
-    expect(next).toBeCalledWith(errorMessage);
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.RetreiveUsersByUsernameRegexSearchMiddleware,
+        expect.any(Error)
+      )
+    );
   });
 });
 
 describe("formatUsersMiddleware", () => {
-  test("checks that response.locals.formattedUsers contains a correctly formatted user", () => {
+  test("sets response.locals.formattedUsers", () => {
     expect.assertions(2);
 
     const mockUser = {
@@ -255,7 +266,7 @@ describe("formatUsersMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("checks that errors are passed into the next middleware", () => {
+  test("calls next with SendFormattedUsersMiddleware error on middleware failure", () => {
     expect.assertions(2);
 
     const request: any = {};
@@ -266,7 +277,7 @@ describe("formatUsersMiddleware", () => {
 
     expect(response.locals.formattedUsers).toBe(undefined);
     expect(next).toBeCalledWith(
-      new TypeError(`Cannot read property 'map' of undefined`)
+      new CustomError(ErrorType.SendFormattedUsersMiddleware, expect.any(Error))
     );
   });
 });
@@ -303,7 +314,9 @@ describe("sendUsersMiddleware", () => {
     sendFormattedUsersMiddleware(request, response, next);
 
     expect.assertions(1);
-    expect(next).toBeCalledWith(new Error(ERROR_MESSAGE));
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.SendFormattedUsersMiddleware, expect.any(Error))
+    );
   });
 });
 

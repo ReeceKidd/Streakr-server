@@ -391,6 +391,37 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
+  test(`creates correct error when type is set to SetSearchQueryToLowercaseMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.SetSearchQueryToLowercaseMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-34`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to RetreiveUsersByUsernameRegexSearchMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.RetreiveUsersByUsernameRegexSearchMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-35`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to FormatUsersMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.FormatUsersMiddleware);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-36`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
   test(`creates correct error when type is set to InternalServerError`, () => {
     expect.assertions(3);
     const customError = new CustomError(ErrorType.InternalServerError);

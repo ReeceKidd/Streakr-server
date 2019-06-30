@@ -5,6 +5,7 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { userModel, User } from "../../Models/User";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { CustomError, ErrorType } from "../../customError";
 
 export const minimumSeachQueryLength = 1;
 export const maximumSearchQueryLength = 64;
@@ -38,7 +39,7 @@ export const setSearchQueryToLowercaseMiddleware = (
     response.locals.lowerCaseSearchQuery = searchQuery.toLowerCase();
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SetSearchQueryToLowercaseMiddleware, err));
   }
 };
 
@@ -52,7 +53,12 @@ export const getRetreiveUsersByUsernameRegexSearchMiddleware = (
     });
     next();
   } catch (err) {
-    next(err);
+    next(
+      new CustomError(
+        ErrorType.RetreiveUsersByUsernameRegexSearchMiddleware,
+        err
+      )
+    );
   }
 };
 
@@ -75,7 +81,7 @@ export const formatUsersMiddleware = (
     });
     next();
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.FormatUsersMiddleware, err));
   }
 };
 
@@ -90,7 +96,7 @@ export const sendFormattedUsersMiddleware = (
       .status(ResponseCodes.success)
       .send({ users: formattedUsers });
   } catch (err) {
-    next(err);
+    next(new CustomError(ErrorType.SendFormattedUsersMiddleware, err));
   }
 };
 
