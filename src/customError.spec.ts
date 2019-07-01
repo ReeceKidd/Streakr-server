@@ -556,6 +556,17 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
+  test(`creates correct error when type is set to JsonWebTokenVerificationSuccessfulMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.JsonWebTokenVerificationSuccessfulMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-47`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
   test(`creates correct error when type is set to InternalServerError`, () => {
     expect.assertions(3);
     const customError = new CustomError(ErrorType.InternalServerError);

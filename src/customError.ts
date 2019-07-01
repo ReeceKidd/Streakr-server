@@ -60,7 +60,8 @@ export enum ErrorType {
   MissingAccessTokenHeader,
   VerifyJsonWebTokenError,
   DecodeJsonWebTokenMiddleware,
-  SetMinimumUserDataOnResponseLocals
+  SetMinimumUserDataOnResponseLocals,
+  JsonWebTokenVerificationSuccessfulMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -504,6 +505,13 @@ export class CustomError extends Error {
       case ErrorType.DecodeJsonWebTokenMiddleware:
         return {
           code: `${ResponseCodes.warning}-46`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.JsonWebTokenVerificationSuccessfulMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-47`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
