@@ -72,19 +72,10 @@ describe("resetIncompleteSoloStreaks", () => {
     await soloStreakModel.findByIdAndUpdate(soloStreakId, {
       currentStreak: { startDate: new Date() }
     });
-    const incompleteSoloStreaks = await getIncompleteSoloStreaks(
-      soloStreakModel,
-      timezone
-    );
-    const defaultCurrentStreak = {
-      startDate: undefined,
-      numberOfDaysInARow: 0
-    };
+    const incompleteSoloStreaks = await getIncompleteSoloStreaks(timezone);
     const endDate = new Date();
     const resetIncompleteSoloStreaksPromise = await resetIncompleteSoloStreaks(
-      soloStreakModel,
       incompleteSoloStreaks,
-      defaultCurrentStreak,
       endDate
     );
     await Promise.all(resetIncompleteSoloStreaksPromise);

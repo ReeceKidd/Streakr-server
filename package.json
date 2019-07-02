@@ -10,7 +10,7 @@
     "dev": "nodemon --exec ts-node -- ./src/server.ts",
     "lint": "tslint --project tsconfig.json",
     "unit-tests": "jest --config=./jest.unit.config.js --coverage",
-    "intergration-tests": "jest --config=./jest.intergration.config.js --runInBand --forceExit",
+    "intergration-tests": "jest --config=./jest.intergration.config.js --runInBand --detectOpenHandles",
     "test": "npm run unit-tests && npm run intergration-tests",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
   },

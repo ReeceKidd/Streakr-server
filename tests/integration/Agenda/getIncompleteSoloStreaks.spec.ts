@@ -1,8 +1,4 @@
-import {
-  soloStreakModel,
-  soloStreakSchema,
-  SoloStreak
-} from "../../../src/Models/SoloStreak";
+import { soloStreakModel, SoloStreak } from "../../../src/Models/SoloStreak";
 import request from "supertest";
 
 import server from "../../../src/app";
@@ -31,7 +27,7 @@ describe("getIncompleteSoloStreaks", () => {
   const description = "I will fast until 1pm everyday";
   const timezone = "Europe/London";
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
@@ -57,16 +53,14 @@ describe("getIncompleteSoloStreaks", () => {
       .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: timezone });
     soloStreakId = createSoloStreakResponse.body._id;
-    done();
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     await userModel.deleteOne({ email: registeredEmail });
     await soloStreakModel.deleteOne({ _id: soloStreakId });
-    done();
   });
 
-  test("that getIncompleteSoloStreaks returns solo streaks that were not completed today", async done => {
+  test("that getIncompleteSoloStreaks returns solo streaks that were not completed today", async () => {
     expect.assertions(1);
     /*
       Have to force soloStreak to have new date because streaks without a new date aren't
@@ -76,13 +70,15 @@ describe("getIncompleteSoloStreaks", () => {
       currentStreak: { startDate: new Date() }
     });
     const incompleteSoloStreaks = (await getIncompleteSoloStreaks(
-      soloStreakModel,
       timezone
     )) as any;
+    console.log(
+      `Number of incomplete solo streaks: ${incompleteSoloStreaks.length}`
+    );
     const incompleteStreak = incompleteSoloStreaks.find(
       (streak: SoloStreak) => (streak.streakName = name)
     );
+    console.log(incompleteStreak);
     expect(incompleteStreak.name).toEqual(name);
-    done();
   });
 });

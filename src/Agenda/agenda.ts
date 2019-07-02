@@ -1,6 +1,5 @@
 import Agenda from "agenda";
-import { soloStreakModel } from "../Models/SoloStreak";
-import { resetSoloStreaksNotCompletedTodayByTimezone } from "./resetSoloStreaksNotCompletedTodayByTimezone";
+import * as moment from "moment-timezone";
 import { getIncompleteSoloStreaks } from "./getIncompleteSoloStreaks";
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
 import { getServiceConfig } from "../getServiceConfig";
@@ -33,18 +32,10 @@ agenda.define(
   AgendaJobs.soloStreakCompleteForTimezoneTracker,
   async (job, done) => {
     const { timezone } = job.attrs.data;
-    const defaultCurrentStreak = {
-      startDate: undefined,
-      numberOfDaysInARow: 0
-    };
-    const endDate = new Date();
-    await resetSoloStreaksNotCompletedTodayByTimezone(
-      soloStreakModel,
-      getIncompleteSoloStreaks,
-      resetIncompleteSoloStreaks,
-      timezone,
-      defaultCurrentStreak,
-      endDate
+    const incompleteSoloStreaks = await getIncompleteSoloStreaks(timezone);
+    await resetIncompleteSoloStreaks(
+      incompleteSoloStreaks,
+      moment.tz(timezone).toDate()
     );
     done();
   }
