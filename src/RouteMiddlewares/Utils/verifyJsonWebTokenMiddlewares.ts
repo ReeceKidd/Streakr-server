@@ -49,9 +49,11 @@ export const getDecodeJsonWebTokenMiddleware = (
       response.locals.minimumUserData = decodedJsonWebToken.minimumUserData;
       next();
     } catch (err) {
+      console.log(err);
       next(new CustomError(ErrorType.VerifyJsonWebTokenError, err));
     }
   } catch (err) {
+    console.log("Decode error");
     next(new CustomError(ErrorType.DecodeJsonWebTokenMiddleware, err));
   }
 };

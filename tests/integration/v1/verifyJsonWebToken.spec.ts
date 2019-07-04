@@ -66,25 +66,28 @@ describe(verifyJsonWebTokenRoute, () => {
     expect(response.type).toEqual("application/json");
   });
 
-  test(`that request fails when json web token is out of date.`, async () => {
-    const outOfDateToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtaW5pbXVtVXNlckRhdGEiOnsiX2lkIjoiNWMzNTExNjA1OWY3YmExOWU0ZTI0OGE5IiwidXNlck5hbWUiOiJ0ZXN0ZXIifSwiaWF0IjoxNTQ3MDE0NTM5LCJleHAiOjE1NDc2MTkzMzl9.tGUQo9W8SOgktnaVvGQn6i33wUmUQPbnUDDTllIzPLw";
-    expect.assertions(3);
-    const response = await request(server)
-      .post(verifyJsonWebTokenRoute)
-      .set({ [SupportedRequestHeaders.xAccessToken]: outOfDateToken });
-    expect(response.status).toEqual(ResponseCodes.unautohorized);
-    expect(response.type).toEqual("application/json");
-  });
-
   test(`that request fails when json web token is missing from header`, async () => {
-    expect.assertions(4);
+    expect.assertions(5);
     const response = await request(server).post(verifyJsonWebTokenRoute);
     expect(response.status).toEqual(ResponseCodes.unautohorized);
-    console.log(response.body);
     expect(response.body.code).toBe("401-01");
     expect(response.body.httpStatusCode).toBe(401);
     expect(response.body.message).toBe("Missing x-access-token header.");
+    expect(response.type).toEqual("application/json");
+  });
+
+  test(`that request fails when json web token is out of date.`, async () => {
+    expect.assertions(5);
+    const outOfDateToken =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtaW5pbXVtVXNlckRhdGEiOnsiX2lkIjoiNWMzNTExNjA1OWY3YmExOWU0ZTI0OGE5IiwidXNlck5hbWUiOiJ0ZXN0ZXIifSwiaWF0IjoxNTQ3MDE0NTM5LCJleHAiOjE1NDc2MTkzMzl9.tGUQo9W8SOgktnaVvGQn6i33wUmUQPbnUDDTllIzPLw";
+    const response = await request(server)
+      .post(verifyJsonWebTokenRoute)
+      .set({ [SupportedRequestHeaders.xAccessToken]: outOfDateToken });
+    expect(response.body.code).toBe("401-02");
+    expect(response.body.httpStatusCode).toBe(401);
+    console.log(response);
+    expect(response.body.message).toBe("Missing x-access-token header.");
+    expect(response.status).toEqual(ResponseCodes.unautohorized);
     expect(response.type).toEqual("application/json");
   });
 });

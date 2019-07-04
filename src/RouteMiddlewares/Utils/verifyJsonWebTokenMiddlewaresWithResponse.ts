@@ -40,6 +40,6 @@ export const jsonWebTokenVerificationSuccessfulMiddleware = getJsonWebTokenVerif
 );
 
 export const verifyJsonWebTokenMiddlewaresWithResponse = [
-  verifyJsonWebTokenMiddlewares,
+  ...verifyJsonWebTokenMiddlewares,
   jsonWebTokenVerificationSuccessfulMiddleware
 ];

@@ -9,11 +9,10 @@ import {
   getDoesUsernameExistMiddleware,
   hashPasswordMiddleware,
   getHashPasswordMiddleware,
-  createUserFromRequestMiddleware,
-  getCreateUserFromRequestMiddleware,
   saveUserToDatabaseMiddleware,
   sendFormattedUserMiddleware,
-  setUsernameToLowercaseMiddleware
+  setUsernameToLowercaseMiddleware,
+  getSaveUserToDatabaseMiddleware
 } from "./registerUserMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -411,13 +410,17 @@ describe(`hashPasswordMiddleware`, () => {
   });
 });
 
-describe(`createUserFromRequestMiddleware`, () => {
-  test("sets response.locals.newUser", async () => {
-    expect.assertions(1);
+describe(`saveUserToDatabaseMiddleware`, () => {
+  test("sets response.locals.savedUser", async () => {
+    expect.assertions(2);
 
     const hashedPassword = "12$4354";
     const userName = "user";
     const email = "user@gmail.com";
+
+    const save = jest.fn(() => {
+      return Promise.resolve(true);
+    });
 
     class User {
       userName: string;
@@ -429,6 +432,10 @@ describe(`createUserFromRequestMiddleware`, () => {
         this.email = email;
         this.password = password;
       }
+
+      save() {
+        return save();
+      }
     }
 
     const response: any = {
@@ -437,72 +444,26 @@ describe(`createUserFromRequestMiddleware`, () => {
     const request: any = { body: { email } };
     const next = jest.fn();
 
-    const middleware = getCreateUserFromRequestMiddleware(User as any);
+    const middleware = getSaveUserToDatabaseMiddleware(User as any);
 
     await middleware(request, response, next);
 
-    const newUser = new User({ userName, email, password: hashedPassword });
-    expect(response.locals.newUser).toEqual(newUser);
+    console.log(response.locals);
+
+    expect(response.locals.savedUser).toBeDefined();
+    expect(save).toBeCalledWith();
   });
 
-  test("calls next with CreateUserFromRequestMiddleware on middleware failure", () => {
+  test("calls next with SaveUserToDatabaseMiddleware error on middleware failure", () => {
     const user = { userName: "userName", email: "username@gmail.com" };
 
     const response: any = { locals: { user } };
     const request: any = { body: {} };
     const next = jest.fn();
 
-    const middleware = getCreateUserFromRequestMiddleware({} as any);
+    const middleware = getSaveUserToDatabaseMiddleware({} as any);
 
     middleware(request, response, next);
-
-    expect.assertions(1);
-    expect(next).toBeCalledWith(
-      new CustomError(
-        ErrorType.CreateUserFromRequestMiddleware,
-        expect.any(Error)
-      )
-    );
-  });
-});
-
-describe(`saveUserToDatabaseMiddleware`, () => {
-  const ERROR_MESSAGE = "error";
-
-  test("sets response.locals.savedUser", async () => {
-    expect.assertions(3);
-
-    const save = jest.fn(() => {
-      return Promise.resolve(true);
-    });
-    const mockUser = {
-      userName: "User",
-      email: "user@gmail.com",
-      password: "password",
-      save
-    };
-
-    const response: any = { locals: { newUser: mockUser } };
-    const request: any = {};
-    const next = jest.fn();
-
-    await saveUserToDatabaseMiddleware(request, response, next);
-
-    expect(save).toBeCalledWith();
-    expect(response.locals.savedUser).toBeDefined();
-    expect(next).toBeCalledWith();
-  });
-
-  test("calls next with SaveUserToDatabaseMiddleware error on middleware failure.", async () => {
-    const save = jest.fn(() => {
-      return Promise.reject(ERROR_MESSAGE);
-    });
-
-    const request: any = {};
-    const response: any = { locals: { newUser: { save } } };
-    const next = jest.fn();
-
-    await saveUserToDatabaseMiddleware(request, response, next);
 
     expect.assertions(1);
     expect(next).toBeCalledWith(
@@ -572,8 +533,8 @@ describe(`sendFormattedUserMiddleware`, () => {
 
 describe(`verifyJsonWebTokenMiddlewaresWithResponse`, () => {
   test("that verfiyJsonWebToken middlewares are defined in the correct order", () => {
-    expect.assertions(9);
-    expect(registerUserMiddlewares.length).toEqual(8);
+    expect.assertions(8);
+    expect(registerUserMiddlewares.length).toEqual(7);
     expect(registerUserMiddlewares[0]).toBe(
       userRegistrationValidationMiddleware
     );
@@ -581,8 +542,7 @@ describe(`verifyJsonWebTokenMiddlewaresWithResponse`, () => {
     expect(registerUserMiddlewares[2]).toBe(setUsernameToLowercaseMiddleware);
     expect(registerUserMiddlewares[3]).toBe(doesUsernameExistMiddleware);
     expect(registerUserMiddlewares[4]).toBe(hashPasswordMiddleware);
-    expect(registerUserMiddlewares[5]).toBe(createUserFromRequestMiddleware);
-    expect(registerUserMiddlewares[6]).toBe(saveUserToDatabaseMiddleware);
-    expect(registerUserMiddlewares[7]).toBe(sendFormattedUserMiddleware);
+    expect(registerUserMiddlewares[5]).toBe(saveUserToDatabaseMiddleware);
+    expect(registerUserMiddlewares[6]).toBe(sendFormattedUserMiddleware);
   });
 });

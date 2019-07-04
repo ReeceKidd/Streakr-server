@@ -53,7 +53,6 @@ export enum ErrorType {
   UsernameAlreadyExists,
   DoesUsernameAlreadyExistMiddleware,
   HashPasswordMiddleware,
-  CreateUserFromRequestMiddleware,
   SaveUserToDatabaseMiddleware,
   SendFormattedUserMiddleware,
   RetreiveJsonWebTokenMiddleware,
@@ -61,7 +60,9 @@ export enum ErrorType {
   VerifyJsonWebTokenError,
   DecodeJsonWebTokenMiddleware,
   SetMinimumUserDataOnResponseLocals,
-  JsonWebTokenVerificationSuccessfulMiddleware
+  JsonWebTokenVerificationSuccessfulMiddleware,
+  RegisterUserWithCognitoMiddleware,
+  CognitoSignUpError
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -474,44 +475,51 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.CreateUserFromRequestMiddleware:
+      case ErrorType.SaveUserToDatabaseMiddleware:
         return {
           code: `${ResponseCodes.warning}-42`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SaveUserToDatabaseMiddleware:
+      case ErrorType.SendFormattedUserMiddleware:
         return {
           code: `${ResponseCodes.warning}-43`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SendFormattedUserMiddleware:
+      case ErrorType.RetreiveJsonWebTokenMiddleware:
         return {
           code: `${ResponseCodes.warning}-44`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.RetreiveJsonWebTokenMiddleware:
+      case ErrorType.DecodeJsonWebTokenMiddleware:
         return {
           code: `${ResponseCodes.warning}-45`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.DecodeJsonWebTokenMiddleware:
+      case ErrorType.JsonWebTokenVerificationSuccessfulMiddleware:
         return {
           code: `${ResponseCodes.warning}-46`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.JsonWebTokenVerificationSuccessfulMiddleware:
+      case ErrorType.RegisterUserWithCognitoMiddleware:
         return {
           code: `${ResponseCodes.warning}-47`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CognitoSignUpError:
+        return {
+          code: `${ResponseCodes.warning}-48`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

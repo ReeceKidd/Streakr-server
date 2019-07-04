@@ -2,6 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
 import { hash } from "bcryptjs";
 import { Model } from "mongoose";
+import * as nodeFetch from "node-fetch";
+// @ts-ignore
+global.fetch = nodeFetch;
+import {
+  CognitoUserPool,
+  CognitoUserAttribute,
+  CognitoUser
+} from "amazon-cognito-identity-js";
 
 import { userModel, User } from "../../Models/User";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
@@ -103,7 +111,7 @@ export const hashPasswordMiddleware = getHashPasswordMiddleware(
   saltRounds
 );
 
-export const getCreateUserFromRequestMiddleware = (user: Model<User>) => (
+export const getSaveUserToDatabaseMiddleware = (user: Model<User>) => async (
   request: Request,
   response: Response,
   next: NextFunction
@@ -111,32 +119,66 @@ export const getCreateUserFromRequestMiddleware = (user: Model<User>) => (
   try {
     const { hashedPassword, lowerCaseUserName } = response.locals;
     const { email } = request.body;
-    response.locals.newUser = new user({
+    const newUser = new user({
       userName: lowerCaseUserName,
       email,
       password: hashedPassword
     });
+    response.locals.savedUser = await newUser.save();
     next();
   } catch (err) {
-    next(new CustomError(ErrorType.CreateUserFromRequestMiddleware, err));
+    next(new CustomError(ErrorType.SaveUserToDatabaseMiddleware, err));
   }
 };
 
-export const createUserFromRequestMiddleware = getCreateUserFromRequestMiddleware(
+export const saveUserToDatabaseMiddleware = getSaveUserToDatabaseMiddleware(
   userModel
 );
 
-export const saveUserToDatabaseMiddleware = async (
+export const registerUserWithCognitoMiddleware = async (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
-    const { newUser } = response.locals;
-    response.locals.savedUser = await newUser.save();
-    next();
+    const { email, userName, password } = request.body;
+    // Need to make these environment variables.
+    const poolData = {
+      UserPoolId: "eu-west-1_S0HecFXKe",
+      ClientId: "AKIAI6YWNH5LCXS223FA"
+    };
+
+    const userPool = new CognitoUserPool(poolData);
+
+    const attributeList = [];
+
+    const dataEmail = {
+      Name: "email",
+      Value: email
+    };
+
+    const attributeEmail = new CognitoUserAttribute(dataEmail);
+
+    attributeList.push(attributeEmail);
+
+    userPool.signUp(userName, password, attributeList, [], function(
+      err,
+      result
+    ) {
+      if (err) {
+        console.log(err);
+        next(new CustomError(ErrorType.CognitoSignUpError, err));
+      } else {
+        const cognitoUser = result && result.user;
+        response.locals.cognitoUser = cognitoUser;
+        console.log(cognitoUser);
+        next();
+      }
+    });
   } catch (err) {
-    next(new CustomError(ErrorType.SaveUserToDatabaseMiddleware, err));
+    console.log(err);
+    if (err instanceof CustomError) next(err);
+    next(new CustomError(ErrorType.RegisterUserWithCognitoMiddleware, err));
   }
 };
 
@@ -160,7 +202,7 @@ export const registerUserMiddlewares = [
   setUsernameToLowercaseMiddleware,
   doesUsernameExistMiddleware,
   hashPasswordMiddleware,
-  createUserFromRequestMiddleware,
   saveUserToDatabaseMiddleware,
+  registerUserWithCognitoMiddleware,
   sendFormattedUserMiddleware
 ];

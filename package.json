@@ -18,10 +18,13 @@
   "author": "Reece Kidd",
   "license": "ISC",
   "dependencies": {
+    "@types/amazon-cognito-auth-js": "^1.2.1",
     "@types/cors": "^2.8.5",
     "@types/dotenv": "^6.1.1",
+    "@types/node-fetch": "^2.3.7",
     "@types/yargs": "^13.0.0",
     "agenda": "^2.0.2",
+    "amazon-cognito-identity-js": "^3.0.13",
     "aws-sdk": "^2.471.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
@@ -33,6 +36,7 @@
     "jsonwebtoken": "^8.4.0",
     "moment-timezone": "^0.5.25",
     "mongoose": "^5.5.12",
+    "node-fetch": "^2.6.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "winston": "^3.1.0"

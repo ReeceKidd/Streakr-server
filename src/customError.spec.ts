@@ -507,22 +507,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to CreateUserFromRequestMiddleware`, () => {
-    expect.assertions(3);
-    const customError = new CustomError(
-      ErrorType.CreateUserFromRequestMiddleware
-    );
-    const { code, message, httpStatusCode } = customError;
-    expect(code).toBe(`500-42`);
-    expect(message).toBe("Internal Server Error.");
-    expect(httpStatusCode).toBe(500);
-  });
-
   test(`creates correct error when type is set to SaveUserToDatabaseMiddleware`, () => {
     expect.assertions(3);
     const customError = new CustomError(ErrorType.SaveUserToDatabaseMiddleware);
     const { code, message, httpStatusCode } = customError;
-    expect(code).toBe(`500-43`);
+    expect(code).toBe(`500-42`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
@@ -531,7 +520,7 @@ describe("customError", () => {
     expect.assertions(3);
     const customError = new CustomError(ErrorType.SendFormattedUserMiddleware);
     const { code, message, httpStatusCode } = customError;
-    expect(code).toBe(`500-44`);
+    expect(code).toBe(`500-43`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
@@ -542,7 +531,7 @@ describe("customError", () => {
       ErrorType.RetreiveJsonWebTokenMiddleware
     );
     const { code, message, httpStatusCode } = customError;
-    expect(code).toBe(`500-45`);
+    expect(code).toBe(`500-44`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
@@ -551,7 +540,7 @@ describe("customError", () => {
     expect.assertions(3);
     const customError = new CustomError(ErrorType.DecodeJsonWebTokenMiddleware);
     const { code, message, httpStatusCode } = customError;
-    expect(code).toBe(`500-46`);
+    expect(code).toBe(`500-45`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
@@ -560,6 +549,17 @@ describe("customError", () => {
     expect.assertions(3);
     const customError = new CustomError(
       ErrorType.JsonWebTokenVerificationSuccessfulMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`500-46`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to RegisterUserWithCognitoMiddleware`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(
+      ErrorType.RegisterUserWithCognitoMiddleware
     );
     const { code, message, httpStatusCode } = customError;
     expect(code).toBe(`500-47`);
