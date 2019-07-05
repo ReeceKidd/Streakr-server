@@ -145,7 +145,7 @@ export const registerUserWithCognitoMiddleware = async (
     // Need to make these environment variables.
     const poolData = {
       UserPoolId: "eu-west-1_S0HecFXKe",
-      ClientId: "AKIAI6YWNH5LCXS223FA"
+      ClientId: "4sipjiblpt7229io7ce389401e"
     };
 
     const userPool = new CognitoUserPool(poolData);
