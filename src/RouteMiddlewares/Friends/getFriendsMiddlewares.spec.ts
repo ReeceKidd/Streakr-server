@@ -279,7 +279,7 @@ describe(`formatFriendsMiddleware`, () => {
 
     const mockFriend = {
       _id: "1234",
-      userName: "test",
+      username: "test",
       email: "test@test.com",
       password: "12345678",
       role: "Admin",
@@ -293,7 +293,7 @@ describe(`formatFriendsMiddleware`, () => {
     formatFriendsMiddleware(request, response, next);
 
     expect(response.locals.formattedFriends[0]).toEqual({
-      userName: mockFriend.userName
+      username: mockFriend.username
     });
     expect(next).toBeCalledWith();
   });

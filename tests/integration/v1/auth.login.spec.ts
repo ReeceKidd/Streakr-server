@@ -11,7 +11,7 @@ const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 
 const registeredEmail = "register@gmail.com";
-const registeredUserName = "registeredUser";
+const registeredUsername = "registeredUser";
 const registeredPassword = "12345678";
 
 jest.setTimeout(120000);
@@ -21,7 +21,7 @@ describe(loginRoute, () => {
     await request(server)
       .post(registrationRoute)
       .send({
-        userName: registeredUserName,
+        username: registeredUsername,
         email: registeredEmail,
         password: registeredPassword
       });

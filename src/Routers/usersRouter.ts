@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { getUsersMiddlewares } from "../RouteMiddlewares/User/getUsersMiddlewares";
-import { verifyJsonWebTokenMiddlewares } from "../RouteMiddlewares/Utils/verifyJsonWebTokenMiddlewares";
 import { addFriendMiddlewares } from "../RouteMiddlewares/Friends/addFriendMiddlewares";
 import { getFriendsMiddlewares } from "../RouteMiddlewares/Friends/getFriendsMiddlewares";
 import { registerUserMiddlewares } from "../RouteMiddlewares/User/registerUserMiddlewares";
@@ -8,30 +7,23 @@ import { registerUserMiddlewares } from "../RouteMiddlewares/User/registerUserMi
 export const userId = "userId";
 
 export enum UserProperties {
-    friends = "friends"
+  friends = "friends"
 }
 
 const usersRouter = Router();
 
-usersRouter.get(
-    "/",
-    ...verifyJsonWebTokenMiddlewares,
-    ...getUsersMiddlewares
-);
+usersRouter.get("/", ...getUsersMiddlewares);
 
-usersRouter.post(
-    `/`,
-    ...registerUserMiddlewares
-);
+usersRouter.post(`/`, ...registerUserMiddlewares);
 
 usersRouter.get(
-    `/:${userId}/${UserProperties.friends}`,
-    ...verifyJsonWebTokenMiddlewares,
-    ...getFriendsMiddlewares);
+  `/:${userId}/${UserProperties.friends}`,
+  ...getFriendsMiddlewares
+);
 
 usersRouter.put(
-    `/:${userId}/${UserProperties.friends}`,
-    ...verifyJsonWebTokenMiddlewares,
-    ...addFriendMiddlewares);
+  `/:${userId}/${UserProperties.friends}`,
+  ...addFriendMiddlewares
+);
 
 export default usersRouter;

@@ -9,11 +9,11 @@ import { ResponseCodes } from "../../../src/Server/responseCodes";
 
 const registeredEmail = "search-user@gmail.com";
 const registeredPassword = "12345678";
-const registeredUserName = "search-user";
+const registeredUsername = "search-user";
 
 const searchableUserEmail = "other-user@gmail.com";
 const searchableUserPassword = "12345678";
-const searchableUserUserName = "other-user";
+const searchableUserUsername = "other-user";
 
 const searchQueryKey = "searchQuery";
 
@@ -29,7 +29,7 @@ describe("/users", () => {
     await request(server)
       .post(registrationRoute)
       .send({
-        userName: registeredUserName,
+        username: registeredUsername,
         email: registeredEmail,
         password: registeredPassword
       });
@@ -45,7 +45,7 @@ describe("/users", () => {
     await request(server)
       .post(registrationRoute)
       .send({
-        userName: searchableUserUserName,
+        username: searchableUserUsername,
         email: searchableUserEmail,
         password: searchableUserPassword
       });
@@ -60,7 +60,7 @@ describe("/users", () => {
 
   test(`that request returns searchAbleUser when full searchTerm is uaed`, async done => {
     expect.assertions(10);
-    const getUsersByRegexSearchRouteWithSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${searchableUserUserName}`;
+    const getUsersByRegexSearchRouteWithSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${searchableUserUsername}`;
     const response = await request(server)
       .get(getUsersByRegexSearchRouteWithSearchQueryRoute)
       .set({ "x-access-token": jsonWebToken });
@@ -71,7 +71,7 @@ describe("/users", () => {
     expect(users[0]).toHaveProperty("streaks");
     expect(users[0]).toHaveProperty("role");
     expect(users[0]).toHaveProperty("_id");
-    expect(users[0]).toHaveProperty("userName");
+    expect(users[0]).toHaveProperty("username");
     expect(users[0]).toHaveProperty("email");
     expect(users[0]).toHaveProperty("createdAt");
     expect(users[0]).toHaveProperty("updatedAt");
@@ -80,7 +80,7 @@ describe("/users", () => {
 
   test("that request returns searchAble user when partial searchTerm is used", async done => {
     expect.assertions(10);
-    const partialSearchQuery = `${searchableUserUserName[0]}${searchableUserUserName[1]}${searchableUserUserName[2]}`;
+    const partialSearchQuery = `${searchableUserUsername[0]}${searchableUserUsername[1]}${searchableUserUsername[2]}`;
     const getUsersByRegexSearchWithPartialSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${partialSearchQuery}`;
     const response = await request(server)
       .get(getUsersByRegexSearchWithPartialSearchQueryRoute)
@@ -92,7 +92,7 @@ describe("/users", () => {
     expect(users[0]).toHaveProperty("streaks");
     expect(users[0]).toHaveProperty("role");
     expect(users[0]).toHaveProperty("_id");
-    expect(users[0]).toHaveProperty("userName");
+    expect(users[0]).toHaveProperty("username");
     expect(users[0]).toHaveProperty("email");
     expect(users[0]).toHaveProperty("createdAt");
     expect(users[0]).toHaveProperty("updatedAt");

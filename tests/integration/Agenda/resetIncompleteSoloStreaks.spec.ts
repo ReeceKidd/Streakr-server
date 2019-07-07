@@ -10,7 +10,7 @@ import { userModel } from "../../../src/Models/User";
 import { getIncompleteSoloStreaks } from "../../../src/Agenda/getIncompleteSoloStreaks";
 import { resetIncompleteSoloStreaks } from "../../../src/Agenda/resetIncompleteSoloStreaks";
 
-const registeredUserName = "resetIncompleteSoloStreaksUsername";
+const registeredUsername = "resetIncompleteSoloStreaksUsername";
 const registeredEmail = "resetIncompleteSoloStreaks@gmail.com";
 const registeredPassword = "resetSoloStreaksPassword";
 
@@ -32,7 +32,7 @@ describe("resetIncompleteSoloStreaks", () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
-        userName: registeredUserName,
+        username: registeredUsername,
         email: registeredEmail,
         password: registeredPassword
       });

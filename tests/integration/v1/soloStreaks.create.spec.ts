@@ -13,7 +13,7 @@ import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
 const registeredEmail = "create-solo-streak-user@gmail.com";
 const registeredPassword = "12345678";
-const registeredUserName = "create-solo-streak-user";
+const registeredUsername = "create-solo-streak-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
@@ -34,7 +34,7 @@ describe(createSoloStreakRoute, () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
-        userName: registeredUserName,
+        username: registeredUsername,
         email: registeredEmail,
         password: registeredPassword
       });

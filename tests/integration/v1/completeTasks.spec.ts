@@ -13,7 +13,7 @@ import { ResponseCodes } from "../../../src/Server/responseCodes";
 
 const registeredEmail = "create-complete-tasks-user@gmail.com";
 const registeredPassword = "12345678";
-const registeredUserName = "create-complete-tasks-user";
+const registeredUsername = "create-complete-tasks-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
@@ -36,7 +36,7 @@ describe(createSoloStreakRoute, () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
-        userName: registeredUserName,
+        username: registeredUsername,
         email: registeredEmail,
         password: registeredPassword
       });

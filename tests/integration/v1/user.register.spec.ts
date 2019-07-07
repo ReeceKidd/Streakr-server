@@ -11,7 +11,7 @@ const userRegistationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 jest.setTimeout(120000);
 
 describe(userRegistationRoute, () => {
-  const userName = "tester1";
+  const username = "tester1";
   const email = "tester1@gmail.com";
   const password = "12345678";
 
@@ -25,7 +25,7 @@ describe(userRegistationRoute, () => {
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
-        userName,
+        username,
         email,
         password
       });
@@ -35,7 +35,7 @@ describe(userRegistationRoute, () => {
     expect(response.body).toHaveProperty("role");
     expect(response.body).toHaveProperty("_id");
     expect(response.body).toHaveProperty("email");
-    expect(response.body).toHaveProperty("userName");
+    expect(response.body).toHaveProperty("username");
     expect(response.body).toHaveProperty("createdAt");
     expect(response.body).toHaveProperty("updatedAt");
     done();
@@ -47,12 +47,12 @@ describe(userRegistationRoute, () => {
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");
     expect(response.body.message).toEqual(
-      'child "userName" fails because ["userName" is required]'
+      'child "username" fails because ["username" is required]'
     );
     done();
   });
 
-  test("fails because userName is missing from request", async done => {
+  test("fails because username is missing from request", async done => {
     expect.assertions(4);
 
     const response = await request(server)
@@ -65,18 +65,18 @@ describe(userRegistationRoute, () => {
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");
     expect(response.body.message).toEqual(
-      'child "userName" fails because ["userName" is required]'
+      'child "username" fails because ["username" is required]'
     );
     done();
   });
 
-  test("fails because userName already exists", async done => {
+  test("fails because username already exists", async done => {
     expect.assertions(4);
 
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
-        userName: "tester1",
+        username: "tester1",
         email: "tester001@gmail.com",
         password: "12345678"
       });
@@ -84,18 +84,18 @@ describe(userRegistationRoute, () => {
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");
     expect(response.body.message).toEqual(
-      `User with userName: 'tester1' already exists`
+      `User with username: 'tester1' already exists`
     );
     done();
   });
 
-  test("fails because userName must be a string", async done => {
+  test("fails because username must be a string", async done => {
     expect.assertions(4);
 
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
-        userName: 1234567,
+        username: 1234567,
         email: "tester001@gmail.com",
         password: "12345678"
       });
@@ -103,7 +103,7 @@ describe(userRegistationRoute, () => {
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");
     expect(response.body.message).toEqual(
-      `child \"userName\" fails because [\"userName\" must be a string]`
+      `child \"username\" fails because [\"username\" must be a string]`
     );
     done();
   });
@@ -113,7 +113,7 @@ describe(userRegistationRoute, () => {
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
-        userName: "tester1",
+        username: "tester1",
         password: "12345678"
       });
     expect(response.status).toEqual(ResponseCodes.unprocessableEntity);
@@ -131,7 +131,7 @@ describe(userRegistationRoute, () => {
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
-        userName: "tester01",
+        username: "tester01",
         email: "tester1@gmail.com",
         password: "12345678"
       });
@@ -150,7 +150,7 @@ describe(userRegistationRoute, () => {
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
-        userName: "tester01",
+        username: "tester01",
         email: "invalid email",
         password: "12345678"
       });
@@ -168,7 +168,7 @@ describe(userRegistationRoute, () => {
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
-        userName: "tester1",
+        username: "tester1",
         email: "tester1@gmail.com"
       });
     expect(response.status).toEqual(ResponseCodes.unprocessableEntity);
@@ -185,7 +185,7 @@ describe(userRegistationRoute, () => {
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
-        userName: "tester1",
+        username: "tester1",
         email: "tester1@gmail.com",
         password: "1234"
       });
@@ -203,7 +203,7 @@ describe(userRegistationRoute, () => {
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
-        userName: "tester1",
+        username: "tester1",
         email: "tester1@gmail.com",
         password: 123456
       });

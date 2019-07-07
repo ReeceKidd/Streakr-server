@@ -9,7 +9,7 @@ import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { userModel } from "../../../src/Models/User";
 import { getIncompleteSoloStreaks } from "../../../src/Agenda/getIncompleteSoloStreaks";
 
-const registeredUserName = "getIncompleteSoloStreaksUsername";
+const registeredUsername = "getIncompleteSoloStreaksUsername";
 const registeredEmail = "getIncompleteSoloStreaksRegisteredEmail@gmail.com";
 const registeredPassword = "getIncompleteSoloStreaksRegisteredPassword";
 
@@ -31,7 +31,7 @@ describe("getIncompleteSoloStreaks", () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
-        userName: registeredUserName,
+        username: registeredUsername,
         email: registeredEmail,
         password: registeredPassword
       });

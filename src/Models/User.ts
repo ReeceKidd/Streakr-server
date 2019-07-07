@@ -8,17 +8,17 @@ export const SALT_ROUNDS = 10;
 
 enum UserTypes {
   user = "user",
-  admin = "admin",
+  admin = "admin"
 }
 
 export interface IMinimumUserData {
   _id: string;
-  userName: string;
+  username: string;
 }
 
 export interface User extends mongoose.Document {
   _id: string;
-  userName: string;
+  username: string;
   email: string;
   password: string;
   createdAt: Date;
@@ -27,26 +27,26 @@ export interface User extends mongoose.Document {
   preferredLanguage: string;
   soloStreaks?: SoloStreak[];
   profilePicture?: {
-    type: String,
+    type: String;
   };
   friends?: string[];
 }
 
 export const userSchema = new mongoose.Schema(
   {
-    userName: {
+    username: {
       required: true,
       type: String,
       unique: true,
       trim: true,
-      index: true,
+      index: true
     },
     email: {
       required: true,
       type: String,
       unique: true,
       trim: true,
-      index: true,
+      index: true
     },
     password: {
       required: true,
@@ -55,7 +55,7 @@ export const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: [UserTypes.user, UserTypes.admin],
-      default: UserTypes.user,
+      default: UserTypes.user
     },
     preferredLanguage: {
       type: String,
@@ -63,10 +63,10 @@ export const userSchema = new mongoose.Schema(
     },
     streaks: {
       type: Array,
-      default: [],
+      default: []
     },
     profilePicture: {
-      type: String,
+      type: String
     },
     friends: {
       type: Array,
@@ -75,10 +75,13 @@ export const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    collection: Collections.Users,
-  },
+    collection: Collections.Users
+  }
 );
-userSchema.index({ userName: "text" });
+userSchema.index({ username: "text" });
 userSchema.index({ email: "text" });
 
-export const userModel: mongoose.Model<User> = mongoose.model<User>(Models.User, userSchema);
+export const userModel: mongoose.Model<User> = mongoose.model<User>(
+  Models.User,
+  userSchema
+);

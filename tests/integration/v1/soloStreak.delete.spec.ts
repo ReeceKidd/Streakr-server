@@ -12,7 +12,7 @@ import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
 const registeredEmail = "delete-solo-streak-user@gmail.com";
 const registeredPassword = "12345678";
-const registeredUserName = "delete-solo-streak-user";
+const registeredUsername = "delete-solo-streak-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
@@ -34,7 +34,7 @@ describe(`DELETE ${soloStreakRoute}`, () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
-        userName: registeredUserName,
+        username: registeredUsername,
         email: registeredEmail,
         password: registeredPassword
       });

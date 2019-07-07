@@ -368,13 +368,13 @@ describe("retreiveFriendsDetailsMiddleware", () => {
 });
 
 describe("formatFriendsMiddleware", () => {
-  test("that formatted friends have just a userName property", () => {
+  test("that formatted friends have just a username property", () => {
     expect.assertions(2);
-    const userName = "friend";
+    const username = "friend";
     const password = "password";
     const email = "secret@gmail.com";
     const friend = {
-      userName,
+      username,
       password,
       email
     };
@@ -385,7 +385,7 @@ describe("formatFriendsMiddleware", () => {
 
     formatFriendsMiddleware(request, response, next);
     expect(next).toBeCalledWith();
-    expect(response.locals.formattedFriends).toEqual([{ userName }]);
+    expect(response.locals.formattedFriends).toEqual([{ username }]);
   });
 
   test("that next is called with err message on err", () => {
@@ -512,7 +512,7 @@ describe("sendFriendAddedSuccessMessageMiddleware", () => {
     const successMessage = "success";
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-    const formattedFriends = [{ userName: "abc" }];
+    const formattedFriends = [{ username: "abc" }];
     const response: any = { status, locals: { formattedFriends } };
 
     const request: any = {};
@@ -535,7 +535,7 @@ describe("sendFriendAddedSuccessMessageMiddleware", () => {
   test("that next gets called with error on message send failure", () => {
     const ERROR_MESSAGE = "error";
     const successMessage = "success";
-    const formattedFriends = [{ userName: "abc" }];
+    const formattedFriends = [{ username: "abc" }];
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });

@@ -281,10 +281,10 @@ describe(`compareRequestPasswordToUserHashedPasswordMiddleware`, () => {
 
 describe(`setMinimumUserDataMiddleware`, () => {
   test("should set response.locals.minimumUserData", () => {
-    const mockUserName = "abc";
+    const mockUsername = "abc";
     const mockId = "12345678";
 
-    const mockUser = { userName: mockUserName, _id: mockId };
+    const mockUser = { username: mockUsername, _id: mockId };
     const response: any = { locals: { user: mockUser } };
 
     const request: any = {};
@@ -295,7 +295,7 @@ describe(`setMinimumUserDataMiddleware`, () => {
     expect.assertions(4);
     expect(response.locals.minimumUserData).toBeDefined();
     expect(response.locals.minimumUserData._id).toBeDefined();
-    expect(response.locals.minimumUserData.userName).toBeDefined();
+    expect(response.locals.minimumUserData.username).toBeDefined();
     expect(next).toBeCalled();
   });
 
@@ -358,7 +358,7 @@ describe("setJsonWebTokenMiddleware", () => {
   const ERROR_MESSAGE = "error";
 
   test("should set response.locals.token", () => {
-    const minimumUserData = { userName: "user" };
+    const minimumUserData = { username: "user" };
     const expiry = { expiresIn: 123 };
     const signTokenMock = jest.fn(() => true);
     const jwtSecretMock = "1234";
@@ -386,7 +386,7 @@ describe("setJsonWebTokenMiddleware", () => {
       throw new Error(ERROR_MESSAGE);
     });
     const expiry = { expiresIn: 123 };
-    const minimumUserData = { userName: "user" };
+    const minimumUserData = { username: "user" };
     const jwtSecretMock = "1234";
 
     const response: any = { locals: { minimumUserData, expiry } };

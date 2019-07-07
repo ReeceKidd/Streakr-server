@@ -135,7 +135,7 @@ describe("setSearchQueryToLowerCaseMiddleware", () => {
   const mockSearchQuery = "Search";
   const mockLowerCaseSearchQuery = "search";
 
-  test("sets userName to lowercase", () => {
+  test("sets username to lowercase", () => {
     const request: any = { query: { searchQuery: mockSearchQuery } };
     const response: any = { locals: {} };
     const next = jest.fn();
@@ -195,7 +195,7 @@ describe("getUsersByUsernameRegexSearchMiddleware", () => {
     await middleware(request, response, next);
 
     expect.assertions(3);
-    expect(find).toBeCalledWith({ userName: { $regex: mockSearchQuery } });
+    expect(find).toBeCalledWith({ username: { $regex: mockSearchQuery } });
     expect(response.locals.users).toBeDefined();
     expect(next).toBeCalledWith();
   });
@@ -240,7 +240,7 @@ describe("formatUsersMiddleware", () => {
       toObject: jest.fn(() => {
         return {
           _id: "1234",
-          userName: "test",
+          username: "test",
           email: "test@test.com",
           password: "12345678",
           role: "Admin",

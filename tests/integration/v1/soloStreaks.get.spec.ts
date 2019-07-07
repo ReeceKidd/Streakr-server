@@ -11,7 +11,7 @@ import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
 const registeredEmail = "get-solo-streaks@gmail.com";
 const registeredPassword = "12345678";
-const registeredUserName = "get-solo-streaks-user";
+const registeredUsername = "get-solo-streaks-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
@@ -34,7 +34,7 @@ describe(getSoloStreaksRoute, () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
-        userName: registeredUserName,
+        username: registeredUsername,
         email: registeredEmail,
         password: registeredPassword
       });

@@ -130,7 +130,7 @@ export const formatFriendsMiddleware = (
     const { friends } = response.locals;
     response.locals.formattedFriends = friends.map((friend: User) => {
       return {
-        userName: friend.userName
+        username: friend.username
       };
     });
     next();

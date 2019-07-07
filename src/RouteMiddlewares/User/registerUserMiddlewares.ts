@@ -2,14 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
 import { hash } from "bcryptjs";
 import { Model } from "mongoose";
-import * as nodeFetch from "node-fetch";
-// @ts-ignore
-global.fetch = nodeFetch;
-import {
-  CognitoUserPool,
-  CognitoUserAttribute,
-  CognitoUser
-} from "amazon-cognito-identity-js";
 
 import { userModel, User } from "../../Models/User";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
@@ -18,7 +10,7 @@ import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
 const registerValidationSchema = {
-  userName: Joi.string().required(),
+  username: Joi.string().required(),
   email: Joi.string()
     .email()
     .required(),
@@ -65,8 +57,8 @@ export const setUsernameToLowercaseMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const { userName } = request.body;
-    response.locals.lowerCaseUserName = userName.toLowerCase();
+    const { username } = request.body;
+    response.locals.lowerCaseUsername = username.toLowerCase();
     next();
   } catch (err) {
     next(new CustomError(ErrorType.SetUsernameToLowercaseMiddleware, err));
@@ -77,8 +69,8 @@ export const getDoesUsernameExistMiddleware = (
   userModel: Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { lowerCaseUserName } = response.locals;
-    const user = await userModel.findOne({ userName: lowerCaseUserName });
+    const { lowerCaseUsername } = response.locals;
+    const user = await userModel.findOne({ username: lowerCaseUsername });
     if (user) {
       throw new CustomError(ErrorType.UsernameAlreadyExists);
     }
@@ -117,10 +109,10 @@ export const getSaveUserToDatabaseMiddleware = (user: Model<User>) => async (
   next: NextFunction
 ) => {
   try {
-    const { hashedPassword, lowerCaseUserName } = response.locals;
+    const { hashedPassword, lowerCaseUsername } = response.locals;
     const { email } = request.body;
     const newUser = new user({
-      userName: lowerCaseUserName,
+      username: lowerCaseUsername,
       email,
       password: hashedPassword
     });
@@ -134,53 +126,6 @@ export const getSaveUserToDatabaseMiddleware = (user: Model<User>) => async (
 export const saveUserToDatabaseMiddleware = getSaveUserToDatabaseMiddleware(
   userModel
 );
-
-export const registerUserWithCognitoMiddleware = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const { email, userName, password } = request.body;
-    // Need to make these environment variables.
-    const poolData = {
-      UserPoolId: "eu-west-1_S0HecFXKe",
-      ClientId: "4sipjiblpt7229io7ce389401e"
-    };
-
-    const userPool = new CognitoUserPool(poolData);
-
-    const attributeList = [];
-
-    const dataEmail = {
-      Name: "email",
-      Value: email
-    };
-
-    const attributeEmail = new CognitoUserAttribute(dataEmail);
-
-    attributeList.push(attributeEmail);
-
-    userPool.signUp(userName, password, attributeList, [], function(
-      err,
-      result
-    ) {
-      if (err) {
-        console.log(err);
-        next(new CustomError(ErrorType.CognitoSignUpError, err));
-      } else {
-        const cognitoUser = result && result.user;
-        response.locals.cognitoUser = cognitoUser;
-        console.log(cognitoUser);
-        next();
-      }
-    });
-  } catch (err) {
-    console.log(err);
-    if (err instanceof CustomError) next(err);
-    next(new CustomError(ErrorType.RegisterUserWithCognitoMiddleware, err));
-  }
-};
 
 export const sendFormattedUserMiddleware = (
   request: Request,
@@ -203,6 +148,5 @@ export const registerUserMiddlewares = [
   doesUsernameExistMiddleware,
   hashPasswordMiddleware,
   saveUserToDatabaseMiddleware,
-  registerUserWithCognitoMiddleware,
   sendFormattedUserMiddleware
 ];

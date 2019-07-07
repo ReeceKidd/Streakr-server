@@ -49,7 +49,7 @@ export const getRetreiveUsersByUsernameRegexSearchMiddleware = (
   try {
     const { lowerCaseSearchQuery } = response.locals;
     response.locals.users = await userModel.find({
-      userName: { $regex: lowerCaseSearchQuery }
+      username: { $regex: lowerCaseSearchQuery }
     });
     next();
   } catch (err) {
