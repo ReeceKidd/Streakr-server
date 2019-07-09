@@ -7,7 +7,6 @@ import { userModel } from "../../../src/Models/User";
 import { soloStreakModel, SoloStreak } from "../../../src/Models/SoloStreak";
 import { completeTaskModel } from "../../../src/Models/CompleteTask";
 
-import { AuthPaths } from "../../../src/Routers/authRouter";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
 
@@ -16,7 +15,6 @@ const registeredPassword = "12345678";
 const registeredUsername = "create-complete-tasks-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
 const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 const londonTimezone = "Europe/London";
@@ -24,7 +22,6 @@ const londonTimezone = "Europe/London";
 jest.setTimeout(120000);
 
 describe(createSoloStreakRoute, () => {
-  let jsonWebToken: string;
   let userId: string;
   let soloStreakId: string;
   let secondSoloStreakId: string;
@@ -41,13 +38,6 @@ describe(createSoloStreakRoute, () => {
         password: registeredPassword
       });
     userId = registrationResponse.body._id;
-    const loginResponse = await request(server)
-      .post(loginRoute)
-      .send({
-        email: registeredEmail,
-        password: registeredPassword
-      });
-    jsonWebToken = loginResponse.body.jsonWebToken;
     const createSoloStreakResponse = await request(server)
       .post(createSoloStreakRoute)
       .send({
@@ -55,7 +45,6 @@ describe(createSoloStreakRoute, () => {
         name,
         description
       })
-      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
     soloStreakId = createSoloStreakResponse.body._id;
     done();
@@ -77,7 +66,6 @@ describe(createSoloStreakRoute, () => {
         .post(
           `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}/${RouteCategories.completeTasks}`
         )
-        .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
         .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
       expect(completeTaskResponse.status).toEqual(ResponseCodes.created);
       expect(completeTaskResponse.body.completeTask._id).toBeDefined();
@@ -104,20 +92,17 @@ describe(createSoloStreakRoute, () => {
           name,
           description
         })
-        .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
         .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
       secondSoloStreakId = secondaryCreateSoloStreakResponse.body._id;
       await request(server)
         .post(
           `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}/${RouteCategories.completeTasks}`
         )
-        .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
         .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
       const secondCompleteTaskResponse = await request(server)
         .post(
           `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}/${RouteCategories.completeTasks}`
         )
-        .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
         .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
       expect(secondCompleteTaskResponse.status).toEqual(
         ResponseCodes.unprocessableEntity

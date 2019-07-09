@@ -1,11 +1,10 @@
 export enum RouteCategories {
-    users = "users",
-    auth = "auth",
-    soloStreaks = "solo-streaks",
-    completeTasks = "complete-tasks",
-    test = "test"
+  users = "users",
+  soloStreaks = "solo-streaks",
+  completeTasks = "complete-tasks",
+  test = "test"
 }
 
 export enum UserProperties {
-    friends = "friends"
+  friends = "friends"
 }

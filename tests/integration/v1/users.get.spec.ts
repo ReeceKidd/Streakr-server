@@ -4,7 +4,6 @@ import server from "../../../src/app";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
-import { AuthPaths } from "../../../src/Routers/authRouter";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
 
 const registeredEmail = "search-user@gmail.com";
@@ -18,13 +17,10 @@ const searchableUserUsername = "other-user";
 const searchQueryKey = "searchQuery";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
 
 jest.setTimeout(120000);
 
 describe("/users", () => {
-  let jsonWebToken: string;
-
   beforeAll(async done => {
     await request(server)
       .post(registrationRoute)
@@ -33,15 +29,6 @@ describe("/users", () => {
         email: registeredEmail,
         password: registeredPassword
       });
-
-    const loginResponse = await request(server)
-      .post(loginRoute)
-      .send({
-        email: registeredEmail,
-        password: registeredPassword
-      });
-
-    jsonWebToken = loginResponse.body.jsonWebToken;
     await request(server)
       .post(registrationRoute)
       .send({
@@ -61,9 +48,9 @@ describe("/users", () => {
   test(`that request returns searchAbleUser when full searchTerm is uaed`, async done => {
     expect.assertions(10);
     const getUsersByRegexSearchRouteWithSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${searchableUserUsername}`;
-    const response = await request(server)
-      .get(getUsersByRegexSearchRouteWithSearchQueryRoute)
-      .set({ "x-access-token": jsonWebToken });
+    const response = await request(server).get(
+      getUsersByRegexSearchRouteWithSearchQueryRoute
+    );
     expect(response.status).toEqual(ResponseCodes.success);
     expect(response.type).toEqual("application/json");
     const users = response.body.users;
@@ -82,9 +69,9 @@ describe("/users", () => {
     expect.assertions(10);
     const partialSearchQuery = `${searchableUserUsername[0]}${searchableUserUsername[1]}${searchableUserUsername[2]}`;
     const getUsersByRegexSearchWithPartialSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${partialSearchQuery}`;
-    const response = await request(server)
-      .get(getUsersByRegexSearchWithPartialSearchQueryRoute)
-      .set({ "x-access-token": jsonWebToken });
+    const response = await request(server).get(
+      getUsersByRegexSearchWithPartialSearchQueryRoute
+    );
     expect(response.status).toEqual(ResponseCodes.success);
     expect(response.type).toEqual("application/json");
     const users = response.body.users;

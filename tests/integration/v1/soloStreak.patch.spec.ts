@@ -6,7 +6,6 @@ import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
 import { soloStreakModel } from "../../../src/Models/SoloStreak";
 
-import { AuthPaths } from "../../../src/Routers/authRouter";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
@@ -15,7 +14,6 @@ const registeredPassword = "12345678";
 const registeredUsername = "patch-solo-streak-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
 const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 const romeTimezone = "Europe/Rome";
@@ -24,7 +22,6 @@ const berlinTimeZone = "Europe/Berlin";
 jest.setTimeout(120000);
 
 describe(`PATCH ${soloStreakRoute}`, () => {
-  let jsonWebToken: string;
   let userId: string;
   let soloStreakId: string;
   let updatedName: string;
@@ -41,13 +38,6 @@ describe(`PATCH ${soloStreakRoute}`, () => {
         password: registeredPassword
       });
     userId = registrationResponse.body._id;
-    const loginResponse = await request(server)
-      .post(loginRoute)
-      .send({
-        email: registeredEmail,
-        password: registeredPassword
-      });
-    jsonWebToken = loginResponse.body.jsonWebToken;
     const createSoloStreakResponse = await request(server)
       .post(soloStreakRoute)
       .send({
@@ -55,7 +45,6 @@ describe(`PATCH ${soloStreakRoute}`, () => {
         name,
         description
       })
-      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: romeTimezone });
     soloStreakId = createSoloStreakResponse.body._id;
     done();
@@ -77,7 +66,6 @@ describe(`PATCH ${soloStreakRoute}`, () => {
         name: updatedName,
         description: updatedDescription
       })
-      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: berlinTimeZone });
     expect(response.status).toEqual(ResponseCodes.success);
     expect(response.type).toEqual("application/json");

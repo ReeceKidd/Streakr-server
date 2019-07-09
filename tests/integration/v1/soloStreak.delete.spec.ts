@@ -6,7 +6,6 @@ import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
 import { soloStreakModel } from "../../../src/Models/SoloStreak";
 
-import { AuthPaths } from "../../../src/Routers/authRouter";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
@@ -15,7 +14,6 @@ const registeredPassword = "12345678";
 const registeredUsername = "delete-solo-streak-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
 const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 const budapestTimezone = "Europe/Budapest";
@@ -23,7 +21,6 @@ const budapestTimezone = "Europe/Budapest";
 jest.setTimeout(120000);
 
 describe(`DELETE ${soloStreakRoute}`, () => {
-  let jsonWebToken: string;
   let userId: string;
   let soloStreakId: string;
 
@@ -39,13 +36,6 @@ describe(`DELETE ${soloStreakRoute}`, () => {
         password: registeredPassword
       });
     userId = registrationResponse.body._id;
-    const loginResponse = await request(server)
-      .post(loginRoute)
-      .send({
-        email: registeredEmail,
-        password: registeredPassword
-      });
-    jsonWebToken = loginResponse.body.jsonWebToken;
     const createSoloStreakResponse = await request(server)
       .post(soloStreakRoute)
       .send({
@@ -53,7 +43,6 @@ describe(`DELETE ${soloStreakRoute}`, () => {
         name,
         description
       })
-      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: budapestTimezone });
     soloStreakId = createSoloStreakResponse.body._id;
     done();
@@ -67,9 +56,9 @@ describe(`DELETE ${soloStreakRoute}`, () => {
 
   test(`that solo streak can be deleted`, async done => {
     expect.assertions(1);
-    const response = await request(server)
-      .delete(`${soloStreakRoute}/${soloStreakId}`)
-      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken });
+    const response = await request(server).delete(
+      `${soloStreakRoute}/${soloStreakId}`
+    );
     expect(response.status).toEqual(ResponseCodes.deleted);
     done();
   });

@@ -1,5 +1,4 @@
 import * as mongoose from "mongoose";
-import { SupportedLanguages } from "../Messages/supportedLanguages";
 import { Collections } from "./Collections";
 import { Models } from "./Models";
 import { SoloStreak } from "./SoloStreak";
@@ -23,7 +22,6 @@ export interface User extends mongoose.Document {
   createdAt: Date;
   modifiedAt: Date;
   role: string;
-  preferredLanguage: string;
   soloStreaks?: SoloStreak[];
   profilePicture?: {
     type: String;
@@ -49,10 +47,6 @@ export const userSchema = new mongoose.Schema(
       type: String,
       enum: [UserTypes.user, UserTypes.admin],
       default: UserTypes.user
-    },
-    preferredLanguage: {
-      type: String,
-      default: SupportedLanguages.EN
     },
     streaks: {
       type: Array,

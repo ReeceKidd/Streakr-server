@@ -5,7 +5,6 @@ import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
 import { soloStreakModel } from "../../../src/Models/SoloStreak";
-import { AuthPaths } from "../../../src/Routers/authRouter";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
@@ -14,7 +13,6 @@ const registeredPassword = "12345678";
 const registeredUsername = "get-solo-streaks-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
 const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 const getSoloStreaksRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
@@ -27,7 +25,6 @@ const parisTimezone = "Europe/Paris";
 jest.setTimeout(120000);
 
 describe(getSoloStreaksRoute, () => {
-  let jsonWebToken: string;
   let userId: string;
 
   beforeAll(async done => {
@@ -39,13 +36,6 @@ describe(getSoloStreaksRoute, () => {
         password: registeredPassword
       });
     userId = registrationResponse.body._id;
-    const loginResponse = await request(server)
-      .post(loginRoute)
-      .send({
-        email: registeredEmail,
-        password: registeredPassword
-      });
-    jsonWebToken = loginResponse.body.jsonWebToken;
     await request(server)
       .post(createSoloStreakRoute)
       .send({
@@ -53,7 +43,6 @@ describe(getSoloStreaksRoute, () => {
         name: soloStreakName,
         description: soloStreakDescription
       })
-      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: parisTimezone });
     done();
   });
@@ -67,9 +56,9 @@ describe(getSoloStreaksRoute, () => {
   test(`that solo streaks can be retreived for user`, async done => {
     expect.assertions(9);
     const getSoloStreaksRouteWithQueryParamater = `${getSoloStreaksRoute}?userId=${userId}`;
-    const response = await request(server)
-      .get(getSoloStreaksRouteWithQueryParamater)
-      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken });
+    const response = await request(server).get(
+      getSoloStreaksRouteWithQueryParamater
+    );
     expect(response.status).toEqual(ResponseCodes.success);
     expect(response.type).toEqual("application/json");
     expect(response.body.soloStreaks.length).toEqual(1);

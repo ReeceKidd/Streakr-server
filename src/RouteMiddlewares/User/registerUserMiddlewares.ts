@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
-import { hash } from "bcryptjs";
 import { Model } from "mongoose";
 
 import { userModel, User } from "../../Models/User";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { saltRounds } from "../../Constants/Auth/saltRounds";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
@@ -89,7 +87,6 @@ export const getSaveUserToDatabaseMiddleware = (user: Model<User>) => async (
 ) => {
   try {
     const { lowerCaseUsername } = response.locals;
-    console.log(lowerCaseUsername);
     const { email } = request.body;
     const newUser = new user({
       username: lowerCaseUsername,
@@ -98,7 +95,6 @@ export const getSaveUserToDatabaseMiddleware = (user: Model<User>) => async (
     response.locals.savedUser = await newUser.save();
     next();
   } catch (err) {
-    console.log(err);
     next(new CustomError(ErrorType.SaveUserToDatabaseMiddleware, err));
   }
 };

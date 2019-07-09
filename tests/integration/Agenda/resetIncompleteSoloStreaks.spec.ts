@@ -4,7 +4,6 @@ import request from "supertest";
 import server from "../../../src/app";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
-import { AuthPaths } from "../../../src/Routers/authRouter";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { userModel } from "../../../src/Models/User";
 import { getIncompleteSoloStreaks } from "../../../src/Agenda/getIncompleteSoloStreaks";
@@ -15,14 +14,12 @@ const registeredEmail = "resetIncompleteSoloStreaks@gmail.com";
 const registeredPassword = "resetSoloStreaksPassword";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-const loginRoute = `/${ApiVersions.v1}/${RouteCategories.auth}/${AuthPaths.login}`;
 const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 jest.setTimeout(120000);
 
 describe("resetIncompleteSoloStreaks", () => {
   let userId: string;
-  let jsonWebToken: string;
   let soloStreakId: string;
   const name = "Daily Programming";
   const description = "I will program for one hour everyday";
@@ -37,13 +34,6 @@ describe("resetIncompleteSoloStreaks", () => {
         password: registeredPassword
       });
     userId = registrationResponse.body._id;
-    const loginResponse = await request(server)
-      .post(loginRoute)
-      .send({
-        email: registeredEmail,
-        password: registeredPassword
-      });
-    jsonWebToken = loginResponse.body.jsonWebToken;
     const createSoloStreakResponse = await request(server)
       .post(soloStreakRoute)
       .send({
@@ -51,7 +41,6 @@ describe("resetIncompleteSoloStreaks", () => {
         name,
         description
       })
-      .set({ [SupportedRequestHeaders.xAccessToken]: jsonWebToken })
       .set({ [SupportedRequestHeaders.xTimezone]: timezone });
     soloStreakId = createSoloStreakResponse.body._id;
     done();

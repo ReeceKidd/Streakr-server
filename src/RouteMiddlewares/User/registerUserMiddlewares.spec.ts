@@ -346,8 +346,6 @@ describe(`saveUserToDatabaseMiddleware`, () => {
 
     await middleware(request, response, next);
 
-    console.log(response.locals);
-
     expect(response.locals.savedUser).toBeDefined();
     expect(save).toBeCalledWith();
   });
