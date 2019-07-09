@@ -88,7 +88,8 @@ export const getSaveUserToDatabaseMiddleware = (user: Model<User>) => async (
   next: NextFunction
 ) => {
   try {
-    const { hashedPassword, lowerCaseUsername } = response.locals;
+    const { lowerCaseUsername } = response.locals;
+    console.log(lowerCaseUsername);
     const { email } = request.body;
     const newUser = new user({
       username: lowerCaseUsername,
@@ -97,6 +98,7 @@ export const getSaveUserToDatabaseMiddleware = (user: Model<User>) => async (
     response.locals.savedUser = await newUser.save();
     next();
   } catch (err) {
+    console.log(err);
     next(new CustomError(ErrorType.SaveUserToDatabaseMiddleware, err));
   }
 };

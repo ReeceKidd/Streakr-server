@@ -37,15 +37,13 @@ export const userSchema = new mongoose.Schema(
       required: true,
       type: String,
       unique: true,
-      trim: true,
-      index: true
+      trim: true
     },
     email: {
       required: true,
       type: String,
       unique: true,
-      trim: true,
-      index: true
+      trim: true
     },
     role: {
       type: String,

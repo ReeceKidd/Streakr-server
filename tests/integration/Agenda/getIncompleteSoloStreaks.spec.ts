@@ -72,13 +72,9 @@ describe("getIncompleteSoloStreaks", () => {
     const incompleteSoloStreaks = (await getIncompleteSoloStreaks(
       timezone
     )) as any;
-    console.log(
-      `Number of incomplete solo streaks: ${incompleteSoloStreaks.length}`
-    );
     const incompleteStreak = incompleteSoloStreaks.find(
       (streak: SoloStreak) => (streak.streakName = name)
     );
-    console.log(incompleteStreak);
     expect(incompleteStreak.name).toEqual(name);
   });
 });
