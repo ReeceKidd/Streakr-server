@@ -20,7 +20,6 @@ export interface User extends mongoose.Document {
   _id: string;
   username: string;
   email: string;
-  password: string;
   createdAt: Date;
   modifiedAt: Date;
   role: string;
@@ -47,10 +46,6 @@ export const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       index: true
-    },
-    password: {
-      required: true,
-      type: String
     },
     role: {
       type: String,

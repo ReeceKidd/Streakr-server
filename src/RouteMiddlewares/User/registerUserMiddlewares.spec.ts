@@ -7,8 +7,6 @@ import {
   getDoesUserEmailExistMiddleware,
   doesUsernameExistMiddleware,
   getDoesUsernameExistMiddleware,
-  hashPasswordMiddleware,
-  getHashPasswordMiddleware,
   saveUserToDatabaseMiddleware,
   sendFormattedUserMiddleware,
   setUsernameToLowercaseMiddleware,
@@ -364,52 +362,6 @@ describe(`doesUsernameExistMiddleware`, () => {
   });
 });
 
-describe(`hashPasswordMiddleware`, () => {
-  const ERROR_MESSAGE = "error";
-
-  test("sets response.locals.hashedPassword", async () => {
-    expect.assertions(3);
-
-    const mockedPassword = "password";
-    const hashedPassword = "12$4354";
-    const saltMock = 10;
-    const hash = jest.fn(() => {
-      return Promise.resolve(hashedPassword);
-    });
-
-    const middleware = getHashPasswordMiddleware(hash, saltMock);
-    const response: any = { locals: {} };
-    const request: any = { body: { password: mockedPassword } };
-    const next = jest.fn();
-
-    await middleware(request, response, next);
-
-    expect(hash).toBeCalledWith(mockedPassword, saltMock);
-    expect(response.locals.hashedPassword).toBe(hashedPassword);
-    expect(next).toBeCalledWith();
-  });
-
-  test("calls next with HashPasswordMiddleware error on middleware failure", async () => {
-    expect.assertions(1);
-    const mockedPassword = "password";
-    const saltMock = 10;
-    const hash = jest.fn(() => {
-      return Promise.reject(ERROR_MESSAGE);
-    });
-
-    const middleware = getHashPasswordMiddleware(hash, saltMock);
-    const response: any = { locals: {} };
-    const request: any = { body: { password: mockedPassword } };
-    const next = jest.fn();
-
-    await middleware(request, response, next);
-
-    expect(next).toBeCalledWith(
-      new CustomError(ErrorType.HashPasswordMiddleware, expect.any(Error))
-    );
-  });
-});
-
 describe(`saveUserToDatabaseMiddleware`, () => {
   test("sets response.locals.savedUser", async () => {
     expect.assertions(2);
@@ -533,16 +485,15 @@ describe(`sendFormattedUserMiddleware`, () => {
 
 describe(`registerUserMiddlewares`, () => {
   test("are defined in the correct order", () => {
-    expect.assertions(8);
-    expect(registerUserMiddlewares.length).toEqual(7);
+    expect.assertions(7);
+    expect(registerUserMiddlewares.length).toEqual(6);
     expect(registerUserMiddlewares[0]).toBe(
       userRegistrationValidationMiddleware
     );
     expect(registerUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware);
     expect(registerUserMiddlewares[2]).toBe(setUsernameToLowercaseMiddleware);
     expect(registerUserMiddlewares[3]).toBe(doesUsernameExistMiddleware);
-    expect(registerUserMiddlewares[4]).toBe(hashPasswordMiddleware);
-    expect(registerUserMiddlewares[5]).toBe(saveUserToDatabaseMiddleware);
-    expect(registerUserMiddlewares[6]).toBe(sendFormattedUserMiddleware);
+    expect(registerUserMiddlewares[4]).toBe(saveUserToDatabaseMiddleware);
+    expect(registerUserMiddlewares[5]).toBe(sendFormattedUserMiddleware);
   });
 });

@@ -13,9 +13,6 @@ const registerValidationSchema = {
   username: Joi.string().required(),
   email: Joi.string()
     .email()
-    .required(),
-  password: Joi.string()
-    .min(6)
     .required()
 };
 
@@ -85,24 +82,6 @@ export const doesUsernameExistMiddleware = getDoesUsernameExistMiddleware(
   userModel
 );
 
-export const getHashPasswordMiddleware = (
-  hash: Function,
-  saltRounds: number
-) => async (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { password } = request.body;
-    response.locals.hashedPassword = await hash(password, saltRounds);
-    next();
-  } catch (err) {
-    next(new CustomError(ErrorType.HashPasswordMiddleware, err));
-  }
-};
-
-export const hashPasswordMiddleware = getHashPasswordMiddleware(
-  hash,
-  saltRounds
-);
-
 export const getSaveUserToDatabaseMiddleware = (user: Model<User>) => async (
   request: Request,
   response: Response,
@@ -113,8 +92,7 @@ export const getSaveUserToDatabaseMiddleware = (user: Model<User>) => async (
     const { email } = request.body;
     const newUser = new user({
       username: lowerCaseUsername,
-      email,
-      password: hashedPassword
+      email
     });
     response.locals.savedUser = await newUser.save();
     next();
@@ -134,7 +112,6 @@ export const sendFormattedUserMiddleware = (
 ) => {
   try {
     const { savedUser } = response.locals;
-    savedUser.password = undefined;
     return response.status(ResponseCodes.created).send(savedUser);
   } catch (err) {
     next(new CustomError(ErrorType.SendFormattedUserMiddleware, err));
@@ -146,7 +123,6 @@ export const registerUserMiddlewares = [
   doesUserEmailExistMiddleware,
   setUsernameToLowercaseMiddleware,
   doesUsernameExistMiddleware,
-  hashPasswordMiddleware,
   saveUserToDatabaseMiddleware,
   sendFormattedUserMiddleware
 ];
