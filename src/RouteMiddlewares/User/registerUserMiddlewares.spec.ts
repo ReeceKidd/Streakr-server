@@ -18,14 +18,13 @@ import { CustomError, ErrorType } from "../../customError";
 describe(`userRegistrationValidationMiddlware`, () => {
   const mockUsername = "mockUsername";
   const mockEmail = "mock@gmail.com";
-  const mockPassword = "12345678";
 
   test("check that valid request passes", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
     const request: any = {
-      body: { username: mockUsername, email: mockEmail, password: mockPassword }
+      body: { username: mockUsername, email: mockEmail }
     };
     const response: any = {
       status
@@ -43,7 +42,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
     const status = jest.fn(() => ({ send }));
 
     const request: any = {
-      body: { email: mockEmail, password: mockPassword }
+      body: { email: mockEmail }
     };
     const response: any = {
       status
@@ -65,7 +64,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
     const status = jest.fn(() => ({ send }));
 
     const request: any = {
-      body: { username: mockUsername, password: mockPassword }
+      body: { username: mockUsername }
     };
     const response: any = {
       status
@@ -91,8 +90,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
     const request: any = {
       body: {
         username: mockUsername,
-        email: incorrectEmail,
-        password: mockPassword
+        email: incorrectEmail
       }
     };
     const response: any = {
@@ -110,57 +108,6 @@ describe(`userRegistrationValidationMiddlware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("sends correct error response when password is missing", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-
-    const request: any = {
-      body: { username: mockUsername, email: mockEmail }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    userRegistrationValidationMiddleware(request, response, next);
-
-    expect.assertions(3);
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "password" fails because ["password" is required]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
-  test("sends correct error response when password is too short", () => {
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-
-    const incorrectPassword = "123";
-
-    const request: any = {
-      body: {
-        username: mockUsername,
-        email: mockEmail,
-        password: incorrectPassword
-      }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    userRegistrationValidationMiddleware(request, response, next);
-
-    expect.assertions(3);
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message:
-        'child "password" fails because ["password" length must be at least 6 characters long]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
   test("sends correct error response when invalid paramater is sent", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -171,8 +118,7 @@ describe(`userRegistrationValidationMiddlware`, () => {
       body: {
         notAllowed,
         username: mockUsername,
-        email: mockEmail,
-        password: mockPassword
+        email: mockEmail
       }
     };
     const response: any = {
@@ -427,17 +373,15 @@ describe(`saveUserToDatabaseMiddleware`, () => {
 describe(`sendFormattedUserMiddleware`, () => {
   const ERROR_MESSAGE = "error";
 
-  test("sends user with undefined password in response", () => {
-    expect.assertions(4);
+  test("sends savedUser in request", () => {
+    expect.assertions(3);
 
     const mockUsername = "abc";
     const mockEmail = "email@gmail.com";
-    const mockPassword = "12345678";
 
     const savedUser = {
       username: mockUsername,
-      email: mockEmail,
-      password: mockPassword
+      email: mockEmail
     };
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -448,7 +392,6 @@ describe(`sendFormattedUserMiddleware`, () => {
 
     sendFormattedUserMiddleware(request, response, next);
 
-    expect(response.locals.savedUser.password).toBeUndefined();
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(ResponseCodes.created);
     expect(send).toBeCalledWith({ username: mockUsername, email: mockEmail });
@@ -459,12 +402,10 @@ describe(`sendFormattedUserMiddleware`, () => {
 
     const mockUsername = "abc";
     const mockEmail = "email@gmail.com";
-    const mockPassword = "12345678";
 
     const savedUser = {
       username: mockUsername,
-      email: mockEmail,
-      password: mockPassword
+      email: mockEmail
     };
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
