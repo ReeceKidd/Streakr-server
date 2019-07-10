@@ -20,13 +20,13 @@ soloStreaksRouter.get(`/`, ...getSoloStreaksMiddlewares);
 
 soloStreaksRouter.get(`/:${soloStreakId}`, ...getSoloStreakMiddlewares);
 
+soloStreaksRouter.delete(`/:${soloStreakId}`, ...deleteSoloStreakMiddlewares);
+
 soloStreaksRouter.use(...timezoneMiddlewares);
 
 soloStreaksRouter.post(`/`, ...createSoloStreakMiddlewares);
 
 soloStreaksRouter.patch(`/:${soloStreakId}`, ...patchSoloStreakMiddlewares);
-
-soloStreaksRouter.delete(`/:${soloStreakId}`, ...deleteSoloStreakMiddlewares);
 
 soloStreaksRouter.post(
   `/:${soloStreakId}/${SoloStreakProperties.completeTasks}`,

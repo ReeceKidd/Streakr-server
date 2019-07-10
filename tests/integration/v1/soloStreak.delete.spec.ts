@@ -10,7 +10,6 @@ import { ResponseCodes } from "../../../src/Server/responseCodes";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
 const registeredEmail = "delete-solo-streak-user@gmail.com";
-const registeredPassword = "12345678";
 const registeredUsername = "delete-solo-streak-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
@@ -27,15 +26,15 @@ describe(`DELETE ${soloStreakRoute}`, () => {
   const name = "Reading";
   const description = "I will read 30 minutes every day";
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
         username: registeredUsername,
-        email: registeredEmail,
-        password: registeredPassword
+        email: registeredEmail
       });
     userId = registrationResponse.body._id;
+
     const createSoloStreakResponse = await request(server)
       .post(soloStreakRoute)
       .send({
@@ -45,21 +44,16 @@ describe(`DELETE ${soloStreakRoute}`, () => {
       })
       .set({ [SupportedRequestHeaders.xTimezone]: budapestTimezone });
     soloStreakId = createSoloStreakResponse.body._id;
-    done();
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     await userModel.deleteOne({ email: registeredEmail });
-    await soloStreakModel.deleteOne({ name });
-    done();
   });
 
-  test(`that solo streak can be deleted`, async done => {
+  test(`that solo streak can be deleted`, async () => {
     expect.assertions(1);
-    const response = await request(server).delete(
-      `${soloStreakRoute}/${soloStreakId}`
-    );
+    const deleteSoloStreakRoute = `${soloStreakRoute}/${soloStreakId}`;
+    const response = await request(server).delete(deleteSoloStreakRoute);
     expect(response.status).toEqual(ResponseCodes.deleted);
-    done();
   });
 });

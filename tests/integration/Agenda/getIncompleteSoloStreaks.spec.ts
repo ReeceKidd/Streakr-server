@@ -59,7 +59,6 @@ describe("getIncompleteSoloStreaks", () => {
     const incompleteSoloStreaks = (await getIncompleteSoloStreaks(
       timezone
     )) as any;
-    console.log(incompleteSoloStreaks);
     const incompleteStreak = incompleteSoloStreaks.find(
       (streak: SoloStreak) => (streak.streakName = name)
     );
