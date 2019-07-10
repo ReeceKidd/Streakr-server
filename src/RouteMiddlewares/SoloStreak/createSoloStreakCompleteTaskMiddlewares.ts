@@ -15,11 +15,9 @@ import {
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
 import { CustomError, ErrorType } from "../../customError";
-import { userId } from "../../Routers/usersRouter";
 
 export const soloStreakTaskCompleteParamsValidationSchema = {
-  soloStreakId: Joi.string().required(),
-  userId: Joi.string().required()
+  soloStreakId: Joi.string().required()
 };
 
 export const soloStreakTaskCompleteParamsValidationMiddleware = (
@@ -30,6 +28,22 @@ export const soloStreakTaskCompleteParamsValidationMiddleware = (
   Joi.validate(
     request.params,
     soloStreakTaskCompleteParamsValidationSchema,
+    getValidationErrorMessageSenderMiddleware(request, response, next)
+  );
+};
+
+export const soloStreakTaskCompleteBodyValidationSchema = {
+  userId: Joi.string().required()
+};
+
+export const soloStreakTaskCompleteBodyValidationMiddleware = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  Joi.validate(
+    request.body,
+    soloStreakTaskCompleteBodyValidationSchema,
     getValidationErrorMessageSenderMiddleware(request, response, next)
   );
 };
@@ -59,7 +73,7 @@ export const getRetreiveUserMiddleware = (
   userModel: mongoose.Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userId } = request.params;
+    const { userId } = request.body;
     const user = await userModel.findOne({ _id: userId }).lean();
     if (!user) {
       throw new CustomError(ErrorType.UserDoesNotExist);
@@ -140,8 +154,9 @@ export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
   completeTaskModel: mongoose.Model<CompleteTask>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { soloStreakId, userId } = request.params;
-    const { taskCompleteDay, user } = response.locals;
+    const { soloStreakId } = request.params;
+    const { userId } = request.body;
+    const { taskCompleteDay } = response.locals;
     const taskAlreadyCompletedToday = await completeTaskModel.findOne({
       userId,
       streakId: soloStreakId,
@@ -171,7 +186,8 @@ export const getCreateCompleteTaskDefinitionMiddleware = (
   streakType: string
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { soloStreakId, userId } = request.params;
+    const { soloStreakId } = request.params;
+    const { userId } = request.body;
     const { taskCompleteTime, taskCompleteDay } = response.locals;
     const completeTaskDefinition = {
       userId,
@@ -248,6 +264,7 @@ export const sendTaskCompleteResponseMiddleware = getSendTaskCompleteResponseMid
 
 export const createSoloStreakCompleteTaskMiddlewares = [
   soloStreakTaskCompleteParamsValidationMiddleware,
+  soloStreakTaskCompleteBodyValidationMiddleware,
   soloStreakExistsMiddleware,
   retreiveUserMiddleware,
   setTaskCompleteTimeMiddleware,
