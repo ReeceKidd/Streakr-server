@@ -3,7 +3,6 @@ import moment from "moment-timezone";
 import * as Joi from "joi";
 import * as mongoose from "mongoose";
 
-import { SupportedRequestHeaders } from "../../Server/headers";
 import { ResponseCodes } from "../../Server/responseCodes";
 
 import { userModel, User } from "../../Models/User";
@@ -16,9 +15,11 @@ import {
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
 import { CustomError, ErrorType } from "../../customError";
+import { userId } from "../../Routers/usersRouter";
 
 export const soloStreakTaskCompleteParamsValidationSchema = {
-  soloStreakId: Joi.string().required()
+  soloStreakId: Joi.string().required(),
+  userId: Joi.string().required()
 };
 
 export const soloStreakTaskCompleteParamsValidationMiddleware = (
@@ -58,8 +59,8 @@ export const getRetreiveUserMiddleware = (
   userModel: mongoose.Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { minimumUserData } = response.locals;
-    const user = await userModel.findOne({ _id: minimumUserData._id }).lean();
+    const { userId } = request.params;
+    const user = await userModel.findOne({ _id: userId }).lean();
     if (!user) {
       throw new CustomError(ErrorType.UserDoesNotExist);
     }
@@ -139,10 +140,10 @@ export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
   completeTaskModel: mongoose.Model<CompleteTask>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { soloStreakId } = request.params;
+    const { soloStreakId, userId } = request.params;
     const { taskCompleteDay, user } = response.locals;
     const taskAlreadyCompletedToday = await completeTaskModel.findOne({
-      userId: user._id,
+      userId,
       streakId: soloStreakId,
       taskCompleteDay
     });
@@ -170,10 +171,10 @@ export const getCreateCompleteTaskDefinitionMiddleware = (
   streakType: string
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { soloStreakId } = request.params;
-    const { taskCompleteTime, taskCompleteDay, user } = response.locals;
+    const { soloStreakId, userId } = request.params;
+    const { taskCompleteTime, taskCompleteDay } = response.locals;
     const completeTaskDefinition = {
-      userId: user._id,
+      userId,
       streakId: soloStreakId,
       taskCompleteTime: taskCompleteTime.toDate(),
       taskCompleteDay,

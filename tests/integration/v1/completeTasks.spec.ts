@@ -11,7 +11,6 @@ import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
 
 const registeredEmail = "create-complete-tasks-user@gmail.com";
-const registeredPassword = "12345678";
 const registeredUsername = "create-complete-tasks-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
@@ -29,13 +28,12 @@ describe(createSoloStreakRoute, () => {
   const name = "Intermittent Fastings";
   const description = "I will not eat until 1pm everyday";
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
         username: registeredUsername,
-        email: registeredEmail,
-        password: registeredPassword
+        email: registeredEmail
       });
     userId = registrationResponse.body._id;
     const createSoloStreakResponse = await request(server)
@@ -47,20 +45,18 @@ describe(createSoloStreakRoute, () => {
       })
       .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
     soloStreakId = createSoloStreakResponse.body._id;
-    done();
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     await userModel.deleteOne({ email: registeredEmail });
     await soloStreakModel.deleteOne({ _id: soloStreakId });
     await soloStreakModel.deleteOne({ _id: secondSoloStreakId });
     await completeTaskModel.deleteOne({ userId, streakId: soloStreakId });
     await completeTaskModel.deleteOne({ userId, streakId: secondSoloStreakId });
-    done();
   });
 
   describe("/v1/solo-streaks/{id}/complete-tasks", () => {
-    test("that user can say that a task has been completed for the day", async done => {
+    test("that user can say that a task has been completed for the day", async () => {
       expect.assertions(6);
       const completeTaskResponse = await request(server)
         .post(
@@ -80,10 +76,9 @@ describe(createSoloStreakRoute, () => {
         soloStreakId
       )) as SoloStreak;
       expect(soloStreak.currentStreak.startDate).toBeDefined();
-      done();
     });
 
-    test("that user cannot complete the same task in the same day", async done => {
+    test("that user cannot complete the same task in the same day", async () => {
       expect.assertions(2);
       const secondaryCreateSoloStreakResponse = await request(server)
         .post(createSoloStreakRoute)
@@ -104,13 +99,13 @@ describe(createSoloStreakRoute, () => {
           `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}/${RouteCategories.completeTasks}`
         )
         .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
+      console.log(secondCompleteTaskResponse);
       expect(secondCompleteTaskResponse.status).toEqual(
         ResponseCodes.unprocessableEntity
       );
       expect(secondCompleteTaskResponse.body.message).toEqual(
         "Task has already been completed today"
       );
-      done();
     });
   });
 });

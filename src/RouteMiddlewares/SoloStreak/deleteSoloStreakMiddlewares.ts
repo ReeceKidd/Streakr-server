@@ -5,9 +5,6 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { soloStreakModel, SoloStreak } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { getLocalisedString } from "../../Messages/getLocalisedString";
-import { MessageCategories } from "../../Messages/messageCategories";
-import { FailureMessageKeys } from "../../Messages/failureMessages";
 import { CustomError, ErrorType } from "../../customError";
 
 const soloStreakParamsValidationSchema = {
