@@ -37,7 +37,6 @@ export const getDeleteSoloStreakMiddleware = (
     response.locals.deletedSoloStreak = deletedSoloStreak;
     next();
   } catch (err) {
-    return response.send(err);
     if (err instanceof CustomError) next(err);
     else next(new CustomError(ErrorType.DeleteSoloStreakMiddleware, err));
   }
@@ -53,7 +52,6 @@ export const getSendSoloStreakDeletedResponseMiddleware = (
   try {
     return response.status(successfulDeletetionResponseCode).send();
   } catch (err) {
-    return response.send(err);
     next(
       new CustomError(ErrorType.SendSoloStreakDeletedResponseMiddleware, err)
     );
