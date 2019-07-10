@@ -55,15 +55,6 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
-    expect.assertions(3);
-    const customError = new CustomError(ErrorType.TaskAlreadyCompletedToday);
-    const { code, message, httpStatusCode } = customError;
-    expect(code).toBe(`400-05`);
-    expect(message).toBe("Task already completed today.");
-    expect(httpStatusCode).toBe(400);
-  });
-
   test(`creates correct error when type is set to NoSoloStreakToDeleteFound`, () => {
     expect.assertions(3);
     const customError = new CustomError(ErrorType.NoSoloStreakToDeleteFound);
@@ -109,6 +100,15 @@ describe("customError", () => {
     expect(code).toBe(`400-10`);
     expect(message).toBe("Username already exists.");
     expect(httpStatusCode).toBe(400);
+  });
+
+  test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
+    expect.assertions(3);
+    const customError = new CustomError(ErrorType.TaskAlreadyCompletedToday);
+    const { code, message, httpStatusCode } = customError;
+    expect(code).toBe(`422-01`);
+    expect(message).toBe("Task already completed today.");
+    expect(httpStatusCode).toBe(422);
   });
 
   test(`creates correct error when type is set to RetreiveUserWithEmailMiddlewareError`, () => {

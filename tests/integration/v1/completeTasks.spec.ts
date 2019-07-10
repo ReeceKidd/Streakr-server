@@ -62,6 +62,7 @@ describe(createSoloStreakRoute, () => {
         .post(
           `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}/${RouteCategories.completeTasks}`
         )
+        .send({ userId })
         .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
       expect(completeTaskResponse.status).toEqual(ResponseCodes.created);
       expect(completeTaskResponse.body.completeTask._id).toBeDefined();
@@ -79,7 +80,7 @@ describe(createSoloStreakRoute, () => {
     });
 
     test("that user cannot complete the same task in the same day", async () => {
-      expect.assertions(2);
+      expect.assertions(3);
       const secondaryCreateSoloStreakResponse = await request(server)
         .post(createSoloStreakRoute)
         .send({
@@ -93,19 +94,21 @@ describe(createSoloStreakRoute, () => {
         .post(
           `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}/${RouteCategories.completeTasks}`
         )
+        .send({ userId })
         .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
       const secondCompleteTaskResponse = await request(server)
         .post(
           `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}/${RouteCategories.completeTasks}`
         )
+        .send({ userId })
         .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
-      console.log(secondCompleteTaskResponse);
       expect(secondCompleteTaskResponse.status).toEqual(
         ResponseCodes.unprocessableEntity
       );
       expect(secondCompleteTaskResponse.body.message).toEqual(
-        "Task has already been completed today"
+        "Task already completed today."
       );
+      expect(secondCompleteTaskResponse.body.code).toEqual("422-01");
     });
   });
 });

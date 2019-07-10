@@ -128,14 +128,6 @@ export class CustomError extends Error {
         };
       }
 
-      case ErrorType.TaskAlreadyCompletedToday: {
-        return {
-          code: `${ResponseCodes.badRequest}-05`,
-          message: "Task already completed today.",
-          httpStatusCode: ResponseCodes.badRequest
-        };
-      }
-
       case ErrorType.NoSoloStreakToDeleteFound: {
         return {
           code: `${ResponseCodes.badRequest}-06`,
@@ -173,6 +165,14 @@ export class CustomError extends Error {
           code: `${ResponseCodes.badRequest}-10`,
           message: "Username already exists.",
           httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.TaskAlreadyCompletedToday: {
+        return {
+          code: `${ResponseCodes.unprocessableEntity}-01`,
+          message: "Task already completed today.",
+          httpStatusCode: ResponseCodes.unprocessableEntity
         };
       }
 
