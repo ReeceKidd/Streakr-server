@@ -11,7 +11,6 @@ import { resetIncompleteSoloStreaks } from "../../../src/Agenda/resetIncompleteS
 
 const registeredUsername = "resetIncompleteSoloStreaksUsername";
 const registeredEmail = "resetIncompleteSoloStreaks@gmail.com";
-const registeredPassword = "resetSoloStreaksPassword";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
@@ -25,13 +24,12 @@ describe("resetIncompleteSoloStreaks", () => {
   const description = "I will program for one hour everyday";
   const timezone = "America/Louisville";
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
         username: registeredUsername,
-        email: registeredEmail,
-        password: registeredPassword
+        email: registeredEmail
       });
     userId = registrationResponse.body._id;
     const createSoloStreakResponse = await request(server)
@@ -43,16 +41,14 @@ describe("resetIncompleteSoloStreaks", () => {
       })
       .set({ [SupportedRequestHeaders.xTimezone]: timezone });
     soloStreakId = createSoloStreakResponse.body._id;
-    done();
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     await userModel.deleteOne({ email: registeredEmail });
     await soloStreakModel.deleteOne({ _id: soloStreakId });
-    done();
   });
 
-  test("that resetIncompleteSoloStreaks updates the current and past values of a streak", async done => {
+  test("that resetIncompleteSoloStreaks updates the current and past values of a streak", async () => {
     expect.assertions(3);
     /*
         Have to force soloStreak to have new date because streaks without a new date aren't
@@ -74,6 +70,5 @@ describe("resetIncompleteSoloStreaks", () => {
     expect(updatedSoloStreak.currentStreak.endDate).toBeUndefined();
     expect(updatedSoloStreak.pastStreaks.length).toBe(1);
     expect(updatedSoloStreak.pastStreaks[0].endDate).toEqual(endDate);
-    done();
   });
 });
