@@ -10,7 +10,6 @@ import { ResponseCodes } from "../../../src/Server/responseCodes";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
 const registeredEmail = "patch-solo-streak-user@gmail.com";
-const registeredPassword = "12345678";
 const registeredUsername = "patch-solo-streak-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
@@ -29,13 +28,12 @@ describe(`PATCH ${soloStreakRoute}`, () => {
   const name = "Keto";
   const description = "I will follow the keto diet every day";
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
         username: registeredUsername,
-        email: registeredEmail,
-        password: registeredPassword
+        email: registeredEmail
       });
     userId = registrationResponse.body._id;
     const createSoloStreakResponse = await request(server)
@@ -47,16 +45,14 @@ describe(`PATCH ${soloStreakRoute}`, () => {
       })
       .set({ [SupportedRequestHeaders.xTimezone]: romeTimezone });
     soloStreakId = createSoloStreakResponse.body._id;
-    done();
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     await userModel.deleteOne({ email: registeredEmail });
     await soloStreakModel.deleteOne({ _id: soloStreakId });
-    done();
   });
 
-  test(`that request passes when solo streak is patched with correct keys`, async done => {
+  test(`that request passes when solo streak is patched with correct keys`, async () => {
     expect.assertions(9);
     updatedName = "Intermittent fasting";
     const updatedDescription = "Cannot eat till 1pm everyday";
@@ -78,6 +74,5 @@ describe(`PATCH ${soloStreakRoute}`, () => {
     );
     expect(response.body.data).toHaveProperty("createdAt");
     expect(response.body.data).toHaveProperty("updatedAt");
-    done();
   });
 });
