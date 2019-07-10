@@ -10,7 +10,6 @@ import { getIncompleteSoloStreaks } from "../../../src/Agenda/getIncompleteSoloS
 
 const registeredUsername = "getIncompleteSoloStreaksUsername";
 const registeredEmail = "getIncompleteSoloStreaksRegisteredEmail@gmail.com";
-const registeredPassword = "getIncompleteSoloStreaksRegisteredPassword";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
@@ -29,8 +28,7 @@ describe("getIncompleteSoloStreaks", () => {
       .post(registrationRoute)
       .send({
         username: registeredUsername,
-        email: registeredEmail,
-        password: registeredPassword
+        email: registeredEmail
       });
     userId = registrationResponse.body._id;
     const createSoloStreakResponse = await request(server)
@@ -61,6 +59,7 @@ describe("getIncompleteSoloStreaks", () => {
     const incompleteSoloStreaks = (await getIncompleteSoloStreaks(
       timezone
     )) as any;
+    console.log(incompleteSoloStreaks);
     const incompleteStreak = incompleteSoloStreaks.find(
       (streak: SoloStreak) => (streak.streakName = name)
     );

@@ -4,10 +4,6 @@ import { registerUserMiddlewares } from "../RouteMiddlewares/User/registerUserMi
 
 export const userId = "userId";
 
-export enum UserProperties {
-  friends = "friends"
-}
-
 const usersRouter = Router();
 
 usersRouter.get("/", ...getUsersMiddlewares);
