@@ -4,7 +4,6 @@ import server from "../../../src/app";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
-import { soloStreakModel } from "../../../src/Models/SoloStreak";
 
 import { ResponseCodes } from "../../../src/Server/responseCodes";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";

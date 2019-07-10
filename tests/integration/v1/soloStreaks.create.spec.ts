@@ -10,7 +10,6 @@ import { ResponseCodes } from "../../../src/Server/responseCodes";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
 const registeredEmail = "create-solo-streak-user@gmail.com";
-const registeredPassword = "12345678";
 const registeredUsername = "create-solo-streak-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
@@ -31,8 +30,7 @@ describe(createSoloStreakRoute, () => {
       .post(registrationRoute)
       .send({
         username: registeredUsername,
-        email: registeredEmail,
-        password: registeredPassword
+        email: registeredEmail
       });
     userId = registrationResponse.body._id;
     done();
@@ -44,7 +42,7 @@ describe(createSoloStreakRoute, () => {
     done();
   });
 
-  test(`that request passes when correct solo streak information is passed`, async done => {
+  test(`that request passes when correct solo streak information is passed`, async () => {
     expect.assertions(9);
     const response = await request(server)
       .post(createSoloStreakRoute)
@@ -63,6 +61,5 @@ describe(createSoloStreakRoute, () => {
     expect(response.body.currentStreak).toHaveProperty("numberOfDaysInARow");
     expect(response.body).toHaveProperty("createdAt");
     expect(response.body).toHaveProperty("updatedAt");
-    done();
   });
 });
