@@ -9,7 +9,6 @@ import { ResponseCodes } from "../../../src/Server/responseCodes";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 
 const registeredEmail = "get-solo-streaks@gmail.com";
-const registeredPassword = "12345678";
 const registeredUsername = "get-solo-streaks-user";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
@@ -32,8 +31,7 @@ describe(getSoloStreaksRoute, () => {
       .post(registrationRoute)
       .send({
         username: registeredUsername,
-        email: registeredEmail,
-        password: registeredPassword
+        email: registeredEmail
       });
     userId = registrationResponse.body._id;
     await request(server)
