@@ -14,9 +14,8 @@ describe(userRegistationRoute, () => {
   const username = "tester1";
   const email = "tester1@gmail.com";
 
-  afterAll(async done => {
+  afterAll(async () => {
     await userModel.deleteOne({ email });
-    done();
   });
 
   test("user can register successfully", async () => {

@@ -44,9 +44,9 @@ export enum ErrorType {
   PatchSoloStreakMiddleware,
   SendUpdatedSoloStreakMiddleware,
   SetSearchQueryToLowercaseMiddleware,
-  RetreiveUsersByUsernameRegexSearchMiddleware,
+  RetreiveUsersByLowercaseUsernameRegexSearchMiddleware,
   FormatUsersMiddleware,
-  SendFormattedUsersMiddleware,
+  SendUsersMiddleware,
   UserEmailAlreadyExists,
   DoesUserEmailExistMiddleware,
   SetUsernameToLowercaseMiddleware,
@@ -426,7 +426,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.RetreiveUsersByUsernameRegexSearchMiddleware:
+      case ErrorType.RetreiveUsersByLowercaseUsernameRegexSearchMiddleware:
         return {
           code: `${ResponseCodes.warning}-35`,
           message: internalServerMessage,
@@ -440,7 +440,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SendFormattedUsersMiddleware:
+      case ErrorType.SendUsersMiddleware:
         return {
           code: `${ResponseCodes.warning}-37`,
           message: internalServerMessage,

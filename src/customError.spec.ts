@@ -441,7 +441,7 @@ describe("customError", () => {
   test(`creates correct error when type is set to RetreiveUsersByUsernameRegexSearchMiddleware`, () => {
     expect.assertions(3);
     const customError = new CustomError(
-      ErrorType.RetreiveUsersByUsernameRegexSearchMiddleware
+      ErrorType.RetreiveUsersByLowercaseUsernameRegexSearchMiddleware
     );
     const { code, message, httpStatusCode } = customError;
     expect(code).toBe(`500-35`);
@@ -458,9 +458,9 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to SendFormattedUsersMiddleware`, () => {
+  test(`creates correct error when type is set to SendUsersMiddleware`, () => {
     expect.assertions(3);
-    const customError = new CustomError(ErrorType.SendFormattedUsersMiddleware);
+    const customError = new CustomError(ErrorType.SendUsersMiddleware);
     const { code, message, httpStatusCode } = customError;
     expect(code).toBe(`500-37`);
     expect(message).toBe("Internal Server Error.");

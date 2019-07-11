@@ -1,12 +1,10 @@
 import {
   getUsersMiddlewares,
   retreiveUsersValidationMiddleware,
-  retreiveUsersByUsernameRegexSearchMiddleware,
-  formatUsersMiddleware,
   maximumSearchQueryLength,
-  getRetreiveUsersByUsernameRegexSearchMiddleware,
+  getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware,
   sendFormattedUsersMiddleware,
-  setSearchQueryToLowercaseMiddleware
+  retreiveUsersByLowercaseUsernameRegexSearchMiddleware
 } from "./getUsersMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -131,71 +129,32 @@ describe(`getUsersValidationMiddleware`, () => {
   });
 });
 
-describe("setSearchQueryToLowerCaseMiddleware", () => {
-  const mockSearchQuery = "Search";
-  const mockLowerCaseSearchQuery = "search";
-
-  test("sets username to lowercase", () => {
-    const request: any = { query: { searchQuery: mockSearchQuery } };
-    const response: any = { locals: {} };
-    const next = jest.fn();
-
-    setSearchQueryToLowercaseMiddleware(request, response, next);
-
-    expect.assertions(2);
-    expect(response.locals.lowerCaseSearchQuery).toBe(mockLowerCaseSearchQuery);
-    expect(next).toBeCalledWith();
-  });
-
-  test("calls next with SetSearchQueryToLowercaseMiddleware error on middleware failure", () => {
-    const request: any = {
-      query: {
-        searchQuery: {
-          toLowerCase: () => {
-            throw new Error();
-          }
-        }
-      }
-    };
-    const response: any = {};
-    const next = jest.fn();
-
-    setSearchQueryToLowercaseMiddleware(request, response, next);
-
-    expect.assertions(1);
-    expect(next).toBeCalledWith(
-      new CustomError(
-        ErrorType.SetSearchQueryToLowercaseMiddleware,
-        expect.any(Error)
-      )
-    );
-  });
-});
-
-describe("getUsersByUsernameRegexSearchMiddleware", () => {
+describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
   test("sets response.locals.users", async () => {
-    const mockSearchQuery = "searchQuery";
+    const searchQuery = "searchQuery";
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
     const find = jest.fn(() => Promise.resolve(true));
     const userModel = { find };
 
-    const request: any = {};
+    const request: any = { query: { searchQuery } };
     const response: any = {
-      status,
-      locals: { lowerCaseSearchQuery: mockSearchQuery }
+      locals: {},
+      status
     };
     const next = jest.fn();
 
-    const middleware = getRetreiveUsersByUsernameRegexSearchMiddleware(
+    const middleware = getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware(
       userModel as any
     );
 
-    await middleware(request, response, next);
+    const r = await middleware(request, response, next);
 
     expect.assertions(3);
-    expect(find).toBeCalledWith({ username: { $regex: mockSearchQuery } });
+    expect(find).toBeCalledWith({
+      username: { $regex: searchQuery.toLowerCase() }
+    });
     expect(response.locals.users).toBeDefined();
     expect(next).toBeCalledWith();
   });
@@ -215,7 +174,7 @@ describe("getUsersByUsernameRegexSearchMiddleware", () => {
     };
     const next = jest.fn();
 
-    const middleware = getRetreiveUsersByUsernameRegexSearchMiddleware(
+    const middleware = getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware(
       userModel as any
     );
 
@@ -225,70 +184,20 @@ describe("getUsersByUsernameRegexSearchMiddleware", () => {
     expect(response.locals.users).not.toBeDefined();
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.RetreiveUsersByUsernameRegexSearchMiddleware,
+        ErrorType.RetreiveUsersByLowercaseUsernameRegexSearchMiddleware,
         expect.any(Error)
       )
     );
   });
 });
 
-describe("formatUsersMiddleware", () => {
-  test("sets response.locals.formattedUsers", () => {
-    expect.assertions(2);
-
-    const mockUser = {
-      toObject: jest.fn(() => {
-        return {
-          _id: "1234",
-          username: "test",
-          email: "test@test.com",
-          password: "12345678",
-          role: "Admin",
-          preferredLanguage: "English"
-        };
-      })
-    };
-
-    const request: any = {};
-    const response: any = { locals: { users: [mockUser] } };
-    const next = jest.fn();
-
-    formatUsersMiddleware(request, response, next);
-
-    const formattedUser = {
-      ...mockUser.toObject(),
-      password: undefined
-    };
-
-    expect(response.locals.formattedUsers[0]).toEqual({
-      ...formattedUser
-    });
-    expect(next).toBeCalledWith();
-  });
-
-  test("calls next with SendFormattedUsersMiddleware error on middleware failure", () => {
-    expect.assertions(2);
-
-    const request: any = {};
-    const response: any = { locals: {} };
-    const next = jest.fn();
-
-    formatUsersMiddleware(request, response, next);
-
-    expect(response.locals.formattedUsers).toBe(undefined);
-    expect(next).toBeCalledWith(
-      new CustomError(ErrorType.SendFormattedUsersMiddleware, expect.any(Error))
-    );
-  });
-});
-
 describe("sendUsersMiddleware", () => {
-  test("should send formattedUsers in response", () => {
+  test("should send users in response", () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {};
-    const formattedUsers = ["user"];
-    const response: any = { locals: { formattedUsers }, status };
+    const users = ["user"];
+    const response: any = { locals: { users }, status };
     const next = jest.fn();
 
     sendFormattedUsersMiddleware(request, response, next);
@@ -297,7 +206,7 @@ describe("sendUsersMiddleware", () => {
     expect.assertions(3);
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(ResponseCodes.success);
-    expect(send).toBeCalledWith({ users: formattedUsers });
+    expect(send).toBeCalledWith({ users });
   });
 
   test("should call next with an error on failure", () => {
@@ -315,20 +224,19 @@ describe("sendUsersMiddleware", () => {
 
     expect.assertions(1);
     expect(next).toBeCalledWith(
-      new CustomError(ErrorType.SendFormattedUsersMiddleware, expect.any(Error))
+      new CustomError(ErrorType.SendUsersMiddleware, expect.any(Error))
     );
   });
 });
 
 describe(`getUsersMiddlewares`, () => {
   test("that getUsersMiddlewares are defined in the correct order", () => {
-    expect.assertions(5);
+    expect.assertions(4);
+    expect(getUsersMiddlewares.length).toEqual(3);
     expect(getUsersMiddlewares[0]).toBe(retreiveUsersValidationMiddleware);
-    expect(getUsersMiddlewares[1]).toBe(setSearchQueryToLowercaseMiddleware);
-    expect(getUsersMiddlewares[2]).toBe(
-      retreiveUsersByUsernameRegexSearchMiddleware
+    expect(getUsersMiddlewares[1]).toBe(
+      retreiveUsersByLowercaseUsernameRegexSearchMiddleware
     );
-    expect(getUsersMiddlewares[3]).toBe(formatUsersMiddleware);
-    expect(getUsersMiddlewares[4]).toBe(sendFormattedUsersMiddleware);
+    expect(getUsersMiddlewares[2]).toBe(sendFormattedUsersMiddleware);
   });
 });

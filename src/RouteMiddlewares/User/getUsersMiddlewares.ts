@@ -29,61 +29,28 @@ export const retreiveUsersValidationMiddleware = (
   );
 };
 
-export const setSearchQueryToLowercaseMiddleware = (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const { searchQuery } = request.query;
-    response.locals.lowerCaseSearchQuery = searchQuery.toLowerCase();
-    next();
-  } catch (err) {
-    next(new CustomError(ErrorType.SetSearchQueryToLowercaseMiddleware, err));
-  }
-};
-
-export const getRetreiveUsersByUsernameRegexSearchMiddleware = (
+export const getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware = (
   userModel: mongoose.Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { lowerCaseSearchQuery } = response.locals;
+    const { searchQuery } = request.query;
     response.locals.users = await userModel.find({
-      username: { $regex: lowerCaseSearchQuery }
+      username: { $regex: searchQuery.toLowerCase() }
     });
     next();
   } catch (err) {
     next(
       new CustomError(
-        ErrorType.RetreiveUsersByUsernameRegexSearchMiddleware,
+        ErrorType.RetreiveUsersByLowercaseUsernameRegexSearchMiddleware,
         err
       )
     );
   }
 };
 
-export const retreiveUsersByUsernameRegexSearchMiddleware = getRetreiveUsersByUsernameRegexSearchMiddleware(
+export const retreiveUsersByLowercaseUsernameRegexSearchMiddleware = getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware(
   userModel
 );
-
-export const formatUsersMiddleware = (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const { users } = response.locals;
-    response.locals.formattedUsers = users.map((user: User) => {
-      return {
-        ...user.toObject(),
-        password: undefined
-      };
-    });
-    next();
-  } catch (err) {
-    next(new CustomError(ErrorType.FormatUsersMiddleware, err));
-  }
-};
 
 export const sendFormattedUsersMiddleware = (
   request: Request,
@@ -91,19 +58,15 @@ export const sendFormattedUsersMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const { formattedUsers } = response.locals;
-    return response
-      .status(ResponseCodes.success)
-      .send({ users: formattedUsers });
+    const { users } = response.locals;
+    return response.status(ResponseCodes.success).send({ users });
   } catch (err) {
-    next(new CustomError(ErrorType.SendFormattedUsersMiddleware, err));
+    next(new CustomError(ErrorType.SendUsersMiddleware, err));
   }
 };
 
 export const getUsersMiddlewares = [
   retreiveUsersValidationMiddleware,
-  setSearchQueryToLowercaseMiddleware,
-  retreiveUsersByUsernameRegexSearchMiddleware,
-  formatUsersMiddleware,
+  retreiveUsersByLowercaseUsernameRegexSearchMiddleware,
   sendFormattedUsersMiddleware
 ];
