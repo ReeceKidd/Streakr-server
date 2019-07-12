@@ -518,6 +518,12 @@ export class CustomError extends Error {
         };
 
       case ErrorType.InternalServerError:
+        return {
+          code: `${ResponseCodes.warning}-01`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
       default:
         return {
           code: `${ResponseCodes.warning}-01`,
