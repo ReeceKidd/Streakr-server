@@ -1,6 +1,7 @@
 import Agenda from "agenda";
 import { getServiceConfig } from "../getServiceConfig";
 import { handleIncompleteSoloStreaks } from "./handleIncompleteSoloStreaks";
+import { Err } from "joi";
 
 const { DATABASE_URI } = getServiceConfig();
 const agenda = new Agenda({
@@ -26,13 +27,23 @@ export enum AgendaTimeRanges {
   day = "day"
 }
 
+interface SoloStreakCompleteForTimezoneTrackerData
+  extends Agenda.JobAttributesData {
+  timezone?: string;
+}
+
+export const soloStreakCompleteForTimezoneTracker = async (
+  job: SoloStreakCompleteForTimezoneTrackerData,
+  done: (err?: Error | undefined) => void
+) => {
+  const timezone = job.attrs.data.timezone;
+  await handleIncompleteSoloStreaks(timezone);
+  done();
+};
+
 agenda.define(
   AgendaJobs.soloStreakCompleteForTimezoneTracker,
-  async (job, done) => {
-    const { timezone } = job.attrs.data;
-    await handleIncompleteSoloStreaks(timezone);
-    done();
-  }
+  soloStreakCompleteForTimezoneTracker
 );
 
 export default agenda;
