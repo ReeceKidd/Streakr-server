@@ -517,13 +517,6 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.CognitoSignUpError:
-        return {
-          code: `${ResponseCodes.warning}-48`,
-          message: internalServerMessage,
-          httpStatusCode: ResponseCodes.warning
-        };
-
       case ErrorType.InternalServerError:
       default:
         return {

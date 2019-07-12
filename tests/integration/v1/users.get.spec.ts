@@ -26,7 +26,6 @@ describe("/users", () => {
         username: registeredUsername,
         email: registeredEmail
       });
-    console.log(result.body);
     await request(server)
       .post(registrationRoute)
       .send({
