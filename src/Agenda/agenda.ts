@@ -1,8 +1,6 @@
 import Agenda from "agenda";
-import * as moment from "moment-timezone";
-import { getIncompleteSoloStreaks } from "./getIncompleteSoloStreaks";
-import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
 import { getServiceConfig } from "../getServiceConfig";
+import { handleIncompleteSoloStreaks } from "./handleIncompleteSoloStreaks";
 
 const { DATABASE_URI } = getServiceConfig();
 const agenda = new Agenda({
@@ -32,11 +30,7 @@ agenda.define(
   AgendaJobs.soloStreakCompleteForTimezoneTracker,
   async (job, done) => {
     const { timezone } = job.attrs.data;
-    const incompleteSoloStreaks = await getIncompleteSoloStreaks(timezone);
-    await resetIncompleteSoloStreaks(
-      incompleteSoloStreaks,
-      moment.tz(timezone).toDate()
-    );
+    await handleIncompleteSoloStreaks(timezone);
     done();
   }
 );
