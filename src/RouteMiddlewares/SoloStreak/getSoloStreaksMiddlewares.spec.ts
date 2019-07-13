@@ -11,10 +11,8 @@ import { CustomError, ErrorType } from "../../customError";
 describe("getSoloStreaksValidationMiddleware", () => {
   test("passes valid request", () => {
     expect.assertions(1);
-
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       query: { userId: "1234" }
     };
@@ -30,10 +28,8 @@ describe("getSoloStreaksValidationMiddleware", () => {
 
   test("sends error when request has no params", () => {
     expect.assertions(3);
-
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       query: {}
     };
@@ -53,10 +49,8 @@ describe("getSoloStreaksValidationMiddleware", () => {
 
   test("sends userId cannot be a number error", () => {
     expect.assertions(3);
-
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       query: { userId: 123 }
     };
@@ -78,7 +72,6 @@ describe("getSoloStreaksValidationMiddleware", () => {
 describe("findSoloStreaksMiddleware", () => {
   test("sets response.locals.soloStreaks", async () => {
     expect.assertions(2);
-
     const find = jest.fn(() => Promise.resolve(true));
     const soloStreakModel = {
       find
@@ -86,7 +79,6 @@ describe("findSoloStreaksMiddleware", () => {
     const request: any = { query: { userId: "1234" } };
     const response: any = { locals: {} };
     const next = jest.fn();
-
     const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
 
     await middleware(request, response, next);
@@ -97,7 +89,6 @@ describe("findSoloStreaksMiddleware", () => {
 
   test("calls next with FindSoloStreaksMiddleware error on middleware failure", async () => {
     expect.assertions(1);
-
     const ERROR_MESSAGE = "error";
     const find = jest.fn(() => Promise.reject(ERROR_MESSAGE));
     const soloStreakModel = {
@@ -106,7 +97,6 @@ describe("findSoloStreaksMiddleware", () => {
     const request: any = { query: { userId: "1234" } };
     const response: any = { locals: {} };
     const next = jest.fn();
-
     const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
 
     await middleware(request, response, next);
@@ -133,7 +123,6 @@ describe("sendSoloStreaksMiddleware", () => {
     const next = jest.fn();
 
     sendSoloStreaksMiddleware(request, response, next);
-    send;
 
     expect.assertions(3);
     expect(next).not.toBeCalled();
@@ -142,19 +131,18 @@ describe("sendSoloStreaksMiddleware", () => {
   });
 
   test("calls next with SendSoloStreaksMiddleware on middleware failure", () => {
+    expect.assertions(1);
     const ERROR_MESSAGE = "sendSoloStreaks error";
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
     const status = jest.fn(() => ({ send }));
     const response: any = { locals: {}, status };
-
     const request: any = {};
     const next = jest.fn();
 
     sendSoloStreaksMiddleware(request, response, next);
 
-    expect.assertions(1);
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.SendSoloStreaksMiddleware, expect.any(Error))
     );
@@ -164,6 +152,7 @@ describe("sendSoloStreaksMiddleware", () => {
 describe(`getSoloStreaksMiddlewares`, () => {
   test("that getSoloStreaksMiddlewares are defined in the correct order", async () => {
     expect.assertions(3);
+
     expect(getSoloStreaksMiddlewares[0]).toBe(
       getSoloStreaksValidationMiddleware
     );

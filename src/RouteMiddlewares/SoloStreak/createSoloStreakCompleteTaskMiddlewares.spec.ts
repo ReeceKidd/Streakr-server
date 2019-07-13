@@ -33,7 +33,6 @@ describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       params: { soloStreakId }
     };
@@ -43,6 +42,7 @@ describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
     const next = jest.fn();
 
     soloStreakTaskCompleteParamsValidationMiddleware(request, response, next);
+
     expect(next).toBeCalled();
   });
 
@@ -50,7 +50,6 @@ describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       params: {}
     };
@@ -72,7 +71,6 @@ describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       params: { soloStreakId: 1234 }
     };
@@ -99,7 +97,6 @@ describe(`soloStreakTaskCompleteBodyValidationMiddleware`, () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { userId }
     };
@@ -109,6 +106,7 @@ describe(`soloStreakTaskCompleteBodyValidationMiddleware`, () => {
     const next = jest.fn();
 
     soloStreakTaskCompleteBodyValidationMiddleware(request, response, next);
+
     expect(next).toBeCalled();
   });
 
@@ -116,7 +114,6 @@ describe(`soloStreakTaskCompleteBodyValidationMiddleware`, () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: {}
     };
@@ -144,11 +141,10 @@ describe("soloStreakExistsMiddleware", () => {
     };
     const response: any = { locals: {} };
     const next = jest.fn();
-
     const findOne = jest.fn(() => Promise.resolve(true));
     const soloStreakModel = { findOne };
-
     const middleware = getSoloStreakExistsMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
 
     expect(findOne).toBeCalledWith({ _id: soloStreakId });
@@ -164,11 +160,10 @@ describe("soloStreakExistsMiddleware", () => {
     };
     const response: any = { locals: {} };
     const next = jest.fn();
-
     const findOne = jest.fn(() => Promise.resolve(false));
     const soloStreakModel = { findOne };
-
     const middleware = getSoloStreakExistsMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
@@ -181,11 +176,10 @@ describe("soloStreakExistsMiddleware", () => {
     const request: any = {};
     const response: any = { locals: {} };
     const next = jest.fn();
-
     const findOne = jest.fn(() => Promise.resolve(true));
     const soloStreakModel = { findOne };
-
     const middleware = getSoloStreakExistsMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
@@ -197,7 +191,6 @@ describe("soloStreakExistsMiddleware", () => {
 describe("retreiveUserMiddleware", () => {
   test("sets response.locals.user and calls next()", async () => {
     expect.assertions(4);
-
     const lean = jest.fn(() => true);
     const findOne = jest.fn(() => ({ lean }));
     const userModel = { findOne };
@@ -205,8 +198,8 @@ describe("retreiveUserMiddleware", () => {
     const request: any = { body: { userId } };
     const response: any = { locals: {} };
     const next = jest.fn();
-
     const middleware = getRetreiveUserMiddleware(userModel as any);
+
     await middleware(request, response, next);
 
     expect(response.locals.user).toBeDefined();
@@ -224,8 +217,8 @@ describe("retreiveUserMiddleware", () => {
     const request: any = { body: { userId } };
     const response: any = { locals: {} };
     const next = jest.fn();
-
     const middleware = getRetreiveUserMiddleware(userModel as any);
+
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(new CustomError(ErrorType.UserDoesNotExist));
@@ -241,8 +234,8 @@ describe("retreiveUserMiddleware", () => {
     const request: any = { body: { userId } };
     const response: any = { status, locals: {} };
     const next = jest.fn();
-
     const middleware = getRetreiveUserMiddleware(userModel as any);
+
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
@@ -261,7 +254,9 @@ describe("setTaskCompleteTimeMiddleware", () => {
     const response: any = { locals: { timezone } };
     const next = jest.fn();
     const middleware = getSetTaskCompleteTimeMiddleware(moment);
+
     middleware(request, response, next);
+
     expect(moment).toBeCalledWith();
     expect(tz).toBeCalledWith(timezone);
     expect(response.locals.taskCompleteTime).toBeDefined();
@@ -276,7 +271,9 @@ describe("setTaskCompleteTimeMiddleware", () => {
     const response: any = {};
     const next = jest.fn();
     const middleware = getSetTaskCompleteTimeMiddleware(moment);
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.SetTaskCompleteTimeMiddleware,
@@ -304,7 +301,9 @@ describe("setStreakStartDateMiddleware", () => {
     const response: any = { locals: { soloStreak, taskCompleteTime } };
     const next: any = jest.fn();
     const middleware = await getSetStreakStartDateMiddleware(soloStreakModel);
+
     await middleware(request, response, next);
+
     expect(findByIdAndUpdate).toBeCalledWith(soloStreakId, {
       currentStreak: { startDate: taskCompleteTime }
     });
@@ -328,7 +327,9 @@ describe("setStreakStartDateMiddleware", () => {
     const response: any = { locals: { soloStreak, taskCompleteTime } };
     const next: any = jest.fn();
     const middleware = await getSetStreakStartDateMiddleware(soloStreakModel);
+
     await middleware(request, response, next);
+
     expect(findByIdAndUpdate).not.toBeCalled();
     expect(next).toBeCalledWith();
   });
@@ -339,7 +340,9 @@ describe("setStreakStartDateMiddleware", () => {
     const response: any = {};
     const next = jest.fn();
     const middleware = getSetStreakStartDateMiddleware(undefined as any);
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.SetStreakStartDateMiddleware, expect.any(Error))
     );
@@ -358,7 +361,9 @@ describe("setDayTaskWasCompletedMiddleware", () => {
     const response: any = { locals: { taskCompleteTime } };
     const next = jest.fn();
     const middleware = getSetDayTaskWasCompletedMiddleware(dayFormat);
+
     middleware(request, response, next);
+
     expect(format).toBeCalledWith(dayFormat);
     expect(response.locals.taskCompleteDay).toBeDefined();
     expect(next).toBeDefined();
@@ -371,7 +376,9 @@ describe("setDayTaskWasCompletedMiddleware", () => {
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getSetDayTaskWasCompletedMiddleware(dayFormat);
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.SetDayTaskWasCompletedMiddleware,
@@ -395,7 +402,9 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
       completeTaskModel as any
     );
+
     await middleware(request, response, next);
+
     expect(findOne).toBeCalledWith({
       userId,
       streakId: soloStreakId,
@@ -417,7 +426,9 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
       completeTaskModel as any
     );
+
     await middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.TaskAlreadyCompletedToday)
     );
@@ -434,7 +445,9 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
       completeTaskModel as any
     );
+
     await middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.HasTaskAlreadyBeenCompletedTodayMiddleware,
@@ -467,7 +480,9 @@ describe("createCompleteTaskDefinitionMiddleware", () => {
     const next = jest.fn();
     const streakType = "soloStreak";
     const middleware = getCreateCompleteTaskDefinitionMiddleware(streakType);
+
     middleware(request, response, next);
+
     expect(response.locals.completeTaskDefinition).toEqual({
       userId,
       streakId: soloStreakId,
@@ -498,7 +513,9 @@ describe("createCompleteTaskDefinitionMiddleware", () => {
     const next = jest.fn();
     const streakType = "soloStreak";
     const middleware = getCreateCompleteTaskDefinitionMiddleware(streakType);
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.CreateCompleteTaskDefinitionMiddleware,
@@ -552,7 +569,9 @@ describe(`saveTaskCompleteMiddleware`, () => {
     const response: any = { locals: { completeTaskDefinition } };
     const next = jest.fn();
     const middleware = getSaveTaskCompleteMiddleware(CompleteTaskModel as any);
+
     await middleware(request, response, next);
+
     expect(response.locals.completeTask).toBeDefined();
     expect(save).toBeCalledWith();
     expect(next).toBeCalledWith();
@@ -576,7 +595,9 @@ describe(`saveTaskCompleteMiddleware`, () => {
     const response: any = { locals: { completeTaskDefinition } };
     const next = jest.fn();
     const middleware = getSaveTaskCompleteMiddleware({} as any);
+
     await middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.SaveTaskCompleteMiddleware, expect.any(Error))
     );
@@ -595,7 +616,9 @@ describe("streakMaintainedMiddleware", () => {
     const response: any = {};
     const next = jest.fn();
     const middleware = getStreakMaintainedMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
+
     expect(updateOne).toBeCalledWith(
       { _id: soloStreakId },
       { completedToday: true, $inc: { "currentStreak.numberOfDaysInARow": 1 } }
@@ -611,7 +634,9 @@ describe("streakMaintainedMiddleware", () => {
     const response: any = {};
     const next = jest.fn();
     const middleware = getStreakMaintainedMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.StreakMaintainedMiddleware, expect.any(Error))
     );
@@ -637,7 +662,9 @@ describe("sendTaskCompleteResponseMiddleware", () => {
     const request: any = {};
     const response: any = { locals: { completeTask }, status };
     const next = jest.fn();
+
     middleware(request, response, next);
+
     expect(status).toBeCalledWith(successResponseCode);
     expect(send).toBeCalledWith({ completeTask });
     expect(next).not.toBeCalled();
@@ -659,7 +686,9 @@ describe("sendTaskCompleteResponseMiddleware", () => {
     const request: any = {};
     const response: any = { locals: { completeTask } };
     const next = jest.fn();
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.SendTaskCompleteResponseMiddleware,
@@ -672,6 +701,7 @@ describe("sendTaskCompleteResponseMiddleware", () => {
 describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
   test("checks createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
     expect.assertions(12);
+
     expect(createSoloStreakCompleteTaskMiddlewares[0]).toBe(
       soloStreakTaskCompleteParamsValidationMiddleware
     );

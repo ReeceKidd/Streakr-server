@@ -1,7 +1,7 @@
 import {
   getRetreiveTimezoneHeaderMiddleware,
   getValidateTimezoneMiddleware
-} from "./timezoneMiddleware";
+} from "./timezoneMiddlewares";
 import { CustomError, ErrorType } from "../customError";
 
 describe("retreiveTimezoneHeaderMiddleware", () => {
@@ -19,7 +19,9 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
     const middleware = getRetreiveTimezoneHeaderMiddleware(
       timezoneHeader as any
     );
+
     middleware(request, response, next);
+
     expect(header).toBeCalledWith(timezoneHeader);
     expect(response.locals.timezone).toBeDefined();
     expect(next).toBeCalledWith();
@@ -58,7 +60,9 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
     const middleware = getRetreiveTimezoneHeaderMiddleware(
       timezoneHeader as any
     );
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.RetreiveTimezoneHeaderMiddleware,
@@ -77,7 +81,9 @@ describe("validateTimezoneMiddleware", () => {
     const next = jest.fn();
     const isValidTimezone = jest.fn(() => true);
     const middleware = getValidateTimezoneMiddleware(isValidTimezone);
+
     middleware(request, response, next);
+
     expect(isValidTimezone).toBeCalledWith(timezone);
     expect(next).toBeCalledWith();
   });
@@ -103,7 +109,9 @@ describe("validateTimezoneMiddleware", () => {
     const response: any = { locals: { timezone } };
     const next = jest.fn();
     const middleware = getValidateTimezoneMiddleware(undefined as any);
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.ValidateTimezoneMiddleware, expect.any(Error))
     );

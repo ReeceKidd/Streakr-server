@@ -1,5 +1,3 @@
-import { Request, Response, NextFunction } from "express";
-
 import {
   registerUserMiddlewares,
   userRegistrationValidationMiddleware,
@@ -20,9 +18,9 @@ describe(`userRegistrationValidationMiddlware`, () => {
   const mockEmail = "mock@gmail.com";
 
   test("check that valid request passes", () => {
+    expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { username: mockUsername, email: mockEmail }
     };
@@ -33,14 +31,13 @@ describe(`userRegistrationValidationMiddlware`, () => {
 
     userRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(1);
     expect(next).toBeCalled();
   });
 
   test("sends correct correct response when username is missing", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { email: mockEmail }
     };
@@ -51,7 +48,6 @@ describe(`userRegistrationValidationMiddlware`, () => {
 
     userRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "username" fails because ["username" is required]'
@@ -60,9 +56,9 @@ describe(`userRegistrationValidationMiddlware`, () => {
   });
 
   test("sends correct error response when email is missing", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { username: mockUsername }
     };
@@ -73,7 +69,6 @@ describe(`userRegistrationValidationMiddlware`, () => {
 
     userRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "email" fails because ["email" is required]'
@@ -82,11 +77,10 @@ describe(`userRegistrationValidationMiddlware`, () => {
   });
 
   test("sends correct error response when email is incorrect", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const incorrectEmail = "1234";
-
     const request: any = {
       body: {
         username: mockUsername,
@@ -100,7 +94,6 @@ describe(`userRegistrationValidationMiddlware`, () => {
 
     userRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "email" fails because ["email" must be a valid email]'
@@ -109,11 +102,10 @@ describe(`userRegistrationValidationMiddlware`, () => {
   });
 
   test("sends correct error response when invalid paramater is sent", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const notAllowed = "123";
-
     const request: any = {
       body: {
         notAllowed,
@@ -128,7 +120,6 @@ describe(`userRegistrationValidationMiddlware`, () => {
 
     userRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
     expect(send).toBeCalledWith({ message: '"notAllowed" is not allowed' });
     expect(next).not.toBeCalled();
@@ -148,7 +139,6 @@ describe(`doesUserEmailExistMiddleware`, () => {
     const request: any = { body: { email: mockEmail } };
     const response: any = { locals: {} };
     const next = jest.fn();
-
     const middleware = getDoesUserEmailExistMiddleware(UserModel as any);
 
     await middleware(request, response, next);
@@ -159,7 +149,6 @@ describe(`doesUserEmailExistMiddleware`, () => {
 
   test("throws UserEmailAlreadyExists if user is found", async () => {
     expect.assertions(1);
-
     const findOne = jest.fn(() => Promise.resolve(true));
     const UserModel = {
       findOne
@@ -167,7 +156,6 @@ describe(`doesUserEmailExistMiddleware`, () => {
     const request: any = { body: { email: mockEmail } };
     const response: any = { locals: {} };
     const next = jest.fn();
-
     const middleware = getDoesUserEmailExistMiddleware(UserModel as any);
 
     await middleware(request, response, next);
@@ -179,7 +167,6 @@ describe(`doesUserEmailExistMiddleware`, () => {
 
   test("calls next with DoesUserEmailExistMiddleware error on middleware failure", async () => {
     expect.assertions(1);
-
     const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
     const UserModel = {
       findOne
@@ -187,7 +174,6 @@ describe(`doesUserEmailExistMiddleware`, () => {
     const request: any = { body: { email: mockEmail } };
     const response: any = { locals: {} };
     const next = jest.fn();
-
     const middleware = getDoesUserEmailExistMiddleware(UserModel as any);
 
     await middleware(request, response, next);
@@ -204,7 +190,6 @@ describe("setUsernameToLowercaseMiddleware", () => {
 
   test("sets username to lowercase version of itself", () => {
     expect.assertions(2);
-
     const request: any = { body: { username: mockUsername } };
     const response: any = { locals: {} };
     const next = jest.fn();
@@ -216,6 +201,7 @@ describe("setUsernameToLowercaseMiddleware", () => {
   });
 
   test("calls next with SetUsernameToLowercaseMiddleware error on middleware failure", () => {
+    expect.assertions(1);
     const request: any = {
       body: {
         username: {
@@ -230,7 +216,6 @@ describe("setUsernameToLowercaseMiddleware", () => {
 
     setUsernameToLowercaseMiddleware(request, response, next);
 
-    expect.assertions(1);
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.SetUsernameToLowercaseMiddleware,
@@ -246,7 +231,6 @@ describe(`doesUsernameExistMiddleware`, () => {
 
   test("calls next() when user does not exist", async () => {
     expect.assertions(2);
-
     const findOne = jest.fn(() => Promise.resolve(false));
     const UserModel = {
       findOne
@@ -254,7 +238,6 @@ describe(`doesUsernameExistMiddleware`, () => {
     const request: any = {};
     const response: any = { locals: { lowerCaseUsername: mockUsername } };
     const next = jest.fn();
-
     const middleware = getDoesUsernameExistMiddleware(UserModel as any);
 
     await middleware(request, response, next);
@@ -265,7 +248,6 @@ describe(`doesUsernameExistMiddleware`, () => {
 
   test("throws UsernameAlreadyExists error when user already exists", async () => {
     expect.assertions(2);
-
     const findOne = jest.fn(() => Promise.resolve(true));
     const UserModel = {
       findOne
@@ -273,7 +255,6 @@ describe(`doesUsernameExistMiddleware`, () => {
     const request: any = {};
     const response: any = { locals: { lowerCaseUsername: mockUsername } };
     const next = jest.fn();
-
     const middleware = getDoesUsernameExistMiddleware(UserModel as any);
 
     await middleware(request, response, next);
@@ -286,7 +267,6 @@ describe(`doesUsernameExistMiddleware`, () => {
 
   test("calls next with DoesUsernameAlreadyExistMiddleware error on middleware failure", async () => {
     expect.assertions(1);
-
     const findOne = jest.fn(() => Promise.reject(ERROR_MESSAGE));
     const UserModel = {
       findOne
@@ -294,7 +274,6 @@ describe(`doesUsernameExistMiddleware`, () => {
     const request: any = { body: {} };
     const response: any = { locals: { lowerCaseUsername: mockUsername } };
     const next = jest.fn();
-
     const middleware = getDoesUsernameExistMiddleware(UserModel as any);
 
     await middleware(request, response, next);
@@ -311,15 +290,12 @@ describe(`doesUsernameExistMiddleware`, () => {
 describe(`saveUserToDatabaseMiddleware`, () => {
   test("sets response.locals.savedUser", async () => {
     expect.assertions(2);
-
     const hashedPassword = "12$4354";
     const username = "user";
     const email = "user@gmail.com";
-
     const save = jest.fn(() => {
       return Promise.resolve(true);
     });
-
     class User {
       username: string;
       email: string;
@@ -335,13 +311,11 @@ describe(`saveUserToDatabaseMiddleware`, () => {
         return save();
       }
     }
-
     const response: any = {
       locals: { hashedPassword, lowerCaseUsername: username }
     };
     const request: any = { body: { email } };
     const next = jest.fn();
-
     const middleware = getSaveUserToDatabaseMiddleware(User as any);
 
     await middleware(request, response, next);
@@ -352,11 +326,9 @@ describe(`saveUserToDatabaseMiddleware`, () => {
 
   test("calls next with SaveUserToDatabaseMiddleware error on middleware failure", () => {
     const user = { username: "username", email: "username@gmail.com" };
-
     const response: any = { locals: { user } };
     const request: any = { body: {} };
     const next = jest.fn();
-
     const middleware = getSaveUserToDatabaseMiddleware({} as any);
 
     middleware(request, response, next);
@@ -373,10 +345,8 @@ describe(`sendFormattedUserMiddleware`, () => {
 
   test("sends savedUser in request", () => {
     expect.assertions(3);
-
     const mockUsername = "abc";
     const mockEmail = "email@gmail.com";
-
     const savedUser = {
       username: mockUsername,
       email: mockEmail
@@ -384,7 +354,6 @@ describe(`sendFormattedUserMiddleware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const response: any = { locals: { savedUser }, status };
-
     const request: any = {};
     const next = jest.fn();
 
@@ -397,10 +366,8 @@ describe(`sendFormattedUserMiddleware`, () => {
 
   test("calls next with SendFormattedUserMiddleware error on middleware failure", () => {
     expect.assertions(1);
-
     const mockUsername = "abc";
     const mockEmail = "email@gmail.com";
-
     const savedUser = {
       username: mockUsername,
       email: mockEmail
@@ -410,7 +377,6 @@ describe(`sendFormattedUserMiddleware`, () => {
     });
     const status = jest.fn(() => ({ send }));
     const response: any = { locals: { savedUser }, status };
-
     const request: any = {};
     const next = jest.fn();
 
@@ -425,6 +391,7 @@ describe(`sendFormattedUserMiddleware`, () => {
 describe(`registerUserMiddlewares`, () => {
   test("are defined in the correct order", () => {
     expect.assertions(7);
+
     expect(registerUserMiddlewares.length).toEqual(6);
     expect(registerUserMiddlewares[0]).toBe(
       userRegistrationValidationMiddleware

@@ -16,6 +16,7 @@ describe("getServiceConfig", () => {
       ...environmentMock,
       NODE_ENV: undefined
     };
+
     try {
       getServiceConfig(environment);
     } catch (err) {
@@ -29,6 +30,7 @@ describe("getServiceConfig", () => {
       ...environmentMock,
       PORT: undefined
     };
+
     try {
       getServiceConfig(environment);
     } catch (err) {
@@ -42,6 +44,7 @@ describe("getServiceConfig", () => {
       ...environmentMock,
       DATABASE_URI: undefined
     };
+
     try {
       getServiceConfig(environment);
     } catch (err) {
@@ -55,6 +58,7 @@ describe("getServiceConfig", () => {
       ...environmentMock,
       AWS_ACCESS_KEY_ID: undefined
     };
+
     try {
       getServiceConfig(environment);
     } catch (err) {
@@ -68,6 +72,7 @@ describe("getServiceConfig", () => {
       ...environmentMock,
       AWS_SECRET_ACCESS_KEY: undefined
     };
+
     try {
       getServiceConfig(environment);
     } catch (err) {
@@ -81,6 +86,7 @@ describe("getServiceConfig", () => {
       ...environmentMock,
       AWS_REGION: undefined
     };
+
     try {
       getServiceConfig(environment);
     } catch (err) {

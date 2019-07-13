@@ -21,9 +21,9 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
   const description = " Do the insane amount of XP for Duolingo each day";
 
   test("valid request passes validation", () => {
+    expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { userId, name, description }
     };
@@ -34,14 +34,13 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
     soloStreakRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(1);
     expect(next).toBeCalled();
   });
 
   test("sends userId is missing error", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { name, description }
     };
@@ -52,7 +51,6 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
     soloStreakRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "userId" fails because ["userId" is required]'
@@ -61,9 +59,9 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
   });
 
   test("sends userId is not a string error", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { userId: 1234, name, description }
     };
@@ -74,7 +72,6 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
     soloStreakRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "userId" fails because ["userId" must be a string]'
@@ -83,9 +80,9 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
   });
 
   test("sends name is missing error", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { userId, description }
     };
@@ -96,7 +93,6 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
     soloStreakRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "name" fails because ["name" is required]'
@@ -105,9 +101,9 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
   });
 
   test("sends name is not a string error", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { userId, name: 1234, description }
     };
@@ -118,7 +114,6 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
     soloStreakRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "name" fails because ["name" must be a string]'
@@ -127,9 +122,9 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
   });
 
   test("sends description is missing error", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { userId, name }
     };
@@ -140,7 +135,6 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
     soloStreakRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "description" fails because ["description" is required]'
@@ -149,9 +143,9 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
   });
 
   test("sends description is not a string error", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       body: { userId, name, description: 1234 }
     };
@@ -162,7 +156,6 @@ describe(`soloStreakRegistrationValidationMiddlware`, () => {
 
     soloStreakRegistrationValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
@@ -182,7 +175,9 @@ describe("defineCurrentTimeMiddleware", () => {
     const response: any = { locals: { timezone } };
     const next = jest.fn();
     const middleware = getDefineCurrentTimeMiddleware(moment);
+
     middleware(request, response, next);
+
     expect(moment).toBeCalledWith();
     expect(tz).toBeCalledWith(timezone);
     expect(response.locals.currentTime).toBeDefined();
@@ -196,7 +191,9 @@ describe("defineCurrentTimeMiddleware", () => {
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getDefineCurrentTimeMiddleware(moment);
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.DefineCurrentTimeMiddleware, expect.any(Error))
     );
@@ -215,7 +212,9 @@ describe("defineStartDayMiddleware", () => {
     const response: any = { locals: { currentTime } };
     const next = jest.fn();
     const middleware = getDefineStartDayMiddleware(dayFormat);
+
     middleware(request, response, next);
+
     expect(response.locals.startDay).toBeDefined();
     expect(format).toBeCalledWith(dayFormat);
     expect(next).toBeCalledWith();
@@ -229,7 +228,9 @@ describe("defineStartDayMiddleware", () => {
     const response: any = { locals: { currentTime } };
     const next = jest.fn();
     const middleware = getDefineStartDayMiddleware(dayFormat);
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.DefineStartDayMiddleware)
     );
@@ -251,7 +252,9 @@ describe("defineEndOfDayMiddleware", () => {
     const next = jest.fn();
     const dayTimeRange = "day";
     const middleware = getDefineEndOfDayMiddleware(dayTimeRange);
+
     middleware(request, response, next);
+
     expect(response.locals.endOfDay).toBeDefined();
     expect(endOf).toBeCalledWith(dayTimeRange);
     expect(toDate).toBeCalled();
@@ -271,7 +274,9 @@ describe("defineEndOfDayMiddleware", () => {
     const next = jest.fn();
     const dayTimeRange = "day";
     const middleware = getDefineEndOfDayMiddleware(dayTimeRange);
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.DefineEndOfDayMiddleware)
     );
@@ -280,11 +285,11 @@ describe("defineEndOfDayMiddleware", () => {
 
 describe(`createSoloStreakFromRequestMiddleware`, () => {
   test("sets response.locals.newSoloStreak", async () => {
+    expect.assertions(2);
     const userId = "abcdefg";
     const name = "streak name";
     const description = "mock streak description";
     const timezone = "Europe/London";
-
     class SoloStreak {
       userId: string;
       name: string;
@@ -298,43 +303,38 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
         this.timezone = timezone;
       }
     }
-
     const response: any = { locals: { timezone } };
     const request: any = { body: { userId, name, description } };
     const next = jest.fn();
-
-    const middleware = getCreateSoloStreakFromRequestMiddleware(
-      SoloStreak as any
-    );
-
-    middleware(request, response, next);
-
-    expect.assertions(2);
     const newSoloStreak = new SoloStreak({
       userId,
       name,
       description,
       timezone
     });
+    const middleware = getCreateSoloStreakFromRequestMiddleware(
+      SoloStreak as any
+    );
+
+    middleware(request, response, next);
+
     expect(response.locals.newSoloStreak).toEqual(newSoloStreak);
     expect(next).toBeCalledWith();
   });
 
   test("calls next with CreateSoloStreakFromRequestMiddleware error on middleware failure", () => {
+    expect.assertions(1);
     const timezone = "Europe/London";
     const userId = "abcdefg";
     const name = "streak name";
     const description = "mock streak description";
-
     const response: any = { locals: { timezone } };
     const request: any = { body: { userId, name, description } };
     const next = jest.fn();
-
     const middleware = getCreateSoloStreakFromRequestMiddleware({} as any);
 
     middleware(request, response, next);
 
-    expect.assertions(1);
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.CreateSoloStreakFromRequestMiddleware,
@@ -348,41 +348,38 @@ describe(`saveSoloStreakToDatabaseMiddleware`, () => {
   const ERROR_MESSAGE = "error";
 
   test("sets response.locals.savedSoloStreak", async () => {
+    expect.assertions(3);
     const save = jest.fn(() => {
       return Promise.resolve(true);
     });
-
     const mockSoloStreak = {
       userId: "abcdefg",
       email: "user@gmail.com",
       password: "password",
       save
     } as any;
-
     const response: any = { locals: { newSoloStreak: mockSoloStreak } };
     const request: any = {};
     const next = jest.fn();
 
     await saveSoloStreakToDatabaseMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(save).toBeCalled();
     expect(response.locals.savedSoloStreak).toBeDefined();
     expect(next).toBeCalled();
   });
 
   test("calls next with SaveSoloStreakToDatabaseMiddleware error on middleware failure", async () => {
+    expect.assertions(1);
     const save = jest.fn(() => {
       return Promise.reject(ERROR_MESSAGE);
     });
-
     const request: any = {};
     const response: any = { locals: { newSoloStreak: { save } } };
     const next = jest.fn();
 
     await saveSoloStreakToDatabaseMiddleware(request, response, next);
 
-    expect.assertions(1);
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.SaveSoloStreakToDatabaseMiddleware,
@@ -402,19 +399,18 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
   };
 
   test("responds with status 201 with soloStreak", () => {
+    expect.assertions(4);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const soloStreakResponseLocals = {
       savedSoloStreak
     };
     const response: any = { locals: soloStreakResponseLocals, status };
-
     const request: any = {};
     const next = jest.fn();
 
     sendFormattedSoloStreakMiddleware(request, response, next);
 
-    expect.assertions(4);
     expect(response.locals.user).toBeUndefined();
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(ResponseCodes.created);
@@ -422,6 +418,7 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
   });
 
   test("calls next with SendFormattedSoloStreakMiddleware error on middleware failure", () => {
+    expect.assertions(1);
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
@@ -433,7 +430,6 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
 
     sendFormattedSoloStreakMiddleware(request, response, next);
 
-    expect.assertions(1);
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.SendFormattedSoloStreakMiddleware,
@@ -446,6 +442,7 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
 describe(`createSoloStreakMiddlewares`, () => {
   test("that createSoloStreak middlewares are defined in the correct order", async () => {
     expect.assertions(8);
+
     expect(createSoloStreakMiddlewares.length).toEqual(7);
     expect(createSoloStreakMiddlewares[0]).toBe(
       soloStreakRegistrationValidationMiddleware

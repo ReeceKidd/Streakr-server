@@ -4,9 +4,9 @@ import { ResponseCodes } from "../Server/responseCodes";
 
 describe(`validationErrorMessageSenderMiddleware`, () => {
   test("calls 'next' middleware if all params are correct ", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request = {
       query: { param: true }
     };
@@ -14,7 +14,6 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
       status
     };
     const next = jest.fn();
-
     const middleware = getValidationErrorMessageSenderMiddleware(
       request as Request,
       response as Response,
@@ -23,13 +22,13 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
 
     middleware(undefined as any);
 
-    expect.assertions(3);
     expect(status).not.toHaveBeenCalled();
     expect(send).not.toBeCalled();
     expect(next).toBeCalled();
   });
 
   test("check that notAllowedParameter error is thrown when error message returns is not allowed", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
 
@@ -40,26 +39,24 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
       status
     };
     const next = jest.fn();
-
     const middleware = getValidationErrorMessageSenderMiddleware(
       request as Request,
       response as Response,
       next as NextFunction
     );
-
     const paramNotAllowedError = '"param" is not allowed';
+
     middleware(new Error(paramNotAllowedError));
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
     expect(send).toBeCalledWith({ message: paramNotAllowedError });
     expect(next).not.toBeCalled();
   });
 
   test(`returns ${ResponseCodes.unprocessableEntity} if value of one of the parameters is missing`, () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request = {
       query: { param: true }
     };
@@ -67,17 +64,15 @@ describe(`validationErrorMessageSenderMiddleware`, () => {
       status
     };
     const next = jest.fn();
-
     const middleware = getValidationErrorMessageSenderMiddleware(
       request as Request,
       response as Response,
       next as NextFunction
     );
-
     const otherError = "other error";
+
     middleware(new Error("other error"));
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({ message: otherError });
     expect(next).not.toBeCalled();

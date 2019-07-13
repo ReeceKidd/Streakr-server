@@ -18,7 +18,9 @@ describe("errorHandler", () => {
       status
     };
     const next = jest.fn();
+
     errorHandler(CustomError, request, response, next);
+
     expect(status).toBeCalledWith(400);
     expect(send).toBeCalledWith(CustomError);
   });
@@ -39,7 +41,9 @@ describe("errorHandler", () => {
       status
     };
     const next = jest.fn();
+
     errorHandler(CustomError, request, response, next);
+
     expect(status).toBeCalledWith(500);
     expect(send).toBeCalledWith(CustomError);
   });

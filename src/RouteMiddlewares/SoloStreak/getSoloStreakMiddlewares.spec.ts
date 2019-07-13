@@ -16,7 +16,6 @@ describe(`getSoloStreakParamsValidationMiddleware`, () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       params: { soloStreakId }
     };
@@ -26,6 +25,7 @@ describe(`getSoloStreakParamsValidationMiddleware`, () => {
     const next = jest.fn();
 
     getSoloStreakParamsValidationMiddleware(request, response, next);
+
     expect(next).toBeCalled();
   });
 
@@ -33,7 +33,6 @@ describe(`getSoloStreakParamsValidationMiddleware`, () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       params: {}
     };
@@ -55,7 +54,6 @@ describe(`getSoloStreakParamsValidationMiddleware`, () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       params: { soloStreakId: 1234 }
     };
@@ -88,7 +86,9 @@ describe("retreiveSoloStreakMiddleware", () => {
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getRetreiveSoloStreakMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
+
     expect(findOne).toBeCalledWith({ _id: soloStreakId });
     expect(response.locals.soloStreak).toBeDefined();
     expect(next).toBeCalledWith();
@@ -106,7 +106,9 @@ describe("retreiveSoloStreakMiddleware", () => {
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getRetreiveSoloStreakMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.GetSoloStreakNoSoloStreakFound)
     );
@@ -125,7 +127,9 @@ describe("retreiveSoloStreakMiddleware", () => {
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getRetreiveSoloStreakMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.RetreiveSoloStreakMiddleware, expect.any(Error))
     );
@@ -141,9 +145,9 @@ describe("sendSoloStreakMiddleware", () => {
     const request: any = {};
     const response: any = { locals: { soloStreak }, status };
     const next = jest.fn();
-
     const resourceCreatedCode = 401;
     const middleware = getSendSoloStreakMiddleware(resourceCreatedCode);
+
     middleware(request, response, next);
 
     expect(next).not.toBeCalled();
@@ -161,7 +165,9 @@ describe("sendSoloStreakMiddleware", () => {
     const next = jest.fn();
     const resourceCreatedResponseCode = 401;
     const middleware = getSendSoloStreakMiddleware(resourceCreatedResponseCode);
+
     await middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.SendSoloStreakMiddleware, expect.any(Error))
     );
@@ -171,6 +177,7 @@ describe("sendSoloStreakMiddleware", () => {
 describe("getSoloStreakMiddlewares", () => {
   test("that getSoloStreakMiddlewares are defined in the correct order", () => {
     expect.assertions(4);
+
     expect(getSoloStreakMiddlewares.length).toEqual(3);
     expect(getSoloStreakMiddlewares[0]).toEqual(
       getSoloStreakParamsValidationMiddleware

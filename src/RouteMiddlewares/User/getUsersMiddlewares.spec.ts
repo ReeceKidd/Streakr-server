@@ -13,9 +13,9 @@ describe(`getUsersValidationMiddleware`, () => {
   const mockSearchQuery = "searchQuery";
 
   test("valid request passes", () => {
+    expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       query: { searchQuery: mockSearchQuery }
     };
@@ -26,14 +26,13 @@ describe(`getUsersValidationMiddleware`, () => {
 
     retreiveUsersValidationMiddleware(request, response, next);
 
-    expect.assertions(1);
     expect(next).toBeCalledWith();
   });
 
   test("sends correct error response when searchQuery is missing", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       query: {}
     };
@@ -44,7 +43,6 @@ describe(`getUsersValidationMiddleware`, () => {
 
     retreiveUsersValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "searchQuery" fails because ["searchQuery" is required]'
@@ -53,11 +51,10 @@ describe(`getUsersValidationMiddleware`, () => {
   });
 
   test("sends correct response when searchQuery length is too short", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const shortSearchQuery = "";
-
     const request: any = {
       query: { searchQuery: shortSearchQuery }
     };
@@ -68,7 +65,6 @@ describe(`getUsersValidationMiddleware`, () => {
 
     retreiveUsersValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
     expect(send).toBeCalledWith({
       message:
@@ -78,12 +74,11 @@ describe(`getUsersValidationMiddleware`, () => {
   });
 
   test(`sends correct response when searchQuery length is longer than ${maximumSearchQueryLength}`, () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const longSearchQuery =
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-
     const request: any = {
       query: { searchQuery: longSearchQuery }
     };
@@ -94,7 +89,6 @@ describe(`getUsersValidationMiddleware`, () => {
 
     retreiveUsersValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
@@ -104,11 +98,10 @@ describe(`getUsersValidationMiddleware`, () => {
   });
 
   test(`sends correct response when searchQuery is not a string`, () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const numberSearchQuery = 123;
-
     const request: any = {
       query: { searchQuery: numberSearchQuery }
     };
@@ -119,7 +112,6 @@ describe(`getUsersValidationMiddleware`, () => {
 
     retreiveUsersValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
@@ -131,27 +123,24 @@ describe(`getUsersValidationMiddleware`, () => {
 
 describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
   test("sets response.locals.users", async () => {
+    expect.assertions(3);
     const searchQuery = "searchQuery";
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const find = jest.fn(() => Promise.resolve(true));
     const userModel = { find };
-
     const request: any = { query: { searchQuery } };
     const response: any = {
       locals: {},
       status
     };
     const next = jest.fn();
-
     const middleware = getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware(
       userModel as any
     );
 
-    const r = await middleware(request, response, next);
+    await middleware(request, response, next);
 
-    expect.assertions(3);
     expect(find).toBeCalledWith({
       username: { $regex: searchQuery.toLowerCase() }
     });
@@ -160,27 +149,24 @@ describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
   });
 
   test("calls next with RetreiveUsersByUsernameRegexSearchMiddleware error on middleware failure", async () => {
+    expect.assertions(2);
     const errorMessage = "error";
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const find = jest.fn(() => Promise.reject(errorMessage));
     const userModel = { find };
-
     const request: any = {};
     const response: any = {
       status,
       locals: {}
     };
     const next = jest.fn();
-
     const middleware = getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware(
       userModel as any
     );
 
     await middleware(request, response, next);
 
-    expect.assertions(2);
     expect(response.locals.users).not.toBeDefined();
     expect(next).toBeCalledWith(
       new CustomError(
@@ -192,7 +178,8 @@ describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
 });
 
 describe("sendUsersMiddleware", () => {
-  test("should send users in response", () => {
+  test("sends users in response", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {};
@@ -201,28 +188,25 @@ describe("sendUsersMiddleware", () => {
     const next = jest.fn();
 
     sendFormattedUsersMiddleware(request, response, next);
-    send;
 
-    expect.assertions(3);
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(ResponseCodes.success);
     expect(send).toBeCalledWith({ users });
   });
 
-  test("should call next with an error on failure", () => {
+  test("calls next with an error on failure", () => {
+    expect.assertions(1);
     const ERROR_MESSAGE = "sendFormattedUsersMiddleware error";
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
     const status = jest.fn(() => ({ send }));
     const response: any = { locals: {}, status };
-
     const request: any = {};
     const next = jest.fn();
 
     sendFormattedUsersMiddleware(request, response, next);
 
-    expect.assertions(1);
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.SendUsersMiddleware, expect.any(Error))
     );
@@ -232,6 +216,7 @@ describe("sendUsersMiddleware", () => {
 describe(`getUsersMiddlewares`, () => {
   test("that getUsersMiddlewares are defined in the correct order", () => {
     expect.assertions(4);
+
     expect(getUsersMiddlewares.length).toEqual(3);
     expect(getUsersMiddlewares[0]).toBe(retreiveUsersValidationMiddleware);
     expect(getUsersMiddlewares[1]).toBe(

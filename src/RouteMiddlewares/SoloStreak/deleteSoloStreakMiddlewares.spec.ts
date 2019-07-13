@@ -11,9 +11,9 @@ import { CustomError, ErrorType } from "../../customError";
 
 describe("soloStreakParamsValidationMiddleware", () => {
   test("sends soloStreakId is not defined error", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       params: {}
     };
@@ -24,7 +24,6 @@ describe("soloStreakParamsValidationMiddleware", () => {
 
     soloStreakParamsValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "soloStreakId" fails because ["soloStreakId" is required]'
@@ -33,9 +32,9 @@ describe("soloStreakParamsValidationMiddleware", () => {
   });
 
   test("sends soloStreakId is not a string error", () => {
+    expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-
     const request: any = {
       params: { soloStreakId: 123 }
     };
@@ -46,7 +45,6 @@ describe("soloStreakParamsValidationMiddleware", () => {
 
     soloStreakParamsValidationMiddleware(request, response, next);
 
-    expect.assertions(3);
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
@@ -68,7 +66,9 @@ describe("deleteSoloStreakMiddleware", () => {
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getDeleteSoloStreakMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
+
     expect(findByIdAndDelete).toBeCalledWith(soloStreakId);
     expect(response.locals.deletedSoloStreak).toBeDefined();
     expect(next).toBeCalledWith();
@@ -85,7 +85,9 @@ describe("deleteSoloStreakMiddleware", () => {
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getDeleteSoloStreakMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.NoSoloStreakToDeleteFound)
     );
@@ -103,7 +105,9 @@ describe("deleteSoloStreakMiddleware", () => {
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getDeleteSoloStreakMiddleware(soloStreakModel as any);
+
     await middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.DeleteSoloStreakMiddleware, expect.any(Error))
     );
@@ -122,7 +126,9 @@ describe("sendSoloStreakDeletedResponseMiddleware", () => {
     const middleware = getSendSoloStreakDeletedResponseMiddleware(
       successfulDeletionResponseCode
     );
+
     middleware(request, response, next);
+
     expect(status).toBeCalledWith(successfulDeletionResponseCode);
     expect(next).not.toBeCalled();
   });
@@ -136,7 +142,9 @@ describe("sendSoloStreakDeletedResponseMiddleware", () => {
     const middleware = getSendSoloStreakDeletedResponseMiddleware(
       successfulDeletionResponseCode
     );
+
     middleware(request, response, next);
+
     expect(next).toBeCalledWith(
       new CustomError(
         ErrorType.SendSoloStreakDeletedResponseMiddleware,
@@ -149,6 +157,7 @@ describe("sendSoloStreakDeletedResponseMiddleware", () => {
 describe("deleteSoloStreakMiddlewares", () => {
   test("that deleteSoloStreakMiddlewares are defined in the correct order", () => {
     expect.assertions(4);
+
     expect(deleteSoloStreakMiddlewares.length).toEqual(3);
     expect(deleteSoloStreakMiddlewares[0]).toEqual(
       soloStreakParamsValidationMiddleware

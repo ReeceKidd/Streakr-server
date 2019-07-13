@@ -6,7 +6,7 @@ import { createSoloStreakCompleteTaskMiddlewares } from "../RouteMiddlewares/Sol
 import { getSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/getSoloStreakMiddlewares";
 import { patchSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/patchSoloStreakMiddlewares";
 import { deleteSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/deleteSoloStreakMiddlewares";
-import { timezoneMiddlewares } from "../SharedMiddleware/timezoneMiddleware";
+import { timezoneMiddlewares } from "../SharedMiddleware/timezoneMiddlewares";
 
 export enum SoloStreakProperties {
   completeTasks = "complete-tasks"
