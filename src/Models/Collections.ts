@@ -1,7 +1,8 @@
 export enum Collections {
-    Users = "Users",
-    SoloStreaks = "SoloStreaks",
-    AgendaJobs = "AgendaJobs",
-    CompleteTasks = "CompleteTasks",
-    System = "System"
+  Users = "Users",
+  StripeCustomers = "StripeCustomers",
+  SoloStreaks = "SoloStreaks",
+  AgendaJobs = "AgendaJobs",
+  CompleteTasks = "CompleteTasks",
+  System = "System"
 }

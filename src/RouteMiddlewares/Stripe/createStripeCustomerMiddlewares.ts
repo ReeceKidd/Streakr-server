@@ -4,6 +4,11 @@ import { Request, Response, NextFunction } from "express";
 const stripe = new Stripe("sk_test_Es9O69gLTpu8QF1lNTw0dMub00ZpeC5AyH");
 import * as Joi from "joi";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
+import {
+  stripeCustomerModel,
+  StripeCustomer
+} from "../../Models/StripeCustomer";
+import { Model } from "mongoose";
 
 const createStripeCustomerBodySchema = {
   token: Joi.string().required(),
@@ -24,36 +29,47 @@ export const createStripeCustomerBodyValidationMiddleware = (
   );
 };
 
-export const createStripeCustomerMiddleware = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const getDoesStripeCustomerExistMiddleware = (
+  stripeCustomerModel: Model<StripeCustomer>
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { token, email } = request.body;
-    const customer = await stripe.customers.create({
-      source: token,
-      email
-    });
-    console.log(customer);
-    response.locals.customer = customer;
+    const { email } = request.body;
+    const existingStripeCustomer = await stripeCustomerModel.findOne({ email });
+    console.log(existingStripeCustomer);
+    response.locals.existingStripeCustomer = existingStripeCustomer;
     next();
   } catch (error) {
-    return response.send(error);
+    next(error);
   }
 };
 
-export const saveStripeCustomerMiddleware = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const doesStripeCustomerExistMiddleware = getDoesStripeCustomerExistMiddleware(
+  stripeCustomerModel
+);
+
+export const getCreateStripeCustomerMiddleware = (
+  stripeCustomerModel: Model<StripeCustomer>
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log("save");
+    const { token, email } = request.body;
+    const { existingStripeCustomer } = response.locals;
+    if (!existingStripeCustomer) {
+      await stripe.customers.create({
+        source: token,
+        email
+      });
+      const customer = new stripeCustomerModel({ email, token });
+      await customer.save();
+    }
+    next();
   } catch (error) {
-    return response.send(error);
+    next(error);
   }
 };
+
+export const createStripeCustomerMiddleware = getCreateStripeCustomerMiddleware(
+  stripeCustomerModel
+);
 
 export const sendCreatedStripeCustomerSuccessMessageMiddleware = (
   request: Request,
@@ -63,13 +79,13 @@ export const sendCreatedStripeCustomerSuccessMessageMiddleware = (
   try {
     response.send("success");
   } catch (error) {
-    return response.send(error);
+    next(error);
   }
 };
 
 export const createStripeCustomerMiddlewares = [
   createStripeCustomerBodyValidationMiddleware,
+  doesStripeCustomerExistMiddleware,
   createStripeCustomerMiddleware,
-  saveStripeCustomerMiddleware,
   sendCreatedStripeCustomerSuccessMessageMiddleware
 ];
