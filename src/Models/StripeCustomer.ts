@@ -19,6 +19,10 @@ export const stripeCustomerSchema = new mongoose.Schema(
     token: {
       required: true,
       type: String
+    },
+    customerId: {
+      required: true,
+      type: String
     }
   },
   {
