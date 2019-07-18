@@ -21,7 +21,7 @@ const createStripeCustomerBodySchema = {
     .required()
 };
 
-export const createStripeCustomerBodyValidationMiddleware = (
+export const createStripeCustomerSubscriptionBodyValidationMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
@@ -141,7 +141,7 @@ export const sendSuccessfulSubscriptionMiddleware = (
 };
 
 export const createStripeCustomerSubscriptionMiddlewares = [
-  createStripeCustomerBodyValidationMiddleware,
+  createStripeCustomerSubscriptionBodyValidationMiddleware,
   doesStripeCustomerExistMiddleware,
   createStripeCustomerMiddleware,
   createStripeSubscriptionMiddleware,
