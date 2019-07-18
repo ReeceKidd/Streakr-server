@@ -9,7 +9,7 @@ describe("getServiceConfig", () => {
     AWS_SECRET_ACCESS_KEY: "AWS_SECRET_ACCESS_KEY",
     AWS_REGION: "AWS_REGION",
     STRIPE_SHAREABLE_KEY: "STRIPE_SHAREABLE_KEY",
-    STRIPE_PRODUCT: "STRIPE_PRODUCT"
+    STRIPE_PLAN: "STRIPE_PLAN"
   };
 
   test("that correct error is thrown when NODE_ENV is not provided", () => {
@@ -96,7 +96,7 @@ describe("getServiceConfig", () => {
     }
   });
 
-  test("that correct error is thrown when AWS_REGION is not provided.", () => {
+  test("that correct error is thrown when STRIPE_SHAREABLE_KEY is not provided.", () => {
     expect.assertions(1);
     const environment = {
       ...environmentMock,
@@ -110,17 +110,17 @@ describe("getServiceConfig", () => {
     }
   });
 
-  test("that correct error is thrown when AWS_REGION is not provided.", () => {
+  test("that correct error is thrown when STRIPE_PLAN is not provided.", () => {
     expect.assertions(1);
     const environment = {
       ...environmentMock,
-      STRIPE_PRODUCT: undefined
+      STRIPE_PLAN: undefined
     };
 
     try {
       getServiceConfig(environment);
     } catch (err) {
-      expect(err.message).toEqual("STRIPE_PRODUCT is not provided.");
+      expect(err.message).toEqual("STRIPE_PLAN is not provided.");
     }
   });
 });

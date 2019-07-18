@@ -1,4 +1,5 @@
 import { ResponseCodes } from "./Server/responseCodes";
+import { deleteSoloStreakMiddleware } from "./RouteMiddlewares/SoloStreak/deleteSoloStreakMiddlewares";
 
 export enum ErrorType {
   InternalServerError,
@@ -55,14 +56,7 @@ export enum ErrorType {
   HashPasswordMiddleware,
   SaveUserToDatabaseMiddleware,
   SendFormattedUserMiddleware,
-  RetreiveJsonWebTokenMiddleware,
-  MissingAccessTokenHeader,
-  VerifyJsonWebTokenError,
-  DecodeJsonWebTokenMiddleware,
-  SetMinimumUserDataOnResponseLocals,
-  JsonWebTokenVerificationSuccessfulMiddleware,
-  RegisterUserWithCognitoMiddleware,
-  CognitoSignUpError
+  DoesStripeCustomerExistMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -82,22 +76,6 @@ export class CustomError extends Error {
 
   private createCustomErrorData(type: ErrorType) {
     switch (type) {
-      case ErrorType.MissingAccessTokenHeader: {
-        return {
-          code: `${ResponseCodes.unautohorized}-01`,
-          message: "Missing x-access-token header.",
-          httpStatusCode: ResponseCodes.unautohorized
-        };
-      }
-
-      case ErrorType.VerifyJsonWebTokenError: {
-        return {
-          code: `${ResponseCodes.unautohorized}-02`,
-          message: "Verification of JWT failed.",
-          httpStatusCode: ResponseCodes.unautohorized
-        };
-      }
-
       case ErrorType.InvalidTimezone:
         return {
           code: `${ResponseCodes.badRequest}-01`,
@@ -175,6 +153,13 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.unprocessableEntity
         };
       }
+
+      case ErrorType.InternalServerError:
+        return {
+          code: `${ResponseCodes.warning}-01`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
 
       case ErrorType.RetreiveUserWithEmailMiddlewareError: {
         return {
@@ -485,41 +470,6 @@ export class CustomError extends Error {
       case ErrorType.SendFormattedUserMiddleware:
         return {
           code: `${ResponseCodes.warning}-43`,
-          message: internalServerMessage,
-          httpStatusCode: ResponseCodes.warning
-        };
-
-      case ErrorType.RetreiveJsonWebTokenMiddleware:
-        return {
-          code: `${ResponseCodes.warning}-44`,
-          message: internalServerMessage,
-          httpStatusCode: ResponseCodes.warning
-        };
-
-      case ErrorType.DecodeJsonWebTokenMiddleware:
-        return {
-          code: `${ResponseCodes.warning}-45`,
-          message: internalServerMessage,
-          httpStatusCode: ResponseCodes.warning
-        };
-
-      case ErrorType.JsonWebTokenVerificationSuccessfulMiddleware:
-        return {
-          code: `${ResponseCodes.warning}-46`,
-          message: internalServerMessage,
-          httpStatusCode: ResponseCodes.warning
-        };
-
-      case ErrorType.RegisterUserWithCognitoMiddleware:
-        return {
-          code: `${ResponseCodes.warning}-47`,
-          message: internalServerMessage,
-          httpStatusCode: ResponseCodes.warning
-        };
-
-      case ErrorType.InternalServerError:
-        return {
-          code: `${ResponseCodes.warning}-01`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

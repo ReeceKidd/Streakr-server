@@ -8,8 +8,9 @@ import {
   StripeCustomer
 } from "../../Models/StripeCustomer";
 import { getServiceConfig } from "../../getServiceConfig";
+import { CustomError, ErrorType } from "../../customError";
 
-const { STRIPE_SHAREABLE_KEY, STRIPE_PRODUCT } = getServiceConfig();
+const { STRIPE_SHAREABLE_KEY, STRIPE_PLAN } = getServiceConfig();
 
 const stripe = new Stripe(STRIPE_SHAREABLE_KEY);
 
@@ -40,8 +41,8 @@ export const getDoesStripeCustomerExistMiddleware = (
     const stripeCustomer = await stripeCustomerModel.findOne({ email });
     response.locals.stripeCustomer = stripeCustomer;
     next();
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    if (err instanceof CustomError) next(err);
   }
 };
 
@@ -85,10 +86,38 @@ export const createStripeSubscriptionMiddleware = async (
 ) => {
   try {
     const { stripeCustomer } = response.locals;
-    await stripe.subscriptions.create({
-      customer: stripeCustomer,
-      items: [{ plan: STRIPE_PRODUCT }]
+    const subscription = await stripe.subscriptions.create({
+      customer: stripeCustomer.customerId,
+      items: [{ plan: STRIPE_PLAN }],
+      expand: ["latest_invoice.payment_intent"]
     });
+    response.locals.subscription = subscription;
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const handleInitialPaymentOutcomeMiddleware = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { subscription } = response.locals;
+    const subscriptionStatus = subscription.status;
+    const paymentIntentStatus =
+      subscription.latest_invoice.payment_intent.status;
+    if (
+      subscriptionStatus === "active" &&
+      paymentIntentStatus === "succeeded"
+    ) {
+      next();
+    } else if (subscriptionStatus === "trialing") {
+      next();
+    } else if (status === "incomplete") {
+      new Error(paymentIntentStatus.toString());
+    } else throw new Error("Unknown case");
   } catch (err) {
     next(err);
   }
@@ -100,8 +129,8 @@ export const sendCreatedStripeCustomerSuccessMessageMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const { stripeCustomer } = response.locals;
-    response.send({ stripeCustomer });
+    const { stripeCustomer, subscription } = response.locals;
+    response.send({ stripeCustomer, subscription });
   } catch (error) {
     next(error);
   }
@@ -111,5 +140,7 @@ export const createStripeCustomerMiddlewares = [
   createStripeCustomerBodyValidationMiddleware,
   doesStripeCustomerExistMiddleware,
   createStripeCustomerMiddleware,
+  createStripeSubscriptionMiddleware,
+  handleInitialPaymentOutcomeMiddleware,
   sendCreatedStripeCustomerSuccessMessageMiddleware
 ];
