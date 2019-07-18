@@ -56,7 +56,13 @@ export enum ErrorType {
   HashPasswordMiddleware,
   SaveUserToDatabaseMiddleware,
   SendFormattedUserMiddleware,
-  DoesStripeCustomerExistMiddleware
+  DoesStripeCustomerExistMiddleware,
+  CreateStripeCustomerMiddleware,
+  CreateStripeSubscriptionMiddleware,
+  HandleInitialPaymentOutcomeMiddleware,
+  SendSuccessfulSubscriptionMiddleware,
+  IncompletePayment,
+  UnknownPaymentStatus
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -470,6 +476,55 @@ export class CustomError extends Error {
       case ErrorType.SendFormattedUserMiddleware:
         return {
           code: `${ResponseCodes.warning}-43`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DoesStripeCustomerExistMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-44`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateStripeCustomerMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-45`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateStripeSubscriptionMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-46`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.HandleInitialPaymentOutcomeMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-47`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendSuccessfulSubscriptionMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-48`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.IncompletePayment:
+        return {
+          code: `${ResponseCodes.warning}-49`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.UnknownPaymentStatus:
+        return {
+          code: `${ResponseCodes.warning}-50`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

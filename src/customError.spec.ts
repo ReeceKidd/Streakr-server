@@ -632,4 +632,91 @@ describe("customError", () => {
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
+
+  test(`creates correct error when type is set to DoesStripeCustomerExistMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.DoesStripeCustomerExistMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-44`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to CreateStripeCustomerMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.CreateStripeCustomerMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-45`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to CreateStripeSubscriptionMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.CreateStripeSubscriptionMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-46`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to HandleInitialPaymentOutcomeMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.HandleInitialPaymentOutcomeMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-47`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendSuccessfulSubscriptionMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SendSuccessfulSubscriptionMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-48`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to IncompletePayment`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.IncompletePayment);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-49`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to UnknownPaymentStatus`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.UnknownPaymentStatus);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-50`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
 });

@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { createStripeCustomerMiddlewares } from "../RouteMiddlewares/Stripe/createStripeCustomerMiddlewares";
+import { createStripeCustomerSubscriptionMiddlewares } from "../RouteMiddlewares/Stripe/createStripeCustomerSubscriptionMiddlewares";
 
 const stripeRouter = Router();
 
-stripeRouter.post("/customers", ...createStripeCustomerMiddlewares);
+stripeRouter.post(
+  "/subscriptions",
+  ...createStripeCustomerSubscriptionMiddlewares
+);
 
 export default stripeRouter;

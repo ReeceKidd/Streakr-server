@@ -43,6 +43,8 @@ export const getDoesStripeCustomerExistMiddleware = (
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
+    else
+      next(new CustomError(ErrorType.DoesStripeCustomerExistMiddleware, err));
   }
 };
 
@@ -70,8 +72,9 @@ export const getCreateStripeCustomerMiddleware = (
       response.locals.stripeCustomer = newCustomer;
     }
     next();
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.CreateStripeCustomerMiddleware, err));
   }
 };
 
@@ -94,7 +97,9 @@ export const createStripeSubscriptionMiddleware = async (
     response.locals.subscription = subscription;
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else
+      next(new CustomError(ErrorType.CreateStripeSubscriptionMiddleware, err));
   }
 };
 
@@ -113,17 +118,16 @@ export const handleInitialPaymentOutcomeMiddleware = (
       paymentIntentStatus === "succeeded"
     ) {
       next();
-    } else if (subscriptionStatus === "trialing") {
-      next();
     } else if (status === "incomplete") {
-      new Error(paymentIntentStatus.toString());
-    } else throw new Error("Unknown case");
+      throw new CustomError(ErrorType.IncompletePayment, paymentIntentStatus);
+    } else throw new CustomError(ErrorType.UnknownPaymentStatus);
   } catch (err) {
-    next(err);
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.HandleInitialPaymentOutcomeMiddleware));
   }
 };
 
-export const sendCreatedStripeCustomerSuccessMessageMiddleware = (
+export const sendSuccessfulSubscriptionMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
@@ -131,16 +135,16 @@ export const sendCreatedStripeCustomerSuccessMessageMiddleware = (
   try {
     const { stripeCustomer, subscription } = response.locals;
     response.send({ stripeCustomer, subscription });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(new CustomError(ErrorType.SendSuccessfulSubscriptionMiddleware));
   }
 };
 
-export const createStripeCustomerMiddlewares = [
+export const createStripeCustomerSubscriptionMiddlewares = [
   createStripeCustomerBodyValidationMiddleware,
   doesStripeCustomerExistMiddleware,
   createStripeCustomerMiddleware,
   createStripeSubscriptionMiddleware,
   handleInitialPaymentOutcomeMiddleware,
-  sendCreatedStripeCustomerSuccessMessageMiddleware
+  sendSuccessfulSubscriptionMiddleware
 ];
