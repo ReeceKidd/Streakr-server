@@ -12,7 +12,7 @@ import { CustomError, ErrorType } from "../../customError";
 
 const { STRIPE_SHAREABLE_KEY, STRIPE_PLAN } = getServiceConfig();
 
-const stripe = new Stripe(STRIPE_SHAREABLE_KEY);
+export const stripe = new Stripe(STRIPE_SHAREABLE_KEY);
 
 const createStripeCustomerBodySchema = {
   token: Joi.string().required(),
@@ -42,9 +42,7 @@ export const getDoesStripeCustomerExistMiddleware = (
     response.locals.stripeCustomer = stripeCustomer;
     next();
   } catch (err) {
-    if (err instanceof CustomError) next(err);
-    else
-      next(new CustomError(ErrorType.DoesStripeCustomerExistMiddleware, err));
+    next(new CustomError(ErrorType.DoesStripeCustomerExistMiddleware, err));
   }
 };
 
@@ -59,14 +57,14 @@ export const getCreateStripeCustomerMiddleware = (
     const { token, email } = request.body;
     const { stripeCustomer } = response.locals;
     if (!stripeCustomer) {
-      const stripeCustomer = await stripe.customers.create({
+      const createdStripeCustomer = await stripe.customers.create({
         source: token,
         email
       });
       const newCustomer = new stripeCustomerModel({
         email,
         token,
-        customerId: stripeCustomer.id
+        customerId: createdStripeCustomer.id
       });
       await newCustomer.save();
       response.locals.stripeCustomer = newCustomer;
@@ -74,7 +72,9 @@ export const getCreateStripeCustomerMiddleware = (
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
-    else next(new CustomError(ErrorType.CreateStripeCustomerMiddleware, err));
+    else {
+      next(new CustomError(ErrorType.CreateStripeCustomerMiddleware, err));
+    }
   }
 };
 
@@ -98,8 +98,9 @@ export const createStripeSubscriptionMiddleware = async (
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
-    else
+    else {
       next(new CustomError(ErrorType.CreateStripeSubscriptionMiddleware, err));
+    }
   }
 };
 
@@ -123,7 +124,9 @@ export const handleInitialPaymentOutcomeMiddleware = (
     } else throw new CustomError(ErrorType.UnknownPaymentStatus);
   } catch (err) {
     if (err instanceof CustomError) next(err);
-    else next(new CustomError(ErrorType.HandleInitialPaymentOutcomeMiddleware));
+    else {
+      next(new CustomError(ErrorType.HandleInitialPaymentOutcomeMiddleware));
+    }
   }
 };
 
