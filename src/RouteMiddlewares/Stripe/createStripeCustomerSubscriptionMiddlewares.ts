@@ -9,6 +9,7 @@ import {
 } from "../../Models/StripeCustomer";
 import { getServiceConfig } from "../../getServiceConfig";
 import { CustomError, ErrorType } from "../../customError";
+import { ResponseCodes } from "../../Server/responseCodes";
 
 const { STRIPE_SHAREABLE_KEY, STRIPE_PLAN } = getServiceConfig();
 
@@ -71,10 +72,7 @@ export const getCreateStripeCustomerMiddleware = (
     }
     next();
   } catch (err) {
-    if (err instanceof CustomError) next(err);
-    else {
-      next(new CustomError(ErrorType.CreateStripeCustomerMiddleware, err));
-    }
+    next(new CustomError(ErrorType.CreateStripeCustomerMiddleware, err));
   }
 };
 
@@ -82,27 +80,26 @@ export const createStripeCustomerMiddleware = getCreateStripeCustomerMiddleware(
   stripeCustomerModel
 );
 
-export const createStripeSubscriptionMiddleware = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const getCreateStripeSubscriptionMiddleware = (
+  stripePlan: string
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { stripeCustomer } = response.locals;
     const subscription = await stripe.subscriptions.create({
       customer: stripeCustomer.customerId,
-      items: [{ plan: STRIPE_PLAN }],
+      items: [{ plan: stripePlan }],
       expand: ["latest_invoice.payment_intent"]
     });
     response.locals.subscription = subscription;
     next();
   } catch (err) {
-    if (err instanceof CustomError) next(err);
-    else {
-      next(new CustomError(ErrorType.CreateStripeSubscriptionMiddleware, err));
-    }
+    next(new CustomError(ErrorType.CreateStripeSubscriptionMiddleware, err));
   }
 };
+
+export const createStripeSubscriptionMiddleware = getCreateStripeSubscriptionMiddleware(
+  STRIPE_PLAN
+);
 
 export const handleInitialPaymentOutcomeMiddleware = (
   request: Request,
@@ -111,21 +108,24 @@ export const handleInitialPaymentOutcomeMiddleware = (
 ) => {
   try {
     const { subscription } = response.locals;
-    const subscriptionStatus = subscription.status;
     const paymentIntentStatus =
       subscription.latest_invoice.payment_intent.status;
     if (
-      subscriptionStatus === "active" &&
+      subscription.status === "active" &&
       paymentIntentStatus === "succeeded"
     ) {
       next();
-    } else if (status === "incomplete") {
+    } else if (subscription.status === "incomplete") {
       throw new CustomError(ErrorType.IncompletePayment, paymentIntentStatus);
-    } else throw new CustomError(ErrorType.UnknownPaymentStatus);
+    } else {
+      throw new CustomError(ErrorType.UnknownPaymentStatus);
+    }
   } catch (err) {
     if (err instanceof CustomError) next(err);
     else {
-      next(new CustomError(ErrorType.HandleInitialPaymentOutcomeMiddleware));
+      next(
+        new CustomError(ErrorType.HandleInitialPaymentOutcomeMiddleware, err)
+      );
     }
   }
 };
@@ -137,9 +137,11 @@ export const sendSuccessfulSubscriptionMiddleware = (
 ) => {
   try {
     const { stripeCustomer, subscription } = response.locals;
-    response.send({ stripeCustomer, subscription });
+    response
+      .status(ResponseCodes.created)
+      .send({ stripeCustomer, subscription });
   } catch (err) {
-    next(new CustomError(ErrorType.SendSuccessfulSubscriptionMiddleware));
+    next(new CustomError(ErrorType.SendSuccessfulSubscriptionMiddleware, err));
   }
 };
 
