@@ -318,6 +318,7 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
       const createStripeSubscriptionMiddleware = getCreateStripeSubscriptionMiddleware(
         stripePlan
       );
+
       await createStripeSubscriptionMiddleware(request, response, next);
 
       expect(stripe.subscriptions.create).toBeCalledWith({
