@@ -1,28 +1,6 @@
 import { CustomError, ErrorType } from "./customError";
 
 describe("customError", () => {
-  test(`creates correct error when type is set to MissingAccessTokenHeader`, () => {
-    expect.assertions(3);
-
-    const customError = new CustomError(ErrorType.MissingAccessTokenHeader);
-    const { code, message, httpStatusCode } = customError;
-
-    expect(code).toBe(`401-01`);
-    expect(message).toBe("Missing x-access-token header.");
-    expect(httpStatusCode).toBe(401);
-  });
-
-  test(`creates correct error when type is set to VerifyJsonWebTokenError`, () => {
-    expect.assertions(3);
-
-    const customError = new CustomError(ErrorType.VerifyJsonWebTokenError);
-    const { code, message, httpStatusCode } = customError;
-
-    expect(code).toBe(`401-02`);
-    expect(message).toBe("Verification of JWT failed.");
-    expect(httpStatusCode).toBe(401);
-  });
-
   test(`creates correct error when type is set to InvalidTimeZone`, () => {
     expect.assertions(3);
 
@@ -655,11 +633,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to RetreiveJsonWebTokenMiddleware`, () => {
+  test(`creates correct error when type is set to DoesStripeCustomerExistMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.RetreiveJsonWebTokenMiddleware
+      ErrorType.DoesStripeCustomerExistMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -668,10 +646,12 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to DecodeJsonWebTokenMiddleware`, () => {
+  test(`creates correct error when type is set to CreateStripeCustomerMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.DecodeJsonWebTokenMiddleware);
+    const customError = new CustomError(
+      ErrorType.CreateStripeCustomerMiddleware
+    );
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-45`);
@@ -679,11 +659,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to JsonWebTokenVerificationSuccessfulMiddleware`, () => {
+  test(`creates correct error when type is set to CreateStripeSubscriptionMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.JsonWebTokenVerificationSuccessfulMiddleware
+      ErrorType.CreateStripeSubscriptionMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -692,15 +672,50 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to RegisterUserWithCognitoMiddleware`, () => {
+  test(`creates correct error when type is set to HandleInitialPaymentOutcomeMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.RegisterUserWithCognitoMiddleware
+      ErrorType.HandleInitialPaymentOutcomeMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-47`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendSuccessfulSubscriptionMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SendSuccessfulSubscriptionMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-48`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to IncompletePayment`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.IncompletePayment);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-49`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to UnknownPaymentStatus`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.UnknownPaymentStatus);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-50`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
