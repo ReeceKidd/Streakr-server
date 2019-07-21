@@ -1,18 +1,21 @@
 import {
   createStripeCustomerSubscriptionMiddlewares,
   createStripeCustomerSubscriptionBodyValidationMiddleware,
-  doesStripeCustomerExistMiddleware,
   createStripeCustomerMiddleware,
   createStripeSubscriptionMiddleware,
   handleInitialPaymentOutcomeMiddleware,
   sendSuccessfulSubscriptionMiddleware,
-  getDoesStripeCustomerExistMiddleware,
   stripe,
   getCreateStripeCustomerMiddleware,
-  getCreateStripeSubscriptionMiddleware
+  getCreateStripeSubscriptionMiddleware,
+  isUserAnExistingStripeCustomerMiddleware,
+  getIsUserAnExistingStripeCustomerMiddleware,
+  addStripeSubscriptionToUserMiddleware,
+  getAddStripeSubscriptionToUserMiddleware
 } from "./createStripeCustomerSubscriptionMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { UserTypes } from "../../Models/User";
 
 describe("createStripeCustomerSubscriptionMiddlewares", () => {
   afterEach(() => {
@@ -149,12 +152,12 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
     });
   });
 
-  describe("doesStripeCustomerExistMiddleware", () => {
-    test("defines response.locals.stripeCustomer", async () => {
-      expect.assertions(3);
+  describe("isUserAnExistingStripeCustomerMiddleware", () => {
+    test("calls next if user exists and is not premium already", async () => {
+      expect.assertions(2);
       const email = "test@test.com";
-      const findOne = jest.fn().mockResolvedValue(true);
-      const stripeCustomerModel: any = {
+      const findOne = jest.fn().mockResolvedValue({ type: "basic" });
+      const userModel: any = {
         findOne
       };
       const request: any = {
@@ -166,21 +169,23 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
         locals: {}
       };
       const next = jest.fn();
-      const doesStripeCustomerExistMiddleware = getDoesStripeCustomerExistMiddleware(
-        stripeCustomerModel
+      const isUserAnExistingStripeCustomerMiddleware = getIsUserAnExistingStripeCustomerMiddleware(
+        userModel
       );
 
-      await doesStripeCustomerExistMiddleware(request, response, next);
+      await isUserAnExistingStripeCustomerMiddleware(request, response, next);
 
       expect(findOne).toBeCalledWith({ email });
-      expect(response.locals.stripeCustomer).toBeDefined();
       expect(next).toBeCalledWith();
     });
 
-    test("calls next with DoesStripeCustomerExistMiddleware error on middleware failure", async () => {
+    test("calls next with StripeSubscriptionUserDoesNotExist error if user doesn't exist", async () => {
       expect.assertions(1);
       const email = "test@test.com";
-      const stripeCustomerModel: any = {};
+      const findOne = jest.fn().mockResolvedValue(false);
+      const userModel: any = {
+        findOne
+      };
       const request: any = {
         body: {
           email
@@ -190,15 +195,68 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
         locals: {}
       };
       const next = jest.fn();
-      const doesStripeCustomerExistMiddleware = getDoesStripeCustomerExistMiddleware(
-        stripeCustomerModel
+      const isUserAnExistingStripeCustomerMiddleware = getIsUserAnExistingStripeCustomerMiddleware(
+        userModel
       );
 
-      await doesStripeCustomerExistMiddleware(request, response, next);
+      await isUserAnExistingStripeCustomerMiddleware(request, response, next);
+
+      expect(next).toBeCalledWith(
+        new CustomError(ErrorType.StripeSubscriptionUserDoesNotExist)
+      );
+    });
+
+    test("calls next with CustomerIsAlreadySubscribed error if user type is set to premium", async () => {
+      expect.assertions(1);
+      const email = "test@test.com";
+      const findOne = jest.fn().mockResolvedValue({
+        type: UserTypes.premium
+      });
+      const userModel: any = {
+        findOne
+      };
+      const request: any = {
+        body: {
+          email
+        }
+      };
+      const response: any = {
+        locals: {}
+      };
+      const next = jest.fn();
+      const isUserAnExistingStripeCustomerMiddleware = getIsUserAnExistingStripeCustomerMiddleware(
+        userModel
+      );
+
+      await isUserAnExistingStripeCustomerMiddleware(request, response, next);
+
+      expect(next).toBeCalledWith(
+        new CustomError(ErrorType.CustomerIsAlreadySubscribed)
+      );
+    });
+
+    test("calls next with IsUserAnExistingStripeCustomerMiddleware error on middleware failure", async () => {
+      expect.assertions(1);
+      const email = "test@test.com";
+      const userModel: any = {};
+      const request: any = {
+        body: {
+          email
+        }
+      };
+      const response: any = {
+        locals: {}
+      };
+      const next = jest.fn();
+      const isUserAnExistingStripeCustomerMiddleware = getIsUserAnExistingStripeCustomerMiddleware(
+        userModel
+      );
+
+      await isUserAnExistingStripeCustomerMiddleware(request, response, next);
 
       expect(next).toBeCalledWith(
         new CustomError(
-          ErrorType.DoesStripeCustomerExistMiddleware,
+          ErrorType.IsUserAnExistingStripeCustomerMiddleware,
           expect.any(Error)
         )
       );
@@ -206,14 +264,18 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
   });
 
   describe("createStripeCustomerMiddleware", () => {
-    test("sets response.locals.stripeCustomer is stripeCustomer does not exist", async () => {
+    test("creates stripe customer and sets response.locals.stripeCustomer", async () => {
       expect.assertions(4);
+      const token = "1234";
+      const email = "reecekidd123@gmail.com";
       const stripeCustomerId = "123";
       stripe.customers.create = jest
         .fn()
         .mockResolvedValue({ id: stripeCustomerId });
-      const token = "1234";
-      const email = "reecekidd123@gmail.com";
+      const updateOne = jest.fn().mockResolvedValue({});
+      const userModel = {
+        updateOne
+      };
       const request: any = {
         body: {
           token,
@@ -223,60 +285,20 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
       const response: any = {
         locals: {}
       };
-      const save = jest.fn(() => Promise.resolve(true));
-      class StripeCustomerModel {
-        email: string;
-        token: string;
-        customerId: string;
-
-        constructor(email: string, token: string, customerId: string) {
-          this.email = email;
-          this.token = token;
-          this.customerId = customerId;
-        }
-
-        save() {
-          return save();
-        }
-      }
       const next = jest.fn();
       const createStripeCustomerMiddleware = getCreateStripeCustomerMiddleware(
-        StripeCustomerModel as any
+        userModel as any
       );
 
       await createStripeCustomerMiddleware(request, response, next);
 
       expect(stripe.customers.create).toBeCalledWith({ source: token, email });
-      expect(save).toBeCalledWith();
-      expect(response.locals.stripeCustomer).toBeDefined();
-      expect(next).toBeCalledWith();
-    });
-
-    test(" calls next without anything else if stripeCustomer already exists", () => {
-      expect.assertions(1);
-      const stripeCustomerId = "123";
-      const token = "1234";
-      const email = "reecekidd123@gmail.com";
-      const request: any = {
-        body: {
-          token,
-          email
-        }
-      };
-      const response: any = {
-        locals: {
-          stripeCustomer: {
-            id: stripeCustomerId
-          }
-        }
-      };
-      const next = jest.fn();
-      const createStripeCustomerMiddleware = getCreateStripeCustomerMiddleware(
-        {} as any
+      expect(updateOne).toBeCalledWith(
+        { email },
+        { $set: { "stripe.customerId": "123" } },
+        { new: true }
       );
-
-      createStripeCustomerMiddleware(request, response, next);
-
+      expect(response.locals.stripeCustomer).toBeDefined();
       expect(next).toBeCalledWith();
     });
 
@@ -434,6 +456,61 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
     });
   });
 
+  describe("addStripeSubscriptionToUserMiddleware", () => {
+    test("updates user model with stripe subscription", async () => {
+      expect.assertions(2);
+      const email = "stripe@gmail.com";
+      const stripeCustomer = {
+        email
+      };
+      const subscription = "subscription";
+      const request: any = {};
+      const response: any = {
+        locals: {
+          stripeCustomer,
+          subscription
+        }
+      };
+      const next = jest.fn();
+      const update = jest.fn().mockResolvedValue(true);
+      const userModel = {
+        update
+      };
+      const addStripeSubscriptionToUserMiddleware = getAddStripeSubscriptionToUserMiddleware(
+        userModel as any
+      );
+
+      await addStripeSubscriptionToUserMiddleware(request, response, next);
+
+      expect(update).toBeCalledWith(
+        { email },
+        { $set: { "stripe.subscription": subscription } },
+        { new: true }
+      );
+      expect(next).toBeCalledWith();
+    });
+
+    test("calls next with AddStripeSubscriptionToUserMiddleware error on middleware failure", async () => {
+      expect.assertions(1);
+      const request: any = {};
+      const response: any = {};
+      const next = jest.fn();
+      const userModel: any = {};
+      const addStripeSubscriptionToUserMiddleware = getAddStripeSubscriptionToUserMiddleware(
+        userModel
+      );
+
+      await addStripeSubscriptionToUserMiddleware(request, response, next);
+
+      expect(next).toBeCalledWith(
+        new CustomError(
+          ErrorType.AddStripeSubscriptionToUserMiddleware,
+          expect.any(Error)
+        )
+      );
+    });
+  });
+
   describe("sendSuccessfulSubscriptionMiddleware", () => {
     test("sends stripeCustomer and subscription information in response", () => {
       expect.assertions(2);
@@ -475,14 +552,14 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
   });
 
   test("are defined in the correct order", () => {
-    expect.assertions(7);
+    expect.assertions(8);
 
-    expect(createStripeCustomerSubscriptionMiddlewares.length).toEqual(6);
+    expect(createStripeCustomerSubscriptionMiddlewares.length).toEqual(7);
     expect(createStripeCustomerSubscriptionMiddlewares[0]).toBe(
       createStripeCustomerSubscriptionBodyValidationMiddleware
     );
     expect(createStripeCustomerSubscriptionMiddlewares[1]).toBe(
-      doesStripeCustomerExistMiddleware
+      isUserAnExistingStripeCustomerMiddleware
     );
     expect(createStripeCustomerSubscriptionMiddlewares[2]).toBe(
       createStripeCustomerMiddleware
@@ -494,6 +571,9 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
       handleInitialPaymentOutcomeMiddleware
     );
     expect(createStripeCustomerSubscriptionMiddlewares[5]).toBe(
+      addStripeSubscriptionToUserMiddleware
+    );
+    expect(createStripeCustomerSubscriptionMiddlewares[6]).toBe(
       sendSuccessfulSubscriptionMiddleware
     );
   });

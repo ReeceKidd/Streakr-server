@@ -1,9 +1,9 @@
 import { ResponseCodes } from "./Server/responseCodes";
-import { deleteSoloStreakMiddleware } from "./RouteMiddlewares/SoloStreak/deleteSoloStreakMiddlewares";
 
 export enum ErrorType {
   InternalServerError,
   InvalidTimezone,
+  AddStripeSubscriptionToUserMiddleware,
   UserDoesNotExist,
   PasswordDoesNotMatchHash,
   RetreiveUserWithEmailMiddlewareError,
@@ -56,13 +56,15 @@ export enum ErrorType {
   HashPasswordMiddleware,
   SaveUserToDatabaseMiddleware,
   SendFormattedUserMiddleware,
-  DoesStripeCustomerExistMiddleware,
   CreateStripeCustomerMiddleware,
   CreateStripeSubscriptionMiddleware,
   HandleInitialPaymentOutcomeMiddleware,
   SendSuccessfulSubscriptionMiddleware,
   IncompletePayment,
-  UnknownPaymentStatus
+  UnknownPaymentStatus,
+  IsUserAnExistingStripeCustomerMiddleware,
+  CustomerIsAlreadySubscribed,
+  StripeSubscriptionUserDoesNotExist
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -151,6 +153,21 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.badRequest
         };
       }
+
+      case ErrorType.StripeSubscriptionUserDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-11`,
+          message: "User does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.CustomerIsAlreadySubscribed:
+        return {
+          code: `${ResponseCodes.badRequest}-12`,
+          message: "User is already subscibed.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
 
       case ErrorType.TaskAlreadyCompletedToday: {
         return {
@@ -480,7 +497,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.DoesStripeCustomerExistMiddleware:
+      case ErrorType.IsUserAnExistingStripeCustomerMiddleware:
         return {
           code: `${ResponseCodes.warning}-44`,
           message: internalServerMessage,
@@ -525,6 +542,13 @@ export class CustomError extends Error {
       case ErrorType.UnknownPaymentStatus:
         return {
           code: `${ResponseCodes.warning}-50`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.AddStripeSubscriptionToUserMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-51`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

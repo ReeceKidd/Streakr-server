@@ -102,6 +102,30 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to StripeSubscriptionUserDoesNotExist`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.StripeSubscriptionUserDoesNotExist
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-11`);
+    expect(message).toBe("User does not exist.");
+    expect(httpStatusCode).toBe(400);
+  });
+
+  test(`creates correct error when type is set to CustomerIsAlreadySubscribed`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.CustomerIsAlreadySubscribed);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-12`);
+    expect(message).toBe("User is already subscribed.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
     expect.assertions(3);
 
@@ -633,11 +657,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to DoesStripeCustomerExistMiddleware`, () => {
+  test(`creates correct error when type is set to IsUserAnExistingStripeCustomerMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.DoesStripeCustomerExistMiddleware
+      ErrorType.IsUserAnExistingStripeCustomerMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -716,6 +740,19 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-50`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to AddStripeSubscriptionToUserMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.AddStripeSubscriptionToUserMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-51`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });

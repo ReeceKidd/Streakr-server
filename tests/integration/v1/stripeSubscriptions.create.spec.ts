@@ -4,7 +4,6 @@ import server from "../../../src/app";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
-import { stripeCustomerModel } from "../../../src/Models/StripeCustomer";
 
 const registeredEmail = "stripe-subscription-user@gmail.com";
 const registeredFailureEmail = "stripe-subscription-failure@gmail.com";
@@ -27,8 +26,7 @@ describe(`POST ${subscriptionsRoute}`, () => {
 
   afterAll(async () => {
     await userModel.deleteOne({ email: registeredEmail });
-    await stripeCustomerModel.deleteOne({ email: registeredEmail });
-    await stripeCustomerModel.deleteOne({ email: registeredFailureEmail });
+    await userModel.deleteOne({ email: registeredFailureEmail });
   });
 
   test("takes users payment and subscribes them", async () => {

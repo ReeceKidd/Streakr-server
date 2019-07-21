@@ -3,13 +3,10 @@ import { Request, Response, NextFunction } from "express";
 import { Model } from "mongoose";
 import * as Joi from "joi";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import {
-  stripeCustomerModel,
-  StripeCustomer
-} from "../../Models/StripeCustomer";
 import { getServiceConfig } from "../../getServiceConfig";
 import { CustomError, ErrorType } from "../../customError";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { userModel, User, UserTypes } from "../../Models/User";
 
 const { STRIPE_SHAREABLE_KEY, STRIPE_PLAN } = getServiceConfig();
 
@@ -34,42 +31,47 @@ export const createStripeCustomerSubscriptionBodyValidationMiddleware = (
   );
 };
 
-export const getDoesStripeCustomerExistMiddleware = (
-  stripeCustomerModel: Model<StripeCustomer>
+export const getIsUserAnExistingStripeCustomerMiddleware = (
+  userModel: Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { email } = request.body;
-    const stripeCustomer = await stripeCustomerModel.findOne({ email });
-    response.locals.stripeCustomer = stripeCustomer;
+    const user = (await userModel.findOne({ email })) as User;
+    if (!user) {
+      throw new CustomError(ErrorType.StripeSubscriptionUserDoesNotExist);
+    }
+    if (user.type === UserTypes.premium) {
+      throw new CustomError(ErrorType.CustomerIsAlreadySubscribed);
+    }
     next();
   } catch (err) {
-    next(new CustomError(ErrorType.DoesStripeCustomerExistMiddleware, err));
+    if (err instanceof CustomError) next(err);
+    else
+      next(
+        new CustomError(ErrorType.IsUserAnExistingStripeCustomerMiddleware, err)
+      );
   }
 };
 
-export const doesStripeCustomerExistMiddleware = getDoesStripeCustomerExistMiddleware(
-  stripeCustomerModel
+export const isUserAnExistingStripeCustomerMiddleware = getIsUserAnExistingStripeCustomerMiddleware(
+  userModel
 );
 
 export const getCreateStripeCustomerMiddleware = (
-  stripeCustomerModel: Model<StripeCustomer>
+  userModel: Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { token, email } = request.body;
-    const { stripeCustomer } = response.locals;
-    if (!stripeCustomer) {
-      const createdStripeCustomer = await stripe.customers.create({
-        source: token,
-        email
-      });
-      const newCustomer = new stripeCustomerModel({
-        email,
-        token,
-        customerId: createdStripeCustomer.id
-      });
-      await newCustomer.save();
-      response.locals.stripeCustomer = newCustomer;
-    }
+    const createdStripeCustomer = await stripe.customers.create({
+      source: token,
+      email
+    });
+    const stripeCustomer = await userModel.updateOne(
+      { email },
+      { $set: { "stripe.customerId": createdStripeCustomer.id } },
+      { new: true }
+    );
+    response.locals.stripeCustomer = stripeCustomer;
     next();
   } catch (err) {
     next(new CustomError(ErrorType.CreateStripeCustomerMiddleware, err));
@@ -77,7 +79,7 @@ export const getCreateStripeCustomerMiddleware = (
 };
 
 export const createStripeCustomerMiddleware = getCreateStripeCustomerMiddleware(
-  stripeCustomerModel
+  userModel
 );
 
 export const getCreateStripeSubscriptionMiddleware = (
@@ -130,6 +132,26 @@ export const handleInitialPaymentOutcomeMiddleware = (
   }
 };
 
+export const getAddStripeSubscriptionToUserMiddleware = (
+  userModel: Model<User>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { stripeCustomer, subscription } = response.locals;
+    await userModel.update(
+      { email: stripeCustomer.email },
+      { $set: { "stripe.subscription": subscription } },
+      { new: true }
+    );
+    next();
+  } catch (err) {
+    next(new CustomError(ErrorType.AddStripeSubscriptionToUserMiddleware, err));
+  }
+};
+
+export const addStripeSubscriptionToUserMiddleware = getAddStripeSubscriptionToUserMiddleware(
+  userModel
+);
+
 export const sendSuccessfulSubscriptionMiddleware = (
   request: Request,
   response: Response,
@@ -147,9 +169,10 @@ export const sendSuccessfulSubscriptionMiddleware = (
 
 export const createStripeCustomerSubscriptionMiddlewares = [
   createStripeCustomerSubscriptionBodyValidationMiddleware,
-  doesStripeCustomerExistMiddleware,
+  isUserAnExistingStripeCustomerMiddleware,
   createStripeCustomerMiddleware,
   createStripeSubscriptionMiddleware,
   handleInitialPaymentOutcomeMiddleware,
+  addStripeSubscriptionToUserMiddleware,
   sendSuccessfulSubscriptionMiddleware
 ];
