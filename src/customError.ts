@@ -165,7 +165,7 @@ export class CustomError extends Error {
       case ErrorType.CustomerIsAlreadySubscribed:
         return {
           code: `${ResponseCodes.badRequest}-12`,
-          message: "User is already subscibed.",
+          message: "User is already subscribed.",
           httpStatusCode: ResponseCodes.badRequest
         };
 
