@@ -135,16 +135,14 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-13`);
-    expect(message).toBe("User is already subscribed.");
+    expect(message).toBe("User does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
   test(`creates correct error when type is set to CustomerIsNotSubscribed`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(
-      ErrorType.CancelStripeSubscriptionUserDoesNotExist
-    );
+    const customError = new CustomError(ErrorType.CustomerIsNotSubscribed);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-14`);
