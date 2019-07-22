@@ -106,7 +106,7 @@ describe("customError", () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.StripeSubscriptionUserDoesNotExist
+      ErrorType.CreateStripeSubscriptionUserDoesNotExist
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -123,6 +123,32 @@ describe("customError", () => {
 
     expect(code).toBe(`400-12`);
     expect(message).toBe("User is already subscribed.");
+    expect(httpStatusCode).toBe(400);
+  });
+
+  test(`creates correct error when type is set to CancelStripeSubscriptionUserDoesNotExist`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.CancelStripeSubscriptionUserDoesNotExist
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-13`);
+    expect(message).toBe("User is already subscribed.");
+    expect(httpStatusCode).toBe(400);
+  });
+
+  test(`creates correct error when type is set to CustomerIsNotSubscribed`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.CancelStripeSubscriptionUserDoesNotExist
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-14`);
+    expect(message).toBe("Customer is not subscribed.");
     expect(httpStatusCode).toBe(400);
   });
 
@@ -753,6 +779,58 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-51`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to DoesUserHaveStripeSubscriptionMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.DoesUserHaveStripeSubscriptionMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-52`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to CancelStripeSubscriptionMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.CancelStripeSubscriptionMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-53`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to RemoveSubscriptionFromUserMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.RemoveSubscriptionFromUserMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-54`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendSuccessfullyRemovedSubscriptionMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SendSuccessfullyRemovedSubscriptionMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-55`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });

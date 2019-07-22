@@ -22,7 +22,7 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
     jest.resetAllMocks();
   });
 
-  describe("createStripeCustomerSubscriptionMiddleware", () => {
+  describe("createStripeCustomerSubscriptionBodyValidationMiddleware", () => {
     const token = "1234";
     const email = "test@test.com";
 
@@ -202,7 +202,7 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
       await isUserAnExistingStripeCustomerMiddleware(request, response, next);
 
       expect(next).toBeCalledWith(
-        new CustomError(ErrorType.StripeSubscriptionUserDoesNotExist)
+        new CustomError(ErrorType.CreateStripeSubscriptionUserDoesNotExist)
       );
     });
 

@@ -38,7 +38,7 @@ export const getIsUserAnExistingStripeCustomerMiddleware = (
     const { email } = request.body;
     const user = (await userModel.findOne({ email })) as User;
     if (!user) {
-      throw new CustomError(ErrorType.StripeSubscriptionUserDoesNotExist);
+      throw new CustomError(ErrorType.CreateStripeSubscriptionUserDoesNotExist);
     }
     if (user.type === UserTypes.premium) {
       throw new CustomError(ErrorType.CustomerIsAlreadySubscribed);
@@ -46,10 +46,11 @@ export const getIsUserAnExistingStripeCustomerMiddleware = (
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
-    else
+    else {
       next(
         new CustomError(ErrorType.IsUserAnExistingStripeCustomerMiddleware, err)
       );
+    }
   }
 };
 
