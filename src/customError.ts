@@ -70,7 +70,9 @@ export enum ErrorType {
   DoesUserHaveStripeSubscriptionMiddleware,
   CancelStripeSubscriptionMiddleware,
   RemoveSubscriptionFromUserMiddleware,
-  SendSuccessfullyRemovedSubscriptionMiddleware
+  SendSuccessfullyRemovedSubscriptionMiddleware,
+  SetUserTypeToPremiumMiddleware,
+  SetUserTypeToBasicMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -599,6 +601,20 @@ export class CustomError extends Error {
       case ErrorType.SendSuccessfullyRemovedSubscriptionMiddleware:
         return {
           code: `${ResponseCodes.warning}-55`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SetUserTypeToPremiumMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-56`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SetUserTypeToBasicMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-57`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
