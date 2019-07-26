@@ -14,9 +14,7 @@ export const stripe = new Stripe(STRIPE_SHAREABLE_KEY);
 
 const cancelStripeCustomerSubscriptionBodySchema = {
   subscription: Joi.string().required(),
-  email: Joi.string()
-    .email()
-    .required()
+  id: Joi.string().required()
 };
 
 export const cancelStripeCustomerSubscriptionBodyValidationMiddleware = (
@@ -35,14 +33,15 @@ export const getDoesUserHaveStripeSubscriptionMiddleware = (
   userModel: Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { email } = request.body;
-    const user = (await userModel.findOne({ email })) as User;
+    const { id } = request.body;
+    const user = (await userModel.findById(id)) as User;
     if (!user) {
       throw new CustomError(ErrorType.CancelStripeSubscriptionUserDoesNotExist);
     }
     if (user.type !== UserTypes.premium) {
       throw new CustomError(ErrorType.CustomerIsNotSubscribed);
     }
+    response.locals.user = user;
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
@@ -64,6 +63,7 @@ export const cancelStripeSubscriptionMiddleware = async (
   next: NextFunction
 ) => {
   try {
+    console.log("#2");
     const { subscription } = request.body;
     await stripe.subscriptions.del(subscription);
     next();
@@ -76,12 +76,11 @@ export const getRemoveSubscriptionFromUserMiddleware = (
   userModel: Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { email } = request.body;
-    const updatedUser = await userModel.updateOne(
-      { email },
-      { $set: { "stripe.subscription": false } },
-      { new: true }
-    );
+    console.log("#3");
+    const { id } = response.locals.user;
+    const updatedUser = await userModel.findByIdAndUpdate(id, {
+      $set: { "stripe.subscription": false }
+    });
     response.locals.updatedUser = updatedUser;
     next();
   } catch (err) {
@@ -93,14 +92,33 @@ export const removeSubscriptionFromUserMiddleware = getRemoveSubscriptionFromUse
   userModel
 );
 
+export const getSetUserTypeToBasicMiddleware = (
+  userModel: Model<User>,
+  basicUserType: UserTypes.basic
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    console.log("#4");
+    const { id } = response.locals.user;
+    await userModel.findByIdAndUpdate(id, { $set: { type: basicUserType } });
+    next();
+  } catch (err) {
+    next(new CustomError(ErrorType.SetUserTypeToBasicMiddleware, err));
+  }
+};
+
+export const setUserTypeToBasicMiddleware = getSetUserTypeToBasicMiddleware(
+  userModel,
+  UserTypes.basic
+);
+
 export const sendSuccessfullyRemovedSubscriptionMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
-    const { updatedUser } = response.locals;
-    response.status(ResponseCodes.deleted).send({ user: updatedUser });
+    console.log("#5");
+    response.status(ResponseCodes.deleted).send();
   } catch (err) {
     next(
       new CustomError(
@@ -116,5 +134,6 @@ export const cancelStripeCustomerSubscriptionMiddlewares = [
   doesUserHaveStripeSubscriptionMiddleware,
   cancelStripeSubscriptionMiddleware,
   removeSubscriptionFromUserMiddleware,
+  setUserTypeToBasicMiddleware,
   sendSuccessfullyRemovedSubscriptionMiddleware
 ];

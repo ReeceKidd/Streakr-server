@@ -29,7 +29,7 @@ describe(userRegistationRoute, () => {
     expect(response.status).toEqual(ResponseCodes.created);
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("streaks");
-    expect(response.body).toHaveProperty("role");
+    expect(response.body).toHaveProperty("type");
     expect(response.body).toHaveProperty("_id");
     expect(response.body).toHaveProperty("email");
     expect(response.body).toHaveProperty("username");

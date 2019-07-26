@@ -42,7 +42,7 @@ describe(`POST ${subscriptionsRoute}`, () => {
         id
       });
     expect(response.status).toEqual(201);
-    expect(response.body.stripeCustomer).toBeDefined();
+    expect(response.body.customer).toBeDefined();
     expect(response.body.subscription).toBeDefined();
   });
 
@@ -53,9 +53,9 @@ describe(`POST ${subscriptionsRoute}`, () => {
       .post(`${subscriptionsRoute}`)
       .send({
         token,
-        email: registeredFailureEmail
+        id
       });
     expect(response.status).toEqual(400);
-    expect(response.body.code).toEqual("400-11");
+    expect(response.body.code).toEqual("400-12");
   });
 });

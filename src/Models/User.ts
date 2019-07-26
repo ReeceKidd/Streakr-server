@@ -3,8 +3,6 @@ import { Collections } from "./Collections";
 import { Models } from "./Models";
 import { SoloStreak } from "./SoloStreak";
 
-export const SALT_ROUNDS = 10;
-
 export enum UserTypes {
   basic = "basic",
   premium = "premium",
@@ -29,12 +27,13 @@ export interface User extends mongoose.Document {
   };
   friends?: string[];
   stripe?: {
-    token: {
-      required: true;
+    token?: {
       type: String;
     };
-    customerId: {
-      required: true;
+    customer?: {
+      type: String;
+    };
+    subscription?: {
       type: String;
     };
   };
@@ -72,11 +71,12 @@ export const userSchema = new mongoose.Schema(
     },
     stripe: {
       token: {
-        required: true,
         type: String
       },
-      customerId: {
-        required: true,
+      customer: {
+        type: String
+      },
+      subscription: {
         type: String
       }
     }

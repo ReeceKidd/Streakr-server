@@ -9,7 +9,9 @@ import {
   sendSuccessfullyRemovedSubscriptionMiddleware,
   getDoesUserHaveStripeSubscriptionMiddleware,
   stripe,
-  getRemoveSubscriptionFromUserMiddleware
+  getRemoveSubscriptionFromUserMiddleware,
+  getSetUserTypeToBasicMiddleware,
+  setUserTypeToBasicMiddleware
 } from "./cancelStripeCustomerSubscriptionMiddlewares";
 
 describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
@@ -19,14 +21,14 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
   describe("cancelStripeCustomerSubscriptionBodyValidationMiddleware", () => {
     const subscription = "subscription";
-    const email = "test@test.com";
+    const id = "id";
 
     test("sends correct error response when unsupported key is sent", () => {
       expect.assertions(3);
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const request: any = {
-        body: { unsupportedKey: 1234, subscription, email }
+        body: { unsupportedKey: 1234, subscription, id }
       };
       const response: any = {
         status
@@ -51,7 +53,7 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const request: any = {
-        body: { email }
+        body: { id }
       };
       const response: any = {
         status
@@ -72,7 +74,7 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
       expect(next).not.toBeCalled();
     });
 
-    test("sends correct error response when email is not defined", () => {
+    test("sends correct error response when id is not defined", () => {
       expect.assertions(3);
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
@@ -92,17 +94,17 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
       expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
       expect(send).toBeCalledWith({
-        message: 'child "email" fails because ["email" is required]'
+        message: 'child "id" fails because ["id" is required]'
       });
       expect(next).not.toBeCalled();
     });
 
-    test("sends correct error response when email is not a string", () => {
+    test("sends correct error response when id is not a string", () => {
       expect.assertions(3);
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const request: any = {
-        body: { subscription, email: 1234 }
+        body: { subscription, id: 1234 }
       };
       const response: any = {
         status
@@ -117,32 +119,7 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
       expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
       expect(send).toBeCalledWith({
-        message: 'child "email" fails because ["email" must be a string]'
-      });
-      expect(next).not.toBeCalled();
-    });
-
-    test("sends correct error response when email is not valid", () => {
-      expect.assertions(3);
-      const send = jest.fn();
-      const status = jest.fn(() => ({ send }));
-      const request: any = {
-        body: { subscription, email: "not an email" }
-      };
-      const response: any = {
-        status
-      };
-      const next = jest.fn();
-
-      cancelStripeCustomerSubscriptionBodyValidationMiddleware(
-        request,
-        response,
-        next
-      );
-
-      expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-      expect(send).toBeCalledWith({
-        message: 'child "email" fails because ["email" must be a valid email]'
+        message: 'child "id" fails because ["id" must be a string]'
       });
       expect(next).not.toBeCalled();
     });
@@ -151,14 +128,14 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
   describe("doesUserHaveStripeSubscriptionMiddleware", () => {
     test("calls next if user exists and has a premium type", async () => {
       expect.assertions(2);
-      const email = "test@test.com";
-      const findOne = jest.fn().mockResolvedValue({ type: "premium" });
+      const id = "id";
+      const findById = jest.fn().mockResolvedValue({ type: "premium" });
       const userModel: any = {
-        findOne
+        findById
       };
       const request: any = {
         body: {
-          email
+          id
         }
       };
       const response: any = {
@@ -171,20 +148,20 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
       await doesUserHaveStripeSubscriptionMiddleware(request, response, next);
 
-      expect(findOne).toBeCalledWith({ email });
+      expect(findById).toBeCalledWith(id);
       expect(next).toBeCalledWith();
     });
 
     test("calls next with CancelStripeSubscriptionUserDoesNotExist error if user doesn't exist", async () => {
       expect.assertions(1);
-      const email = "test@test.com";
-      const findOne = jest.fn().mockResolvedValue(false);
+      const id = "id";
+      const findById = jest.fn().mockResolvedValue(false);
       const userModel: any = {
-        findOne
+        findById
       };
       const request: any = {
         body: {
-          email
+          id
         }
       };
       const response: any = {
@@ -204,16 +181,16 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
     test("calls next with CustomerIsNotSubscribed error if user type is not set to premium", async () => {
       expect.assertions(1);
-      const email = "test@test.com";
-      const findOne = jest.fn().mockResolvedValue({
+      const id = "id";
+      const findById = jest.fn().mockResolvedValue({
         type: "basic"
       });
       const userModel: any = {
-        findOne
+        findById
       };
       const request: any = {
         body: {
-          email
+          id
         }
       };
       const response: any = {
@@ -260,7 +237,7 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
   });
 
   describe("cancelStripeSubscriptionMiddleware", () => {
-    test("creates stripe subscription for correct plan", async () => {
+    test("cancels stripe subscription", async () => {
       expect.assertions(2);
       const subscription = "subscription";
       stripe.subscriptions.del = jest.fn().mockResolvedValue({});
@@ -295,18 +272,19 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
   describe("removeSubcriptionFromUserMiddleware", () => {
     test("updates users stripe.subscription property to be false", async () => {
       expect.assertions(3);
-      const email = "email@email.com";
-      const updateOne = jest.fn().mockResolvedValue({});
+      const findByIdAndUpdate = jest.fn().mockResolvedValue({});
       const userModel = {
-        updateOne
+        findByIdAndUpdate
       };
-      const request: any = {
-        body: {
-          email
-        }
+      const id = "id";
+      const user = {
+        id
       };
+      const request: any = {};
       const response: any = {
-        locals: {}
+        locals: {
+          user
+        }
       };
       const next = jest.fn();
       const removeSubscriptionFromUserMiddleware = getRemoveSubscriptionFromUserMiddleware(
@@ -315,11 +293,9 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
       await removeSubscriptionFromUserMiddleware(request, response, next);
 
-      expect(updateOne).toBeCalledWith(
-        { email },
-        { $set: { "stripe.subscription": false } },
-        { new: true }
-      );
+      expect(findByIdAndUpdate).toBeCalledWith(id, {
+        $set: { "stripe.subscription": false }
+      });
       expect(response.locals.updatedUser).toBeDefined();
       expect(next).toBeCalledWith();
     });
@@ -344,17 +320,63 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
     });
   });
 
-  describe("sendSuccessfullyRemovedSubscriptionMiddleware", () => {
-    test("sends stripeCustomer and subscription information in response", () => {
+  describe("setUserTypeToBasicMiddleware", () => {
+    test("updates user model type to be basic", async () => {
       expect.assertions(2);
-      const updatedUser = {};
-      const send = jest.fn();
-      const status = jest.fn(() => ({ send }));
+      const id = "id";
+      const user = {
+        id
+      };
       const request: any = {};
       const response: any = {
         locals: {
-          updatedUser
-        },
+          user
+        }
+      };
+      const next = jest.fn();
+      const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+      const userModel = {
+        findByIdAndUpdate
+      };
+      const setUserTypeToBasicMiddleware = getSetUserTypeToBasicMiddleware(
+        userModel as any,
+        "basic" as any
+      );
+
+      await setUserTypeToBasicMiddleware(request, response, next);
+
+      expect(findByIdAndUpdate).toBeCalledWith(id, { $set: { type: "basic" } });
+      expect(next).toBeCalledWith();
+    });
+
+    test("calls next with SetUserTypeToBasicMiddleware error on middleware failure", async () => {
+      expect.assertions(1);
+      const request: any = {};
+      const response: any = {};
+      const next = jest.fn();
+      const userModel: any = {};
+      const setUserTypeToBasicMiddleware = getSetUserTypeToBasicMiddleware(
+        userModel,
+        "basic" as any
+      );
+
+      await setUserTypeToBasicMiddleware(request, response, next);
+
+      expect(next).toBeCalledWith(
+        new CustomError(
+          ErrorType.SetUserTypeToBasicMiddleware,
+          expect.any(Error)
+        )
+      );
+    });
+  });
+
+  describe("sendSuccessfullyRemovedSubscriptionMiddleware", () => {
+    test("sends stripeCustomer and subscription information in response", () => {
+      expect.assertions(1);
+      const status = jest.fn();
+      const request: any = {};
+      const response: any = {
         status
       };
       const next = jest.fn();
@@ -362,7 +384,6 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
       sendSuccessfullyRemovedSubscriptionMiddleware(request, response, next);
 
       expect(status).toBeCalledWith(204);
-      expect(send).toBeCalledWith({ user: updatedUser });
     });
 
     test("calls next with SendSuccessfulSubscriptionMiddleware on middleware failure", () => {
@@ -383,9 +404,9 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
   });
 
   test("are defined in the correct order", () => {
-    expect.assertions(6);
+    expect.assertions(7);
 
-    expect(cancelStripeCustomerSubscriptionMiddlewares.length).toEqual(5);
+    expect(cancelStripeCustomerSubscriptionMiddlewares.length).toEqual(6);
     expect(cancelStripeCustomerSubscriptionMiddlewares[0]).toBe(
       cancelStripeCustomerSubscriptionBodyValidationMiddleware
     );
@@ -399,6 +420,9 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
       removeSubscriptionFromUserMiddleware
     );
     expect(cancelStripeCustomerSubscriptionMiddlewares[4]).toBe(
+      setUserTypeToBasicMiddleware
+    );
+    expect(cancelStripeCustomerSubscriptionMiddlewares[5]).toBe(
       sendSuccessfullyRemovedSubscriptionMiddleware
     );
   });
