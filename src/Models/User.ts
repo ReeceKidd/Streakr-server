@@ -3,10 +3,9 @@ import { Collections } from "./Collections";
 import { Models } from "./Models";
 import { SoloStreak } from "./SoloStreak";
 
-export const SALT_ROUNDS = 10;
-
-enum UserTypes {
-  user = "user",
+export enum UserTypes {
+  basic = "basic",
+  premium = "premium",
   admin = "admin"
 }
 
@@ -21,12 +20,23 @@ export interface User extends mongoose.Document {
   email: string;
   createdAt: Date;
   modifiedAt: Date;
-  role: string;
+  type: string;
   soloStreaks?: SoloStreak[];
   profilePicture?: {
-    type: String;
+    type: string;
   };
   friends?: string[];
+  stripe?: {
+    token?: {
+      type: string;
+    };
+    customer?: {
+      type: string;
+    };
+    subscription?: {
+      type: string;
+    };
+  };
 }
 
 export const userSchema = new mongoose.Schema(
@@ -43,10 +53,10 @@ export const userSchema = new mongoose.Schema(
       unique: true,
       trim: true
     },
-    role: {
+    type: {
       type: String,
-      enum: [UserTypes.user, UserTypes.admin],
-      default: UserTypes.user
+      enum: [UserTypes.basic, UserTypes.premium, UserTypes.admin],
+      default: UserTypes.basic
     },
     streaks: {
       type: Array,
@@ -58,6 +68,18 @@ export const userSchema = new mongoose.Schema(
     friends: {
       type: Array,
       default: []
+    },
+    stripe: {
+      token: {
+        type: String
+      },
+      customer: {
+        type: String
+      },
+      subscription: {
+        type: String,
+        default: undefined
+      }
     }
   },
   {

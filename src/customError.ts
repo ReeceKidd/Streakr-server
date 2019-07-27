@@ -1,9 +1,9 @@
 import { ResponseCodes } from "./Server/responseCodes";
-import { deleteSoloStreakMiddleware } from "./RouteMiddlewares/SoloStreak/deleteSoloStreakMiddlewares";
 
 export enum ErrorType {
   InternalServerError,
   InvalidTimezone,
+  AddStripeSubscriptionToUserMiddleware,
   UserDoesNotExist,
   PasswordDoesNotMatchHash,
   RetreiveUserWithEmailMiddlewareError,
@@ -56,13 +56,23 @@ export enum ErrorType {
   HashPasswordMiddleware,
   SaveUserToDatabaseMiddleware,
   SendFormattedUserMiddleware,
-  DoesStripeCustomerExistMiddleware,
   CreateStripeCustomerMiddleware,
   CreateStripeSubscriptionMiddleware,
   HandleInitialPaymentOutcomeMiddleware,
   SendSuccessfulSubscriptionMiddleware,
   IncompletePayment,
-  UnknownPaymentStatus
+  UnknownPaymentStatus,
+  IsUserAnExistingStripeCustomerMiddleware,
+  CustomerIsAlreadySubscribed,
+  CreateStripeSubscriptionUserDoesNotExist,
+  CancelStripeSubscriptionUserDoesNotExist,
+  CustomerIsNotSubscribed,
+  DoesUserHaveStripeSubscriptionMiddleware,
+  CancelStripeSubscriptionMiddleware,
+  RemoveSubscriptionFromUserMiddleware,
+  SendSuccessfullyRemovedSubscriptionMiddleware,
+  SetUserTypeToPremiumMiddleware,
+  SetUserTypeToBasicMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -148,6 +158,37 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-10`,
           message: "Username already exists.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.CreateStripeSubscriptionUserDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-11`,
+          message: "User does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.CustomerIsAlreadySubscribed:
+        return {
+          code: `${ResponseCodes.badRequest}-12`,
+          message: "User is already subscribed.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+
+      case ErrorType.CancelStripeSubscriptionUserDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-13`,
+          message: "User does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.CustomerIsNotSubscribed: {
+        return {
+          code: `${ResponseCodes.badRequest}-14`,
+          message: "Customer is not subscribed.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -480,7 +521,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.DoesStripeCustomerExistMiddleware:
+      case ErrorType.IsUserAnExistingStripeCustomerMiddleware:
         return {
           code: `${ResponseCodes.warning}-44`,
           message: internalServerMessage,
@@ -525,6 +566,55 @@ export class CustomError extends Error {
       case ErrorType.UnknownPaymentStatus:
         return {
           code: `${ResponseCodes.warning}-50`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.AddStripeSubscriptionToUserMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-51`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DoesUserHaveStripeSubscriptionMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-52`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CancelStripeSubscriptionMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-53`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RemoveSubscriptionFromUserMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-54`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendSuccessfullyRemovedSubscriptionMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-55`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SetUserTypeToPremiumMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-56`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SetUserTypeToBasicMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-57`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

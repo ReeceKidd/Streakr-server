@@ -4,11 +4,11 @@ import server from "../../../src/app";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
-import { stripeCustomerModel } from "../../../src/Models/StripeCustomer";
 
 const registeredEmail = "stripe-subscription-user@gmail.com";
-const registeredFailureEmail = "stripe-subscription-failure@gmail.com";
 const registeredUsername = "stripe-subscription-user";
+const secondRegisteredEmail = "second-stripe-subscription-user@gmail.com";
+const secondRegisteredUsername = "second-registered-username";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const subscriptionsRoute = `/${ApiVersions.v1}/${RouteCategories.stripe}/subscriptions`;
@@ -16,44 +16,55 @@ const subscriptionsRoute = `/${ApiVersions.v1}/${RouteCategories.stripe}/subscri
 jest.setTimeout(120000);
 
 describe(`POST ${subscriptionsRoute}`, () => {
+  let id = "";
+  let secondId = "";
+
   beforeAll(async () => {
-    await request(server)
+    const userResponse = await request(server)
       .post(registrationRoute)
       .send({
         username: registeredUsername,
         email: registeredEmail
       });
+    id = userResponse.body._id;
+    const secondUserResponse = await request(server)
+      .post(registrationRoute)
+      .send({
+        username: secondRegisteredUsername,
+        email: secondRegisteredEmail
+      });
+    secondId = secondUserResponse.body._id;
   });
 
   afterAll(async () => {
-    await userModel.deleteOne({ email: registeredEmail });
-    await stripeCustomerModel.deleteOne({ email: registeredEmail });
-    await stripeCustomerModel.deleteOne({ email: registeredFailureEmail });
+    await userModel.findByIdAndDelete(id);
+    await userModel.findByIdAndDelete(secondId);
   });
 
   test("takes users payment and subscribes them", async () => {
-    expect.assertions(3);
+    expect.assertions(5);
     const token = "tok_visa";
-    const email = registeredEmail;
     const response = await request(server)
       .post(`${subscriptionsRoute}`)
       .send({
         token,
-        email
+        id
       });
     expect(response.status).toEqual(201);
-    expect(response.body).toHaveProperty("stripeCustomer");
-    expect(response.body).toHaveProperty("subscription");
+    expect(response.body.user._id).toBeDefined();
+    expect(response.body.user.stripe.subscription).toBeDefined();
+    expect(response.body.user.stripe.customer).toBeDefined();
+    expect(response.body.user.type).toEqual("premium");
   });
 
-  test("sends correct error when invalid data is sent", async () => {
+  test("sends correct error when invalid token is sent", async () => {
     expect.assertions(2);
     const token = "any";
     const response = await request(server)
       .post(`${subscriptionsRoute}`)
       .send({
         token,
-        email: registeredFailureEmail
+        id: secondId
       });
     expect(response.status).toEqual(500);
     expect(response.body.code).toEqual("500-45");

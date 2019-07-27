@@ -50,7 +50,7 @@ describe("/users", () => {
     const users = response.body.users;
     expect(users.length).toBe(1);
     expect(users[0]).toHaveProperty("streaks");
-    expect(users[0]).toHaveProperty("role");
+    expect(users[0]).toHaveProperty("type");
     expect(users[0]).toHaveProperty("_id");
     expect(users[0]).toHaveProperty("username");
     expect(users[0]).toHaveProperty("email");
@@ -70,7 +70,7 @@ describe("/users", () => {
     const users = response.body.users;
     expect(users.length).toBe(1);
     expect(users[0]).toHaveProperty("streaks");
-    expect(users[0]).toHaveProperty("role");
+    expect(users[0]).toHaveProperty("type");
     expect(users[0]).toHaveProperty("_id");
     expect(users[0]).toHaveProperty("username");
     expect(users[0]).toHaveProperty("email");
