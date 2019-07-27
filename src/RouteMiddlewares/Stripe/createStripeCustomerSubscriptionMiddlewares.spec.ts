@@ -439,7 +439,7 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
     test("updates user model with stripe subscription", async () => {
       expect.assertions(2);
       const user = {
-        id: "123"
+        _id: "123"
       };
       const stripeSubscription = {
         id: "abc"
@@ -462,7 +462,7 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
 
       await addStripeSubscriptionToUserMiddleware(request, response, next);
 
-      expect(findByIdAndUpdate).toBeCalledWith(user.id, {
+      expect(findByIdAndUpdate).toBeCalledWith(user._id, {
         $set: { "stripe.subscription": stripeSubscription.id }
       });
       expect(next).toBeCalledWith();
@@ -493,9 +493,8 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
     test("updates user model type to be premium", async () => {
       expect.assertions(2);
       const user = {
-        id: "123"
+        _id: "123"
       };
-      const subscription = "subscription";
       const request: any = {};
       const response: any = {
         locals: {
@@ -513,9 +512,13 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
 
       await setUserTypeToPremiumMiddleware(request, response, next);
 
-      expect(findByIdAndUpdate).toBeCalledWith("123", {
-        $set: { type: "premium" }
-      });
+      expect(findByIdAndUpdate).toBeCalledWith(
+        user._id,
+        {
+          $set: { type: "premium" }
+        },
+        { new: true }
+      );
       expect(next).toBeCalledWith();
     });
 
@@ -544,14 +547,16 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
     test("sends customer and subscription information in response", () => {
       expect.assertions(2);
       const request: any = {};
-      const stripeCustomer = { id: "123" };
-      const stripeSubscription = { id: "abc" };
+      const user = {
+        id: "abc",
+        stripe: { customer: "customer", subscription: "subscription" },
+        type: "type"
+      };
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const response: any = {
         locals: {
-          stripeCustomer,
-          stripeSubscription
+          user
         },
         status
       };
@@ -561,8 +566,11 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
 
       expect(status).toBeCalledWith(201);
       expect(send).toBeCalledWith({
-        customer: stripeCustomer.id,
-        subscription: stripeSubscription.id
+        user: {
+          _id: user.id,
+          stripe: user.stripe,
+          type: user.type
+        }
       });
     });
 

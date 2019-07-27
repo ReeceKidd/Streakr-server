@@ -6,8 +6,9 @@ import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
 
 const registeredEmail = "stripe-subscription-user@gmail.com";
-const registeredFailureEmail = "stripe-subscription-failure@gmail.com";
 const registeredUsername = "stripe-subscription-user";
+const secondRegisteredEmail = "second-stripe-subscription-user@gmail.com";
+const secondRegisteredUsername = "second-registered-username";
 
 const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const subscriptionsRoute = `/${ApiVersions.v1}/${RouteCategories.stripe}/subscriptions`;
@@ -16,6 +17,7 @@ jest.setTimeout(120000);
 
 describe(`POST ${subscriptionsRoute}`, () => {
   let id = "";
+  let secondId = "";
 
   beforeAll(async () => {
     const userResponse = await request(server)
@@ -25,15 +27,22 @@ describe(`POST ${subscriptionsRoute}`, () => {
         email: registeredEmail
       });
     id = userResponse.body._id;
+    const secondUserResponse = await request(server)
+      .post(registrationRoute)
+      .send({
+        username: secondRegisteredUsername,
+        email: secondRegisteredEmail
+      });
+    secondId = secondUserResponse.body._id;
   });
 
   afterAll(async () => {
-    await userModel.deleteOne({ email: registeredEmail });
-    await userModel.deleteOne({ email: registeredFailureEmail });
+    await userModel.findByIdAndDelete(id);
+    await userModel.findByIdAndDelete(secondId);
   });
 
   test("takes users payment and subscribes them", async () => {
-    expect.assertions(3);
+    expect.assertions(5);
     const token = "tok_visa";
     const response = await request(server)
       .post(`${subscriptionsRoute}`)
@@ -42,8 +51,10 @@ describe(`POST ${subscriptionsRoute}`, () => {
         id
       });
     expect(response.status).toEqual(201);
-    expect(response.body.customer).toBeDefined();
-    expect(response.body.subscription).toBeDefined();
+    expect(response.body.user._id).toBeDefined();
+    expect(response.body.user.stripe.subscription).toBeDefined();
+    expect(response.body.user.stripe.customer).toBeDefined();
+    expect(response.body.user.type).toEqual("premium");
   });
 
   test("sends correct error when invalid token is sent", async () => {
@@ -53,9 +64,9 @@ describe(`POST ${subscriptionsRoute}`, () => {
       .post(`${subscriptionsRoute}`)
       .send({
         token,
-        id
+        id: secondId
       });
-    expect(response.status).toEqual(400);
-    expect(response.body.code).toEqual("400-12");
+    expect(response.status).toEqual(500);
+    expect(response.body.code).toEqual("500-45");
   });
 });

@@ -63,7 +63,6 @@ export const cancelStripeSubscriptionMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    console.log("#2");
     const { subscription } = request.body;
     await stripe.subscriptions.del(subscription);
     next();
@@ -76,10 +75,9 @@ export const getRemoveSubscriptionFromUserMiddleware = (
   userModel: Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log("#3");
     const { id } = response.locals.user;
     const updatedUser = await userModel.findByIdAndUpdate(id, {
-      $set: { "stripe.subscription": false }
+      $set: { "stripe.subscription": undefined }
     });
     response.locals.updatedUser = updatedUser;
     next();
@@ -97,7 +95,6 @@ export const getSetUserTypeToBasicMiddleware = (
   basicUserType: UserTypes.basic
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log("#4");
     const { id } = response.locals.user;
     await userModel.findByIdAndUpdate(id, { $set: { type: basicUserType } });
     next();
@@ -117,7 +114,6 @@ export const sendSuccessfullyRemovedSubscriptionMiddleware = (
   next: NextFunction
 ) => {
   try {
-    console.log("#5");
     response.status(ResponseCodes.deleted).send();
   } catch (err) {
     next(

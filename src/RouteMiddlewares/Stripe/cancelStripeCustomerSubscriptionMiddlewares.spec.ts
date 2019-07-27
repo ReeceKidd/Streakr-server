@@ -294,7 +294,7 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
       await removeSubscriptionFromUserMiddleware(request, response, next);
 
       expect(findByIdAndUpdate).toBeCalledWith(id, {
-        $set: { "stripe.subscription": false }
+        $set: { "stripe.subscription": undefined }
       });
       expect(response.locals.updatedUser).toBeDefined();
       expect(next).toBeCalledWith();

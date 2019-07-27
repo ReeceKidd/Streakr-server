@@ -23,18 +23,18 @@ export interface User extends mongoose.Document {
   type: string;
   soloStreaks?: SoloStreak[];
   profilePicture?: {
-    type: String;
+    type: string;
   };
   friends?: string[];
   stripe?: {
     token?: {
-      type: String;
+      type: string;
     };
     customer?: {
-      type: String;
+      type: string;
     };
     subscription?: {
-      type: String;
+      type: string;
     };
   };
 }
@@ -77,7 +77,8 @@ export const userSchema = new mongoose.Schema(
         type: String
       },
       subscription: {
-        type: String
+        type: String,
+        default: undefined
       }
     }
   },

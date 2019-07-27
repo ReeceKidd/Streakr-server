@@ -137,7 +137,7 @@ export const getAddStripeSubscriptionToUserMiddleware = (
   try {
     const { user } = response.locals;
     const { stripeSubscription } = response.locals;
-    await userModel.findByIdAndUpdate(user.id, {
+    await userModel.findByIdAndUpdate(user._id, {
       $set: { "stripe.subscription": stripeSubscription.id }
     });
     next();
@@ -155,9 +155,13 @@ export const getSetUserTypeToPremiumMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { user } = response.locals;
-    await userModel.findByIdAndUpdate(user.id, {
-      $set: { type: UserTypes.premium }
-    });
+    response.locals.user = await userModel.findByIdAndUpdate(
+      user._id,
+      {
+        $set: { type: UserTypes.premium }
+      },
+      { new: true }
+    );
     next();
   } catch (err) {
     next(new CustomError(ErrorType.SetUserTypeToPremiumMiddleware, err));
@@ -174,13 +178,14 @@ export const sendSuccessfulSubscriptionMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const { stripeCustomer, stripeSubscription } = response.locals;
-    return response
-      .status(ResponseCodes.created)
-      .send({
-        customer: stripeCustomer.id,
-        subscription: stripeSubscription.id
-      });
+    const { user } = response.locals;
+    return response.status(ResponseCodes.created).send({
+      user: {
+        _id: user.id,
+        stripe: user.stripe,
+        type: user.type
+      }
+    });
   } catch (err) {
     next(new CustomError(ErrorType.SendSuccessfulSubscriptionMiddleware, err));
   }
