@@ -68,11 +68,13 @@ describe(`DELETE ${subscriptionsRoute}`, () => {
 
   test("sends correct error when subscription is missing in request", async () => {
     expect.assertions(2);
+
     const response = await request(server)
       .delete(`${subscriptionsRoute}`)
       .send({
         id
       });
+
     expect(response.status).toEqual(422);
     expect(response.body.message).toEqual(
       'child "subscription" fails because ["subscription" is required]'
@@ -81,11 +83,13 @@ describe(`DELETE ${subscriptionsRoute}`, () => {
 
   test("sends correct error when id is missing in request", async () => {
     expect.assertions(2);
+
     const response = await request(server)
       .delete(`${subscriptionsRoute}`)
       .send({
         subscription
       });
+
     expect(response.status).toEqual(422);
     expect(response.body.message).toEqual(
       'child "id" fails because ["id" is required]'
@@ -94,12 +98,14 @@ describe(`DELETE ${subscriptionsRoute}`, () => {
 
   test("sends correct error when user does not exist", async () => {
     expect.assertions(3);
+
     const response = await request(server)
       .delete(`${subscriptionsRoute}`)
       .send({
         id: "5d053a174c64143898b78455",
         subscription
       });
+
     expect(response.status).toEqual(400);
     expect(response.body.code).toEqual("400-13");
     expect(response.body.message).toEqual("User does not exist.");
@@ -107,12 +113,14 @@ describe(`DELETE ${subscriptionsRoute}`, () => {
 
   test("sends correct error when user is not subscribed", async () => {
     expect.assertions(3);
+
     const response = await request(server)
       .delete(`${subscriptionsRoute}`)
       .send({
         id: basicUserId,
         subscription
       });
+
     expect(response.status).toEqual(400);
     expect(response.body.code).toEqual("400-14");
     expect(response.body.message).toEqual("Customer is not subscribed.");

@@ -20,12 +20,14 @@ describe(userRegistationRoute, () => {
 
   test("user can register successfully", async () => {
     expect.assertions(9);
+
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
         username,
         email
       });
+
     expect(response.status).toEqual(ResponseCodes.created);
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("streaks");
@@ -39,7 +41,9 @@ describe(userRegistationRoute, () => {
 
   test("fails because nothing is sent with request", async () => {
     expect.assertions(4);
+
     const response = await request(server).post(userRegistationRoute);
+
     expect(response.status).toEqual(ResponseCodes.unprocessableEntity);
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");
@@ -56,6 +60,7 @@ describe(userRegistationRoute, () => {
       .send({
         email: "tester1@gmail.com"
       });
+
     expect(response.status).toEqual(ResponseCodes.unprocessableEntity);
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");
@@ -73,6 +78,7 @@ describe(userRegistationRoute, () => {
         username: "tester1",
         email: "tester001@gmail.com"
       });
+
     expect(response.status).toEqual(ResponseCodes.badRequest);
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");
@@ -88,6 +94,7 @@ describe(userRegistationRoute, () => {
         username: 1234567,
         email: "tester001@gmail.com"
       });
+
     expect(response.status).toEqual(ResponseCodes.unprocessableEntity);
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");
@@ -98,11 +105,13 @@ describe(userRegistationRoute, () => {
 
   test("fails because email is missing from request", async () => {
     expect.assertions(4);
+
     const response = await request(server)
       .post(userRegistationRoute)
       .send({
         username: "tester1"
       });
+
     expect(response.status).toEqual(ResponseCodes.unprocessableEntity);
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");
@@ -120,6 +129,7 @@ describe(userRegistationRoute, () => {
         username: "tester01",
         email: "tester1@gmail.com"
       });
+
     expect(response.status).toEqual(ResponseCodes.badRequest);
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");
@@ -135,6 +145,7 @@ describe(userRegistationRoute, () => {
         username: "tester01",
         email: "invalid email"
       });
+
     expect(response.status).toEqual(ResponseCodes.unprocessableEntity);
     expect(response.type).toEqual("application/json");
     expect(response.body).toHaveProperty("message");

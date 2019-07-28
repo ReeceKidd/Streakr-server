@@ -62,6 +62,7 @@ describe("getIncompleteSoloStreaks", () => {
     const incompleteStreak = incompleteSoloStreaks.find(
       (streak: SoloStreak) => (streak.streakName = name)
     );
+
     expect(incompleteStreak.name).toEqual(name);
   });
 });

@@ -62,12 +62,14 @@ describe(`POST ${subscriptionsRoute}`, () => {
 
   test("takes users payment and subscribes them", async () => {
     expect.assertions(5);
+
     const response = await request(server)
       .post(`${subscriptionsRoute}`)
       .send({
         token: validToken,
         id
       });
+
     expect(response.status).toEqual(201);
     expect(response.body.user._id).toBeDefined();
     expect(response.body.user.stripe.subscription).toBeDefined();
@@ -77,11 +79,13 @@ describe(`POST ${subscriptionsRoute}`, () => {
 
   test("sends correct error when token is missing in request", async () => {
     expect.assertions(2);
+
     const response = await request(server)
       .post(`${subscriptionsRoute}`)
       .send({
         id: secondId
       });
+
     expect(response.status).toEqual(422);
     expect(response.body.message).toEqual(
       'child "token" fails because ["token" is required]'
@@ -90,12 +94,14 @@ describe(`POST ${subscriptionsRoute}`, () => {
 
   test("sends correct error when id is missing in request", async () => {
     expect.assertions(2);
+
     const token = "tok_visa";
     const response = await request(server)
       .post(`${subscriptionsRoute}`)
       .send({
         token
       });
+
     expect(response.status).toEqual(422);
     expect(response.body.message).toEqual(
       'child "id" fails because ["id" is required]'
@@ -104,6 +110,7 @@ describe(`POST ${subscriptionsRoute}`, () => {
 
   test("sends correct error when invalid token is sent", async () => {
     expect.assertions(2);
+
     const token = "any";
     const response = await request(server)
       .post(`${subscriptionsRoute}`)
@@ -111,6 +118,7 @@ describe(`POST ${subscriptionsRoute}`, () => {
         token,
         id: secondId
       });
+
     expect(response.status).toEqual(500);
     expect(response.body.code).toEqual("500-45");
   });
@@ -133,12 +141,14 @@ describe(`POST ${subscriptionsRoute}`, () => {
   test("sends correct error when user does not exist", async () => {
     expect.assertions(3);
     const token = "tok_visa";
+
     const response = await request(server)
       .post(`${subscriptionsRoute}`)
       .send({
         id: "5d053a174c64143898b78455",
         token
       });
+
     expect(response.status).toEqual(400);
     expect(response.body.code).toEqual("400-11");
     expect(response.body.message).toEqual("User does not exist.");
@@ -147,12 +157,14 @@ describe(`POST ${subscriptionsRoute}`, () => {
   test("sends correct error when user is already premium", async () => {
     expect.assertions(3);
     const token = "tok_visa";
+
     const response = await request(server)
       .post(`${subscriptionsRoute}`)
       .send({
         id: premiumId,
         token
       });
+
     expect(response.status).toEqual(400);
     expect(response.body.code).toEqual("400-12");
     expect(response.body.message).toEqual("User is already subscribed.");

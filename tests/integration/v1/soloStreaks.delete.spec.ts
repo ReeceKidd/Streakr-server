@@ -52,7 +52,9 @@ describe(`DELETE ${soloStreakRoute}`, () => {
   test(`that solo streak can be deleted`, async () => {
     expect.assertions(1);
     const deleteSoloStreakRoute = `${soloStreakRoute}/${soloStreakId}`;
+
     const response = await request(server).delete(deleteSoloStreakRoute);
+
     expect(response.status).toEqual(ResponseCodes.deleted);
   });
 });
