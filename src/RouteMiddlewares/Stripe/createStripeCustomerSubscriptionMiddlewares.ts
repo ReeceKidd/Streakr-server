@@ -34,7 +34,8 @@ export const getIsUserAnExistingStripeCustomerMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { id } = request.body;
-    const user = (await userModel.findById(id)) as User;
+
+    const user: User = (await await userModel.findById(id)) as User;
     if (!user) {
       throw new CustomError(ErrorType.CreateStripeSubscriptionUserDoesNotExist);
     }

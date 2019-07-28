@@ -25,7 +25,7 @@ describe(createSoloStreakRoute, () => {
   let soloStreakId: string;
   let secondSoloStreakId: string;
 
-  const name = "Intermittent Fastings";
+  const name = "Intermittent fasting";
   const description = "I will not eat until 1pm everyday";
 
   beforeAll(async () => {
