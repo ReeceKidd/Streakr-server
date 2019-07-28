@@ -1,1 +1,0 @@
-{"version":3,"file":"testRouter.js","sourceRoot":"","sources":["../../../src/Routers/testRouter.ts"],"names":[],"mappings":";;AAAA,qCAAiC;AAEjC,mIAAgI;AAEnH,QAAA,SAAS,GAAG;IACrB,kBAAkB,EAAE,uBAAuB;CAC9C,CAAC;AAEF,MAAM,UAAU,GAAG,gBAAM,EAAE,CAAC;AAE5B,UAAU,CAAC,IAAI,CACX,IAAI,iBAAS,CAAC,kBAAkB,EAAE,EAClC,GAAG,qFAAyC,CAAC,CAAC;AAGlD,kBAAe,UAAU,CAAC"}
