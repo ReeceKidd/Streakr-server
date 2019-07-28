@@ -67,6 +67,7 @@ describe("resetIncompleteSoloStreaks", () => {
     const updatedSoloStreak = (await soloStreakModel.findById(
       soloStreakId
     )) as SoloStreak;
+
     expect(updatedSoloStreak.currentStreak.endDate).toBeUndefined();
     expect(updatedSoloStreak.pastStreaks.length).toBe(1);
     expect(updatedSoloStreak.pastStreaks[0].endDate).toEqual(endDate);

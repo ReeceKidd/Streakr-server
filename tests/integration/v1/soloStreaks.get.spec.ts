@@ -26,7 +26,7 @@ jest.setTimeout(120000);
 describe(getSoloStreaksRoute, () => {
   let userId: string;
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     const registrationResponse = await request(server)
       .post(registrationRoute)
       .send({
@@ -42,21 +42,21 @@ describe(getSoloStreaksRoute, () => {
         description: soloStreakDescription
       })
       .set({ [SupportedRequestHeaders.xTimezone]: parisTimezone });
-    done();
   });
 
-  afterAll(async done => {
+  afterAll(async () => {
     await userModel.deleteOne({ email: registeredEmail });
     await soloStreakModel.deleteOne({ name: soloStreakName });
-    done();
   });
 
-  test(`that solo streaks can be retreived for user`, async done => {
+  test(`that solo streaks can be retreived for user`, async () => {
     expect.assertions(9);
     const getSoloStreaksRouteWithQueryParamater = `${getSoloStreaksRoute}?userId=${userId}`;
+
     const response = await request(server).get(
       getSoloStreaksRouteWithQueryParamater
     );
+
     expect(response.status).toEqual(ResponseCodes.success);
     expect(response.type).toEqual("application/json");
     expect(response.body.soloStreaks.length).toEqual(1);
@@ -68,6 +68,5 @@ describe(getSoloStreaksRoute, () => {
     expect(response.body.soloStreaks[0]).toHaveProperty("_id");
     expect(response.body.soloStreaks[0]).toHaveProperty("createdAt");
     expect(response.body.soloStreaks[0]).toHaveProperty("updatedAt");
-    done();
   });
 });

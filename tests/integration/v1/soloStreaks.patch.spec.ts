@@ -55,6 +55,7 @@ describe(`PATCH ${soloStreakRoute}`, () => {
   test(`that request passes when solo streak is patched with correct keys`, async () => {
     expect.assertions(9);
     updatedName = "Intermittent fasting";
+
     const updatedDescription = "Cannot eat till 1pm everyday";
     const response = await request(server)
       .patch(`${soloStreakRoute}/${soloStreakId}`)
@@ -63,6 +64,7 @@ describe(`PATCH ${soloStreakRoute}`, () => {
         description: updatedDescription
       })
       .set({ [SupportedRequestHeaders.xTimezone]: berlinTimeZone });
+
     expect(response.status).toEqual(ResponseCodes.success);
     expect(response.type).toEqual("application/json");
     expect(response.body.data.name).toEqual(updatedName);

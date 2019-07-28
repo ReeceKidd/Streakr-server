@@ -41,10 +41,12 @@ describe("/users", () => {
 
   test(`that request returns searchAbleUser when full searchTerm is uaed`, async () => {
     expect.assertions(10);
+
     const getUsersByRegexSearchRouteWithSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${searchableUserUsername}`;
     const response = await request(server).get(
       getUsersByRegexSearchRouteWithSearchQueryRoute
     );
+
     expect(response.status).toEqual(ResponseCodes.success);
     expect(response.type).toEqual("application/json");
     const users = response.body.users;
@@ -60,14 +62,17 @@ describe("/users", () => {
 
   test("that request returns searchAble user when partial searchTerm is used", async () => {
     expect.assertions(10);
+
     const partialSearchQuery = `${searchableUserUsername}`;
     const getUsersByRegexSearchWithPartialSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${partialSearchQuery}`;
     const response = await request(server).get(
       getUsersByRegexSearchWithPartialSearchQueryRoute
     );
+    const users = response.body.users;
+
     expect(response.status).toEqual(ResponseCodes.success);
     expect(response.type).toEqual("application/json");
-    const users = response.body.users;
+
     expect(users.length).toBe(1);
     expect(users[0]).toHaveProperty("streaks");
     expect(users[0]).toHaveProperty("type");

@@ -58,12 +58,17 @@ describe(createSoloStreakRoute, () => {
   describe("/v1/solo-streaks/{id}/complete-tasks", () => {
     test("that user can say that a task has been completed for the day", async () => {
       expect.assertions(6);
+
       const completeTaskResponse = await request(server)
         .post(
           `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}/${RouteCategories.completeTasks}`
         )
         .send({ userId })
         .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
+      const soloStreak = (await soloStreakModel.findById(
+        soloStreakId
+      )) as SoloStreak;
+
       expect(completeTaskResponse.status).toEqual(ResponseCodes.created);
       expect(completeTaskResponse.body.completeTask._id).toBeDefined();
       expect(
@@ -73,9 +78,7 @@ describe(createSoloStreakRoute, () => {
       expect(completeTaskResponse.body.completeTask.streakId).toEqual(
         soloStreakId
       );
-      const soloStreak = (await soloStreakModel.findById(
-        soloStreakId
-      )) as SoloStreak;
+
       expect(soloStreak.currentStreak.startDate).toBeDefined();
     });
 

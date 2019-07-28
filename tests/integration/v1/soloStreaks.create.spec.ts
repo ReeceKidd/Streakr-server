@@ -44,6 +44,7 @@ describe(createSoloStreakRoute, () => {
 
   test(`that request passes when correct solo streak information is passed`, async () => {
     expect.assertions(9);
+
     const response = await request(server)
       .post(createSoloStreakRoute)
       .send({
@@ -52,6 +53,7 @@ describe(createSoloStreakRoute, () => {
         description
       })
       .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
+
     expect(response.status).toEqual(ResponseCodes.created);
     expect(response.type).toEqual("application/json");
     expect(response.body.name).toEqual(name);
