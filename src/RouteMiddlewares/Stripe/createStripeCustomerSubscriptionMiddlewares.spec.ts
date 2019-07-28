@@ -372,17 +372,17 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
 
     test("calls next with IncompletePayment error when status is incomplete", () => {
       expect.assertions(1);
-      const subscription = {
+      const incompleteSubscription = {
         status: "incomplete",
         latest_invoice: {
           payment_intent: {
-            status: "succeeded"
+            status: "incomplete"
           }
         }
       };
       const request: any = {};
       const response: any = {
-        locals: { subscription }
+        locals: { stripeSubscription: incompleteSubscription }
       };
       const next = jest.fn();
 
@@ -405,7 +405,7 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
       };
       const request: any = {};
       const response: any = {
-        locals: { subscription }
+        locals: { stripeSubscription: subscription }
       };
       const next = jest.fn();
 

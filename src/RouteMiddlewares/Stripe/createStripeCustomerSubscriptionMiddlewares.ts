@@ -118,7 +118,7 @@ export const handleInitialPaymentOutcomeMiddleware = (
     ) {
       next();
     } else if (stripeSubscription.status === "incomplete") {
-      throw new CustomError(ErrorType.IncompletePayment, paymentIntentStatus);
+      throw new CustomError(ErrorType.IncompletePayment);
     } else {
       throw new CustomError(ErrorType.UnknownPaymentStatus);
     }
