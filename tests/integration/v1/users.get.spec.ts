@@ -10,7 +10,7 @@ const registeredEmail = "search-user@gmail.com";
 const registeredUsername = "search-user";
 
 const searchableUserEmail = "other-user@gmail.com";
-const searchableUserUsername = "other-user";
+const searchableUserUsername = "other-user-username";
 
 const searchQueryKey = "searchQuery";
 
