@@ -7,6 +7,7 @@ export interface AppConfigHttp {
   AWS_REGION: string;
   STRIPE_SHAREABLE_KEY: string;
   STRIPE_PLAN: string;
+  APPLICATION_URL: string;
 }
 
 export type AppConfig = AppConfigHttp;
@@ -25,7 +26,8 @@ export const getServiceConfig = (
     AWS_SECRET_ACCESS_KEY,
     AWS_REGION,
     STRIPE_SHAREABLE_KEY,
-    STRIPE_PLAN
+    STRIPE_PLAN,
+    APPLICATION_URL
   } = environment;
 
   if (!NODE_ENV) throw new Error("NODE_ENV is not provided.");
@@ -54,6 +56,10 @@ export const getServiceConfig = (
     throw new Error("STRIPE_PLAN is not provided.");
   }
 
+  if (!APPLICATION_URL) {
+    throw new Error("APPLICATION_URL is not provided.");
+  }
+
   return {
     NODE_ENV,
     PORT,
@@ -62,6 +68,7 @@ export const getServiceConfig = (
     AWS_SECRET_ACCESS_KEY,
     AWS_REGION,
     STRIPE_SHAREABLE_KEY,
-    STRIPE_PLAN
+    STRIPE_PLAN,
+    APPLICATION_URL
   } as AppConfigHttp;
 };
