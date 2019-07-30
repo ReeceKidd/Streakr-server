@@ -1,6 +1,5 @@
-import request from "supertest";
+import axios from "axios";
 
-import server from "../../../src/app";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { userModel } from "../../../src/Models/User";
@@ -9,12 +8,13 @@ import { completeTaskModel } from "../../../src/Models/CompleteTask";
 
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
+import APPLICATION_URL from "../../config";
 
 const registeredEmail = "create-complete-tasks-user@gmail.com";
 const registeredUsername = "create-complete-tasks-user";
 
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
+const registrationRoute = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.users}`;
+const createSoloStreakRoute = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 const londonTimezone = "Europe/London";
 
@@ -29,22 +29,34 @@ describe(createSoloStreakRoute, () => {
   const description = "I will not eat until 1pm everyday";
 
   beforeAll(async () => {
-    const registrationResponse = await request(server)
-      .post(registrationRoute)
-      .send({
-        username: registeredUsername,
-        email: registeredEmail
+    try {
+      const registrationResponse = await axios({
+        data: {
+          username: registeredUsername,
+          email: registeredEmail
+        },
+        method: "POST",
+        url: registrationRoute
       });
-    userId = registrationResponse.body._id;
-    const createSoloStreakResponse = await request(server)
-      .post(createSoloStreakRoute)
-      .send({
-        userId,
-        name,
-        description
-      })
-      .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
-    soloStreakId = createSoloStreakResponse.body._id;
+      userId = registrationResponse.data._id;
+      console.log(`UserId: ${userId}`);
+      const createSoloStreakResponse = await axios({
+        data: {
+          userId,
+          name,
+          description
+        },
+        headers: {
+          [SupportedRequestHeaders.xTimezone]: londonTimezone
+        },
+        method: "POST",
+        url: createSoloStreakRoute
+      });
+      soloStreakId = createSoloStreakResponse.data._id;
+      console.log(`SoloStreakId: ${soloStreakId}`);
+    } catch (err) {
+      console.log(err);
+    }
   });
 
   afterAll(async () => {
@@ -56,62 +68,80 @@ describe(createSoloStreakRoute, () => {
   });
 
   describe("/v1/solo-streaks/{id}/complete-tasks", () => {
-    test("that user can say that a task has been completed for the day", async () => {
+    test.only("that user can say that a task has been completed for the day", async () => {
       expect.assertions(6);
 
-      const completeTaskResponse = await request(server)
-        .post(
-          `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}/${RouteCategories.completeTasks}`
-        )
-        .send({ userId })
-        .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
-      const soloStreak = (await soloStreakModel.findById(
-        soloStreakId
-      )) as SoloStreak;
+      try {
+        console.log("Entered");
+        const completeTaskResponse = await axios({
+          data: {
+            userId
+          },
+          headers: {
+            [SupportedRequestHeaders.xTimezone]: londonTimezone
+          },
+          method: "POST",
+          url: `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}/${RouteCategories.completeTasks}`
+        });
+        const soloStreak = (await soloStreakModel.findById(
+          soloStreakId
+        )) as SoloStreak;
+        const { data } = completeTaskResponse;
+        console.log(data);
 
-      expect(completeTaskResponse.status).toEqual(ResponseCodes.created);
-      expect(completeTaskResponse.body.completeTask._id).toBeDefined();
-      expect(
-        completeTaskResponse.body.completeTask.taskCompleteTime
-      ).toBeDefined();
-      expect(completeTaskResponse.body.completeTask.userId).toEqual(userId);
-      expect(completeTaskResponse.body.completeTask.streakId).toEqual(
-        soloStreakId
-      );
-
-      expect(soloStreak.currentStreak.startDate).toBeDefined();
+        expect(completeTaskResponse.status).toEqual(ResponseCodes.created);
+        expect(data.completeTask._id).toBeDefined();
+        expect(data.completeTask.taskCompleteTime).toBeDefined();
+        expect(data.completeTask.userId).toEqual(userId);
+        expect(data.completeTask.streakId).toEqual(soloStreakId);
+        expect(soloStreak.currentStreak.startDate).toBeDefined();
+        console.log("FINISHED");
+      } catch (err) {
+        console.log(err);
+      }
     });
 
-    test("that user cannot complete the same task in the same day", async () => {
+    test("that user cannot complete the same task in the same day", async done => {
       expect.assertions(3);
-      const secondaryCreateSoloStreakResponse = await request(server)
-        .post(createSoloStreakRoute)
-        .send({
-          userId,
-          name,
-          description
-        })
-        .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
-      secondSoloStreakId = secondaryCreateSoloStreakResponse.body._id;
-      await request(server)
-        .post(
-          `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}/${RouteCategories.completeTasks}`
-        )
-        .send({ userId })
-        .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
-      const secondCompleteTaskResponse = await request(server)
-        .post(
-          `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}/${RouteCategories.completeTasks}`
-        )
-        .send({ userId })
-        .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
-      expect(secondCompleteTaskResponse.status).toEqual(
-        ResponseCodes.unprocessableEntity
-      );
-      expect(secondCompleteTaskResponse.body.message).toEqual(
-        "Task already completed today."
-      );
-      expect(secondCompleteTaskResponse.body.code).toEqual("422-01");
+      try {
+        const secondaryCreateSoloStreakResponse = await axios({
+          data: {
+            userId,
+            name,
+            description
+          },
+          headers: {
+            [SupportedRequestHeaders.xTimezone]: londonTimezone
+          },
+          method: "POST",
+          url: createSoloStreakRoute
+        });
+        secondSoloStreakId = secondaryCreateSoloStreakResponse.data.body._id;
+
+        await axios({
+          data: { userId },
+          headers: {
+            [SupportedRequestHeaders.xTimezone]: londonTimezone
+          },
+          method: "POST",
+          url: `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}/${RouteCategories.completeTasks}`
+        });
+
+        await axios({
+          data: { userId },
+          headers: {
+            [SupportedRequestHeaders.xTimezone]: londonTimezone
+          },
+          method: "POST",
+          url: `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}/${RouteCategories.completeTasks}`
+        });
+        done();
+      } catch (err) {
+        expect(err.status).toEqual(ResponseCodes.unprocessableEntity);
+        expect(err.data.body.message).toEqual("Task already completed today.");
+        expect(err.data.body.code).toEqual("422-01");
+      }
+      done();
     });
   });
 });
