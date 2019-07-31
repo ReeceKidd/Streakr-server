@@ -1,12 +1,14 @@
 import { soloStreakModel, SoloStreak } from "../../../src/Models/SoloStreak";
 import request from "supertest";
 
-import server from "../../../src/app";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { userModel } from "../../../src/Models/User";
 import { getIncompleteSoloStreaks } from "../../../src/Agenda/getIncompleteSoloStreaks";
+import { getServiceConfig } from "../../../src/getServiceConfig";
+
+const { APPLICATION_URL } = getServiceConfig();
 
 const registeredUsername = "getIncompleteSoloStreaksUsername";
 const registeredEmail = "getIncompleteSoloStreaksRegisteredEmail@gmail.com";
@@ -24,14 +26,14 @@ describe("getIncompleteSoloStreaks", () => {
   const timezone = "Europe/London";
 
   beforeAll(async () => {
-    const registrationResponse = await request(server)
+    const registrationResponse = await request(APPLICATION_URL)
       .post(registrationRoute)
       .send({
         username: registeredUsername,
         email: registeredEmail
       });
     userId = registrationResponse.body._id;
-    const createSoloStreakResponse = await request(server)
+    const createSoloStreakResponse = await request(APPLICATION_URL)
       .post(soloStreakRoute)
       .send({
         userId,
