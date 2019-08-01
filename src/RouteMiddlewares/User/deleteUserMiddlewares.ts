@@ -5,7 +5,7 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { User } from "../../Models/User";
+import { User, userModel } from "../../Models/User";
 
 const userParamsValidationSchema = {
   userId: Joi.string().required()
