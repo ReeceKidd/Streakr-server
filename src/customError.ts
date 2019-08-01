@@ -72,7 +72,10 @@ export enum ErrorType {
   RemoveSubscriptionFromUserMiddleware,
   SendSuccessfullyRemovedSubscriptionMiddleware,
   SetUserTypeToPremiumMiddleware,
-  SetUserTypeToBasicMiddleware
+  SetUserTypeToBasicMiddleware,
+  NoUserToDeleteFound,
+  DeleteUserMiddleware,
+  SendUserDeletedResponseMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -189,6 +192,14 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-14`,
           message: "Customer is not subscribed.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoUserToDeleteFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-15`,
+          message: "User does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -615,6 +626,20 @@ export class CustomError extends Error {
       case ErrorType.SetUserTypeToBasicMiddleware:
         return {
           code: `${ResponseCodes.warning}-57`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteUserMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-58`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendUserDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-59`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
