@@ -75,7 +75,10 @@ export enum ErrorType {
   SetUserTypeToBasicMiddleware,
   NoUserToDeleteFound,
   DeleteUserMiddleware,
-  SendUserDeletedResponseMiddleware
+  SendUserDeletedResponseMiddleware,
+  NoCompleteTaskToDeleteFound,
+  DeleteCompleteTaskMiddleware,
+  SendCompleteTaskDeletedResponseMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -200,6 +203,14 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-15`,
           message: "User does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoCompleteTaskToDeleteFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-16`,
+          message: "Complete Task does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -640,6 +651,20 @@ export class CustomError extends Error {
       case ErrorType.SendUserDeletedResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-59`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteCompleteTaskMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-60`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendCompleteTaskDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-61`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

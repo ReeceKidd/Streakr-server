@@ -11,6 +11,6 @@ usersRouter.get("/", ...getUsersMiddlewares);
 
 usersRouter.post(`/`, ...registerUserMiddlewares);
 
-usersRouter.delete(`/`, ...deleteUserMiddlewares);
+usersRouter.delete(`/${userId}`, ...deleteUserMiddlewares);
 
 export default usersRouter;
