@@ -1,13 +1,10 @@
 import { Router } from "express";
-import { deleteCompleteTaskMiddlewares } from "../RouteMiddlewares/CompleteTask/deleteCompleteTaskMiddlewares";
+import { getCompleteTasksMiddlewares } from "../RouteMiddlewares/CompleteTask/getCompleteTasksMiddlewares";
 
-export const completeTaskId = "userId";
+export const completeTaskId = "completeTaskId";
 
 const completeTasksRouter = Router();
 
-completeTasksRouter.delete(
-  `/${completeTaskId}`,
-  ...deleteCompleteTaskMiddlewares
-);
+completeTasksRouter.get(`/`, ...getCompleteTasksMiddlewares);
 
 export default completeTasksRouter;

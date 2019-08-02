@@ -161,17 +161,6 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to NoCompleteTaskToDeleteFound`, () => {
-    expect.assertions(3);
-
-    const customError = new CustomError(ErrorType.NoCompleteTaskToDeleteFound);
-    const { code, message, httpStatusCode } = customError;
-
-    expect(code).toBe(`400-16`);
-    expect(message).toBe("Complete Task does not exist.");
-    expect(httpStatusCode).toBe(400);
-  });
-
   test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
     expect.assertions(3);
 
@@ -903,10 +892,10 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to DeleteCompleteTaskMiddleware`, () => {
+  test(`creates correct error when type is set to GetCompleteTasksMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.DeleteCompleteTaskMiddleware);
+    const customError = new CustomError(ErrorType.GetCompleteTasksMiddleware);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-60`);
@@ -914,11 +903,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to SendCompleteTaskDeletedResponseMiddleware`, () => {
+  test(`creates correct error when type is set to SendCompleteTasksResponseMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.SendCompleteTaskDeletedResponseMiddleware
+      ErrorType.SendCompleteTasksResponseMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 

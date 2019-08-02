@@ -47,6 +47,7 @@ describe(createSoloStreakRoute, () => {
       })
       .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
     soloStreakId = createSoloStreakResponse.body._id;
+    console.log(createSoloStreakResponse);
   });
 
   afterAll(async () => {
@@ -58,6 +59,9 @@ describe(createSoloStreakRoute, () => {
     );
     await request(APPLICATION_URL).delete(
       `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}`
+    );
+    await request(APPLICATION_URL).delete(
+      `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${comp}`
     );
     await completeTaskModel.deleteOne({ userId, streakId: soloStreakId });
     await completeTaskModel.deleteOne({ userId, streakId: secondSoloStreakId });
