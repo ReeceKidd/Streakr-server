@@ -9,7 +9,7 @@ import { ResponseCodes } from "../../Server/responseCodes";
 import { ErrorType, CustomError } from "../../customError";
 
 describe(`userParamsValidationMiddleware`, () => {
-  const userId = "12345678";
+  const userId = "5d43f0c2f4499975cb312b72";
 
   test("calls next() when correct params are supplied", () => {
     expect.assertions(1);
@@ -66,6 +66,28 @@ describe(`userParamsValidationMiddleware`, () => {
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "userId" fails because ["userId" must be a string]'
+    });
+    expect(next).not.toBeCalled();
+  });
+
+  test("sends error response when userId is not 24 characters in length", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      params: { userId: "1234567" }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    userParamsValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message:
+        'child "userId" fails because ["userId" length must be 24 characters long]'
     });
     expect(next).not.toBeCalled();
   });

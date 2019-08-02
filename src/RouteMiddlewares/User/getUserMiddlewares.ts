@@ -8,7 +8,9 @@ import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
 const userParamsValidationSchema = {
-  userId: Joi.string().required()
+  userId: Joi.string()
+    .required()
+    .length(24)
 };
 
 export const userParamsValidationMiddleware = (
@@ -35,6 +37,7 @@ export const getRetreiveUserMiddleware = (
     response.locals.user = user;
     next();
   } catch (err) {
+    console.log(err);
     if (err instanceof CustomError) next(err);
     else next(new CustomError(ErrorType.GetRetreiveUserMiddleware, err));
   }

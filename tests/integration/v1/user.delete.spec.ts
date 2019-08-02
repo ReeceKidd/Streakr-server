@@ -1,20 +1,13 @@
 import request from "supertest";
 
-import server from "../../../src/app";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
-import { userModel } from "../../../src/Models/User";
 import APPLICATION_URL from "../../config";
 
-const registeredEmail = "search-user@gmail.com";
-const registeredUsername = "search-user";
+const registeredEmail = "delete-user@gmail.com";
+const registeredUsername = "delete-user";
 
-const searchableUserEmail = "other-user@gmail.com";
-const searchableUserUsername = "other-user-username";
-
-const searchQueryKey = "searchQuery";
-
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
+const usersRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 
 jest.setTimeout(120000);
 
@@ -22,8 +15,8 @@ describe("DELETE /users/:userId", () => {
   let userId = "";
 
   beforeAll(async () => {
-    const registrationResponse = await request(server)
-      .post(registrationRoute)
+    const registrationResponse = await request(APPLICATION_URL)
+      .post(usersRoute)
       .send({
         username: registeredUsername,
         email: registeredEmail
@@ -35,10 +28,10 @@ describe("DELETE /users/:userId", () => {
     expect.assertions(3);
 
     const deleteUserResponse = await request(APPLICATION_URL).delete(
-      `/${ApiVersions.v1}/${RouteCategories.users}/${userId}`
+      `${usersRoute}/${userId}`
     );
     const getUserAfterDeletionResponse = await request(APPLICATION_URL).get(
-      `/${ApiVersions.v1}/${RouteCategories.users}/${userId}`
+      `${usersRoute}/${userId}`
     );
 
     expect(deleteUserResponse.status).toBe(204);
