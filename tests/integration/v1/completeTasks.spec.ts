@@ -47,12 +47,15 @@ describe(createSoloStreakRoute, () => {
       })
       .set({ [SupportedRequestHeaders.xTimezone]: londonTimezone });
     soloStreakId = createSoloStreakResponse.body._id;
-    console.log(createSoloStreakResponse);
   });
 
   afterAll(async () => {
+    console.log(`/${ApiVersions.v1}/${RouteCategories.users}/${userId}`);
     await request(APPLICATION_URL).delete(
       `/${ApiVersions.v1}/${RouteCategories.users}/${userId}`
+    );
+    console.log(
+      `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}`
     );
     await request(APPLICATION_URL).delete(
       `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}`
@@ -60,11 +63,20 @@ describe(createSoloStreakRoute, () => {
     await request(APPLICATION_URL).delete(
       `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}`
     );
-    await request(APPLICATION_URL).delete(
-      `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${comp}`
+    console.log(
+      `/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${secondSoloStreakId}`
     );
-    await completeTaskModel.deleteOne({ userId, streakId: soloStreakId });
-    await completeTaskModel.deleteOne({ userId, streakId: secondSoloStreakId });
+    const completeTasks = await request(APPLICATION_URL).get(
+      `/${ApiVersions.v1}/${RouteCategories.completeTasks}?userId=${userId}`
+    );
+    console.log(completeTasks.body);
+    await Promise.all(
+      completeTasks.body.map((completeTask: any) => {
+        return request(APPLICATION_URL).delete(
+          `/${ApiVersions.v1}/${RouteCategories.completeTasks}/${completeTask.id}`
+        );
+      })
+    );
   });
 
   describe("/v1/solo-streaks/{id}/complete-tasks", () => {
