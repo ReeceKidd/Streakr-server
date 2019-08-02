@@ -915,4 +915,28 @@ describe("customError", () => {
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
+
+  test(`creates correct error when type is set to DeleteCompleteTaskMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.DeleteCompleteTaskMiddleware);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-62`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendCompleteTaskDeletedResponseMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SendCompleteTaskDeletedResponseMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-63`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
 });
