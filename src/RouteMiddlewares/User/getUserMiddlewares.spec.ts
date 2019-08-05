@@ -96,10 +96,9 @@ describe(`userParamsValidationMiddleware`, () => {
 describe("retreiveUserMiddleware", () => {
   test("sets response.locals.user", async () => {
     expect.assertions(3);
-    const lean = jest.fn(() => Promise.resolve(true));
-    const findById = jest.fn(() => ({ lean }));
+    const findOne = jest.fn().mockResolvedValue(true);
     const userModel = {
-      findById
+      findOne
     };
     const userId = "abcd";
     const request: any = { params: { userId } };
@@ -109,16 +108,16 @@ describe("retreiveUserMiddleware", () => {
 
     await middleware(request, response, next);
 
-    expect(findById).toBeCalledWith(userId);
+    expect(findOne).toBeCalledWith({ _id: userId });
     expect(response.locals.user).toBeDefined();
     expect(next).toBeCalledWith();
   });
 
   test("throws NoUserFound when user is not found", async () => {
     expect.assertions(1);
-    const findById = jest.fn(() => Promise.resolve(false));
+    const findOne = jest.fn().mockResolvedValue(false);
     const userModel = {
-      findById
+      findOne
     };
     const userId = "abcd";
     const request: any = { params: { userId } };
@@ -128,14 +127,15 @@ describe("retreiveUserMiddleware", () => {
 
     await middleware(request, response, next);
 
-    expect(next).toBeCalledWith(new CustomError(ErrorType.NoUserFound));
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.NoUserFound, expect.any(Error))
+    );
   });
 
   test("calls next with GetRetreiveUserMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const errorMessage = "error";
-    const lean = jest.fn(() => Promise.reject(errorMessage));
-    const findOne = jest.fn(() => ({ lean }));
+    const findOne = jest.fn().mockRejectedValue(errorMessage);
     const userModel = {
       findOne
     };
