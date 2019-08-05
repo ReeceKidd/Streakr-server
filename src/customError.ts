@@ -215,7 +215,7 @@ export class CustomError extends Error {
       case ErrorType.NoCompleteTaskToDeleteFound: {
         return {
           code: `${ResponseCodes.badRequest}-16`,
-          message: "User does not exist.",
+          message: "Complete task does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }

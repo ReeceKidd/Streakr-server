@@ -161,6 +161,28 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to NoCompleteTaskToDeleteFound`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.NoCompleteTaskToDeleteFound);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-16`);
+    expect(message).toBe("Complete task does not exist.");
+    expect(httpStatusCode).toBe(400);
+  });
+
+  test(`creates correct error when type is set to NoUserFound`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.NoUserFound);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-17`);
+    expect(message).toBe("User does not exist.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
     expect.assertions(3);
 
@@ -936,6 +958,30 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-63`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to GetRetreiveUserMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.GetRetreiveUserMiddleware);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-64`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendRetreiveUserResponseMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SendRetreiveUserResponseMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-65`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
