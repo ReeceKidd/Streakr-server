@@ -27,8 +27,4 @@ soloStreaksRouter.post(`/`, ...createSoloStreakMiddlewares);
 
 soloStreaksRouter.patch(`/:${soloStreakId}`, ...patchSoloStreakMiddlewares);
 
-soloStreaksRouter.post(
-  `/:${soloStreakId}/${SoloStreakProperties.completeTasks}`
-);
-
 export default soloStreaksRouter;

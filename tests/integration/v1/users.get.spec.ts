@@ -20,7 +20,7 @@ jest.setTimeout(120000);
 
 describe("/users", () => {
   beforeAll(async () => {
-    const result = await request(server)
+    await request(server)
       .post(registrationRoute)
       .send({
         username: registeredUsername,
