@@ -6,7 +6,12 @@ import ApiVersions from "../Server/versions";
 import { RouteCategories } from "../routeCategories";
 import { SupportedRequestHeaders } from "../Server/headers";
 
-const getAll = () => {
+const getAll = (userId?: string) => {
+  if (userId) {
+    return axios.get(
+      `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}?userId=${userId}`
+    );
+  }
   return axios.get(
     `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
   );
