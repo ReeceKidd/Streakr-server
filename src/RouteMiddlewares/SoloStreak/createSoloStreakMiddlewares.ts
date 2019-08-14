@@ -10,7 +10,7 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 import { User } from "../../Models/User";
 import { SoloStreak, soloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { dayFormat } from "./createSoloStreakCompleteTaskMiddlewares";
+import { dayFormat } from "../CompleteTask/createCompleteTaskMiddlewares";
 import { CustomError, ErrorType } from "../../customError";
 
 export interface SoloStreakRegistrationRequestBody {

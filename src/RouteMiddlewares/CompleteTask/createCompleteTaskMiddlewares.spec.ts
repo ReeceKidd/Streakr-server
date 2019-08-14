@@ -1,12 +1,11 @@
 import {
-  createSoloStreakCompleteTaskMiddlewares,
+  createCompleteTaskMiddlewares,
   hasTaskAlreadyBeenCompletedTodayMiddleware,
   retreiveUserMiddleware,
   setTaskCompleteTimeMiddleware,
   setDayTaskWasCompletedMiddleware,
   sendTaskCompleteResponseMiddleware,
   createCompleteTaskDefinitionMiddleware,
-  soloStreakTaskCompleteParamsValidationMiddleware,
   soloStreakExistsMiddleware,
   saveTaskCompleteMiddleware,
   streakMaintainedMiddleware,
@@ -21,29 +20,52 @@ import {
   getSendTaskCompleteResponseMiddleware,
   setStreakStartDateMiddleware,
   getSetStreakStartDateMiddleware,
-  soloStreakTaskCompleteBodyValidationMiddleware
-} from "./createSoloStreakCompleteTaskMiddlewares";
+  completeTaskBodyValidationMiddleware
+} from "./createCompleteTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import completeTasksRouter from "../../Routers/completeTasksRouter";
 
-describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
-  const soloStreakId = "12345678";
+describe(`completeTaskBodyValidationMiddleware`, () => {
+  const userId = "abcdefgh";
+  const soloStreakId = "123456";
 
-  test("calls next() when correct params are supplied", () => {
+  test("calls next() when correct body is supplied", () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      params: { soloStreakId }
+      body: { userId, soloStreakId }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    soloStreakTaskCompleteParamsValidationMiddleware(request, response, next);
+    completeTaskBodyValidationMiddleware(request, response, next);
 
     expect(next).toBeCalled();
+  });
+
+  test("sends correct error response when userId is missing", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      body: { soloStreakId }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    completeTaskBodyValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message: 'child "userId" fails because ["userId" is required]'
+    });
+    expect(next).not.toBeCalled();
   });
 
   test("sends correct error response when soloStreakId is missing", () => {
@@ -51,14 +73,14 @@ describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      params: {}
+      body: { userId }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    soloStreakTaskCompleteParamsValidationMiddleware(request, response, next);
+    completeTaskBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -72,61 +94,19 @@ describe(`soloStreakTaskCompleteParamsValidationMiddleware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      params: { soloStreakId: 1234 }
+      body: { soloStreakId: 1234, userId }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    soloStreakTaskCompleteParamsValidationMiddleware(request, response, next);
+    completeTaskBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
         'child "soloStreakId" fails because ["soloStreakId" must be a string]'
-    });
-    expect(next).not.toBeCalled();
-  });
-});
-
-describe(`soloStreakTaskCompleteBodyValidationMiddleware`, () => {
-  const userId = "abcdefgh";
-
-  test("calls next() when correct body is supplied", () => {
-    expect.assertions(1);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      body: { userId }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    soloStreakTaskCompleteBodyValidationMiddleware(request, response, next);
-
-    expect(next).toBeCalled();
-  });
-
-  test("sends correct error response when userId is missing", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      body: {}
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    soloStreakTaskCompleteBodyValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "userId" fails because ["userId" is required]'
     });
     expect(next).not.toBeCalled();
   });
@@ -698,44 +678,32 @@ describe("sendTaskCompleteResponseMiddleware", () => {
   });
 });
 
-describe(`createSoloStreakCompleteTaskMiddlewares`, () => {
-  test("checks createSoloStreakTaskMiddlweares are defined in the correct order", async () => {
+describe(`createCompleteTaskMiddlewares`, () => {
+  test("are defined in the correct order", async () => {
     expect.assertions(12);
 
-    expect(createSoloStreakCompleteTaskMiddlewares[0]).toBe(
-      soloStreakTaskCompleteParamsValidationMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[1]).toBe(
-      soloStreakTaskCompleteBodyValidationMiddleware
+    expect(createCompleteTaskMiddlewares.length).toEqual(11);
+    expect(createCompleteTaskMiddlewares[0]).toBe(
+      completeTaskBodyValidationMiddleware
     ),
-      expect(createSoloStreakCompleteTaskMiddlewares[2]).toBe(
-        soloStreakExistsMiddleware
-      );
-    expect(createSoloStreakCompleteTaskMiddlewares[3]).toBe(
-      retreiveUserMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[4]).toBe(
+      expect(createCompleteTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
+    expect(createCompleteTaskMiddlewares[2]).toBe(retreiveUserMiddleware);
+    expect(createCompleteTaskMiddlewares[3]).toBe(
       setTaskCompleteTimeMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[5]).toBe(
-      setStreakStartDateMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[6]).toBe(
+    expect(createCompleteTaskMiddlewares[4]).toBe(setStreakStartDateMiddleware);
+    expect(createCompleteTaskMiddlewares[5]).toBe(
       setDayTaskWasCompletedMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[7]).toBe(
+    expect(createCompleteTaskMiddlewares[6]).toBe(
       hasTaskAlreadyBeenCompletedTodayMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[8]).toBe(
+    expect(createCompleteTaskMiddlewares[7]).toBe(
       createCompleteTaskDefinitionMiddleware
     );
-    expect(createSoloStreakCompleteTaskMiddlewares[9]).toBe(
-      saveTaskCompleteMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[10]).toBe(
-      streakMaintainedMiddleware
-    );
-    expect(createSoloStreakCompleteTaskMiddlewares[11]).toBe(
+    expect(createCompleteTaskMiddlewares[8]).toBe(saveTaskCompleteMiddleware);
+    expect(createCompleteTaskMiddlewares[9]).toBe(streakMaintainedMiddleware);
+    expect(createCompleteTaskMiddlewares[10]).toBe(
       sendTaskCompleteResponseMiddleware
     );
   });
