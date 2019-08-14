@@ -47,7 +47,7 @@ describe(userRegistationRoute, () => {
 
     // Delete created user to clear up the database
     const userId = response.data._id;
-    await streakoid.users.deleteOne(response.data._id);
+    await streakoid.users.deleteOne(userId);
   });
 
   test("fails because username is missing from request", async () => {
@@ -56,7 +56,7 @@ describe(userRegistationRoute, () => {
     try {
       await streakoid.users.create("", email);
     } catch (err) {
-      expect(err.response.status).toEqual(400);
+      expect(err.response.status).toEqual(ResponseCodes.badRequest);
       expect(err.response.data.message).toEqual(
         'child "username" fails because ["username" is not allowed to be empty]'
       );
@@ -69,7 +69,7 @@ describe(userRegistationRoute, () => {
     try {
       await streakoid.users.create(username, "new-email@gmail.com");
     } catch (err) {
-      expect(err.response.status).toEqual(400);
+      expect(err.response.status).toEqual(ResponseCodes.badRequest);
       expect(err.response.data.code).toBe("400-10");
       expect(err.response.data.message).toEqual(`Username already exists.`);
     }

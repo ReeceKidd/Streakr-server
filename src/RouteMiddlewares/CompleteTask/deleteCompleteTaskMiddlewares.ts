@@ -16,6 +16,7 @@ export const completeTaskParamsValidationMiddleware = (
   response: Response,
   next: NextFunction
 ) => {
+  console.log(request.params);
   Joi.validate(
     request.params,
     completeTaskParamsValidationSchema,
@@ -28,6 +29,7 @@ export const getDeleteCompleteTaskMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { completeTaskId } = request.params;
+    console.log(completeTaskId);
     const deletedCompleteTask = await completeTaskModel.findByIdAndDelete(
       completeTaskId
     );

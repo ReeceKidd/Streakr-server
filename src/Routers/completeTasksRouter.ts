@@ -12,7 +12,7 @@ completeTasksRouter.get(`/`, ...getCompleteTasksMiddlewares);
 completeTasksRouter.post(`/`, ...createCompleteTaskMiddlewares);
 
 completeTasksRouter.delete(
-  `/${completeTaskId}`,
+  `/:${completeTaskId}`,
   ...deleteCompleteTaskMiddlewares
 );
 

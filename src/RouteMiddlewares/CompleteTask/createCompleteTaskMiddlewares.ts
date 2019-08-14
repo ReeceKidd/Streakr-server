@@ -15,6 +15,7 @@ import {
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
 import { CustomError, ErrorType } from "../../customError";
+import { SupportedRequestHeaders } from "../../Server/headers";
 
 export const completeTaskBodyValidationSchema = {
   userId: Joi.string().required(),
@@ -26,7 +27,6 @@ export const completeTaskBodyValidationMiddleware = (
   response: Response,
   next: NextFunction
 ) => {
-  console.log("ENTERED");
   Joi.validate(
     request.body,
     completeTaskBodyValidationSchema,
@@ -80,7 +80,7 @@ export const getSetTaskCompleteTimeMiddleware = (moment: any) => (
   next: NextFunction
 ) => {
   try {
-    const { timezone } = response.locals;
+    const timezone = request.headers[SupportedRequestHeaders.xTimezone];
     const taskCompleteTime = moment().tz(timezone);
     response.locals.taskCompleteTime = taskCompleteTime;
     next();
@@ -100,10 +100,15 @@ export const getSetStreakStartDateMiddleware = (
     const soloStreak: SoloStreak = response.locals.soloStreak;
     const taskCompleteTime = response.locals.taskCompleteTime;
     if (!soloStreak.currentStreak.startDate) {
-      const { soloStreakId } = request.params;
-      await soloStreakModel.findByIdAndUpdate(soloStreakId, {
-        currentStreak: { startDate: taskCompleteTime }
-      });
+      await soloStreakModel.updateOne(
+        { _id: soloStreak._id },
+        {
+          currentStreak: {
+            startDate: taskCompleteTime,
+            numberOfDaysInARow: soloStreak.currentStreak.numberOfDaysInARow
+          }
+        }
+      );
     }
     next();
   } catch (err) {

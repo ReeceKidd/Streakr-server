@@ -9,7 +9,40 @@ describe("SDK completeTasks", () => {
   });
 
   describe("getAll", () => {
-    test("calls GET with correct URL and query paramater", async () => {
+    test("calls GET with correct URL when just userId is passed", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      await streakoid.completeTasks.getAll("userId");
+
+      expect(axios.get).toBeCalledWith(
+        `${APPLICATION_URL}/v1/complete-tasks?userId=userId`
+      );
+    });
+
+    test("calls GET with correct URL when just streakId is passed", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      await streakoid.completeTasks.getAll(undefined, "streakId");
+
+      expect(axios.get).toBeCalledWith(
+        `${APPLICATION_URL}/v1/complete-tasks?streakId=streakId`
+      );
+    });
+
+    test("calls GET with correct URL when both userId and streakId is passed", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      await streakoid.completeTasks.getAll("userId", "streakId");
+
+      expect(axios.get).toBeCalledWith(
+        `${APPLICATION_URL}/v1/complete-tasks?streakId=streakId&userId=userId`
+      );
+    });
+
+    test("calls GET with correct URL when no query paramaters are passed", async () => {
       expect.assertions(1);
       axios.get = jest.fn();
 
@@ -25,14 +58,20 @@ describe("SDK completeTasks", () => {
       axios.post = jest.fn();
       const userId = "userId";
       const streakId = "streakId";
+      const timezone = "timezone";
 
-      await streakoid.completeTasks.create(userId, streakId);
+      await streakoid.completeTasks.create(userId, streakId, timezone);
 
       expect(axios.post).toBeCalledWith(
         `${APPLICATION_URL}/v1/complete-tasks`,
         {
           userId,
           streakId
+        },
+        {
+          headers: {
+            "x-timezone": timezone
+          }
         }
       );
     });

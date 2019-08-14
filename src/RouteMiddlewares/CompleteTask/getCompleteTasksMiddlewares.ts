@@ -28,12 +28,21 @@ export const getRetreiveCompleteTasksMiddleware = (
   completeTaskModel: mongoose.Model<CompleteTask>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log("ENTERED");
     const { userId, streakId } = request.query;
-    console.log(userId);
-    const completeTasks = await completeTaskModel.find({ userId, streakId });
-    console.log(completeTasks);
-    response.locals.completeTasks = completeTasks;
+    if (userId && !streakId) {
+      response.locals.completeTasks = await completeTaskModel.find({ userId });
+    } else if (streakId && !userId) {
+      response.locals.completeTasks = await completeTaskModel.find({
+        streakId
+      });
+    } else if (userId && streakId) {
+      response.locals.completeTasks = await completeTaskModel.find({
+        userId,
+        streakId
+      });
+    } else {
+      response.locals.completeTasks = await completeTaskModel.find({});
+    }
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
