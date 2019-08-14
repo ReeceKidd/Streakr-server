@@ -1,55 +1,36 @@
 import request from "supertest";
 
-import server from "../../../src/app";
-import ApiVersions from "../../../src/Server/versions";
-import { RouteCategories } from "../../../src/routeCategories";
-import { userModel } from "../../../src/Models/User";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
+import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "search-user@gmail.com";
 const registeredUsername = "search-user";
 
-const searchableUserEmail = "other-user@gmail.com";
-const searchableUserUsername = "other-user-username";
-
-const searchQueryKey = "searchQuery";
-
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-
 jest.setTimeout(120000);
 
 describe("/users", () => {
+  let userId: string;
+
   beforeAll(async () => {
-    await request(server)
-      .post(registrationRoute)
-      .send({
-        username: registeredUsername,
-        email: registeredEmail
-      });
-    await request(server)
-      .post(registrationRoute)
-      .send({
-        username: searchableUserUsername,
-        email: searchableUserEmail
-      });
+    const createUserResponse = await streakoid.users.create(
+      registeredUsername,
+      registeredEmail
+    );
+    userId = createUserResponse.data._id;
   });
 
   afterAll(async () => {
-    await userModel.deleteOne({ email: registeredEmail });
-    await userModel.deleteOne({ email: searchableUserEmail });
+    await streakoid.users.deleteOne(userId);
   });
 
-  test(`that request returns searchAbleUser when full searchTerm is uaed`, async () => {
-    expect.assertions(10);
+  test(`returns user when full searchTerm is used`, async () => {
+    expect.assertions(9);
 
-    const getUsersByRegexSearchRouteWithSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${searchableUserUsername}`;
-    const response = await request(server).get(
-      getUsersByRegexSearchRouteWithSearchQueryRoute
-    );
+    const response = await streakoid.users.getAll(registeredUsername);
+    const users = response.data.users;
 
     expect(response.status).toEqual(ResponseCodes.success);
-    expect(response.type).toEqual("application/json");
-    const users = response.body.users;
+
     expect(users.length).toBe(1);
     expect(users[0]).toHaveProperty("streaks");
     expect(users[0]).toHaveProperty("type");
@@ -60,19 +41,13 @@ describe("/users", () => {
     expect(users[0]).toHaveProperty("updatedAt");
   });
 
-  test("that request returns searchAble user when partial searchTerm is used", async () => {
-    expect.assertions(10);
+  test("returns user when partial searchTerm is used", async () => {
+    expect.assertions(9);
 
-    const partialSearchQuery = `${searchableUserUsername}`;
-    const getUsersByRegexSearchWithPartialSearchQueryRoute = `/${ApiVersions.v1}/${RouteCategories.users}?${searchQueryKey}=${partialSearchQuery}`;
-    const response = await request(server).get(
-      getUsersByRegexSearchWithPartialSearchQueryRoute
-    );
-    const users = response.body.users;
+    const response = await streakoid.users.getAll("search");
+    const users = response.data.users;
 
     expect(response.status).toEqual(ResponseCodes.success);
-    expect(response.type).toEqual("application/json");
-
     expect(users.length).toBe(1);
     expect(users[0]).toHaveProperty("streaks");
     expect(users[0]).toHaveProperty("type");
