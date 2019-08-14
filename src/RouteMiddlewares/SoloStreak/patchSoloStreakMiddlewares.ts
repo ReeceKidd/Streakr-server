@@ -24,10 +24,8 @@ export const soloStreakParamsValidationMiddleware = (
 };
 
 const soloStreakBodyValidationSchema = {
-  userId: Joi.string(),
   name: Joi.string(),
-  description: Joi.string(),
-  completedToday: Joi.boolean()
+  description: Joi.string()
 };
 
 export const soloStreakRequestBodyValidationMiddleware = (

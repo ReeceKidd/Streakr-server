@@ -4,26 +4,18 @@ const { APPLICATION_URL } = getServiceConfig();
 
 import ApiVersions from "../Server/versions";
 import { RouteCategories } from "../routeCategories";
+import { SupportedRequestHeaders } from "../Server/headers";
 
 const getAll = () => {
-  return axios({
-    method: "GET",
-    url: `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
-  });
+  return axios.get(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
+  );
 };
 
 const getOne = (soloStreakId: string) => {
-  return axios({
-    method: "GET",
-    url: `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}`
-  });
-};
-
-const deleteOne = (soloStreakId: string) => {
-  return axios({
-    method: "DELETE",
-    url: `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}`
-  });
+  return axios.get(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}`
+  );
 };
 
 const create = (
@@ -32,23 +24,29 @@ const create = (
   description: string,
   timezone: string
 ) => {
-  return axios({
-    method: "POST",
-    url: `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`,
-    data: {
-      userId,
-      name,
-      description
-    }
-  });
+  return axios.post(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`,
+    { userId, name, description },
+    { headers: { [SupportedRequestHeaders.xTimezone]: timezone } }
+  );
 };
 
-const update = (soloStreakId: string, data: any) => {
-  return axios({
-    method: "PATCH",
-    url: `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}`,
-    data
-  });
+const update = (
+  soloStreakId: string,
+  data: { name: string; description: string },
+  timezone: string
+) => {
+  return axios.patch(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}`,
+    data,
+    { headers: { [SupportedRequestHeaders.xTimezone]: timezone } }
+  );
+};
+
+const deleteOne = (soloStreakId: string) => {
+  return axios.delete(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}`
+  );
 };
 
 const soloStreaks = {
