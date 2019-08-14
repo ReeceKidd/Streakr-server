@@ -73,7 +73,7 @@ export const getSendUpdatedSoloStreakMiddleware = (
     const { updatedSoloStreak } = response.locals;
     return response
       .status(updatedResourceResponseCode)
-      .send({ data: updatedSoloStreak });
+      .send({ soloStreak: updatedSoloStreak });
   } catch (err) {
     next(new CustomError(ErrorType.SendUpdatedSoloStreakMiddleware, err));
   }

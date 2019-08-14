@@ -8,6 +8,7 @@ import { soloStreakModel } from "../../../src/Models/SoloStreak";
 
 import { ResponseCodes } from "../../../src/Server/responseCodes";
 import { SupportedRequestHeaders } from "../../../src/Server/headers";
+import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "patch-solo-streak-user@gmail.com";
 const registeredUsername = "patch-solo-streak-user";
@@ -23,58 +24,52 @@ jest.setTimeout(120000);
 describe(`PATCH ${soloStreakRoute}`, () => {
   let userId: string;
   let soloStreakId: string;
-  let updatedName: string;
 
   const name = "Keto";
   const description = "I will follow the keto diet every day";
 
   beforeAll(async () => {
-    const registrationResponse = await request(server)
-      .post(registrationRoute)
-      .send({
-        username: registeredUsername,
-        email: registeredEmail
-      });
-    userId = registrationResponse.body._id;
-    const createSoloStreakResponse = await request(server)
-      .post(soloStreakRoute)
-      .send({
-        userId,
-        name,
-        description
-      })
-      .set({ [SupportedRequestHeaders.xTimezone]: romeTimezone });
-    soloStreakId = createSoloStreakResponse.body._id;
+    const registrationResponse = await streakoid.users.create(
+      registeredUsername,
+      registeredEmail
+    );
+    userId = registrationResponse.data._id;
+
+    const createSoloStreakResponse = await streakoid.soloStreaks.create(
+      userId,
+      name,
+      description,
+      romeTimezone
+    );
+    soloStreakId = createSoloStreakResponse.data._id;
   });
 
   afterAll(async () => {
-    await userModel.deleteOne({ email: registeredEmail });
-    await soloStreakModel.deleteOne({ _id: soloStreakId });
+    await streakoid.users.deleteOne(userId);
+    await streakoid.soloStreaks.deleteOne(soloStreakId);
   });
 
   test(`that request passes when solo streak is patched with correct keys`, async () => {
-    expect.assertions(9);
-    updatedName = "Intermittent fasting";
+    expect.assertions(8);
 
+    const updatedName = "Intermittent fasting";
     const updatedDescription = "Cannot eat till 1pm everyday";
-    const response = await request(server)
-      .patch(`${soloStreakRoute}/${soloStreakId}`)
-      .send({
-        name: updatedName,
-        description: updatedDescription
-      })
-      .set({ [SupportedRequestHeaders.xTimezone]: berlinTimeZone });
+
+    const response = await streakoid.soloStreaks.update(
+      soloStreakId,
+      { name: updatedName, description: updatedDescription },
+      romeTimezone
+    );
 
     expect(response.status).toEqual(ResponseCodes.success);
-    expect(response.type).toEqual("application/json");
-    expect(response.body.data.name).toEqual(updatedName);
-    expect(response.body.data.description).toEqual(updatedDescription);
-    expect(response.body.data.userId).toEqual(userId);
-    expect(response.body.data).toHaveProperty("_id");
-    expect(response.body.data.currentStreak).toHaveProperty(
+    expect(response.data.soloStreak.name).toEqual(updatedName);
+    expect(response.data.soloStreak.description).toEqual(updatedDescription);
+    expect(response.data.soloStreak.userId).toEqual(userId);
+    expect(response.data.soloStreak).toHaveProperty("_id");
+    expect(response.data.soloStreak.currentStreak).toHaveProperty(
       "numberOfDaysInARow"
     );
-    expect(response.body.data).toHaveProperty("createdAt");
-    expect(response.body.data).toHaveProperty("updatedAt");
+    expect(response.data.soloStreak).toHaveProperty("createdAt");
+    expect(response.data.soloStreak).toHaveProperty("updatedAt");
   });
 });
