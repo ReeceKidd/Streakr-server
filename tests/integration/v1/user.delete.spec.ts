@@ -3,6 +3,7 @@ import request from "supertest";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
 import APPLICATION_URL from "../../config";
+import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "delete-user@gmail.com";
 const registeredUsername = "delete-user";
@@ -15,39 +16,34 @@ describe("DELETE /users/:userId", () => {
   let userId = "";
 
   beforeAll(async () => {
-    const registrationResponse = await request(APPLICATION_URL)
-      .post(usersRoute)
-      .send({
-        username: registeredUsername,
-        email: registeredEmail
-      });
-    userId = registrationResponse.body._id;
+    const registrationResponse = await streakoid.users.create(
+      registeredUsername,
+      registeredEmail
+    );
+    userId = registrationResponse.data._id;
   });
 
   test(`deletes user`, async () => {
     expect.assertions(3);
 
-    const deleteUserResponse = await request(APPLICATION_URL).delete(
-      `${usersRoute}/${userId}`
-    );
-    const getUserAfterDeletionResponse = await request(APPLICATION_URL).get(
-      `${usersRoute}/${userId}`
-    );
-
-    expect(deleteUserResponse.status).toBe(204);
-    expect(getUserAfterDeletionResponse.status).toBe(400);
-    expect(getUserAfterDeletionResponse.body.message).toEqual(
-      "User does not exist."
-    );
+    try {
+      const deleteUserResponse = await streakoid.users.deleteOne(userId);
+      expect(deleteUserResponse.status).toBe(204);
+      await streakoid.users.getOne(userId);
+    } catch (err) {
+      expect(err.response.status).toBe(400);
+      expect(err.response.data.message).toEqual("User does not exist.");
+    }
   });
 
   test(`sends NoUserToDeleteFound error when user does not exist`, async () => {
     expect.assertions(2);
 
-    const deleteUserResponse = await request(APPLICATION_URL).delete(
-      `/${ApiVersions.v1}/${RouteCategories.users}/${userId}`
-    );
-    expect(deleteUserResponse.status).toBe(400);
-    expect(deleteUserResponse.body.message).toEqual("User does not exist.");
+    try {
+      await streakoid.users.deleteOne(userId);
+    } catch (err) {
+      expect(err.response.status).toBe(400);
+      expect(err.response.data.message).toEqual("User does not exist.");
+    }
   });
 });
