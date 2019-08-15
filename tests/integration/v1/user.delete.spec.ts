@@ -1,14 +1,7 @@
-import request from "supertest";
-
-import ApiVersions from "../../../src/Server/versions";
-import { RouteCategories } from "../../../src/routeCategories";
-import APPLICATION_URL from "../../config";
 import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "delete-user@gmail.com";
 const registeredUsername = "delete-user";
-
-const usersRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 
 jest.setTimeout(120000);
 

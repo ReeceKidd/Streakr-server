@@ -1,19 +1,13 @@
-import ApiVersions from "../../../src/Server/versions";
-import { RouteCategories } from "../../../src/routeCategories";
-
-import { ResponseCodes } from "../../../src/Server/responseCodes";
 import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "patch-solo-streak-user@gmail.com";
 const registeredUsername = "patch-solo-streak-user";
 
-const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
-
 const romeTimezone = "Europe/Rome";
 
 jest.setTimeout(120000);
 
-describe(`PATCH ${soloStreakRoute}`, () => {
+describe(`PATCH /solo-streaks`, () => {
   let userId: string;
   let soloStreakId: string;
 
@@ -53,7 +47,7 @@ describe(`PATCH ${soloStreakRoute}`, () => {
       romeTimezone
     );
 
-    expect(response.status).toEqual(ResponseCodes.success);
+    expect(response.status).toEqual(200);
     expect(response.data.soloStreak.name).toEqual(updatedName);
     expect(response.data.soloStreak.description).toEqual(updatedDescription);
     expect(response.data.soloStreak.userId).toEqual(userId);

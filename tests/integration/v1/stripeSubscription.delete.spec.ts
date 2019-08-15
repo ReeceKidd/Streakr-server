@@ -1,5 +1,3 @@
-import ApiVersions from "../../../src/Server/versions";
-import { RouteCategories } from "../../../src/routeCategories";
 import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "stripe-subscription-delete@gmail.com";
@@ -7,12 +5,9 @@ const registeredUsername = "stripe-subscription-delete";
 const basicUserEmail = "basic-subscription-user@gmail.com";
 const basicUserUsername = "basic-subscription-user";
 
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-const subscriptionsRoute = `/${ApiVersions.v1}/${RouteCategories.stripe}/subscriptions`;
-
 jest.setTimeout(120000);
 
-describe(`DELETE ${subscriptionsRoute}`, () => {
+describe(`DELETE /subscriptions`, () => {
   let subscription = "";
   let id = "";
   let basicUserId = "";

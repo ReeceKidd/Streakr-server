@@ -1,5 +1,3 @@
-import request from "supertest";
-
 import { ResponseCodes } from "../../../src/Server/responseCodes";
 import streakoid from "../../../src/sdk/streakoid";
 

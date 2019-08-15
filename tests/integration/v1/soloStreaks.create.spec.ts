@@ -1,7 +1,3 @@
-import ApiVersions from "../../../src/Server/versions";
-import { RouteCategories } from "../../../src/routeCategories";
-
-import { ResponseCodes } from "../../../src/Server/responseCodes";
 import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "create-solo-streak-user@gmail.com";
@@ -39,7 +35,7 @@ describe("POST solo-streaks", () => {
       londonTimezone
     );
 
-    expect(response.status).toEqual(ResponseCodes.created);
+    expect(response.status).toEqual(201);
     expect(response.data.name).toEqual(name);
     expect(response.data.description).toEqual(description);
     expect(response.data.userId).toEqual(userId);

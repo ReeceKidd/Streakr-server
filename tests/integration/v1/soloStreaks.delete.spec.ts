@@ -1,19 +1,7 @@
-import request from "supertest";
-
-import server from "../../../src/app";
-import ApiVersions from "../../../src/Server/versions";
-import { RouteCategories } from "../../../src/routeCategories";
-import { userModel } from "../../../src/Models/User";
-
-import { ResponseCodes } from "../../../src/Server/responseCodes";
-import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "delete-solo-streak-user@gmail.com";
 const registeredUsername = "delete-solo-streak-user";
-
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 const budapestTimezone = "Europe/Budapest";
 
@@ -51,6 +39,6 @@ describe(`DELETE solo-streaks`, () => {
 
     const response = await streakoid.soloStreaks.deleteOne(soloStreakId);
 
-    expect(response.status).toEqual(ResponseCodes.deleted);
+    expect(response.status).toEqual(204);
   });
 });

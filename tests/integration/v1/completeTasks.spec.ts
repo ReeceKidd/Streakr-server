@@ -1,22 +1,14 @@
-import ApiVersions from "../../../src/Server/versions";
-import { RouteCategories } from "../../../src/routeCategories";
-import { ResponseCodes } from "../../../src/Server/responseCodes";
-import { getServiceConfig } from "../../../src/getServiceConfig";
 import streakoid from "../../../src/sdk/streakoid";
 import { CompleteTask } from "../../../src/Models/CompleteTask";
 
-const { APPLICATION_URL } = getServiceConfig();
-
 const registeredEmail = "create-complete-tasks-user@gmail.com";
 const registeredUsername = "create-complete-tasks-user";
-
-const createSoloStreakRoute = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 const londonTimezone = "Europe/London";
 
 jest.setTimeout(120000);
 
-describe(createSoloStreakRoute, () => {
+describe("POST /solo-streaks", () => {
   let userId: string;
   let soloStreakId: string;
   let secondSoloStreakId: string;
@@ -41,26 +33,19 @@ describe(createSoloStreakRoute, () => {
   });
 
   afterAll(async () => {
-    try {
-      await streakoid.users.deleteOne(userId);
+    await streakoid.users.deleteOne(userId);
 
-      await streakoid.soloStreaks.deleteOne(soloStreakId);
-      await streakoid.soloStreaks.deleteOne(secondSoloStreakId);
+    await streakoid.soloStreaks.deleteOne(soloStreakId);
+    await streakoid.soloStreaks.deleteOne(secondSoloStreakId);
 
-      const completeTasksResponse = await streakoid.completeTasks.getAll(
-        userId
-      );
-      await Promise.all(
-        completeTasksResponse.data.completeTasks.map(
-          (completeTask: CompleteTask) => {
-            return streakoid.completeTasks.deleteOne(completeTask._id);
-          }
-        )
-      );
-      console.log("FINISHED");
-    } catch (err) {
-      console.log(err.response.data);
-    }
+    const completeTasksResponse = await streakoid.completeTasks.getAll(userId);
+    await Promise.all(
+      completeTasksResponse.data.completeTasks.map(
+        (completeTask: CompleteTask) => {
+          return streakoid.completeTasks.deleteOne(completeTask._id);
+        }
+      )
+    );
   });
 
   describe("POST /v1/complete-tasks", () => {
@@ -76,7 +61,7 @@ describe(createSoloStreakRoute, () => {
         soloStreakId
       );
 
-      expect(completeTaskResponse.status).toEqual(ResponseCodes.created);
+      expect(completeTaskResponse.status).toEqual(201);
       expect(completeTaskResponse.data.completeTask._id).toBeDefined();
       expect(
         completeTaskResponse.data.completeTask.taskCompleteTime
@@ -110,7 +95,7 @@ describe(createSoloStreakRoute, () => {
           londonTimezone
         );
       } catch (err) {
-        expect(err.response.status).toEqual(ResponseCodes.unprocessableEntity);
+        expect(err.response.status).toEqual(422);
         expect(err.response.data.message).toEqual(
           "Task already completed today."
         );

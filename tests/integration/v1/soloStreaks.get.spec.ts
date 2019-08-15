@@ -1,4 +1,3 @@
-import { ResponseCodes } from "../../../src/Server/responseCodes";
 import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "get-solo-streaks@gmail.com";
@@ -42,7 +41,7 @@ describe("GET solo-streaks", () => {
 
     const response = await streakoid.soloStreaks.getAll(userId);
 
-    expect(response.status).toEqual(ResponseCodes.success);
+    expect(response.status).toEqual(200);
     expect(response.data.soloStreaks.length).toEqual(1);
     expect(response.data.soloStreaks[0].name).toEqual(soloStreakName);
     expect(response.data.soloStreaks[0].description).toEqual(
