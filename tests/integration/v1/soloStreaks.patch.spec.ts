@@ -1,23 +1,15 @@
-import request from "supertest";
-
-import server from "../../../src/app";
 import ApiVersions from "../../../src/Server/versions";
 import { RouteCategories } from "../../../src/routeCategories";
-import { userModel } from "../../../src/Models/User";
-import { soloStreakModel } from "../../../src/Models/SoloStreak";
 
 import { ResponseCodes } from "../../../src/Server/responseCodes";
-import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "patch-solo-streak-user@gmail.com";
 const registeredUsername = "patch-solo-streak-user";
 
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
 const soloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 const romeTimezone = "Europe/Rome";
-const berlinTimeZone = "Europe/Berlin";
 
 jest.setTimeout(120000);
 
