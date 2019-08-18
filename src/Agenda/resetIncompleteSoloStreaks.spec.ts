@@ -1,5 +1,6 @@
 import { soloStreakModel } from "../Models/SoloStreak";
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
+import streakoid from "../sdk/streakoid";
 
 describe("resetSoloStreaksThatWereNotCompletedTodayByTimezone ", () => {
   afterEach(() => {
@@ -7,18 +8,19 @@ describe("resetSoloStreaksThatWereNotCompletedTodayByTimezone ", () => {
   });
 
   test("that incomplete solo streaks default current streak is reset and old streak is pushed to past streaks for multiple solo streaks", async () => {
-    expect.assertions(2);
-    soloStreakModel.findByIdAndUpdate = jest.fn();
+    expect.assertions(1);
+    streakoid.soloStreaks.update = jest.fn().mockResolvedValue({ data: {} });
     const _id = 1;
     const endDate = new Date();
+    const timezone = "Europe/London";
+    const currentStreak = {
+      startDate: undefined,
+      numberOfDaysInARow: 0
+    };
     const incompleteSoloStreaks = [
       {
         _id,
-        currentStreak: {
-          startDate: undefined,
-          endDate,
-          numberOfDaysInARow: 0
-        },
+        currentStreak,
         startDate: new Date(),
         completedToday: false,
         pastStreaks: [],
@@ -30,13 +32,15 @@ describe("resetSoloStreaksThatWereNotCompletedTodayByTimezone ", () => {
         updatedAt: new Date()
       } as any
     ];
-    await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate);
-    expect(soloStreakModel.findByIdAndUpdate).toBeCalledTimes(
-      incompleteSoloStreaks.length
+    const pastStreaks = [{ ...currentStreak, endDate }];
+    await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate, timezone);
+    expect(streakoid.soloStreaks.update).toBeCalledWith(
+      _id,
+      {
+        currentStreak: { startDate: undefined, numberOfDaysInARow: 0 },
+        pastStreaks
+      },
+      timezone
     );
-    expect(soloStreakModel.findByIdAndUpdate).toBeCalledWith(_id, {
-      currentStreak: { startDate: undefined, numberOfDaysInARow: 0 },
-      $push: { pastStreaks: { ...incompleteSoloStreaks[0].currentStreak } }
-    });
   });
 });

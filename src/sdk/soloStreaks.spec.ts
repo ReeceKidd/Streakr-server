@@ -15,7 +15,7 @@ describe("SDK soloStreaks", () => {
 
       await streakoid.soloStreaks.getAll();
 
-      expect(axios.get).toBeCalledWith(`${APPLICATION_URL}/v1/solo-streaks`);
+      expect(axios.get).toBeCalledWith(`${APPLICATION_URL}/v1/solo-streaks?`);
     });
   });
 

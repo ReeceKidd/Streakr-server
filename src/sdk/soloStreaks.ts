@@ -48,7 +48,7 @@ const update = (
   data: {
     name?: string;
     description?: string;
-    currentStreak?: { startDate?: Date };
+    currentStreak?: { startDate?: Date; numberOfDaysInARow?: number };
     pastStreaks?: [
       {
         startDate: Date;

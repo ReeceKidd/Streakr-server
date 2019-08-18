@@ -6,10 +6,6 @@ export const resetIncompleteSoloStreaks = async (
   endDate: Date,
   timezone: string
 ) => {
-  const defaultCurrentStreak = {
-    startDate: undefined,
-    numberOfDaysInARow: 0
-  };
   return incompleteSoloStreaks.map(async soloStreak => {
     soloStreak.currentStreak.endDate = endDate;
     const pastStreaks: any = [
@@ -18,7 +14,10 @@ export const resetIncompleteSoloStreaks = async (
     ];
     const updatedSoloStreakResponse = await streakoid.soloStreaks.update(
       soloStreak._id,
-      { currentStreak: defaultCurrentStreak, pastStreaks },
+      {
+        currentStreak: { startDate: undefined, numberOfDaysInARow: 0 },
+        pastStreaks
+      },
       timezone
     );
     return updatedSoloStreakResponse.data;
