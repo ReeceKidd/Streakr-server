@@ -49,6 +49,13 @@ const update = (
     name?: string;
     description?: string;
     currentStreak?: { startDate?: Date };
+    pastStreaks?: [
+      {
+        startDate: Date;
+        numberOfDaysInARow: number;
+        endDate: Date;
+      }
+    ];
   },
   timezone: string
 ) => {

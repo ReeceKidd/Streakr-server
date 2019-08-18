@@ -13,7 +13,6 @@ jest.mock("./resetIncompleteSoloStreaks", () => ({
 }));
 
 import * as moment from "moment-timezone";
-import { getIncompleteSoloStreaks } from "./getIncompleteSoloStreaks";
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
 import { handleIncompleteSoloStreaks } from "./handleIncompleteSoloStreaks";
 
@@ -22,7 +21,6 @@ describe("handleIncompleteSoloStreaks", () => {
     expect.assertions(2);
     const timezone = "Europe/London";
     await handleIncompleteSoloStreaks(timezone);
-    expect(getIncompleteSoloStreaks).toBeCalledWith(timezone);
     expect(resetIncompleteSoloStreaks).toBeCalledWith(
       true,
       moment.tz(timezone).toDate()

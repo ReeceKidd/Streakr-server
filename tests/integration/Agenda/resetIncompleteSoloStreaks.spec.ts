@@ -1,5 +1,3 @@
-import { soloStreakModel, SoloStreak } from "../../../src/Models/SoloStreak";
-import { getIncompleteSoloStreaks } from "../../../src/Agenda/getIncompleteSoloStreaks";
 import { resetIncompleteSoloStreaks } from "../../../src/Agenda/resetIncompleteSoloStreaks";
 import streakoid from "../../../src/sdk/streakoid";
 
@@ -37,27 +35,33 @@ describe("resetIncompleteSoloStreaks", () => {
   });
 
   test("that resetIncompleteSoloStreaks updates the current and past values of a streak", async () => {
-    expect.assertions(3);
-    /*
-        Have to force soloStreak to have new date because streaks without a new date aren't
-        considered incomplete as they haven't been started
-        */
-    await soloStreakModel.findByIdAndUpdate(soloStreakId, {
-      currentStreak: { startDate: new Date() }
-    });
-    const incompleteSoloStreaks = await getIncompleteSoloStreaks(timezone);
+    expect.assertions(4);
+
+    const incompleteSoloStreaksResponse = await streakoid.soloStreaks.getAll(
+      undefined,
+      false,
+      timezone
+    );
+    const incompleteSoloStreaks =
+      incompleteSoloStreaksResponse.data.soloStreaks;
+
     const endDate = new Date();
     const resetIncompleteSoloStreaksPromise = await resetIncompleteSoloStreaks(
       incompleteSoloStreaks,
-      endDate
+      endDate,
+      timezone
     );
+
     await Promise.all(resetIncompleteSoloStreaksPromise);
-    const updatedSoloStreak = (await soloStreakModel.findById(
+
+    const updatedSoloStreakResponse: any = await streakoid.soloStreaks.getOne(
       soloStreakId
-    )) as SoloStreak;
+    );
+    const updatedSoloStreak = updatedSoloStreakResponse.data;
 
     expect(updatedSoloStreak.currentStreak.endDate).toBeUndefined();
+    expect(updatedSoloStreak.currentStreak.numberOfDaysInARow).toEqual(0);
     expect(updatedSoloStreak.pastStreaks.length).toBe(1);
-    expect(updatedSoloStreak.pastStreaks[0].endDate).toEqual(endDate);
+    expect(updatedSoloStreak.pastStreaks[0].endDate).toBeDefined();
   });
 });
