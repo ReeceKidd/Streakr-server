@@ -25,7 +25,8 @@ export const soloStreakParamsValidationMiddleware = (
 
 const soloStreakBodyValidationSchema = {
   name: Joi.string(),
-  description: Joi.string()
+  description: Joi.string(),
+  currentStreak: Joi.object()
 };
 
 export const soloStreakRequestBodyValidationMiddleware = (

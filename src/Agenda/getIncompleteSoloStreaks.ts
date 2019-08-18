@@ -1,8 +1,7 @@
 import { soloStreakModel } from "../Models/SoloStreak";
-export const getIncompleteSoloStreaks = (timezone: string) => {
+export const getIncompleteSoloStreaks = async (timezone: string) => {
   return soloStreakModel.find({
     timezone,
-    completedToday: false,
-    "currentStreak.startDate": { $exists: true }
+    completedToday: false
   });
 };

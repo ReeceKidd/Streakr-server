@@ -6,15 +6,22 @@ import ApiVersions from "../Server/versions";
 import { RouteCategories } from "../routeCategories";
 import { SupportedRequestHeaders } from "../Server/headers";
 
-const getAll = (userId?: string) => {
+const getAll = (
+  userId?: string,
+  completedToday?: boolean,
+  timezone?: string
+) => {
+  let getAllSoloStreaksURL = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}?`;
   if (userId) {
-    return axios.get(
-      `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}?userId=${userId}`
-    );
+    getAllSoloStreaksURL = `${getAllSoloStreaksURL}userId=${userId}&`;
   }
-  return axios.get(
-    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`
-  );
+  if (completedToday) {
+    getAllSoloStreaksURL = `${getAllSoloStreaksURL}completedToday=${completedToday}&`;
+  }
+  if (timezone) {
+    getAllSoloStreaksURL = `${getAllSoloStreaksURL}timezone=${timezone}`;
+  }
+  return axios.get(getAllSoloStreaksURL);
 };
 
 const getOne = (soloStreakId: string) => {
@@ -38,7 +45,11 @@ const create = (
 
 const update = (
   soloStreakId: string,
-  data: { name: string; description: string },
+  data: {
+    name?: string;
+    description?: string;
+    currentStreak?: { startDate?: Date };
+  },
   timezone: string
 ) => {
   return axios.patch(

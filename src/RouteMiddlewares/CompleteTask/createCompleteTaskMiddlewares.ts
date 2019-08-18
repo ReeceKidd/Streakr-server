@@ -241,6 +241,7 @@ export const getSendTaskCompleteResponseMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { completeTask } = response.locals;
+    console.log(completeTask);
     return response.status(resourceCreatedResponseCode).send({ completeTask });
   } catch (err) {
     next(new CustomError(ErrorType.SendTaskCompleteResponseMiddleware, err));

@@ -27,6 +27,8 @@ app.get(`/health`, (request, response, next) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
+console.log(DATABASE_URI);
+
 mongoose
   .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false })
   .catch(err => console.log(err.message));

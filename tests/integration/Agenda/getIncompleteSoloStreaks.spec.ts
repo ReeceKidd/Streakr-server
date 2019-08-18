@@ -7,6 +7,7 @@ import { SupportedRequestHeaders } from "../../../src/Server/headers";
 import { userModel } from "../../../src/Models/User";
 import { getIncompleteSoloStreaks } from "../../../src/Agenda/getIncompleteSoloStreaks";
 import { getServiceConfig } from "../../../src/getServiceConfig";
+import streakoid from "../../../src/sdk/streakoid";
 
 const { APPLICATION_URL } = getServiceConfig();
 
@@ -26,27 +27,24 @@ describe("getIncompleteSoloStreaks", () => {
   const timezone = "Europe/London";
 
   beforeAll(async () => {
-    const registrationResponse = await request(APPLICATION_URL)
-      .post(registrationRoute)
-      .send({
-        username: registeredUsername,
-        email: registeredEmail
-      });
-    userId = registrationResponse.body._id;
-    const createSoloStreakResponse = await request(APPLICATION_URL)
-      .post(soloStreakRoute)
-      .send({
-        userId,
-        name,
-        description
-      })
-      .set({ [SupportedRequestHeaders.xTimezone]: timezone });
-    soloStreakId = createSoloStreakResponse.body._id;
+    const registrationResponse = await streakoid.users.create(
+      registeredUsername,
+      registeredEmail
+    );
+    userId = registrationResponse.data._id;
+
+    const createSoloStreakResponse = await streakoid.soloStreaks.create(
+      userId,
+      name,
+      description,
+      timezone
+    );
+    soloStreakId = createSoloStreakResponse.data._id;
   });
 
   afterAll(async () => {
-    await userModel.deleteOne({ email: registeredEmail });
-    await soloStreakModel.deleteOne({ _id: soloStreakId });
+    await streakoid.users.deleteOne(userId);
+    await streakoid.soloStreaks.deleteOne(soloStreakId);
   });
 
   test("that getIncompleteSoloStreaks returns solo streaks that were not completed today", async () => {
@@ -55,16 +53,18 @@ describe("getIncompleteSoloStreaks", () => {
       Have to force soloStreak to have new date because streaks without a new date aren't
       considered incomplete as they haven't been started
       */
-    await soloStreakModel.findByIdAndUpdate(soloStreakId, {
-      currentStreak: { startDate: new Date() }
-    });
-    const incompleteSoloStreaks = (await getIncompleteSoloStreaks(
+    const soloStreakResponse = await streakoid.soloStreaks.getOne(soloStreakId);
+    const soloStreak = soloStreakResponse.data;
+    await streakoid.soloStreaks.update(
+      soloStreakId,
+      { currentStreak: { ...soloStreak.currentStreak, startDate: new Date() } },
       timezone
-    )) as any;
-    const incompleteStreak = incompleteSoloStreaks.find(
-      (streak: SoloStreak) => (streak.streakName = name)
+    );
+    const incompleteSoloStreaks = await getIncompleteSoloStreaks(timezone);
+    const incompleteStreak = (incompleteSoloStreaks as any).find(
+      (streak: any) => (streak.streakName = soloStreak.name)
     );
 
-    expect(incompleteStreak.name).toEqual(name);
+    expect((incompleteStreak as any).streakName).toEqual(name);
   });
 });

@@ -13,8 +13,7 @@ describe("getIncompleteSoloStreaks ", async () => {
     await getIncompleteSoloStreaks(timezone);
     expect(soloStreakModel.find).toBeCalledWith({
       timezone,
-      completedToday: false,
-      "currentStreak.startDate": { $exists: true }
+      completedToday: false
     });
   });
 });
