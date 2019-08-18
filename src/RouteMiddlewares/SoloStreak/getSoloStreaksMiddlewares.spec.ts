@@ -1,6 +1,6 @@
 import {
   getSoloStreaksMiddlewares,
-  getSoloStreaksValidationMiddleware,
+  getSoloStreaksQueryValidationMiddleware,
   getFindSoloStreaksMiddleware,
   findSoloStreaksMiddleware,
   sendSoloStreaksMiddleware
@@ -21,7 +21,7 @@ describe("getSoloStreaksValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    getSoloStreaksValidationMiddleware(request, response, next);
+    getSoloStreaksQueryValidationMiddleware(request, response, next);
 
     expect(next).toBeCalledWith();
   });
@@ -38,7 +38,7 @@ describe("getSoloStreaksValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    getSoloStreaksValidationMiddleware(request, response, next);
+    getSoloStreaksQueryValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -59,7 +59,7 @@ describe("getSoloStreaksValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    getSoloStreaksValidationMiddleware(request, response, next);
+    getSoloStreaksQueryValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -154,7 +154,7 @@ describe(`getSoloStreaksMiddlewares`, () => {
     expect.assertions(3);
 
     expect(getSoloStreaksMiddlewares[0]).toBe(
-      getSoloStreaksValidationMiddleware
+      getSoloStreaksQueryValidationMiddleware
     );
     expect(getSoloStreaksMiddlewares[1]).toBe(findSoloStreaksMiddleware);
     expect(getSoloStreaksMiddlewares[2]).toBe(sendSoloStreaksMiddleware);
