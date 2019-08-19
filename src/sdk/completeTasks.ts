@@ -3,7 +3,6 @@ import { getServiceConfig } from "../getServiceConfig";
 import ApiVersions from "../Server/versions";
 import { RouteCategories } from "../routeCategories";
 import { SupportedRequestHeaders } from "../Server/headers";
-import { callbackify } from "util";
 
 const { APPLICATION_URL } = getServiceConfig();
 
@@ -13,7 +12,7 @@ const getAll = (userId?: string, streakId?: string) => {
     getAllURL = `${getAllURL}userId=${userId}&`;
   }
   if (streakId) {
-    getAllURL = `${getAllURL}streakId=${streakId}&`;
+    getAllURL = `${getAllURL}streakId=${streakId}`;
   }
 
   return axios.get(getAllURL);

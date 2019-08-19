@@ -16,7 +16,7 @@ describe("SDK completeTasks", () => {
       await streakoid.completeTasks.getAll("userId");
 
       expect(axios.get).toBeCalledWith(
-        `${APPLICATION_URL}/v1/complete-tasks?userId=userId`
+        `${APPLICATION_URL}/v1/complete-tasks?userId=userId&`
       );
     });
 
@@ -38,7 +38,7 @@ describe("SDK completeTasks", () => {
       await streakoid.completeTasks.getAll("userId", "streakId");
 
       expect(axios.get).toBeCalledWith(
-        `${APPLICATION_URL}/v1/complete-tasks?streakId=streakId&userId=userId`
+        `${APPLICATION_URL}/v1/complete-tasks?userId=userId&streakId=streakId`
       );
     });
 
@@ -48,7 +48,7 @@ describe("SDK completeTasks", () => {
 
       await streakoid.completeTasks.getAll();
 
-      expect(axios.get).toBeCalledWith(`${APPLICATION_URL}/v1/complete-tasks`);
+      expect(axios.get).toBeCalledWith(`${APPLICATION_URL}/v1/complete-tasks?`);
     });
   });
 
@@ -57,16 +57,16 @@ describe("SDK completeTasks", () => {
       expect.assertions(1);
       axios.post = jest.fn();
       const userId = "userId";
-      const streakId = "streakId";
+      const soloStreakId = "soloStreakId";
       const timezone = "timezone";
 
-      await streakoid.completeTasks.create(userId, streakId, timezone);
+      await streakoid.completeTasks.create(userId, soloStreakId, timezone);
 
       expect(axios.post).toBeCalledWith(
         `${APPLICATION_URL}/v1/complete-tasks`,
         {
           userId,
-          streakId
+          soloStreakId
         },
         {
           headers: {
