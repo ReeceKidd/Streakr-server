@@ -24,7 +24,7 @@ import {
 } from "./createCompleteTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import completeTasksRouter from "../../Routers/completeTasksRouter";
+import { SupportedRequestHeaders } from "../../Server/headers";
 
 describe(`completeTaskBodyValidationMiddleware`, () => {
   const userId = "abcdefgh";
@@ -117,7 +117,7 @@ describe("soloStreakExistsMiddleware", () => {
     expect.assertions(3);
     const soloStreakId = "abc";
     const request: any = {
-      params: { soloStreakId }
+      body: { soloStreakId }
     };
     const response: any = { locals: {} };
     const next = jest.fn();
@@ -136,7 +136,7 @@ describe("soloStreakExistsMiddleware", () => {
     expect.assertions(1);
     const soloStreakId = "abc";
     const request: any = {
-      params: { soloStreakId }
+      body: { soloStreakId }
     };
     const response: any = { locals: {} };
     const next = jest.fn();
@@ -230,8 +230,10 @@ describe("setTaskCompleteTimeMiddleware", () => {
     const timezone = "Europe/London";
     const tz = jest.fn(() => true);
     const moment = jest.fn(() => ({ tz }));
-    const request: any = {};
-    const response: any = { locals: { timezone } };
+    const request: any = {
+      headers: { [SupportedRequestHeaders.xTimezone]: timezone }
+    };
+    const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getSetTaskCompleteTimeMiddleware(moment);
 
@@ -266,27 +268,32 @@ describe("setTaskCompleteTimeMiddleware", () => {
 describe("setStreakStartDateMiddleware", () => {
   test("sets soloStreak.startDate to taskCompleteTime if it's undefined and calls next()", async () => {
     expect.assertions(2);
-    const findByIdAndUpdate = jest.fn();
+    const updateOne = jest.fn().mockResolvedValue(true);
     const soloStreakModel: any = {
-      findByIdAndUpdate
+      updateOne
     };
     const taskCompleteTime = new Date();
     const soloStreakId = 1;
     const soloStreak = {
+      _id: soloStreakId,
       currentStreak: {
-        startDate: undefined
+        startDate: undefined,
+        numberOfDaysInARow: 0
       }
     };
-    const request: any = { params: { soloStreakId } };
+    const request: any = {};
     const response: any = { locals: { soloStreak, taskCompleteTime } };
     const next: any = jest.fn();
     const middleware = await getSetStreakStartDateMiddleware(soloStreakModel);
 
     await middleware(request, response, next);
 
-    expect(findByIdAndUpdate).toBeCalledWith(soloStreakId, {
-      currentStreak: { startDate: taskCompleteTime }
-    });
+    expect(updateOne).toBeCalledWith(
+      { _id: soloStreakId },
+      {
+        currentStreak: { startDate: taskCompleteTime, numberOfDaysInARow: 0 }
+      }
+    );
     expect(next).toBeCalledWith();
   });
 
@@ -376,7 +383,7 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     const soloStreakId = "abcd";
     const taskCompleteDay = "26/04/2012";
     const userId = "Abcde";
-    const request: any = { params: { soloStreakId }, body: { userId } };
+    const request: any = { body: { userId, soloStreakId } };
     const response: any = { locals: { taskCompleteDay } };
     const next = jest.fn();
     const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
@@ -448,8 +455,7 @@ describe("createCompleteTaskDefinitionMiddleware", () => {
     const taskCompleteDay = "09/05/2019";
     const userId = "abc";
     const request: any = {
-      params: { soloStreakId },
-      body: { userId }
+      body: { userId, soloStreakId }
     };
     const response: any = {
       locals: {
@@ -592,7 +598,7 @@ describe("streakMaintainedMiddleware", () => {
     const soloStreakModel = {
       updateOne
     };
-    const request: any = { params: { soloStreakId } };
+    const request: any = { body: { soloStreakId } };
     const response: any = {};
     const next = jest.fn();
     const middleware = getStreakMaintainedMiddleware(soloStreakModel as any);
