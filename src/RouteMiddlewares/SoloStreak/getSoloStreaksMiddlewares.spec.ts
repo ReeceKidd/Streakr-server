@@ -49,19 +49,59 @@ describe("getSoloStreaksValidationMiddleware", () => {
 });
 
 describe("findSoloStreaksMiddleware", () => {
-  test("sets response.locals.soloStreaks", async () => {
-    expect.assertions(2);
+  test("queries database with just userId and sets response.locals.soloStreaks", async () => {
+    expect.assertions(3);
     const find = jest.fn(() => Promise.resolve(true));
     const soloStreakModel = {
       find
     };
-    const request: any = { query: { userId: "1234" } };
+    const userId = "1234";
+    const request: any = { query: { userId } };
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
 
     await middleware(request, response, next);
 
+    expect(find).toBeCalledWith({ userId });
+    expect(response.locals.soloStreaks).toEqual(true);
+    expect(next).toBeCalledWith();
+  });
+
+  test("queries database with just timezone and sets response.locals.soloStreaks", async () => {
+    expect.assertions(3);
+    const find = jest.fn(() => Promise.resolve(true));
+    const soloStreakModel = {
+      find
+    };
+    const timezone = "Europe/London";
+    const request: any = { query: { timezone } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({ timezone });
+    expect(response.locals.soloStreaks).toEqual(true);
+    expect(next).toBeCalledWith();
+  });
+
+  test("queries database with just completedToday as a boolean and sets response.locals.soloStreaks", async () => {
+    expect.assertions(3);
+    const find = jest.fn(() => Promise.resolve(true));
+    const soloStreakModel = {
+      find
+    };
+    const completedToday = "true";
+    const request: any = { query: { completedToday } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({ completedToday: true });
     expect(response.locals.soloStreaks).toEqual(true);
     expect(next).toBeCalledWith();
   });
