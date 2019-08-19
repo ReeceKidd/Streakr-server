@@ -31,7 +31,6 @@ export const getRetreiveUserMiddleware = (
   try {
     const { userId } = request.params;
     const user = await userModel.findOne({ _id: userId });
-    s;
     if (!user) {
       throw new CustomError(ErrorType.NoUserFound);
     }
