@@ -26,27 +26,6 @@ describe("getSoloStreaksValidationMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("sends error when request has no params", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      query: {}
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    getSoloStreaksQueryValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "userId" fails because ["userId" is required]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
   test("sends userId cannot be a number error", () => {
     expect.assertions(3);
     const send = jest.fn();

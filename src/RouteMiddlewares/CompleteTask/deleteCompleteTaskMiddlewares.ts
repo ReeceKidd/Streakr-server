@@ -31,7 +31,6 @@ export const getDeleteCompleteTaskMiddleware = (
     const deletedCompleteTask = await completeTaskModel.findByIdAndDelete(
       completeTaskId
     );
-    console.log(deletedCompleteTask);
     if (!deletedCompleteTask) {
       throw new CustomError(ErrorType.NoCompleteTaskToDeleteFound);
     }

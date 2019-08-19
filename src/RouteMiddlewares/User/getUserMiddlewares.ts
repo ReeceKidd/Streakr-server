@@ -31,14 +31,13 @@ export const getRetreiveUserMiddleware = (
   try {
     const { userId } = request.params;
     const user = await userModel.findOne({ _id: userId });
-    console.log(user);
+    s;
     if (!user) {
       throw new CustomError(ErrorType.NoUserFound);
     }
     response.locals.user = user;
     next();
   } catch (err) {
-    console.log(err);
     if (err instanceof CustomError) next(err);
     else next(new CustomError(ErrorType.GetRetreiveUserMiddleware, err));
   }
