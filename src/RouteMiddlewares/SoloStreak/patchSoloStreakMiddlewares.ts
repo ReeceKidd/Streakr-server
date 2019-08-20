@@ -24,10 +24,10 @@ export const soloStreakParamsValidationMiddleware = (
 };
 
 const soloStreakBodyValidationSchema = {
-  userId: Joi.string(),
   name: Joi.string(),
   description: Joi.string(),
-  completedToday: Joi.boolean()
+  currentStreak: Joi.object(),
+  pastStreaks: Joi.array()
 };
 
 export const soloStreakRequestBodyValidationMiddleware = (
@@ -75,7 +75,7 @@ export const getSendUpdatedSoloStreakMiddleware = (
     const { updatedSoloStreak } = response.locals;
     return response
       .status(updatedResourceResponseCode)
-      .send({ data: updatedSoloStreak });
+      .send({ soloStreak: updatedSoloStreak });
   } catch (err) {
     next(new CustomError(ErrorType.SendUpdatedSoloStreakMiddleware, err));
   }

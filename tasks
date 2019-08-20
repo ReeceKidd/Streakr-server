@@ -20,3 +20,5 @@ Need to make sure all unit tests are spaced correctly with the AAA structure.
 
   Need to update all unit tests so they go into one describe block so 
   that I can do after each to reset the mocks. 
+
+  Update the code because APPLICATION URL IS NOT WORKING. 

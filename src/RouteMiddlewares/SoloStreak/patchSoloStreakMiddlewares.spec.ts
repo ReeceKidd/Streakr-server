@@ -77,27 +77,6 @@ describe("soloStreakRequestBodyValidationMiddleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  test("sends correct error response when userId is not a string", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      body: { userId: 1234 }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    soloStreakRequestBodyValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "userId" fails because ["userId" must be a string]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
   test("sends correct error when name is not a string", () => {
     expect.assertions(3);
     const send = jest.fn();
@@ -137,28 +116,6 @@ describe("soloStreakRequestBodyValidationMiddleware", () => {
     expect(send).toBeCalledWith({
       message:
         'child "description" fails because ["description" must be a string]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
-  test("sends correct response when completedToday is not a boolean", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      body: { completedToday: 1 }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    soloStreakRequestBodyValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message:
-        'child "completedToday" fails because ["completedToday" must be a boolean]'
     });
     expect(next).not.toBeCalled();
   });
@@ -285,7 +242,7 @@ describe("sendUpdatedPatchMiddleware", () => {
     expect(response.locals.user).toBeUndefined();
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(updatedResourceResponseCode);
-    expect(send).toBeCalledWith({ data: updatedSoloStreak });
+    expect(send).toBeCalledWith({ soloStreak: updatedSoloStreak });
   });
 
   test("calls next with SendUpdatedSoloStreakMiddleware error on middleware failure", () => {

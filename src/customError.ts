@@ -72,7 +72,19 @@ export enum ErrorType {
   RemoveSubscriptionFromUserMiddleware,
   SendSuccessfullyRemovedSubscriptionMiddleware,
   SetUserTypeToPremiumMiddleware,
-  SetUserTypeToBasicMiddleware
+  SetUserTypeToBasicMiddleware,
+  NoUserToDeleteFound,
+  DeleteUserMiddleware,
+  SendUserDeletedResponseMiddleware,
+  GetCompleteTasksMiddleware,
+  SendCompleteTasksResponseMiddleware,
+  NoCompleteTaskToDeleteFound,
+  DeleteCompleteTaskMiddleware,
+  SendCompleteTaskDeletedResponseMiddleware,
+  NoUserFound,
+  GetRetreiveUserMiddleware,
+  SendRetreiveUserResponseMiddleware,
+  RetreiveIncompleteSoloStreaksMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -189,6 +201,30 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-14`,
           message: "Customer is not subscribed.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoUserToDeleteFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-15`,
+          message: "User does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoCompleteTaskToDeleteFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-16`,
+          message: "Complete task does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoUserFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-17`,
+          message: "User does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -615,6 +651,69 @@ export class CustomError extends Error {
       case ErrorType.SetUserTypeToBasicMiddleware:
         return {
           code: `${ResponseCodes.warning}-57`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteUserMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-58`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendUserDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-59`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.GetCompleteTasksMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-60`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendCompleteTasksResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-61`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteCompleteTaskMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-62`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendCompleteTaskDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-63`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.GetRetreiveUserMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-64`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendRetreiveUserResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-65`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveIncompleteSoloStreaksMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-66`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

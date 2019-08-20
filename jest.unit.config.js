@@ -12,6 +12,11 @@ module.exports = {
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
   testEnvironment: "node",
-  modulePathIgnorePatterns: ["./coverage/*", "./jest.config.js", "./dist/*"],
+  modulePathIgnorePatterns: [
+    "./coverage/*",
+    "./jest.config.js",
+    "./dist/*",
+    "./tests/*"
+  ],
   testMatch: ["**/src/**/*.spec.(ts|js)"]
 };

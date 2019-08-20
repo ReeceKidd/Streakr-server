@@ -1,6 +1,6 @@
 import {
   getSoloStreaksMiddlewares,
-  getSoloStreaksValidationMiddleware,
+  getSoloStreaksQueryValidationMiddleware,
   getFindSoloStreaksMiddleware,
   findSoloStreaksMiddleware,
   sendSoloStreaksMiddleware
@@ -21,30 +21,9 @@ describe("getSoloStreaksValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    getSoloStreaksValidationMiddleware(request, response, next);
+    getSoloStreaksQueryValidationMiddleware(request, response, next);
 
     expect(next).toBeCalledWith();
-  });
-
-  test("sends error when request has no params", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      query: {}
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    getSoloStreaksValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "userId" fails because ["userId" is required]'
-    });
-    expect(next).not.toBeCalled();
   });
 
   test("sends userId cannot be a number error", () => {
@@ -59,7 +38,7 @@ describe("getSoloStreaksValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    getSoloStreaksValidationMiddleware(request, response, next);
+    getSoloStreaksQueryValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -70,19 +49,59 @@ describe("getSoloStreaksValidationMiddleware", () => {
 });
 
 describe("findSoloStreaksMiddleware", () => {
-  test("sets response.locals.soloStreaks", async () => {
-    expect.assertions(2);
+  test("queries database with just userId and sets response.locals.soloStreaks", async () => {
+    expect.assertions(3);
     const find = jest.fn(() => Promise.resolve(true));
     const soloStreakModel = {
       find
     };
-    const request: any = { query: { userId: "1234" } };
+    const userId = "1234";
+    const request: any = { query: { userId } };
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
 
     await middleware(request, response, next);
 
+    expect(find).toBeCalledWith({ userId });
+    expect(response.locals.soloStreaks).toEqual(true);
+    expect(next).toBeCalledWith();
+  });
+
+  test("queries database with just timezone and sets response.locals.soloStreaks", async () => {
+    expect.assertions(3);
+    const find = jest.fn(() => Promise.resolve(true));
+    const soloStreakModel = {
+      find
+    };
+    const timezone = "Europe/London";
+    const request: any = { query: { timezone } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({ timezone });
+    expect(response.locals.soloStreaks).toEqual(true);
+    expect(next).toBeCalledWith();
+  });
+
+  test("queries database with just completedToday as a boolean and sets response.locals.soloStreaks", async () => {
+    expect.assertions(3);
+    const find = jest.fn(() => Promise.resolve(true));
+    const soloStreakModel = {
+      find
+    };
+    const completedToday = "true";
+    const request: any = { query: { completedToday } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({ completedToday: true });
     expect(response.locals.soloStreaks).toEqual(true);
     expect(next).toBeCalledWith();
   });
@@ -154,7 +173,7 @@ describe(`getSoloStreaksMiddlewares`, () => {
     expect.assertions(3);
 
     expect(getSoloStreaksMiddlewares[0]).toBe(
-      getSoloStreaksValidationMiddleware
+      getSoloStreaksQueryValidationMiddleware
     );
     expect(getSoloStreaksMiddlewares[1]).toBe(findSoloStreaksMiddleware);
     expect(getSoloStreaksMiddlewares[2]).toBe(sendSoloStreaksMiddleware);

@@ -1,19 +1,7 @@
-import request from "supertest";
-
-import server from "../../../src/app";
-import ApiVersions from "../../../src/Server/versions";
-import { RouteCategories } from "../../../src/routeCategories";
-import { userModel } from "../../../src/Models/User";
-import { soloStreakModel } from "../../../src/Models/SoloStreak";
-import { ResponseCodes } from "../../../src/Server/responseCodes";
-import { SupportedRequestHeaders } from "../../../src/Server/headers";
+import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail = "get-solo-streaks@gmail.com";
 const registeredUsername = "get-solo-streaks-user";
-
-const registrationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-const createSoloStreakRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
-const getSoloStreaksRoute = `/${ApiVersions.v1}/${RouteCategories.soloStreaks}`;
 
 const soloStreakName = "Daily Spanish";
 const soloStreakDescription =
@@ -23,50 +11,140 @@ const parisTimezone = "Europe/Paris";
 
 jest.setTimeout(120000);
 
-describe(getSoloStreaksRoute, () => {
+describe("GET solo-streaks", () => {
   let userId: string;
+  let soloStreakId: string;
+  let secondSoloStreakId: string;
 
   beforeAll(async () => {
-    const registrationResponse = await request(server)
-      .post(registrationRoute)
-      .send({
-        username: registeredUsername,
-        email: registeredEmail
-      });
-    userId = registrationResponse.body._id;
-    await request(server)
-      .post(createSoloStreakRoute)
-      .send({
-        userId,
-        name: soloStreakName,
-        description: soloStreakDescription
-      })
-      .set({ [SupportedRequestHeaders.xTimezone]: parisTimezone });
+    const registrationResponse = await streakoid.users.create(
+      registeredUsername,
+      registeredEmail
+    );
+    userId = registrationResponse.data._id;
+
+    const createSoloStreakResponse = await streakoid.soloStreaks.create(
+      userId,
+      soloStreakName,
+      soloStreakDescription,
+      parisTimezone
+    );
+    soloStreakId = createSoloStreakResponse.data._id;
   });
 
   afterAll(async () => {
-    await userModel.deleteOne({ email: registeredEmail });
-    await soloStreakModel.deleteOne({ name: soloStreakName });
+    await streakoid.users.deleteOne(userId);
+    await streakoid.soloStreaks.deleteOne(soloStreakId);
+    await streakoid.soloStreaks.deleteOne(secondSoloStreakId);
   });
 
-  test(`that solo streaks can be retreived for user`, async () => {
-    expect.assertions(9);
-    const getSoloStreaksRouteWithQueryParamater = `${getSoloStreaksRoute}?userId=${userId}`;
+  test(`that solo streaks can be retreived with user query parameter`, async () => {
+    expect.assertions(11);
 
-    const response = await request(server).get(
-      getSoloStreaksRouteWithQueryParamater
+    const response = await streakoid.soloStreaks.getAll(userId);
+
+    const soloStreak = response.data.soloStreaks[0];
+    expect(response.status).toEqual(200);
+    expect(response.data.soloStreaks.length).toEqual(1);
+    expect(soloStreak.name).toEqual(soloStreakName);
+    expect(soloStreak.description).toEqual(soloStreakDescription);
+    expect(soloStreak.userId).toEqual(userId);
+    expect(soloStreak.completedToday).toEqual(false);
+    expect(soloStreak.currentStreak).toEqual({ numberOfDaysInARow: 0 });
+    expect(soloStreak.timezone).toEqual(parisTimezone);
+    expect(soloStreak).toHaveProperty("_id");
+    expect(soloStreak).toHaveProperty("createdAt");
+    expect(soloStreak).toHaveProperty("updatedAt");
+  });
+
+  test(`that solo streaks can be retreieved with timezone query parameter`, async () => {
+    expect.assertions(11);
+
+    const response = await streakoid.soloStreaks.getAll(
+      undefined,
+      undefined,
+      parisTimezone
     );
 
-    expect(response.status).toEqual(ResponseCodes.success);
-    expect(response.type).toEqual("application/json");
-    expect(response.body.soloStreaks.length).toEqual(1);
-    expect(response.body.soloStreaks[0].name).toEqual(soloStreakName);
-    expect(response.body.soloStreaks[0].description).toEqual(
-      soloStreakDescription
+    const soloStreak = response.data.soloStreaks[0];
+
+    expect(response.status).toEqual(200);
+    expect(response.data.soloStreaks.length).toEqual(1);
+    expect(soloStreak.name).toEqual(soloStreakName);
+    expect(soloStreak.description).toEqual(soloStreakDescription);
+    expect(soloStreak.userId).toEqual(userId);
+    expect(soloStreak.completedToday).toEqual(false);
+    expect(soloStreak.currentStreak).toEqual({ numberOfDaysInARow: 0 });
+    expect(soloStreak.timezone).toEqual(parisTimezone);
+    expect(soloStreak).toHaveProperty("_id");
+    expect(soloStreak).toHaveProperty("createdAt");
+    expect(soloStreak).toHaveProperty("updatedAt");
+  });
+
+  test("that incomplete solo streaks can be retreived", async () => {
+    expect.assertions(11);
+
+    const response = await streakoid.soloStreaks.getAll(
+      undefined,
+      false,
+      undefined
     );
-    expect(response.body.soloStreaks[0].userId).toEqual(userId);
-    expect(response.body.soloStreaks[0]).toHaveProperty("_id");
-    expect(response.body.soloStreaks[0]).toHaveProperty("createdAt");
-    expect(response.body.soloStreaks[0]).toHaveProperty("updatedAt");
+
+    const soloStreak = response.data.soloStreaks[0];
+    expect(response.status).toEqual(200);
+    expect(response.data.soloStreaks.length).toEqual(1);
+    expect(soloStreak.name).toEqual(soloStreakName);
+    expect(soloStreak.description).toEqual(soloStreakDescription);
+    expect(soloStreak.userId).toEqual(userId);
+    expect(soloStreak.completedToday).toEqual(false);
+    expect(soloStreak.currentStreak).toEqual({ numberOfDaysInARow: 0 });
+    expect(soloStreak.timezone).toEqual(parisTimezone);
+    expect(soloStreak).toHaveProperty("_id");
+    expect(soloStreak).toHaveProperty("createdAt");
+    expect(soloStreak).toHaveProperty("updatedAt");
+  });
+
+  test("that solo streaks that have been completed today can be retreived", async () => {
+    expect.assertions(12);
+
+    const name = "30 minutes of reading";
+    const description = "Every day I must do 30 minutes of reading";
+
+    const createdSoloStreakResponse = await streakoid.soloStreaks.create(
+      userId,
+      name,
+      description,
+      parisTimezone
+    );
+    secondSoloStreakId = createdSoloStreakResponse.data._id;
+
+    const completedTaskResponse = await streakoid.completeTasks.create(
+      userId,
+      secondSoloStreakId,
+      parisTimezone
+    );
+    const completedTaskResponseId = completedTaskResponse.data.completeTask._id;
+
+    const response = await streakoid.soloStreaks.getAll(
+      undefined,
+      true,
+      undefined
+    );
+    const soloStreak = response.data.soloStreaks[0];
+
+    expect(response.status).toEqual(200);
+    expect(response.data.soloStreaks.length).toEqual(1);
+    expect(soloStreak.name).toEqual(name);
+    expect(soloStreak.description).toEqual(description);
+    expect(soloStreak.userId).toEqual(userId);
+    expect(soloStreak.completedToday).toEqual(true);
+    expect(soloStreak.currentStreak.numberOfDaysInARow).toEqual(1);
+    expect(soloStreak.timezone).toEqual(parisTimezone);
+    expect(soloStreak.currentStreak).toHaveProperty("startDate");
+    expect(soloStreak).toHaveProperty("_id");
+    expect(soloStreak).toHaveProperty("createdAt");
+    expect(soloStreak).toHaveProperty("updatedAt");
+
+    await streakoid.completeTasks.deleteOne(completedTaskResponseId);
   });
 });

@@ -5,7 +5,8 @@ import { cancelStripeCustomerSubscriptionMiddlewares } from "../RouteMiddlewares
 const stripeRouter = Router();
 
 export enum stripeRouterPaths {
-  subscriptions = "subscriptions"
+  subscriptions = "subscriptions",
+  deleteSubscriptions = "delete-subscriptions"
 }
 
 stripeRouter.post(
@@ -13,8 +14,8 @@ stripeRouter.post(
   ...createStripeCustomerSubscriptionMiddlewares
 );
 
-stripeRouter.delete(
-  `/${stripeRouterPaths.subscriptions}`,
+stripeRouter.post(
+  `/${stripeRouterPaths.deleteSubscriptions}`,
   ...cancelStripeCustomerSubscriptionMiddlewares
 );
 

@@ -9,7 +9,8 @@ describe("getServiceConfig", () => {
     AWS_SECRET_ACCESS_KEY: "AWS_SECRET_ACCESS_KEY",
     AWS_REGION: "AWS_REGION",
     STRIPE_SHAREABLE_KEY: "STRIPE_SHAREABLE_KEY",
-    STRIPE_PLAN: "STRIPE_PLAN"
+    STRIPE_PLAN: "STRIPE_PLAN",
+    APPLICATION_URL: "APPLICATION_URL"
   };
 
   test("that correct error is thrown when NODE_ENV is not provided", () => {
@@ -121,6 +122,20 @@ describe("getServiceConfig", () => {
       getServiceConfig(environment);
     } catch (err) {
       expect(err.message).toEqual("STRIPE_PLAN is not provided.");
+    }
+  });
+
+  test("that correct error is thrown when APPLICATION_URL is not provided.", () => {
+    expect.assertions(1);
+    const environment = {
+      ...environmentMock,
+      APPLICATION_URL: undefined
+    };
+
+    try {
+      getServiceConfig(environment);
+    } catch (err) {
+      expect(err.message).toEqual("APPLICATION_URL is not provided.");
     }
   });
 });

@@ -2,7 +2,6 @@ import { Router } from "express";
 
 import { getSoloStreaksMiddlewares } from "../RouteMiddlewares/SoloStreak/getSoloStreaksMiddlewares";
 import { createSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakMiddlewares";
-import { createSoloStreakCompleteTaskMiddlewares } from "../RouteMiddlewares/SoloStreak/createSoloStreakCompleteTaskMiddlewares";
 import { getSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/getSoloStreakMiddlewares";
 import { patchSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/patchSoloStreakMiddlewares";
 import { deleteSoloStreakMiddlewares } from "../RouteMiddlewares/SoloStreak/deleteSoloStreakMiddlewares";
@@ -27,10 +26,5 @@ soloStreaksRouter.use(...timezoneMiddlewares);
 soloStreaksRouter.post(`/`, ...createSoloStreakMiddlewares);
 
 soloStreaksRouter.patch(`/:${soloStreakId}`, ...patchSoloStreakMiddlewares);
-
-soloStreaksRouter.post(
-  `/:${soloStreakId}/${SoloStreakProperties.completeTasks}`,
-  ...createSoloStreakCompleteTaskMiddlewares
-);
 
 export default soloStreaksRouter;

@@ -7,22 +7,20 @@ import { soloStreakModel, SoloStreak } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
-export enum GetSoloStreaksQueryParamaters {
-  userId = "userId"
-}
-
-const getSoloStreaksValidationSchema = {
-  userId: Joi.string().required()
+const getSoloStreaksQueryValidationSchema = {
+  userId: Joi.string(),
+  timezone: Joi.string(),
+  completedToday: Joi.boolean()
 };
 
-export const getSoloStreaksValidationMiddleware = (
+export const getSoloStreaksQueryValidationMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   Joi.validate(
     request.query,
-    getSoloStreaksValidationSchema,
+    getSoloStreaksQueryValidationSchema,
     getValidationErrorMessageSenderMiddleware(request, response, next)
   );
 };
@@ -31,10 +29,25 @@ export const getFindSoloStreaksMiddleware = (
   soloStreakModel: mongoose.Model<SoloStreak>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userId } = request.query;
-    response.locals.soloStreaks = await soloStreakModel.find({
-      userId
-    });
+    const { userId, timezone, completedToday } = request.query;
+
+    const query: {
+      userId?: string;
+      timezone?: string;
+      completedToday?: boolean;
+    } = {};
+
+    if (userId) {
+      query.userId = userId;
+    }
+    if (timezone) {
+      query.timezone = timezone;
+    }
+    if (completedToday) {
+      query.completedToday = completedToday === "true";
+    }
+
+    response.locals.soloStreaks = await soloStreakModel.find(query);
     next();
   } catch (err) {
     next(new CustomError(ErrorType.FindSoloStreaksMiddleware, err));
@@ -59,7 +72,7 @@ export const sendSoloStreaksMiddleware = (
 };
 
 export const getSoloStreaksMiddlewares = [
-  getSoloStreaksValidationMiddleware,
+  getSoloStreaksQueryValidationMiddleware,
   findSoloStreaksMiddleware,
   sendSoloStreaksMiddleware
 ];
