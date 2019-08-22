@@ -30,9 +30,6 @@ export const getServiceConfig = (
     APPLICATION_URL
   } = environment;
 
-  console.log("ENVIRONMENT");
-  console.log(environment);
-
   if (!NODE_ENV) throw new Error("NODE_ENV is not provided.");
 
   if (!PORT) throw new Error("PORT is not provided.");
