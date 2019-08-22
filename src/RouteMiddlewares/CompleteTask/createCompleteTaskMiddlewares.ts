@@ -13,7 +13,6 @@ import {
   CompleteTask
 } from "../../Models/CompleteTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-
 import { CustomError, ErrorType } from "../../customError";
 import { SupportedRequestHeaders } from "../../Server/headers";
 
@@ -80,7 +79,7 @@ export const getSetTaskCompleteTimeMiddleware = (moment: any) => (
   next: NextFunction
 ) => {
   try {
-    const timezone = request.headers[SupportedRequestHeaders.xTimezone];
+    const timezone = response.locals.timezone;
     const taskCompleteTime = moment().tz(timezone);
     response.locals.taskCompleteTime = taskCompleteTime;
     next();
