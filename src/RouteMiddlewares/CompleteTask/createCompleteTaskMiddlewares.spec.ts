@@ -230,10 +230,8 @@ describe("setTaskCompleteTimeMiddleware", () => {
     const timezone = "Europe/London";
     const tz = jest.fn(() => true);
     const moment = jest.fn(() => ({ tz }));
-    const request: any = {
-      headers: { [SupportedRequestHeaders.xTimezone]: timezone }
-    };
-    const response: any = { locals: {} };
+    const request: any = {};
+    const response: any = { locals: { timezone } };
     const next = jest.fn();
     const middleware = getSetTaskCompleteTimeMiddleware(moment);
 

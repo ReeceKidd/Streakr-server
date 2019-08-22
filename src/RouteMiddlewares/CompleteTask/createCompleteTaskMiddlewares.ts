@@ -14,7 +14,6 @@ import {
 } from "../../Models/CompleteTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
-import { SupportedRequestHeaders } from "../../Server/headers";
 
 export const completeTaskBodyValidationSchema = {
   userId: Joi.string().required(),
