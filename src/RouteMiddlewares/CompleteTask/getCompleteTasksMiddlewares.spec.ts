@@ -71,8 +71,52 @@ describe("completeTaskQueryValidationMiddleware", () => {
   });
 });
 
-describe("getCompleteTaskMiddleware", () => {
-  test("sets response.locals.completeTasks", async () => {
+describe("getRetreiveCompleteTasksMiddleware", () => {
+  test("queries completeTask model and sets response.locals.completeTasks with just userId", async () => {
+    expect.assertions(3);
+
+    const find = jest.fn(() => Promise.resolve(true));
+    const completeTaskModel = {
+      find
+    };
+    const userId = "userId";
+    const request: any = { query: { userId } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getRetreiveCompleteTasksMiddleware(
+      completeTaskModel as any
+    );
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({ userId });
+    expect(response.locals.completeTasks).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("queries completeTask model and sets response.locals.completeTasks with just streakId", async () => {
+    expect.assertions(3);
+
+    const find = jest.fn(() => Promise.resolve(true));
+    const completeTaskModel = {
+      find
+    };
+    const streakId = "streakId";
+    const request: any = { query: { streakId } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getRetreiveCompleteTasksMiddleware(
+      completeTaskModel as any
+    );
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({ streakId });
+    expect(response.locals.completeTasks).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("queries completeTask model and sets response.locals.completeTasks with both a userId and streakId", async () => {
     expect.assertions(3);
 
     const find = jest.fn(() => Promise.resolve(true));
@@ -95,18 +139,35 @@ describe("getCompleteTaskMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("calls next with GetCompleteTasksMiddleware error on middleware failure", async () => {
-    expect.assertions(1);
-    const completeTaskId = "abc123";
-    const error = "error";
-    const findByIdAndDelete = jest.fn(() => Promise.reject(error));
-    const completeTaskModel = {};
-    const request: any = { params: { completeTaskId } };
+  test("queries completeTask model and sets response.locals.completeTasks with no query paramaters", async () => {
+    expect.assertions(3);
+
+    const find = jest.fn(() => Promise.resolve(true));
+    const completeTaskModel = {
+      find
+    };
+    const request: any = { query: {} };
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getRetreiveCompleteTasksMiddleware(
       completeTaskModel as any
     );
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({});
+    expect(response.locals.completeTasks).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("calls next with GetCompleteTasksMiddleware error on middleware failure", async () => {
+    expect.assertions(1);
+
+    const request: any = {};
+    const response: any = {};
+    const next = jest.fn();
+
+    const middleware = getRetreiveCompleteTasksMiddleware({} as any);
 
     await middleware(request, response, next);
 
@@ -136,7 +197,6 @@ describe("sendCompleteTaskDeletedResponseMiddleware", () => {
 
   test("that on error next is called with error", () => {
     expect.assertions(1);
-    const successfulDeletionResponseCode = 204;
     const request: any = {};
     const response: any = {};
     const next = jest.fn();

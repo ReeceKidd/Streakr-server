@@ -45,8 +45,7 @@ export const getRetreiveCompleteTasksMiddleware = (
     }
     next();
   } catch (err) {
-    if (err instanceof CustomError) next(err);
-    else next(new CustomError(ErrorType.GetCompleteTasksMiddleware, err));
+    next(new CustomError(ErrorType.GetCompleteTasksMiddleware, err));
   }
 };
 
