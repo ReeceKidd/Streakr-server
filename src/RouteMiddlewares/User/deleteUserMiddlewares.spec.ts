@@ -3,8 +3,7 @@ import {
   deleteUserParamsValidationMiddleware,
   deleteUserMiddleware,
   getDeleteUserMiddleware,
-  sendUserDeletedResponseMiddleware,
-  getSendUserDeletedResponseMiddleware
+  sendUserDeletedResponseMiddleware
 } from "./deleteUserMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -114,33 +113,27 @@ describe("deleteUserMiddleware", () => {
 describe("sendUserDeletedResponseMiddleware", () => {
   test("responds with successful deletion", () => {
     expect.assertions(2);
-    const successfulDeletionResponseCode = 204;
+
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {};
     const response: any = { status };
     const next = jest.fn();
-    const middleware = getSendUserDeletedResponseMiddleware(
-      successfulDeletionResponseCode
-    );
 
-    middleware(request, response, next);
+    sendUserDeletedResponseMiddleware(request, response, next);
 
-    expect(status).toBeCalledWith(successfulDeletionResponseCode);
+    expect(status).toBeCalledWith(204);
     expect(next).not.toBeCalled();
   });
 
   test("that on error next is called with error", () => {
     expect.assertions(1);
-    const successfulDeletionResponseCode = 204;
+
     const request: any = {};
     const response: any = {};
     const next = jest.fn();
-    const middleware = getSendUserDeletedResponseMiddleware(
-      successfulDeletionResponseCode
-    );
 
-    middleware(request, response, next);
+    sendUserDeletedResponseMiddleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(

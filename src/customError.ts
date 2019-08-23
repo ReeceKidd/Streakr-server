@@ -94,7 +94,12 @@ export enum ErrorType {
   AddFriendToUsersFriendListMiddleware,
   SendUserWithNewFriendMiddleware,
   IsAlreadyAFriend,
-  IsAlreadyAFriendMiddleware
+  IsAlreadyAFriendMiddleware,
+  DeleteUserNoUserFound,
+  DeleteUserRetreiveUserMiddleware,
+  DeleteFriendDoesFriendExistMiddleware,
+  DeleteFriendMiddleware,
+  DeleteUserFriendDoesNotExist
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -259,6 +264,22 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-20`,
           message: "User is already a friend.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.DeleteUserNoUserFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-21`,
+          message: "User does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.DeleteUserFriendDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-22`,
+          message: "Friend does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -797,6 +818,27 @@ export class CustomError extends Error {
       case ErrorType.IsAlreadyAFriendMiddleware:
         return {
           code: `${ResponseCodes.warning}-73`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteUserRetreiveUserMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-74`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteFriendDoesFriendExistMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-75`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteFriendMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-76`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
