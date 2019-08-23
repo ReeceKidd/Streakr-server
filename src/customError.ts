@@ -86,7 +86,15 @@ export enum ErrorType {
   SendRetreiveUserResponseMiddleware,
   RetreiveIncompleteSoloStreaksMiddleware,
   RetreiveFriendsMiddleware,
-  SendFormattedFriendsMiddleware
+  SendFormattedFriendsMiddleware,
+  AddFriendUserDoesNotExist,
+  AddFriendRetreiveUserMiddleware,
+  FriendDoesNotExist,
+  DoesFriendExistMiddleware,
+  AddFriendToUsersFriendListMiddleware,
+  SendUserWithNewFriendMiddleware,
+  IsAlreadyAFriend,
+  IsAlreadyAFriendMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -227,6 +235,30 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-17`,
           message: "User does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.AddFriendUserDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-18`,
+          message: "User does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.FriendDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-19`,
+          message: "Friend does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.IsAlreadyAFriend: {
+        return {
+          code: `${ResponseCodes.badRequest}-20`,
+          message: "User is already a friend.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -730,6 +762,41 @@ export class CustomError extends Error {
       case ErrorType.SendFormattedFriendsMiddleware:
         return {
           code: `${ResponseCodes.warning}-68`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.AddFriendRetreiveUserMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-69`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DoesFriendExistMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-70`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.AddFriendToUsersFriendListMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-71`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendUserWithNewFriendMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-72`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.IsAlreadyAFriendMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-73`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
