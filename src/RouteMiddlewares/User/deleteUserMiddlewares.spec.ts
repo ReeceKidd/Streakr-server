@@ -1,6 +1,6 @@
 import {
   deleteUserMiddlewares,
-  userParamsValidationMiddleware,
+  deleteUserParamsValidationMiddleware,
   deleteUserMiddleware,
   getDeleteUserMiddleware,
   sendUserDeletedResponseMiddleware,
@@ -9,7 +9,7 @@ import {
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
-describe("userParamsValidationMiddleware", () => {
+describe("deleteUserParamsValidationMiddleware", () => {
   test("sends userId is not defined error", () => {
     expect.assertions(3);
     const send = jest.fn();
@@ -22,7 +22,7 @@ describe("userParamsValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    userParamsValidationMiddleware(request, response, next);
+    deleteUserParamsValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -43,7 +43,7 @@ describe("userParamsValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    userParamsValidationMiddleware(request, response, next);
+    deleteUserParamsValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -156,7 +156,9 @@ describe("deleteUserMiddlewares", () => {
     expect.assertions(4);
 
     expect(deleteUserMiddlewares.length).toEqual(3);
-    expect(deleteUserMiddlewares[0]).toEqual(userParamsValidationMiddleware);
+    expect(deleteUserMiddlewares[0]).toEqual(
+      deleteUserParamsValidationMiddleware
+    );
     expect(deleteUserMiddlewares[1]).toEqual(deleteUserMiddleware);
     expect(deleteUserMiddlewares[2]).toEqual(sendUserDeletedResponseMiddleware);
   });

@@ -84,7 +84,9 @@ export enum ErrorType {
   NoUserFound,
   GetRetreiveUserMiddleware,
   SendRetreiveUserResponseMiddleware,
-  RetreiveIncompleteSoloStreaksMiddleware
+  RetreiveIncompleteSoloStreaksMiddleware,
+  RetreiveFriendsMiddleware,
+  SendFormattedFriendsMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -714,6 +716,20 @@ export class CustomError extends Error {
       case ErrorType.RetreiveIncompleteSoloStreaksMiddleware:
         return {
           code: `${ResponseCodes.warning}-66`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveFriendsMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-67`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendFormattedFriendsMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-68`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

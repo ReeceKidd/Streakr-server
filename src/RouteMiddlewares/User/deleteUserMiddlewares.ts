@@ -11,7 +11,7 @@ const userParamsValidationSchema = {
   userId: Joi.string().required()
 };
 
-export const userParamsValidationMiddleware = (
+export const deleteUserParamsValidationMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
@@ -57,7 +57,7 @@ export const sendUserDeletedResponseMiddleware = getSendUserDeletedResponseMiddl
 );
 
 export const deleteUserMiddlewares = [
-  userParamsValidationMiddleware,
+  deleteUserParamsValidationMiddleware,
   deleteUserMiddleware,
   sendUserDeletedResponseMiddleware
 ];
