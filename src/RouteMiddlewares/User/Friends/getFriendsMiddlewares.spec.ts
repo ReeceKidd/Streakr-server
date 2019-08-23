@@ -238,6 +238,41 @@ describe(`getFriendsMiddlewares`, () => {
     });
   });
 
+  describe("sendFormattedFriendsMiddleware", () => {
+    test("sends users in response", () => {
+      expect.assertions(3);
+      const send = jest.fn();
+      const status = jest.fn(() => ({ send }));
+      const request: any = {};
+      const friends = ["user"];
+      const response: any = { locals: { friends }, status };
+      const next = jest.fn();
+
+      sendFormattedFriendsMiddleware(request, response, next);
+
+      expect(next).not.toBeCalled();
+      expect(status).toBeCalledWith(200);
+      expect(send).toBeCalledWith({ friends });
+    });
+
+    test("calls next with SendFormattedFriendsMiddleware on middleware failure", () => {
+      expect.assertions(1);
+
+      const response: any = {};
+      const request: any = {};
+      const next = jest.fn();
+
+      sendFormattedFriendsMiddleware(request, response, next);
+
+      expect(next).toBeCalledWith(
+        new CustomError(
+          ErrorType.SendFormattedFriendsMiddleware,
+          expect.any(Error)
+        )
+      );
+    });
+  });
+
   test("middlewares are defined in the correct order", () => {
     expect.assertions(5);
 

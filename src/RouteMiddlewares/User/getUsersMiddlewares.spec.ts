@@ -194,7 +194,7 @@ describe("sendUsersMiddleware", () => {
     expect(send).toBeCalledWith({ users });
   });
 
-  test("calls next with an error on failure", () => {
+  test("calls next with SendUsersMiddleware error on middleware failure", () => {
     expect.assertions(1);
     const ERROR_MESSAGE = "sendFormattedUsersMiddleware error";
     const send = jest.fn(() => {
