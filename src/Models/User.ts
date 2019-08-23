@@ -25,7 +25,7 @@ export interface User extends mongoose.Document {
   profilePicture?: {
     type: string;
   };
-  friends?: string[];
+  friends?: User[];
   stripe?: {
     token?: {
       type: string;
