@@ -3,6 +3,8 @@ import { getUsersMiddlewares } from "../RouteMiddlewares/User/getUsersMiddleware
 import { registerUserMiddlewares } from "../RouteMiddlewares/User/registerUserMiddlewares";
 import { deleteUserMiddlewares } from "../RouteMiddlewares/User/deleteUserMiddlewares";
 import { getUserMiddlewares } from "../RouteMiddlewares/User/getUserMiddlewares";
+import friendsRouter from "./friendsRouter";
+import { RouteCategories } from "../routeCategories";
 
 export const userId = "userId";
 
@@ -15,5 +17,7 @@ usersRouter.get(`/:${userId}`, ...getUserMiddlewares);
 usersRouter.post(`/`, ...registerUserMiddlewares);
 
 usersRouter.delete(`/:${userId}`, ...deleteUserMiddlewares);
+
+usersRouter.use(`/:${userId}/${RouteCategories.friends}`, friendsRouter);
 
 export default usersRouter;
