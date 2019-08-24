@@ -24,7 +24,7 @@ usersRouter.delete(`/:${userId}`, ...deleteUserMiddlewares);
 
 // Friends routes
 
-usersRouter.get(`/:${userId}/friends/:${friendId}`, ...getFriendsMiddlewares);
+usersRouter.get(`/:${userId}/friends`, ...getFriendsMiddlewares);
 
 usersRouter.post(`/:${userId}/friends`, ...addFriendMiddlewares);
 

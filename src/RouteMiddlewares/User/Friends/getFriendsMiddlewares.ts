@@ -3,7 +3,7 @@ import * as Joi from "joi";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { User } from "../../../Models/User";
+import { User, userModel } from "../../../Models/User";
 import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
 
@@ -26,44 +26,61 @@ export const getFriendsParamsValidationMiddleware = (
   );
 };
 
-const getFriendsQueryValidationSchema = {
-  searchQuery: Joi.string()
-    .min(minimumSeachQueryLength)
-    .max(maximumSearchQueryLength)
-    .required()
+export const getRetreiveUserMiddleware = (
+  userModel: mongoose.Model<User>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { userId } = request.body;
+    const user = await userModel.findOne({ _id: userId }).lean();
+    if (!user) {
+      throw new CustomError(ErrorType.GetFriendsUserDoesNotExist);
+    }
+    response.locals.user = user;
+    next();
+  } catch (err) {
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.GetFriendsRetreiveUserMiddleware, err));
+  }
 };
 
-export const getFriendsQueryValidationMiddleware = (
-  request: Request,
-  response: Response,
-  next: NextFunction
-): void => {
-  Joi.validate(
-    request.query,
-    getFriendsQueryValidationSchema,
-    getValidationErrorMessageSenderMiddleware(request, response, next)
-  );
-};
+export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
 export const getRetreiveFriendsMiddleware = (
   userModel: mongoose.Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userId } = request.params;
-    const { searchQuery } = request.query;
-    if (searchQuery) {
-      response.locals.friends = await userModel.find({
-        _id: userId,
-        "friends.username": { $regex: searchQuery.toLowerCase() }
-      });
-    } else {
-      response.locals.friends = await userModel.findById(userId, {
-        friends: 1
-      });
-    }
+    const { user } = response.locals;
+    const { friends } = user;
+    response.locals.friends = await userModel.find({ _id: friends });
+    console.log(response.locals.friends);
     next();
   } catch (err) {
-    next(new CustomError(ErrorType.RetreiveFriendsMiddleware, err));
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.RetreiveFriendsMiddleware, err));
+  }
+};
+
+export const retreiveFriendsMiddleware = getRetreiveFriendsMiddleware(
+  userModel
+);
+
+export const formatFriendsMiddleware = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const friends: { _id: string; username: string }[] =
+      response.locals.friends;
+    response.locals.formattedFriends = friends.map(friend => {
+      return {
+        username: friend.username,
+        _id: friend._id
+      };
+    });
+    next();
+  } catch (err) {
+    next(new CustomError(ErrorType.FormatFriendsMiddleware, err));
   }
 };
 
@@ -73,8 +90,10 @@ export const sendFormattedFriendsMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const { friends } = response.locals;
-    return response.status(ResponseCodes.success).send({ friends });
+    const { formattedFriends } = response.locals;
+    return response
+      .status(ResponseCodes.success)
+      .send({ friends: formattedFriends });
   } catch (err) {
     next(new CustomError(ErrorType.SendFormattedFriendsMiddleware, err));
   }
@@ -82,7 +101,8 @@ export const sendFormattedFriendsMiddleware = (
 
 export const getFriendsMiddlewares = [
   getFriendsParamsValidationMiddleware,
-  getFriendsQueryValidationMiddleware,
-  getRetreiveFriendsMiddleware,
+  retreiveUserMiddleware,
+  retreiveFriendsMiddleware,
+  formatFriendsMiddleware,
   sendFormattedFriendsMiddleware
 ];
