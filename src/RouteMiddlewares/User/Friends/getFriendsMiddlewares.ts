@@ -30,7 +30,7 @@ export const getRetreiveUserMiddleware = (
   userModel: mongoose.Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userId } = request.body;
+    const { userId } = request.params;
     const user = await userModel.findOne({ _id: userId }).lean();
     if (!user) {
       throw new CustomError(ErrorType.GetFriendsUserDoesNotExist);
@@ -52,7 +52,6 @@ export const getRetreiveFriendsMiddleware = (
     const { user } = response.locals;
     const { friends } = user;
     response.locals.friends = await userModel.find({ _id: friends });
-    console.log(response.locals.friends);
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);

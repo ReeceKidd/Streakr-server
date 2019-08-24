@@ -34,18 +34,13 @@ describe("GET /users/:id/friends", () => {
   });
 
   test(`user can get a list of friends`, async () => {
-    try {
-      console.log(`UserId: ${userId}`);
-      expect.assertions(3);
-      const response = await streakoid.users.friends.getAll(userId);
+    expect.assertions(3);
 
-      console.log(response.data);
+    const response = await streakoid.users.friends.getAll(userId);
 
-      expect(response.status).toEqual(200);
-      expect(response.data.friends.length).toEqual(1);
-    } catch (err) {
-      console.log("Entered error");
-      console.log(err);
-    }
+    expect(response.status).toEqual(200);
+    expect(response.data.friends.length).toEqual(1);
+    const friend = response.data.friends[0];
+    expect(Object.keys(friend)).toEqual(["username", "_id"]);
   });
 });
