@@ -2,6 +2,7 @@ import {
   addFriendMiddlewares,
   addFriendParamsValidationMiddleware,
   getRetreiveUserMiddleware,
+  retreiveUserMiddleware,
   addFriendBodyValidationMiddleware,
   getRetreiveFriendMiddleware,
   addFriendToUsersFriendListMiddleware,
@@ -287,9 +288,13 @@ describe("addFriendMiddlewares", () => {
       const middleware = getAddFriendToUsersFriendListMiddleware(userModel);
       await middleware(request, response, next);
 
-      expect(findByIdAndUpdate).toBeCalledWith(userId, {
-        $addToSet: { friends: friendId }
-      });
+      expect(findByIdAndUpdate).toBeCalledWith(
+        userId,
+        {
+          $addToSet: { friends: friendId }
+        },
+        { new: true }
+      );
       expect(response.locals.userWithNewFriend).toBeDefined();
       expect(next).toBeCalledWith();
     });
@@ -355,7 +360,7 @@ describe("addFriendMiddlewares", () => {
       addFriendParamsValidationMiddleware
     );
     expect(addFriendMiddlewares[1]).toEqual(addFriendBodyValidationMiddleware);
-    expect(addFriendMiddlewares[2]).toEqual(getRetreiveUserMiddleware);
+    expect(addFriendMiddlewares[2]).toEqual(retreiveUserMiddleware);
     expect(addFriendMiddlewares[3]).toEqual(isAlreadyAFriendMiddleware);
     expect(addFriendMiddlewares[4]).toEqual(retreiveFriendMiddleware);
     expect(addFriendMiddlewares[5]).toEqual(
