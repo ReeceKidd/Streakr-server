@@ -7,7 +7,7 @@ const londonTimezone = "Europe/London";
 
 jest.setTimeout(120000);
 
-describe("POST solo-streaks", () => {
+describe("POST /solo-streaks", () => {
   let userId: string;
 
   const name = "Keto";

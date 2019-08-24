@@ -1,11 +1,11 @@
 import { Router } from "express";
 
-import soloStreaksRouter from "../Routers/soloStreaksRouter";
-import usersRouter from "../Routers/usersRouter";
-import stripeRouter from "../Routers/stripeRouter";
-import completeTasksRouter from "../Routers/completeTasksRouter";
+import soloStreaksRouter from "./soloStreaksRouter";
+import usersRouter from "./usersRouter";
+import stripeRouter from "./stripeRouter";
+import completeTasksRouter from "./completeTasksRouter";
 
-import { RouteCategories } from "../routeCategories";
+import { RouteCategories } from "../../../routeCategories";
 
 const v1Router = Router();
 

@@ -7,7 +7,8 @@ import {
   addFriendToUsersFriendListMiddleware,
   sendUserWithNewFriendMiddleware,
   isAlreadyAFriendMiddleware,
-  getAddFriendToUsersFriendListMiddleware
+  getAddFriendToUsersFriendListMiddleware,
+  retreiveFriendMiddleware
 } from "./addFriendMiddlewares";
 import { CustomError, ErrorType } from "../../../customError";
 
@@ -356,7 +357,7 @@ describe("addFriendMiddlewares", () => {
     expect(addFriendMiddlewares[1]).toEqual(addFriendBodyValidationMiddleware);
     expect(addFriendMiddlewares[2]).toEqual(getRetreiveUserMiddleware);
     expect(addFriendMiddlewares[3]).toEqual(isAlreadyAFriendMiddleware);
-    expect(addFriendMiddlewares[4]).toEqual(getRetreiveFriendMiddleware);
+    expect(addFriendMiddlewares[4]).toEqual(retreiveFriendMiddleware);
     expect(addFriendMiddlewares[5]).toEqual(
       addFriendToUsersFriendListMiddleware
     );

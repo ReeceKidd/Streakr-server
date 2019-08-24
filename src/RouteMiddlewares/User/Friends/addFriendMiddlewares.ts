@@ -5,7 +5,6 @@ import { getValidationErrorMessageSenderMiddleware } from "../../../SharedMiddle
 import { User, userModel } from "../../../Models/User";
 import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
-import { getSendUpdatedSoloStreakMiddleware } from "../../SoloStreak/patchSoloStreakMiddlewares";
 
 const addFriendParamsValidationSchema = {
   userId: Joi.string().required()
@@ -68,7 +67,8 @@ export const isAlreadyAFriendMiddleware = (
   try {
     const user: User = response.locals.user;
     const { friendId } = request.body;
-    const isExistingFriend = user.friends!.find(friend => friend === friendId);
+
+    const isExistingFriend = user.friends.find(friend => friend === friendId);
     if (isExistingFriend) {
       throw new CustomError(ErrorType.IsAlreadyAFriend);
     }
@@ -98,7 +98,7 @@ export const getRetreiveFriendMiddleware = (userModel: Model<User>) => async (
   }
 };
 
-export const doesFriendExistMiddleware = getRetreiveFriendMiddleware(userModel);
+export const retreiveFriendMiddleware = getRetreiveFriendMiddleware(userModel);
 
 export const getAddFriendToUsersFriendListMiddleware = (
   userModel: Model<User>
@@ -106,9 +106,13 @@ export const getAddFriendToUsersFriendListMiddleware = (
   try {
     const { userId } = request.params;
     const { friendId } = request.body;
-    const userWithNewFriend = await userModel.findByIdAndUpdate(userId, {
-      $addToSet: { friends: friendId }
-    });
+    const userWithNewFriend = await userModel.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: { friends: friendId }
+      },
+      { new: true }
+    );
     response.locals.userWithNewFriend = userWithNewFriend;
     next();
   } catch (err) {
@@ -138,9 +142,9 @@ export const sendUserWithNewFriendMiddleware = (
 export const addFriendMiddlewares = [
   addFriendParamsValidationMiddleware,
   addFriendBodyValidationMiddleware,
-  getRetreiveUserMiddleware,
+  retreiveUserMiddleware,
   isAlreadyAFriendMiddleware,
-  getRetreiveFriendMiddleware,
+  retreiveFriendMiddleware,
   addFriendToUsersFriendListMiddleware,
   sendUserWithNewFriendMiddleware
 ];

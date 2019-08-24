@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import ApiVersions from "./Server/versions";
-import v1Router from "./versions/v1";
+import v1Router from "./Routers/versions/v1";
 
 import { getServiceConfig } from "./getServiceConfig";
 import { errorHandler } from "./errorHandler";

@@ -1,13 +1,9 @@
-import ApiVersions from "../../../src/Server/versions";
-import { RouteCategories } from "../../../src/routeCategories";
 import { ResponseCodes } from "../../../src/Server/responseCodes";
 import streakoid from "../../../src/sdk/streakoid";
 
-const userRegistationRoute = `/${ApiVersions.v1}/${RouteCategories.users}`;
-
 jest.setTimeout(120000);
 
-describe(userRegistationRoute, () => {
+describe(`POST /users`, () => {
   const username = "tester1";
   const email = "tester1@gmail.com";
   let userId: string;

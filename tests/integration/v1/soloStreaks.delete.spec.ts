@@ -7,7 +7,7 @@ const budapestTimezone = "Europe/Budapest";
 
 jest.setTimeout(120000);
 
-describe(`DELETE solo-streaks`, () => {
+describe(`DELETE /solo-streaks`, () => {
   let userId: string;
   let soloStreakId: string;
 
