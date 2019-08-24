@@ -6,8 +6,6 @@ import { getValidationErrorMessageSenderMiddleware } from "../../../SharedMiddle
 import { User, userModel } from "../../../Models/User";
 import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
-import { getTestMessageUrl } from "nodemailer";
-import { setDayTaskWasCompletedMiddleware } from "../../CompleteTask/createCompleteTaskMiddlewares";
 
 const deleteFriendParamsValidationSchema = {
   userId: Joi.string()
