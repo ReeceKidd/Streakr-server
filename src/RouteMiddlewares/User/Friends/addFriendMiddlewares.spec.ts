@@ -56,6 +56,28 @@ describe("addFriendMiddlewares", () => {
       });
       expect(next).not.toBeCalled();
     });
+
+    test("sends userId is not 24 characters long error", () => {
+      expect.assertions(3);
+      const send = jest.fn();
+      const status = jest.fn(() => ({ send }));
+      const request: any = {
+        params: { userId: "12345678" }
+      };
+      const response: any = {
+        status
+      };
+      const next = jest.fn();
+
+      addFriendParamsValidationMiddleware(request, response, next);
+
+      expect(status).toHaveBeenCalledWith(422);
+      expect(send).toBeCalledWith({
+        message:
+          'child "userId" fails because ["userId" length must be 24 characters long]'
+      });
+      expect(next).not.toBeCalled();
+    });
   });
 
   describe("addFriendBodyValidationMiddleware", () => {
@@ -97,6 +119,28 @@ describe("addFriendMiddlewares", () => {
       expect(status).toHaveBeenCalledWith(422);
       expect(send).toBeCalledWith({
         message: 'child "friendId" fails because ["friendId" must be a string]'
+      });
+      expect(next).not.toBeCalled();
+    });
+
+    test("sends friendId is not 24 characters long error", () => {
+      expect.assertions(3);
+      const send = jest.fn();
+      const status = jest.fn(() => ({ send }));
+      const request: any = {
+        body: { friendId: "12345678" }
+      };
+      const response: any = {
+        status
+      };
+      const next = jest.fn();
+
+      addFriendBodyValidationMiddleware(request, response, next);
+
+      expect(status).toHaveBeenCalledWith(422);
+      expect(send).toBeCalledWith({
+        message:
+          'child "friendId" fails because ["friendId" length must be 24 characters long]'
       });
       expect(next).not.toBeCalled();
     });

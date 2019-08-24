@@ -7,7 +7,9 @@ import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
 
 const addFriendParamsValidationSchema = {
-  userId: Joi.string().required()
+  userId: Joi.string()
+    .required()
+    .length(24)
 };
 
 export const addFriendParamsValidationMiddleware = (
@@ -23,7 +25,9 @@ export const addFriendParamsValidationMiddleware = (
 };
 
 const addFriendBodyValidationSchema = {
-  friendId: Joi.string().required()
+  friendId: Joi.string()
+    .required()
+    .length(24)
 };
 
 export const addFriendBodyValidationMiddleware = (
