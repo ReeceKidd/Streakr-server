@@ -17,7 +17,7 @@ const getUsersValidationSchema = {
     .required()
 };
 
-export const retreiveUsersValidationMiddleware = (
+export const getUsersValidationMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
@@ -66,7 +66,7 @@ export const sendFormattedUsersMiddleware = (
 };
 
 export const getUsersMiddlewares = [
-  retreiveUsersValidationMiddleware,
+  getUsersValidationMiddleware,
   retreiveUsersByLowercaseUsernameRegexSearchMiddleware,
   sendFormattedUsersMiddleware
 ];

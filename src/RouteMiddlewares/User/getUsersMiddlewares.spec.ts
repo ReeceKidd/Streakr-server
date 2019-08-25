@@ -1,6 +1,6 @@
 import {
   getUsersMiddlewares,
-  retreiveUsersValidationMiddleware,
+  getUsersValidationMiddleware,
   maximumSearchQueryLength,
   getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware,
   sendFormattedUsersMiddleware,
@@ -24,7 +24,7 @@ describe(`getUsersValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    retreiveUsersValidationMiddleware(request, response, next);
+    getUsersValidationMiddleware(request, response, next);
 
     expect(next).toBeCalledWith();
   });
@@ -41,7 +41,7 @@ describe(`getUsersValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    retreiveUsersValidationMiddleware(request, response, next);
+    getUsersValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -63,7 +63,7 @@ describe(`getUsersValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    retreiveUsersValidationMiddleware(request, response, next);
+    getUsersValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
     expect(send).toBeCalledWith({
@@ -87,7 +87,7 @@ describe(`getUsersValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    retreiveUsersValidationMiddleware(request, response, next);
+    getUsersValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -110,7 +110,7 @@ describe(`getUsersValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    retreiveUsersValidationMiddleware(request, response, next);
+    getUsersValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -194,7 +194,7 @@ describe("sendUsersMiddleware", () => {
     expect(send).toBeCalledWith({ users });
   });
 
-  test("calls next with an error on failure", () => {
+  test("calls next with SendUsersMiddleware error on middleware failure", () => {
     expect.assertions(1);
     const ERROR_MESSAGE = "sendFormattedUsersMiddleware error";
     const send = jest.fn(() => {
@@ -218,7 +218,7 @@ describe(`getUsersMiddlewares`, () => {
     expect.assertions(4);
 
     expect(getUsersMiddlewares.length).toEqual(3);
-    expect(getUsersMiddlewares[0]).toBe(retreiveUsersValidationMiddleware);
+    expect(getUsersMiddlewares[0]).toBe(getUsersValidationMiddleware);
     expect(getUsersMiddlewares[1]).toBe(
       retreiveUsersByLowercaseUsernameRegexSearchMiddleware
     );

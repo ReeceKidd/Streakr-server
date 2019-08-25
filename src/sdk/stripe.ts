@@ -2,7 +2,7 @@ import axios from "axios";
 import { getServiceConfig } from "../getServiceConfig";
 import ApiVersions from "../Server/versions";
 import { RouteCategories } from "../routeCategories";
-import { stripeRouterPaths } from "../Routers/stripeRouter";
+import { stripeRouterPaths } from "../Routers/versions/v1/stripeRouter";
 
 const { APPLICATION_URL } = getServiceConfig();
 

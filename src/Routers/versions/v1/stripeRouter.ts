@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { createStripeCustomerSubscriptionMiddlewares } from "../RouteMiddlewares/Stripe/createStripeCustomerSubscriptionMiddlewares";
-import { cancelStripeCustomerSubscriptionMiddlewares } from "../RouteMiddlewares/Stripe/cancelStripeCustomerSubscriptionMiddlewares";
+import { createStripeCustomerSubscriptionMiddlewares } from "../../../RouteMiddlewares/Stripe/createStripeCustomerSubscriptionMiddlewares";
+import { cancelStripeCustomerSubscriptionMiddlewares } from "../../../RouteMiddlewares/Stripe/cancelStripeCustomerSubscriptionMiddlewares";
 
 const stripeRouter = Router();
 

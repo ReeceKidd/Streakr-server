@@ -11,7 +11,7 @@ const userParamsValidationSchema = {
   userId: Joi.string().required()
 };
 
-export const userParamsValidationMiddleware = (
+export const deleteUserParamsValidationMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
@@ -42,22 +42,20 @@ export const getDeleteUserMiddleware = (
 
 export const deleteUserMiddleware = getDeleteUserMiddleware(userModel);
 
-export const getSendUserDeletedResponseMiddleware = (
-  successfulDeletetionResponseCode: ResponseCodes
-) => (request: Request, response: Response, next: NextFunction) => {
+export const sendUserDeletedResponseMiddleware = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
   try {
-    return response.status(successfulDeletetionResponseCode).send();
+    return response.status(ResponseCodes.deleted).send();
   } catch (err) {
     next(new CustomError(ErrorType.SendUserDeletedResponseMiddleware, err));
   }
 };
 
-export const sendUserDeletedResponseMiddleware = getSendUserDeletedResponseMiddleware(
-  ResponseCodes.deleted
-);
-
 export const deleteUserMiddlewares = [
-  userParamsValidationMiddleware,
+  deleteUserParamsValidationMiddleware,
   deleteUserMiddleware,
   sendUserDeletedResponseMiddleware
 ];

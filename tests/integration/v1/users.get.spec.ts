@@ -6,7 +6,7 @@ const registeredUsername = "search-user";
 
 jest.setTimeout(120000);
 
-describe("/users", () => {
+describe("GET /users", () => {
   let userId: string;
 
   beforeAll(async () => {

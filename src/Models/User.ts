@@ -21,11 +21,11 @@ export interface User extends mongoose.Document {
   createdAt: Date;
   modifiedAt: Date;
   type: string;
+  friends: string[];
   soloStreaks?: SoloStreak[];
   profilePicture?: {
     type: string;
   };
-  friends?: string[];
   stripe?: {
     token?: {
       type: string;

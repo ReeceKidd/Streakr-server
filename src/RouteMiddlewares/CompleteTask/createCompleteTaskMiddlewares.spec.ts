@@ -24,7 +24,6 @@ import {
 } from "./createCompleteTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { SupportedRequestHeaders } from "../../Server/headers";
 
 describe(`completeTaskBodyValidationMiddleware`, () => {
   const userId = "abcdefgh";

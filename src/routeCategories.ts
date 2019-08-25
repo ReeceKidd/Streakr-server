@@ -3,7 +3,8 @@ export enum RouteCategories {
   soloStreaks = "solo-streaks",
   completeTasks = "complete-tasks",
   test = "test",
-  stripe = "stripe"
+  stripe = "stripe",
+  friends = "friends"
 }
 
 export enum UserProperties {

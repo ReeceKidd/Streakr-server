@@ -11,7 +11,7 @@ const parisTimezone = "Europe/Paris";
 
 jest.setTimeout(120000);
 
-describe("GET solo-streaks", () => {
+describe("GET /solo-streaks", () => {
   let userId: string;
   let soloStreakId: string;
   let secondSoloStreakId: string;
