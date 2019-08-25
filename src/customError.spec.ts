@@ -245,7 +245,7 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-23`);
-    expect(message).toBe("Friend does not exist.");
+    expect(message).toBe("User does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 

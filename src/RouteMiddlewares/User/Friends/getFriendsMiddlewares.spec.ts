@@ -62,7 +62,7 @@ describe(`getFriendsMiddlewares`, () => {
       const findOne = jest.fn(() => ({ lean }));
       const userModel = { findOne };
       const userId = "abcdefg";
-      const request: any = { body: { userId } };
+      const request: any = { params: { userId } };
       const response: any = { locals: {} };
       const next = jest.fn();
       const middleware = getRetreiveUserMiddleware(userModel as any);
@@ -75,20 +75,22 @@ describe(`getFriendsMiddlewares`, () => {
       expect(next).toBeCalledWith();
     });
 
-    test("throws UserDoesNotExistError when user does not exist", async () => {
+    test("throws GetFriendsUserDoesNotExistError when user does not exist", async () => {
       expect.assertions(1);
-      const userId = "abcd";
+      const userId = "5d616c43e1dc592ce8bd487b";
       const lean = jest.fn(() => false);
       const findOne = jest.fn(() => ({ lean }));
       const userModel = { findOne };
-      const request: any = { body: { userId } };
+      const request: any = { params: { userId } };
       const response: any = { locals: {} };
       const next = jest.fn();
       const middleware = getRetreiveUserMiddleware(userModel as any);
 
       await middleware(request, response, next);
 
-      expect(next).toBeCalledWith(new CustomError(ErrorType.UserDoesNotExist));
+      expect(next).toBeCalledWith(
+        new CustomError(ErrorType.GetFriendsUserDoesNotExist)
+      );
     });
 
     test("throws RetreiveUserMiddleware error on middleware failure", async () => {
