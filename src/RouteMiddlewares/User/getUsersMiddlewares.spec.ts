@@ -29,27 +29,6 @@ describe(`getUsersValidationMiddleware`, () => {
     expect(next).toBeCalledWith();
   });
 
-  test("sends correct error response when searchQuery is missing", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      query: {}
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    getUsersValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "searchQuery" fails because ["searchQuery" is required]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
   test("sends correct response when searchQuery length is too short", () => {
     expect.assertions(3);
     const send = jest.fn();

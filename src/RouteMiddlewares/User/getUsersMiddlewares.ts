@@ -14,7 +14,6 @@ const getUsersValidationSchema = {
   searchQuery: Joi.string()
     .min(minimumSeachQueryLength)
     .max(maximumSearchQueryLength)
-    .required()
 };
 
 export const getUsersValidationMiddleware = (
