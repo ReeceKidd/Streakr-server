@@ -43,4 +43,16 @@ describe("GET /users/:id/friends", () => {
     const friend = response.data.friends[0];
     expect(Object.keys(friend)).toEqual(["username", "_id"]);
   });
+
+  test(`throws GetFriendsUserDoesNotExist error when user does not exist`, async () => {
+    expect.assertions(3);
+
+    try {
+      await streakoid.users.friends.getAll("5d616c43e1dc592ce8bd487b");
+    } catch (err) {
+      expect(err.response.status).toEqual(400);
+      expect(err.response.data.message).toEqual("User does not exist.");
+      expect(err.response.data.code).toEqual("400-23");
+    }
+  });
 });
