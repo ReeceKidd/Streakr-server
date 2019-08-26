@@ -33,9 +33,13 @@ export const getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { searchQuery } = request.query;
-    response.locals.users = await userModel.find({
-      username: { $regex: searchQuery.toLowerCase() }
-    });
+    if (searchQuery) {
+      response.locals.users = await userModel.find({
+        username: { $regex: searchQuery.toLowerCase() }
+      });
+    } else {
+      response.locals.users = await userModel.find({});
+    }
     next();
   } catch (err) {
     next(

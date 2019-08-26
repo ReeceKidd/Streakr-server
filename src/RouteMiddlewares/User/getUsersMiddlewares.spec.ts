@@ -101,7 +101,7 @@ describe(`getUsersValidationMiddleware`, () => {
 });
 
 describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
-  test("sets response.locals.users", async () => {
+  test("retrieves users with searchQuery and sets response.locals.users", async () => {
     expect.assertions(3);
     const searchQuery = "searchQuery";
     const send = jest.fn();
@@ -123,6 +123,29 @@ describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
     expect(find).toBeCalledWith({
       username: { $regex: searchQuery.toLowerCase() }
     });
+    expect(response.locals.users).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("retrieves users without searchQuery and sets response.locals.users", async () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const find = jest.fn(() => Promise.resolve(true));
+    const userModel = { find };
+    const request: any = { query: {} };
+    const response: any = {
+      locals: {},
+      status
+    };
+    const next = jest.fn();
+    const middleware = getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware(
+      userModel as any
+    );
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({});
     expect(response.locals.users).toBeDefined();
     expect(next).toBeCalledWith();
   });
