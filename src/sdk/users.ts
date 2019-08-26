@@ -9,7 +9,6 @@ const getAll = (searchQuery?: string) => {
   if (searchQuery) {
     getAllUsersURL = `${getAllUsersURL}searchQuery=${searchQuery}`;
   }
-  console.log(getAllUsersURL);
   return axios.get(getAllUsersURL);
 };
 
