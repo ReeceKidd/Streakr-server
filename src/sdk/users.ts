@@ -4,10 +4,13 @@ import ApiVersions from "../Server/versions";
 import { RouteCategories } from "../routeCategories";
 const { APPLICATION_URL } = getServiceConfig();
 
-const getAll = (searchQuery: string) => {
-  return axios.get(
-    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.users}?searchQuery=${searchQuery}`
-  );
+const getAll = (searchQuery?: string) => {
+  let getAllUsersURL = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.users}?`;
+  if (searchQuery) {
+    getAllUsersURL = `${getAllUsersURL}searchQuery=${searchQuery}`;
+  }
+  console.log(getAllUsersURL);
+  return axios.get(getAllUsersURL);
 };
 
 const getOne = (userId: string) => {

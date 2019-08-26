@@ -9,7 +9,7 @@ describe("SDK users", () => {
   });
 
   describe("getAll", () => {
-    test("calls GET with correct URL and query paramater", async () => {
+    test("calls GET with correct URL and searchQuery paramater", async () => {
       expect.assertions(1);
       axios.get = jest.fn();
 
@@ -18,6 +18,15 @@ describe("SDK users", () => {
       expect(axios.get).toBeCalledWith(
         `${APPLICATION_URL}/v1/users?searchQuery=searchQuery`
       );
+    });
+
+    test("calls GET with correct URL without searchQuery paramater", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      await streakoid.users.getAll();
+
+      expect(axios.get).toBeCalledWith(`${APPLICATION_URL}/v1/users?`);
     });
   });
 

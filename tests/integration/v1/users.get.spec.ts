@@ -21,6 +21,24 @@ describe("GET /users", () => {
     await streakoid.users.deleteOne(userId);
   });
 
+  test(`returns all users when no searchTerm is used`, async () => {
+    expect.assertions(9);
+
+    const response = await streakoid.users.getAll();
+    const users = response.data.users;
+
+    expect(response.status).toEqual(ResponseCodes.success);
+
+    expect(users.length).toBeGreaterThanOrEqual(1);
+    expect(users[0]).toHaveProperty("streaks");
+    expect(users[0]).toHaveProperty("type");
+    expect(users[0]).toHaveProperty("_id");
+    expect(users[0]).toHaveProperty("username");
+    expect(users[0]).toHaveProperty("email");
+    expect(users[0]).toHaveProperty("createdAt");
+    expect(users[0]).toHaveProperty("updatedAt");
+  });
+
   test(`returns user when full searchTerm is used`, async () => {
     expect.assertions(9);
 
