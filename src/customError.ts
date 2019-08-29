@@ -102,7 +102,13 @@ export enum ErrorType {
   DeleteUserFriendDoesNotExist,
   GetFriendsUserDoesNotExist,
   GetFriendsRetreiveUserMiddleware,
-  FormatFriendsMiddleware
+  FormatFriendsMiddleware,
+  GroupStreakDefineCurrentTimeMiddleware,
+  GroupStreakDefineStartDayMiddleware,
+  GroupStreakDefineEndOfDayMiddleware,
+  CreateGroupStreakFromRequestMiddleware,
+  SaveGroupStreakToDatabaseMiddleware,
+  SendFormattedGroupStreakMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -864,6 +870,48 @@ export class CustomError extends Error {
       case ErrorType.FormatFriendsMiddleware:
         return {
           code: `${ResponseCodes.warning}-78`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.GroupStreakDefineCurrentTimeMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-79`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.GroupStreakDefineStartDayMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-80`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.GroupStreakDefineEndOfDayMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-81`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateGroupStreakFromRequestMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-82`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SaveGroupStreakToDatabaseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-83`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendFormattedGroupStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-84`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

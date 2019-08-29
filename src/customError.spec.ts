@@ -1210,4 +1210,82 @@ describe("customError", () => {
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
+
+  test(`creates correct error when type is set to GroupStreakDefineCurrentTimeMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.GroupStreakDefineCurrentTimeMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-79`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to GroupStreakDefineStartDayMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.GroupStreakDefineStartDayMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-80`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to GroupStreakDefineEndOfDayMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.GroupStreakDefineEndOfDayMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-81`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to CreateGroupStreakFromRequestMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.CreateGroupStreakFromRequestMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-82`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SaveGroupStreakToDatabaseMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SaveGroupStreakToDatabaseMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-83`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendFormattedGroupStreakMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SendFormattedGroupStreakMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-84`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
 });

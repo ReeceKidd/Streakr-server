@@ -7,6 +7,7 @@ export interface SoloStreak extends mongoose.Document {
   streakName: string;
   streakDescription: string;
   completedToday: boolean;
+  activity: [];
   currentStreak: {
     startDate: Date;
     numberOfDaysInARow: number;

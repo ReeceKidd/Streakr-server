@@ -7,10 +7,6 @@ import { patchSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStreak
 import { deleteSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStreak/deleteSoloStreakMiddlewares";
 import { timezoneMiddlewares } from "../../../SharedMiddleware/timezoneMiddlewares";
 
-export enum SoloStreakProperties {
-  completeTasks = "complete-tasks"
-}
-
 export const soloStreakId = "soloStreakId";
 
 const soloStreaksRouter = Router();

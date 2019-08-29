@@ -1,165 +1,169 @@
 import {
-  createSoloStreakMiddlewares,
-  createSoloStreakBodyValidationMiddleware,
-  createSoloStreakFromRequestMiddleware,
-  getCreateSoloStreakFromRequestMiddleware,
-  saveSoloStreakToDatabaseMiddleware,
-  sendFormattedSoloStreakMiddleware,
+  createGroupStreakMiddlewares,
+  createGroupStreakBodyValidationMiddleware,
+  createGroupStreakFromRequestMiddleware,
+  getCreateGroupStreakFromRequestMiddleware,
+  saveGroupStreakToDatabaseMiddleware,
+  sendFormattedGroupStreakMiddleware,
   defineEndOfDayMiddleware,
   defineCurrentTimeMiddleware,
   defineStartDayMiddleware,
   getDefineCurrentTimeMiddleware,
   getDefineStartDayMiddleware,
   getDefineEndOfDayMiddleware
-} from "./createSoloStreakMiddlewares";
+} from "./createGroupStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
-describe(`createSoloStreakBodyValidationMiddleware`, () => {
-  const userId = "12345678";
-  const name = "Spanish Streak";
-  const description = " Do the insane amount of XP for Duolingo each day";
+describe(`createGroupStreakBodyValidationMiddleware`, () => {
+  const creatorId = "abcdefgh";
+  const groupName = "Weightwatchers London";
+  const streakName = "Followed our calorie level";
+  const streakDescription = "Stuck to our recommended calorie level";
+  const members: string[] = [];
+
+  const body = {
+    creatorId,
+    groupName,
+    streakName,
+    streakDescription,
+    members
+  };
 
   test("valid request passes validation", () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId, name, description }
+      body
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    createSoloStreakBodyValidationMiddleware(request, response, next);
+    createGroupStreakBodyValidationMiddleware(request, response, next);
 
     expect(next).toBeCalled();
   });
 
-  test("sends userId is missing error", () => {
+  test("sends creatorId is missing error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { name, description }
+      body: {
+        ...body,
+        creatorId: undefined
+      }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    createSoloStreakBodyValidationMiddleware(request, response, next);
+    createGroupStreakBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
-      message: 'child "userId" fails because ["userId" is required]'
+      message: 'child "creatorId" fails because ["creatorId" is required]'
     });
     expect(next).not.toBeCalled();
   });
 
-  test("sends userId is not a string error", () => {
+  test("sends groupName is missing error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId: 1234, name, description }
+      body: {
+        ...body,
+        groupName: undefined
+      }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    createSoloStreakBodyValidationMiddleware(request, response, next);
+    createGroupStreakBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
-      message: 'child "userId" fails because ["userId" must be a string]'
+      message: 'child "groupName" fails because ["groupName" is required]'
     });
     expect(next).not.toBeCalled();
   });
 
-  test("sends name is missing error", () => {
+  test("sends streakName is missing error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId, description }
+      body: {
+        ...body,
+        streakName: undefined
+      }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    createSoloStreakBodyValidationMiddleware(request, response, next);
+    createGroupStreakBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
-      message: 'child "name" fails because ["name" is required]'
+      message: 'child "streakName" fails because ["streakName" is required]'
     });
     expect(next).not.toBeCalled();
   });
 
-  test("sends name is not a string error", () => {
+  test("sends streakDescription is missing error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId, name: 1234, description }
+      body: {
+        ...body,
+        streakDescription: undefined
+      }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    createSoloStreakBodyValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "name" fails because ["name" must be a string]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
-  test("sends description is missing error", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      body: { userId, name }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    createSoloStreakBodyValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "description" fails because ["description" is required]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
-  test("sends description is not a string error", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      body: { userId, name, description: 1234 }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    createSoloStreakBodyValidationMiddleware(request, response, next);
+    createGroupStreakBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
-        'child "description" fails because ["description" must be a string]'
+        'child "streakDescription" fails because ["streakDescription" is required]'
+    });
+    expect(next).not.toBeCalled();
+  });
+
+  test("sends members is missing error", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      body: {
+        ...body,
+        members: undefined
+      }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    createGroupStreakBodyValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message: 'child "members" fails because ["members" is required]'
     });
     expect(next).not.toBeCalled();
   });
@@ -283,46 +287,72 @@ describe("defineEndOfDayMiddleware", () => {
   });
 });
 
-describe(`createSoloStreakFromRequestMiddleware`, () => {
-  test("sets response.locals.newSoloStreak", async () => {
+describe(`createGroupStreakFromRequestMiddleware`, () => {
+  test("sets response.locals.newGroupStreak", async () => {
     expect.assertions(2);
-    const userId = "abcdefg";
-    const name = "streak name";
-    const description = "mock streak description";
+
+    const creatorId = "abcdefg";
+    const groupName = "Spanish Learners";
+    const streakName = "30 minutes of Spanish";
+    const streakDescription = "Everyday we must do 30 minutes of Spanish";
+    const members: string[] = [];
     const timezone = "Europe/London";
-    class SoloStreak {
-      userId: string;
-      name: string;
-      description: string;
+
+    class GroupStreak {
+      creatorId: string;
+      groupName: string;
+      streakName: string;
+      streakDescription: string;
+      members: string[];
       timezone: string;
 
-      constructor({ userId, name, description, timezone }: any) {
-        this.userId = userId;
-        this.name = name;
-        this.description = description;
+      constructor({
+        creatorId,
+        groupName,
+        streakName,
+        streakDescription,
+        members,
+        timezone
+      }: any) {
+        this.creatorId = creatorId;
+        this.groupName = groupName;
+        this.streakName = streakName;
+        this.streakDescription = streakDescription;
+        this.members = members;
         this.timezone = timezone;
       }
     }
     const response: any = { locals: { timezone } };
-    const request: any = { body: { userId, name, description } };
+    const request: any = {
+      body: {
+        creatorId,
+        groupName,
+        streakName,
+        streakDescription,
+        members,
+        timezone
+      }
+    };
     const next = jest.fn();
-    const newSoloStreak = new SoloStreak({
-      userId,
-      name,
-      description,
+    const newGroupStreak = new GroupStreak({
+      creatorId,
+      groupName,
+      streakName,
+      streakDescription,
+      members,
       timezone
     });
-    const middleware = getCreateSoloStreakFromRequestMiddleware(
-      SoloStreak as any
+    const middleware = getCreateGroupStreakFromRequestMiddleware(
+      GroupStreak as any
     );
 
     middleware(request, response, next);
 
-    expect(response.locals.newSoloStreak).toEqual(newSoloStreak);
+    expect(response.locals.newGroupStreak).toEqual(newGroupStreak);
     expect(next).toBeCalledWith();
   });
 
-  test("calls next with CreateSoloStreakFromRequestMiddleware error on middleware failure", () => {
+  test("calls next with CreateGroupStreakFromRequestMiddleware error on middleware failure", () => {
     expect.assertions(1);
     const timezone = "Europe/London";
     const userId = "abcdefg";
@@ -331,133 +361,133 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
     const response: any = { locals: { timezone } };
     const request: any = { body: { userId, name, description } };
     const next = jest.fn();
-    const middleware = getCreateSoloStreakFromRequestMiddleware({} as any);
+    const middleware = getCreateGroupStreakFromRequestMiddleware({} as any);
 
     middleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.CreateSoloStreakFromRequestMiddleware,
+        ErrorType.CreateGroupStreakFromRequestMiddleware,
         expect.any(Error)
       )
     );
   });
 });
 
-describe(`saveSoloStreakToDatabaseMiddleware`, () => {
+describe(`saveGroupStreakToDatabaseMiddleware`, () => {
   const ERROR_MESSAGE = "error";
 
-  test("sets response.locals.savedSoloStreak", async () => {
+  test("sets response.locals.savedGroupStreak", async () => {
     expect.assertions(3);
     const save = jest.fn(() => {
       return Promise.resolve(true);
     });
-    const mockSoloStreak = {
+    const mockGroupStreak = {
       userId: "abcdefg",
       email: "user@gmail.com",
       password: "password",
       save
     } as any;
-    const response: any = { locals: { newSoloStreak: mockSoloStreak } };
+    const response: any = { locals: { newGroupStreak: mockGroupStreak } };
     const request: any = {};
     const next = jest.fn();
 
-    await saveSoloStreakToDatabaseMiddleware(request, response, next);
+    await saveGroupStreakToDatabaseMiddleware(request, response, next);
 
     expect(save).toBeCalled();
-    expect(response.locals.savedSoloStreak).toBeDefined();
+    expect(response.locals.savedGroupStreak).toBeDefined();
     expect(next).toBeCalled();
   });
 
-  test("calls next with SaveSoloStreakToDatabaseMiddleware error on middleware failure", async () => {
+  test("calls next with SaveGroupStreakToDatabaseMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const save = jest.fn(() => {
       return Promise.reject(ERROR_MESSAGE);
     });
     const request: any = {};
-    const response: any = { locals: { newSoloStreak: { save } } };
+    const response: any = { locals: { newGroupStreak: { save } } };
     const next = jest.fn();
 
-    await saveSoloStreakToDatabaseMiddleware(request, response, next);
+    await saveGroupStreakToDatabaseMiddleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.SaveSoloStreakToDatabaseMiddleware,
+        ErrorType.SaveGroupStreakToDatabaseMiddleware,
         expect.any(Error)
       )
     );
   });
 });
 
-describe(`sendFormattedSoloStreakMiddleware`, () => {
+describe(`sendFormattedGroupStreakMiddleware`, () => {
   const ERROR_MESSAGE = "error";
-  const savedSoloStreak = {
+  const savedGroupStreak = {
     userId: "abc",
     streakName: "Daily Spanish",
     streakDescription: "Practice spanish every day",
     startDate: new Date()
   };
 
-  test("responds with status 201 with soloStreak", () => {
+  test("responds with status 201 with groupStreak", () => {
     expect.assertions(4);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-    const soloStreakResponseLocals = {
-      savedSoloStreak
+    const groupStreakResponseLocals = {
+      savedGroupStreak
     };
-    const response: any = { locals: soloStreakResponseLocals, status };
+    const response: any = { locals: groupStreakResponseLocals, status };
     const request: any = {};
     const next = jest.fn();
 
-    sendFormattedSoloStreakMiddleware(request, response, next);
+    sendFormattedGroupStreakMiddleware(request, response, next);
 
     expect(response.locals.user).toBeUndefined();
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(ResponseCodes.created);
-    expect(send).toBeCalledWith(savedSoloStreak);
+    expect(send).toBeCalledWith(savedGroupStreak);
   });
 
-  test("calls next with SendFormattedSoloStreakMiddleware error on middleware failure", () => {
+  test("calls next with SendFormattedGroupStreakMiddleware error on middleware failure", () => {
     expect.assertions(1);
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
     const status = jest.fn(() => ({ send }));
-    const response: any = { locals: { savedSoloStreak }, status };
+    const response: any = { locals: { savedGroupStreak }, status };
 
     const request: any = {};
     const next = jest.fn();
 
-    sendFormattedSoloStreakMiddleware(request, response, next);
+    sendFormattedGroupStreakMiddleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.SendFormattedSoloStreakMiddleware,
+        ErrorType.SendFormattedGroupStreakMiddleware,
         expect.any(Error)
       )
     );
   });
 });
 
-describe(`createSoloStreakMiddlewares`, () => {
-  test("that createSoloStreak middlewares are defined in the correct order", async () => {
+describe(`createGroupStreakMiddlewares`, () => {
+  test("that createGroupStreak middlewares are defined in the correct order", async () => {
     expect.assertions(8);
 
-    expect(createSoloStreakMiddlewares.length).toEqual(7);
-    expect(createSoloStreakMiddlewares[0]).toBe(
-      createSoloStreakBodyValidationMiddleware
+    expect(createGroupStreakMiddlewares.length).toEqual(7);
+    expect(createGroupStreakMiddlewares[0]).toBe(
+      createGroupStreakBodyValidationMiddleware
     );
-    expect(createSoloStreakMiddlewares[1]).toBe(defineCurrentTimeMiddleware);
-    expect(createSoloStreakMiddlewares[2]).toBe(defineStartDayMiddleware);
-    expect(createSoloStreakMiddlewares[3]).toBe(defineEndOfDayMiddleware);
-    expect(createSoloStreakMiddlewares[4]).toBe(
-      createSoloStreakFromRequestMiddleware
+    expect(createGroupStreakMiddlewares[1]).toBe(defineCurrentTimeMiddleware);
+    expect(createGroupStreakMiddlewares[2]).toBe(defineStartDayMiddleware);
+    expect(createGroupStreakMiddlewares[3]).toBe(defineEndOfDayMiddleware);
+    expect(createGroupStreakMiddlewares[4]).toBe(
+      createGroupStreakFromRequestMiddleware
     );
-    expect(createSoloStreakMiddlewares[5]).toBe(
-      saveSoloStreakToDatabaseMiddleware
+    expect(createGroupStreakMiddlewares[5]).toBe(
+      saveGroupStreakToDatabaseMiddleware
     );
-    expect(createSoloStreakMiddlewares[6]).toBe(
-      sendFormattedSoloStreakMiddleware
+    expect(createGroupStreakMiddlewares[6]).toBe(
+      sendFormattedGroupStreakMiddleware
     );
   });
 });

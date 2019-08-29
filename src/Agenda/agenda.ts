@@ -1,7 +1,6 @@
 import Agenda from "agenda";
 import { getServiceConfig } from "../getServiceConfig";
 import { handleIncompleteSoloStreaks } from "./handleIncompleteSoloStreaks";
-import { Err } from "joi";
 
 const { DATABASE_URI } = getServiceConfig();
 const agenda = new Agenda({
