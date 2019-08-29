@@ -3,6 +3,7 @@ import { Collections } from "./Collections";
 import { Models } from "./Models";
 
 export interface GroupStreak extends mongoose.Document {
+  creatorId: string;
   groupName: string;
   streakName: string;
   streakDescription: string;
@@ -24,6 +25,10 @@ export interface GroupStreak extends mongoose.Document {
 
 export const groupStreakSchema = new mongoose.Schema(
   {
+    creatorId: {
+      required: true,
+      type: String
+    },
     groupName: {
       required: true,
       type: String
