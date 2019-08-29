@@ -7,14 +7,16 @@ import { RouteCategories } from "../routeCategories";
 import { SupportedRequestHeaders } from "../Server/headers";
 
 const create = (
-  userId: string,
-  name: string,
-  description: string,
+  creatorId: string,
+  groupName: string,
+  streakName: string,
+  streakDescription: string,
+  members: string[],
   timezone: string
 ) => {
   return axios.post(
-    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`,
-    { userId, name, description },
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupStreaks}`,
+    { creatorId, groupName, streakName, streakDescription, members },
     { headers: { [SupportedRequestHeaders.xTimezone]: timezone } }
   );
 };

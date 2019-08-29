@@ -3,6 +3,7 @@ import soloStreaks from "./soloStreaks";
 import stripe from "./stripe";
 import users from "./users";
 import friends from "./friends";
+import groupStreaks from "./groupStreaks";
 
 export default {
   completeTasks,
@@ -11,5 +12,6 @@ export default {
   users: {
     ...users,
     friends
-  }
+  },
+  groupStreaks
 };
