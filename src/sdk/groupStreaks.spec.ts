@@ -8,6 +8,56 @@ describe("SDK groupStreaks", () => {
     jest.resetAllMocks();
   });
 
+  describe("getAll", () => {
+    test("calls GET with correct URL when no query paramters are passed", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      await streakoid.groupStreaks.getAll();
+
+      expect(axios.get).toBeCalledWith(`${APPLICATION_URL}/v1/group-streaks?`);
+    });
+
+    test("calls GET with correct URL when memberId query paramater is passed", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      const memberId = "memberId";
+
+      await streakoid.groupStreaks.getAll(memberId);
+
+      expect(axios.get).toBeCalledWith(
+        `${APPLICATION_URL}/v1/group-streaks?memberId=${memberId}&`
+      );
+    });
+
+    test("calls GET with correct URL when completedToday query paramater is passed", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      const completedToday = true;
+
+      await streakoid.groupStreaks.getAll(undefined, completedToday);
+
+      expect(axios.get).toBeCalledWith(
+        `${APPLICATION_URL}/v1/group-streaks?completedToday=true&`
+      );
+    });
+
+    test("calls GET with correct URL when timezone query paramater is passed", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      const timezone = `Europe/London`;
+
+      await streakoid.groupStreaks.getAll(undefined, undefined, timezone);
+
+      expect(axios.get).toBeCalledWith(
+        `${APPLICATION_URL}/v1/group-streaks?timezone=${timezone}`
+      );
+    });
+  });
+
   describe("create", () => {
     test("calls POST with correct URL and data parmaters", async () => {
       expect.assertions(1);

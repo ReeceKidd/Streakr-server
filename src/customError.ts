@@ -108,7 +108,13 @@ export enum ErrorType {
   GroupStreakDefineEndOfDayMiddleware,
   CreateGroupStreakFromRequestMiddleware,
   SaveGroupStreakToDatabaseMiddleware,
-  SendFormattedGroupStreakMiddleware
+  SendFormattedGroupStreakMiddleware,
+  FindGroupStreaksMiddleware,
+  SendGroupStreaksMiddleware,
+  RetreiveGroupStreakMembersInformation,
+  SendGroupStreakDeletedResponseMiddleware,
+  DeleteGroupStreakMiddleware,
+  NoGroupStreakToDeleteFound
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -297,6 +303,14 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-23`,
           message: "User does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoGroupStreakToDeleteFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-23`,
+          message: "Group streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -912,6 +926,41 @@ export class CustomError extends Error {
       case ErrorType.SendFormattedGroupStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-84`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.FindGroupStreaksMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-85`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendGroupStreaksMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-86`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveGroupStreakMembersInformation:
+        return {
+          code: `${ResponseCodes.warning}-87`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteGroupStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-88`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendGroupStreakDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-88`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

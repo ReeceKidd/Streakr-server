@@ -6,19 +6,7 @@ export interface GroupStreak extends mongoose.Document {
   creatorId: string;
   streakName: string;
   streakDescription: string;
-  members: Array<{
-    userId: string;
-    currentStreak: {
-      startDate: Date;
-      numberOfDaysInARow: number;
-      endDate: Date;
-    };
-    pastStreaks: Array<{
-      endDate: Date;
-      startDate: Date;
-      numberOfDaysInARow: number;
-    }>;
-  }>;
+  members: string[];
   timezone: string;
 }
 
@@ -36,23 +24,7 @@ export const groupStreakSchema = new mongoose.Schema(
       required: true,
       type: String
     },
-    members: [
-      {
-        userId: String,
-        currentStreak: {
-          startDate: Date,
-          numberOfDaysInARow: Number,
-          endDate: Date
-        },
-        pastStreaks: [
-          {
-            endDate: Date,
-            startDate: Date,
-            numberOfDaysInARow: Number
-          }
-        ]
-      }
-    ],
+    members: [String],
     timezone: {
       required: true,
       type: String
