@@ -17,14 +17,12 @@ import { CustomError, ErrorType } from "../../customError";
 
 describe(`createGroupStreakBodyValidationMiddleware`, () => {
   const creatorId = "abcdefgh";
-  const groupName = "Weightwatchers London";
   const streakName = "Followed our calorie level";
   const streakDescription = "Stuck to our recommended calorie level";
   const members: string[] = [];
 
   const body = {
     creatorId,
-    groupName,
     streakName,
     streakDescription,
     members
@@ -67,30 +65,6 @@ describe(`createGroupStreakBodyValidationMiddleware`, () => {
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "creatorId" fails because ["creatorId" is required]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
-  test("sends groupName is missing error", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      body: {
-        ...body,
-        groupName: undefined
-      }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    createGroupStreakBodyValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "groupName" fails because ["groupName" is required]'
     });
     expect(next).not.toBeCalled();
   });
@@ -292,7 +266,6 @@ describe(`createGroupStreakFromRequestMiddleware`, () => {
     expect.assertions(2);
 
     const creatorId = "abcdefg";
-    const groupName = "Spanish Learners";
     const streakName = "30 minutes of Spanish";
     const streakDescription = "Everyday we must do 30 minutes of Spanish";
     const members: string[] = [];
@@ -300,7 +273,6 @@ describe(`createGroupStreakFromRequestMiddleware`, () => {
 
     class GroupStreak {
       creatorId: string;
-      groupName: string;
       streakName: string;
       streakDescription: string;
       members: string[];
@@ -308,14 +280,12 @@ describe(`createGroupStreakFromRequestMiddleware`, () => {
 
       constructor({
         creatorId,
-        groupName,
         streakName,
         streakDescription,
         members,
         timezone
       }: any) {
         this.creatorId = creatorId;
-        this.groupName = groupName;
         this.streakName = streakName;
         this.streakDescription = streakDescription;
         this.members = members;
@@ -326,7 +296,6 @@ describe(`createGroupStreakFromRequestMiddleware`, () => {
     const request: any = {
       body: {
         creatorId,
-        groupName,
         streakName,
         streakDescription,
         members,
@@ -336,7 +305,6 @@ describe(`createGroupStreakFromRequestMiddleware`, () => {
     const next = jest.fn();
     const newGroupStreak = new GroupStreak({
       creatorId,
-      groupName,
       streakName,
       streakDescription,
       members,

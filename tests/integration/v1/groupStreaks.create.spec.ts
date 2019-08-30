@@ -10,9 +10,6 @@ jest.setTimeout(120000);
 describe("POST /group-streaks", () => {
   let userId: string;
 
-  const name = "Keto";
-  const description = "I will follow the keto diet every day";
-
   beforeAll(async () => {
     const registrationResponse = await streakoid.users.create(
       registeredUsername,
@@ -29,14 +26,12 @@ describe("POST /group-streaks", () => {
     expect.assertions(8);
 
     const creatorId = userId;
-    const groupName = "Reading group";
     const streakName = "30 minutes of reading";
     const streakDescription = "Everyday I must do 30 minutes of reading";
     const members: string[] = [];
 
     const response = await streakoid.groupStreaks.create(
       creatorId,
-      groupName,
       streakName,
       streakDescription,
       members,
@@ -44,7 +39,6 @@ describe("POST /group-streaks", () => {
     );
 
     expect(response.status).toEqual(201);
-    console.log(response.data);
     expect(response.data.creatorId).toEqual(creatorId);
     expect(response.data.streakName).toEqual(streakName);
     expect(response.data.streakDescription).toEqual(streakDescription);

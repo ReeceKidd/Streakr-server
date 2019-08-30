@@ -14,7 +14,6 @@ import { CustomError, ErrorType } from "../../customError";
 
 export interface GroupStreakRegistrationRequestBody {
   creatorId: string;
-  groupName: string;
   streakName: string;
   streakDescription: string;
   members: string[];
@@ -22,7 +21,6 @@ export interface GroupStreakRegistrationRequestBody {
 
 const createGroupStreakBodyValidationSchema = {
   creatorId: Joi.string().required(),
-  groupName: Joi.string().required(),
   streakName: Joi.string().required(),
   streakDescription: Joi.string().required(),
   members: Joi.array().required()
@@ -101,16 +99,9 @@ export const getCreateGroupStreakFromRequestMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
-    const {
-      creatorId,
-      groupName,
-      streakName,
-      streakDescription,
-      members
-    } = request.body;
+    const { creatorId, streakName, streakDescription, members } = request.body;
     response.locals.newGroupStreak = new groupStreak({
       creatorId,
-      groupName,
       streakName,
       streakDescription,
       members,

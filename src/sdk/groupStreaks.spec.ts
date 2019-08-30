@@ -14,7 +14,6 @@ describe("SDK groupStreaks", () => {
       axios.post = jest.fn();
 
       const creatorId = "abcdefgh";
-      const groupName = "Weightwatchers London";
       const streakName = "Followed our calorie level";
       const streakDescription = "Stuck to our recommended calorie level";
       const members: string[] = [];
@@ -22,7 +21,6 @@ describe("SDK groupStreaks", () => {
 
       await streakoid.groupStreaks.create(
         creatorId,
-        groupName,
         streakName,
         streakDescription,
         members,
@@ -33,7 +31,6 @@ describe("SDK groupStreaks", () => {
         `${APPLICATION_URL}/v1/group-streaks`,
         {
           creatorId,
-          groupName,
           streakName,
           streakDescription,
           members
