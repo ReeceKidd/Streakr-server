@@ -38,9 +38,16 @@ const create = (
   );
 };
 
+const deleteOne = (groupStreakId: string) => {
+  return axios.delete(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupStreaks}/${groupStreakId}`
+  );
+};
+
 const groupStreaks = {
   getAll,
-  create
+  create,
+  deleteOne
 };
 
 export default groupStreaks;

@@ -32,6 +32,8 @@ export const getFindGroupStreaksMiddleware = (
   try {
     const { memberId, timezone, completedToday } = request.query;
 
+    console.log(memberId);
+
     const query: {
       members?: string;
       timezone?: string;

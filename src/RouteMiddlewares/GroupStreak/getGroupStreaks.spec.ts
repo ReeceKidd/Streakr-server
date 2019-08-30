@@ -30,8 +30,10 @@ describe("getGroupStreaksValidationMiddleware", () => {
 
 describe("findGroupStreaksMiddleware", () => {
   test("queries database with just memberId and sets response.locals.groupStreaks", async () => {
-    expect.assertions(3);
-    const find = jest.fn(() => Promise.resolve(true));
+    expect.assertions(4);
+
+    const lean = jest.fn().mockResolvedValue(true);
+    const find = jest.fn(() => ({ lean }));
     const groupStreakModel = {
       find
     };
@@ -44,13 +46,16 @@ describe("findGroupStreaksMiddleware", () => {
     await middleware(request, response, next);
 
     expect(find).toBeCalledWith({ members: memberId });
+    expect(lean).toBeCalledWith();
     expect(response.locals.groupStreaks).toEqual(true);
     expect(next).toBeCalledWith();
   });
 
   test("queries database with just timezone and sets response.locals.groupStreaks", async () => {
-    expect.assertions(3);
-    const find = jest.fn(() => Promise.resolve(true));
+    expect.assertions(4);
+
+    const lean = jest.fn().mockResolvedValue(true);
+    const find = jest.fn(() => ({ lean }));
     const groupStreakModel = {
       find
     };
@@ -63,13 +68,16 @@ describe("findGroupStreaksMiddleware", () => {
     await middleware(request, response, next);
 
     expect(find).toBeCalledWith({ timezone });
+    expect(lean).toBeCalledWith();
     expect(response.locals.groupStreaks).toEqual(true);
     expect(next).toBeCalledWith();
   });
 
   test("queries database with just completedToday as a boolean and sets response.locals.groupStreaks", async () => {
-    expect.assertions(3);
-    const find = jest.fn(() => Promise.resolve(true));
+    expect.assertions(4);
+
+    const lean = jest.fn().mockResolvedValue(true);
+    const find = jest.fn(() => ({ lean }));
     const groupStreakModel = {
       find
     };
@@ -82,21 +90,18 @@ describe("findGroupStreaksMiddleware", () => {
     await middleware(request, response, next);
 
     expect(find).toBeCalledWith({ completedToday: true });
+    expect(lean).toBeCalledWith();
     expect(response.locals.groupStreaks).toEqual(true);
     expect(next).toBeCalledWith();
   });
 
   test("calls next with FindGroupStreaksMiddleware error on middleware failure", async () => {
     expect.assertions(1);
-    const ERROR_MESSAGE = "error";
-    const find = jest.fn(() => Promise.reject(ERROR_MESSAGE));
-    const groupStreakModel = {
-      find
-    };
-    const request: any = { query: { memberId: "1234" } };
-    const response: any = { locals: {} };
+
+    const request: any = {};
+    const response: any = {};
     const next = jest.fn();
-    const middleware = getFindGroupStreaksMiddleware(groupStreakModel as any);
+    const middleware = getFindGroupStreaksMiddleware({} as any);
 
     await middleware(request, response, next);
 

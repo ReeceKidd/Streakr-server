@@ -309,7 +309,7 @@ export class CustomError extends Error {
 
       case ErrorType.NoGroupStreakToDeleteFound: {
         return {
-          code: `${ResponseCodes.badRequest}-23`,
+          code: `${ResponseCodes.badRequest}-24`,
           message: "Group streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
@@ -960,7 +960,7 @@ export class CustomError extends Error {
 
       case ErrorType.SendGroupStreakDeletedResponseMiddleware:
         return {
-          code: `${ResponseCodes.warning}-88`,
+          code: `${ResponseCodes.warning}-89`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
