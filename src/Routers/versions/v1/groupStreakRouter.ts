@@ -3,12 +3,15 @@ import { timezoneMiddlewares } from "../../../SharedMiddleware/timezoneMiddlewar
 import { createGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStreak/createGroupStreakMiddlewares";
 import { getGroupStreaksMiddlewares } from "../../../RouteMiddlewares/GroupStreak/getGroupStreaksMiddlewares";
 import { deleteGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStreak/deleteGroupStreakMiddlewares";
+import { getGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStreak/getGroupStreakMiddlewares";
 
 export const groupStreakId = "groupStreakId";
 
 const groupStreaksRouter = Router();
 
 groupStreaksRouter.get(`/`, ...getGroupStreaksMiddlewares);
+
+groupStreaksRouter.get(`/:${groupStreakId}`, ...getGroupStreakMiddlewares);
 
 groupStreaksRouter.delete(
   `/:${groupStreakId}`,

@@ -28,6 +28,12 @@ const getAll = ({
   return axios.get(getAllSoloStreaksURL);
 };
 
+const getOne = (groupStreakId: string) => {
+  return axios.get(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupStreaks}/${groupStreakId}`
+  );
+};
+
 const create = (
   creatorId: string,
   streakName: string,
@@ -50,6 +56,7 @@ const deleteOne = (groupStreakId: string) => {
 
 const groupStreaks = {
   getAll,
+  getOne,
   create,
   deleteOne
 };

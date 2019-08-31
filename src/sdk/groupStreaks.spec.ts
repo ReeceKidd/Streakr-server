@@ -58,6 +58,19 @@ describe("SDK groupStreaks", () => {
     });
   });
 
+  describe("getOne", () => {
+    test("calls GET with correct URL", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      await streakoid.groupStreaks.getOne("id");
+
+      expect(axios.get).toBeCalledWith(
+        `${APPLICATION_URL}/v1/group-streaks/id`
+      );
+    });
+  });
+
   describe("create", () => {
     test("calls POST with correct URL and data parmaters", async () => {
       expect.assertions(1);
