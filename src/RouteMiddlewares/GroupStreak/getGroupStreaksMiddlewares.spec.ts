@@ -30,6 +30,28 @@ describe("getGroupStreaksValidationMiddleware", () => {
 });
 
 describe("findGroupStreaksMiddleware", () => {
+  test("queries database with just creatorId and sets response.locals.groupStreaks", async () => {
+    expect.assertions(4);
+
+    const lean = jest.fn().mockResolvedValue(true);
+    const find = jest.fn(() => ({ lean }));
+    const groupStreakModel = {
+      find
+    };
+    const creatorId = "1234";
+    const request: any = { query: { creatorId } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getFindGroupStreaksMiddleware(groupStreakModel as any);
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({ creatorId });
+    expect(lean).toBeCalledWith();
+    expect(response.locals.groupStreaks).toEqual(true);
+    expect(next).toBeCalledWith();
+  });
+
   test("queries database with just memberId and sets response.locals.groupStreaks", async () => {
     expect.assertions(4);
 

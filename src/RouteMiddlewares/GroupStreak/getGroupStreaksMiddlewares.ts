@@ -9,6 +9,7 @@ import { CustomError, ErrorType } from "../../customError";
 import { User, userModel } from "../../Models/User";
 
 const getGroupStreaksQueryValidationSchema = {
+  creatorId: Joi.string(),
   memberId: Joi.string(),
   timezone: Joi.string()
 };
@@ -29,13 +30,17 @@ export const getFindGroupStreaksMiddleware = (
   groupStreakModel: mongoose.Model<GroupStreak>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { memberId, timezone, completedToday } = request.query;
+    const { memberId, timezone, creatorId } = request.query;
 
     const query: {
+      creatorId?: string;
       members?: string;
       timezone?: string;
     } = {};
 
+    if (creatorId) {
+      query.creatorId = creatorId;
+    }
     if (memberId) {
       query.members = memberId;
     }
