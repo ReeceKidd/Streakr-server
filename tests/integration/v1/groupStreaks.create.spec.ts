@@ -47,8 +47,8 @@ describe("POST /group-streaks", () => {
     expect(response.data).toHaveProperty("createdAt");
     expect(response.data).toHaveProperty("updatedAt");
 
-    // // Remove created solo streak to maintain clean database
-    // const soloStreakId = response.data._id;
-    // await streakoid.soloStreaks.deleteOne(soloStreakId);
+    // Remove created group streak to maintain clean database
+    const groupStreakId = response.data._id;
+    await streakoid.groupStreaks.deleteOne(groupStreakId);
   });
 });
