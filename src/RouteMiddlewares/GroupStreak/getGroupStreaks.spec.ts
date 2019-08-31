@@ -74,28 +74,6 @@ describe("findGroupStreaksMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("queries database with just completedToday as a boolean and sets response.locals.groupStreaks", async () => {
-    expect.assertions(4);
-
-    const lean = jest.fn().mockResolvedValue(true);
-    const find = jest.fn(() => ({ lean }));
-    const groupStreakModel = {
-      find
-    };
-    const completedToday = "true";
-    const request: any = { query: { completedToday } };
-    const response: any = { locals: {} };
-    const next = jest.fn();
-    const middleware = getFindGroupStreaksMiddleware(groupStreakModel as any);
-
-    await middleware(request, response, next);
-
-    expect(find).toBeCalledWith({ completedToday: true });
-    expect(lean).toBeCalledWith();
-    expect(response.locals.groupStreaks).toEqual(true);
-    expect(next).toBeCalledWith();
-  });
-
   test("calls next with FindGroupStreaksMiddleware error on middleware failure", async () => {
     expect.assertions(1);
 
