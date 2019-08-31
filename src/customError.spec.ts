@@ -52,7 +52,7 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-06`);
-    expect(message).toBe("No solo streak found.");
+    expect(message).toBe("Solo streak does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
@@ -65,7 +65,7 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-07`);
-    expect(message).toBe("No solo streak found.");
+    expect(message).toBe("Solo streak does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
@@ -76,7 +76,7 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-08`);
-    expect(message).toBe("No solo streak found.");
+    expect(message).toBe("Solo streak does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 

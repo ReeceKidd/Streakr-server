@@ -76,4 +76,23 @@ describe("GET /group-streaks/:groupStreakId", () => {
       "__v"
     ]);
   });
+
+  test(`sends group streak does not exist error when solo streak doesn't exist`, async () => {
+    expect.assertions(5);
+
+    try {
+      await streakoid.groupStreaks.getOne("5d54487483233622e43270f9");
+    } catch (err) {
+      const { code, message, httpStatusCode } = err.response.data;
+      expect(err.response.status).toEqual(400);
+      expect(code).toEqual("400-25");
+      expect(message).toEqual("Group streak does not exist.");
+      expect(httpStatusCode).toEqual(400);
+      expect(Object.keys(err.response.data)).toEqual([
+        "code",
+        "message",
+        "httpStatusCode"
+      ]);
+    }
+  });
 });

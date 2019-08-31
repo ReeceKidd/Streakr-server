@@ -171,7 +171,7 @@ export class CustomError extends Error {
       case ErrorType.NoSoloStreakToDeleteFound: {
         return {
           code: `${ResponseCodes.badRequest}-06`,
-          message: "No solo streak found.",
+          message: "Solo streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -179,7 +179,7 @@ export class CustomError extends Error {
       case ErrorType.GetSoloStreakNoSoloStreakFound: {
         return {
           code: `${ResponseCodes.badRequest}-07`,
-          message: "No solo streak found.",
+          message: "Solo streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -187,7 +187,7 @@ export class CustomError extends Error {
       case ErrorType.UpdatedSoloStreakNotFound: {
         return {
           code: `${ResponseCodes.badRequest}-08`,
-          message: "No solo streak found.",
+          message: "Solo streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
