@@ -3,9 +3,15 @@ import streakoid from "../../../src/sdk/streakoid";
 const registeredEmail = "get-group-streaks@gmail.com";
 const registeredUsername = "get-group-streaks-user";
 
-const groupStreakName = "Daily Spanish";
-const groupStreakDescription =
+const creatorRegisteredEmail = "creator@gmail.com";
+const creatorRegisteredUsername = "creator";
+
+const creatorIdStreakName = "Daily Spanish";
+const creatorIdStreakDescription =
   "Each day I must do the insame amount 50xp of Duolingo";
+
+const memberIdStreakName = "Read 30 minutes";
+const memberIdStreakDescription = "Everyday we must read for 30 minutes";
 
 const timezoneStreakName = "Cold showers";
 const timezoneStreakDescription =
@@ -19,7 +25,8 @@ jest.setTimeout(120000);
 describe("GET /group-streaks", () => {
   let userId: string;
   let creatorId: string;
-  let groupStreakId: string;
+  let creatorIdGroupStreakId: string;
+  let memberIdGroupStreakId: string;
   let timezoneGroupStreakId: string;
 
   beforeAll(async () => {
@@ -29,17 +36,31 @@ describe("GET /group-streaks", () => {
     );
     userId = registrationResponse.data._id;
 
-    creatorId = userId;
+    const creatorRegistrationResponse = await streakoid.users.create(
+      creatorRegisteredUsername,
+      creatorRegisteredEmail
+    );
+    creatorId = creatorRegistrationResponse.data._id;
+
     const members = [userId];
 
-    const createGroupStreakResponse = await streakoid.groupStreaks.create(
+    const creatorIdGroupStreakResponse = await streakoid.groupStreaks.create(
       creatorId,
-      groupStreakName,
-      groupStreakDescription,
+      creatorIdStreakName,
+      creatorIdStreakDescription,
+      [],
+      timezone
+    );
+    creatorIdGroupStreakId = creatorIdGroupStreakResponse.data._id;
+
+    const memberIdGroupStreakResponse = await streakoid.groupStreaks.create(
+      userId,
+      memberIdStreakName,
+      memberIdStreakDescription,
       members,
       timezone
     );
-    groupStreakId = createGroupStreakResponse.data._id;
+    memberIdGroupStreakId = memberIdGroupStreakResponse.data._id;
 
     const specificTimezoneGroupStreakResponse = await streakoid.groupStreaks.create(
       userId,
@@ -54,21 +75,48 @@ describe("GET /group-streaks", () => {
 
   afterAll(async () => {
     await streakoid.users.deleteOne(userId);
-    await streakoid.groupStreaks.deleteOne(groupStreakId);
+    await streakoid.users.deleteOne(creatorId);
+
+    await streakoid.groupStreaks.deleteOne(creatorIdGroupStreakId);
+    await streakoid.groupStreaks.deleteOne(memberIdGroupStreakId);
     await streakoid.groupStreaks.deleteOne(timezoneGroupStreakId);
   });
 
-  test(`that group streaks can be retreived with memberId query parameter`, async () => {
+  test(`group streaks can be retreived with creatorId query paramater`, async () => {
+    const response = await streakoid.groupStreaks.getAll({ creatorId });
+    const groupStreak = response.data.groupStreaks[0];
+
+    expect(response.status).toEqual(200);
+    expect(response.data.groupStreaks.length).toEqual(1);
+    expect(groupStreak.members.length).toEqual(0);
+    expect(groupStreak.streakName).toEqual(creatorIdStreakName);
+    expect(groupStreak.streakDescription).toEqual(creatorIdStreakDescription);
+    expect(groupStreak.creatorId).toEqual(creatorId);
+    expect(groupStreak.timezone).toEqual(timezone);
+    expect(Object.keys(groupStreak)).toEqual([
+      "_id",
+      "members",
+      "creatorId",
+      "streakName",
+      "streakDescription",
+      "timezone",
+      "createdAt",
+      "updatedAt",
+      "__v"
+    ]);
+  });
+
+  test(`group streaks can be retreived with memberId query parameter`, async () => {
     expect.assertions(11);
 
-    const response = await streakoid.groupStreaks.getAll(userId);
+    const response = await streakoid.groupStreaks.getAll({ memberId: userId });
     const groupStreak = response.data.groupStreaks[0];
 
     expect(response.status).toEqual(200);
     expect(response.data.groupStreaks.length).toEqual(1);
     expect(groupStreak.members.length).toEqual(1);
-    expect(groupStreak.streakName).toEqual(groupStreakName);
-    expect(groupStreak.streakDescription).toEqual(groupStreakDescription);
+    expect(groupStreak.streakName).toEqual(memberIdStreakName);
+    expect(groupStreak.streakDescription).toEqual(memberIdStreakDescription);
     expect(groupStreak.creatorId).toEqual(userId);
     expect(groupStreak.timezone).toEqual(timezone);
     expect(Object.keys(groupStreak)).toEqual([
@@ -99,13 +147,12 @@ describe("GET /group-streaks", () => {
     ]);
   });
 
-  test(`that group streaks can be retreieved with timezone query parameter`, async () => {
+  test(`group streaks can be retreieved with timezone query parameter`, async () => {
     expect.assertions(8);
 
-    const response = await streakoid.groupStreaks.getAll(
-      undefined,
-      londonTimezone
-    );
+    const response = await streakoid.groupStreaks.getAll({
+      timezone: londonTimezone
+    });
     const groupStreak = response.data.groupStreaks[0];
 
     expect(response.status).toEqual(200);
