@@ -10,8 +10,7 @@ import { User, userModel } from "../../Models/User";
 
 const getGroupStreaksQueryValidationSchema = {
   memberId: Joi.string(),
-  timezone: Joi.string(),
-  completedToday: Joi.boolean()
+  timezone: Joi.string()
 };
 
 export const getGroupStreaksQueryValidationMiddleware = (
@@ -31,8 +30,6 @@ export const getFindGroupStreaksMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { memberId, timezone, completedToday } = request.query;
-
-    console.log(memberId);
 
     const query: {
       members?: string;
@@ -69,15 +66,14 @@ export const getRetreiveGroupStreakMembersInformation = (
     const groupStreaksWithUsers = await Promise.all(
       groupStreaks.map(async (groupStreak: any) => {
         const { members } = groupStreak;
-        const updatedMembers = await Promise.all(
-          members.map(async (member: string) => {
-            const user = await userModel.find({ _id: member }).lean();
-            return user;
-          })
-        );
+
         return {
           ...groupStreak,
-          members: updatedMembers
+          members: await Promise.all(
+            members.map(async (member: string) => {
+              return userModel.findOne({ _id: member }).lean();
+            })
+          )
         };
       })
     );

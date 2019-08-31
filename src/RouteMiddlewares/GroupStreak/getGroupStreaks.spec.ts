@@ -4,7 +4,8 @@ import {
   getFindGroupStreaksMiddleware,
   findGroupStreaksMiddleware,
   sendGroupStreaksMiddleware,
-  retreiveGroupStreakMembersInformation
+  retreiveGroupStreakMembersInformation,
+  getRetreiveGroupStreakMembersInformation
 } from "./getGroupStreaksMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -107,6 +108,50 @@ describe("findGroupStreaksMiddleware", () => {
 
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.FindGroupStreaksMiddleware, expect.any(Error))
+    );
+  });
+});
+
+describe("retreiveGroupStreakMembersInformation", () => {
+  test("retreives group streak members information and sets response.locals.groupStreaksWithUsers", async () => {
+    expect.assertions(4);
+
+    const user = { _id: "12345678", username: "usernames" };
+    const lean = jest.fn().mockResolvedValue(user);
+    const findOne = jest.fn(() => ({ lean }));
+    const userModel: any = {
+      findOne
+    };
+    const members = ["12345678"];
+    const groupStreaks = [{ _id: "abc", members }];
+    const request: any = {};
+    const response: any = { locals: { groupStreaks } };
+    const next = jest.fn();
+
+    const middleware = getRetreiveGroupStreakMembersInformation(userModel);
+    await middleware(request, response, next);
+
+    expect(findOne).toHaveBeenCalledTimes(1);
+    expect(lean).toHaveBeenCalledTimes(1);
+    expect(response.locals.groupStreaksWithUsers).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("calls next with RetreiveGroupStreakMembersInformation on middleware failure", async () => {
+    expect.assertions(1);
+
+    const response: any = {};
+    const request: any = {};
+    const next = jest.fn();
+
+    const middleware = getRetreiveGroupStreakMembersInformation({} as any);
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.RetreiveGroupStreakMembersInformation,
+        expect.any(Error)
+      )
     );
   });
 });
