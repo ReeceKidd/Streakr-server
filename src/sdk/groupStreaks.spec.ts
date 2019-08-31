@@ -27,7 +27,7 @@ describe("SDK groupStreaks", () => {
       await streakoid.groupStreaks.getAll({ creatorId });
 
       expect(axios.get).toBeCalledWith(
-        `${APPLICATION_URL}/v1/group-streaks?memberId=${creatorId}&`
+        `${APPLICATION_URL}/v1/group-streaks?creatorId=${creatorId}&`
       );
     });
 
