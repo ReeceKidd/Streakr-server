@@ -69,4 +69,21 @@ describe("GET /solo-streaks/:soloStreakId", () => {
       "__v"
     ]);
   });
+
+  test.only(`sends solo streak does not exist error when solo streak doesn't exist`, async () => {
+    expect.assertions(4);
+
+    try {
+      await streakoid.soloStreaks.getOne("5d54487483233622e43270f9");
+    } catch (err) {
+      expect(err.response.status).toEqual(400);
+      expect(err.response.data.code).toEqual("400-07");
+      expect(err.response.data.httpStatusCode).toEqual(400);
+      expect(Object.keys(err.response.data)).toEqual([
+        "code",
+        "message",
+        "httpStatusCode"
+      ]);
+    }
+  });
 });
