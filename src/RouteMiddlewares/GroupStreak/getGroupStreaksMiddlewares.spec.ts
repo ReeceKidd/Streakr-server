@@ -4,8 +4,8 @@ import {
   getFindGroupStreaksMiddleware,
   findGroupStreaksMiddleware,
   sendGroupStreaksMiddleware,
-  retreiveGroupStreakMembersInformation,
-  getRetreiveGroupStreakMembersInformation
+  retreiveGroupStreaksMembersInformationMiddleware,
+  getRetreiveGroupStreaksMembersInformationMiddleware
 } from "./getGroupStreaksMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -112,7 +112,7 @@ describe("findGroupStreaksMiddleware", () => {
   });
 });
 
-describe("retreiveGroupStreakMembersInformation", () => {
+describe("retreiveGroupStreaksMembersInformation", () => {
   test("retreives group streak members information and sets response.locals.groupStreaksWithUsers", async () => {
     expect.assertions(4);
 
@@ -128,7 +128,9 @@ describe("retreiveGroupStreakMembersInformation", () => {
     const response: any = { locals: { groupStreaks } };
     const next = jest.fn();
 
-    const middleware = getRetreiveGroupStreakMembersInformation(userModel);
+    const middleware = getRetreiveGroupStreaksMembersInformationMiddleware(
+      userModel
+    );
     await middleware(request, response, next);
 
     expect(findOne).toHaveBeenCalledTimes(1);
@@ -144,12 +146,14 @@ describe("retreiveGroupStreakMembersInformation", () => {
     const request: any = {};
     const next = jest.fn();
 
-    const middleware = getRetreiveGroupStreakMembersInformation({} as any);
+    const middleware = getRetreiveGroupStreaksMembersInformationMiddleware(
+      {} as any
+    );
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.RetreiveGroupStreakMembersInformation,
+        ErrorType.RetreiveGroupStreaksMembersInformation,
         expect.any(Error)
       )
     );
@@ -213,7 +217,7 @@ describe(`getGroupStreaksMiddlewares`, () => {
     );
     expect(getGroupStreaksMiddlewares[1]).toBe(findGroupStreaksMiddleware);
     expect(getGroupStreaksMiddlewares[2]).toBe(
-      retreiveGroupStreakMembersInformation
+      retreiveGroupStreaksMembersInformationMiddleware
     );
     expect(getGroupStreaksMiddlewares[3]).toBe(sendGroupStreaksMiddleware);
   });

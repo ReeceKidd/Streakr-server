@@ -111,10 +111,14 @@ export enum ErrorType {
   SendFormattedGroupStreakMiddleware,
   FindGroupStreaksMiddleware,
   SendGroupStreaksMiddleware,
-  RetreiveGroupStreakMembersInformation,
+  RetreiveGroupStreaksMembersInformation,
   SendGroupStreakDeletedResponseMiddleware,
   DeleteGroupStreakMiddleware,
-  NoGroupStreakToDeleteFound
+  NoGroupStreakToDeleteFound,
+  GetGroupStreakNoGroupStreakFound,
+  RetreiveGroupStreakMiddleware,
+  SendGroupStreakMiddleware,
+  RetreiveGroupStreakMembersInformation
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -310,6 +314,14 @@ export class CustomError extends Error {
       case ErrorType.NoGroupStreakToDeleteFound: {
         return {
           code: `${ResponseCodes.badRequest}-24`,
+          message: "Group streak does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.GetGroupStreakNoGroupStreakFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-25`,
           message: "Group streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
@@ -944,7 +956,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.RetreiveGroupStreakMembersInformation:
+      case ErrorType.RetreiveGroupStreaksMembersInformation:
         return {
           code: `${ResponseCodes.warning}-87`,
           message: internalServerMessage,
@@ -961,6 +973,27 @@ export class CustomError extends Error {
       case ErrorType.SendGroupStreakDeletedResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-89`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveGroupStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-90`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendGroupStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-91`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveGroupStreakMembersInformation:
+        return {
+          code: `${ResponseCodes.warning}-92`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

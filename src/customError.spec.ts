@@ -260,6 +260,19 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to GetGroupStreakNoGroupStreakFound`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.GetGroupStreakNoGroupStreakFound
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-25`);
+    expect(message).toBe("Group streak does not exist.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
     expect.assertions(3);
 
@@ -1322,11 +1335,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to RetreiveGroupStreakMembersInformation`, () => {
+  test(`creates correct error when type is set to RetreiveGroupStreaksMembersInformation`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.RetreiveGroupStreakMembersInformation
+      ErrorType.RetreiveGroupStreaksMembersInformation
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1355,6 +1368,43 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-89`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to RetreiveGroupStreakMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.RetreiveGroupStreakMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-90`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendGroupStreakMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.SendGroupStreakMiddleware);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-91`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to RetreiveGroupStreakMembersInformation`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.RetreiveGroupStreakMembersInformation
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-92`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
