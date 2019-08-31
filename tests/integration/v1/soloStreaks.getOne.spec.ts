@@ -42,7 +42,6 @@ describe("GET /solo-streaks/:soloStreakId", () => {
     const soloStreak = response.data;
 
     expect(response.status).toEqual(200);
-    console.log(soloStreak);
 
     expect(soloStreak.name).toEqual(streakName);
     expect(soloStreak.description).toEqual(streakDescription);
