@@ -6,17 +6,10 @@ import ApiVersions from "../Server/versions";
 import { RouteCategories } from "../routeCategories";
 import { SupportedRequestHeaders } from "../Server/headers";
 
-const getAll = (
-  memberId?: string,
-  completedToday?: boolean,
-  timezone?: string
-) => {
+const getAll = (memberId?: string, timezone?: string) => {
   let getAllSoloStreaksURL = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupStreaks}?`;
   if (memberId) {
     getAllSoloStreaksURL = `${getAllSoloStreaksURL}memberId=${memberId}&`;
-  }
-  if (completedToday) {
-    getAllSoloStreaksURL = `${getAllSoloStreaksURL}completedToday=${completedToday}&`;
   }
   if (timezone) {
     getAllSoloStreaksURL = `${getAllSoloStreaksURL}timezone=${timezone}`;

@@ -31,26 +31,13 @@ describe("SDK groupStreaks", () => {
       );
     });
 
-    test("calls GET with correct URL when completedToday query paramater is passed", async () => {
-      expect.assertions(1);
-      axios.get = jest.fn();
-
-      const completedToday = true;
-
-      await streakoid.groupStreaks.getAll(undefined, completedToday);
-
-      expect(axios.get).toBeCalledWith(
-        `${APPLICATION_URL}/v1/group-streaks?completedToday=true&`
-      );
-    });
-
     test("calls GET with correct URL when timezone query paramater is passed", async () => {
       expect.assertions(1);
       axios.get = jest.fn();
 
       const timezone = `Europe/London`;
 
-      await streakoid.groupStreaks.getAll(undefined, undefined, timezone);
+      await streakoid.groupStreaks.getAll(undefined, timezone);
 
       expect(axios.get).toBeCalledWith(
         `${APPLICATION_URL}/v1/group-streaks?timezone=${timezone}`

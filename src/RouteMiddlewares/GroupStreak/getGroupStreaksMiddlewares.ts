@@ -34,7 +34,6 @@ export const getFindGroupStreaksMiddleware = (
     const query: {
       members?: string;
       timezone?: string;
-      completedToday?: boolean;
     } = {};
 
     if (memberId) {
@@ -43,9 +42,8 @@ export const getFindGroupStreaksMiddleware = (
     if (timezone) {
       query.timezone = timezone;
     }
-    if (completedToday) {
-      query.completedToday = completedToday === "true";
-    }
+
+    console.log(query);
 
     response.locals.groupStreaks = await groupStreakModel.find(query).lean();
     next();
