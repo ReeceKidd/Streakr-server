@@ -43,8 +43,6 @@ export const getFindGroupStreaksMiddleware = (
       query.timezone = timezone;
     }
 
-    console.log(query);
-
     response.locals.groupStreaks = await groupStreakModel.find(query).lean();
     next();
   } catch (err) {
