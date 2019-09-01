@@ -1,0 +1,2 @@
+1) What do you think of the solution to initialise solo streak tracker jobs? 
+2) How would you intergration test the solo streak tracker jobs to ensure they are going to work in production? 

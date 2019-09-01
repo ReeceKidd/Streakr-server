@@ -3,7 +3,7 @@ import { getServiceConfig } from "../getServiceConfig";
 import { handleIncompleteSoloStreaks } from "./handleIncompleteSoloStreaks";
 
 const { DATABASE_URI } = getServiceConfig();
-const agenda = new Agenda({
+export const agenda = new Agenda({
   db: {
     address: DATABASE_URI,
     collection: "AgendaJobs",

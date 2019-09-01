@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import passport from "passport";
 import dotenv from "dotenv";
 import cors from "cors";
+import Agenda from "agenda";
+const AgendaDash = require("agendash");
 
 import ApiVersions from "./Server/versions";
 import v1Router from "./Routers/versions/v1";
@@ -11,6 +13,7 @@ import v1Router from "./Routers/versions/v1";
 import { getServiceConfig } from "./getServiceConfig";
 import { errorHandler } from "./errorHandler";
 import { initialiseSoloStreakTimezoneCheckerJobs } from "./scripts/initaliseSoloStreakTimezoneCheckers";
+import { agenda } from "./Agenda/agenda";
 
 dotenv.config();
 
@@ -24,6 +27,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get(`/health`, (request, response, next) => {
   return response.status(200).send({ message: "success" });
 });
+
+app.use("/dash", AgendaDash(agenda));
 
 initialiseSoloStreakTimezoneCheckerJobs();
 
