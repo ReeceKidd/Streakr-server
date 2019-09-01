@@ -18,10 +18,6 @@ export enum AgendaJobs {
   soloStreakCompleteForTimezoneTracker = "soloStreakCompleteForTimezoneTracker"
 }
 
-export enum AgendaProcessTimes {
-  day = "24 hours"
-}
-
 export enum AgendaTimeRanges {
   day = "day"
 }

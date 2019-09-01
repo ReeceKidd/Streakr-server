@@ -138,4 +138,20 @@ describe("getServiceConfig", () => {
       expect(err.message).toEqual("APPLICATION_URL is not provided.");
     }
   });
+
+  test("that correct error is thrown when AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL is not provided.", () => {
+    expect.assertions(1);
+    const environment = {
+      ...environmentMock,
+      APPLICATION_URL: undefined
+    };
+
+    try {
+      getServiceConfig(environment);
+    } catch (err) {
+      expect(err.message).toEqual(
+        "AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL is not provided."
+      );
+    }
+  });
 });
