@@ -1,48 +1,41 @@
 import moment from "moment";
-import * as mongoose from "mongoose";
-import { agendaJobModel, AgendaJob } from "../Models/AgendaJob";
+import { agendaJobModel } from "../Models/AgendaJob";
 import agenda, {
+  AgendaJobs,
   AgendaTimeRanges,
-  AgendaProcessTimes,
-  AgendaJobs
+  AgendaProcessTimes
 } from "../Agenda/agenda";
 
-export const getInitialiseStreakTimezoneCheckerJobs = (
-  moment: any,
-  agendaJobModel: mongoose.Model<AgendaJob>,
-  agenda: any,
-  agendaTimeRangeDay: AgendaTimeRanges,
-  agendaProcessTimeDay: AgendaProcessTimes,
-  soloStreakCompleteForTimezoneTracker: AgendaJobs
-) => {
+export const initialiseStreakTimezoneCheckerJobs = async () => {
   const timezones = moment.tz.names();
+  const numberOfTimezones = timezones.length;
+  const numberOfSoloStreakTimezoneCheckerJobs = await agendaJobModel.countDocuments(
+    {}
+  );
+  if (numberOfTimezones === numberOfSoloStreakTimezoneCheckerJobs) {
+    console.log(
+      "Number of timezones matches number of solo streak timezone checker jobs. No jobs need to be created"
+    );
+    return;
+  }
   return timezones.map(async (timezone: string) => {
     const existingTimezone = await agendaJobModel.findOne({
       "data.timezone": timezone,
-      name: soloStreakCompleteForTimezoneTracker
+      name: AgendaJobs.soloStreakCompleteForTimezoneTracker
     });
     if (!existingTimezone) {
       const currentTimeInTimezone = moment().tz(timezone);
       const endOfDayForTimezone = currentTimeInTimezone
-        .endOf(agendaTimeRangeDay)
+        .endOf(AgendaTimeRanges.day)
         .toDate();
       await agenda.start();
       const job = await agenda.schedule(
         endOfDayForTimezone,
-        soloStreakCompleteForTimezoneTracker,
+        AgendaJobs.soloStreakCompleteForTimezoneTracker,
         { timezone }
       );
-      await job.repeatEvery(agendaProcessTimeDay);
+      await job.repeatEvery(AgendaProcessTimes.day);
       await job.save();
     }
   });
 };
-
-export const initialiseStreakTimezoneCheckerJobs = getInitialiseStreakTimezoneCheckerJobs(
-  moment,
-  agendaJobModel,
-  agenda,
-  AgendaTimeRanges.day,
-  AgendaProcessTimes.day,
-  AgendaJobs.soloStreakCompleteForTimezoneTracker
-);
