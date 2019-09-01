@@ -10,6 +10,7 @@ import v1Router from "./Routers/versions/v1";
 
 import { getServiceConfig } from "./getServiceConfig";
 import { errorHandler } from "./errorHandler";
+import { initialiseStreakTimezoneCheckerJobs } from "./scripts/initaliseSoloStreakTimezoneCheckers";
 
 dotenv.config();
 
@@ -23,6 +24,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get(`/health`, (request, response, next) => {
   return response.status(200).send({ message: "success" });
 });
+
+initialiseStreakTimezoneCheckerJobs();
 
 app.use(passport.initialize());
 app.use(passport.session());
