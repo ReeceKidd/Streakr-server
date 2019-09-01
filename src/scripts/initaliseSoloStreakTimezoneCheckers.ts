@@ -1,9 +1,12 @@
 import moment from "moment";
 import { agendaJobModel } from "../Models/AgendaJob";
-import agenda, { AgendaJobs, AgendaTimeRanges } from "../Agenda/agenda";
+import agenda, { AgendaJobs } from "../Agenda/agenda";
 import { getServiceConfig } from "../getServiceConfig";
 
-const { AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL } = getServiceConfig();
+const {
+  AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL,
+  AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF
+} = getServiceConfig();
 
 export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
   const repeatInterval = AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL;
@@ -18,7 +21,22 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
     });
   }
 
-  console.log(`soloStreak timezone checker repeat interval: ${repeatInterval}`);
+  if (
+    currentSetup &&
+    currentSetup.data.endOfTime !==
+      AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF
+  ) {
+    console.log(
+      `Clear soloStreak timezone checker jobs as endOfTime has changed from ${currentSetup.data.endOfTime} to ${AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF} `
+    );
+    await agendaJobModel.deleteMany({
+      name: AgendaJobs.soloStreakCompleteForTimezoneTracker
+    });
+  }
+
+  console.log(
+    `soloStreakTimezoneChecker repeat interval: ${repeatInterval}, run at end of: ${AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF}`
+  );
 
   const timezones = moment.tz.names();
   const numberOfTimezones = timezones.length;
@@ -37,15 +55,17 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
       name: AgendaJobs.soloStreakCompleteForTimezoneTracker
     });
     if (!existingTimezone) {
+      const endOfTime = AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF;
       const currentTimeInTimezone = moment().tz(timezone);
       const endOfDayForTimezone = currentTimeInTimezone
-        .endOf(AgendaTimeRanges.day)
+        .endOf(endOfTime as any)
         .toDate();
+      const nextRunTime = endOfDayForTimezone;
       await agenda.start();
       const job = await agenda.schedule(
-        endOfDayForTimezone,
+        nextRunTime,
         AgendaJobs.soloStreakCompleteForTimezoneTracker,
-        { timezone }
+        { timezone, endOfTime }
       );
       await job.repeatEvery(repeatInterval);
       await job.save();

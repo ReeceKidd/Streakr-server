@@ -143,7 +143,7 @@ describe("getServiceConfig", () => {
     expect.assertions(1);
     const environment = {
       ...environmentMock,
-      APPLICATION_URL: undefined
+      AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL: undefined
     };
 
     try {
@@ -151,6 +151,22 @@ describe("getServiceConfig", () => {
     } catch (err) {
       expect(err.message).toEqual(
         "AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL is not provided."
+      );
+    }
+  });
+
+  test("that correct error is thrown when AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_TIME_RANGE is not provided.", () => {
+    expect.assertions(1);
+    const environment = {
+      ...environmentMock,
+      AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_TIME_RANGE: undefined
+    };
+
+    try {
+      getServiceConfig(environment);
+    } catch (err) {
+      expect(err.message).toEqual(
+        "AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_TIME_RANGE is not provided."
       );
     }
   });
