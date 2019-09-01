@@ -13,8 +13,8 @@ describe("getServiceConfig", () => {
     APPLICATION_URL: "APPLICATION_URL",
     AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL:
       "AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL",
-    AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_TIME_RANGE:
-      "AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_TIME_RANGE"
+    AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF:
+      "AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF"
   };
 
   test("that correct error is thrown when NODE_ENV is not provided", () => {
@@ -159,18 +159,18 @@ describe("getServiceConfig", () => {
     }
   });
 
-  test("that correct error is thrown when AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_TIME_RANGE is not provided.", () => {
+  test("that correct error is thrown when AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF is not provided.", () => {
     expect.assertions(1);
     const environment = {
       ...environmentMock,
-      AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_TIME_RANGE: undefined
+      AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF: undefined
     };
 
     try {
       getServiceConfig(environment);
     } catch (err) {
       expect(err.message).toEqual(
-        "AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_TIME_RANGE is not provided."
+        "AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF is not provided."
       );
     }
   });

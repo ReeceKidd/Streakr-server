@@ -66,13 +66,13 @@ export const getServiceConfig = (
 
   if (!AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL) {
     throw new Error(
-      "AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL is not provided"
+      "AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL is not provided."
     );
   }
 
   if (!AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF) {
     throw new Error(
-      "AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF=day is not provided"
+      "AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF is not provided."
     );
   }
 
