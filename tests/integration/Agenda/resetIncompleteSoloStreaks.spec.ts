@@ -37,11 +37,10 @@ describe("resetIncompleteSoloStreaks", () => {
   test("that resetIncompleteSoloStreaks updates the current and past values of a streak", async () => {
     expect.assertions(4);
 
-    const incompleteSoloStreaksResponse = await streakoid.soloStreaks.getAll(
-      undefined,
-      false,
+    const incompleteSoloStreaksResponse = await streakoid.soloStreaks.getAll({
+      completedToday: false,
       timezone
-    );
+    });
     const incompleteSoloStreaks =
       incompleteSoloStreaksResponse.data.soloStreaks;
 

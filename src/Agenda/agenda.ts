@@ -15,7 +15,7 @@ export const agenda = new Agenda({
 });
 
 export enum AgendaJobs {
-  soloStreakCompleteForTimezoneTracker = "soloStreakCompleteForTimezoneTracker"
+  soloStreakDailyTracker = "soloStreakDailyTracker"
 }
 
 export enum AgendaTimeRanges {
@@ -31,13 +31,15 @@ export const soloStreakCompleteForTimezoneTracker = async (
   job: SoloStreakCompleteForTimezoneTrackerData,
   done: (err?: Error | undefined) => void
 ) => {
+  console.log("Entered job");
   const timezone = job.attrs.data.timezone;
+  console.log(`Timezone: ${timezone}`);
   await handleIncompleteSoloStreaks(timezone);
   done();
 };
 
 agenda.define(
-  AgendaJobs.soloStreakCompleteForTimezoneTracker,
+  AgendaJobs.soloStreakDailyTracker,
   soloStreakCompleteForTimezoneTracker
 );
 

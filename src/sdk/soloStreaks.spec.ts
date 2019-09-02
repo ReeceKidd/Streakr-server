@@ -13,7 +13,7 @@ describe("SDK soloStreaks", () => {
       expect.assertions(1);
       axios.get = jest.fn();
 
-      await streakoid.soloStreaks.getAll();
+      await streakoid.soloStreaks.getAll({});
 
       expect(axios.get).toBeCalledWith(`${APPLICATION_URL}/v1/solo-streaks?`);
     });
@@ -24,7 +24,7 @@ describe("SDK soloStreaks", () => {
 
       const userId = "userId";
 
-      await streakoid.soloStreaks.getAll(userId);
+      await streakoid.soloStreaks.getAll({ userId });
 
       expect(axios.get).toBeCalledWith(
         `${APPLICATION_URL}/v1/solo-streaks?userId=${userId}&`
@@ -37,7 +37,7 @@ describe("SDK soloStreaks", () => {
 
       const completedToday = true;
 
-      await streakoid.soloStreaks.getAll(undefined, completedToday);
+      await streakoid.soloStreaks.getAll({ completedToday });
 
       expect(axios.get).toBeCalledWith(
         `${APPLICATION_URL}/v1/solo-streaks?completedToday=true&`
@@ -50,7 +50,7 @@ describe("SDK soloStreaks", () => {
 
       const timezone = `Europe/London`;
 
-      await streakoid.soloStreaks.getAll(undefined, undefined, timezone);
+      await streakoid.soloStreaks.getAll({ timezone });
 
       expect(axios.get).toBeCalledWith(
         `${APPLICATION_URL}/v1/solo-streaks?timezone=${timezone}`
