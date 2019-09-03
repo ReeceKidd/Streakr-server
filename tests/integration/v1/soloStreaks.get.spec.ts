@@ -41,7 +41,7 @@ describe("GET /solo-streaks", () => {
   test(`that solo streaks can be retreived with user query parameter`, async () => {
     expect.assertions(11);
 
-    const response = await streakoid.soloStreaks.getAll(userId);
+    const response = await streakoid.soloStreaks.getAll({ userId });
 
     const soloStreak = response.data.soloStreaks[0];
     expect(response.status).toEqual(200);
@@ -60,11 +60,9 @@ describe("GET /solo-streaks", () => {
   test(`that solo streaks can be retreieved with timezone query parameter`, async () => {
     expect.assertions(11);
 
-    const response = await streakoid.soloStreaks.getAll(
-      undefined,
-      undefined,
-      parisTimezone
-    );
+    const response = await streakoid.soloStreaks.getAll({
+      timezone: parisTimezone
+    });
 
     const soloStreak = response.data.soloStreaks[0];
 
@@ -84,11 +82,9 @@ describe("GET /solo-streaks", () => {
   test("that incomplete solo streaks can be retreived", async () => {
     expect.assertions(11);
 
-    const response = await streakoid.soloStreaks.getAll(
-      undefined,
-      false,
-      undefined
-    );
+    const response = await streakoid.soloStreaks.getAll({
+      completedToday: false
+    });
 
     const soloStreak = response.data.soloStreaks[0];
     expect(response.status).toEqual(200);
@@ -125,11 +121,9 @@ describe("GET /solo-streaks", () => {
     );
     const completedTaskResponseId = completedTaskResponse.data.completeTask._id;
 
-    const response = await streakoid.soloStreaks.getAll(
-      undefined,
-      true,
-      undefined
-    );
+    const response = await streakoid.soloStreaks.getAll({
+      completedToday: true
+    });
     const soloStreak = response.data.soloStreaks[0];
 
     expect(response.status).toEqual(200);

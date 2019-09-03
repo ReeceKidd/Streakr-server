@@ -1,5 +1,4 @@
 import streakoid from "../../../src/sdk/streakoid";
-import { description } from "joi";
 
 const email = "get-one-solo-streak@gmail.com";
 const username = "get-one-solo-streak-user";
@@ -59,6 +58,7 @@ describe("GET /solo-streaks/:soloStreakId", () => {
       "_id",
       "currentStreak",
       "completedToday",
+      "activity",
       "pastStreaks",
       "name",
       "description",
