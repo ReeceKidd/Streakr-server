@@ -1,9 +1,9 @@
 import { soloStreakCompleteForTimezoneTracker } from "./agenda";
-import { handleIncompleteSoloStreaks } from "./handleIncompleteSoloStreaks";
-jest.mock("./handleIncompleteSoloStreaks");
+import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
+jest.mock("./manageDailySoloStreaks");
 
 describe("soloStreakCompleteForTimezoneTracker", () => {
-  test("calls handleIncompleteSoloStreaks with the correct params", async () => {
+  test("calls manageDailySoloStreaks with the correct params", async () => {
     const timezone = "Europe/London";
     const job = {
       attrs: {
@@ -16,7 +16,7 @@ describe("soloStreakCompleteForTimezoneTracker", () => {
 
     await soloStreakCompleteForTimezoneTracker(job, done);
 
-    expect(handleIncompleteSoloStreaks).toBeCalledWith(timezone);
+    expect(manageDailySoloStreaks).toBeCalledWith(timezone);
     expect(done).toBeCalledWith();
   });
 });

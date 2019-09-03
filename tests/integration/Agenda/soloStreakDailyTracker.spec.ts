@@ -43,11 +43,6 @@ describe("soloStreakDailyTracker", () => {
       const runResult = await job.run();
       // Check if the job is ok
       console.log(runResult);
-
-      // Continue; working; on; intergration; test; to; make; sure; that; solo; streak; job; can; actually; be;
-      // reset; completely, and; that; the; next; job; is; initialised; to; run; ok.This; will; mean; having; to;
-      // define; an; Agenda; SDK; to; delete the; jobs; via; the; URL; because; you; can; "t access the database here";
-      // Checking; the; result; of; run; to; make; sure; that; it; does; run; automatically.;
     } catch (err) {
       console.log(err);
     }

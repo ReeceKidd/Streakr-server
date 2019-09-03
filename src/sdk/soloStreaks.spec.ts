@@ -104,7 +104,8 @@ describe("SDK soloStreaks", () => {
       const description = "description";
       const data = {
         name,
-        description
+        description,
+        activity: []
       };
       const timezone = "timezone";
 

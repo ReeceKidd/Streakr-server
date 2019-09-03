@@ -10,28 +10,29 @@ jest.mock("./resetIncompleteSoloStreaks", () => ({
 
 import * as moment from "moment-timezone";
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
-import { handleIncompleteSoloStreaks } from "./handleIncompleteSoloStreaks";
+import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
 import streakoid from "../sdk/streakoid";
 
-describe("handleIncompleteSoloStreaks", () => {
+describe("manageDailySoloStreaks", () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  test("calls getIncompleteSoloStreaks and resetIncompleteSoloStreaks directly", async () => {
+  test("gets and resets incomplete solo straks", async () => {
     expect.assertions(2);
     streakoid.soloStreaks.getAll = jest.fn(() => {
       return {
-        data: []
+        data: {
+          soloStreaks: []
+        }
       };
     });
     const timezone = "Europe/London";
-    await handleIncompleteSoloStreaks(timezone);
-    expect(streakoid.soloStreaks.getAll).toBeCalledWith(
-      undefined,
-      false,
+    await manageDailySoloStreaks(timezone);
+    expect(streakoid.soloStreaks.getAll).toBeCalledWith({
+      completedToday: false,
       timezone
-    );
+    });
     expect(resetIncompleteSoloStreaks).toBeCalledWith(
       expect.any(Array),
       moment.tz(timezone).toDate(),

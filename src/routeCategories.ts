@@ -5,7 +5,8 @@ export enum RouteCategories {
   completeTasks = "complete-tasks",
   test = "test",
   stripe = "stripe",
-  friends = "friends"
+  friends = "friends",
+  streakTrackingEvents = "streak-tracking-events"
 }
 
 export enum UserProperties {

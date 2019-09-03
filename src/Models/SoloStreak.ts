@@ -2,12 +2,19 @@ import * as mongoose from "mongoose";
 import { Collections } from "./Collections";
 import { Models } from "./Models";
 
+export enum SoloStreakActivityTypes {
+  LostStreak = "LostStreak"
+}
+
 export interface SoloStreak extends mongoose.Document {
   userId: string;
   streakName: string;
   streakDescription: string;
   completedToday: boolean;
-  activity: [];
+  activity: Array<{
+    type: SoloStreakActivityTypes;
+    time: Date;
+  }>;
   currentStreak: {
     startDate: Date;
     numberOfDaysInARow: number;
@@ -45,6 +52,10 @@ export const soloStreakSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    activity: {
+      type: Array,
+      default: []
+    },
     currentStreak: {
       startDate: {
         type: Date,
@@ -59,7 +70,10 @@ export const soloStreakSchema = new mongoose.Schema(
         default: undefined
       }
     },
-    pastStreaks: []
+    pastStreaks: {
+      type: Array,
+      default: []
+    }
   },
   {
     timestamps: true,

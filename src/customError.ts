@@ -118,7 +118,10 @@ export enum ErrorType {
   GetGroupStreakNoGroupStreakFound,
   RetreiveGroupStreakMiddleware,
   SendGroupStreakMiddleware,
-  RetreiveGroupStreakMembersInformation
+  RetreiveGroupStreakMembersInformation,
+  CreateStreakTrackingEventFromRequestMiddleware,
+  SaveStreakTrackingEventToDatabaseMiddleware,
+  SendFormattedStreakTrackingEventMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -994,6 +997,27 @@ export class CustomError extends Error {
       case ErrorType.RetreiveGroupStreakMembersInformation:
         return {
           code: `${ResponseCodes.warning}-92`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateStreakTrackingEventFromRequestMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-93`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SaveStreakTrackingEventToDatabaseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-94`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendFormattedStreakTrackingEventMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-95`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

@@ -60,6 +60,7 @@ const update = (
         endDate: Date;
       }
     ];
+    activity: { type: string; time: Date }[];
   },
   timezone: string
 ) => {

@@ -1,6 +1,6 @@
 import Agenda from "agenda";
 import { getServiceConfig } from "../getServiceConfig";
-import { handleIncompleteSoloStreaks } from "./handleIncompleteSoloStreaks";
+import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
 
 const { DATABASE_URI } = getServiceConfig();
 export const agenda = new Agenda({
@@ -34,7 +34,7 @@ export const soloStreakCompleteForTimezoneTracker = async (
   console.log("Entered job");
   const timezone = job.attrs.data.timezone;
   console.log(`Timezone: ${timezone}`);
-  await handleIncompleteSoloStreaks(timezone);
+  await manageDailySoloStreaks(timezone);
   done();
 };
 

@@ -1,5 +1,7 @@
 import { SoloStreak } from "../Models/SoloStreak";
 import streakoid from "../sdk/streakoid";
+import { SoloStreakActivityTypes } from "../Models/SoloStreak";
+import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
 
 export const resetIncompleteSoloStreaks = async (
   incompleteSoloStreaks: SoloStreak[],
@@ -12,14 +14,26 @@ export const resetIncompleteSoloStreaks = async (
       ...soloStreak.pastStreaks,
       soloStreak.currentStreak
     ];
+    const updatedActivity = [
+      ...soloStreak.activity,
+      { type: SoloStreakActivityTypes.LostStreak, time: endDate }
+    ];
     const updatedSoloStreakResponse = await streakoid.soloStreaks.update(
       soloStreak._id,
       {
         currentStreak: { startDate: undefined, numberOfDaysInARow: 0 },
-        pastStreaks
+        pastStreaks,
+        activity: updatedActivity
       },
       timezone
     );
+
+    await streakoid.streakTrackingEvents.create(
+      StreakTrackingEventType.LostStreak,
+      soloStreak._id,
+      soloStreak.userId
+    );
+
     return updatedSoloStreakResponse.data;
   });
 };
