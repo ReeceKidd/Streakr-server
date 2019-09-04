@@ -109,7 +109,7 @@ describe("SDK soloStreaks", () => {
       };
       const timezone = "timezone";
 
-      await streakoid.soloStreaks.update("id", data, timezone);
+      await streakoid.soloStreaks.update("id", timezone, data);
 
       expect(axios.patch).toBeCalledWith(
         `${APPLICATION_URL}/v1/solo-streaks/id`,

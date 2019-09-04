@@ -3,7 +3,8 @@ import { Collections } from "./Collections";
 import { Models } from "./Models";
 
 export enum SoloStreakActivityTypes {
-  LostStreak = "LostStreak"
+  LostStreak = "LostStreak",
+  MaintainedStreak = "MaintainedStreak"
 }
 
 export interface SoloStreak extends mongoose.Document {

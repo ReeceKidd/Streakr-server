@@ -49,7 +49,8 @@ const create = (
 
 const update = (
   soloStreakId: string,
-  data: {
+  timezone: string,
+  data?: {
     name?: string;
     description?: string;
     currentStreak?: { startDate?: Date; numberOfDaysInARow?: number };
@@ -60,9 +61,8 @@ const update = (
         endDate: Date;
       }
     ];
-    activity: { type: string; time: Date }[];
-  },
-  timezone: string
+    activity?: { type: string; time: Date }[];
+  }
 ) => {
   return axios.patch(
     `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}/${soloStreakId}`,

@@ -3,7 +3,8 @@ import { Collections } from "./Collections";
 import { Models } from "./Models";
 
 export enum StreakTrackingEventType {
-  LostStreak = "lost-streak"
+  LostStreak = "lost-streak",
+  MaintainedStreak = "maintained-streak"
 }
 
 export interface StreakTrackingEvent extends mongoose.Document {
