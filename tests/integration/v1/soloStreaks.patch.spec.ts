@@ -43,8 +43,8 @@ describe(`PATCH /solo-streaks`, () => {
 
     const response = await streakoid.soloStreaks.update(
       soloStreakId,
-      { name: updatedName, description: updatedDescription },
-      romeTimezone
+      romeTimezone,
+      { name: updatedName, description: updatedDescription }
     );
 
     expect(response.status).toEqual(200);
