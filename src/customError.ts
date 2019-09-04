@@ -121,7 +121,15 @@ export enum ErrorType {
   RetreiveGroupStreakMembersInformation,
   CreateStreakTrackingEventFromRequestMiddleware,
   SaveStreakTrackingEventToDatabaseMiddleware,
-  SendFormattedStreakTrackingEventMiddleware
+  SendFormattedStreakTrackingEventMiddleware,
+  GetStreakTrackingEventsMiddleware,
+  SendStreakTrackingEventsResponseMiddleware,
+  GetStreakTrackingEventNoStreakTrackingEventFound,
+  RetreiveStreakTrackingEventMiddleware,
+  SendStreakTrackingEventMiddleware,
+  NoStreakTrackingEventToDeleteFound,
+  DeleteStreakTrackingEventMiddleware,
+  SendStreakTrackingEventDeletedResponseMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -326,6 +334,22 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-25`,
           message: "Group streak does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.GetStreakTrackingEventNoStreakTrackingEventFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-26`,
+          message: "Streak tracking event does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoStreakTrackingEventToDeleteFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-27`,
+          message: "Streak tracking event does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -1018,6 +1042,48 @@ export class CustomError extends Error {
       case ErrorType.SendFormattedStreakTrackingEventMiddleware:
         return {
           code: `${ResponseCodes.warning}-95`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.GetStreakTrackingEventsMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-96`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendStreakTrackingEventsResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-97`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveStreakTrackingEventMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-98`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendStreakTrackingEventMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-99`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteStreakTrackingEventMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-100`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendStreakTrackingEventDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-101`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

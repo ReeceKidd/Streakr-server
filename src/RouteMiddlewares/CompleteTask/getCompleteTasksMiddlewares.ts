@@ -29,20 +29,21 @@ export const getRetreiveCompleteTasksMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId, streakId } = request.query;
-    if (userId && !streakId) {
-      response.locals.completeTasks = await completeTaskModel.find({ userId });
-    } else if (streakId && !userId) {
-      response.locals.completeTasks = await completeTaskModel.find({
-        streakId
-      });
-    } else if (userId && streakId) {
-      response.locals.completeTasks = await completeTaskModel.find({
-        userId,
-        streakId
-      });
-    } else {
-      response.locals.completeTasks = await completeTaskModel.find({});
+
+    const query: {
+      userId?: string;
+      streakId?: string;
+    } = {};
+
+    if (userId) {
+      query.userId;
     }
+    if (streakId) {
+      query.streakId;
+    }
+
+    response.locals.completeTasks = await completeTaskModel.find(query);
+
     next();
   } catch (err) {
     next(new CustomError(ErrorType.GetCompleteTasksMiddleware, err));
