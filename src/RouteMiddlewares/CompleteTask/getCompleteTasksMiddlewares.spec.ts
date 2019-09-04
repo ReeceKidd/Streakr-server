@@ -119,7 +119,7 @@ describe("getRetreiveCompleteTasksMiddleware", () => {
   test("queries completeTask model and sets response.locals.completeTasks with both a userId and streakId", async () => {
     expect.assertions(3);
 
-    const find = jest.fn(() => Promise.resolve(true));
+    const find = jest.fn().mockResolvedValue(true);
     const completeTaskModel = {
       find
     };

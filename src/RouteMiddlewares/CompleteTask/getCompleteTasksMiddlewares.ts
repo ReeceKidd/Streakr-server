@@ -36,14 +36,13 @@ export const getRetreiveCompleteTasksMiddleware = (
     } = {};
 
     if (userId) {
-      query.userId;
+      query.userId = userId;
     }
     if (streakId) {
-      query.streakId;
+      query.streakId = streakId;
     }
 
     response.locals.completeTasks = await completeTaskModel.find(query);
-
     next();
   } catch (err) {
     next(new CustomError(ErrorType.GetCompleteTasksMiddleware, err));

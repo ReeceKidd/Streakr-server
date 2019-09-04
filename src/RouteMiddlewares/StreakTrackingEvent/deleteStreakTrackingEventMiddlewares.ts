@@ -30,7 +30,6 @@ export const getDeleteStreakTrackingEventMiddleware = (
   streakTrackingEventModel: mongoose.Model<StreakTrackingEvent>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(request.params);
     const { streakTrackingEventId } = request.params;
     const deletedStreakTrackingEvent = await streakTrackingEventModel.findByIdAndDelete(
       streakTrackingEventId
@@ -41,7 +40,6 @@ export const getDeleteStreakTrackingEventMiddleware = (
     response.locals.deletedStreakTrackingEvent = deletedStreakTrackingEvent;
     next();
   } catch (err) {
-    console.log(err);
     if (err instanceof CustomError) next(err);
     else
       next(new CustomError(ErrorType.DeleteStreakTrackingEventMiddleware, err));
