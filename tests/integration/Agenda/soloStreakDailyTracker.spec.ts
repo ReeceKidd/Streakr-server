@@ -22,7 +22,7 @@ describe("soloStreakDailyTracker", () => {
     expect(name).toEqual("soloStreakDailyTracker");
     expect(data.timezone).toEqual("Europe/London");
     expect(data.endOfTime).toEqual("day");
-    expect(Object.keys(data)).toEqual(["timezone", "endOfTime"]);
+    expect(Object.keys(data)).toEqual(["timezone", "endOfTime", "custom"]);
     expect(type).toEqual("normal");
     expect(priority).toEqual(0);
     expect(nextRunAt).toBeDefined();
