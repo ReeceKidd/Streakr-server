@@ -12,7 +12,7 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
   const environmentRepeatInterval = AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL;
 
   const currentDailySoloStreakTrackerSetup = await agendaJobModel
-    .findOne({ name: AgendaJobs.soloStreakDailyTracker })
+    .findOne({ name: AgendaJobs.soloStreakDailyTracker, "data.custom": false })
     .lean();
   if (currentDailySoloStreakTrackerSetup) {
     const { repeatInterval } = currentDailySoloStreakTrackerSetup;
@@ -44,7 +44,7 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
   const timezones = moment.tz.names();
   const numberOfTimezones = timezones.length;
   const numberOfSoloStreakTimezoneCheckerJobs = await agendaJobModel.countDocuments(
-    { name: AgendaJobs.soloStreakDailyTracker }
+    { name: AgendaJobs.soloStreakDailyTracker, "data.custom": false }
   );
   if (numberOfTimezones === numberOfSoloStreakTimezoneCheckerJobs) {
     console.log(
@@ -75,7 +75,7 @@ export const createSoloStreakDailyTrackerJob = async (timezone: string) => {
   const job = await agenda.schedule(
     nextRunTime,
     AgendaJobs.soloStreakDailyTracker,
-    { timezone, endOfTime }
+    { timezone, endOfTime, custom: false }
   );
   await job.repeatEvery(AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL);
   return job.save();
