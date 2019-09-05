@@ -588,7 +588,7 @@ describe(`saveTaskCompleteMiddleware`, () => {
 });
 
 describe("streakMaintainedMiddleware", () => {
-  test("updates streak completedToday, increments number of days and calls next", async () => {
+  test("updates streak completedToday, increments number of days, sets active and calls next", async () => {
     expect.assertions(2);
     const soloStreakId = "123abc";
     const updateOne = jest.fn(() => Promise.resolve(true));
@@ -604,7 +604,11 @@ describe("streakMaintainedMiddleware", () => {
 
     expect(updateOne).toBeCalledWith(
       { _id: soloStreakId },
-      { completedToday: true, $inc: { "currentStreak.numberOfDaysInARow": 1 } }
+      {
+        completedToday: true,
+        $inc: { "currentStreak.numberOfDaysInARow": 1 },
+        active: true
+      }
     );
     expect(next).toBeCalledWith();
   });

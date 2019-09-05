@@ -31,9 +31,7 @@ export const soloStreakCompleteForTimezoneTracker = async (
   job: SoloStreakCompleteForTimezoneTrackerData,
   done: (err?: Error | undefined) => void
 ) => {
-  console.log("Entered job");
   const timezone = job.attrs.data.timezone;
-  console.log(`Timezone: ${timezone}`);
   await manageDailySoloStreaks(timezone);
   done();
 };

@@ -9,11 +9,13 @@ import { SupportedRequestHeaders } from "../Server/headers";
 const getAll = ({
   userId,
   completedToday,
-  timezone
+  timezone,
+  active
 }: {
   userId?: string;
   completedToday?: boolean;
   timezone?: string;
+  active?: boolean;
 }) => {
   let getAllSoloStreaksURL = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}?`;
   if (userId) {
@@ -24,6 +26,9 @@ const getAll = ({
   }
   if (timezone) {
     getAllSoloStreaksURL = `${getAllSoloStreaksURL}timezone=${timezone}`;
+  }
+  if (active) {
+    getAllSoloStreaksURL = `${getAllSoloStreaksURL}active=${active}`;
   }
   return axios.get(getAllSoloStreaksURL);
 };
@@ -53,6 +58,7 @@ const update = (
   data?: {
     name?: string;
     description?: string;
+    active?: boolean;
     currentStreak?: { startDate?: Date; numberOfDaysInARow?: number };
     pastStreaks?: [
       {

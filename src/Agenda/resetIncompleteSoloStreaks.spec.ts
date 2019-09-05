@@ -1,4 +1,3 @@
-import { SoloStreakActivityTypes } from "../Models/SoloStreak";
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
 import streakoid from "../sdk/streakoid";
 import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
@@ -41,7 +40,8 @@ describe("resetIncompleteSoloStreaks", () => {
     expect(streakoid.soloStreaks.update).toBeCalledWith(_id, timezone, {
       currentStreak: { startDate: undefined, numberOfDaysInARow: 0 },
       pastStreaks,
-      activity: [{ type: SoloStreakActivityTypes.LostStreak, time: endDate }]
+      activity: [{ type: StreakTrackingEventType.LostStreak, time: endDate }],
+      active: false
     });
     expect(streakoid.streakTrackingEvents.create).toBeCalledWith(
       StreakTrackingEventType.LostStreak,

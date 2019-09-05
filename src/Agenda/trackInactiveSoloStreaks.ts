@@ -2,7 +2,7 @@ import { SoloStreak } from "../Models/SoloStreak";
 import streakoid from "../sdk/streakoid";
 import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
 
-export const trackMaintainedSoloStreaks = async (
+export const trackInactiveSoloStreaks = async (
   maintainedSoloStreaks: SoloStreak[],
   currentLocalTime: Date
 ) => {
@@ -13,7 +13,7 @@ export const trackMaintainedSoloStreaks = async (
       const updatedActivity = [
         ...soloStreak.activity,
         {
-          type: StreakTrackingEventType.MaintainedStreak,
+          type: StreakTrackingEventType.InactiveStreak,
           time: currentLocalTime
         }
       ];
@@ -23,7 +23,7 @@ export const trackMaintainedSoloStreaks = async (
       });
 
       return streakoid.streakTrackingEvents.create(
-        StreakTrackingEventType.MaintainedStreak,
+        StreakTrackingEventType.InactiveStreak,
         soloStreak._id,
         soloStreak.userId
       );

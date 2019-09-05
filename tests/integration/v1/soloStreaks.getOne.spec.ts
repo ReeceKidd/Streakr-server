@@ -1,4 +1,5 @@
 import streakoid from "../../../src/sdk/streakoid";
+import { getTestMessageUrl } from "nodemailer";
 
 const email = "get-one-solo-streak@gmail.com";
 const username = "get-one-solo-streak-user";
@@ -35,7 +36,7 @@ describe("GET /solo-streaks/:soloStreakId", () => {
   });
 
   test(`solo streak can be retreived`, async () => {
-    expect.assertions(12);
+    expect.assertions(13);
 
     const response = await streakoid.soloStreaks.getOne(soloStreakId);
     const soloStreak = response.data;
@@ -46,6 +47,7 @@ describe("GET /solo-streaks/:soloStreakId", () => {
     expect(soloStreak.description).toEqual(streakDescription);
     expect(soloStreak.userId).toEqual(userId);
     expect(soloStreak.completedToday).toEqual(false);
+    expect(soloStreak.active).toEqual(false);
     expect(soloStreak.currentStreak.numberOfDaysInARow).toEqual(0);
     expect(soloStreak.timezone).toEqual(timezone);
     expect(Object.keys(soloStreak.currentStreak)).toEqual([
@@ -58,6 +60,7 @@ describe("GET /solo-streaks/:soloStreakId", () => {
       "_id",
       "currentStreak",
       "completedToday",
+      "active",
       "activity",
       "pastStreaks",
       "name",

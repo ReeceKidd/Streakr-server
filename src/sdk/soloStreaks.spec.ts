@@ -56,6 +56,19 @@ describe("SDK soloStreaks", () => {
         `${APPLICATION_URL}/v1/solo-streaks?timezone=${timezone}`
       );
     });
+
+    test("calls GET with correct URL when active query paramater is passed", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      const active = true;
+
+      await streakoid.soloStreaks.getAll({ active });
+
+      expect(axios.get).toBeCalledWith(
+        `${APPLICATION_URL}/v1/solo-streaks?active=${active}`
+      );
+    });
   });
 
   describe("getOne", () => {

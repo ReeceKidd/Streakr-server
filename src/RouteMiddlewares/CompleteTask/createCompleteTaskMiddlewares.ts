@@ -222,7 +222,11 @@ export const getStreakMaintainedMiddleware = (
     const { soloStreakId } = request.body;
     await soloStreakModel.updateOne(
       { _id: soloStreakId },
-      { completedToday: true, $inc: { "currentStreak.numberOfDaysInARow": 1 } }
+      {
+        completedToday: true,
+        $inc: { "currentStreak.numberOfDaysInARow": 1 },
+        active: true
+      }
     );
     next();
   } catch (err) {

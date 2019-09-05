@@ -1,13 +1,13 @@
 import streakoid from "../sdk/streakoid";
 import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
-import { trackMaintainedSoloStreaks } from "./trackMaintainedSoloStreaks";
+import { trackInactiveSoloStreaks } from "./trackInactiveSoloStreaks";
 
-describe("trackMaintainedSoloStreaks", () => {
+describe("trackInactiveSoloStreaks", () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  test("that maintained solo streak activity gets updated and a solo streak tracking event is created", async () => {
+  test("that inactive solo streak activity gets updated and a solo streak tracking event is created", async () => {
     expect.assertions(2);
     streakoid.soloStreaks.update = jest.fn().mockResolvedValue({ data: {} });
     streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
@@ -19,12 +19,13 @@ describe("trackMaintainedSoloStreaks", () => {
       numberOfDaysInARow: 1
     };
     const userId = "5c35116059f7ba19e4e248a9";
-    const maintainedSoloStreaks = [
+    const inactiveSoloStreaks = [
       {
         _id,
         currentStreak,
         startDate: new Date(),
         completedToday: true,
+        active: false,
         activity: [],
         pastStreaks: [],
         streakName: "Daily Danish",
@@ -35,17 +36,17 @@ describe("trackMaintainedSoloStreaks", () => {
         updatedAt: new Date()
       } as any
     ];
-    await trackMaintainedSoloStreaks(maintainedSoloStreaks, currentLocalTime);
+    await trackInactiveSoloStreaks(inactiveSoloStreaks, currentLocalTime);
     expect(streakoid.soloStreaks.update).toBeCalledWith(_id, timezone, {
       activity: [
         {
-          type: StreakTrackingEventType.MaintainedStreak,
+          type: StreakTrackingEventType.InactiveStreak,
           time: currentLocalTime
         }
       ]
     });
     expect(streakoid.streakTrackingEvents.create).toBeCalledWith(
-      StreakTrackingEventType.MaintainedStreak,
+      StreakTrackingEventType.InactiveStreak,
       _id,
       userId
     );
