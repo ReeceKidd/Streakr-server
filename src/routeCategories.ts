@@ -1,4 +1,5 @@
 export enum RouteCategories {
+  agendaJobs = "agenda-jobs",
   users = "users",
   soloStreaks = "solo-streaks",
   groupStreaks = "group-streaks",

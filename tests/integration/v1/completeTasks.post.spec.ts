@@ -8,7 +8,7 @@ const londonTimezone = "Europe/London";
 
 jest.setTimeout(120000);
 
-describe("POST /solo-streaks", () => {
+describe("POST /complete-tasks", () => {
   let userId: string;
   let soloStreakId: string;
   let secondSoloStreakId: string;

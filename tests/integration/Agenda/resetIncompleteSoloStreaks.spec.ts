@@ -81,5 +81,7 @@ describe("resetIncompleteSoloStreaks", () => {
     expect(userId).toEqual(userId);
     expect(streakTrackingEvent.createdAt).toBeDefined();
     expect(streakTrackingEvent.updatedAt).toBeDefined();
+
+    await streakoid.streakTrackingEvents.deleteOne(streakTrackingEvent._id);
   });
 });

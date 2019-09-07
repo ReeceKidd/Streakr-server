@@ -1,10 +1,11 @@
 import { createSoloStreakDailyTrackerJob } from "../../../src/scripts/initaliseSoloStreakTimezoneCheckers";
+import streakoid from "../../../src/sdk/streakoid";
 
 jest.setTimeout(120000);
 
 describe("soloStreakDailyTracker", () => {
   test("initialises soloStreakDailyTracker job correctly", async () => {
-    expect.assertions(10);
+    expect.assertions(11);
     const timezone = "Europe/London";
     const job = await createSoloStreakDailyTrackerJob(timezone);
     const { attrs } = job;
@@ -20,7 +21,8 @@ describe("soloStreakDailyTracker", () => {
     } = attrs;
     expect(name).toEqual("soloStreakDailyTracker");
     expect(data.timezone).toEqual("Europe/London");
-    expect(Object.keys(data)).toEqual(["timezone", "endOfTime", "custom"]);
+    expect(data.custom).toEqual(false);
+    expect(Object.keys(data)).toEqual(["timezone", "custom"]);
     expect(type).toEqual("normal");
     expect(priority).toEqual(0);
     expect(nextRunAt).toBeDefined();
@@ -37,5 +39,7 @@ describe("soloStreakDailyTracker", () => {
       "repeatInterval",
       "repeatTimezone"
     ]);
+
+    await streakoid.agendaJobs.deleteOne(String(_id));
   });
 });

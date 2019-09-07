@@ -16,13 +16,15 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
       "data.custom": false
     }
   );
+  console.log(
+    `Number of solo streak daily tracker jobs: ${numberOfSoloStreakTimezoneCheckerJobs}`
+  );
+  console.log(`Number of timezones: ${numberOfTimezones}`);
   if (numberOfTimezones === numberOfSoloStreakTimezoneCheckerJobs) {
     console.log(
       "Number of timezones matches number of solo streak timezone checker jobs. No jobs need to be created"
     );
     return;
-  } else {
-    console.log("Creating new daily solo steak tracker jobs");
   }
 
   return timezones.map(async (timezone: string) => {

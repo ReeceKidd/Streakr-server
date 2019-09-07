@@ -129,7 +129,10 @@ export enum ErrorType {
   SendStreakTrackingEventMiddleware,
   NoStreakTrackingEventToDeleteFound,
   DeleteStreakTrackingEventMiddleware,
-  SendStreakTrackingEventDeletedResponseMiddleware
+  SendStreakTrackingEventDeletedResponseMiddleware,
+  NoAgendaJobToDeleteFound,
+  DeleteAgendaJobMiddleware,
+  SendAgendaJobDeletedResponseMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -350,6 +353,14 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-27`,
           message: "Streak tracking event does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoAgendaJobToDeleteFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-28`,
+          message: "Agenda job does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -1084,6 +1095,20 @@ export class CustomError extends Error {
       case ErrorType.SendStreakTrackingEventDeletedResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-101`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteAgendaJobMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-102`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendAgendaJobDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-103`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
