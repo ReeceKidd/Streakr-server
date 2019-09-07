@@ -31,8 +31,8 @@ describe("POST /solo-streaks", () => {
     const response = await streakoid.soloStreaks.create(
       registeredUserId,
       streakName,
-      streakDescription,
-      londonTimezone
+      londonTimezone,
+      streakDescription
     );
 
     const {
