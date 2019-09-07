@@ -22,6 +22,10 @@ export enum AgendaTimeRanges {
   day = "day"
 }
 
+export enum AgendaProcessTimes {
+  twentyFourHours = "24 hours"
+}
+
 interface SoloStreakCompleteForTimezoneTrackerData
   extends Agenda.JobAttributesData {
   timezone?: string;

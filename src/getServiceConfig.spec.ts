@@ -10,11 +10,7 @@ describe("getServiceConfig", () => {
     AWS_REGION: "AWS_REGION",
     STRIPE_SHAREABLE_KEY: "STRIPE_SHAREABLE_KEY",
     STRIPE_PLAN: "STRIPE_PLAN",
-    APPLICATION_URL: "APPLICATION_URL",
-    AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL:
-      "AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL",
-    AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF:
-      "AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF"
+    APPLICATION_URL: "APPLICATION_URL"
   };
 
   test("that correct error is thrown when NODE_ENV is not provided", () => {
@@ -140,38 +136,6 @@ describe("getServiceConfig", () => {
       getServiceConfig(environment);
     } catch (err) {
       expect(err.message).toEqual("APPLICATION_URL is not provided.");
-    }
-  });
-
-  test("that correct error is thrown when AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL is not provided.", () => {
-    expect.assertions(1);
-    const environment = {
-      ...environmentMock,
-      AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL: undefined
-    };
-
-    try {
-      getServiceConfig(environment);
-    } catch (err) {
-      expect(err.message).toEqual(
-        "AGENDA_SOLO_STREAK_TRACKER_REPEAT_INTERVAL is not provided."
-      );
-    }
-  });
-
-  test("that correct error is thrown when AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF is not provided.", () => {
-    expect.assertions(1);
-    const environment = {
-      ...environmentMock,
-      AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF: undefined
-    };
-
-    try {
-      getServiceConfig(environment);
-    } catch (err) {
-      expect(err.message).toEqual(
-        "AGENDA_SOLO_STREAK_TRACKER_NEXT_RUN_AT_END_OF is not provided."
-      );
     }
   });
 });
