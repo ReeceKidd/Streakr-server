@@ -30,7 +30,8 @@ export interface SoloStreakResponseLocals {
 const createSoloStreakBodyValidationSchema = {
   userId: Joi.string().required(),
   name: Joi.string().required(),
-  description: Joi.string()
+  description: Joi.string(),
+  numberOfMinutes: Joi.number().positive()
 };
 
 export const createSoloStreakBodyValidationMiddleware = (
@@ -104,12 +105,13 @@ export const getCreateSoloStreakFromRequestMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
-    const { name, description, userId } = request.body;
+    const { name, description, userId, numberOfMinutes } = request.body;
     response.locals.newSoloStreak = new soloStreak({
       name,
       description,
       userId,
-      timezone
+      timezone,
+      numberOfMinutes
     });
     next();
   } catch (err) {

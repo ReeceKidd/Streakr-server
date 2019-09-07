@@ -10,8 +10,9 @@ jest.setTimeout(120000);
 describe("POST /solo-streaks", () => {
   let registeredUserId: string;
 
-  const streakName = "Keto";
-  const streakDescription = "I will follow the keto diet every day";
+  const streakName = "Daily Spanish";
+  const streakDescription = "Everyday I must do Spanish on Duolingo";
+  const streakNumberOfMinutes = 30;
 
   beforeAll(async () => {
     const registrationResponse = await streakoid.users.create(
@@ -25,19 +26,21 @@ describe("POST /solo-streaks", () => {
     await streakoid.users.deleteOne(registeredUserId);
   });
 
-  test(`creates solo streak with a description`, async () => {
-    expect.assertions(14);
+  test(`creates solo streak with a description and numberOfMinutes`, async () => {
+    expect.assertions(15);
 
     const response = await streakoid.soloStreaks.create(
       registeredUserId,
       streakName,
       londonTimezone,
-      streakDescription
+      streakDescription,
+      streakNumberOfMinutes
     );
 
     const {
       name,
       description,
+      numberOfMinutes,
       userId,
       _id,
       currentStreak,
@@ -52,6 +55,7 @@ describe("POST /solo-streaks", () => {
     expect(response.status).toEqual(201);
     expect(name).toEqual(streakName);
     expect(description).toEqual(streakDescription);
+    expect(numberOfMinutes).toEqual(streakNumberOfMinutes);
     expect(userId).toEqual(registeredUserId);
     expect(_id).toBeDefined();
     expect(Object.keys(currentStreak)).toEqual(["numberOfDaysInARow"]);
@@ -73,6 +77,7 @@ describe("POST /solo-streaks", () => {
       "description",
       "userId",
       "timezone",
+      "numberOfMinutes",
       "createdAt",
       "updatedAt",
       "__v"
@@ -83,8 +88,8 @@ describe("POST /solo-streaks", () => {
     await streakoid.soloStreaks.deleteOne(soloStreakId);
   });
 
-  test(`creates solo streak without a description`, async () => {
-    expect.assertions(14);
+  test(`creates solo streak without a description or number of minutes`, async () => {
+    expect.assertions(15);
 
     const response = await streakoid.soloStreaks.create(
       registeredUserId,
@@ -95,6 +100,7 @@ describe("POST /solo-streaks", () => {
     const {
       name,
       description,
+      numberOfMinutes,
       userId,
       _id,
       currentStreak,
@@ -108,6 +114,7 @@ describe("POST /solo-streaks", () => {
 
     expect(response.status).toEqual(201);
     expect(name).toEqual(streakName);
+    expect(numberOfMinutes).toEqual(undefined);
     expect(description).toEqual(undefined);
     expect(userId).toEqual(registeredUserId);
     expect(_id).toBeDefined();

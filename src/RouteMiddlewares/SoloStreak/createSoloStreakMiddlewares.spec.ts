@@ -142,6 +142,28 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
     });
     expect(next).not.toBeCalled();
   });
+
+  test("sends numberOfMinutes is not a positive number error", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      body: { userId, name, numberOfMinutes: -1 }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    createSoloStreakBodyValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message:
+        'child "numberOfMinutes" fails because ["numberOfMinutes" must be a positive number]'
+    });
+    expect(next).not.toBeCalled();
+  });
 });
 
 describe("defineCurrentTimeMiddleware", () => {

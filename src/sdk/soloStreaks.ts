@@ -43,11 +43,12 @@ const create = (
   userId: string,
   name: string,
   timezone: string,
-  description?: string
+  description?: string,
+  numberOfMinutes?: number
 ) => {
   return axios.post(
     `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`,
-    { userId, name, description },
+    { userId, name, description, numberOfMinutes },
     { headers: { [SupportedRequestHeaders.xTimezone]: timezone } }
   );
 };

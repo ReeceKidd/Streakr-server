@@ -7,6 +7,7 @@ export interface SoloStreak extends mongoose.Document {
   userId: string;
   streakName: string;
   streakDescription: string;
+  numberOfMinutes: number;
   completedToday: boolean;
   active: boolean;
   activity: Array<{
@@ -40,6 +41,9 @@ export const soloStreakSchema = new mongoose.Schema(
     },
     description: {
       type: String
+    },
+    numberOfMinutes: {
+      type: Number
     },
     timezone: {
       required: true,
