@@ -5,9 +5,9 @@ import { RouteCategories } from "../routeCategories";
 
 const { APPLICATION_URL } = getServiceConfig();
 
-const deleteOne = (completeTaskId: string) => {
+const deleteOne = (agendaJobId: string) => {
   return axios.delete(
-    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.agendaJobs}/${completeTaskId}`
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.agendaJobs}/${agendaJobId}`
   );
 };
 

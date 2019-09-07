@@ -132,7 +132,13 @@ export enum ErrorType {
   SendStreakTrackingEventDeletedResponseMiddleware,
   NoAgendaJobToDeleteFound,
   DeleteAgendaJobMiddleware,
-  SendAgendaJobDeletedResponseMiddleware
+  SendAgendaJobDeletedResponseMiddleware,
+  CreateFeedbackFromRequestMiddleware,
+  SaveFeedbackToDatabaseMiddleware,
+  SendFormattedFeedbackMiddleware,
+  DeleteFeedbackMiddleware,
+  SendFeedbackDeletedResponseMiddleware,
+  NoFeedbackToDeleteFound
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -361,6 +367,14 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-28`,
           message: "Agenda job does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoFeedbackToDeleteFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-29`,
+          message: "Feedback does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -1109,6 +1123,41 @@ export class CustomError extends Error {
       case ErrorType.SendAgendaJobDeletedResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-103`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateFeedbackFromRequestMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-104`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SaveFeedbackToDatabaseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-105`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendFormattedFeedbackMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-106`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteFeedbackMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-107`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendFeedbackDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-108`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

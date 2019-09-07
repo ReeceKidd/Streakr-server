@@ -310,6 +310,17 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to NoFeedbackToDeleteFound`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.NoFeedbackToDeleteFound);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-29`);
+    expect(message).toBe("Feedback does not exist.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
     expect.assertions(3);
 
@@ -1583,6 +1594,69 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-103`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to CreateFeedbackFromRequestMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.CreateFeedbackFromRequestMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-104`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SaveFeedbackToDatabaseMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SaveFeedbackToDatabaseMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-105`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendFormattedFeedbackMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SendFormattedFeedbackMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-106`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to DeleteFeedbackMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.DeleteFeedbackMiddleware);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-107`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendFeedbackDeletedResponseMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SendFeedbackDeletedResponseMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-108`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });

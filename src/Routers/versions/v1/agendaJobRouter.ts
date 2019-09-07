@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { deleteAgendaJobMiddlewares } from "../../../RouteMiddlewares/Agenda/deleteAgendaJobMiddleware";
+import { deleteAgendaJobMiddlewares } from "../../../RouteMiddlewares/Agenda/deleteAgendaJobMiddlewares";
 
 export const agendaJobId = "agendaJobId";
 

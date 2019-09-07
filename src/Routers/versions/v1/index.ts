@@ -9,6 +9,7 @@ import { RouteCategories } from "../../../routeCategories";
 import groupStreaksRouter from "./groupStreakRouter";
 import streakTrackingEventRouter from "./streakTrackingEventRouter";
 import agendaJobsRouter from "./agendaJobRouter";
+import feedbackRouter from "./feedbackRouter";
 
 const v1Router = Router();
 
@@ -22,5 +23,6 @@ v1Router.use(
   streakTrackingEventRouter
 );
 v1Router.use(`/${RouteCategories.agendaJobs}`, agendaJobsRouter);
+v1Router.use(`/${RouteCategories.feedbacks}`, feedbackRouter);
 
 export default v1Router;
