@@ -8,41 +8,131 @@ const londonTimezone = "Europe/London";
 jest.setTimeout(120000);
 
 describe("POST /solo-streaks", () => {
-  let userId: string;
+  let registeredUserId: string;
 
-  const name = "Keto";
-  const description = "I will follow the keto diet every day";
+  const streakName = "Keto";
+  const streakDescription = "I will follow the keto diet every day";
 
   beforeAll(async () => {
     const registrationResponse = await streakoid.users.create(
       registeredUsername,
       registeredEmail
     );
-    userId = registrationResponse.data._id;
+    registeredUserId = registrationResponse.data._id;
   });
 
   afterAll(async () => {
-    await streakoid.users.deleteOne(userId);
+    await streakoid.users.deleteOne(registeredUserId);
   });
 
-  test(`that request passes when correct solo streak information is passed`, async () => {
-    expect.assertions(8);
+  test(`creates solo streak with a description`, async () => {
+    expect.assertions(14);
 
     const response = await streakoid.soloStreaks.create(
-      userId,
-      name,
-      description,
+      registeredUserId,
+      streakName,
+      streakDescription,
       londonTimezone
     );
 
+    const {
+      name,
+      description,
+      userId,
+      _id,
+      currentStreak,
+      completedToday,
+      active,
+      activity,
+      pastStreaks,
+      createdAt,
+      updatedAt
+    } = response.data;
+
     expect(response.status).toEqual(201);
-    expect(response.data.name).toEqual(name);
-    expect(response.data.description).toEqual(description);
-    expect(response.data.userId).toEqual(userId);
-    expect(response.data).toHaveProperty("_id");
-    expect(response.data.currentStreak).toHaveProperty("numberOfDaysInARow");
-    expect(response.data).toHaveProperty("createdAt");
-    expect(response.data).toHaveProperty("updatedAt");
+    expect(name).toEqual(streakName);
+    expect(description).toEqual(streakDescription);
+    expect(userId).toEqual(registeredUserId);
+    expect(_id).toBeDefined();
+    expect(Object.keys(currentStreak)).toEqual(["numberOfDaysInARow"]);
+    expect(currentStreak.numberOfDaysInARow).toEqual(0);
+    expect(completedToday).toEqual(false);
+    expect(active).toEqual(false);
+    expect(activity).toEqual([]);
+    expect(pastStreaks).toEqual([]);
+    expect(createdAt).toBeDefined();
+    expect(updatedAt).toBeDefined();
+    expect(Object.keys(response.data)).toEqual([
+      "currentStreak",
+      "completedToday",
+      "active",
+      "activity",
+      "pastStreaks",
+      "_id",
+      "name",
+      "description",
+      "userId",
+      "timezone",
+      "createdAt",
+      "updatedAt",
+      "__v"
+    ]);
+
+    // Remove created solo streak to maintain clean database
+    const soloStreakId = response.data._id;
+    await streakoid.soloStreaks.deleteOne(soloStreakId);
+  });
+
+  test(`creates solo streak without a description`, async () => {
+    expect.assertions(14);
+
+    const response = await streakoid.soloStreaks.create(
+      registeredUserId,
+      streakName,
+      londonTimezone
+    );
+
+    const {
+      name,
+      description,
+      userId,
+      _id,
+      currentStreak,
+      completedToday,
+      active,
+      activity,
+      pastStreaks,
+      createdAt,
+      updatedAt
+    } = response.data;
+
+    expect(response.status).toEqual(201);
+    expect(name).toEqual(streakName);
+    expect(description).toEqual(undefined);
+    expect(userId).toEqual(registeredUserId);
+    expect(_id).toBeDefined();
+    expect(Object.keys(currentStreak)).toEqual(["numberOfDaysInARow"]);
+    expect(currentStreak.numberOfDaysInARow).toEqual(0);
+    expect(completedToday).toEqual(false);
+    expect(active).toEqual(false);
+    expect(activity).toEqual([]);
+    expect(pastStreaks).toEqual([]);
+    expect(createdAt).toBeDefined();
+    expect(updatedAt).toBeDefined();
+    expect(Object.keys(response.data)).toEqual([
+      "currentStreak",
+      "completedToday",
+      "active",
+      "activity",
+      "pastStreaks",
+      "_id",
+      "name",
+      "userId",
+      "timezone",
+      "createdAt",
+      "updatedAt",
+      "__v"
+    ]);
 
     // Remove created solo streak to maintain clean database
     const soloStreakId = response.data._id;

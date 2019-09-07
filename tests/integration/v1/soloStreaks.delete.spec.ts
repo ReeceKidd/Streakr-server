@@ -24,8 +24,8 @@ describe(`DELETE /solo-streaks`, () => {
     const createSoloStreakResponse = await streakoid.soloStreaks.create(
       userId,
       name,
-      description,
-      budapestTimezone
+      budapestTimezone,
+      description
     );
     soloStreakId = createSoloStreakResponse.data._id;
   });

@@ -91,7 +91,7 @@ describe("SDK soloStreaks", () => {
       const description = "descrption";
       const timezone = "timezone";
 
-      await streakoid.soloStreaks.create(userId, name, description, timezone);
+      await streakoid.soloStreaks.create(userId, name, timezone, description);
 
       expect(axios.post).toBeCalledWith(
         `${APPLICATION_URL}/v1/solo-streaks`,

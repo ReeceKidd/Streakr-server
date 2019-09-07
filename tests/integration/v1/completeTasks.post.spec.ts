@@ -26,8 +26,8 @@ describe("POST /complete-tasks", () => {
     const createSoloStreakResponse = await streakoid.soloStreaks.create(
       userId,
       name,
-      description,
-      londonTimezone
+      londonTimezone,
+      description
     );
     soloStreakId = createSoloStreakResponse.data._id;
   });
@@ -79,8 +79,8 @@ describe("POST /complete-tasks", () => {
       const secondaryCreateSoloStreakResponse = await streakoid.soloStreaks.create(
         userId,
         name,
-        description,
-        londonTimezone
+        londonTimezone,
+        description
       );
       secondSoloStreakId = secondaryCreateSoloStreakResponse.data._id;
       try {

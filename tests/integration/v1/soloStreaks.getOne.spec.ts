@@ -23,8 +23,8 @@ describe("GET /solo-streaks/:soloStreakId", () => {
     const createSoloStreakResponse = await streakoid.soloStreaks.create(
       userId,
       streakName,
-      streakDescription,
-      timezone
+      timezone,
+      streakDescription
     );
     soloStreakId = createSoloStreakResponse.data._id;
   });

@@ -121,27 +121,6 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("sends description is missing error", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      body: { userId, name }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    createSoloStreakBodyValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "description" fails because ["description" is required]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
   test("sends description is not a string error", () => {
     expect.assertions(3);
     const send = jest.fn();

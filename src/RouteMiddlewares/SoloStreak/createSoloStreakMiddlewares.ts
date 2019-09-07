@@ -30,7 +30,7 @@ export interface SoloStreakResponseLocals {
 const createSoloStreakBodyValidationSchema = {
   userId: Joi.string().required(),
   name: Joi.string().required(),
-  description: Joi.string().required()
+  description: Joi.string()
 };
 
 export const createSoloStreakBodyValidationMiddleware = (

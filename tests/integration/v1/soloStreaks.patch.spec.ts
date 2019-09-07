@@ -24,8 +24,8 @@ describe(`PATCH /solo-streaks`, () => {
     const createSoloStreakResponse = await streakoid.soloStreaks.create(
       userId,
       name,
-      description,
-      romeTimezone
+      romeTimezone,
+      description
     );
     soloStreakId = createSoloStreakResponse.data._id;
   });

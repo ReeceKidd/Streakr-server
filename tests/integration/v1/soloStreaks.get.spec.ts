@@ -26,8 +26,8 @@ describe("GET /solo-streaks", () => {
     const createSoloStreakResponse = await streakoid.soloStreaks.create(
       userId,
       soloStreakName,
-      soloStreakDescription,
-      parisTimezone
+      parisTimezone,
+      soloStreakDescription
     );
     soloStreakId = createSoloStreakResponse.data._id;
   });
@@ -109,8 +109,8 @@ describe("GET /solo-streaks", () => {
     const createdSoloStreakResponse = await streakoid.soloStreaks.create(
       userId,
       name,
-      description,
-      parisTimezone
+      parisTimezone,
+      description
     );
     secondSoloStreakId = createdSoloStreakResponse.data._id;
 

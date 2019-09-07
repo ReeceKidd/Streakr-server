@@ -39,7 +39,6 @@ export const soloStreakSchema = new mongoose.Schema(
       index: true
     },
     description: {
-      required: true,
       type: String
     },
     timezone: {

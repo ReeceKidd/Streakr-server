@@ -24,8 +24,8 @@ describe("trackMaintainedSoloStreak", () => {
     const createSoloStreakResponse = await streakoid.soloStreaks.create(
       userId,
       name,
-      description,
-      timezone
+      timezone,
+      description
     );
     soloStreakId = createSoloStreakResponse.data._id;
 

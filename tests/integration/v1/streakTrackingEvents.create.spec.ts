@@ -25,8 +25,8 @@ describe("POST /streak-tracking-events", () => {
     const soloStreakRegistration = await streakoid.soloStreaks.create(
       userId,
       name,
-      description,
-      timezone
+      timezone,
+      description
     );
     soloStreakId = soloStreakRegistration.data._id;
   });

@@ -42,8 +42,8 @@ const getOne = (soloStreakId: string) => {
 const create = (
   userId: string,
   name: string,
-  description: string,
-  timezone: string
+  timezone: string,
+  description?: string
 ) => {
   return axios.post(
     `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}`,
