@@ -10,12 +10,19 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
   const timezones = moment.tz.names();
   const numberOfTimezones = timezones.length;
 
-  const numberOfSoloStreakTimezoneCheckerJobs = await getNumberOfSoloStreakDailyTrackerJobs();
+  const numberOfSoloStreakTimezoneCheckerJobs = await agendaJobModel.countDocuments(
+    {
+      name: AgendaJobs.soloStreakDailyTracker,
+      "data.custom": false
+    }
+  );
   if (numberOfTimezones === numberOfSoloStreakTimezoneCheckerJobs) {
     console.log(
       "Number of timezones matches number of solo streak timezone checker jobs. No jobs need to be created"
     );
     return;
+  } else {
+    console.log("Creating new daily solo steak tracker jobs");
   }
 
   return timezones.map(async (timezone: string) => {
@@ -27,13 +34,6 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
     if (!existingTimezone) {
       await createSoloStreakDailyTrackerJob(timezone);
     }
-  });
-};
-
-export const getNumberOfSoloStreakDailyTrackerJobs = () => {
-  return agendaJobModel.countDocuments({
-    name: AgendaJobs.soloStreakDailyTracker,
-    "data.custom": false
   });
 };
 
