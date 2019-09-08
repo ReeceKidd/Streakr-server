@@ -14,6 +14,7 @@ jest.setTimeout(120000);
 describe("POST /streak-tracking-events", () => {
   let userId: string;
   let soloStreakId: string;
+  let streakTrackingEventId: string;
 
   beforeAll(async () => {
     const registrationResponse = await streakoid.users.create(
@@ -34,6 +35,7 @@ describe("POST /streak-tracking-events", () => {
   afterAll(async () => {
     await streakoid.users.deleteOne(userId);
     await streakoid.soloStreaks.deleteOne(soloStreakId);
+    await streakoid.streakTrackingEvents.deleteOne(streakTrackingEventId);
   });
 
   test(`streak tracking events can be created`, async () => {
@@ -44,6 +46,9 @@ describe("POST /streak-tracking-events", () => {
       soloStreakId,
       userId
     );
+
+    const streakTrackingEvent = response.data;
+    streakTrackingEventId = streakTrackingEvent._id;
 
     expect(response.status).toEqual(201);
     expect(response.data.type).toEqual(StreakTrackingEventType.LostStreak);

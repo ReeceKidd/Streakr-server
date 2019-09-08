@@ -162,7 +162,7 @@ describe("soloStreakDailyTracker", () => {
     maintainedStreakTrackingEventId = streakTrackingEvent._id;
   });
 
-  test.only("manages lost streaks correctly", async () => {
+  test("manages lost streaks correctly", async () => {
     expect.assertions(10);
 
     const timezone = "Europe/London";
