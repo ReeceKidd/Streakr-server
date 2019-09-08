@@ -53,7 +53,7 @@ describe("SDK soloStreaks", () => {
       await streakoid.soloStreaks.getAll({ timezone });
 
       expect(axios.get).toBeCalledWith(
-        `${APPLICATION_URL}/v1/solo-streaks?timezone=${timezone}`
+        `${APPLICATION_URL}/v1/solo-streaks?timezone=${timezone}&`
       );
     });
 

@@ -42,7 +42,8 @@ describe("trackMaintainedSoloStreaks", () => {
           type: StreakTrackingEventType.MaintainedStreak,
           time: currentLocalTime
         }
-      ]
+      ],
+      completedToday: false
     });
     expect(streakoid.streakTrackingEvents.create).toBeCalledWith(
       StreakTrackingEventType.MaintainedStreak,

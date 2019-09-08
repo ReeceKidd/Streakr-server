@@ -41,6 +41,7 @@ describe("manageDailySoloStreaks", () => {
 
     expect(streakoid.soloStreaks.getAll).toBeCalledWith({
       completedToday: true,
+      active: true,
       timezone
     });
     expect(trackMaintainedSoloStreaks).toBeCalledWith(

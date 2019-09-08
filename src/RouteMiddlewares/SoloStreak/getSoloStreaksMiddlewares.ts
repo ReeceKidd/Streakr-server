@@ -51,7 +51,6 @@ export const getFindSoloStreaksMiddleware = (
     if (active) {
       query.active = active === "true";
     }
-    console.log(query);
 
     response.locals.soloStreaks = await soloStreakModel.find(query);
     next();
