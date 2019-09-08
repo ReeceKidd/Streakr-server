@@ -19,7 +19,8 @@ export const trackMaintainedSoloStreaks = async (
       ];
 
       await streakoid.soloStreaks.update(soloStreak._id, timezone, {
-        activity: updatedActivity
+        activity: updatedActivity,
+        completedToday: false
       });
 
       return streakoid.streakTrackingEvents.create(

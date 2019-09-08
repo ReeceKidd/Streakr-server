@@ -38,11 +38,7 @@ describe("DELETE /feedbacks/:feedbackId", () => {
 
     const { _id } = createFeedbackResponse.data;
 
-    try {
-      const response = await streakoid.feedbacks.deleteOne(_id);
-      expect(response.status).toEqual(204);
-    } catch (err) {
-      console.log(err);
-    }
+    const response = await streakoid.feedbacks.deleteOne(_id);
+    expect(response.status).toEqual(204);
   });
 });

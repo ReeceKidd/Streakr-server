@@ -18,18 +18,25 @@ const getAll = ({
   active?: boolean;
 }) => {
   let getAllSoloStreaksURL = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.soloStreaks}?`;
+
   if (userId) {
     getAllSoloStreaksURL = `${getAllSoloStreaksURL}userId=${userId}&`;
   }
-  if (completedToday) {
-    getAllSoloStreaksURL = `${getAllSoloStreaksURL}completedToday=${completedToday}&`;
+
+  if (completedToday !== undefined) {
+    getAllSoloStreaksURL = `${getAllSoloStreaksURL}completedToday=${Boolean(
+      completedToday
+    )}&`;
   }
+
   if (timezone) {
-    getAllSoloStreaksURL = `${getAllSoloStreaksURL}timezone=${timezone}`;
+    getAllSoloStreaksURL = `${getAllSoloStreaksURL}timezone=${timezone}&`;
   }
-  if (active) {
-    getAllSoloStreaksURL = `${getAllSoloStreaksURL}active=${active}`;
+
+  if (active !== undefined) {
+    getAllSoloStreaksURL = `${getAllSoloStreaksURL}active=${Boolean(active)}`;
   }
+
   return axios.get(getAllSoloStreaksURL);
 };
 
@@ -59,6 +66,7 @@ const update = (
   data?: {
     name?: string;
     description?: string;
+    completedToday?: boolean;
     active?: boolean;
     currentStreak?: { startDate?: Date; numberOfDaysInARow?: number };
     pastStreaks?: [

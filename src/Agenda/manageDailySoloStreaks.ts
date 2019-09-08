@@ -8,26 +8,39 @@ import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
 export const manageDailySoloStreaks = async (timezone: string) => {
   const currentLocalTime = moment.tz(timezone).toDate();
 
-  const maintainedSoloStreakResponse = await streakoid.soloStreaks.getAll({
-    completedToday: true,
-    timezone: timezone
-  });
+  const [
+    maintainedSoloStreakResponse,
+    inactiveSoloStreakResponse,
+    incompleteSoloStreaksResponse
+  ] = await Promise.all([
+    streakoid.soloStreaks.getAll({
+      completedToday: true,
+      active: true,
+      timezone: timezone
+    }),
+    streakoid.soloStreaks.getAll({
+      completedToday: false,
+      active: false,
+      timezone
+    }),
+    streakoid.soloStreaks.getAll({
+      completedToday: false,
+      active: true,
+      timezone: timezone
+    })
+  ]);
+
   const maintainedSoloStreaks = maintainedSoloStreakResponse.data.soloStreaks;
-  trackMaintainedSoloStreaks(maintainedSoloStreaks, currentLocalTime);
-
-  const inactiveSoloStreakResponse = await streakoid.soloStreaks.getAll({
-    completedToday: false,
-    active: false,
-    timezone
-  });
   const inactiveSoloStreaks = inactiveSoloStreakResponse.data.soloStreaks;
-  trackInactiveSoloStreaks(inactiveSoloStreaks, currentLocalTime);
-
-  const incompleteSoloStreaksResponse = await streakoid.soloStreaks.getAll({
-    completedToday: false,
-    active: true,
-    timezone: timezone
-  });
   const incompleteSoloStreaks = incompleteSoloStreaksResponse.data.soloStreaks;
-  resetIncompleteSoloStreaks(incompleteSoloStreaks, currentLocalTime, timezone);
+
+  return Promise.all([
+    trackMaintainedSoloStreaks(maintainedSoloStreaks, currentLocalTime),
+    trackInactiveSoloStreaks(inactiveSoloStreaks, currentLocalTime),
+    resetIncompleteSoloStreaks(
+      incompleteSoloStreaks,
+      currentLocalTime,
+      timezone
+    )
+  ]);
 };
