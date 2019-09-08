@@ -45,7 +45,7 @@ describe("GET /solo-streaks", () => {
 
     const soloStreak = response.data.soloStreaks[0];
     expect(response.status).toEqual(200);
-    expect(response.data.soloStreaks.length).toEqual(1);
+    expect(response.data.soloStreaks.length).toBeGreaterThan(1);
     expect(soloStreak.name).toEqual(soloStreakName);
     expect(soloStreak.description).toEqual(soloStreakDescription);
     expect(soloStreak.userId).toEqual(userId);

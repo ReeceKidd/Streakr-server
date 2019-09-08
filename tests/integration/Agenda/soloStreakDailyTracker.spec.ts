@@ -136,7 +136,7 @@ describe("soloStreakDailyTracker", () => {
       startDate: expect.any(String),
       numberOfDaysInARow: 1
     });
-    expect(completedToday).toEqual(true);
+    expect(completedToday).toEqual(false);
     expect(active).toEqual(true);
     expect(activity).toEqual([
       {
