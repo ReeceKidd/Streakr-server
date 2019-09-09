@@ -4,13 +4,7 @@ import {
   createGroupStreakFromRequestMiddleware,
   getCreateGroupStreakFromRequestMiddleware,
   saveGroupStreakToDatabaseMiddleware,
-  sendFormattedGroupStreakMiddleware,
-  defineEndOfDayMiddleware,
-  defineCurrentTimeMiddleware,
-  defineStartDayMiddleware,
-  getDefineCurrentTimeMiddleware,
-  getDefineStartDayMiddleware,
-  getDefineEndOfDayMiddleware
+  sendFormattedGroupStreakMiddleware
 } from "./createGroupStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -167,124 +161,6 @@ describe(`createGroupStreakBodyValidationMiddleware`, () => {
         'child "numberOfMinutes" fails because ["numberOfMinutes" must be a positive number]'
     });
     expect(next).not.toBeCalled();
-  });
-});
-
-describe("defineCurrentTimeMiddleware", () => {
-  test("sets response.locals.currentTime", () => {
-    expect.assertions(4);
-    const timezone = "Europe/London";
-    const tz = jest.fn(() => true);
-    const moment = jest.fn(() => ({ tz }));
-    const request: any = {};
-    const response: any = { locals: { timezone } };
-    const next = jest.fn();
-    const middleware = getDefineCurrentTimeMiddleware(moment);
-
-    middleware(request, response, next);
-
-    expect(moment).toBeCalledWith();
-    expect(tz).toBeCalledWith(timezone);
-    expect(response.locals.currentTime).toBeDefined();
-    expect(next).toBeCalledWith();
-  });
-
-  test("calls next with DefineCurrentTimeMiddleware error on middleware failure", () => {
-    expect.assertions(1);
-    const moment = jest.fn(() => ({}));
-    const request: any = {};
-    const response: any = { locals: {} };
-    const next = jest.fn();
-    const middleware = getDefineCurrentTimeMiddleware(moment);
-
-    middleware(request, response, next);
-
-    expect(next).toBeCalledWith(
-      new CustomError(ErrorType.DefineCurrentTimeMiddleware, expect.any(Error))
-    );
-  });
-});
-
-describe("defineStartDayMiddleware", () => {
-  test("sets response.locals.startDay", () => {
-    expect.assertions(3);
-    const dayFormat = "DD/MM/YYYY";
-    const format = jest.fn(() => true);
-    const currentTime = {
-      format
-    };
-    const request: any = {};
-    const response: any = { locals: { currentTime } };
-    const next = jest.fn();
-    const middleware = getDefineStartDayMiddleware(dayFormat);
-
-    middleware(request, response, next);
-
-    expect(response.locals.startDay).toBeDefined();
-    expect(format).toBeCalledWith(dayFormat);
-    expect(next).toBeCalledWith();
-  });
-
-  test("calls next with DefineStartDayMiddleware on middleware failure", () => {
-    expect.assertions(1);
-    const dayFormat = "DD/MM/YYYY";
-    const currentTime = {};
-    const request: any = {};
-    const response: any = { locals: { currentTime } };
-    const next = jest.fn();
-    const middleware = getDefineStartDayMiddleware(dayFormat);
-
-    middleware(request, response, next);
-
-    expect(next).toBeCalledWith(
-      new CustomError(ErrorType.DefineStartDayMiddleware)
-    );
-  });
-});
-
-describe("defineEndOfDayMiddleware", () => {
-  test("sets response.locals.endOfDay", () => {
-    expect.assertions(4);
-    const toDate = jest.fn(() => new Date());
-    const endOf = jest.fn(() => ({ toDate }));
-    const currentTime = {
-      endOf
-    };
-    const request: any = {};
-    const response: any = {
-      locals: { currentTime }
-    };
-    const next = jest.fn();
-    const dayTimeRange = "day";
-    const middleware = getDefineEndOfDayMiddleware(dayTimeRange);
-
-    middleware(request, response, next);
-
-    expect(response.locals.endOfDay).toBeDefined();
-    expect(endOf).toBeCalledWith(dayTimeRange);
-    expect(toDate).toBeCalled();
-    expect(next).toBeCalledWith();
-  });
-
-  test("calls next with DefineEndOfDayMiddleware on middleware failure", () => {
-    expect.assertions(1);
-    const endOf = jest.fn(() => ({}));
-    const currentTime = {
-      endOf
-    };
-    const request: any = {};
-    const response: any = {
-      locals: { currentTime }
-    };
-    const next = jest.fn();
-    const dayTimeRange = "day";
-    const middleware = getDefineEndOfDayMiddleware(dayTimeRange);
-
-    middleware(request, response, next);
-
-    expect(next).toBeCalledWith(
-      new CustomError(ErrorType.DefineEndOfDayMiddleware)
-    );
   });
 });
 
@@ -466,22 +342,19 @@ describe(`sendFormattedGroupStreakMiddleware`, () => {
 
 describe(`createGroupStreakMiddlewares`, () => {
   test("that createGroupStreak middlewares are defined in the correct order", async () => {
-    expect.assertions(8);
+    expect.assertions(5);
 
-    expect(createGroupStreakMiddlewares.length).toEqual(7);
+    expect(createGroupStreakMiddlewares.length).toEqual(4);
     expect(createGroupStreakMiddlewares[0]).toBe(
       createGroupStreakBodyValidationMiddleware
     );
-    expect(createGroupStreakMiddlewares[1]).toBe(defineCurrentTimeMiddleware);
-    expect(createGroupStreakMiddlewares[2]).toBe(defineStartDayMiddleware);
-    expect(createGroupStreakMiddlewares[3]).toBe(defineEndOfDayMiddleware);
-    expect(createGroupStreakMiddlewares[4]).toBe(
+    expect(createGroupStreakMiddlewares[1]).toBe(
       createGroupStreakFromRequestMiddleware
     );
-    expect(createGroupStreakMiddlewares[5]).toBe(
+    expect(createGroupStreakMiddlewares[2]).toBe(
       saveGroupStreakToDatabaseMiddleware
     );
-    expect(createGroupStreakMiddlewares[6]).toBe(
+    expect(createGroupStreakMiddlewares[3]).toBe(
       sendFormattedGroupStreakMiddleware
     );
   });

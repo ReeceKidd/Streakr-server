@@ -7,5 +7,6 @@ export enum Collections {
   AgendaJobs = "AgendaJobs",
   CompleteTasks = "CompleteTasks",
   System = "System",
-  StreakTrackingEvents = "StreakTrackingEvents"
+  StreakTrackingEvents = "StreakTrackingEvents",
+  GroupMemberStreaks = "GroupMemberStreaks"
 }

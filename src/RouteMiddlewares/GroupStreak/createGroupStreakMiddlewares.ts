@@ -7,9 +7,7 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 
 import { GroupStreak, groupStreakModel } from "../../Models/GroupStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { dayFormat } from "../CompleteTask/createCompleteTaskMiddlewares";
 import { CustomError, ErrorType } from "../../customError";
-import { AgendaProcessTimes, AgendaTimeRanges } from "../../Agenda/agenda";
 
 export interface GroupStreakRegistrationRequestBody {
   creatorId: string;
@@ -38,62 +36,6 @@ export const createGroupStreakBodyValidationMiddleware = (
     getValidationErrorMessageSenderMiddleware(request, response, next)
   );
 };
-
-export const getDefineCurrentTimeMiddleware = (moment: any) => (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const { timezone } = response.locals;
-    const currentTime = moment().tz(timezone);
-    response.locals.currentTime = currentTime;
-    next();
-  } catch (err) {
-    next(
-      new CustomError(ErrorType.GroupStreakDefineCurrentTimeMiddleware, err)
-    );
-  }
-};
-
-export const defineCurrentTimeMiddleware = getDefineCurrentTimeMiddleware(
-  moment
-);
-
-export const getDefineStartDayMiddleware = (dayFormat: string) => (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const { currentTime } = response.locals;
-    const startDay = currentTime.format(dayFormat);
-    response.locals.startDay = startDay;
-    next();
-  } catch (err) {
-    next(new CustomError(ErrorType.GroupStreakDefineStartDayMiddleware, err));
-  }
-};
-
-export const defineStartDayMiddleware = getDefineStartDayMiddleware(dayFormat);
-
-export const getDefineEndOfDayMiddleware = (dayTimeRange: string) => (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const { currentTime } = response.locals;
-    response.locals.endOfDay = currentTime.endOf(dayTimeRange).toDate();
-    next();
-  } catch (err) {
-    next(new CustomError(ErrorType.GroupStreakDefineEndOfDayMiddleware, err));
-  }
-};
-
-export const defineEndOfDayMiddleware = getDefineEndOfDayMiddleware(
-  AgendaTimeRanges.day
-);
 
 export const getCreateGroupStreakFromRequestMiddleware = (
   groupStreak: mongoose.Model<GroupStreak>
@@ -156,9 +98,6 @@ export const sendFormattedGroupStreakMiddleware = (
 
 export const createGroupStreakMiddlewares = [
   createGroupStreakBodyValidationMiddleware,
-  defineCurrentTimeMiddleware,
-  defineStartDayMiddleware,
-  defineEndOfDayMiddleware,
   createGroupStreakFromRequestMiddleware,
   saveGroupStreakToDatabaseMiddleware,
   sendFormattedGroupStreakMiddleware

@@ -5,5 +5,6 @@ export enum Models {
   AgendaJob = "AgendaJob",
   CompleteTask = "CompleteTask",
   GroupStreak = "GroupStreak",
-  StreakTrackingEvent = "StreakTrackingEvent"
+  StreakTrackingEvent = "StreakTrackingEvent",
+  GroupMemberStreak = "GroupMemberStreak"
 }

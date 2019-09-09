@@ -139,7 +139,10 @@ export enum ErrorType {
   DeleteFeedbackMiddleware,
   SendFeedbackDeletedResponseMiddleware,
   NoFeedbackToDeleteFound,
-  RetreiveGroupStreakCreatorInformationMiddleware
+  RetreiveGroupStreakCreatorInformationMiddleware,
+  CreateGroupMemberStreakFromRequestMiddleware,
+  SaveGroupMemberStreakToDatabaseMiddleware,
+  SendFormattedGroupMemberStreakMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -1166,6 +1169,27 @@ export class CustomError extends Error {
       case ErrorType.RetreiveGroupStreakCreatorInformationMiddleware:
         return {
           code: `${ResponseCodes.warning}-109`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateGroupMemberStreakFromRequestMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-110`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SaveGroupMemberStreakToDatabaseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-111`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendFormattedGroupMemberStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-112`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
