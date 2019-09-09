@@ -36,4 +36,17 @@ describe("SDK groupMemberStreaks", () => {
       );
     });
   });
+
+  describe("deleteOne", () => {
+    test("calls DELETE correct URL ", async () => {
+      expect.assertions(1);
+      axios.delete = jest.fn();
+
+      await streakoid.groupMemberStreaks.deleteOne("id");
+
+      expect(axios.delete).toBeCalledWith(
+        `${APPLICATION_URL}/v1/group-member-streaks/id`
+      );
+    });
+  });
 });

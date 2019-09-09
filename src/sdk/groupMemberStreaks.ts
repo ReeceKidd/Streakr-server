@@ -14,8 +14,15 @@ const create = (userId: string, groupStreakId: string, timezone: string) => {
   );
 };
 
+const deleteOne = (groupMemberStreakId: string) => {
+  return axios.delete(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupMemberStreaks}/${groupMemberStreakId}`
+  );
+};
+
 const groupMemberStreaks = {
-  create
+  create,
+  deleteOne
 };
 
 export default groupMemberStreaks;
