@@ -142,7 +142,9 @@ export enum ErrorType {
   RetreiveGroupStreakCreatorInformationMiddleware,
   CreateGroupMemberStreakFromRequestMiddleware,
   SaveGroupMemberStreakToDatabaseMiddleware,
-  SendFormattedGroupMemberStreakMiddleware
+  SendFormattedGroupMemberStreakMiddleware,
+  CreateGroupMemberStreakRetreiveUserMiddleware,
+  CreateGroupMemberStreakUserDoesNotExist
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -379,6 +381,14 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-29`,
           message: "Feedback does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.CreateGroupMemberStreakUserDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-30`,
+          message: "User does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -1190,6 +1200,13 @@ export class CustomError extends Error {
       case ErrorType.SendFormattedGroupMemberStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-112`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateGroupMemberStreakRetreiveUserMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-113`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

@@ -7,6 +7,7 @@ import groupStreaks from "./groupStreaks";
 import streakTrackingEvents from "./streakTrackingEvents";
 import agendaJobs from "./agendaJobs";
 import feedbacks from "./feedbacks";
+import groupMemberStreaks from "./groupMemberStreaks";
 
 export default {
   completeTasks,
@@ -19,5 +20,6 @@ export default {
   groupStreaks,
   streakTrackingEvents,
   agendaJobs,
-  feedbacks
+  feedbacks,
+  groupMemberStreaks
 };

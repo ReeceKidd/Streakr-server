@@ -8,7 +8,8 @@ export enum RouteCategories {
   test = "test",
   stripe = "stripe",
   friends = "friends",
-  streakTrackingEvents = "streak-tracking-events"
+  streakTrackingEvents = "streak-tracking-events",
+  groupMemberStreaks = "group-member-streaks"
 }
 
 export enum UserProperties {

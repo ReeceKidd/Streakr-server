@@ -4,7 +4,8 @@ import {
   createGroupMemberStreakFromRequestMiddleware,
   getCreateGroupMemberStreakFromRequestMiddleware,
   saveGroupMemberStreakToDatabaseMiddleware,
-  sendFormattedGroupMemberStreakMiddleware
+  sendFormattedGroupMemberStreakMiddleware,
+  retreiveUserMiddleware
 } from "./createGroupMemberStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -82,29 +83,25 @@ describe(`createGroupMemberStreakFromRequestMiddleware`, () => {
   test("sets response.locals.newGroupMemberStreak", async () => {
     expect.assertions(2);
     const userId = "abcdefg";
-    const name = "streak name";
-    const description = "mock streak description";
+    const groupStreakId = "1a2b3c";
     const timezone = "Europe/London";
     class GroupMemberStreak {
       userId: string;
-      name: string;
-      description: string;
+      groupStreakId: string;
       timezone: string;
 
-      constructor({ userId, name, description, timezone }: any) {
+      constructor({ userId, groupStreakId, timezone }: any) {
         this.userId = userId;
-        this.name = name;
-        this.description = description;
+        this.groupStreakId = groupStreakId;
         this.timezone = timezone;
       }
     }
     const response: any = { locals: { timezone } };
-    const request: any = { body: { userId, name, description } };
+    const request: any = { body: { userId, groupStreakId } };
     const next = jest.fn();
     const newGroupMemberStreak = new GroupMemberStreak({
       userId,
-      name,
-      description,
+      groupStreakId,
       timezone
     });
     const middleware = getCreateGroupMemberStreakFromRequestMiddleware(
@@ -240,19 +237,20 @@ describe(`sendFormattedGroupMemberStreakMiddleware`, () => {
 
 describe(`createGroupMemberStreakMiddlewares`, () => {
   test("that createGroupMemberStreak middlewares are defined in the correct order", async () => {
-    expect.assertions(5);
+    expect.assertions(6);
 
-    expect(createGroupMemberStreakMiddlewares.length).toEqual(4);
+    expect(createGroupMemberStreakMiddlewares.length).toEqual(5);
     expect(createGroupMemberStreakMiddlewares[0]).toBe(
       createGroupMemberStreakBodyValidationMiddleware
     );
-    expect(createGroupMemberStreakMiddlewares[1]).toBe(
+    expect(createGroupMemberStreakMiddlewares[1]).toBe(retreiveUserMiddleware);
+    expect(createGroupMemberStreakMiddlewares[2]).toBe(
       createGroupMemberStreakFromRequestMiddleware
     );
-    expect(createGroupMemberStreakMiddlewares[2]).toBe(
+    expect(createGroupMemberStreakMiddlewares[3]).toBe(
       saveGroupMemberStreakToDatabaseMiddleware
     );
-    expect(createGroupMemberStreakMiddlewares[3]).toBe(
+    expect(createGroupMemberStreakMiddlewares[4]).toBe(
       sendFormattedGroupMemberStreakMiddleware
     );
   });

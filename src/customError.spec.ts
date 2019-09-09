@@ -321,6 +321,19 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to CreateGroupMemberStreakUserDoesNotExist`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.CreateGroupMemberStreakUserDoesNotExist
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-30`);
+    expect(message).toBe("User does not exist.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
     expect.assertions(3);
 
@@ -1709,6 +1722,19 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-112`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to CreateGroupMemberStreakRetreiveUserMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.CreateGroupMemberStreakRetreiveUserMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-113`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });

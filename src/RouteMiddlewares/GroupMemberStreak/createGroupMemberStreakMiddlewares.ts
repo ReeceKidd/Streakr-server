@@ -11,6 +11,7 @@ import {
 } from "../../Models/GroupMemberStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { User, userModel } from "../../Models/User";
 
 export interface GroupMemberStreakRegistrationRequestBody {
   userId: string;
@@ -34,7 +35,30 @@ export const createGroupMemberStreakBodyValidationMiddleware = (
   );
 };
 
-// Does user exist middleware
+export const getRetreiveUserMiddleware = (
+  userModel: mongoose.Model<User>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { userId } = request.body;
+    const user = await userModel.findOne({ _id: userId }).lean();
+    if (!user) {
+      throw new CustomError(ErrorType.CreateGroupMemberStreakUserDoesNotExist);
+    }
+    response.locals.user = user;
+    next();
+  } catch (err) {
+    if (err instanceof CustomError) next(err);
+    else
+      next(
+        new CustomError(
+          ErrorType.CreateGroupMemberStreakRetreiveUserMiddleware,
+          err
+        )
+      );
+  }
+};
+
+export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
 // Does group Id exist middleware
 
@@ -43,13 +67,11 @@ export const getCreateGroupMemberStreakFromRequestMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
-    const { name, description, userId, numberOfMinutes } = request.body;
+    const { userId, groupStreakId } = request.body;
     response.locals.newGroupMemberStreak = new groupMemberStreak({
-      name,
-      description,
       userId,
-      timezone,
-      numberOfMinutes
+      groupStreakId,
+      timezone
     });
     next();
   } catch (err) {
@@ -100,6 +122,7 @@ export const sendFormattedGroupMemberStreakMiddleware = (
 
 export const createGroupMemberStreakMiddlewares = [
   createGroupMemberStreakBodyValidationMiddleware,
+  retreiveUserMiddleware,
   createGroupMemberStreakFromRequestMiddleware,
   saveGroupMemberStreakToDatabaseMiddleware,
   sendFormattedGroupMemberStreakMiddleware
