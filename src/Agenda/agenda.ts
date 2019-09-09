@@ -68,6 +68,7 @@ agenda.define(
       await manageDailySoloStreaks(timezone);
       done();
     } catch (err) {
+      console.log(err);
       done(err);
     }
   }
