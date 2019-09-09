@@ -69,19 +69,19 @@ export const getServiceConfig = (
   }
 
   if (!EMAIL_USER) {
-    throw new Error("EMAIL_USER is not provided");
+    throw new Error("EMAIL_USER is not provided.");
   }
 
   if (!EMAIL_PASSWORD) {
-    throw new Error("EMAIL_PASSWORD is not provided");
+    throw new Error("EMAIL_PASSWORD is not provided.");
   }
 
   if (!EMAIL_FROM) {
-    throw new Error("EMAIL_FROM is not provided");
+    throw new Error("EMAIL_FROM is not provided.");
   }
 
   if (!EMAIL_TO) {
-    throw new Error("EMAIL_TO is not provided");
+    throw new Error("EMAIL_TO is not provided.");
   }
 
   return {
