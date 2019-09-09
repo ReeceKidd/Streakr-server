@@ -38,7 +38,7 @@ describe("GET /group-streaks/:groupStreakId", () => {
   });
 
   test(`group streak can be retreived with populated member information`, async () => {
-    expect.assertions(10);
+    expect.assertions(13);
 
     const response = await streakoid.groupStreaks.getOne(groupStreakId);
     const groupStreak = response.data;
@@ -49,6 +49,9 @@ describe("GET /group-streaks/:groupStreakId", () => {
     expect(groupStreak.streakDescription).toEqual(streakDescription);
     expect(groupStreak.creatorId).toEqual(userId);
     expect(groupStreak.timezone).toEqual(timezone);
+    expect(groupStreak.creator._id).toBeDefined();
+    expect(groupStreak.creator.username).toEqual(username);
+    expect(Object.keys(groupStreak.creator)).toEqual(["_id", "username"]);
     expect(Object.keys(groupStreak)).toEqual([
       "_id",
       "members",
@@ -58,7 +61,8 @@ describe("GET /group-streaks/:groupStreakId", () => {
       "timezone",
       "createdAt",
       "updatedAt",
-      "__v"
+      "__v",
+      "creator"
     ]);
 
     const groupStreakMember = groupStreak.members[0];
