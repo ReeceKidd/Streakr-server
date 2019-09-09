@@ -80,9 +80,9 @@ describe("soloStreakDailyTracker", () => {
       "type",
       "priority",
       "nextRunAt",
-      "_id",
       "repeatInterval",
-      "repeatTimezone"
+      "repeatTimezone",
+      "_id"
     ]);
 
     await streakoid.agendaJobs.deleteOne(String(_id));
