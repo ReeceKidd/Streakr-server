@@ -51,7 +51,7 @@ describe("soloStreakDailyTracker", () => {
   });
 
   test("initialises soloStreakDailyTracker job correctly", async () => {
-    expect.assertions(11);
+    expect.assertions(10);
     const timezone = "Europe/London";
     const job = await createSoloStreakDailyTrackerJob(timezone);
     const { attrs } = job as any;
