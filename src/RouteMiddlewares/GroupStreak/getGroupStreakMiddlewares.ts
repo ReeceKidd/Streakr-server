@@ -69,7 +69,7 @@ export const retreiveGroupStreakMembersInformationMiddleware = getRetreiveGroupS
   userModel
 );
 
-export const getRetreiveCreatorInformationMiddleware = (
+export const getRetreiveGroupStreakCreatorInformationMiddleware = (
   userModel: mongoose.Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
@@ -83,11 +83,16 @@ export const getRetreiveCreatorInformationMiddleware = (
     response.locals.groupStreak = groupStreak;
     next();
   } catch (err) {
-    next(new CustomError(ErrorType.RetreiveGroupStreakMembersInformation, err));
+    next(
+      new CustomError(
+        ErrorType.RetreiveGroupStreakCreatorInformationMiddleware,
+        err
+      )
+    );
   }
 };
 
-export const retreiveCreatorInformationMiddleware = getRetreiveCreatorInformationMiddleware(
+export const retreiveGroupStreakCreatorInformationMiddleware = getRetreiveGroupStreakCreatorInformationMiddleware(
   userModel
 );
 
@@ -96,7 +101,6 @@ export const getSendGroupStreakMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreak } = response.locals;
-    console.log(groupStreak);
     return response
       .status(resourceCreatedResponseCode)
       .send({ ...groupStreak });
@@ -113,6 +117,6 @@ export const getGroupStreakMiddlewares = [
   getGroupStreakParamsValidationMiddleware,
   retreiveGroupStreakMiddleware,
   retreiveGroupStreakMembersInformationMiddleware,
-  retreiveCreatorInformationMiddleware,
+  retreiveGroupStreakCreatorInformationMiddleware,
   sendGroupStreakMiddleware
 ];

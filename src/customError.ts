@@ -138,7 +138,8 @@ export enum ErrorType {
   SendFormattedFeedbackMiddleware,
   DeleteFeedbackMiddleware,
   SendFeedbackDeletedResponseMiddleware,
-  NoFeedbackToDeleteFound
+  NoFeedbackToDeleteFound,
+  RetreiveGroupStreakCreatorInformationMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -1158,6 +1159,13 @@ export class CustomError extends Error {
       case ErrorType.SendFeedbackDeletedResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-108`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveGroupStreakCreatorInformationMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-109`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

@@ -6,7 +6,9 @@ import {
   getGroupStreakParamsValidationMiddleware,
   getSendGroupStreakMiddleware,
   retreiveGroupStreakMembersInformationMiddleware,
-  getRetreiveGroupStreakMembersInformationMiddleware
+  getRetreiveGroupStreakMembersInformationMiddleware,
+  retreiveGroupStreakCreatorInformationMiddleware,
+  getRetreiveGroupStreakCreatorInformationMiddleware
 } from "./getGroupStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { ErrorType, CustomError } from "../../customError";
@@ -196,6 +198,54 @@ describe("retreiveGroupStreakMembersInformation", () => {
   });
 });
 
+describe("retreiveGroupStreakCreatorInformation", () => {
+  test("retreives group streak creator information and sets response.locals.groupStreak", async () => {
+    expect.assertions(4);
+
+    const user = { _id: "12345678", username: "usernames" };
+    const lean = jest.fn().mockResolvedValue(user);
+    const findOne = jest.fn(() => ({ lean }));
+    const userModel: any = {
+      findOne
+    };
+    const creatorId = "creatorId";
+    const groupStreak = { _id: "abc", creatorId };
+    const request: any = {};
+    const response: any = { locals: { groupStreak } };
+    const next = jest.fn();
+
+    const middleware = getRetreiveGroupStreakCreatorInformationMiddleware(
+      userModel
+    );
+    await middleware(request, response, next);
+
+    expect(findOne).toHaveBeenCalledWith({ _id: creatorId });
+    expect(lean).toHaveBeenCalled();
+    expect(response.locals.groupStreak.creator).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("calls next with RetreiveGroupStreakCreatorInformationMiddleware on middleware failure", async () => {
+    expect.assertions(1);
+
+    const response: any = {};
+    const request: any = {};
+    const next = jest.fn();
+
+    const middleware = getRetreiveGroupStreakCreatorInformationMiddleware(
+      {} as any
+    );
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.RetreiveGroupStreakCreatorInformationMiddleware,
+        expect.any(Error)
+      )
+    );
+  });
+});
+
 describe("sendGroupStreakMiddleware", () => {
   test("sends groupStreak", () => {
     expect.assertions(3);
@@ -238,9 +288,9 @@ describe("sendGroupStreakMiddleware", () => {
 
 describe("getGroupStreakMiddlewares", () => {
   test("that getGroupStreakMiddlewares are defined in the correct order", () => {
-    expect.assertions(5);
+    expect.assertions(6);
 
-    expect(getGroupStreakMiddlewares.length).toEqual(4);
+    expect(getGroupStreakMiddlewares.length).toEqual(5);
     expect(getGroupStreakMiddlewares[0]).toEqual(
       getGroupStreakParamsValidationMiddleware
     );
@@ -248,6 +298,9 @@ describe("getGroupStreakMiddlewares", () => {
     expect(getGroupStreakMiddlewares[2]).toEqual(
       retreiveGroupStreakMembersInformationMiddleware
     );
-    expect(getGroupStreakMiddlewares[3]).toEqual(sendGroupStreakMiddleware);
+    expect(getGroupStreakMiddlewares[3]).toEqual(
+      retreiveGroupStreakCreatorInformationMiddleware
+    );
+    expect(getGroupStreakMiddlewares[4]).toEqual(sendGroupStreakMiddleware);
   });
 });
