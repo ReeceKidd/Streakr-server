@@ -145,7 +145,7 @@ describe("retreiveUserMiddleware", () => {
 });
 
 describe("retreiveGroupStreakMiddleware", () => {
-  test("sets response.locals.soloStreak and calls next()", async () => {
+  test("sets response.locals.groupStreak and calls next()", async () => {
     expect.assertions(3);
     const groupStreakId = "abc";
     const request: any = {
@@ -168,9 +168,9 @@ describe("retreiveGroupStreakMiddleware", () => {
 
   test("throws CreateGroupMemberStreakGroupStreakDoesNotExist error when solo streak does not exist", async () => {
     expect.assertions(1);
-    const soloStreakId = "abc";
+    const groupStreakId = "abc";
     const request: any = {
-      body: { soloStreakId }
+      body: { groupStreakId }
     };
     const response: any = { locals: {} };
     const next = jest.fn();
