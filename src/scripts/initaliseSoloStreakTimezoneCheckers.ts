@@ -44,16 +44,16 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
 
 export const createSoloStreakDailyTrackerJob = async (timezone: string) => {
   const endOfDay = moment.tz(timezone).endOf(AgendaTimeRanges.day);
-  const date = endOfDay.toDate();
-  (async () => {
+  return (async () => {
     const soloStreakDailyTrackerJob = agenda.create(
       AgendaJobs.soloStreakDailyTracker,
       { timezone }
     );
-    soloStreakDailyTrackerJob.schedule(date);
+    soloStreakDailyTrackerJob.schedule(endOfDay.toDate());
     await agenda.start();
     await soloStreakDailyTrackerJob
       .repeatEvery(AgendaProcessTimes.oneDay)
       .save();
+    return soloStreakDailyTrackerJob;
   })();
 };

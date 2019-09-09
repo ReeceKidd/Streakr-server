@@ -115,7 +115,7 @@ describe("soloStreakDailyTracker", () => {
 
     const job = await createSoloStreakDailyTrackerJob(timezone);
 
-    await job!.run();
+    await job.run();
 
     const updatedMaintainedSoloStreakResponse = await streakoid.soloStreaks.getOne(
       maintainedSoloStreakId

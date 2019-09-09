@@ -8,6 +8,10 @@ export interface AppConfigHttp {
   STRIPE_SHAREABLE_KEY: string;
   STRIPE_PLAN: string;
   APPLICATION_URL: string;
+  EMAIL_USER: string;
+  EMAIL_PASSWORD: string;
+  EMAIL_FROM: string;
+  EMAIL_TO: string;
 }
 
 export type AppConfig = AppConfigHttp;
@@ -27,7 +31,11 @@ export const getServiceConfig = (
     AWS_REGION,
     STRIPE_SHAREABLE_KEY,
     STRIPE_PLAN,
-    APPLICATION_URL
+    APPLICATION_URL,
+    EMAIL_USER,
+    EMAIL_PASSWORD,
+    EMAIL_FROM,
+    EMAIL_TO
   } = environment;
 
   if (!NODE_ENV) throw new Error("NODE_ENV is not provided.");
@@ -60,6 +68,22 @@ export const getServiceConfig = (
     throw new Error("APPLICATION_URL is not provided.");
   }
 
+  if (!EMAIL_USER) {
+    throw new Error("EMAIL_USER is not provided");
+  }
+
+  if (!EMAIL_PASSWORD) {
+    throw new Error("EMAIL_PASSWORD is not provided");
+  }
+
+  if (!EMAIL_FROM) {
+    throw new Error("EMAIL_FROM is not provided");
+  }
+
+  if (!EMAIL_TO) {
+    throw new Error("EMAIL_TO is not provided");
+  }
+
   return {
     NODE_ENV,
     PORT,
@@ -69,6 +93,10 @@ export const getServiceConfig = (
     AWS_REGION,
     STRIPE_SHAREABLE_KEY,
     STRIPE_PLAN,
-    APPLICATION_URL
+    APPLICATION_URL,
+    EMAIL_USER,
+    EMAIL_PASSWORD,
+    EMAIL_FROM,
+    EMAIL_TO
   } as AppConfigHttp;
 };

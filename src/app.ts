@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import passport from "passport";
 import dotenv from "dotenv";
 import cors from "cors";
-import Agenda from "agenda";
 const AgendaDash = require("agendash");
 
 import ApiVersions from "./Server/versions";
@@ -28,7 +27,7 @@ app.get(`/health`, (request, response, next) => {
   return response.status(200).send({ message: "success" });
 });
 
-// app.use("/dash", AgendaDash(agenda));
+app.use("/dash", AgendaDash(agenda));
 
 app.use(passport.initialize());
 app.use(passport.session());

@@ -10,7 +10,11 @@ describe("getServiceConfig", () => {
     AWS_REGION: "AWS_REGION",
     STRIPE_SHAREABLE_KEY: "STRIPE_SHAREABLE_KEY",
     STRIPE_PLAN: "STRIPE_PLAN",
-    APPLICATION_URL: "APPLICATION_URL"
+    APPLICATION_URL: "APPLICATION_URL",
+    EMAIL_USER: "EMAIL_USER",
+    EMAIL_PASSWORD: "EMAIL_PASSWORD",
+    EMAIL_FROM: "EMAIL_FROM",
+    EMAIL_TO: "EMAIL_TO"
   };
 
   test("that correct error is thrown when NODE_ENV is not provided", () => {
@@ -136,6 +140,62 @@ describe("getServiceConfig", () => {
       getServiceConfig(environment);
     } catch (err) {
       expect(err.message).toEqual("APPLICATION_URL is not provided.");
+    }
+  });
+
+  test("that correct error is thrown when EMAIL_USER is not provided.", () => {
+    expect.assertions(1);
+    const environment = {
+      ...environmentMock,
+      EMAIL_USER: undefined
+    };
+
+    try {
+      getServiceConfig(environment);
+    } catch (err) {
+      expect(err.message).toEqual("EMAIL_USER is not provided.");
+    }
+  });
+
+  test("that correct error is thrown when EMAIL_PASSWORD is not provided.", () => {
+    expect.assertions(1);
+    const environment = {
+      ...environmentMock,
+      EMAIL_PASSWORD: undefined
+    };
+
+    try {
+      getServiceConfig(environment);
+    } catch (err) {
+      expect(err.message).toEqual("EMAIL_PASSWORD is not provided.");
+    }
+  });
+
+  test("that correct error is thrown when EMAIL_FROM is not provided.", () => {
+    expect.assertions(1);
+    const environment = {
+      ...environmentMock,
+      EMAIL_FROM: undefined
+    };
+
+    try {
+      getServiceConfig(environment);
+    } catch (err) {
+      expect(err.message).toEqual("EMAIL_FROM is not provided.");
+    }
+  });
+
+  test("that correct error is thrown when EMAIL_TO is not provided.", () => {
+    expect.assertions(1);
+    const environment = {
+      ...environmentMock,
+      EMAIL_TO: undefined
+    };
+
+    try {
+      getServiceConfig(environment);
+    } catch (err) {
+      expect(err.message).toEqual("EMAIL_TO is not provided.");
     }
   });
 });
