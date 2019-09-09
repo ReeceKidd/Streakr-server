@@ -10,6 +10,7 @@ jest.setTimeout(120000);
 describe("POST /group-member-streaks", () => {
   let registeredUserId: string;
   let createdGroupStreakId: string;
+  let createdGroupMemberStreakId: string;
 
   const streakName = "Daily Spanish";
   const streakDescription = "Everyday I must do Spanish on Duolingo";
@@ -33,6 +34,7 @@ describe("POST /group-member-streaks", () => {
   afterAll(async () => {
     await streakoid.users.deleteOne(registeredUserId);
     await streakoid.groupStreaks.deleteOne(createdGroupStreakId);
+    await streakoid.groupMemberStreaks.deleteOne(createdGroupMemberStreakId);
   });
 
   test("throws userId does not exist error", async () => {
@@ -86,6 +88,8 @@ describe("POST /group-member-streaks", () => {
       createdAt,
       updatedAt
     } = createGroupMemberStreakResponse.data;
+
+    createdGroupMemberStreakId = createGroupMemberStreakResponse.data._id;
 
     expect(createGroupMemberStreakResponse.status).toEqual(201);
     expect(userId).toEqual(registeredUserId);
