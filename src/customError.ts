@@ -146,7 +146,10 @@ export enum ErrorType {
   CreateGroupMemberStreakRetreiveUserMiddleware,
   CreateGroupMemberStreakUserDoesNotExist,
   CreateGroupMemberStreakGroupStreakDoesNotExist,
-  CreateGroupMemberStreakRetreiveGroupStreakMiddleware
+  CreateGroupMemberStreakRetreiveGroupStreakMiddleware,
+  DeleteGroupMemberStreakMiddleware,
+  SendGroupMemberStreakDeletedResponseMiddleware,
+  NoGroupMemberStreakToDeleteFound
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -399,6 +402,14 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-31`,
           message: "Group streak does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoGroupMemberStreakToDeleteFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-32`,
+          message: "Group member streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -1224,6 +1235,20 @@ export class CustomError extends Error {
       case ErrorType.CreateGroupMemberStreakRetreiveGroupStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-114`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteGroupMemberStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-115`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendGroupMemberStreakDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-116`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
