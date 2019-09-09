@@ -31,9 +31,10 @@ export const agenda = new Agenda({
 
 agenda.on("success", async job => {
   try {
-    const message = `Ran job: ${job.attrs.name} for timezone: ${
-      job.attrs.data.timezone
-    }, at ${new Date()}`;
+    const message = `Job name: ${job.attrs.name}
+    Timezone: ${job.attrs.data.timezone}
+    Local next run time: ${job.attrs.nextRunAt}
+    Run time: ${new Date()}`;
     await sendEmail("Agenda Success", message);
   } catch (err) {
     console.log(err);
