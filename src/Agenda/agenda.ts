@@ -45,12 +45,14 @@ agenda.on("success", async job => {
 
 agenda.on("fail", async (err, job) => {
   try {
+    console.log(err);
     const message = `
         Envirionment: ${NODE_ENV}
         Ran job: ${job.attrs.name} for timezone: ${job.attrs.data.timezone},
       At ${new Date()}
       Failure reason: ${err.message}
-      Failure count ${job.attrs.failCount}`;
+      Failure count ${job.attrs.failCount}
+      err: ${err.toString()}`;
     await sendEmail("Agenda Failure", message);
   } catch (err) {
     console.log(err);
