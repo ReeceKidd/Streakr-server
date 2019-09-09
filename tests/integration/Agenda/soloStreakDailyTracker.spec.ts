@@ -67,7 +67,6 @@ describe("soloStreakDailyTracker", () => {
     } = attrs;
     expect(name).toEqual("soloStreakDailyTracker");
     expect(data.timezone).toEqual("Europe/London");
-    expect(data.custom).toEqual(false);
     expect(Object.keys(data)).toEqual(["timezone", "custom"]);
     expect(type).toEqual("normal");
     expect(priority).toEqual(0);

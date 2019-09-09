@@ -36,8 +36,6 @@ mongoose
   .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false })
   .catch(err => console.log(err.message));
 
-initialiseSoloStreakTimezoneCheckerJobs();
-
 agenda
   .start()
   .then(() => {

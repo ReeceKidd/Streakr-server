@@ -7,7 +7,6 @@ import {
   AgendaTimeRanges,
   AgendaProcessTimes
 } from "../Agenda/agenda";
-import { dayFormat } from "../RouteMiddlewares/CompleteTask/createCompleteTaskMiddlewares";
 
 export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
   const timezones = moment.tz.names();
@@ -15,8 +14,7 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
 
   const numberOfSoloStreakTimezoneCheckerJobs = await agendaJobModel.countDocuments(
     {
-      name: AgendaJobs.soloStreakDailyTracker,
-      "data.custom": false
+      name: AgendaJobs.soloStreakDailyTracker
     }
   );
   console.log(
