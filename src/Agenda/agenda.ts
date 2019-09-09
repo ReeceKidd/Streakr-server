@@ -4,7 +4,7 @@ import { getServiceConfig } from "../getServiceConfig";
 import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
 import { sendEmail } from "../email";
 
-const { DATABASE_URI } = getServiceConfig();
+const { DATABASE_URI, NODE_ENV } = getServiceConfig();
 
 export enum AgendaJobs {
   soloStreakDailyTracker = "soloStreakDailyTracker"
@@ -31,7 +31,9 @@ export const agenda = new Agenda({
 
 agenda.on("success", async job => {
   try {
-    const message = `Job name: ${job.attrs.name}
+    const message = `
+    Environment: ${NODE_ENV}
+    Job name: ${job.attrs.name}
     Timezone: ${job.attrs.data.timezone}
     Local next run time: ${job.attrs.nextRunAt}
     Run time: ${new Date()}`;
@@ -43,9 +45,9 @@ agenda.on("success", async job => {
 
 agenda.on("fail", async (err, job) => {
   try {
-    const message = `Ran job: ${job.attrs.name} for timezone: ${
-      job.attrs.data.timezone
-    },
+    const message = `
+        Envirionment: ${NODE_ENV}
+        Ran job: ${job.attrs.name} for timezone: ${job.attrs.data.timezone},
       At ${new Date()}
       Failure reason: ${err.message}
       Failure count ${job.attrs.failCount}`;
