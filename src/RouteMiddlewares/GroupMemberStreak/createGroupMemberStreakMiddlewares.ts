@@ -12,6 +12,7 @@ import {
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import { User, userModel } from "../../Models/User";
+import { groupStreakModel, GroupStreak } from "../../Models/GroupStreak";
 
 export interface GroupMemberStreakRegistrationRequestBody {
   userId: string;
@@ -60,7 +61,34 @@ export const getRetreiveUserMiddleware = (
 
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
-// Does group Id exist middleware
+export const getRetreiveGroupStreakMiddleware = (
+  groupStreakModel: mongoose.Model<GroupStreak>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { groupStreakId } = request.body;
+    const groupStreak = await groupStreakModel.findOne({ _id: groupStreakId });
+    if (!groupStreak) {
+      throw new CustomError(
+        ErrorType.CreateGroupMemberStreakGroupStreakDoesNotExist
+      );
+    }
+    response.locals.groupStreak = groupStreak;
+    next();
+  } catch (err) {
+    if (err instanceof CustomError) next(err);
+    else
+      next(
+        new CustomError(
+          ErrorType.CreateGroupMemberStreakRetreiveGroupStreakMiddleware,
+          err
+        )
+      );
+  }
+};
+
+export const retreiveGroupStreakMiddleware = getRetreiveGroupStreakMiddleware(
+  groupStreakModel
+);
 
 export const getCreateGroupMemberStreakFromRequestMiddleware = (
   groupMemberStreak: mongoose.Model<GroupMemberStreak>
@@ -123,6 +151,7 @@ export const sendFormattedGroupMemberStreakMiddleware = (
 export const createGroupMemberStreakMiddlewares = [
   createGroupMemberStreakBodyValidationMiddleware,
   retreiveUserMiddleware,
+  retreiveGroupStreakMiddleware,
   createGroupMemberStreakFromRequestMiddleware,
   saveGroupMemberStreakToDatabaseMiddleware,
   sendFormattedGroupMemberStreakMiddleware

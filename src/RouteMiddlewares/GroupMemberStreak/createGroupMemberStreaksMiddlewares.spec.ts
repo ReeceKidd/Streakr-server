@@ -5,7 +5,10 @@ import {
   getCreateGroupMemberStreakFromRequestMiddleware,
   saveGroupMemberStreakToDatabaseMiddleware,
   sendFormattedGroupMemberStreakMiddleware,
-  retreiveUserMiddleware
+  retreiveUserMiddleware,
+  getRetreiveGroupStreakMiddleware,
+  getRetreiveUserMiddleware,
+  retreiveGroupStreakMiddleware
 } from "./createGroupMemberStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -79,6 +82,133 @@ describe(`createGroupMemberStreakBodyValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 });
+
+describe("retreiveUserMiddleware", () => {
+  test("sets response.locals.user and calls next()", async () => {
+    expect.assertions(4);
+    const lean = jest.fn(() => true);
+    const findOne = jest.fn(() => ({ lean }));
+    const userModel = { findOne };
+    const userId = "abcdefg";
+    const request: any = { body: { userId } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getRetreiveUserMiddleware(userModel as any);
+
+    await middleware(request, response, next);
+
+    expect(response.locals.user).toBeDefined();
+    expect(findOne).toBeCalledWith({ _id: userId });
+    expect(lean).toBeCalledWith();
+    expect(next).toBeCalledWith();
+  });
+
+  test("throws CreateGroupMemberStreakUserDoesNotExist when user does not exist", async () => {
+    expect.assertions(1);
+    const userId = "abcd";
+    const lean = jest.fn(() => false);
+    const findOne = jest.fn(() => ({ lean }));
+    const userModel = { findOne };
+    const request: any = { body: { userId } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getRetreiveUserMiddleware(userModel as any);
+
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.CreateGroupMemberStreakUserDoesNotExist)
+    );
+  });
+
+  test("throws CreateGroupMemberStreakRetreiveUserMiddleware error on middleware failure", async () => {
+    expect.assertions(1);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const userId = "abcd";
+    const findOne = jest.fn(() => ({}));
+    const userModel = { findOne };
+    const request: any = { body: { userId } };
+    const response: any = { status, locals: {} };
+    const next = jest.fn();
+    const middleware = getRetreiveUserMiddleware(userModel as any);
+
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.CreateGroupMemberStreakRetreiveUserMiddleware,
+        expect.any(Error)
+      )
+    );
+  });
+});
+
+describe("retreiveGroupStreakMiddleware", () => {
+  test("sets response.locals.soloStreak and calls next()", async () => {
+    expect.assertions(3);
+    const groupStreakId = "abc";
+    const request: any = {
+      body: { groupStreakId }
+    };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const findOne = jest.fn(() => Promise.resolve(true));
+    const groupStreakModel = { findOne };
+    const middleware = getRetreiveGroupStreakMiddleware(
+      groupStreakModel as any
+    );
+
+    await middleware(request, response, next);
+
+    expect(findOne).toBeCalledWith({ _id: groupStreakId });
+    expect(response.locals.groupStreak).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("throws CreateGroupMemberStreakGroupStreakDoesNotExist error when solo streak does not exist", async () => {
+    expect.assertions(1);
+    const soloStreakId = "abc";
+    const request: any = {
+      body: { soloStreakId }
+    };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const findOne = jest.fn(() => Promise.resolve(false));
+    const groupStreakModel = { findOne };
+    const middleware = getRetreiveGroupStreakMiddleware(
+      groupStreakModel as any
+    );
+
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.CreateGroupMemberStreakGroupStreakDoesNotExist)
+    );
+  });
+
+  test("throws CreateGroupMemberStreakRetreiveGroupStreakMiddleware error on middleware failure", async () => {
+    expect.assertions(1);
+    const request: any = {};
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const findOne = jest.fn(() => Promise.resolve(true));
+    const groupStreakModel = { findOne };
+    const middleware = getRetreiveGroupStreakMiddleware(
+      groupStreakModel as any
+    );
+
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.CreateGroupMemberStreakRetreiveGroupStreakMiddleware,
+        expect.any(Error)
+      )
+    );
+  });
+});
+
 describe(`createGroupMemberStreakFromRequestMiddleware`, () => {
   test("sets response.locals.newGroupMemberStreak", async () => {
     expect.assertions(2);
@@ -237,20 +367,23 @@ describe(`sendFormattedGroupMemberStreakMiddleware`, () => {
 
 describe(`createGroupMemberStreakMiddlewares`, () => {
   test("that createGroupMemberStreak middlewares are defined in the correct order", async () => {
-    expect.assertions(6);
+    expect.assertions(7);
 
-    expect(createGroupMemberStreakMiddlewares.length).toEqual(5);
+    expect(createGroupMemberStreakMiddlewares.length).toEqual(6);
     expect(createGroupMemberStreakMiddlewares[0]).toBe(
       createGroupMemberStreakBodyValidationMiddleware
     );
     expect(createGroupMemberStreakMiddlewares[1]).toBe(retreiveUserMiddleware);
     expect(createGroupMemberStreakMiddlewares[2]).toBe(
-      createGroupMemberStreakFromRequestMiddleware
+      retreiveGroupStreakMiddleware
     );
     expect(createGroupMemberStreakMiddlewares[3]).toBe(
-      saveGroupMemberStreakToDatabaseMiddleware
+      createGroupMemberStreakFromRequestMiddleware
     );
     expect(createGroupMemberStreakMiddlewares[4]).toBe(
+      saveGroupMemberStreakToDatabaseMiddleware
+    );
+    expect(createGroupMemberStreakMiddlewares[5]).toBe(
       sendFormattedGroupMemberStreakMiddleware
     );
   });
