@@ -42,8 +42,6 @@ describe("POST /group-streaks", () => {
       timezone
     });
 
-    console.log(response.data);
-
     expect(response.status).toEqual(201);
     expect(response.data.creatorId).toEqual(creatorId);
     expect(response.data.streakName).toEqual(streakName);
