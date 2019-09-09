@@ -31,13 +31,15 @@ export const agenda = new Agenda({
 
 agenda.on("success", async job => {
   try {
-    const message = `
-    Environment: ${NODE_ENV}
-    Job name: ${job.attrs.name}
-    Timezone: ${job.attrs.data.timezone}
-    Local next run time: ${job.attrs.nextRunAt}
-    Run time: ${new Date()}`;
-    await sendEmail("Agenda Success", message);
+    if (job.attrs.data.timezone === "Europe/London") {
+      const message = `
+        Environment: ${NODE_ENV}
+        Job name: ${job.attrs.name}
+        Timezone: ${job.attrs.data.timezone}
+        Local next run time: ${job.attrs.nextRunAt}
+        Run time: ${new Date()}`;
+      await sendEmail("Agenda Success", message);
+    }
   } catch (err) {
     console.log(err);
   }
