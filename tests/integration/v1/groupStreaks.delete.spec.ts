@@ -21,15 +21,15 @@ describe(`DELETE /group-streaks`, () => {
     );
     userId = registrationResponse.data._id;
     const creatorId = userId;
-    const members: string[] = [];
+    const members: string[] = [userId];
 
-    const createSoloStreakResponse = await streakoid.groupStreaks.create(
+    const createSoloStreakResponse = await streakoid.groupStreaks.create({
       creatorId,
-      name,
-      description,
+      streakName: name,
+      streakDescription: description,
       members,
       timezone
-    );
+    });
     groupStreakId = createSoloStreakResponse.data._id;
   });
 

@@ -19,12 +19,14 @@ describe(`createGroupStreakBodyValidationMiddleware`, () => {
   const creatorId = "abcdefgh";
   const streakName = "Followed our calorie level";
   const streakDescription = "Stuck to our recommended calorie level";
-  const members: string[] = [];
+  const numberOfMinutes = 30;
+  const members: string[] = ["123"];
 
   const body = {
     creatorId,
     streakName,
     streakDescription,
+    numberOfMinutes,
     members
   };
 
@@ -93,14 +95,38 @@ describe(`createGroupStreakBodyValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("sends streakDescription is missing error", () => {
+  test("sends members must be an array error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
       body: {
         ...body,
-        streakDescription: undefined
+        members: 123
+      }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    createGroupStreakBodyValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message: 'child "members" fails because ["members" must be an array]'
+    });
+    expect(next).not.toBeCalled();
+  });
+
+  test("sends members must have at least one member error", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      body: {
+        ...body,
+        members: []
       }
     };
     const response: any = {
@@ -113,19 +139,19 @@ describe(`createGroupStreakBodyValidationMiddleware`, () => {
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
-        'child "streakDescription" fails because ["streakDescription" is required]'
+        'child "members" fails because ["members" must contain at least 1 items]'
     });
     expect(next).not.toBeCalled();
   });
 
-  test("sends members is missing error", () => {
+  test("sends numberOfMinutes must be a postive number error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
       body: {
         ...body,
-        members: undefined
+        numberOfMinutes: -1
       }
     };
     const response: any = {
@@ -137,7 +163,8 @@ describe(`createGroupStreakBodyValidationMiddleware`, () => {
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
-      message: 'child "members" fails because ["members" is required]'
+      message:
+        'child "numberOfMinutes" fails because ["numberOfMinutes" must be a positive number]'
     });
     expect(next).not.toBeCalled();
   });

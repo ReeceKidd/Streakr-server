@@ -5,6 +5,7 @@ const { APPLICATION_URL } = getServiceConfig();
 import ApiVersions from "../Server/versions";
 import { RouteCategories } from "../routeCategories";
 import { SupportedRequestHeaders } from "../Server/headers";
+import { optional } from "joi";
 
 const getAll = ({
   creatorId,
@@ -34,16 +35,24 @@ const getOne = (groupStreakId: string) => {
   );
 };
 
-const create = (
-  creatorId: string,
-  streakName: string,
-  streakDescription: string,
-  members: string[],
-  timezone: string
-) => {
+const create = ({
+  creatorId,
+  streakName,
+  timezone,
+  streakDescription,
+  numberOfMinutes,
+  members
+}: {
+  creatorId: string;
+  streakName: string;
+  timezone: string;
+  streakDescription?: string;
+  numberOfMinutes?: number;
+  members?: string[];
+}) => {
   return axios.post(
     `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupStreaks}`,
-    { creatorId, streakName, streakDescription, members },
+    { creatorId, streakName, streakDescription, numberOfMinutes, members },
     { headers: { [SupportedRequestHeaders.xTimezone]: timezone } }
   );
 };

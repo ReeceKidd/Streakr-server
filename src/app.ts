@@ -13,6 +13,7 @@ import v1Router from "./Routers/versions/v1";
 import { getServiceConfig } from "./getServiceConfig";
 import { errorHandler } from "./errorHandler";
 import { agenda } from "./Agenda/agenda";
+import { initialiseSoloStreakTimezoneCheckerJobs } from "./scripts/initaliseSoloStreakTimezoneCheckers";
 
 dotenv.config();
 
@@ -28,8 +29,6 @@ app.get(`/health`, (request, response, next) => {
 });
 
 app.use("/dash", AgendaDash(agenda));
-
-// initialiseSoloStreakTimezoneCheckerJobs();
 
 app.use(passport.initialize());
 app.use(passport.session());

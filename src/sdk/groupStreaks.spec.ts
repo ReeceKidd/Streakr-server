@@ -79,16 +79,17 @@ describe("SDK groupStreaks", () => {
       const creatorId = "abcdefgh";
       const streakName = "Followed our calorie level";
       const streakDescription = "Stuck to our recommended calorie level";
+
       const members: string[] = [];
       const timezone = "Europe/London";
 
-      await streakoid.groupStreaks.create(
+      await streakoid.groupStreaks.create({
         creatorId,
         streakName,
+        timezone,
         streakDescription,
-        members,
-        timezone
-      );
+        members
+      });
 
       expect(axios.post).toBeCalledWith(
         `${APPLICATION_URL}/v1/group-streaks`,

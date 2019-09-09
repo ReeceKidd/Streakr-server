@@ -21,13 +21,13 @@ describe("GET /group-streaks/:groupStreakId", () => {
 
     const members = [userId];
 
-    const createGroupStreakResponse = await streakoid.groupStreaks.create(
-      userId,
+    const createGroupStreakResponse = await streakoid.groupStreaks.create({
+      creatorId: userId,
       streakName,
       streakDescription,
       members,
       timezone
-    );
+    });
     groupStreakId = createGroupStreakResponse.data._id;
   });
 

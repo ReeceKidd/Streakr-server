@@ -16,14 +16,16 @@ export interface GroupStreakRegistrationRequestBody {
   creatorId: string;
   streakName: string;
   streakDescription: string;
+  numberOfMinutes: number;
   members: string[];
 }
 
 const createGroupStreakBodyValidationSchema = {
   creatorId: Joi.string().required(),
   streakName: Joi.string().required(),
-  streakDescription: Joi.string().required(),
-  members: Joi.array().required()
+  streakDescription: Joi.string(),
+  numberOfMinutes: Joi.number().positive(),
+  members: Joi.array().min(1)
 };
 
 export const createGroupStreakBodyValidationMiddleware = (
@@ -99,11 +101,18 @@ export const getCreateGroupStreakFromRequestMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
-    const { creatorId, streakName, streakDescription, members } = request.body;
+    const {
+      creatorId,
+      streakName,
+      streakDescription,
+      numberOfMinutes,
+      members
+    } = request.body;
     response.locals.newGroupStreak = new groupStreak({
       creatorId,
       streakName,
       streakDescription,
+      numberOfMinutes,
       members,
       timezone
     });
