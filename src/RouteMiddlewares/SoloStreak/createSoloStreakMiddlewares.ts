@@ -3,8 +3,6 @@ import * as Joi from "joi";
 import moment from "moment-timezone";
 import * as mongoose from "mongoose";
 
-import { AgendaTimeRanges } from "../../Agenda/agenda";
-
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
 import { User } from "../../Models/User";
@@ -12,6 +10,7 @@ import { SoloStreak, soloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { dayFormat } from "../CompleteTask/createCompleteTaskMiddlewares";
 import { CustomError, ErrorType } from "../../customError";
+import { AgendaTimeRanges } from "../../Agenda/agenda";
 
 export interface SoloStreakRegistrationRequestBody {
   userId: string;

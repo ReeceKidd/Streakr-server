@@ -3,14 +3,13 @@ import * as Joi from "joi";
 import moment from "moment-timezone";
 import * as mongoose from "mongoose";
 
-import { AgendaTimeRanges } from "../../Agenda/agenda";
-
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
 import { GroupStreak, groupStreakModel } from "../../Models/GroupStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { dayFormat } from "../CompleteTask/createCompleteTaskMiddlewares";
 import { CustomError, ErrorType } from "../../customError";
+import { AgendaProcessTimes, AgendaTimeRanges } from "../../Agenda/agenda";
 
 export interface GroupStreakRegistrationRequestBody {
   creatorId: string;

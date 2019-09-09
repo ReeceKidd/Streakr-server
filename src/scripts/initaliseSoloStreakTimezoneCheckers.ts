@@ -1,10 +1,13 @@
 import moment from "moment";
+
 import { agendaJobModel } from "../Models/AgendaJob";
-import agenda, {
+import {
+  agenda,
   AgendaJobs,
   AgendaTimeRanges,
   AgendaProcessTimes
 } from "../Agenda/agenda";
+import { dayFormat } from "../RouteMiddlewares/CompleteTask/createCompleteTaskMiddlewares";
 
 export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
   const timezones = moment.tz.names();
@@ -41,12 +44,16 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
 
 export const createSoloStreakDailyTrackerJob = async (timezone: string) => {
   const endOfDay = moment.tz(timezone).endOf(AgendaTimeRanges.day);
-  await agenda.start();
-  const job = await agenda.schedule(
-    endOfDay.toDate(),
-    AgendaJobs.soloStreakDailyTracker,
-    { timezone, custom: false }
-  );
-  await job.repeatEvery(AgendaProcessTimes.twentyFourHours);
-  return job.save();
+  const date = endOfDay.toDate();
+  (async () => {
+    const soloStreakDailyTrackerJob = agenda.create(
+      AgendaJobs.soloStreakDailyTracker,
+      { timezone }
+    );
+    soloStreakDailyTrackerJob.schedule(date);
+    await agenda.start();
+    await soloStreakDailyTrackerJob
+      .repeatEvery(AgendaProcessTimes.oneDay)
+      .save();
+  })();
 };

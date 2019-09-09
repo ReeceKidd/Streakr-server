@@ -12,7 +12,7 @@ import v1Router from "./Routers/versions/v1";
 
 import { getServiceConfig } from "./getServiceConfig";
 import { errorHandler } from "./errorHandler";
-import { agenda } from "./Agenda/agenda";
+import { agenda, AgendaJobs } from "./Agenda/agenda";
 import { initialiseSoloStreakTimezoneCheckerJobs } from "./scripts/initaliseSoloStreakTimezoneCheckers";
 
 dotenv.config();
@@ -28,7 +28,7 @@ app.get(`/health`, (request, response, next) => {
   return response.status(200).send({ message: "success" });
 });
 
-app.use("/dash", AgendaDash(agenda));
+// app.use("/dash", AgendaDash(agenda));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -36,6 +36,18 @@ app.use(passport.session());
 mongoose
   .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false })
   .catch(err => console.log(err.message));
+
+initialiseSoloStreakTimezoneCheckerJobs();
+
+agenda
+  .start()
+  .then(() => {
+    console.log("Agenda processing");
+  })
+  .catch(err => {
+    console.log("Agenda error");
+    console.log(err);
+  });
 
 mongoose.set("useCreateIndex", true);
 

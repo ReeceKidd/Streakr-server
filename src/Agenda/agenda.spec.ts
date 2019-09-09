@@ -1,22 +1,22 @@
-import { soloStreakCompleteForTimezoneTracker } from "./agenda";
-import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
-jest.mock("./manageDailySoloStreaks");
+// import { soloStreakCompleteForTimezoneTracker } from "./producer";
+// import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
+// jest.mock("./manageDailySoloStreaks");
 
-describe("soloStreakCompleteForTimezoneTracker", () => {
-  test("calls manageDailySoloStreaks with the correct params", async () => {
-    const timezone = "Europe/London";
-    const job = {
-      attrs: {
-        data: {
-          timezone
-        }
-      }
-    };
-    const done = jest.fn();
+// describe("soloStreakCompleteForTimezoneTracker", () => {
+//   test("calls manageDailySoloStreaks with the correct params", async () => {
+//     const timezone = "Europe/London";
+//     const job = {
+//       attrs: {
+//         data: {
+//           timezone
+//         }
+//       }
+//     };
+//     const done = jest.fn();
 
-    await soloStreakCompleteForTimezoneTracker(job, done);
+//     await soloStreakCompleteForTimezoneTracker(job, done);
 
-    expect(manageDailySoloStreaks).toBeCalledWith(timezone);
-    expect(done).toBeCalledWith();
-  });
-});
+//     expect(manageDailySoloStreaks).toBeCalledWith(timezone);
+//     expect(done).toBeCalledWith();
+//   });
+// });

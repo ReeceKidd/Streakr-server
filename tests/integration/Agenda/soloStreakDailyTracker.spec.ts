@@ -54,7 +54,7 @@ describe("soloStreakDailyTracker", () => {
     expect.assertions(11);
     const timezone = "Europe/London";
     const job = await createSoloStreakDailyTrackerJob(timezone);
-    const { attrs } = job;
+    const { attrs } = job as any;
     const {
       name,
       data,
@@ -115,7 +115,7 @@ describe("soloStreakDailyTracker", () => {
 
     const job = await createSoloStreakDailyTrackerJob(timezone);
 
-    await job.run();
+    await job!.run();
 
     const updatedMaintainedSoloStreakResponse = await streakoid.soloStreaks.getOne(
       maintainedSoloStreakId
@@ -158,7 +158,7 @@ describe("soloStreakDailyTracker", () => {
     expect(streakTrackingEvent.streakId).toEqual(maintainedSoloStreakId);
     expect(streakTrackingEvent.userId).toEqual(userId);
 
-    maintainedSoloStreakAgendaJobId = String(job.attrs._id);
+    maintainedSoloStreakAgendaJobId = String(job!.attrs._id);
     maintainedStreakTrackingEventId = streakTrackingEvent._id;
   });
 
@@ -188,9 +188,9 @@ describe("soloStreakDailyTracker", () => {
 
     const job = await createSoloStreakDailyTrackerJob(timezone);
 
-    await job.run();
+    await job!.run();
     // Simulates an additional day passing
-    await job.run();
+    await job!.run();
 
     const updatedLostSoloStreakResponse = await streakoid.soloStreaks.getOne(
       lostSoloStreakId
@@ -242,7 +242,7 @@ describe("soloStreakDailyTracker", () => {
     expect(lostStreakTrackingEvent.streakId).toEqual(lostSoloStreakId);
     expect(lostStreakTrackingEvent.userId).toEqual(userId);
 
-    lostSoloStreakAgendaJobId = String(job.attrs._id);
+    lostSoloStreakAgendaJobId = String(job!.attrs._id);
     lostStreakTrackingEventId = lostStreakTrackingEvent._id;
   });
 
@@ -262,9 +262,9 @@ describe("soloStreakDailyTracker", () => {
     inactiveSoloStreakId = createInactiveSoloStreakResponse.data._id;
 
     const job = await createSoloStreakDailyTrackerJob(timezone);
-    inactiveSoloStreakAgendaJobId = String(job.attrs._id);
+    inactiveSoloStreakAgendaJobId = String(job!.attrs._id);
 
-    await job.run();
+    await job!.run();
 
     const updatedInactiveSoloStreakResponse = await streakoid.soloStreaks.getOne(
       inactiveSoloStreakId

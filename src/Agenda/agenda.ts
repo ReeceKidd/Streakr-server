@@ -1,18 +1,9 @@
 import Agenda from "agenda";
+
 import { getServiceConfig } from "../getServiceConfig";
 import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
 
 const { DATABASE_URI } = getServiceConfig();
-export const agenda = new Agenda({
-  db: {
-    address: DATABASE_URI,
-    collection: "AgendaJobs",
-    options: {
-      useNewUrlParser: true
-    }
-  },
-  processEvery: "30 seconds"
-});
 
 export enum AgendaJobs {
   soloStreakDailyTracker = "soloStreakDailyTracker"
@@ -23,26 +14,26 @@ export enum AgendaTimeRanges {
 }
 
 export enum AgendaProcessTimes {
-  twentyFourHours = "24 hours"
+  oneDay = "1 day"
 }
 
-interface SoloStreakCompleteForTimezoneTrackerData
-  extends Agenda.JobAttributesData {
-  timezone?: string;
-}
-
-export const soloStreakCompleteForTimezoneTracker = async (
-  job: SoloStreakCompleteForTimezoneTrackerData,
-  done: (err?: Error | undefined) => void
-) => {
-  const timezone = job.attrs.data.timezone;
-  await manageDailySoloStreaks(timezone);
-  done();
-};
+export const agenda = new Agenda({
+  db: {
+    address: DATABASE_URI,
+    collection: "AgendaJobs",
+    options: {
+      useNewUrlParser: true
+    }
+  },
+  processEvery: "30 Seconds"
+});
 
 agenda.define(
   AgendaJobs.soloStreakDailyTracker,
-  soloStreakCompleteForTimezoneTracker
+  { priority: "high" },
+  async (job, done) => {
+    const { timezone } = job.attrs.data;
+    await manageDailySoloStreaks(timezone);
+    done();
+  }
 );
-
-export default agenda;
