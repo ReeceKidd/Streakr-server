@@ -18,7 +18,7 @@ const timezoneStreakDescription =
   "Every day I must take cold showers for one minutes";
 
 const timezone = "Europe/Paris";
-const londonTimezone = "Europe/London";
+const romeTimezone = "Europe/Rome";
 
 jest.setTimeout(120000);
 
@@ -66,7 +66,7 @@ describe("GET /group-streaks", () => {
         creatorId: userId,
         streakName: timezoneStreakName,
         streakDescription: timezoneStreakDescription,
-        timezone: londonTimezone
+        timezone: romeTimezone
       }
     );
 
@@ -151,7 +151,7 @@ describe("GET /group-streaks", () => {
     expect.assertions(8);
 
     const response = await streakoid.groupStreaks.getAll({
-      timezone: londonTimezone
+      timezone: romeTimezone
     });
     const groupStreak = response.data.groupStreaks[0];
 
@@ -161,7 +161,7 @@ describe("GET /group-streaks", () => {
     expect(groupStreak.streakName).toEqual(timezoneStreakName);
     expect(groupStreak.streakDescription).toEqual(timezoneStreakDescription);
     expect(groupStreak.creatorId).toEqual(userId);
-    expect(groupStreak.timezone).toEqual(londonTimezone);
+    expect(groupStreak.timezone).toEqual(romeTimezone);
     expect(Object.keys(groupStreak)).toEqual([
       "_id",
       "members",
