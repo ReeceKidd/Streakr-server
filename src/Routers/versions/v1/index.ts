@@ -1,11 +1,12 @@
 import { Router } from "express";
 
+import { RouteCategories } from "../../../routeCategories";
+
 import soloStreaksRouter from "./soloStreaksRouter";
 import usersRouter from "./usersRouter";
 import stripeRouter from "./stripeRouter";
 import completeSoloStreakTasksRouter from "./completeSoloStreakTasksRouter";
-
-import { RouteCategories } from "../../../routeCategories";
+import completeGroupMemberStreakTasksRouter from "./completeGroupMemberStreakTaskRouter";
 import groupStreaksRouter from "./groupStreakRouter";
 import streakTrackingEventRouter from "./streakTrackingEventRouter";
 import agendaJobsRouter from "./agendaJobRouter";
@@ -20,6 +21,10 @@ v1Router.use(`/${RouteCategories.stripe}`, stripeRouter);
 v1Router.use(
   `/${RouteCategories.completeSoloStreakTasks}`,
   completeSoloStreakTasksRouter
+);
+v1Router.use(
+  `/${RouteCategories.completeGroupMemberStreakTasks}`,
+  completeGroupMemberStreakTasksRouter
 );
 v1Router.use(`/${RouteCategories.groupStreaks}`, groupStreaksRouter);
 v1Router.use(

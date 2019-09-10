@@ -16,7 +16,7 @@ describe("SDK completeSoloStreakTasks", () => {
       await streakoid.completeSoloStreakTasks.getAll("userId");
 
       expect(axios.get).toBeCalledWith(
-        `${APPLICATION_URL}/v1/complete-tasks?userId=userId&`
+        `${APPLICATION_URL}/v1/complete-solo-streak-tasks?userId=userId&`
       );
     });
 
@@ -27,7 +27,7 @@ describe("SDK completeSoloStreakTasks", () => {
       await streakoid.completeSoloStreakTasks.getAll(undefined, "streakId");
 
       expect(axios.get).toBeCalledWith(
-        `${APPLICATION_URL}/v1/complete-tasks?streakId=streakId`
+        `${APPLICATION_URL}/v1/complete-solo-streak-tasks?streakId=streakId`
       );
     });
 
@@ -38,7 +38,7 @@ describe("SDK completeSoloStreakTasks", () => {
       await streakoid.completeSoloStreakTasks.getAll("userId", "streakId");
 
       expect(axios.get).toBeCalledWith(
-        `${APPLICATION_URL}/v1/complete-tasks?userId=userId&streakId=streakId`
+        `${APPLICATION_URL}/v1/complete-solo-streak-tasks?userId=userId&streakId=streakId`
       );
     });
 
@@ -48,7 +48,9 @@ describe("SDK completeSoloStreakTasks", () => {
 
       await streakoid.completeSoloStreakTasks.getAll();
 
-      expect(axios.get).toBeCalledWith(`${APPLICATION_URL}/v1/complete-tasks?`);
+      expect(axios.get).toBeCalledWith(
+        `${APPLICATION_URL}/v1/complete-solo-streak-tasks?`
+      );
     });
   });
 
@@ -67,7 +69,7 @@ describe("SDK completeSoloStreakTasks", () => {
       );
 
       expect(axios.post).toBeCalledWith(
-        `${APPLICATION_URL}/v1/complete-tasks`,
+        `${APPLICATION_URL}/v1/complete-solo-streak-tasks`,
         {
           userId,
           soloStreakId
@@ -89,7 +91,7 @@ describe("SDK completeSoloStreakTasks", () => {
       await streakoid.completeSoloStreakTasks.deleteOne("id");
 
       expect(axios.delete).toBeCalledWith(
-        `${APPLICATION_URL}/v1/complete-tasks/id`
+        `${APPLICATION_URL}/v1/complete-solo-streak-tasks/id`
       );
     });
   });

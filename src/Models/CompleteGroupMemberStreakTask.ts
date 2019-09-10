@@ -3,7 +3,7 @@ import { Models } from "./Models";
 import { Collections } from "./Collections";
 import { TypesOfStreak } from "./TypesOfStreak";
 
-export interface CompleteSoloStreakTask extends mongoose.Document {
+export interface CompleteGroupMemberStreakTask extends mongoose.Document {
   streakId: string;
   userId: string;
   taskCompleteTime: Date;
@@ -11,7 +11,7 @@ export interface CompleteSoloStreakTask extends mongoose.Document {
   streakType: TypesOfStreak;
 }
 
-export const completeSoloStreakTaskSchema = new mongoose.Schema(
+export const completeGroupMemberStreakTaskSchema = new mongoose.Schema(
   {
     streakId: {
       required: true,
@@ -36,18 +36,18 @@ export const completeSoloStreakTaskSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    collection: Collections.CompleteSoloStreakTasks
+    collection: Collections.CompleteGroupMemberStreakTasks
   }
 );
 
-completeSoloStreakTaskSchema.index(
+completeGroupMemberStreakTaskSchema.index(
   { userId: 1, streakId: 1 },
   { unique: true }
 );
 
-export const completeSoloStreakTaskModel: mongoose.Model<
-  CompleteSoloStreakTask
-> = mongoose.model<CompleteSoloStreakTask>(
+export const completeGroupMemberStreakTaskModel: mongoose.Model<
+  CompleteGroupMemberStreakTask
+> = mongoose.model<CompleteGroupMemberStreakTask>(
   Models.CompleteSoloStreakTask,
-  completeSoloStreakTaskSchema
+  completeGroupMemberStreakTaskSchema
 );

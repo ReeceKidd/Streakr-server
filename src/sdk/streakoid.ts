@@ -1,4 +1,5 @@
 import completeSoloStreakTasks from "./completeSoloStreakTasks";
+import completeGroupMemberStreakTasks from "./completeGroupMemberStreakTasks";
 import soloStreaks from "./soloStreaks";
 import stripe from "./stripe";
 import users from "./users";
@@ -11,6 +12,7 @@ import groupMemberStreaks from "./groupMemberStreaks";
 
 export default {
   completeSoloStreakTasks,
+  completeGroupMemberStreakTasks,
   soloStreaks,
   stripe,
   users: {
