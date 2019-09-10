@@ -19,7 +19,6 @@ export const completeGroupMemberStreakTaskParamsValidationMiddleware = (
   response: Response,
   next: NextFunction
 ) => {
-  console.log(1);
   Joi.validate(
     request.params,
     completeGroupMemberStreakTaskParamsValidationSchema,
@@ -33,9 +32,7 @@ export const getDeleteCompleteGroupMemberStreakTaskMiddleware = (
   >
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(2);
     const { completeGroupMemberStreakTaskId } = request.params;
-    console.log(request.params);
     const deletedCompleteGroupMemberStreakTask = await completeGroupMemberStreakTaskModel.findByIdAndDelete(
       completeGroupMemberStreakTaskId
     );
@@ -47,7 +44,6 @@ export const getDeleteCompleteGroupMemberStreakTaskMiddleware = (
     response.locals.deletedCompleteGroupMemberStreakTask = deletedCompleteGroupMemberStreakTask;
     next();
   } catch (err) {
-    console.log(err);
     if (err instanceof CustomError) next(err);
     else
       next(
@@ -67,7 +63,6 @@ export const getSendCompleteGroupMemberStreakTaskDeletedResponseMiddleware = (
   successfulDeletetionResponseCode: ResponseCodes
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(3);
     return response.status(successfulDeletetionResponseCode).send();
   } catch (err) {
     next(
