@@ -27,8 +27,15 @@ const create = (
   );
 };
 
+const deleteOne = (completeGroupMemberStreakTaskId: string) => {
+  return axios.delete(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.completeGroupMemberStreakTasks}/${completeGroupMemberStreakTaskId}`
+  );
+};
+
 const completeGroupMemberStreakTasks = {
-  create
+  create,
+  deleteOne
 };
 
 export default completeGroupMemberStreakTasks;

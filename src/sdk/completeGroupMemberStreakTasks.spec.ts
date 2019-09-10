@@ -39,4 +39,17 @@ describe("SDK completeSoloStreakTasks", () => {
       );
     });
   });
+
+  describe("deleteOne", () => {
+    test("calls DELETE correct URL ", async () => {
+      expect.assertions(1);
+      axios.delete = jest.fn();
+
+      await streakoid.completeGroupMemberStreakTasks.deleteOne("id");
+
+      expect(axios.delete).toBeCalledWith(
+        `${APPLICATION_URL}/v1/complete-group-member-streak-tasks/id`
+      );
+    });
+  });
 });

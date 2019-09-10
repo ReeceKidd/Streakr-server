@@ -1,5 +1,4 @@
 import streakoid from "../../../src/sdk/streakoid";
-import { CompleteGroupMemberStreakTask } from "../../../src/Models/CompleteGroupMemberStreakTask";
 
 const registeredEmail =
   "create-complete-group-member-streak-tasks-user@gmail.com";
