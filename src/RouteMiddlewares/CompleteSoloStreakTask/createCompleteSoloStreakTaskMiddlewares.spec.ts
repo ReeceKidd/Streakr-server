@@ -1,11 +1,11 @@
 import {
-  createCompleteTaskMiddlewares,
+  createCompleteSoloStreakTaskMiddlewares,
   hasTaskAlreadyBeenCompletedTodayMiddleware,
   retreiveUserMiddleware,
   setTaskCompleteTimeMiddleware,
   setDayTaskWasCompletedMiddleware,
   sendTaskCompleteResponseMiddleware,
-  createCompleteTaskDefinitionMiddleware,
+  createCompleteSoloStreakTaskDefinitionMiddleware,
   soloStreakExistsMiddleware,
   saveTaskCompleteMiddleware,
   streakMaintainedMiddleware,
@@ -14,18 +14,18 @@ import {
   getSetDayTaskWasCompletedMiddleware,
   getSetTaskCompleteTimeMiddleware,
   getHasTaskAlreadyBeenCompletedTodayMiddleware,
-  getCreateCompleteTaskDefinitionMiddleware,
+  getCreateCompleteSoloStreakTaskDefinitionMiddleware,
   getSaveTaskCompleteMiddleware,
   getStreakMaintainedMiddleware,
   getSendTaskCompleteResponseMiddleware,
   setStreakStartDateMiddleware,
   getSetStreakStartDateMiddleware,
-  completeTaskBodyValidationMiddleware
-} from "./createCompleteTaskMiddlewares";
+  completeSoloStreakTaskBodyValidationMiddleware
+} from "./createCompleteSoloStreakTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
-describe(`completeTaskBodyValidationMiddleware`, () => {
+describe(`completeSoloStreakTaskBodyValidationMiddleware`, () => {
   const userId = "abcdefgh";
   const soloStreakId = "123456";
 
@@ -41,7 +41,7 @@ describe(`completeTaskBodyValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    completeTaskBodyValidationMiddleware(request, response, next);
+    completeSoloStreakTaskBodyValidationMiddleware(request, response, next);
 
     expect(next).toBeCalled();
   });
@@ -58,7 +58,7 @@ describe(`completeTaskBodyValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    completeTaskBodyValidationMiddleware(request, response, next);
+    completeSoloStreakTaskBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -79,7 +79,7 @@ describe(`completeTaskBodyValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    completeTaskBodyValidationMiddleware(request, response, next);
+    completeSoloStreakTaskBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -100,7 +100,7 @@ describe(`completeTaskBodyValidationMiddleware`, () => {
     };
     const next = jest.fn();
 
-    completeTaskBodyValidationMiddleware(request, response, next);
+    completeSoloStreakTaskBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -376,7 +376,7 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
   test("checks task has not already been completed today", async () => {
     expect.assertions(2);
     const findOne = jest.fn(() => Promise.resolve(false));
-    const completeTaskModel = { findOne };
+    const completeSoloStreakTaskModel = { findOne };
     const soloStreakId = "abcd";
     const taskCompleteDay = "26/04/2012";
     const userId = "Abcde";
@@ -384,7 +384,7 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     const response: any = { locals: { taskCompleteDay } };
     const next = jest.fn();
     const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
-      completeTaskModel as any
+      completeSoloStreakTaskModel as any
     );
 
     await middleware(request, response, next);
@@ -400,7 +400,7 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
   test("throws TaskAlreadyCompletedToday error if task has already been completed today", async () => {
     expect.assertions(1);
     const findOne = jest.fn(() => Promise.resolve(true));
-    const completeTaskModel = { findOne };
+    const completeSoloStreakTaskModel = { findOne };
     const soloStreakId = "abcd";
     const taskCompleteDay = "26/04/2012";
     const userId = "abcde";
@@ -408,7 +408,7 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     const response: any = { locals: { taskCompleteDay } };
     const next = jest.fn();
     const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
-      completeTaskModel as any
+      completeSoloStreakTaskModel as any
     );
 
     await middleware(request, response, next);
@@ -421,13 +421,13 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
   test("throws HasTaskAlreadyBeenCompletedTodayMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const findOne = jest.fn(() => Promise.resolve(true));
-    const completeTaskModel = { findOne };
+    const completeSoloStreakTaskModel = { findOne };
     const taskCompleteDay = "26/04/2012";
     const request: any = {};
     const response: any = { locals: { taskCompleteDay } };
     const next = jest.fn();
     const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
-      completeTaskModel as any
+      completeSoloStreakTaskModel as any
     );
 
     await middleware(request, response, next);
@@ -441,8 +441,8 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
   });
 });
 
-describe("createCompleteTaskDefinitionMiddleware", () => {
-  test("sets completeTaskDefinition and calls next()", () => {
+describe("createCompleteSoloStreakTaskDefinitionMiddleware", () => {
+  test("sets completeSoloStreakTaskDefinition and calls next()", () => {
     expect.assertions(3);
     const soloStreakId = "abcd123";
     const toDate = jest.fn(() => "27/03/2019");
@@ -462,11 +462,13 @@ describe("createCompleteTaskDefinitionMiddleware", () => {
     };
     const next = jest.fn();
     const streakType = "soloStreak";
-    const middleware = getCreateCompleteTaskDefinitionMiddleware(streakType);
+    const middleware = getCreateCompleteSoloStreakTaskDefinitionMiddleware(
+      streakType
+    );
 
     middleware(request, response, next);
 
-    expect(response.locals.completeTaskDefinition).toEqual({
+    expect(response.locals.completeSoloStreakTaskDefinition).toEqual({
       userId,
       streakId: soloStreakId,
       taskCompleteTime: taskCompleteTime.toDate(),
@@ -477,7 +479,7 @@ describe("createCompleteTaskDefinitionMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("throws CreateCompleteTaskDefinitionMiddlware error on middleware failure", () => {
+  test("throws CreateCompleteSoloStreakTaskDefinitionMiddlware error on middleware failure", () => {
     expect.assertions(1);
     const soloStreakId = "abcd123";
     const taskCompleteTime = {};
@@ -495,13 +497,15 @@ describe("createCompleteTaskDefinitionMiddleware", () => {
     };
     const next = jest.fn();
     const streakType = "soloStreak";
-    const middleware = getCreateCompleteTaskDefinitionMiddleware(streakType);
+    const middleware = getCreateCompleteSoloStreakTaskDefinitionMiddleware(
+      streakType
+    );
 
     middleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.CreateCompleteTaskDefinitionMiddleware,
+        ErrorType.CreateCompleteSoloStreakTaskDefinitionMiddleware,
         expect.any(Error)
       )
     );
@@ -509,14 +513,14 @@ describe("createCompleteTaskDefinitionMiddleware", () => {
 });
 
 describe(`saveTaskCompleteMiddleware`, () => {
-  test("sets response.locals.completeTask and calls next", async () => {
+  test("sets response.locals.completeSoloStreakTask and calls next", async () => {
     expect.assertions(3);
     const userId = "abcd";
     const streakId = "1234";
     const taskCompleteTime = new Date();
     const taskCompleteDay = "09/05/2019";
     const streakType = "soloStreak";
-    const completeTaskDefinition = {
+    const completeSoloStreakTaskDefinition = {
       userId,
       streakId,
       taskCompleteTime,
@@ -524,7 +528,7 @@ describe(`saveTaskCompleteMiddleware`, () => {
       streakType
     };
     const save = jest.fn(() => Promise.resolve(true));
-    class CompleteTaskModel {
+    class CompleteSoloStreakTaskModel {
       userId: string;
       streakId: string;
       taskCompleteTime: Date;
@@ -549,13 +553,15 @@ describe(`saveTaskCompleteMiddleware`, () => {
       }
     }
     const request: any = {};
-    const response: any = { locals: { completeTaskDefinition } };
+    const response: any = { locals: { completeSoloStreakTaskDefinition } };
     const next = jest.fn();
-    const middleware = getSaveTaskCompleteMiddleware(CompleteTaskModel as any);
+    const middleware = getSaveTaskCompleteMiddleware(
+      CompleteSoloStreakTaskModel as any
+    );
 
     await middleware(request, response, next);
 
-    expect(response.locals.completeTask).toBeDefined();
+    expect(response.locals.completeSoloStreakTask).toBeDefined();
     expect(save).toBeCalledWith();
     expect(next).toBeCalledWith();
   });
@@ -567,7 +573,7 @@ describe(`saveTaskCompleteMiddleware`, () => {
     const taskCompleteTime = new Date();
     const taskCompleteDay = "09/05/2019";
     const streakType = "soloStreak";
-    const completeTaskDefinition = {
+    const completeSoloStreakTaskDefinition = {
       userId,
       streakId,
       taskCompleteTime,
@@ -575,7 +581,7 @@ describe(`saveTaskCompleteMiddleware`, () => {
       streakType
     };
     const request: any = {};
-    const response: any = { locals: { completeTaskDefinition } };
+    const response: any = { locals: { completeSoloStreakTaskDefinition } };
     const next = jest.fn();
     const middleware = getSaveTaskCompleteMiddleware({} as any);
 
@@ -631,11 +637,11 @@ describe("streakMaintainedMiddleware", () => {
 });
 
 describe("sendTaskCompleteResponseMiddleware", () => {
-  test("sends completeTask response", () => {
+  test("sends completeSoloStreakTask response", () => {
     expect.assertions(3);
     const send = jest.fn(() => true);
     const status = jest.fn(() => ({ send }));
-    const completeTask = {
+    const completeSoloStreakTask = {
       userId: "abcd",
       streakId: "1234",
       taskCompleteTime: new Date(),
@@ -647,19 +653,19 @@ describe("sendTaskCompleteResponseMiddleware", () => {
       successResponseCode
     );
     const request: any = {};
-    const response: any = { locals: { completeTask }, status };
+    const response: any = { locals: { completeSoloStreakTask }, status };
     const next = jest.fn();
 
     middleware(request, response, next);
 
     expect(status).toBeCalledWith(successResponseCode);
-    expect(send).toBeCalledWith({ completeTask });
+    expect(send).toBeCalledWith({ completeSoloStreakTask });
     expect(next).not.toBeCalled();
   });
 
   test("throws SendTaskCompleteResponseMiddleware error on middleware failure", () => {
     expect.assertions(1);
-    const completeTask = {
+    const completeSoloStreakTask = {
       userId: "abcd",
       streakId: "1234",
       taskCompleteTime: new Date(),
@@ -671,7 +677,7 @@ describe("sendTaskCompleteResponseMiddleware", () => {
       successResponseCode
     );
     const request: any = {};
-    const response: any = { locals: { completeTask } };
+    const response: any = { locals: { completeSoloStreakTask } };
     const next = jest.fn();
 
     middleware(request, response, next);
@@ -685,32 +691,42 @@ describe("sendTaskCompleteResponseMiddleware", () => {
   });
 });
 
-describe(`createCompleteTaskMiddlewares`, () => {
+describe(`createCompleteSoloStreakTaskMiddlewares`, () => {
   test("are defined in the correct order", async () => {
     expect.assertions(12);
 
-    expect(createCompleteTaskMiddlewares.length).toEqual(11);
-    expect(createCompleteTaskMiddlewares[0]).toBe(
-      completeTaskBodyValidationMiddleware
+    expect(createCompleteSoloStreakTaskMiddlewares.length).toEqual(11);
+    expect(createCompleteSoloStreakTaskMiddlewares[0]).toBe(
+      completeSoloStreakTaskBodyValidationMiddleware
     ),
-      expect(createCompleteTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
-    expect(createCompleteTaskMiddlewares[2]).toBe(retreiveUserMiddleware);
-    expect(createCompleteTaskMiddlewares[3]).toBe(
+      expect(createCompleteSoloStreakTaskMiddlewares[1]).toBe(
+        soloStreakExistsMiddleware
+      );
+    expect(createCompleteSoloStreakTaskMiddlewares[2]).toBe(
+      retreiveUserMiddleware
+    );
+    expect(createCompleteSoloStreakTaskMiddlewares[3]).toBe(
       setTaskCompleteTimeMiddleware
     );
-    expect(createCompleteTaskMiddlewares[4]).toBe(setStreakStartDateMiddleware);
-    expect(createCompleteTaskMiddlewares[5]).toBe(
+    expect(createCompleteSoloStreakTaskMiddlewares[4]).toBe(
+      setStreakStartDateMiddleware
+    );
+    expect(createCompleteSoloStreakTaskMiddlewares[5]).toBe(
       setDayTaskWasCompletedMiddleware
     );
-    expect(createCompleteTaskMiddlewares[6]).toBe(
+    expect(createCompleteSoloStreakTaskMiddlewares[6]).toBe(
       hasTaskAlreadyBeenCompletedTodayMiddleware
     );
-    expect(createCompleteTaskMiddlewares[7]).toBe(
-      createCompleteTaskDefinitionMiddleware
+    expect(createCompleteSoloStreakTaskMiddlewares[7]).toBe(
+      createCompleteSoloStreakTaskDefinitionMiddleware
     );
-    expect(createCompleteTaskMiddlewares[8]).toBe(saveTaskCompleteMiddleware);
-    expect(createCompleteTaskMiddlewares[9]).toBe(streakMaintainedMiddleware);
-    expect(createCompleteTaskMiddlewares[10]).toBe(
+    expect(createCompleteSoloStreakTaskMiddlewares[8]).toBe(
+      saveTaskCompleteMiddleware
+    );
+    expect(createCompleteSoloStreakTaskMiddlewares[9]).toBe(
+      streakMaintainedMiddleware
+    );
+    expect(createCompleteSoloStreakTaskMiddlewares[10]).toBe(
       sendTaskCompleteResponseMiddleware
     );
   });

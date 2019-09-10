@@ -161,10 +161,12 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to NoCompleteTaskToDeleteFound`, () => {
+  test(`creates correct error when type is set to NoCompleteSoloStreakTaskToDeleteFound`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.NoCompleteTaskToDeleteFound);
+    const customError = new CustomError(
+      ErrorType.NoCompleteSoloStreakTaskToDeleteFound
+    );
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-16`);
@@ -548,11 +550,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to CreateCompleteTaskDefinitionMiddleware`, () => {
+  test(`creates correct error when type is set to CreateCompleteSoloStreakTaskDefinitionMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.CreateCompleteTaskDefinitionMiddleware
+      ErrorType.CreateCompleteSoloStreakTaskDefinitionMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1091,10 +1093,12 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to GetCompleteTasksMiddleware`, () => {
+  test(`creates correct error when type is set to GetCompleteSoloStreakTasksMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.GetCompleteTasksMiddleware);
+    const customError = new CustomError(
+      ErrorType.GetCompleteSoloStreakTasksMiddleware
+    );
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-60`);
@@ -1102,11 +1106,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to SendCompleteTasksResponseMiddleware`, () => {
+  test(`creates correct error when type is set to SendCompleteSoloStreakTasksResponseMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.SendCompleteTasksResponseMiddleware
+      ErrorType.SendCompleteSoloStreakTasksResponseMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1115,10 +1119,12 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to DeleteCompleteTaskMiddleware`, () => {
+  test(`creates correct error when type is set to DeleteCompleteSoloStreakTaskMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.DeleteCompleteTaskMiddleware);
+    const customError = new CustomError(
+      ErrorType.DeleteCompleteSoloStreakTaskMiddleware
+    );
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-62`);
@@ -1126,11 +1132,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to SendCompleteTaskDeletedResponseMiddleware`, () => {
+  test(`creates correct error when type is set to SendCompleteSoloStreakTaskDeletedResponseMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.SendCompleteTaskDeletedResponseMiddleware
+      ErrorType.SendCompleteSoloStreakTaskDeletedResponseMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 

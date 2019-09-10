@@ -3,7 +3,7 @@ import streakoid from "./streakoid";
 import { getServiceConfig } from "../getServiceConfig";
 const { APPLICATION_URL } = getServiceConfig();
 
-describe("SDK completeTasks", () => {
+describe("SDK completeSoloStreakTasks", () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -13,7 +13,7 @@ describe("SDK completeTasks", () => {
       expect.assertions(1);
       axios.get = jest.fn();
 
-      await streakoid.completeTasks.getAll("userId");
+      await streakoid.completeSoloStreakTasks.getAll("userId");
 
       expect(axios.get).toBeCalledWith(
         `${APPLICATION_URL}/v1/complete-tasks?userId=userId&`
@@ -24,7 +24,7 @@ describe("SDK completeTasks", () => {
       expect.assertions(1);
       axios.get = jest.fn();
 
-      await streakoid.completeTasks.getAll(undefined, "streakId");
+      await streakoid.completeSoloStreakTasks.getAll(undefined, "streakId");
 
       expect(axios.get).toBeCalledWith(
         `${APPLICATION_URL}/v1/complete-tasks?streakId=streakId`
@@ -35,7 +35,7 @@ describe("SDK completeTasks", () => {
       expect.assertions(1);
       axios.get = jest.fn();
 
-      await streakoid.completeTasks.getAll("userId", "streakId");
+      await streakoid.completeSoloStreakTasks.getAll("userId", "streakId");
 
       expect(axios.get).toBeCalledWith(
         `${APPLICATION_URL}/v1/complete-tasks?userId=userId&streakId=streakId`
@@ -46,7 +46,7 @@ describe("SDK completeTasks", () => {
       expect.assertions(1);
       axios.get = jest.fn();
 
-      await streakoid.completeTasks.getAll();
+      await streakoid.completeSoloStreakTasks.getAll();
 
       expect(axios.get).toBeCalledWith(`${APPLICATION_URL}/v1/complete-tasks?`);
     });
@@ -60,7 +60,11 @@ describe("SDK completeTasks", () => {
       const soloStreakId = "soloStreakId";
       const timezone = "timezone";
 
-      await streakoid.completeTasks.create(userId, soloStreakId, timezone);
+      await streakoid.completeSoloStreakTasks.create(
+        userId,
+        soloStreakId,
+        timezone
+      );
 
       expect(axios.post).toBeCalledWith(
         `${APPLICATION_URL}/v1/complete-tasks`,
@@ -82,7 +86,7 @@ describe("SDK completeTasks", () => {
       expect.assertions(1);
       axios.delete = jest.fn();
 
-      await streakoid.completeTasks.deleteOne("id");
+      await streakoid.completeSoloStreakTasks.deleteOne("id");
 
       expect(axios.delete).toBeCalledWith(
         `${APPLICATION_URL}/v1/complete-tasks/id`

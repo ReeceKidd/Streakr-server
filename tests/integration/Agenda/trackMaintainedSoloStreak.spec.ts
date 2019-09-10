@@ -11,7 +11,7 @@ jest.setTimeout(120000);
 describe("trackMaintainedSoloStreak", () => {
   let userId: string;
   let soloStreakId: string;
-  let completeTaskId: string;
+  let completeSoloStreakTaskId: string;
 
   const name = "Daily Programming";
   const description = "I will program for one hour everyday";
@@ -29,18 +29,18 @@ describe("trackMaintainedSoloStreak", () => {
     );
     soloStreakId = createSoloStreakResponse.data._id;
 
-    const createCompleteTaskResponse = await streakoid.completeTasks.create(
+    const createCompleteSoloStreakTaskResponse = await streakoid.completeSoloStreakTasks.create(
       userId,
       soloStreakId,
       timezone
     );
-    completeTaskId = createCompleteTaskResponse.data._id;
+    completeSoloStreakTaskId = createCompleteSoloStreakTaskResponse.data._id;
   });
 
   afterAll(async () => {
     await streakoid.users.deleteOne(userId);
     await streakoid.soloStreaks.deleteOne(soloStreakId);
-    await streakoid.completeTasks.deleteOne(completeTaskId);
+    await streakoid.completeSoloStreakTasks.deleteOne(completeSoloStreakTaskId);
   });
 
   test("updates solo streak activity and creates a streak maintained tracking event", async () => {

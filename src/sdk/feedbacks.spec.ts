@@ -3,7 +3,7 @@ import streakoid from "./streakoid";
 import { getServiceConfig } from "../getServiceConfig";
 const { APPLICATION_URL } = getServiceConfig();
 
-describe("SDK completeTasks", () => {
+describe("SDK completeSoloStreakTasks", () => {
   afterEach(() => {
     jest.resetAllMocks();
   });

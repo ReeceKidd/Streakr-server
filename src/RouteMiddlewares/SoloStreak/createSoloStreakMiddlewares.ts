@@ -7,9 +7,7 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 import { User } from "../../Models/User";
 import { SoloStreak, soloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { dayFormat } from "../CompleteTask/createCompleteTaskMiddlewares";
 import { CustomError, ErrorType } from "../../customError";
-import { AgendaTimeRanges } from "../../Agenda/agenda";
 
 export interface SoloStreakRegistrationRequestBody {
   userId: string;

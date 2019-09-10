@@ -114,12 +114,13 @@ describe("GET /solo-streaks", () => {
     );
     secondSoloStreakId = createdSoloStreakResponse.data._id;
 
-    const completedTaskResponse = await streakoid.completeTasks.create(
+    const completedTaskResponse = await streakoid.completeSoloStreakTasks.create(
       userId,
       secondSoloStreakId,
       parisTimezone
     );
-    const completedTaskResponseId = completedTaskResponse.data.completeTask._id;
+    const completedTaskResponseId =
+      completedTaskResponse.data.completeSoloStreakTask._id;
 
     const response = await streakoid.soloStreaks.getAll({
       completedToday: true
@@ -139,6 +140,6 @@ describe("GET /solo-streaks", () => {
     expect(soloStreak).toHaveProperty("createdAt");
     expect(soloStreak).toHaveProperty("updatedAt");
 
-    await streakoid.completeTasks.deleteOne(completedTaskResponseId);
+    await streakoid.completeSoloStreakTasks.deleteOne(completedTaskResponseId);
   });
 });

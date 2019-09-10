@@ -8,26 +8,26 @@ import { ResponseCodes } from "../../Server/responseCodes";
 import { userModel, User } from "../../Models/User";
 import { soloStreakModel, SoloStreak } from "../../Models/SoloStreak";
 import {
-  completeTaskModel,
+  completeSoloStreakTaskModel,
   TypesOfStreak,
-  CompleteTask
-} from "../../Models/CompleteTask";
+  CompleteSoloStreakTask
+} from "../../Models/CompleteSoloStreakTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
 
-export const completeTaskBodyValidationSchema = {
+export const completeSoloStreakTaskBodyValidationSchema = {
   userId: Joi.string().required(),
   soloStreakId: Joi.string().required()
 };
 
-export const completeTaskBodyValidationMiddleware = (
+export const completeSoloStreakTaskBodyValidationMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   Joi.validate(
     request.body,
-    completeTaskBodyValidationSchema,
+    completeSoloStreakTaskBodyValidationSchema,
     getValidationErrorMessageSenderMiddleware(request, response, next)
   );
 };
@@ -140,16 +140,18 @@ export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddlew
 );
 
 export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
-  completeTaskModel: mongoose.Model<CompleteTask>
+  completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTask>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId, soloStreakId } = request.body;
     const { taskCompleteDay } = response.locals;
-    const taskAlreadyCompletedToday = await completeTaskModel.findOne({
-      userId,
-      streakId: soloStreakId,
-      taskCompleteDay
-    });
+    const taskAlreadyCompletedToday = await completeSoloStreakTaskModel.findOne(
+      {
+        userId,
+        streakId: soloStreakId,
+        taskCompleteDay
+      }
+    );
     if (taskAlreadyCompletedToday) {
       throw new CustomError(ErrorType.TaskAlreadyCompletedToday);
     }
@@ -167,44 +169,47 @@ export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
 };
 
 export const hasTaskAlreadyBeenCompletedTodayMiddleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
-  completeTaskModel
+  completeSoloStreakTaskModel
 );
 
-export const getCreateCompleteTaskDefinitionMiddleware = (
+export const getCreateCompleteSoloStreakTaskDefinitionMiddleware = (
   streakType: string
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId, soloStreakId } = request.body;
     const { taskCompleteTime, taskCompleteDay } = response.locals;
-    const completeTaskDefinition = {
+    const completeSoloStreakTaskDefinition = {
       userId,
       streakId: soloStreakId,
       taskCompleteTime: taskCompleteTime.toDate(),
       taskCompleteDay,
       streakType
     };
-    response.locals.completeTaskDefinition = completeTaskDefinition;
+    response.locals.completeSoloStreakTaskDefinition = completeSoloStreakTaskDefinition;
     next();
   } catch (err) {
     next(
-      new CustomError(ErrorType.CreateCompleteTaskDefinitionMiddleware, err)
+      new CustomError(
+        ErrorType.CreateCompleteSoloStreakTaskDefinitionMiddleware,
+        err
+      )
     );
   }
 };
 
-export const createCompleteTaskDefinitionMiddleware = getCreateCompleteTaskDefinitionMiddleware(
+export const createCompleteSoloStreakTaskDefinitionMiddleware = getCreateCompleteSoloStreakTaskDefinitionMiddleware(
   TypesOfStreak.soloStreak
 );
 
 export const getSaveTaskCompleteMiddleware = (
-  completeTaskModel: mongoose.Model<CompleteTask>
+  completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTask>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { completeTaskDefinition } = response.locals;
-    const completeTask = await new completeTaskModel(
-      completeTaskDefinition
+    const { completeSoloStreakTaskDefinition } = response.locals;
+    const completeSoloStreakTask = await new completeSoloStreakTaskModel(
+      completeSoloStreakTaskDefinition
     ).save();
-    response.locals.completeTask = completeTask;
+    response.locals.completeSoloStreakTask = completeSoloStreakTask;
     next();
   } catch (err) {
     next(new CustomError(ErrorType.SaveTaskCompleteMiddleware, err));
@@ -212,7 +217,7 @@ export const getSaveTaskCompleteMiddleware = (
 };
 
 export const saveTaskCompleteMiddleware = getSaveTaskCompleteMiddleware(
-  completeTaskModel
+  completeSoloStreakTaskModel
 );
 
 export const getStreakMaintainedMiddleware = (
@@ -242,8 +247,10 @@ export const getSendTaskCompleteResponseMiddleware = (
   resourceCreatedResponseCode: number
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { completeTask } = response.locals;
-    return response.status(resourceCreatedResponseCode).send({ completeTask });
+    const { completeSoloStreakTask } = response.locals;
+    return response
+      .status(resourceCreatedResponseCode)
+      .send({ completeSoloStreakTask });
   } catch (err) {
     next(new CustomError(ErrorType.SendTaskCompleteResponseMiddleware, err));
   }
@@ -253,15 +260,15 @@ export const sendTaskCompleteResponseMiddleware = getSendTaskCompleteResponseMid
   ResponseCodes.created
 );
 
-export const createCompleteTaskMiddlewares = [
-  completeTaskBodyValidationMiddleware,
+export const createCompleteSoloStreakTaskMiddlewares = [
+  completeSoloStreakTaskBodyValidationMiddleware,
   soloStreakExistsMiddleware,
   retreiveUserMiddleware,
   setTaskCompleteTimeMiddleware,
   setStreakStartDateMiddleware,
   setDayTaskWasCompletedMiddleware,
   hasTaskAlreadyBeenCompletedTodayMiddleware,
-  createCompleteTaskDefinitionMiddleware,
+  createCompleteSoloStreakTaskDefinitionMiddleware,
   saveTaskCompleteMiddleware,
   streakMaintainedMiddleware,
   sendTaskCompleteResponseMiddleware

@@ -1,5 +1,5 @@
 import streakoid from "../../../src/sdk/streakoid";
-import { CompleteTask } from "../../../src/Models/CompleteTask";
+import { CompleteSoloStreakTask } from "../../../src/Models/CompleteSoloStreakTask";
 
 const registeredEmail = "create-complete-tasks-user@gmail.com";
 const registeredUsername = "create-complete-tasks-user";
@@ -38,11 +38,15 @@ describe("POST /complete-tasks", () => {
     await streakoid.soloStreaks.deleteOne(soloStreakId);
     await streakoid.soloStreaks.deleteOne(secondSoloStreakId);
 
-    const completeTasksResponse = await streakoid.completeTasks.getAll(userId);
+    const completeSoloStreakTasksResponse = await streakoid.completeSoloStreakTasks.getAll(
+      userId
+    );
     await Promise.all(
-      completeTasksResponse.data.completeTasks.map(
-        (completeTask: CompleteTask) => {
-          return streakoid.completeTasks.deleteOne(completeTask._id);
+      completeSoloStreakTasksResponse.data.completeSoloStreakTasks.map(
+        (completeSoloStreakTask: CompleteSoloStreakTask) => {
+          return streakoid.completeSoloStreakTasks.deleteOne(
+            completeSoloStreakTask._id
+          );
         }
       )
     );
@@ -52,7 +56,7 @@ describe("POST /complete-tasks", () => {
     test("user can say that a task has been completed for the day", async () => {
       expect.assertions(6);
 
-      const completeTaskResponse = await streakoid.completeTasks.create(
+      const completeSoloStreakTaskResponse = await streakoid.completeSoloStreakTasks.create(
         userId,
         soloStreakId,
         londonTimezone
@@ -61,15 +65,20 @@ describe("POST /complete-tasks", () => {
         soloStreakId
       );
 
-      expect(completeTaskResponse.status).toEqual(201);
-      expect(completeTaskResponse.data.completeTask._id).toBeDefined();
+      expect(completeSoloStreakTaskResponse.status).toEqual(201);
       expect(
-        completeTaskResponse.data.completeTask.taskCompleteTime
+        completeSoloStreakTaskResponse.data.completeSoloStreakTask._id
       ).toBeDefined();
-      expect(completeTaskResponse.data.completeTask.userId).toEqual(userId);
-      expect(completeTaskResponse.data.completeTask.streakId).toEqual(
-        soloStreakId
-      );
+      expect(
+        completeSoloStreakTaskResponse.data.completeSoloStreakTask
+          .taskCompleteTime
+      ).toBeDefined();
+      expect(
+        completeSoloStreakTaskResponse.data.completeSoloStreakTask.userId
+      ).toEqual(userId);
+      expect(
+        completeSoloStreakTaskResponse.data.completeSoloStreakTask.streakId
+      ).toEqual(soloStreakId);
 
       expect(soloStreakResponse.data.currentStreak.startDate).toBeDefined();
     });
@@ -84,12 +93,12 @@ describe("POST /complete-tasks", () => {
       );
       secondSoloStreakId = secondaryCreateSoloStreakResponse.data._id;
       try {
-        await streakoid.completeTasks.create(
+        await streakoid.completeSoloStreakTasks.create(
           userId,
           secondSoloStreakId,
           londonTimezone
         );
-        await streakoid.completeTasks.create(
+        await streakoid.completeSoloStreakTasks.create(
           userId,
           secondSoloStreakId,
           londonTimezone

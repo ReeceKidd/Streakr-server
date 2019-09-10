@@ -7,7 +7,7 @@ import { SupportedRequestHeaders } from "../Server/headers";
 const { APPLICATION_URL } = getServiceConfig();
 
 const getAll = (userId?: string, streakId?: string) => {
-  let getAllURL = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.completeTasks}?`;
+  let getAllURL = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.completeSoloStreakTasks}?`;
   if (userId) {
     getAllURL = `${getAllURL}userId=${userId}&`;
   }
@@ -20,7 +20,7 @@ const getAll = (userId?: string, streakId?: string) => {
 
 const create = (userId: string, soloStreakId: string, timezone: string) => {
   return axios.post(
-    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.completeTasks}`,
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.completeSoloStreakTasks}`,
     {
       userId,
       soloStreakId
@@ -33,16 +33,16 @@ const create = (userId: string, soloStreakId: string, timezone: string) => {
   );
 };
 
-const deleteOne = (completeTaskId: string) => {
+const deleteOne = (completeSoloStreakTaskId: string) => {
   return axios.delete(
-    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.completeTasks}/${completeTaskId}`
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.completeSoloStreakTasks}/${completeSoloStreakTaskId}`
   );
 };
 
-const completeTasks = {
+const completeSoloStreakTasks = {
   getAll,
   create,
   deleteOne
 };
 
-export default completeTasks;
+export default completeSoloStreakTasks;

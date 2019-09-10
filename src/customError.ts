@@ -22,7 +22,7 @@ export enum ErrorType {
   SetStreakStartDateMiddleware,
   TaskAlreadyCompletedToday,
   HasTaskAlreadyBeenCompletedTodayMiddleware,
-  CreateCompleteTaskDefinitionMiddleware,
+  CreateCompleteSoloStreakTaskDefinitionMiddleware,
   SaveTaskCompleteMiddleware,
   StreakMaintainedMiddleware,
   SendTaskCompleteResponseMiddleware,
@@ -76,11 +76,11 @@ export enum ErrorType {
   NoUserToDeleteFound,
   DeleteUserMiddleware,
   SendUserDeletedResponseMiddleware,
-  GetCompleteTasksMiddleware,
-  SendCompleteTasksResponseMiddleware,
-  NoCompleteTaskToDeleteFound,
-  DeleteCompleteTaskMiddleware,
-  SendCompleteTaskDeletedResponseMiddleware,
+  GetCompleteSoloStreakTasksMiddleware,
+  SendCompleteSoloStreakTasksResponseMiddleware,
+  NoCompleteSoloStreakTaskToDeleteFound,
+  DeleteCompleteSoloStreakTaskMiddleware,
+  SendCompleteSoloStreakTaskDeletedResponseMiddleware,
   NoUserFound,
   GetRetreiveUserMiddleware,
   SendRetreiveUserResponseMiddleware,
@@ -278,7 +278,7 @@ export class CustomError extends Error {
         };
       }
 
-      case ErrorType.NoCompleteTaskToDeleteFound: {
+      case ErrorType.NoCompleteSoloStreakTaskToDeleteFound: {
         return {
           code: `${ResponseCodes.badRequest}-16`,
           message: "Complete task does not exist.",
@@ -533,7 +533,7 @@ export class CustomError extends Error {
         };
       }
 
-      case ErrorType.CreateCompleteTaskDefinitionMiddleware: {
+      case ErrorType.CreateCompleteSoloStreakTaskDefinitionMiddleware: {
         return {
           code: `${ResponseCodes.warning}-15`,
           message: internalServerMessage,
@@ -854,28 +854,28 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.GetCompleteTasksMiddleware:
+      case ErrorType.GetCompleteSoloStreakTasksMiddleware:
         return {
           code: `${ResponseCodes.warning}-60`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SendCompleteTasksResponseMiddleware:
+      case ErrorType.SendCompleteSoloStreakTasksResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-61`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.DeleteCompleteTaskMiddleware:
+      case ErrorType.DeleteCompleteSoloStreakTaskMiddleware:
         return {
           code: `${ResponseCodes.warning}-62`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SendCompleteTaskDeletedResponseMiddleware:
+      case ErrorType.SendCompleteSoloStreakTaskDeletedResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-63`,
           message: internalServerMessage,

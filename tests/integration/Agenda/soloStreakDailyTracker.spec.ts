@@ -10,7 +10,7 @@ describe("soloStreakDailyTracker", () => {
   let maintainedSoloStreakAgendaJobId: string;
   let maintainedStreakTrackingEventId: string;
 
-  let completeTaskId: string;
+  let completeSoloStreakTaskId: string;
 
   let lostSoloStreakId: string;
   let lostSoloStreakAgendaJobId: string;
@@ -47,7 +47,7 @@ describe("soloStreakDailyTracker", () => {
       inactiveStreakTrackingEventId
     );
 
-    await streakoid.completeTasks.deleteOne(completeTaskId);
+    await streakoid.completeSoloStreakTasks.deleteOne(completeSoloStreakTaskId);
   });
 
   test("initialises soloStreakDailyTracker job correctly", async () => {
@@ -104,13 +104,13 @@ describe("soloStreakDailyTracker", () => {
     );
     maintainedSoloStreakId = createMaintainedSoloStreakResponse.data._id;
 
-    const completeTaskResponse = await streakoid.completeTasks.create(
+    const completeSoloStreakTaskResponse = await streakoid.completeSoloStreakTasks.create(
       userId,
       maintainedSoloStreakId,
       timezone
     );
 
-    completeTaskId = completeTaskResponse.data._id;
+    completeSoloStreakTaskId = completeSoloStreakTaskResponse.data._id;
 
     const job = await createSoloStreakDailyTrackerJob(timezone);
 
@@ -177,13 +177,13 @@ describe("soloStreakDailyTracker", () => {
     );
     lostSoloStreakId = createLostSoloStreakResponse.data._id;
 
-    const completeTaskResponse = await streakoid.completeTasks.create(
+    const completeSoloStreakTaskResponse = await streakoid.completeSoloStreakTasks.create(
       userId,
       lostSoloStreakId,
       timezone
     );
 
-    completeTaskId = completeTaskResponse.data._id;
+    completeSoloStreakTaskId = completeSoloStreakTaskResponse.data._id;
 
     const job = await createSoloStreakDailyTrackerJob(timezone);
 

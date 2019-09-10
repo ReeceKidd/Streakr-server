@@ -1,14 +1,14 @@
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import {
-  completeTaskQueryValidationMiddleware,
-  getRetreiveCompleteTasksMiddleware,
-  sendCompleteTasksResponseMiddleware,
-  getCompleteTasksMiddlewares,
-  retreiveCompleteTasksMiddleware
-} from "./getCompleteTasksMiddlewares";
+  completeSoloStreakTaskQueryValidationMiddleware,
+  getRetreiveCompleteSoloStreakTasksMiddleware,
+  sendCompleteSoloStreakTasksResponseMiddleware,
+  getCompleteSoloStreakTasksMiddlewares,
+  retreiveCompleteSoloStreakTasksMiddleware
+} from "./getCompleteSoloStreakTasksMiddlewares";
 
-describe("completeTaskQueryValidationMiddleware", () => {
+describe("completeSoloStreakTaskQueryValidationMiddleware", () => {
   test("allows userId as a query paramater", () => {
     expect.assertions(1);
     const send = jest.fn();
@@ -23,7 +23,7 @@ describe("completeTaskQueryValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    completeTaskQueryValidationMiddleware(request, response, next);
+    completeSoloStreakTaskQueryValidationMiddleware(request, response, next);
 
     expect(next).toBeCalled();
   });
@@ -42,7 +42,7 @@ describe("completeTaskQueryValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    completeTaskQueryValidationMiddleware(request, response, next);
+    completeSoloStreakTaskQueryValidationMiddleware(request, response, next);
 
     expect(next).toBeCalled();
   });
@@ -61,7 +61,7 @@ describe("completeTaskQueryValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    completeTaskQueryValidationMiddleware(request, response, next);
+    completeSoloStreakTaskQueryValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
     expect(send).toBeCalledWith({
@@ -71,56 +71,56 @@ describe("completeTaskQueryValidationMiddleware", () => {
   });
 });
 
-describe("getRetreiveCompleteTasksMiddleware", () => {
-  test("queries completeTask model and sets response.locals.completeTasks with just userId", async () => {
+describe("getRetreiveCompleteSoloStreakTasksMiddleware", () => {
+  test("queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with just userId", async () => {
     expect.assertions(3);
 
     const find = jest.fn(() => Promise.resolve(true));
-    const completeTaskModel = {
+    const completeSoloStreakTaskModel = {
       find
     };
     const userId = "userId";
     const request: any = { query: { userId } };
     const response: any = { locals: {} };
     const next = jest.fn();
-    const middleware = getRetreiveCompleteTasksMiddleware(
-      completeTaskModel as any
+    const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(
+      completeSoloStreakTaskModel as any
     );
 
     await middleware(request, response, next);
 
     expect(find).toBeCalledWith({ userId });
-    expect(response.locals.completeTasks).toBeDefined();
+    expect(response.locals.completeSoloStreakTasks).toBeDefined();
     expect(next).toBeCalledWith();
   });
 
-  test("queries completeTask model and sets response.locals.completeTasks with just streakId", async () => {
+  test("queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with just streakId", async () => {
     expect.assertions(3);
 
     const find = jest.fn(() => Promise.resolve(true));
-    const completeTaskModel = {
+    const completeSoloStreakTaskModel = {
       find
     };
     const streakId = "streakId";
     const request: any = { query: { streakId } };
     const response: any = { locals: {} };
     const next = jest.fn();
-    const middleware = getRetreiveCompleteTasksMiddleware(
-      completeTaskModel as any
+    const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(
+      completeSoloStreakTaskModel as any
     );
 
     await middleware(request, response, next);
 
     expect(find).toBeCalledWith({ streakId });
-    expect(response.locals.completeTasks).toBeDefined();
+    expect(response.locals.completeSoloStreakTasks).toBeDefined();
     expect(next).toBeCalledWith();
   });
 
-  test("queries completeTask model and sets response.locals.completeTasks with both a userId and streakId", async () => {
+  test("queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with both a userId and streakId", async () => {
     expect.assertions(3);
 
     const find = jest.fn().mockResolvedValue(true);
-    const completeTaskModel = {
+    const completeSoloStreakTaskModel = {
       find
     };
     const userId = "userId";
@@ -128,70 +128,73 @@ describe("getRetreiveCompleteTasksMiddleware", () => {
     const request: any = { query: { userId, streakId } };
     const response: any = { locals: {} };
     const next = jest.fn();
-    const middleware = getRetreiveCompleteTasksMiddleware(
-      completeTaskModel as any
+    const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(
+      completeSoloStreakTaskModel as any
     );
 
     await middleware(request, response, next);
 
     expect(find).toBeCalledWith({ userId, streakId });
-    expect(response.locals.completeTasks).toBeDefined();
+    expect(response.locals.completeSoloStreakTasks).toBeDefined();
     expect(next).toBeCalledWith();
   });
 
-  test("queries completeTask model and sets response.locals.completeTasks with no query paramaters", async () => {
+  test("queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with no query paramaters", async () => {
     expect.assertions(3);
 
     const find = jest.fn(() => Promise.resolve(true));
-    const completeTaskModel = {
+    const completeSoloStreakTaskModel = {
       find
     };
     const request: any = { query: {} };
     const response: any = { locals: {} };
     const next = jest.fn();
-    const middleware = getRetreiveCompleteTasksMiddleware(
-      completeTaskModel as any
+    const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(
+      completeSoloStreakTaskModel as any
     );
 
     await middleware(request, response, next);
 
     expect(find).toBeCalledWith({});
-    expect(response.locals.completeTasks).toBeDefined();
+    expect(response.locals.completeSoloStreakTasks).toBeDefined();
     expect(next).toBeCalledWith();
   });
 
-  test("calls next with GetCompleteTasksMiddleware error on middleware failure", async () => {
+  test("calls next with GetCompleteSoloStreakTasksMiddleware error on middleware failure", async () => {
     expect.assertions(1);
 
     const request: any = {};
     const response: any = {};
     const next = jest.fn();
 
-    const middleware = getRetreiveCompleteTasksMiddleware({} as any);
+    const middleware = getRetreiveCompleteSoloStreakTasksMiddleware({} as any);
 
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
-      new CustomError(ErrorType.GetCompleteTasksMiddleware, expect.any(Error))
+      new CustomError(
+        ErrorType.GetCompleteSoloStreakTasksMiddleware,
+        expect.any(Error)
+      )
     );
   });
 });
 
-describe("sendCompleteTaskDeletedResponseMiddleware", () => {
+describe("sendCompleteSoloStreakTaskDeletedResponseMiddleware", () => {
   test("responds with successful deletion", () => {
     expect.assertions(3);
 
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {};
-    const completeTasks = true;
-    const response: any = { status, locals: { completeTasks } };
+    const completeSoloStreakTasks = true;
+    const response: any = { status, locals: { completeSoloStreakTasks } };
     const next = jest.fn();
 
-    sendCompleteTasksResponseMiddleware(request, response, next);
+    sendCompleteSoloStreakTasksResponseMiddleware(request, response, next);
 
     expect(status).toBeCalledWith(200);
-    expect(send).toBeCalledWith({ completeTasks });
+    expect(send).toBeCalledWith({ completeSoloStreakTasks });
     expect(next).not.toBeCalled();
   });
 
@@ -200,30 +203,30 @@ describe("sendCompleteTaskDeletedResponseMiddleware", () => {
     const request: any = {};
     const response: any = {};
     const next = jest.fn();
-    sendCompleteTasksResponseMiddleware(request, response, next);
+    sendCompleteSoloStreakTasksResponseMiddleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.SendCompleteTasksResponseMiddleware,
+        ErrorType.SendCompleteSoloStreakTasksResponseMiddleware,
         expect.any(Error)
       )
     );
   });
 });
 
-describe("getCompleteTaskMiddlewares", () => {
-  test("that getCompleteTaskMiddlewares are defined in the correct order", () => {
+describe("getCompleteSoloStreakTaskMiddlewares", () => {
+  test("that getCompleteSoloStreakTaskMiddlewares are defined in the correct order", () => {
     expect.assertions(4);
 
-    expect(getCompleteTasksMiddlewares.length).toEqual(3);
-    expect(getCompleteTasksMiddlewares[0]).toEqual(
-      completeTaskQueryValidationMiddleware
+    expect(getCompleteSoloStreakTasksMiddlewares.length).toEqual(3);
+    expect(getCompleteSoloStreakTasksMiddlewares[0]).toEqual(
+      completeSoloStreakTaskQueryValidationMiddleware
     );
-    expect(getCompleteTasksMiddlewares[1]).toEqual(
-      retreiveCompleteTasksMiddleware
+    expect(getCompleteSoloStreakTasksMiddlewares[1]).toEqual(
+      retreiveCompleteSoloStreakTasksMiddleware
     );
-    expect(getCompleteTasksMiddlewares[2]).toEqual(
-      sendCompleteTasksResponseMiddleware
+    expect(getCompleteSoloStreakTasksMiddlewares[2]).toEqual(
+      sendCompleteSoloStreakTasksResponseMiddleware
     );
   });
 });

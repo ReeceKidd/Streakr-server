@@ -3,7 +3,7 @@ export enum Models {
   Feedback = "Feedback",
   SoloStreak = "SoloStreak",
   AgendaJob = "AgendaJob",
-  CompleteTask = "CompleteTask",
+  CompleteSoloStreakTask = "CompleteSoloStreakTask",
   GroupStreak = "GroupStreak",
   StreakTrackingEvent = "StreakTrackingEvent",
   GroupMemberStreak = "GroupMemberStreak"
