@@ -31,7 +31,7 @@ export const agenda = new Agenda({
 
 agenda.on("success", async job => {
   try {
-    if (job.attrs.data.timezone === "Europe/London") {
+    if (job.attrs.data.timezone === "Europe/London" && NODE_ENV !== "TEST") {
       const message = `
         Environment: ${NODE_ENV}
         Job name: ${job.attrs.name}
