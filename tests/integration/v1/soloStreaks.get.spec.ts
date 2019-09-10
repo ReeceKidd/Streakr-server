@@ -119,8 +119,7 @@ describe("GET /solo-streaks", () => {
       secondSoloStreakId,
       parisTimezone
     );
-    const completedTaskResponseId =
-      completedTaskResponse.data.completeSoloStreakTask._id;
+    const completedTaskResponseId = completedTaskResponse.data._id;
 
     const response = await streakoid.soloStreaks.getAll({
       completedToday: true
