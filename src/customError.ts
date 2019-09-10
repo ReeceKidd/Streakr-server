@@ -170,7 +170,9 @@ export enum ErrorType {
   CreateCompleteGroupMemberStreakTaskMiddleware,
   DeleteCompleteGroupMemberStreakTaskMiddleware,
   SendCompleteGroupMemberStreakTaskDeletedResponseMiddleware,
-  NoCompleteGroupMemberStreakTaskToDeleteFound
+  NoCompleteGroupMemberStreakTaskToDeleteFound,
+  GetCompleteGroupMemberStreakTasksMiddleware,
+  SendCompleteGroupMemberStreakTasksResponseMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -1422,6 +1424,20 @@ export class CustomError extends Error {
       case ErrorType.SendCompleteGroupMemberStreakTaskDeletedResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-132`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.GetCompleteGroupMemberStreakTasksMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-133`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendCompleteGroupMemberStreakTasksResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-134`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

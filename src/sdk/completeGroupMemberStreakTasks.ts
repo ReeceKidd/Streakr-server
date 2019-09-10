@@ -6,6 +6,29 @@ import { SupportedRequestHeaders } from "../Server/headers";
 
 const { APPLICATION_URL } = getServiceConfig();
 
+const getAll = ({
+  userId,
+  groupStreakId,
+  groupMemberStreakId
+}: {
+  userId?: string;
+  groupStreakId?: string;
+  groupMemberStreakId?: string;
+}) => {
+  let getAllURL = `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.completeGroupMemberStreakTasks}?`;
+  if (userId) {
+    getAllURL = `${getAllURL}userId=${userId}&`;
+  }
+  if (groupStreakId) {
+    getAllURL = `${getAllURL}groupStreakId=${groupStreakId}&`;
+  }
+  if (groupMemberStreakId) {
+    getAllURL = `${getAllURL}groupMemberStreakId=${groupMemberStreakId}`;
+  }
+
+  return axios.get(getAllURL);
+};
+
 const create = (
   userId: string,
   groupStreakId: string,
@@ -34,6 +57,7 @@ const deleteOne = (completeGroupMemberStreakTaskId: string) => {
 };
 
 const completeGroupMemberStreakTasks = {
+  getAll,
   create,
   deleteOne
 };
