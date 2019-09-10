@@ -47,7 +47,6 @@ agenda.on("success", async job => {
 
 agenda.on("fail", async (err, job) => {
   try {
-    console.log(err);
     const message = `
         Envirionment: ${NODE_ENV}
         Ran job: ${job.attrs.name} for timezone: ${job.attrs.data.timezone},

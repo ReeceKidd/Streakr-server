@@ -1,14 +1,14 @@
 import streakoid from "../../../src/sdk/streakoid";
 import { CompleteSoloStreakTask } from "../../../src/Models/CompleteSoloStreakTask";
 
-const registeredEmail = "create-complete-tasks-user@gmail.com";
-const registeredUsername = "create-complete-tasks-user";
+const registeredEmail = "create-complete-solo-streak-tasks-user@gmail.com";
+const registeredUsername = "create-complete-solo-streak-tasks-user";
 
 const londonTimezone = "Europe/London";
 
 jest.setTimeout(120000);
 
-describe("POST /complete-tasks", () => {
+describe("POST /complete-solo-streak-tasks", () => {
   let userId: string;
   let soloStreakId: string;
   let secondSoloStreakId: string;
@@ -52,8 +52,8 @@ describe("POST /complete-tasks", () => {
     );
   });
 
-  describe("POST /v1/complete-tasks", () => {
-    test("user can say that a task has been completed for the day", async () => {
+  describe("POST /v1/complete-solo-streak-tasks", () => {
+    test("user can say that a solo streak task has been completed for the day", async () => {
       expect.assertions(6);
 
       const completeSoloStreakTaskResponse = await streakoid.completeSoloStreakTasks.create(
@@ -83,7 +83,7 @@ describe("POST /complete-tasks", () => {
       expect(soloStreakResponse.data.currentStreak.startDate).toBeDefined();
     });
 
-    test("user cannot complete the same task in the same day", async () => {
+    test("user cannot complete the same solo streak task in the same day", async () => {
       expect.assertions(3);
       const secondaryCreateSoloStreakResponse = await streakoid.soloStreaks.create(
         userId,

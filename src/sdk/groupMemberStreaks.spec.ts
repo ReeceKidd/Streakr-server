@@ -8,6 +8,19 @@ describe("SDK groupMemberStreaks", () => {
     jest.resetAllMocks();
   });
 
+  describe("getOne", () => {
+    test("calls GET with correct URL", async () => {
+      expect.assertions(1);
+      axios.get = jest.fn();
+
+      await streakoid.groupMemberStreaks.getOne("id");
+
+      expect(axios.get).toBeCalledWith(
+        `${APPLICATION_URL}/v1/group-member-streaks/id`
+      );
+    });
+  });
+
   describe("create", () => {
     test("calls POST with correct URL and data parmaters", async () => {
       expect.assertions(1);

@@ -13,12 +13,14 @@ describe("SDK completeSoloStreakTasks", () => {
       expect.assertions(1);
       axios.post = jest.fn();
       const userId = "userId";
-      const soloStreakId = "soloStreakId";
+      const groupStreakId = "groupStreakId";
+      const groupMemberStreakId = "groupMemberStreakId";
       const timezone = "timezone";
 
       await streakoid.completeGroupMemberStreakTasks.create(
         userId,
-        soloStreakId,
+        groupStreakId,
+        groupMemberStreakId,
         timezone
       );
 
@@ -26,7 +28,8 @@ describe("SDK completeSoloStreakTasks", () => {
         `${APPLICATION_URL}/v1/complete-group-member-streak-tasks`,
         {
           userId,
-          soloStreakId
+          groupStreakId,
+          groupMemberStreakId
         },
         {
           headers: {

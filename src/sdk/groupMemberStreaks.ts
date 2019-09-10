@@ -14,6 +14,12 @@ const create = (userId: string, groupStreakId: string, timezone: string) => {
   );
 };
 
+const getOne = (groupMemberStreakId: string) => {
+  return axios.get(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupMemberStreaks}/${groupMemberStreakId}`
+  );
+};
+
 const deleteOne = (groupMemberStreakId: string) => {
   return axios.delete(
     `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupMemberStreaks}/${groupMemberStreakId}`
@@ -21,6 +27,7 @@ const deleteOne = (groupMemberStreakId: string) => {
 };
 
 const groupMemberStreaks = {
+  getOne,
   create,
   deleteOne
 };

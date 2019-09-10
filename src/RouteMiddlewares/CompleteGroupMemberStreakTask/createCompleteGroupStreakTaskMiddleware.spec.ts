@@ -5,37 +5,42 @@ import {
   setTaskCompleteTimeMiddleware,
   setDayTaskWasCompletedMiddleware,
   sendCompleteGroupMemberStreakTaskResponseMiddleware,
-  createCompleteGroupMemberStreakTaskDefinitionMiddleware,
   groupMemberStreakExistsMiddleware,
-  saveTaskCompleteMiddleware,
   streakMaintainedMiddleware,
   getGroupMemberStreakExistsMiddleware,
   getRetreiveUserMiddleware,
   getSetDayTaskWasCompletedMiddleware,
   getSetTaskCompleteTimeMiddleware,
   getHasTaskAlreadyBeenCompletedTodayMiddleware,
-  getCreateCompleteGroupMemberStreakTaskDefinitionMiddleware,
-  getSaveTaskCompleteMiddleware,
   getStreakMaintainedMiddleware,
-  getSendCompleteGroupMemberStreakTaskResponseMiddleware,
   setStreakStartDateMiddleware,
   getSetStreakStartDateMiddleware,
-  completeGroupMemberStreakTaskBodyValidationMiddleware
+  completeGroupMemberStreakTaskBodyValidationMiddleware,
+  createCompleteGroupMemberStreakTaskMiddleware,
+  getCreateCompleteGroupMemberStreakTaskMiddleware,
+  getGroupStreakExistsMiddleware,
+  groupStreakExistsMiddleware
 } from "./createCompleteGroupMemberStreakTaskMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { getSendTaskCompleteResponseMiddleware } from "../CompleteSoloStreakTask/createCompleteSoloStreakTaskMiddlewares";
 
 describe(`completeGroupMemberStreakTaskBodyValidationMiddleware`, () => {
   const userId = "abcdefgh";
+  const groupStreakId = "a1b2c3d4";
   const groupMemberStreakId = "123456";
+
+  const body = {
+    userId,
+    groupStreakId,
+    groupMemberStreakId
+  };
 
   test("calls next() when correct body is supplied", () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId, groupMemberStreakId }
+      body
     };
     const response: any = {
       status
@@ -56,7 +61,7 @@ describe(`completeGroupMemberStreakTaskBodyValidationMiddleware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { groupMemberStreakId }
+      body: { ...body, userId: undefined }
     };
     const response: any = {
       status
@@ -76,12 +81,38 @@ describe(`completeGroupMemberStreakTaskBodyValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
+  test("sends correct error response when groupStreakId is missing", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      body: { ...body, groupStreakId: undefined }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    completeGroupMemberStreakTaskBodyValidationMiddleware(
+      request,
+      response,
+      next
+    );
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message:
+        'child "groupStreakId" fails because ["groupStreakId" is required]'
+    });
+    expect(next).not.toBeCalled();
+  });
+
   test("sends correct error response when groupMemberStreakId is missing", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId }
+      body: { ...body, groupMemberStreakId: undefined }
     };
     const response: any = {
       status
@@ -101,31 +132,59 @@ describe(`completeGroupMemberStreakTaskBodyValidationMiddleware`, () => {
     });
     expect(next).not.toBeCalled();
   });
+});
 
-  test("sends correct error response when groupMemberStreakId is not a string", () => {
+describe("groupStreakExistsMiddleware", () => {
+  test("sets response.locals.groupStreak and calls next()", async () => {
     expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
+    const groupStreakId = "abc";
     const request: any = {
-      body: { groupMemberStreakId: 1234, userId }
+      body: { groupStreakId }
     };
-    const response: any = {
-      status
-    };
+    const response: any = { locals: {} };
     const next = jest.fn();
+    const findOne = jest.fn(() => Promise.resolve(true));
+    const groupStreakModel = { findOne };
+    const middleware = getGroupStreakExistsMiddleware(groupStreakModel as any);
 
-    completeGroupMemberStreakTaskBodyValidationMiddleware(
-      request,
-      response,
-      next
+    await middleware(request, response, next);
+
+    expect(findOne).toBeCalledWith({ _id: groupStreakId });
+    expect(response.locals.groupStreak).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("throws GroupStreakDoesNotExist error when solo streak does not exist", async () => {
+    expect.assertions(1);
+    const groupStreakId = "abc";
+    const request: any = {
+      body: { groupStreakId }
+    };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const findOne = jest.fn(() => Promise.resolve(false));
+    const groupStreakModel = { findOne };
+    const middleware = getGroupStreakExistsMiddleware(groupStreakModel as any);
+
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.GroupStreakDoesNotExist)
     );
+  });
 
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message:
-        'child "groupMemberStreakId" fails because ["groupMemberStreakId" must be a string]'
-    });
-    expect(next).not.toBeCalled();
+  test("throws GroupStreakExistsMiddleware error on middleware failure", async () => {
+    expect.assertions(1);
+    const request: any = {};
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getGroupStreakExistsMiddleware({} as any);
+
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(ErrorType.GroupStreakExistsMiddleware, expect.any(Error))
+    );
   });
 });
 
@@ -472,123 +531,50 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
   });
 });
 
-describe("createCompleteGroupMemberStreakTaskDefinitionMiddleware", () => {
-  test("sets completeGroupMemberStreakTaskDefinition and calls next()", () => {
-    expect.assertions(3);
-    const groupMemberStreakId = "abcd123";
-    const toDate = jest.fn(() => "27/03/2019");
-    const taskCompleteTime = {
-      toDate
-    };
-    const taskCompleteDay = "09/05/2019";
-    const userId = "abc";
-    const request: any = {
-      body: { userId, groupMemberStreakId }
-    };
-    const response: any = {
-      locals: {
-        taskCompleteTime,
-        taskCompleteDay
-      }
-    };
-    const next = jest.fn();
-    const streakType = "groupMemberStreak";
-    const middleware = getCreateCompleteGroupMemberStreakTaskDefinitionMiddleware(
-      streakType
-    );
-
-    middleware(request, response, next);
-
-    expect(response.locals.completeGroupMemberStreakTaskDefinition).toEqual({
-      userId,
-      streakId: groupMemberStreakId,
-      taskCompleteTime: taskCompleteTime.toDate(),
-      taskCompleteDay,
-      streakType
-    });
-    expect(toDate).toBeCalledWith();
-    expect(next).toBeCalledWith();
-  });
-
-  test("throws CreateCompleteGroupMemberStreakTaskDefinitionMiddlware error on middleware failure", () => {
-    expect.assertions(1);
-    const groupMemberStreakId = "abcd123";
-    const taskCompleteTime = {};
-    const taskCompleteDay = "09/05/2019";
-    const userId = "abcd";
-    const request: any = {
-      params: { groupMemberStreakId },
-      body: { userId }
-    };
-    const response: any = {
-      locals: {
-        taskCompleteTime,
-        taskCompleteDay
-      }
-    };
-    const next = jest.fn();
-    const streakType = "groupMemberStreak";
-    const middleware = getCreateCompleteGroupMemberStreakTaskDefinitionMiddleware(
-      streakType
-    );
-
-    middleware(request, response, next);
-
-    expect(next).toBeCalledWith(
-      new CustomError(
-        ErrorType.CreateCompleteGroupMemberStreakTaskDefinitionMiddleware,
-        expect.any(Error)
-      )
-    );
-  });
-});
-
-describe(`saveTaskCompleteMiddleware`, () => {
+describe(`createCompleteGroupMemberStreakTaskMiddleware`, () => {
   test("sets response.locals.completeGroupMemberStreakTask and calls next", async () => {
     expect.assertions(3);
     const userId = "abcd";
-    const streakId = "1234";
+    const groupStreakId = "1234";
+    const groupMemberStreakId = "1a2b3c4d";
     const taskCompleteTime = new Date();
     const taskCompleteDay = "09/05/2019";
-    const streakType = "groupMemberStreak";
-    const completeGroupMemberStreakTaskDefinition = {
-      userId,
-      streakId,
-      taskCompleteTime,
-      taskCompleteDay,
-      streakType
-    };
+
     const save = jest.fn(() => Promise.resolve(true));
     class CompleteGroupMemberStreakTaskModel {
       userId: string;
-      streakId: string;
+      groupStreakId: string;
+      groupMemberStreakId: string;
       taskCompleteTime: Date;
       taskCompleteDay: string;
       streakType: string;
 
       constructor(
         userId: string,
-        streakId: string,
+        groupStreakId: string,
+        groupMemberStreakId: string,
         taskCompleteTime: Date,
         taskCompleteDay: string,
         streakType: string
       ) {
         this.userId = userId;
-        (this.streakId = streakId), (this.taskCompleteTime = taskCompleteTime);
+        this.groupStreakId = groupStreakId;
+        this.groupMemberStreakId = groupMemberStreakId;
+        this.taskCompleteTime = taskCompleteTime;
         this.taskCompleteDay = taskCompleteDay;
         this.streakType = streakType;
       }
 
-      save() {
-        return save();
-      }
+      save = save;
     }
-    const request: any = {};
+    const request: any = {
+      body: { userId, groupStreakId, groupMemberStreakId }
+    };
     const response: any = {
-      locals: { completeGroupMemberStreakTaskDefinition }
+      locals: { taskCompleteTime, taskCompleteDay }
     };
     const next = jest.fn();
-    const middleware = getSaveTaskCompleteMiddleware(
+    const middleware = getCreateCompleteGroupMemberStreakTaskMiddleware(
       CompleteGroupMemberStreakTaskModel as any
     );
 
@@ -601,29 +587,22 @@ describe(`saveTaskCompleteMiddleware`, () => {
 
   test("throws SaveTaskCompleteMiddleware error on Middleware failure", async () => {
     expect.assertions(1);
-    const userId = "abcd";
-    const streakId = "1234";
-    const taskCompleteTime = new Date();
-    const taskCompleteDay = "09/05/2019";
-    const streakType = "groupMemberStreak";
-    const completeGroupMemberStreakTaskDefinition = {
-      userId,
-      streakId,
-      taskCompleteTime,
-      taskCompleteDay,
-      streakType
-    };
     const request: any = {};
     const response: any = {
-      locals: { completeGroupMemberStreakTaskDefinition }
+      locals: {}
     };
     const next = jest.fn();
-    const middleware = getSaveTaskCompleteMiddleware({} as any);
+    const middleware = getCreateCompleteGroupMemberStreakTaskMiddleware(
+      {} as any
+    );
 
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
-      new CustomError(ErrorType.SaveTaskCompleteMiddleware, expect.any(Error))
+      new CustomError(
+        ErrorType.CreateCompleteGroupMemberStreakTaskMiddleware,
+        expect.any(Error)
+      )
     );
   });
 });
@@ -687,17 +666,18 @@ describe("sendCompleteGroupMemberStreakTaskResponseMiddleware", () => {
       taskCompleteDay: "10/05/2019",
       streakType: "solo-streak"
     };
-    const successResponseCode = 200;
-    const middleware = getSendCompleteGroupMemberStreakTaskResponseMiddleware(
-      successResponseCode
-    );
+
     const request: any = {};
     const response: any = { locals: { completeGroupMemberStreakTask }, status };
     const next = jest.fn();
 
-    middleware(request, response, next);
+    sendCompleteGroupMemberStreakTaskResponseMiddleware(
+      request,
+      response,
+      next
+    );
 
-    expect(status).toBeCalledWith(successResponseCode);
+    expect(status).toBeCalledWith(201);
     expect(send).toBeCalledWith({ completeGroupMemberStreakTask });
     expect(next).not.toBeCalled();
   });
@@ -711,15 +691,16 @@ describe("sendCompleteGroupMemberStreakTaskResponseMiddleware", () => {
       taskCompleteDay: "10/05/2019",
       streakType: "solo-streak"
     };
-    const successResponseCode = 200;
-    const middleware = getSendCompleteGroupMemberStreakTaskResponseMiddleware(
-      successResponseCode
-    );
+
     const request: any = {};
     const response: any = { locals: { completeGroupMemberStreakTask } };
     const next = jest.fn();
 
-    middleware(request, response, next);
+    sendCompleteGroupMemberStreakTaskResponseMiddleware(
+      request,
+      response,
+      next
+    );
 
     expect(next).toBeCalledWith(
       new CustomError(
@@ -737,30 +718,30 @@ describe(`createCompleteGroupMemberStreakTaskMiddlewares`, () => {
     expect(createCompleteGroupMemberStreakTaskMiddlewares.length).toEqual(11);
     expect(createCompleteGroupMemberStreakTaskMiddlewares[0]).toBe(
       completeGroupMemberStreakTaskBodyValidationMiddleware
-    ),
-      expect(createCompleteGroupMemberStreakTaskMiddlewares[1]).toBe(
-        groupMemberStreakExistsMiddleware
-      );
+    );
+    expect(createCompleteGroupMemberStreakTaskMiddlewares[1]).toBe(
+      groupStreakExistsMiddleware
+    );
     expect(createCompleteGroupMemberStreakTaskMiddlewares[2]).toBe(
-      retreiveUserMiddleware
+      groupMemberStreakExistsMiddleware
     );
     expect(createCompleteGroupMemberStreakTaskMiddlewares[3]).toBe(
-      setTaskCompleteTimeMiddleware
+      retreiveUserMiddleware
     );
     expect(createCompleteGroupMemberStreakTaskMiddlewares[4]).toBe(
-      setStreakStartDateMiddleware
+      setTaskCompleteTimeMiddleware
     );
     expect(createCompleteGroupMemberStreakTaskMiddlewares[5]).toBe(
-      setDayTaskWasCompletedMiddleware
+      setStreakStartDateMiddleware
     );
     expect(createCompleteGroupMemberStreakTaskMiddlewares[6]).toBe(
-      hasTaskAlreadyBeenCompletedTodayMiddleware
+      setDayTaskWasCompletedMiddleware
     );
     expect(createCompleteGroupMemberStreakTaskMiddlewares[7]).toBe(
-      createCompleteGroupMemberStreakTaskDefinitionMiddleware
+      hasTaskAlreadyBeenCompletedTodayMiddleware
     );
     expect(createCompleteGroupMemberStreakTaskMiddlewares[8]).toBe(
-      saveTaskCompleteMiddleware
+      createCompleteGroupMemberStreakTaskMiddleware
     );
     expect(createCompleteGroupMemberStreakTaskMiddlewares[9]).toBe(
       streakMaintainedMiddleware

@@ -161,7 +161,13 @@ export enum ErrorType {
   SendCompleteGroupMemberStreakTaskResponseMiddleware,
   GroupMemberStreakTaskAlreadyCompletedToday,
   GroupMemberStreakDoesNotExist,
-  CreateCompleteGroupMemberStreakTaskDefinitionMiddleware
+  CreateCompleteGroupMemberStreakTaskDefinitionMiddleware,
+  RetreiveGroupMemberStreakMiddleware,
+  SendGroupMemberStreakMiddleware,
+  GetGroupMemberStreakNoGroupMemberStreakFound,
+  GroupStreakDoesNotExist,
+  GroupStreakExistsMiddleware,
+  CreateCompleteGroupMemberStreakTaskMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -430,6 +436,22 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-33`,
           message: "Group member streak does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.GetGroupMemberStreakNoGroupMemberStreakFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-34`,
+          message: "Group member streak does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.GroupStreakDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-35`,
+          message: "Group streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -1347,6 +1369,34 @@ export class CustomError extends Error {
       case ErrorType.CreateCompleteGroupMemberStreakTaskDefinitionMiddleware:
         return {
           code: `${ResponseCodes.warning}-126`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveGroupMemberStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-127`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendGroupMemberStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-128`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.GroupStreakExistsMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-129`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateCompleteGroupMemberStreakTaskMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-130`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

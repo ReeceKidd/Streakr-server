@@ -13,7 +13,7 @@ import {
 } from "../../Models/CompleteSoloStreakTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
-import { TypesOfStreak } from "../../Models/TypesOfStreak";
+import { StreakTypes } from "../../Models/TypesOfStreak";
 
 export const completeSoloStreakTaskBodyValidationSchema = {
   userId: Joi.string().required(),
@@ -198,7 +198,7 @@ export const getCreateCompleteSoloStreakTaskDefinitionMiddleware = (
 };
 
 export const createCompleteSoloStreakTaskDefinitionMiddleware = getCreateCompleteSoloStreakTaskDefinitionMiddleware(
-  TypesOfStreak.soloStreak
+  StreakTypes.soloStreak
 );
 
 export const getSaveTaskCompleteMiddleware = (

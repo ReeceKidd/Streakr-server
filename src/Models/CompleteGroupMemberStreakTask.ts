@@ -1,23 +1,29 @@
 import * as mongoose from "mongoose";
 import { Models } from "./Models";
 import { Collections } from "./Collections";
-import { TypesOfStreak } from "./TypesOfStreak";
+import { StreakTypes } from "./TypesOfStreak";
 
 export interface CompleteGroupMemberStreakTask extends mongoose.Document {
   streakId: string;
   userId: string;
+  groupStreakId: string;
+  groupMemberStreakId: string;
   taskCompleteTime: Date;
   taskCompleteDay: string;
-  streakType: TypesOfStreak;
+  streakType: StreakTypes;
 }
 
 export const completeGroupMemberStreakTaskSchema = new mongoose.Schema(
   {
-    streakId: {
+    userId: {
       required: true,
       type: String
     },
-    userId: {
+    groupStreakId: {
+      required: true,
+      type: String
+    },
+    groupMemberStreakId: {
       required: true,
       type: String
     },
@@ -40,14 +46,11 @@ export const completeGroupMemberStreakTaskSchema = new mongoose.Schema(
   }
 );
 
-completeGroupMemberStreakTaskSchema.index(
-  { userId: 1, streakId: 1 },
-  { unique: true }
-);
+completeGroupMemberStreakTaskSchema.index({ userId: 1, streakId: 1 });
 
 export const completeGroupMemberStreakTaskModel: mongoose.Model<
   CompleteGroupMemberStreakTask
 > = mongoose.model<CompleteGroupMemberStreakTask>(
-  Models.CompleteSoloStreakTask,
+  Models.CompleteGroupMemberStreakTask,
   completeGroupMemberStreakTaskSchema
 );

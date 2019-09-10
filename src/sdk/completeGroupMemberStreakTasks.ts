@@ -6,12 +6,18 @@ import { SupportedRequestHeaders } from "../Server/headers";
 
 const { APPLICATION_URL } = getServiceConfig();
 
-const create = (userId: string, soloStreakId: string, timezone: string) => {
+const create = (
+  userId: string,
+  groupStreakId: string,
+  groupMemberStreakId: string,
+  timezone: string
+) => {
   return axios.post(
     `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.completeGroupMemberStreakTasks}`,
     {
       userId,
-      soloStreakId
+      groupStreakId,
+      groupMemberStreakId
     },
     {
       headers: {

@@ -16,10 +16,12 @@ import {
 } from "../../Models/CompleteGroupMemberStreakTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
-import { TypesOfStreak } from "../../Models/TypesOfStreak";
+import { StreakTypes } from "../../Models/TypesOfStreak";
+import { GroupStreak, groupStreakModel } from "../../Models/GroupStreak";
 
 export const completeGroupMemberStreakTaskBodyValidationSchema = {
   userId: Joi.string().required(),
+  groupStreakId: Joi.string().required(),
   groupMemberStreakId: Joi.string().required()
 };
 
@@ -34,6 +36,29 @@ export const completeGroupMemberStreakTaskBodyValidationMiddleware = (
     getValidationErrorMessageSenderMiddleware(request, response, next)
   );
 };
+
+export const getGroupStreakExistsMiddleware = (
+  groupStreakModel: mongoose.Model<GroupStreak>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { groupStreakId } = request.body;
+    const groupStreak = await groupStreakModel.findOne({
+      _id: groupStreakId
+    });
+    if (!groupStreak) {
+      throw new CustomError(ErrorType.GroupStreakDoesNotExist);
+    }
+    response.locals.groupStreak = groupStreak;
+    next();
+  } catch (err) {
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.GroupStreakExistsMiddleware, err));
+  }
+};
+
+export const groupStreakExistsMiddleware = getGroupStreakExistsMiddleware(
+  groupStreakModel
+);
 
 export const getGroupMemberStreakExistsMiddleware = (
   groupMemberStreakModel: mongoose.Model<GroupMemberStreak>
@@ -171,12 +196,13 @@ export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
   >
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userId, groupMemberStreakId } = request.body;
+    const { userId, groupStreakId, groupMemberStreakId } = request.body;
     const { taskCompleteDay } = response.locals;
     const taskAlreadyCompletedToday = await completeGroupMemberStreakTaskModel.findOne(
       {
         userId,
-        streakId: groupMemberStreakId,
+        groupStreakId,
+        groupMemberStreakId,
         taskCompleteDay
       }
     );
@@ -202,58 +228,37 @@ export const hasTaskAlreadyBeenCompletedTodayMiddleware = getHasTaskAlreadyBeenC
   completeGroupMemberStreakTaskModel
 );
 
-export const getCreateCompleteGroupMemberStreakTaskDefinitionMiddleware = (
-  streakType: string
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { userId, groupMemberStreakId } = request.body;
-    const { taskCompleteTime, taskCompleteDay } = response.locals;
-    const completeGroupMemberStreakTaskDefinition = {
-      userId,
-      streakId: groupMemberStreakId,
-      taskCompleteTime: taskCompleteTime.toDate(),
-      taskCompleteDay,
-      streakType
-    };
-    response.locals.completeGroupMemberStreakTaskDefinition = completeGroupMemberStreakTaskDefinition;
-    next();
-  } catch (err) {
-    next(
-      new CustomError(
-        ErrorType.CreateCompleteGroupMemberStreakTaskDefinitionMiddleware,
-        err
-      )
-    );
-  }
-};
-
-export const createCompleteGroupMemberStreakTaskDefinitionMiddleware = getCreateCompleteGroupMemberStreakTaskDefinitionMiddleware(
-  TypesOfStreak.groupMemberStreak
-);
-
-export const getSaveTaskCompleteMiddleware = (
+export const getCreateCompleteGroupMemberStreakTaskMiddleware = (
   completeGroupMemberStreakTaskModel: mongoose.Model<
     CompleteGroupMemberStreakTask
   >
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { completeGroupMemberStreakTaskDefinition } = response.locals;
-    const completeGroupMemberStreakTask = await new completeGroupMemberStreakTaskModel(
+    const { userId, groupStreakId, groupMemberStreakId } = request.body;
+    const { taskCompleteTime, taskCompleteDay } = response.locals;
+    const completeGroupMemberStreakTaskDefinition = {
+      userId,
+      groupStreakId,
+      groupMemberStreakId,
+      taskCompleteTime: taskCompleteTime,
+      taskCompleteDay,
+      streakType: StreakTypes.groupMemberStreak
+    };
+    response.locals.completeGroupMemberStreakTask = await new completeGroupMemberStreakTaskModel(
       completeGroupMemberStreakTaskDefinition
     ).save();
-    response.locals.completeGroupMemberStreakTask = completeGroupMemberStreakTask;
     next();
   } catch (err) {
     next(
       new CustomError(
-        ErrorType.SaveGroupMemberStreakTaskCompleteMiddleware,
+        ErrorType.CreateCompleteGroupMemberStreakTaskMiddleware,
         err
       )
     );
   }
 };
 
-export const saveTaskCompleteMiddleware = getSaveTaskCompleteMiddleware(
+export const createCompleteGroupMemberStreakTaskMiddleware = getCreateCompleteGroupMemberStreakTaskMiddleware(
   completeGroupMemberStreakTaskModel
 );
 
@@ -280,13 +285,15 @@ export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(
   groupMemberStreakModel
 );
 
-export const getSendCompleteGroupMemberStreakTaskResponseMiddleware = (
-  resourceCreatedResponseCode: number
-) => (request: Request, response: Response, next: NextFunction) => {
+export const sendCompleteGroupMemberStreakTaskResponseMiddleware = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
   try {
     const { completeGroupMemberStreakTask } = response.locals;
     return response
-      .status(resourceCreatedResponseCode)
+      .status(ResponseCodes.created)
       .send({ completeGroupMemberStreakTask });
   } catch (err) {
     next(
@@ -298,20 +305,16 @@ export const getSendCompleteGroupMemberStreakTaskResponseMiddleware = (
   }
 };
 
-export const sendCompleteGroupMemberStreakTaskResponseMiddleware = getSendCompleteGroupMemberStreakTaskResponseMiddleware(
-  ResponseCodes.created
-);
-
 export const createCompleteGroupMemberStreakTaskMiddlewares = [
   completeGroupMemberStreakTaskBodyValidationMiddleware,
+  groupStreakExistsMiddleware,
   groupMemberStreakExistsMiddleware,
   retreiveUserMiddleware,
   setTaskCompleteTimeMiddleware,
   setStreakStartDateMiddleware,
   setDayTaskWasCompletedMiddleware,
   hasTaskAlreadyBeenCompletedTodayMiddleware,
-  createCompleteGroupMemberStreakTaskDefinitionMiddleware,
-  saveTaskCompleteMiddleware,
+  createCompleteGroupMemberStreakTaskMiddleware,
   streakMaintainedMiddleware,
   sendCompleteGroupMemberStreakTaskResponseMiddleware
 ];
