@@ -1,8 +1,8 @@
 import streakoid from "../../../src/sdk/streakoid";
 
 const registeredEmail =
-  "create-complete-group-member-streak-tasks-user@gmail.com";
-const registeredUsername = "create-complete-group-member-streak-tasks-user";
+  "delete-complete-group-member-streak-tasks-user@gmail.com";
+const registeredUsername = "delete-complete-group-member-streak-tasks-user";
 
 const timezone = "Europe/London";
 
