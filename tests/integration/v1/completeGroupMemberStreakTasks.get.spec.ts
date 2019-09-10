@@ -1,8 +1,8 @@
 import streakoid from "../../../src/sdk/streakoid";
 import { StreakTypes } from "../../../src/Models/TypesOfStreak";
 
-const email = "get-one-group-member-streak@gmail.com";
-const username = "get-one-group-member-streak-user";
+const email = "get-complete-group-member-task@gmail.com";
+const username = "get-complete-group-member-task";
 
 const streakName = "10 minutes journaling";
 const streakDescription = "Each day I must do 10 minutes journaling";
