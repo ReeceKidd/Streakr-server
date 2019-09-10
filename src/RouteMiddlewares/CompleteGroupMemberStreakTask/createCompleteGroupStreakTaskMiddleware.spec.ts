@@ -467,10 +467,13 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
     expect.assertions(2);
     const findOne = jest.fn(() => Promise.resolve(false));
     const completeGroupMemberStreakTaskModel = { findOne };
+    const userId = "Abcde";
+    const groupStreakId = "12345";
     const groupMemberStreakId = "abcd";
     const taskCompleteDay = "26/04/2012";
-    const userId = "Abcde";
-    const request: any = { body: { userId, groupMemberStreakId } };
+    const request: any = {
+      body: { userId, groupStreakId, groupMemberStreakId }
+    };
     const response: any = { locals: { taskCompleteDay } };
     const next = jest.fn();
     const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
@@ -481,7 +484,8 @@ describe("hasTaskAlreadyBeenCompletedTodayMiddleware", () => {
 
     expect(findOne).toBeCalledWith({
       userId,
-      streakId: groupMemberStreakId,
+      groupStreakId,
+      groupMemberStreakId,
       taskCompleteDay
     });
     expect(next).toBeCalledWith();
