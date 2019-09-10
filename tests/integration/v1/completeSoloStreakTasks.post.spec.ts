@@ -1,5 +1,6 @@
 import streakoid from "../../../src/sdk/streakoid";
 import { CompleteSoloStreakTask } from "../../../src/Models/CompleteSoloStreakTask";
+import { endianness } from "os";
 
 const registeredEmail = "create-complete-solo-streak-tasks-user@gmail.com";
 const registeredUsername = "create-complete-solo-streak-tasks-user";
@@ -54,33 +55,47 @@ describe("POST /complete-solo-streak-tasks", () => {
 
   describe("POST /v1/complete-solo-streak-tasks", () => {
     test("user can say that a solo streak task has been completed for the day", async () => {
-      expect.assertions(6);
+      expect.assertions(11);
 
       const completeSoloStreakTaskResponse = await streakoid.completeSoloStreakTasks.create(
         userId,
         soloStreakId,
         londonTimezone
       );
+
+      const completeSoloStreakTask = completeSoloStreakTaskResponse.data;
+
+      expect(completeSoloStreakTaskResponse.status).toEqual(201);
+      expect(completeSoloStreakTask._id).toBeDefined();
+      expect(completeSoloStreakTask.taskCompleteTime).toBeDefined();
+      expect(completeSoloStreakTask.userId).toEqual(userId);
+      expect(completeSoloStreakTask.streakId).toEqual(soloStreakId);
+      expect(Object.keys(completeSoloStreakTask)).toEqual([
+        "_id",
+        "userId",
+        "streakId",
+        "taskCompleteTime",
+        "taskCompleteDay",
+        "streakType",
+        "createdAt",
+        "updatedAt",
+        "__v"
+      ]);
+
       const soloStreakResponse = await streakoid.soloStreaks.getOne(
         soloStreakId
       );
 
-      expect(completeSoloStreakTaskResponse.status).toEqual(201);
-      expect(
-        completeSoloStreakTaskResponse.data.completeSoloStreakTask._id
-      ).toBeDefined();
-      expect(
-        completeSoloStreakTaskResponse.data.completeSoloStreakTask
-          .taskCompleteTime
-      ).toBeDefined();
-      expect(
-        completeSoloStreakTaskResponse.data.completeSoloStreakTask.userId
-      ).toEqual(userId);
-      expect(
-        completeSoloStreakTaskResponse.data.completeSoloStreakTask.streakId
-      ).toEqual(soloStreakId);
-
-      expect(soloStreakResponse.data.currentStreak.startDate).toBeDefined();
+      const updatedSoloStreak = soloStreakResponse.data;
+      const { currentStreak } = updatedSoloStreak;
+      expect(currentStreak.startDate).toBeDefined();
+      expect(currentStreak.numberOfDaysInARow).toEqual(1);
+      expect(Object.keys(currentStreak)).toEqual([
+        "startDate",
+        "numberOfDaysInARow"
+      ]);
+      expect(updatedSoloStreak.completedToday).toEqual(true);
+      expect(updatedSoloStreak.active).toEqual(true);
     });
 
     test("user cannot complete the same solo streak task in the same day", async () => {

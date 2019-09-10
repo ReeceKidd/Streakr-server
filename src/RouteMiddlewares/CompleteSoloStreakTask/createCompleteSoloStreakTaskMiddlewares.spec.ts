@@ -659,7 +659,7 @@ describe("sendTaskCompleteResponseMiddleware", () => {
     middleware(request, response, next);
 
     expect(status).toBeCalledWith(successResponseCode);
-    expect(send).toBeCalledWith({ completeSoloStreakTask });
+    expect(send).toBeCalledWith(completeSoloStreakTask);
     expect(next).not.toBeCalled();
   });
 

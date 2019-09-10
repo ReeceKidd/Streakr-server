@@ -250,7 +250,7 @@ export const getSendTaskCompleteResponseMiddleware = (
     const { completeSoloStreakTask } = response.locals;
     return response
       .status(resourceCreatedResponseCode)
-      .send({ completeSoloStreakTask });
+      .send(completeSoloStreakTask);
   } catch (err) {
     next(new CustomError(ErrorType.SendTaskCompleteResponseMiddleware, err));
   }
