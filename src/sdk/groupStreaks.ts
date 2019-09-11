@@ -46,9 +46,9 @@ const create = ({
   creatorId: string;
   streakName: string;
   timezone: string;
+  members: { memberId: string; groupMemberStreakId?: string }[];
   streakDescription?: string;
   numberOfMinutes?: number;
-  members?: string[];
 }) => {
   return axios.post(
     `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupStreaks}`,

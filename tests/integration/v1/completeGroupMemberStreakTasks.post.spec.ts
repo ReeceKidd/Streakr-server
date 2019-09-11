@@ -23,12 +23,14 @@ describe("POST /complete-group-member-streak-tasks", () => {
       registeredEmail
     );
     userId = registrationResponse.data._id;
+    const members = [{ memberId: userId }];
 
     const createGroupStreakResponse = await streakoid.groupStreaks.create({
       creatorId: userId,
       streakName,
       streakDescription,
-      timezone
+      timezone,
+      members
     });
     groupStreakId = createGroupStreakResponse.data._id;
 

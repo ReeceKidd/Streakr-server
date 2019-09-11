@@ -7,6 +7,10 @@ import { groupStreakModel, GroupStreak } from "../../Models/GroupStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import { User, userModel } from "../../Models/User";
+import {
+  GroupMemberStreak,
+  groupMemberStreakModel
+} from "../../Models/GroupMemberStreak";
 
 const getGroupStreakParamsValidationSchema = {
   groupStreakId: Joi.string().required()
@@ -48,17 +52,31 @@ export const retreiveGroupStreakMiddleware = getRetreiveGroupStreakMiddleware(
 );
 
 export const getRetreiveGroupStreakMembersInformationMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<User>,
+  groupMemberStreakModel: mongoose.Model<GroupMemberStreak>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreak } = response.locals;
     const { members } = groupStreak;
     groupStreak.members = await Promise.all(
-      members.map(async (member: string) => {
-        return userModel.findOne({ _id: member }).lean();
-      })
+      members.map(
+        async (member: { memberId: string; groupMemberStreakId: string }) => {
+          const [memberInfo, groupMemberStreak] = await Promise.all([
+            userModel.findOne({ _id: member.memberId }).lean(),
+            groupMemberStreakModel
+              .findOne({ _id: member.groupMemberStreakId })
+              .lean()
+          ]);
+          return {
+            _id: memberInfo._id,
+            username: memberInfo.username,
+            groupMemberStreak
+          };
+        }
+      )
     );
-    response.locals.groupStreakWithUsers = groupStreak;
+
+    response.locals.groupStreak = groupStreak;
     next();
   } catch (err) {
     next(new CustomError(ErrorType.RetreiveGroupStreakMembersInformation, err));
@@ -66,7 +84,8 @@ export const getRetreiveGroupStreakMembersInformationMiddleware = (
 };
 
 export const retreiveGroupStreakMembersInformationMiddleware = getRetreiveGroupStreakMembersInformationMiddleware(
-  userModel
+  userModel,
+  groupMemberStreakModel
 );
 
 export const getRetreiveGroupStreakCreatorInformationMiddleware = (

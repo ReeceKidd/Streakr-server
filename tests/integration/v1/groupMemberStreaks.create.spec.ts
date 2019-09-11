@@ -22,11 +22,14 @@ describe("POST /group-member-streaks", () => {
     );
     registeredUserId = registrationResponse.data._id;
 
+    const members = [{ memberId: registeredUserId }];
+
     const createGroupStreakResponse = await streakoid.groupStreaks.create({
       creatorId: registeredUserId,
       streakName,
       timezone,
-      streakDescription
+      streakDescription,
+      members
     });
     createdGroupStreakId = createGroupStreakResponse.data._id;
   });

@@ -19,11 +19,13 @@ describe("GET /group-member-streaks/:groupMemberStreakId", () => {
   beforeAll(async () => {
     const registrationResponse = await streakoid.users.create(username, email);
     userId = registrationResponse.data._id;
+    const members = [{ memberId: userId }];
 
     const createGroupStreakResponse = await streakoid.groupStreaks.create({
       creatorId: userId,
       streakName,
-      timezone
+      timezone,
+      members
     });
     groupStreakId = createGroupStreakResponse.data._id;
 

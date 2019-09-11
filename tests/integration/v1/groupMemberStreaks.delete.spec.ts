@@ -1,5 +1,4 @@
 import streakoid from "../../../src/sdk/streakoid";
-import { groupMemberStreakId } from "../../../src/Routers/versions/v1/groupMemberStreaksRouter";
 
 const registeredEmail = "delete-groupMember-streak-user@gmail.com";
 const registeredUsername = "delete-groupMember-streak-user";
@@ -23,11 +22,14 @@ describe("DELETE /group-member-streaks", () => {
     );
     registeredUserId = registrationResponse.data._id;
 
+    const members = [{ memberId: registeredUserId }];
+
     const createGroupStreakResponse = await streakoid.groupStreaks.create({
       creatorId: registeredUserId,
       streakName,
       timezone,
-      streakDescription
+      streakDescription,
+      members
     });
     createdGroupStreakId = createGroupStreakResponse.data._id;
 

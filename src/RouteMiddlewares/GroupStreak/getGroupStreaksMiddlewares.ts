@@ -7,6 +7,10 @@ import { groupStreakModel, GroupStreak } from "../../Models/GroupStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import { User, userModel } from "../../Models/User";
+import {
+  GroupMemberStreak,
+  groupMemberStreakModel
+} from "../../Models/GroupMemberStreak";
 
 const getGroupStreaksQueryValidationSchema = {
   creatorId: Joi.string(),
@@ -32,17 +36,13 @@ export const getFindGroupStreaksMiddleware = (
   try {
     const { memberId, timezone, creatorId } = request.query;
 
-    const query: {
-      creatorId?: string;
-      members?: string;
-      timezone?: string;
-    } = {};
+    const query: any = {};
 
     if (creatorId) {
       query.creatorId = creatorId;
     }
     if (memberId) {
-      query.members = memberId;
+      query["members.memberId"] = memberId;
     }
     if (timezone) {
       query.timezone = timezone;
@@ -60,25 +60,39 @@ export const findGroupStreaksMiddleware = getFindGroupStreaksMiddleware(
 );
 
 export const getRetreiveGroupStreaksMembersInformationMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<User>,
+  groupMemberStreakModel: mongoose.Model<GroupMemberStreak>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreaks } = response.locals;
-    const groupStreaksWithUsers = await Promise.all(
+    const groupStreaksWithPopulatedData = await Promise.all(
       groupStreaks.map(async (groupStreak: any) => {
         const { members } = groupStreak;
-
-        return {
-          ...groupStreak,
-          members: await Promise.all(
-            members.map(async (member: string) => {
-              return userModel.findOne({ _id: member }).lean();
-            })
+        groupStreak.members = await Promise.all(
+          members.map(
+            async (member: {
+              memberId: string;
+              groupMemberStreakId: string;
+            }) => {
+              const [memberInfo, groupMemberStreak] = await Promise.all([
+                userModel.findOne({ _id: member.memberId }).lean(),
+                groupMemberStreakModel
+                  .findOne({ _id: member.groupMemberStreakId })
+                  .lean()
+              ]);
+              return {
+                _id: memberInfo._id,
+                username: memberInfo.username,
+                groupMemberStreak
+              };
+            }
           )
-        };
+        );
+
+        return groupStreak;
       })
     );
-    response.locals.groupStreaksWithUsers = groupStreaksWithUsers;
+    response.locals.groupStreaks = groupStreaksWithPopulatedData;
     next();
   } catch (err) {
     next(
@@ -88,7 +102,8 @@ export const getRetreiveGroupStreaksMembersInformationMiddleware = (
 };
 
 export const retreiveGroupStreaksMembersInformationMiddleware = getRetreiveGroupStreaksMembersInformationMiddleware(
-  userModel
+  userModel,
+  groupMemberStreakModel
 );
 
 export const sendGroupStreaksMiddleware = (
@@ -97,10 +112,8 @@ export const sendGroupStreaksMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const { groupStreaksWithUsers } = response.locals;
-    response
-      .status(ResponseCodes.success)
-      .send({ groupStreaks: groupStreaksWithUsers });
+    const { groupStreaks } = response.locals;
+    response.status(ResponseCodes.success).send({ groupStreaks: groupStreaks });
   } catch (err) {
     next(new CustomError(ErrorType.SendGroupStreaksMiddleware, err));
   }

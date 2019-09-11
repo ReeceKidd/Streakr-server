@@ -42,13 +42,14 @@ describe("GET /group-streaks", () => {
     );
     creatorId = creatorRegistrationResponse.data._id;
 
-    const members = [userId];
+    const members = [{ memberId: userId }];
 
     const creatorIdGroupStreakResponse = await streakoid.groupStreaks.create({
       creatorId,
       streakName: creatorIdStreakName,
       streakDescription: creatorIdStreakDescription,
-      timezone
+      timezone,
+      members
     });
     creatorIdGroupStreakId = creatorIdGroupStreakResponse.data._id;
 
@@ -66,7 +67,8 @@ describe("GET /group-streaks", () => {
         creatorId: userId,
         streakName: timezoneStreakName,
         streakDescription: timezoneStreakDescription,
-        timezone: romeTimezone
+        timezone: romeTimezone,
+        members
       }
     );
 
@@ -83,12 +85,12 @@ describe("GET /group-streaks", () => {
   });
 
   test(`group streaks can be retreived with creatorId query paramater`, async () => {
+    expect.assertions(13);
     const response = await streakoid.groupStreaks.getAll({ creatorId });
     const groupStreak = response.data.groupStreaks[0];
 
     expect(response.status).toEqual(200);
     expect(response.data.groupStreaks.length).toEqual(1);
-    expect(groupStreak.members.length).toEqual(0);
     expect(groupStreak.streakName).toEqual(creatorIdStreakName);
     expect(groupStreak.streakDescription).toEqual(creatorIdStreakDescription);
     expect(groupStreak.creatorId).toEqual(creatorId);
@@ -104,20 +106,58 @@ describe("GET /group-streaks", () => {
       "updatedAt",
       "__v"
     ]);
+
+    const { members } = groupStreak;
+    expect(members.length).toEqual(1);
+
+    const member = members[0];
+    expect(member._id).toBeDefined();
+    expect(member.username).toEqual(registeredUsername);
+    expect(Object.keys(member)).toEqual([
+      "_id",
+      "username",
+      "groupMemberStreak"
+    ]);
+
+    const { groupMemberStreak } = member;
+    expect(Object.keys(groupMemberStreak)).toEqual([
+      "_id",
+      "currentStreak",
+      "completedToday",
+      "active",
+      "activity",
+      "pastStreaks",
+      "userId",
+      "groupStreakId",
+      "timezone",
+      "createdAt",
+      "updatedAt",
+      "__v"
+    ]);
+
+    const { currentStreak } = groupMemberStreak;
+    expect(Object.keys(currentStreak)).toEqual(["numberOfDaysInARow"]);
+  });
+
+  test("returns no group streaks when invalid creatorId is used", async () => {
+    expect.assertions(1);
+    const response = await streakoid.groupStreaks.getAll({
+      creatorId: "InvalidID"
+    });
+    const { groupStreaks } = response.data;
+    expect(groupStreaks.length).toEqual(0);
   });
 
   test(`group streaks can be retreived with memberId query parameter`, async () => {
-    expect.assertions(11);
-
+    expect.assertions(13);
     const response = await streakoid.groupStreaks.getAll({ memberId: userId });
     const groupStreak = response.data.groupStreaks[0];
 
     expect(response.status).toEqual(200);
-    expect(response.data.groupStreaks.length).toEqual(1);
-    expect(groupStreak.members.length).toEqual(1);
-    expect(groupStreak.streakName).toEqual(memberIdStreakName);
-    expect(groupStreak.streakDescription).toEqual(memberIdStreakDescription);
-    expect(groupStreak.creatorId).toEqual(userId);
+    expect(response.data.groupStreaks.length).toBeGreaterThanOrEqual(1);
+    expect(groupStreak.streakName).toEqual(creatorIdStreakName);
+    expect(groupStreak.streakDescription).toEqual(creatorIdStreakDescription);
+    expect(groupStreak.creatorId).toEqual(creatorId);
     expect(groupStreak.timezone).toEqual(timezone);
     expect(Object.keys(groupStreak)).toEqual([
       "_id",
@@ -131,37 +171,58 @@ describe("GET /group-streaks", () => {
       "__v"
     ]);
 
-    const groupStreakMember = groupStreak.members[0];
-    expect(groupStreakMember.username).toEqual(registeredUsername);
-    expect(groupStreakMember.email).toEqual(registeredEmail);
-    expect(Object.keys(groupStreakMember)).toEqual([
+    const { members } = groupStreak;
+    expect(members.length).toEqual(1);
+
+    const member = members[0];
+    expect(member._id).toBeDefined();
+    expect(member.username).toEqual(registeredUsername);
+    expect(Object.keys(member)).toEqual([
       "_id",
-      "type",
-      "streaks",
-      "friends",
       "username",
-      "email",
+      "groupMemberStreak"
+    ]);
+
+    const { groupMemberStreak } = member;
+    expect(Object.keys(groupMemberStreak)).toEqual([
+      "_id",
+      "currentStreak",
+      "completedToday",
+      "active",
+      "activity",
+      "pastStreaks",
+      "userId",
+      "groupStreakId",
+      "timezone",
       "createdAt",
       "updatedAt",
       "__v"
     ]);
+
+    const { currentStreak } = groupMemberStreak;
+    expect(Object.keys(currentStreak)).toEqual(["numberOfDaysInARow"]);
+  });
+
+  test("returns no group streaks when invalid memberId is used", async () => {
+    expect.assertions(1);
+    const response = await streakoid.groupStreaks.getAll({
+      memberId: "InvalidID"
+    });
+    const { groupStreaks } = response.data;
+    expect(groupStreaks.length).toEqual(0);
   });
 
   test(`group streaks can be retreieved with timezone query parameter`, async () => {
-    expect.assertions(8);
-
-    const response = await streakoid.groupStreaks.getAll({
-      timezone: romeTimezone
-    });
+    expect.assertions(13);
+    const response = await streakoid.groupStreaks.getAll({ timezone });
     const groupStreak = response.data.groupStreaks[0];
 
     expect(response.status).toEqual(200);
     expect(response.data.groupStreaks.length).toBeGreaterThanOrEqual(1);
-    expect(groupStreak.members.length).toEqual(0);
-    expect(groupStreak.streakName).toEqual(timezoneStreakName);
-    expect(groupStreak.streakDescription).toEqual(timezoneStreakDescription);
-    expect(groupStreak.creatorId).toEqual(userId);
-    expect(groupStreak.timezone).toEqual(romeTimezone);
+    expect(groupStreak.streakName).toEqual(creatorIdStreakName);
+    expect(groupStreak.streakDescription).toEqual(creatorIdStreakDescription);
+    expect(groupStreak.creatorId).toEqual(creatorId);
+    expect(groupStreak.timezone).toEqual(timezone);
     expect(Object.keys(groupStreak)).toEqual([
       "_id",
       "members",
@@ -173,5 +234,45 @@ describe("GET /group-streaks", () => {
       "updatedAt",
       "__v"
     ]);
+
+    const { members } = groupStreak;
+    expect(members.length).toEqual(1);
+
+    const member = members[0];
+    expect(member._id).toBeDefined();
+    expect(member.username).toEqual(registeredUsername);
+    expect(Object.keys(member)).toEqual([
+      "_id",
+      "username",
+      "groupMemberStreak"
+    ]);
+
+    const { groupMemberStreak } = member;
+    expect(Object.keys(groupMemberStreak)).toEqual([
+      "_id",
+      "currentStreak",
+      "completedToday",
+      "active",
+      "activity",
+      "pastStreaks",
+      "userId",
+      "groupStreakId",
+      "timezone",
+      "createdAt",
+      "updatedAt",
+      "__v"
+    ]);
+
+    const { currentStreak } = groupMemberStreak;
+    expect(Object.keys(currentStreak)).toEqual(["numberOfDaysInARow"]);
+  });
+
+  test("returns no group streaks when timezone with no group streaks is used", async () => {
+    expect.assertions(1);
+    const response = await streakoid.groupStreaks.getAll({
+      timezone: "Europe/Gambier Islands"
+    });
+    const { groupStreaks } = response.data;
+    expect(groupStreaks.length).toEqual(0);
   });
 });

@@ -21,7 +21,7 @@ describe(`DELETE /group-streaks`, () => {
     );
     userId = registrationResponse.data._id;
     const creatorId = userId;
-    const members: string[] = [userId];
+    const members = [{ memberId: userId }];
 
     const createSoloStreakResponse = await streakoid.groupStreaks.create({
       creatorId,

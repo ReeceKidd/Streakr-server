@@ -24,17 +24,18 @@ describe("POST /group-streaks", () => {
     await streakoid.groupStreaks.deleteOne(groupStreakId);
   });
 
-  test(`group streak can be created with description, numberOfMinutes and members`, async () => {
+  test(`group streak can be created with description and numberOfMinutes`, async () => {
     expect.assertions(9);
 
-    const creatorId = userId;
     const streakName = "Reading";
     const streakDescription = "Everyday I must do 30 minutes of reading";
     const numberOfMinutes = 30;
-    const members: string[] = [userId];
+    const members: { memberId: string; groupMemberStreakId?: string }[] = [
+      { memberId: userId }
+    ];
 
     const response = await streakoid.groupStreaks.create({
-      creatorId,
+      creatorId: userId,
       streakName,
       streakDescription,
       numberOfMinutes,
@@ -43,11 +44,14 @@ describe("POST /group-streaks", () => {
     });
 
     expect(response.status).toEqual(201);
-    expect(response.data.creatorId).toEqual(creatorId);
+
+    expect(response.data.creatorId).toEqual(userId);
     expect(response.data.streakName).toEqual(streakName);
     expect(response.data.streakDescription).toEqual(streakDescription);
     expect(response.data.numberOfMinutes).toEqual(numberOfMinutes);
-    expect(response.data.members).toEqual([userId]);
+    expect(response.data.members).toEqual([
+      { memberId: userId, groupMemberStreakId: expect.any(String) }
+    ]);
     expect(response.data).toHaveProperty("_id");
     expect(response.data).toHaveProperty("createdAt");
     expect(response.data).toHaveProperty("updatedAt");
@@ -55,24 +59,27 @@ describe("POST /group-streaks", () => {
     groupStreakId = response.data._id;
   });
 
-  test(`group streak can be created without description, numberOfMinutes and members`, async () => {
+  test(`group streak can be created without description or numberOfMinutes`, async () => {
     expect.assertions(9);
 
-    const creatorId = userId;
     const streakName = "Reading";
+    const members = [{ memberId: userId }];
 
     const response = await streakoid.groupStreaks.create({
-      creatorId,
+      creatorId: userId,
       streakName,
-      timezone
+      timezone,
+      members
     });
 
     expect(response.status).toEqual(201);
-    expect(response.data.creatorId).toEqual(creatorId);
+    expect(response.data.creatorId).toEqual(userId);
     expect(response.data.streakName).toEqual(streakName);
     expect(response.data.streakDescription).toBeUndefined();
     expect(response.data.numberOfMinutes).toBeUndefined();
-    expect(response.data.members).toEqual([]);
+    expect(response.data.members).toEqual([
+      { memberId: userId, groupMemberStreakId: expect.any(String) }
+    ]);
     expect(response.data).toHaveProperty("_id");
     expect(response.data).toHaveProperty("createdAt");
     expect(response.data).toHaveProperty("updatedAt");

@@ -19,7 +19,7 @@ describe("GET /group-streaks/:groupStreakId", () => {
     const registrationResponse = await streakoid.users.create(username, email);
     userId = registrationResponse.data._id;
 
-    const members = [userId];
+    const members = [{ memberId: userId }];
 
     const createGroupStreakResponse = await streakoid.groupStreaks.create({
       creatorId: userId,
@@ -33,25 +33,46 @@ describe("GET /group-streaks/:groupStreakId", () => {
 
   afterAll(async () => {
     await streakoid.users.deleteOne(userId);
-
     await streakoid.groupStreaks.deleteOne(groupStreakId);
   });
 
   test(`group streak can be retreived with populated member information`, async () => {
-    expect.assertions(13);
+    expect.assertions(14);
 
     const response = await streakoid.groupStreaks.getOne(groupStreakId);
     const groupStreak = response.data;
 
     expect(response.status).toEqual(200);
     expect(groupStreak.members.length).toEqual(1);
+    const member = groupStreak.members[0];
+    expect(member._id).toBeDefined();
+    expect(member.username).toEqual(username);
+    expect(Object.keys(member)).toEqual([
+      "_id",
+      "username",
+      "groupMemberStreak"
+    ]);
+
+    const { groupMemberStreak } = member;
+    expect(Object.keys(groupMemberStreak)).toEqual([
+      "_id",
+      "currentStreak",
+      "completedToday",
+      "active",
+      "activity",
+      "pastStreaks",
+      "userId",
+      "groupStreakId",
+      "timezone",
+      "createdAt",
+      "updatedAt",
+      "__v"
+    ]);
+
     expect(groupStreak.streakName).toEqual(streakName);
     expect(groupStreak.streakDescription).toEqual(streakDescription);
     expect(groupStreak.creatorId).toEqual(userId);
     expect(groupStreak.timezone).toEqual(timezone);
-    expect(groupStreak.creator._id).toBeDefined();
-    expect(groupStreak.creator.username).toEqual(username);
-    expect(Object.keys(groupStreak.creator)).toEqual(["_id", "username"]);
     expect(Object.keys(groupStreak)).toEqual([
       "_id",
       "members",
@@ -65,20 +86,10 @@ describe("GET /group-streaks/:groupStreakId", () => {
       "creator"
     ]);
 
-    const groupStreakMember = groupStreak.members[0];
-    expect(groupStreakMember.username).toEqual(username);
-    expect(groupStreakMember.email).toEqual(email);
-    expect(Object.keys(groupStreakMember)).toEqual([
-      "_id",
-      "type",
-      "streaks",
-      "friends",
-      "username",
-      "email",
-      "createdAt",
-      "updatedAt",
-      "__v"
-    ]);
+    const { creator } = groupStreak;
+    expect(creator._id).toBeDefined();
+    expect(creator.username).toEqual(username);
+    expect(Object.keys(creator)).toEqual(["_id", "username"]);
   });
 
   test(`sends group streak does not exist error when solo streak doesn't exist`, async () => {

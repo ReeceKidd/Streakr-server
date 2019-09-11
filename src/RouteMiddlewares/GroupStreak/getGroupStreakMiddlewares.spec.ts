@@ -152,12 +152,15 @@ describe("retreiveGroupStreakMiddleware", () => {
 
 describe("retreiveGroupStreakMembersInformation", () => {
   test("retreives group streak members information and sets response.locals.groupStreaksWithUsers", async () => {
-    expect.assertions(4);
+    expect.assertions(5);
 
     const user = { _id: "12345678", username: "usernames" };
     const lean = jest.fn().mockResolvedValue(user);
     const findOne = jest.fn(() => ({ lean }));
     const userModel: any = {
+      findOne
+    };
+    const groupStreakModel: any = {
       findOne
     };
     const members = ["12345678"];
@@ -167,13 +170,22 @@ describe("retreiveGroupStreakMembersInformation", () => {
     const next = jest.fn();
 
     const middleware = getRetreiveGroupStreakMembersInformationMiddleware(
-      userModel
+      userModel,
+      groupStreakModel
     );
     await middleware(request, response, next);
 
-    expect(findOne).toHaveBeenCalled();
-    expect(lean).toHaveBeenCalled();
-    expect(response.locals.groupStreakWithUsers).toBeDefined();
+    expect(findOne).toHaveBeenCalledTimes(2);
+    expect(lean).toHaveBeenCalledTimes(2);
+
+    expect(response.locals.groupStreak).toBeDefined();
+    const member = response.locals.groupStreak.members[0];
+    expect(Object.keys(member)).toEqual([
+      "_id",
+      "username",
+      "groupMemberStreak"
+    ]);
+
     expect(next).toBeCalledWith();
   });
 
@@ -185,6 +197,7 @@ describe("retreiveGroupStreakMembersInformation", () => {
     const next = jest.fn();
 
     const middleware = getRetreiveGroupStreakMembersInformationMiddleware(
+      {} as any,
       {} as any
     );
     await middleware(request, response, next);

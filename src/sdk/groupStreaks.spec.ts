@@ -80,7 +80,7 @@ describe("SDK groupStreaks", () => {
       const streakName = "Followed our calorie level";
       const streakDescription = "Stuck to our recommended calorie level";
 
-      const members: string[] = [];
+      const members: [] = [];
       const timezone = "Europe/London";
 
       await streakoid.groupStreaks.create({

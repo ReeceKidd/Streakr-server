@@ -412,6 +412,17 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to GroupMemberDoesNotExist`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.GroupMemberDoesNotExist);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-37`);
+    expect(message).toBe("Group member does not exist.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
     expect.assertions(3);
 
@@ -1433,9 +1444,7 @@ describe("customError", () => {
   test(`creates correct error when type is set to CreateGroupStreakFromRequestMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(
-      ErrorType.CreateGroupStreakFromRequestMiddleware
-    );
+    const customError = new CustomError(ErrorType.CreateGroupStreakMiddleware);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-82`);
@@ -2101,6 +2110,32 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-134`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to CreateGroupStreakCreateMemberStreakFromRequestMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.CreateGroupStreakCreateMemberStreakMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-135`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to UpdateGroupStreakMembersArray`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.UpdateGroupStreakMembersArray
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-136`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });

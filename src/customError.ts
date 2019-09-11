@@ -106,7 +106,7 @@ export enum ErrorType {
   GroupStreakDefineCurrentTimeMiddleware,
   GroupStreakDefineStartDayMiddleware,
   GroupStreakDefineEndOfDayMiddleware,
-  CreateGroupStreakFromRequestMiddleware,
+  CreateGroupStreakMiddleware,
   SaveGroupStreakToDatabaseMiddleware,
   SendFormattedGroupStreakMiddleware,
   FindGroupStreaksMiddleware,
@@ -172,7 +172,10 @@ export enum ErrorType {
   SendCompleteGroupMemberStreakTaskDeletedResponseMiddleware,
   NoCompleteGroupMemberStreakTaskToDeleteFound,
   GetCompleteGroupMemberStreakTasksMiddleware,
-  SendCompleteGroupMemberStreakTasksResponseMiddleware
+  SendCompleteGroupMemberStreakTasksResponseMiddleware,
+  CreateGroupStreakCreateMemberStreakMiddleware,
+  GroupMemberDoesNotExist,
+  UpdateGroupStreakMembersArray
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -465,6 +468,14 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-36`,
           message: "Group member streak task does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.GroupMemberDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-37`,
+          message: "Group member does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -1071,7 +1082,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.CreateGroupStreakFromRequestMiddleware:
+      case ErrorType.CreateGroupStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-82`,
           message: internalServerMessage,
@@ -1438,6 +1449,20 @@ export class CustomError extends Error {
       case ErrorType.SendCompleteGroupMemberStreakTasksResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-134`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateGroupStreakCreateMemberStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-135`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.UpdateGroupStreakMembersArray:
+        return {
+          code: `${ResponseCodes.warning}-136`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
