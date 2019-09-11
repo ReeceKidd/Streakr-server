@@ -108,6 +108,37 @@ describe("SDK groupStreaks", () => {
     });
   });
 
+  describe("update", () => {
+    test("calls PATCH with correct URL and data parmaters", async () => {
+      expect.assertions(1);
+      axios.patch = jest.fn();
+      const streakName = "streakName";
+      const streakDescription = "streakDescription";
+      const numberOfMinutes = 30;
+      const timezone = "timezone";
+
+      const data = {
+        streakName,
+        streakDescription,
+        numberOfMinutes
+      };
+
+      await streakoid.groupStreaks.update("id", timezone, data);
+
+      expect(axios.patch).toBeCalledWith(
+        `${APPLICATION_URL}/v1/group-streaks/id`,
+        {
+          ...data
+        },
+        {
+          headers: {
+            "x-timezone": timezone
+          }
+        }
+      );
+    });
+  });
+
   describe("deleteOne", () => {
     test("calls DELETE correct URL ", async () => {
       expect.assertions(1);

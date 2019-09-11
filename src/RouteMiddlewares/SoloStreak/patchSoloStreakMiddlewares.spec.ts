@@ -4,7 +4,6 @@ import {
   getPatchSoloStreakMiddleware,
   patchSoloStreakMiddleware,
   sendUpdatedSoloStreakMiddleware,
-  getSendUpdatedSoloStreakMiddleware,
   soloStreakParamsValidationMiddleware
 } from "./patchSoloStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
@@ -233,11 +232,8 @@ describe("sendUpdatedPatchMiddleware", () => {
     const request: any = {};
     const next = jest.fn();
     const updatedResourceResponseCode = 200;
-    const middleware = getSendUpdatedSoloStreakMiddleware(
-      updatedResourceResponseCode
-    );
 
-    middleware(request, response, next);
+    sendUpdatedSoloStreakMiddleware(request, response, next);
 
     expect(response.locals.user).toBeUndefined();
     expect(next).not.toBeCalled();
@@ -254,12 +250,8 @@ describe("sendUpdatedPatchMiddleware", () => {
     const response: any = { locals: { updatedSoloStreak }, status };
     const request: any = {};
     const next = jest.fn();
-    const updatedResourceResponseCode = 200;
-    const middleware = getSendUpdatedSoloStreakMiddleware(
-      updatedResourceResponseCode
-    );
 
-    middleware(request, response, next);
+    sendUpdatedSoloStreakMiddleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(

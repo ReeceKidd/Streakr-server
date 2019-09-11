@@ -5,7 +5,6 @@ const { APPLICATION_URL } = getServiceConfig();
 import ApiVersions from "../Server/versions";
 import { RouteCategories } from "../routeCategories";
 import { SupportedRequestHeaders } from "../Server/headers";
-import { optional } from "joi";
 
 const getAll = ({
   creatorId,
@@ -57,6 +56,24 @@ const create = ({
   );
 };
 
+const update = (
+  groupStreakId: string,
+  timezone: string,
+  data?: {
+    creatorId?: string;
+    streakName?: string;
+    streakDescription?: string;
+    numberOfMinutes?: number;
+    timezone?: string;
+  }
+) => {
+  return axios.patch(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupStreaks}/${groupStreakId}`,
+    data,
+    { headers: { [SupportedRequestHeaders.xTimezone]: timezone } }
+  );
+};
+
 const deleteOne = (groupStreakId: string) => {
   return axios.delete(
     `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupStreaks}/${groupStreakId}`
@@ -67,6 +84,7 @@ const groupStreaks = {
   getAll,
   getOne,
   create,
+  update,
   deleteOne
 };
 

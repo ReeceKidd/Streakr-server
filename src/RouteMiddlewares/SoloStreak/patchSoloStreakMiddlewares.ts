@@ -71,22 +71,20 @@ export const patchSoloStreakMiddleware = getPatchSoloStreakMiddleware(
   soloStreakModel
 );
 
-export const getSendUpdatedSoloStreakMiddleware = (
-  updatedResourceResponseCode: number
-) => (request: Request, response: Response, next: NextFunction) => {
+export const sendUpdatedSoloStreakMiddleware = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
   try {
     const { updatedSoloStreak } = response.locals;
     return response
-      .status(updatedResourceResponseCode)
+      .status(ResponseCodes.success)
       .send({ soloStreak: updatedSoloStreak });
   } catch (err) {
     next(new CustomError(ErrorType.SendUpdatedSoloStreakMiddleware, err));
   }
 };
-
-export const sendUpdatedSoloStreakMiddleware = getSendUpdatedSoloStreakMiddleware(
-  ResponseCodes.success
-);
 
 export const patchSoloStreakMiddlewares = [
   soloStreakParamsValidationMiddleware,
