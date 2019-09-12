@@ -5,6 +5,7 @@ const { APPLICATION_URL } = getServiceConfig();
 import ApiVersions from "../Server/versions";
 import { RouteCategories } from "../routeCategories";
 import { SupportedRequestHeaders } from "../Server/headers";
+import groupMembers from "./groupMembers";
 
 const getAll = ({
   creatorId,
@@ -85,7 +86,8 @@ const groupStreaks = {
   getOne,
   create,
   update,
-  deleteOne
+  deleteOne,
+  groupMembers
 };
 
 export default groupStreaks;

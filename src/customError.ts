@@ -178,7 +178,14 @@ export enum ErrorType {
   UpdateGroupStreakMembersArray,
   PatchGroupStreakMiddleware,
   SendUpdatedGroupStreakMiddleware,
-  UpdatedGroupStreakNotFound
+  UpdatedGroupStreakNotFound,
+  CreateGroupMemberFriendExistsMiddleware,
+  CreateGroupMemberGroupStreakExistsMiddleware,
+  SendCreateGroupMemberResponseMiddleware,
+  CreateGroupMemberFriendDoesNotExist,
+  CreateGroupMemberGroupStreakDoesNotExist,
+  CreateGroupMemberCreateGroupMemberStreakMiddleware,
+  AddFriendToGroupStreakMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -486,6 +493,22 @@ export class CustomError extends Error {
       case ErrorType.UpdatedGroupStreakNotFound: {
         return {
           code: `${ResponseCodes.badRequest}-38`,
+          message: "Group streak does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.CreateGroupMemberFriendDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-39`,
+          message: "Friend does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.CreateGroupMemberGroupStreakDoesNotExist: {
+        return {
+          code: `${ResponseCodes.badRequest}-40`,
           message: "Group streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
@@ -1488,6 +1511,41 @@ export class CustomError extends Error {
       case ErrorType.SendUpdatedGroupStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-138`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateGroupMemberFriendExistsMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-139`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateGroupMemberGroupStreakExistsMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-140`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendCreateGroupMemberResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-141`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.CreateGroupMemberCreateGroupMemberStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-142`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.AddFriendToGroupStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-143`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

@@ -43,16 +43,6 @@ export const groupStreakRequestBodyValidationMiddleware = (
   );
 };
 
-// Might be better to do an endpoint called groupStreak/:id/members/:id;
-// Does that make sense? I think so? As it is the members of the group streak.
-// That way you can just post to groupStreak/:id/members to add a friend
-// Getting returns the member information and the group member streak
-// Deleteing deletes the member from the group
-
-// Create a new group member streak for each new member
-
-// Make sure memberId, groupStreakMemberId is in the same format before performing the update.
-
 export const getPatchGroupStreakMiddleware = (
   groupStreakModel: mongoose.Model<GroupStreak>
 ) => async (request: Request, response: Response, next: NextFunction) => {

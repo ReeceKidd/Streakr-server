@@ -7,7 +7,7 @@ export interface GroupStreak extends mongoose.Document {
   streakName: string;
   streakDescription: string;
   numberOfMinutes: number;
-  members: { _id: string; memberId: string; groupMemberStreakId: string }[];
+  members: { memberId: string; groupMemberStreakId: string }[];
   timezone: string;
 }
 

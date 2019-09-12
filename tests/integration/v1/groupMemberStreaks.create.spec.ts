@@ -40,36 +40,6 @@ describe("POST /group-member-streaks", () => {
     await streakoid.groupMemberStreaks.deleteOne(createdGroupMemberStreakId);
   });
 
-  test("throws userId does not exist error", async () => {
-    expect.assertions(2);
-
-    try {
-      await streakoid.groupMemberStreaks.create(
-        "incorrect-user-id",
-        createdGroupStreakId,
-        timezone
-      );
-    } catch (err) {
-      expect(err.response.status).toEqual(500);
-      expect(err.response.data.code).toEqual("500-113");
-    }
-  });
-
-  test("throws groupStreakId does not exist error", async () => {
-    expect.assertions(2);
-
-    try {
-      await streakoid.groupMemberStreaks.create(
-        registeredUserId,
-        "incorrect-group-streak-id",
-        timezone
-      );
-    } catch (err) {
-      expect(err.response.status).toEqual(500);
-      expect(err.response.data.code).toEqual("500-114");
-    }
-  });
-
   test(`creates groupMember streak associated with groupId`, async () => {
     expect.assertions(13);
 
@@ -120,5 +90,35 @@ describe("POST /group-member-streaks", () => {
       "updatedAt",
       "__v"
     ]);
+  });
+
+  test("throws userId does not exist error", async () => {
+    expect.assertions(2);
+
+    try {
+      await streakoid.groupMemberStreaks.create(
+        "incorrect-user-id",
+        createdGroupStreakId,
+        timezone
+      );
+    } catch (err) {
+      expect(err.response.status).toEqual(500);
+      expect(err.response.data.code).toEqual("500-113");
+    }
+  });
+
+  test("throws groupStreakId does not exist error", async () => {
+    expect.assertions(2);
+
+    try {
+      await streakoid.groupMemberStreaks.create(
+        registeredUserId,
+        "incorrect-group-streak-id",
+        timezone
+      );
+    } catch (err) {
+      expect(err.response.status).toEqual(500);
+      expect(err.response.data.code).toEqual("500-114");
+    }
   });
 });
