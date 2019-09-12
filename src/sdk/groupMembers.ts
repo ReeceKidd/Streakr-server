@@ -23,8 +23,21 @@ const create = ({
   );
 };
 
+const deleteOne = ({
+  groupStreakId,
+  memberId
+}: {
+  groupStreakId: string;
+  memberId: string;
+}) => {
+  return axios.delete(
+    `${APPLICATION_URL}/${ApiVersions.v1}/${RouteCategories.groupStreaks}/${groupStreakId}/${GroupStreakRouteCategories.members}/${memberId}`
+  );
+};
+
 const groupMembers = {
-  create
+  create,
+  deleteOne
 };
 
 export default groupMembers;

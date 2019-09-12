@@ -185,7 +185,13 @@ export enum ErrorType {
   CreateGroupMemberFriendDoesNotExist,
   CreateGroupMemberGroupStreakDoesNotExist,
   CreateGroupMemberCreateGroupMemberStreakMiddleware,
-  AddFriendToGroupStreakMiddleware
+  AddFriendToGroupStreakMiddleware,
+  DeleteGroupMemberRetreiveGroupStreakMiddleware,
+  RetreiveGroupMemberMiddleware,
+  DeleteGroupMemberMiddleware,
+  SendGroupMemberDeletedResponseMiddleware,
+  NoGroupStreakFound,
+  NoGroupMemberFound
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -510,6 +516,22 @@ export class CustomError extends Error {
         return {
           code: `${ResponseCodes.badRequest}-40`,
           message: "Group streak does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoGroupStreakFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-41`,
+          message: "Group streak does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.NoGroupMemberFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-42`,
+          message: "Group streak member does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -1546,6 +1568,34 @@ export class CustomError extends Error {
       case ErrorType.AddFriendToGroupStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-143`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteGroupMemberRetreiveGroupStreakMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-144`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveGroupMemberMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-145`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.DeleteGroupMemberMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-146`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendGroupMemberDeletedResponseMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-147`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

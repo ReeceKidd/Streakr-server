@@ -35,4 +35,20 @@ describe("SDK groupMembers", () => {
       );
     });
   });
+
+  describe("deleteOne", () => {
+    test("calls DELETE correct URL ", async () => {
+      expect.assertions(1);
+      axios.delete = jest.fn();
+
+      await streakoid.groupStreaks.groupMembers.deleteOne({
+        groupStreakId: "groupStreakId",
+        memberId: "memberId"
+      });
+
+      expect(axios.delete).toBeCalledWith(
+        `${APPLICATION_URL}/v1/group-streaks/groupStreakId/members/memberId`
+      );
+    });
+  });
 });

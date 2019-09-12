@@ -6,8 +6,11 @@ import { deleteGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStr
 import { getGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStreak/getGroupStreakMiddlewares";
 import { patchGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStreak/patchGroupStreakMiddlewares";
 import { createGroupMemberMiddlewares } from "../../../RouteMiddlewares/GroupMember/createGroupMemberMiddlewares";
+import { deleteGroupMemberMiddlewares } from "../../../RouteMiddlewares/GroupMember/deleteGroupMemberMiddlewares";
 
 export const groupStreakId = "groupStreakId";
+
+export const memberId = "memberId";
 
 const groupStreaksRouter = Router();
 
@@ -22,6 +25,11 @@ groupStreaksRouter.get(`/:${groupStreakId}`, ...getGroupStreakMiddlewares);
 groupStreaksRouter.delete(
   `/:${groupStreakId}`,
   ...deleteGroupStreakMiddlewares
+);
+
+groupStreaksRouter.delete(
+  `/:${groupStreakId}/${GroupStreakRouteCategories.members}/:${memberId}`,
+  ...deleteGroupMemberMiddlewares
 );
 
 groupStreaksRouter.use(...timezoneMiddlewares);
