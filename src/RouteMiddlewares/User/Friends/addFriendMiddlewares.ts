@@ -135,9 +135,7 @@ export const sendUserWithNewFriendMiddleware = (
 ) => {
   try {
     const { userWithNewFriend } = response.locals;
-    return response
-      .status(ResponseCodes.created)
-      .send({ user: userWithNewFriend });
+    return response.status(ResponseCodes.created).send(userWithNewFriend);
   } catch (err) {
     next(new CustomError(ErrorType.SendUserWithNewFriendMiddleware, err));
   }

@@ -76,33 +76,12 @@ describe("soloStreakRequestBodyValidationMiddleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  test("sends correct error when name is not a string", () => {
+  test("sends correct error when streakName is not a string", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { name: 1234 }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    soloStreakRequestBodyValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "name" fails because ["name" must be a string]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
-  test("sends correct response is sent when description is not a string", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      body: { description: 1234 }
+      body: { streakName: 1234 }
     };
     const response: any = {
       status
@@ -114,7 +93,29 @@ describe("soloStreakRequestBodyValidationMiddleware", () => {
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
-        'child "description" fails because ["description" must be a string]'
+        'child "streakName" fails because ["streakName" must be a string]'
+    });
+    expect(next).not.toBeCalled();
+  });
+
+  test("sends correct response is sent when streakDescription is not a string", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      body: { streakDescription: 1234 }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    soloStreakRequestBodyValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message:
+        'child "streakDescription" fails because ["streakDescription" must be a string]'
     });
     expect(next).not.toBeCalled();
   });
@@ -125,14 +126,14 @@ describe("patchSoloStreakMiddleware", () => {
     expect.assertions(3);
     const soloStreakId = "abc123";
     const userId = "123cde";
-    const name = "Daily programming";
-    const description = "Do one hour of programming each day";
+    const streakName = "Daily programming";
+    const streakDescription = "Do one hour of programming each day";
     const request: any = {
       params: { soloStreakId },
       body: {
         userId,
-        name,
-        description
+        streakName,
+        streakDescription
       }
     };
     const response: any = { locals: {} };
@@ -147,7 +148,7 @@ describe("patchSoloStreakMiddleware", () => {
 
     expect(findByIdAndUpdate).toBeCalledWith(
       soloStreakId,
-      { userId, name, description },
+      { userId, streakName, streakDescription },
       { new: true }
     );
     expect(response.locals.updatedSoloStreak).toBeDefined();
@@ -158,14 +159,14 @@ describe("patchSoloStreakMiddleware", () => {
     expect.assertions(1);
     const soloStreakId = "abc123";
     const userId = "123cde";
-    const name = "Daily programming";
-    const description = "Do one hour of programming each day";
+    const streakName = "Daily programming";
+    const streakDescription = "Do one hour of programming each day";
     const request: any = {
       params: { soloStreakId },
       body: {
         userId,
-        name,
-        description
+        streakName,
+        streakDescription
       }
     };
     const response: any = { locals: {} };
@@ -187,14 +188,14 @@ describe("patchSoloStreakMiddleware", () => {
     expect.assertions(1);
     const soloStreakId = "abc123";
     const userId = "123cde";
-    const name = "Daily programming";
-    const description = "Do one hour of programming each day";
+    const streakName = "Daily programming";
+    const streakDescription = "Do one hour of programming each day";
     const request: any = {
       params: { soloStreakId },
       body: {
         userId,
-        name,
-        description
+        streakName,
+        streakDescription
       }
     };
     const response: any = { locals: {} };
@@ -238,7 +239,7 @@ describe("sendUpdatedPatchMiddleware", () => {
     expect(response.locals.user).toBeUndefined();
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(updatedResourceResponseCode);
-    expect(send).toBeCalledWith({ soloStreak: updatedSoloStreak });
+    expect(send).toBeCalledWith(updatedSoloStreak);
   });
 
   test("calls next with SendUpdatedSoloStreakMiddleware error on middleware failure", () => {

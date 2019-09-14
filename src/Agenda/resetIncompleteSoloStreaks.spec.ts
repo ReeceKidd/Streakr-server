@@ -1,6 +1,7 @@
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
-import streakoid from "../sdk/streakoid";
+
 import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
+import streakoid from "../streakoid";
 
 describe("resetIncompleteSoloStreaks", () => {
   afterEach(() => {
@@ -37,16 +38,22 @@ describe("resetIncompleteSoloStreaks", () => {
     ];
     const pastStreaks = [{ ...currentStreak, endDate }];
     await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate, timezone);
-    expect(streakoid.soloStreaks.update).toBeCalledWith(_id, timezone, {
-      currentStreak: { startDate: undefined, numberOfDaysInARow: 0 },
-      pastStreaks,
-      activity: [{ type: StreakTrackingEventType.LostStreak, time: endDate }],
-      active: false
+
+    expect(streakoid.soloStreaks.update).toBeCalledWith({
+      soloStreakId: _id,
+      timezone,
+      updateData: {
+        currentStreak: { startDate: undefined, numberOfDaysInARow: 0 },
+        pastStreaks,
+        activity: [{ type: StreakTrackingEventType.LostStreak, time: endDate }],
+        active: false
+      }
     });
-    expect(streakoid.streakTrackingEvents.create).toBeCalledWith(
-      StreakTrackingEventType.LostStreak,
-      _id,
+
+    expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
+      type: StreakTrackingEventType.LostStreak,
+      streakId: _id,
       userId
-    );
+    });
   });
 });

@@ -199,7 +199,7 @@ describe("sendGroupStreaksMiddleware", () => {
     expect.assertions(3);
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(ResponseCodes.success);
-    expect(send).toBeCalledWith({ groupStreaks: groupStreaks });
+    expect(send).toBeCalledWith(groupStreaks);
   });
 
   test("calls next with SendGroupStreaksMiddleware on middleware failure", () => {

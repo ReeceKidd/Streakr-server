@@ -7,7 +7,7 @@ export interface Feedback extends mongoose.Document {
   pageUrl: string;
   username: string;
   userEmail: string;
-  feedback: string;
+  feedbackText: string;
 }
 
 export const feedbackSchema = new mongoose.Schema(
@@ -28,7 +28,7 @@ export const feedbackSchema = new mongoose.Schema(
       required: true,
       type: String
     },
-    feedback: {
+    feedbackText: {
       required: true,
       type: String
     }

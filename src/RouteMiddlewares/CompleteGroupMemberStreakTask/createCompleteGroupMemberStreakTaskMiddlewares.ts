@@ -294,7 +294,7 @@ export const sendCompleteGroupMemberStreakTaskResponseMiddleware = (
     const { completeGroupMemberStreakTask } = response.locals;
     return response
       .status(ResponseCodes.created)
-      .send({ completeGroupMemberStreakTask });
+      .send(completeGroupMemberStreakTask);
   } catch (err) {
     next(
       new CustomError(

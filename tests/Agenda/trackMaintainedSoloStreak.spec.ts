@@ -1,7 +1,6 @@
-import { resetIncompleteSoloStreaks } from "../../../src/Agenda/resetIncompleteSoloStreaks";
-import streakoid from "../../../src/sdk/streakoid";
-import { StreakTrackingEventType } from "../../../src/Models/StreakTrackingEvent";
+import { StreakTrackingEventType } from ".../../../../src/Models/StreakTrackingEvent";
 import { trackMaintainedSoloStreaks } from ".../../../src/Agenda/trackMaintainedSoloStreaks";
+import streakoid from ".../../../src/streakoid";
 
 const username = "trackMaintainedSoloStreakUsername";
 const email = "trackMaintainedSoloStreak@gmail.com";
@@ -13,28 +12,30 @@ describe("trackMaintainedSoloStreak", () => {
   let soloStreakId: string;
   let completeSoloStreakTaskId: string;
 
-  const name = "Daily Programming";
-  const description = "I will program for one hour everyday";
+  const streakName = "Daily Programming";
+  const streakDescription = "I will program for one hour everyday";
   const timezone = "America/Louisville";
 
   beforeAll(async () => {
-    const registrationResponse = await streakoid.users.create(username, email);
-    userId = registrationResponse.data._id;
+    const user = await streakoid.users.create({ username, email });
+    userId = user._id;
 
-    const createSoloStreakResponse = await streakoid.soloStreaks.create(
+    const soloStreak = await streakoid.soloStreaks.create({
       userId,
-      name,
-      timezone,
-      description
-    );
-    soloStreakId = createSoloStreakResponse.data._id;
-
-    const createCompleteSoloStreakTaskResponse = await streakoid.completeSoloStreakTasks.create(
-      userId,
-      soloStreakId,
+      streakName,
+      streakDescription,
       timezone
+    });
+    soloStreakId = soloStreak._id;
+
+    const completeSoloStreakTask = await streakoid.completeSoloStreakTasks.create(
+      {
+        userId,
+        soloStreakId,
+        timezone
+      }
     );
-    completeSoloStreakTaskId = createCompleteSoloStreakTaskResponse.data._id;
+    completeSoloStreakTaskId = completeSoloStreakTask._id;
   });
 
   afterAll(async () => {
@@ -46,12 +47,10 @@ describe("trackMaintainedSoloStreak", () => {
   test("updates solo streak activity and creates a streak maintained tracking event", async () => {
     expect.assertions(11);
 
-    const maintainedSoloStreaksResponse = await streakoid.soloStreaks.getAll({
+    const maintainedSoloStreaks = await streakoid.soloStreaks.getAll({
       completedToday: true,
       timezone
     });
-    const maintainedSoloStreaks =
-      maintainedSoloStreaksResponse.data.soloStreaks;
 
     const endDate = new Date();
     const maintainedSoloStreaksPromises = await trackMaintainedSoloStreaks(
@@ -61,10 +60,7 @@ describe("trackMaintainedSoloStreak", () => {
 
     await Promise.all(maintainedSoloStreaksPromises);
 
-    const updatedSoloStreakResponse: any = await streakoid.soloStreaks.getOne(
-      soloStreakId
-    );
-    const updatedSoloStreak = updatedSoloStreakResponse.data;
+    const updatedSoloStreak = await streakoid.soloStreaks.getOne(soloStreakId);
 
     expect(updatedSoloStreak.active).toEqual(true);
     expect(updatedSoloStreak.currentStreak.endDate).toBeUndefined();
@@ -77,11 +73,10 @@ describe("trackMaintainedSoloStreak", () => {
       }
     ]);
 
-    const streakTrackingEventResponse = await streakoid.streakTrackingEvents.getAll(
-      { userId }
-    );
-    const streakTrackingEvent =
-      streakTrackingEventResponse.data.streakTrackingEvents[0];
+    const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+      userId
+    });
+    const streakTrackingEvent = streakTrackingEvents[0];
 
     expect(streakTrackingEvent._id).toBeDefined();
     expect(streakTrackingEvent.type).toEqual(

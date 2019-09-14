@@ -70,7 +70,7 @@ export const sendSoloStreaksMiddleware = (
 ) => {
   try {
     const { soloStreaks } = response.locals;
-    response.status(ResponseCodes.success).send({ soloStreaks });
+    response.status(ResponseCodes.success).send(soloStreaks);
   } catch (err) {
     next(new CustomError(ErrorType.SendSoloStreaksMiddleware, err));
   }

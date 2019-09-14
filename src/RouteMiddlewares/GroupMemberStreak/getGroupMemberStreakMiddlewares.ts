@@ -57,9 +57,7 @@ export const getSendGroupMemberStreakMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupMemberStreak } = response.locals;
-    return response
-      .status(resourceCreatedResponseCode)
-      .send({ ...groupMemberStreak });
+    return response.status(resourceCreatedResponseCode).send(groupMemberStreak);
   } catch (err) {
     next(new CustomError(ErrorType.SendGroupMemberStreakMiddleware, err));
   }

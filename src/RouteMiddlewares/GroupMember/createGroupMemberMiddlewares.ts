@@ -171,9 +171,7 @@ export const sendCreateGroupMemberResponseMiddleware = (
 ) => {
   try {
     const { groupStreak } = response.locals;
-    return response
-      .status(ResponseCodes.created)
-      .send({ members: groupStreak.members });
+    return response.status(ResponseCodes.created).send(groupStreak.members);
   } catch (err) {
     next(
       new CustomError(ErrorType.SendCreateGroupMemberResponseMiddleware, err)

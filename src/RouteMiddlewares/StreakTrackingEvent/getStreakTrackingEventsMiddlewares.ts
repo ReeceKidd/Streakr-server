@@ -70,9 +70,7 @@ export const sendStreakTrackingEventsResponseMiddleware = (
 ) => {
   try {
     const { streakTrackingEvents } = response.locals;
-    return response
-      .status(ResponseCodes.success)
-      .send({ streakTrackingEvents });
+    return response.status(ResponseCodes.success).send(streakTrackingEvents);
   } catch (err) {
     next(
       new CustomError(ErrorType.SendStreakTrackingEventsResponseMiddleware, err)

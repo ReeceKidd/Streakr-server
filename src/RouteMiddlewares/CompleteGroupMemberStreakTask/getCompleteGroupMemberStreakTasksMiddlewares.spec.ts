@@ -263,7 +263,7 @@ describe("sendCompleteGroupMemberStreakTaskDeletedResponseMiddleware", () => {
     );
 
     expect(status).toBeCalledWith(200);
-    expect(send).toBeCalledWith({ completeGroupMemberStreakTasks });
+    expect(send).toBeCalledWith(completeGroupMemberStreakTasks);
     expect(next).not.toBeCalled();
   });
 

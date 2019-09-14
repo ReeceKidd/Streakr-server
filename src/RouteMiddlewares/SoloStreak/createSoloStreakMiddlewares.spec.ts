@@ -11,15 +11,21 @@ import { CustomError, ErrorType } from "../../customError";
 
 describe(`createSoloStreakBodyValidationMiddleware`, () => {
   const userId = "12345678";
-  const name = "Spanish Streak";
-  const description = " Do the insane amount of XP for Duolingo each day";
+  const streakName = "Spanish Streak";
+  const streakDescription = " Do the insane amount of XP for Duolingo each day";
+
+  const body = {
+    userId,
+    streakName,
+    streakDescription
+  };
 
   test("valid request passes validation", () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId, name, description }
+      body
     };
     const response: any = {
       status
@@ -36,7 +42,7 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { name, description }
+      body: { ...body, userId: undefined }
     };
     const response: any = {
       status
@@ -57,7 +63,7 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId: 1234, name, description }
+      body: { ...body, userId: 123 }
     };
     const response: any = {
       status
@@ -73,12 +79,12 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("sends name is missing error", () => {
+  test("sends streakName is missing error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId, description }
+      body: { ...body, streakName: undefined }
     };
     const response: any = {
       status
@@ -89,38 +95,17 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
-      message: 'child "name" fails because ["name" is required]'
+      message: 'child "streakName" fails because ["streakName" is required]'
     });
     expect(next).not.toBeCalled();
   });
 
-  test("sends name is not a string error", () => {
+  test("sends streakName is not a string error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId, name: 1234, description }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    createSoloStreakBodyValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-    expect(send).toBeCalledWith({
-      message: 'child "name" fails because ["name" must be a string]'
-    });
-    expect(next).not.toBeCalled();
-  });
-
-  test("sends description is not a string error", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      body: { userId, name, description: 1234 }
+      body: { ...body, streakName: 123 }
     };
     const response: any = {
       status
@@ -132,7 +117,29 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
-        'child "description" fails because ["description" must be a string]'
+        'child "streakName" fails because ["streakName" must be a string]'
+    });
+    expect(next).not.toBeCalled();
+  });
+
+  test("sends streakDescription is not a string error", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      body: { ...body, streakDescription: 123 }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    createSoloStreakBodyValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message:
+        'child "streakDescription" fails because ["streakDescription" must be a string]'
     });
     expect(next).not.toBeCalled();
   });
@@ -142,7 +149,7 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId, name, numberOfMinutes: -1 }
+      body: { ...body, numberOfMinutes: -1 }
     };
     const response: any = {
       status
@@ -164,29 +171,29 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
   test("sets response.locals.newSoloStreak", async () => {
     expect.assertions(2);
     const userId = "abcdefg";
-    const name = "streak name";
-    const description = "mock streak description";
+    const streakName = "streak streakName";
+    const streakDescription = "mock streak streakDescription";
     const timezone = "Europe/London";
     class SoloStreak {
       userId: string;
-      name: string;
-      description: string;
+      streakName: string;
+      streakDescription: string;
       timezone: string;
 
-      constructor({ userId, name, description, timezone }: any) {
+      constructor({ userId, streakName, streakDescription, timezone }: any) {
         this.userId = userId;
-        this.name = name;
-        this.description = description;
+        this.streakName = streakName;
+        this.streakDescription = streakDescription;
         this.timezone = timezone;
       }
     }
     const response: any = { locals: { timezone } };
-    const request: any = { body: { userId, name, description } };
+    const request: any = { body: { userId, streakName, streakDescription } };
     const next = jest.fn();
     const newSoloStreak = new SoloStreak({
       userId,
-      name,
-      description,
+      streakName,
+      streakDescription,
       timezone
     });
     const middleware = getCreateSoloStreakFromRequestMiddleware(
@@ -203,10 +210,10 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
     expect.assertions(1);
     const timezone = "Europe/London";
     const userId = "abcdefg";
-    const name = "streak name";
-    const description = "mock streak description";
+    const streakName = "streak streakName";
+    const streakDescription = "mock streak streakDescription";
     const response: any = { locals: { timezone } };
-    const request: any = { body: { userId, name, description } };
+    const request: any = { body: { userId, streakName, streakDescription } };
     const next = jest.fn();
     const middleware = getCreateSoloStreakFromRequestMiddleware({} as any);
 

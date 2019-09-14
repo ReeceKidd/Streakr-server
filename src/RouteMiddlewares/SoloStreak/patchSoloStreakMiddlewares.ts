@@ -24,8 +24,8 @@ export const soloStreakParamsValidationMiddleware = (
 };
 
 const soloStreakBodyValidationSchema = {
-  name: Joi.string(),
-  description: Joi.string(),
+  streakName: Joi.string(),
+  streakDescription: Joi.string(),
   completedToday: Joi.boolean(),
   active: Joi.boolean(),
   currentStreak: Joi.object(),
@@ -78,9 +78,7 @@ export const sendUpdatedSoloStreakMiddleware = (
 ) => {
   try {
     const { updatedSoloStreak } = response.locals;
-    return response
-      .status(ResponseCodes.success)
-      .send({ soloStreak: updatedSoloStreak });
+    return response.status(ResponseCodes.success).send(updatedSoloStreak);
   } catch (err) {
     next(new CustomError(ErrorType.SendUpdatedSoloStreakMiddleware, err));
   }

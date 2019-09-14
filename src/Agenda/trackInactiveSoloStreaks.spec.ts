@@ -1,6 +1,7 @@
-import streakoid from "../sdk/streakoid";
 import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
 import { trackInactiveSoloStreaks } from "./trackInactiveSoloStreaks";
+import streakoid from "../streakoid";
+import { soloStreakId } from "../Routers/versions/v1/soloStreaksRouter";
 
 describe("trackInactiveSoloStreaks", () => {
   afterEach(() => {
@@ -37,18 +38,22 @@ describe("trackInactiveSoloStreaks", () => {
       } as any
     ];
     await trackInactiveSoloStreaks(inactiveSoloStreaks, currentLocalTime);
-    expect(streakoid.soloStreaks.update).toBeCalledWith(_id, timezone, {
-      activity: [
-        {
-          type: StreakTrackingEventType.InactiveStreak,
-          time: currentLocalTime
-        }
-      ]
+    expect(streakoid.soloStreaks.update).toBeCalledWith({
+      soloStreakId: _id,
+      timezone,
+      updateData: {
+        activity: [
+          {
+            type: StreakTrackingEventType.InactiveStreak,
+            time: currentLocalTime
+          }
+        ]
+      }
     });
-    expect(streakoid.streakTrackingEvents.create).toBeCalledWith(
-      StreakTrackingEventType.InactiveStreak,
-      _id,
+    expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
+      type: StreakTrackingEventType.InactiveStreak,
+      streakId: _id,
       userId
-    );
+    });
   });
 });

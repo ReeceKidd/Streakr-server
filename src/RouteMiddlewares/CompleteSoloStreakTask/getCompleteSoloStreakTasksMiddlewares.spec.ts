@@ -194,7 +194,7 @@ describe("sendCompleteSoloStreakTaskDeletedResponseMiddleware", () => {
     sendCompleteSoloStreakTasksResponseMiddleware(request, response, next);
 
     expect(status).toBeCalledWith(200);
-    expect(send).toBeCalledWith({ completeSoloStreakTasks });
+    expect(send).toBeCalledWith(completeSoloStreakTasks);
     expect(next).not.toBeCalled();
   });
 

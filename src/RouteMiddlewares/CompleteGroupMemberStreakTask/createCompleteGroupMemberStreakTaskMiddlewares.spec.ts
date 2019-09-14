@@ -682,7 +682,7 @@ describe("sendCompleteGroupMemberStreakTaskResponseMiddleware", () => {
     );
 
     expect(status).toBeCalledWith(201);
-    expect(send).toBeCalledWith({ completeGroupMemberStreakTask });
+    expect(send).toBeCalledWith(completeGroupMemberStreakTask);
     expect(next).not.toBeCalled();
   });
 

@@ -21,14 +21,19 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
   describe("cancelStripeCustomerSubscriptionBodyValidationMiddleware", () => {
     const subscription = "subscription";
-    const id = "id";
+    const userId = "userId";
+
+    const body = {
+      subscription,
+      userId
+    };
 
     test("sends correct error response when unsupported key is sent", () => {
       expect.assertions(3);
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const request: any = {
-        body: { unsupportedKey: 1234, subscription, id }
+        body: { ...body, unsupportedKey: 1234 }
       };
       const response: any = {
         status
@@ -53,7 +58,7 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const request: any = {
-        body: { id }
+        body: { ...body, subscription: undefined }
       };
       const response: any = {
         status
@@ -74,12 +79,12 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
       expect(next).not.toBeCalled();
     });
 
-    test("sends correct error response when id is not defined", () => {
+    test("sends correct error response when userId is not defined", () => {
       expect.assertions(3);
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const request: any = {
-        body: { subscription }
+        body: { ...body, userId: undefined }
       };
       const response: any = {
         status
@@ -94,17 +99,17 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
       expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
       expect(send).toBeCalledWith({
-        message: 'child "id" fails because ["id" is required]'
+        message: 'child "userId" fails because ["userId" is required]'
       });
       expect(next).not.toBeCalled();
     });
 
-    test("sends correct error response when id is not a string", () => {
+    test("sends correct error response when userId is not a string", () => {
       expect.assertions(3);
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const request: any = {
-        body: { subscription, id: 1234 }
+        body: { subscription, userId: 1234 }
       };
       const response: any = {
         status
@@ -119,7 +124,7 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
       expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
       expect(send).toBeCalledWith({
-        message: 'child "id" fails because ["id" must be a string]'
+        message: 'child "userId" fails because ["userId" must be a string]'
       });
       expect(next).not.toBeCalled();
     });
@@ -128,14 +133,15 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
   describe("doesUserHaveStripeSubscriptionMiddleware", () => {
     test("calls next if user exists and has a premium type", async () => {
       expect.assertions(2);
-      const id = "id";
-      const findById = jest.fn().mockResolvedValue({ type: "premium" });
+      const userId = "id";
+      const lean = jest.fn().mockResolvedValue({ type: "premium" });
+      const findById = jest.fn(() => ({ lean }));
       const userModel: any = {
         findById
       };
       const request: any = {
         body: {
-          id
+          userId
         }
       };
       const response: any = {
@@ -148,20 +154,21 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
       await doesUserHaveStripeSubscriptionMiddleware(request, response, next);
 
-      expect(findById).toBeCalledWith(id);
+      expect(findById).toBeCalledWith(userId);
       expect(next).toBeCalledWith();
     });
 
     test("calls next with CancelStripeSubscriptionUserDoesNotExist error if user doesn't exist", async () => {
       expect.assertions(1);
-      const id = "id";
-      const findById = jest.fn().mockResolvedValue(false);
+      const userId = "id";
+      const lean = jest.fn().mockResolvedValue(false);
+      const findById = jest.fn(() => ({ lean }));
       const userModel: any = {
         findById
       };
       const request: any = {
         body: {
-          id
+          userId
         }
       };
       const response: any = {
@@ -181,16 +188,15 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
     test("calls next with CustomerIsNotSubscribed error if user type is not set to premium", async () => {
       expect.assertions(1);
-      const id = "id";
-      const findById = jest.fn().mockResolvedValue({
-        type: "basic"
-      });
+      const userId = "id";
+      const lean = jest.fn().mockResolvedValue({ type: "basic" });
+      const findById = jest.fn(() => ({ lean }));
       const userModel: any = {
         findById
       };
       const request: any = {
         body: {
-          id
+          userId
         }
       };
       const response: any = {
@@ -210,19 +216,12 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
     test("calls next with DoesUserHaveStripeSubscriptionMiddleware error on middleware failure", async () => {
       expect.assertions(1);
-      const email = "test@test.com";
-      const userModel: any = {};
-      const request: any = {
-        body: {
-          email
-        }
-      };
-      const response: any = {
-        locals: {}
-      };
+
+      const request: any = {};
+      const response: any = {};
       const next = jest.fn();
       const doesUserHaveStripeSubscriptionMiddleware = getDoesUserHaveStripeSubscriptionMiddleware(
-        userModel
+        {} as any
       );
 
       await doesUserHaveStripeSubscriptionMiddleware(request, response, next);
@@ -271,20 +270,19 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
   describe("removeSubcriptionFromUserMiddleware", () => {
     test("updates users stripe.subscription property to be false", async () => {
-      expect.assertions(3);
+      expect.assertions(2);
       const findByIdAndUpdate = jest.fn().mockResolvedValue({});
       const userModel = {
         findByIdAndUpdate
       };
-      const id = "id";
-      const user = {
-        id
-      };
-      const request: any = {};
-      const response: any = {
-        locals: {
-          user
+      const userId = "id";
+      const request: any = {
+        body: {
+          userId
         }
+      };
+      const response: any = {
+        locals: {}
       };
       const next = jest.fn();
       const removeSubscriptionFromUserMiddleware = getRemoveSubscriptionFromUserMiddleware(
@@ -293,10 +291,9 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
       await removeSubscriptionFromUserMiddleware(request, response, next);
 
-      expect(findByIdAndUpdate).toBeCalledWith(id, {
+      expect(findByIdAndUpdate).toBeCalledWith(userId, {
         $set: { "stripe.subscription": undefined }
       });
-      expect(response.locals.updatedUser).toBeDefined();
       expect(next).toBeCalledWith();
     });
 
@@ -322,30 +319,30 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
   describe("setUserTypeToBasicMiddleware", () => {
     test("updates user model type to be basic", async () => {
-      expect.assertions(2);
-      const id = "id";
-      const user = {
-        id
-      };
-      const request: any = {};
+      expect.assertions(3);
+      const userId = "id";
+      const request: any = { body: { userId } };
       const response: any = {
-        locals: {
-          user
-        }
+        locals: {}
       };
       const next = jest.fn();
-      const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+      const lean = jest.fn().mockResolvedValue(true);
+      const findByIdAndUpdate = jest.fn(() => ({ lean }));
       const userModel = {
         findByIdAndUpdate
       };
       const setUserTypeToBasicMiddleware = getSetUserTypeToBasicMiddleware(
-        userModel as any,
-        "basic" as any
+        userModel as any
       );
 
       await setUserTypeToBasicMiddleware(request, response, next);
 
-      expect(findByIdAndUpdate).toBeCalledWith(id, { $set: { type: "basic" } });
+      expect(findByIdAndUpdate).toBeCalledWith(
+        userId,
+        { $set: { type: "basic" } },
+        { new: true }
+      );
+      expect(lean).toBeCalled();
       expect(next).toBeCalledWith();
     });
 
@@ -356,8 +353,7 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
       const next = jest.fn();
       const userModel: any = {};
       const setUserTypeToBasicMiddleware = getSetUserTypeToBasicMiddleware(
-        userModel,
-        "basic" as any
+        userModel
       );
 
       await setUserTypeToBasicMiddleware(request, response, next);
@@ -373,17 +369,24 @@ describe("cancelStripeCustomerSubscriptionMiddlewares", () => {
 
   describe("sendSuccessfullyRemovedSubscriptionMiddleware", () => {
     test("sends stripeCustomer and subscription information in response", () => {
-      expect.assertions(1);
-      const status = jest.fn();
+      expect.assertions(2);
+
+      const updatedUser = { _id: "abc" };
+      const send = jest.fn();
+      const status = jest.fn(() => ({ send }));
       const request: any = {};
       const response: any = {
+        locals: {
+          updatedUser
+        },
         status
       };
       const next = jest.fn();
 
       sendSuccessfullyRemovedSubscriptionMiddleware(request, response, next);
 
-      expect(status).toBeCalledWith(204);
+      expect(send).toBeCalledWith(updatedUser);
+      expect(status).toBeCalledWith(200);
     });
 
     test("calls next with SendSuccessfulSubscriptionMiddleware on middleware failure", () => {

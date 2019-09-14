@@ -4,29 +4,14 @@ import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
-import { User } from "../../Models/User";
 import { SoloStreak, soloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
-export interface SoloStreakRegistrationRequestBody {
-  userId: string;
-  name: string;
-  description: string;
-  createdAt: Date;
-  modifiedAt: Date;
-}
-
-export interface SoloStreakResponseLocals {
-  user?: User;
-  newSoloStreak?: SoloStreak;
-  savedSoloStreak?: SoloStreak;
-}
-
 const createSoloStreakBodyValidationSchema = {
   userId: Joi.string().required(),
-  name: Joi.string().required(),
-  description: Joi.string(),
+  streakName: Joi.string().required(),
+  streakDescription: Joi.string(),
   numberOfMinutes: Joi.number().positive()
 };
 
@@ -47,10 +32,15 @@ export const getCreateSoloStreakFromRequestMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
-    const { name, description, userId, numberOfMinutes } = request.body;
+    const {
+      streakName,
+      streakDescription,
+      userId,
+      numberOfMinutes
+    } = request.body;
     response.locals.newSoloStreak = new soloStreak({
-      name,
-      description,
+      streakName,
+      streakDescription,
       userId,
       timezone,
       numberOfMinutes
@@ -85,7 +75,7 @@ export const sendFormattedSoloStreakMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const { savedSoloStreak } = response.locals as SoloStreakResponseLocals;
+    const { savedSoloStreak } = response.locals;
     return response.status(ResponseCodes.created).send(savedSoloStreak);
   } catch (err) {
     next(new CustomError(ErrorType.SendFormattedSoloStreakMiddleware, err));

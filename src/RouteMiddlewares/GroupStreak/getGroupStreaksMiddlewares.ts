@@ -113,7 +113,7 @@ export const sendGroupStreaksMiddleware = (
 ) => {
   try {
     const { groupStreaks } = response.locals;
-    response.status(ResponseCodes.success).send({ groupStreaks: groupStreaks });
+    response.status(ResponseCodes.success).send(groupStreaks);
   } catch (err) {
     next(new CustomError(ErrorType.SendGroupStreaksMiddleware, err));
   }

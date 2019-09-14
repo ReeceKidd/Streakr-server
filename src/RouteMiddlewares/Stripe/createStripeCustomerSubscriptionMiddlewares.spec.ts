@@ -565,13 +565,7 @@ describe("createStripeCustomerSubscriptionMiddlewares", () => {
       sendSuccessfulSubscriptionMiddleware(request, response, next);
 
       expect(status).toBeCalledWith(201);
-      expect(send).toBeCalledWith({
-        user: {
-          _id: user.id,
-          stripe: user.stripe,
-          type: user.type
-        }
-      });
+      expect(send).toBeCalledWith(user);
     });
 
     test("calls next with SendSuccessfulSubscriptionMiddleware on middleware failure", () => {

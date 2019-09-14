@@ -1,7 +1,6 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import mongoose from "mongoose";
-import passport from "passport";
 import dotenv from "dotenv";
 import cors from "cors";
 const AgendaDash = require("agendash");
@@ -27,9 +26,6 @@ app.get(`/health`, (request, response, next) => {
 });
 
 app.use("/dash", AgendaDash(agenda));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 mongoose
   .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false })

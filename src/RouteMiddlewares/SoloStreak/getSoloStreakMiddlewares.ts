@@ -51,7 +51,7 @@ export const getSendSoloStreakMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { soloStreak } = response.locals;
-    return response.status(resourceCreatedResponseCode).send({ ...soloStreak });
+    return response.status(resourceCreatedResponseCode).send(soloStreak);
   } catch (err) {
     next(new CustomError(ErrorType.SendSoloStreakMiddleware, err));
   }

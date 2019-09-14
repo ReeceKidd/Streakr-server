@@ -34,13 +34,14 @@ export const soloStreakSchema = new mongoose.Schema(
       type: String,
       index: true
     },
-    name: {
+    streakName: {
       required: true,
       type: String,
       index: true
     },
-    description: {
-      type: String
+    streakDescription: {
+      type: String,
+      default: ""
     },
     numberOfMinutes: {
       type: Number

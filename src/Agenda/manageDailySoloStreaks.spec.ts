@@ -18,9 +18,9 @@ jest.mock("./resetIncompleteSoloStreaks", () => ({
 
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
 import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
-import streakoid from "../sdk/streakoid";
 import { trackMaintainedSoloStreaks } from "./trackMaintainedSoloStreaks";
 import { trackInactiveSoloStreaks } from "./trackInactiveSoloStreaks";
+import streakoid from "../streakoid";
 
 describe("manageDailySoloStreaks", () => {
   afterEach(() => {
@@ -30,11 +30,7 @@ describe("manageDailySoloStreaks", () => {
   test("calls trackMaintainedSoloStreaks, trackInactiveSoloStreaks and resetIncompleteSoloStreaks", async () => {
     expect.assertions(6);
     streakoid.soloStreaks.getAll = jest.fn(() => {
-      return {
-        data: {
-          soloStreaks: []
-        }
-      };
+      return [];
     });
     const timezone = "Europe/London";
     await manageDailySoloStreaks(timezone);

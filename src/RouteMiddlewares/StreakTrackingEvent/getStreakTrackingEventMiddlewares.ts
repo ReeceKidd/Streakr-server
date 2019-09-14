@@ -61,7 +61,7 @@ export const getSendStreakTrackingEventMiddleware = (
     const { streakTrackingEvent } = response.locals;
     return response
       .status(resourceCreatedResponseCode)
-      .send({ ...streakTrackingEvent });
+      .send(streakTrackingEvent);
   } catch (err) {
     next(new CustomError(ErrorType.SendStreakTrackingEventMiddleware, err));
   }

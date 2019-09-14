@@ -90,9 +90,7 @@ export const sendFormattedFriendsMiddleware = (
 ) => {
   try {
     const { formattedFriends } = response.locals;
-    return response
-      .status(ResponseCodes.success)
-      .send({ friends: formattedFriends });
+    return response.status(ResponseCodes.success).send(formattedFriends);
   } catch (err) {
     next(new CustomError(ErrorType.SendFormattedFriendsMiddleware, err));
   }

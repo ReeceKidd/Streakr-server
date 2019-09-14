@@ -204,7 +204,7 @@ describe(`getFriendsMiddlewares`, () => {
 
       expect(next).not.toBeCalled();
       expect(status).toBeCalledWith(200);
-      expect(send).toBeCalledWith({ friends: formattedFriends });
+      expect(send).toBeCalledWith(formattedFriends);
     });
 
     test("calls next with SendFormattedFriendsMiddleware on middleware failure", () => {

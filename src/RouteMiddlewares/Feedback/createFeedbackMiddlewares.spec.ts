@@ -14,14 +14,14 @@ describe(`createFeedbackBodyValidationMiddleware`, () => {
   const pageUrl = "/solo-streaks";
   const username = "username";
   const userEmail = "userEmail";
-  const feedback = "feedback";
+  const feedbackText = "feedbackText";
 
   const body = {
     userId,
     pageUrl,
     username,
     userEmail,
-    feedback
+    feedbackText
   };
 
   test("valid request passes validation", () => {
@@ -29,7 +29,7 @@ describe(`createFeedbackBodyValidationMiddleware`, () => {
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { userId, pageUrl, username, userEmail, feedback }
+      body
     };
     const response: any = {
       status
@@ -125,12 +125,12 @@ describe(`createFeedbackBodyValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("sends feedback is missing error", () => {
+  test("sends feedbackText is missing error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { ...body, feedback: undefined }
+      body: { ...body, feedbackText: undefined }
     };
     const response: any = {
       status
@@ -141,7 +141,7 @@ describe(`createFeedbackBodyValidationMiddleware`, () => {
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
-      message: 'child "feedback" fails because ["feedback" is required]'
+      message: 'child "feedbackText" fails because ["feedbackText" is required]'
     });
     expect(next).not.toBeCalled();
   });
@@ -155,26 +155,26 @@ describe(`createFeedbackFromRequestMiddleware`, () => {
     const pageUrl = "/solo-streaks";
     const username = "username";
     const userEmail = "userEmail";
-    const feedback = "feedback";
+    const feedbackText = "feedbackText";
 
     class Feedback {
       userId: string;
       pageUrl: string;
       username: string;
       userEmail: string;
-      feedback: string;
+      feedbackText: string;
 
-      constructor({ userId, pageUrl, username, userEmail, feedback }: any) {
+      constructor({ userId, pageUrl, username, userEmail, feedbackText }: any) {
         this.userId = userId;
         this.pageUrl = pageUrl;
         this.username = username;
         this.userEmail = userEmail;
-        this.feedback = feedback;
+        this.feedbackText = feedbackText;
       }
     }
     const response: any = { locals: {} };
     const request: any = {
-      body: { userId, pageUrl, username, userEmail, feedback }
+      body: { userId, pageUrl, username, userEmail, feedbackText }
     };
     const next = jest.fn();
     const newFeedback = new Feedback({
@@ -182,7 +182,7 @@ describe(`createFeedbackFromRequestMiddleware`, () => {
       pageUrl,
       username,
       userEmail,
-      feedback
+      feedbackText
     });
     const middleware = getCreateFeedbackFromRequestMiddleware(Feedback as any);
 
@@ -268,14 +268,14 @@ describe(`sendFormattedFeedbackMiddleware`, () => {
     startDate: new Date()
   };
 
-  test("responds with status 201 with feedback", () => {
+  test("responds with status 201 with feedbackText", () => {
     expect.assertions(4);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-    const feedbackResponseLocals = {
+    const feedbackTextResponseLocals = {
       savedFeedback
     };
-    const response: any = { locals: feedbackResponseLocals, status };
+    const response: any = { locals: feedbackTextResponseLocals, status };
     const request: any = {};
     const next = jest.fn();
 

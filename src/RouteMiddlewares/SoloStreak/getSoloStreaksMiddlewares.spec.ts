@@ -165,7 +165,7 @@ describe("sendSoloStreaksMiddleware", () => {
     expect.assertions(3);
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(ResponseCodes.success);
-    expect(send).toBeCalledWith({ soloStreaks });
+    expect(send).toBeCalledWith(soloStreaks);
   });
 
   test("calls next with SendSoloStreaksMiddleware on middleware failure", () => {

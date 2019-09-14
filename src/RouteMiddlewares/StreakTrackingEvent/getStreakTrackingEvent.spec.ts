@@ -166,7 +166,7 @@ describe("sendStreakTrackingEventMiddleware", () => {
 
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(resourceCreatedCode);
-    expect(send).toBeCalledWith({ ...streakTrackingEvent });
+    expect(send).toBeCalledWith(streakTrackingEvent);
   });
 
   test("calls next with SendStreakTrackingEventMiddleware error on middleware failure", async () => {

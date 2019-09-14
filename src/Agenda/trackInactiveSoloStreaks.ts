@@ -1,6 +1,7 @@
 import { SoloStreak } from "../Models/SoloStreak";
-import streakoid from "../sdk/streakoid";
+
 import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
+import streakoid from "../streakoid";
 
 export const trackInactiveSoloStreaks = async (
   maintainedSoloStreaks: SoloStreak[],
@@ -18,15 +19,19 @@ export const trackInactiveSoloStreaks = async (
         }
       ];
 
-      await streakoid.soloStreaks.update(soloStreak._id, timezone, {
-        activity: updatedActivity
+      await streakoid.soloStreaks.update({
+        soloStreakId: soloStreak._id,
+        timezone,
+        updateData: {
+          activity: updatedActivity
+        }
       });
 
-      return streakoid.streakTrackingEvents.create(
-        StreakTrackingEventType.InactiveStreak,
-        soloStreak._id,
-        soloStreak.userId
-      );
+      return streakoid.streakTrackingEvents.create({
+        type: StreakTrackingEventType.InactiveStreak,
+        streakId: soloStreak._id,
+        userId: soloStreak.userId
+      });
     })
   );
 };

@@ -167,7 +167,7 @@ describe("sendRetreiveUserResponseMiddleware", () => {
 
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(200);
-    expect(send).toBeCalledWith({ user });
+    expect(send).toBeCalledWith(user);
   });
 
   test("calls next with SendRetreiveUserResponseMiddleware error on middleware failure", async () => {

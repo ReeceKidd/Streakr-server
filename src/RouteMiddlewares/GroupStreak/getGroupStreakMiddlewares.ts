@@ -120,9 +120,7 @@ export const getSendGroupStreakMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreak } = response.locals;
-    return response
-      .status(resourceCreatedResponseCode)
-      .send({ ...groupStreak });
+    return response.status(resourceCreatedResponseCode).send(groupStreak);
   } catch (err) {
     next(new CustomError(ErrorType.SendGroupStreakMiddleware, err));
   }

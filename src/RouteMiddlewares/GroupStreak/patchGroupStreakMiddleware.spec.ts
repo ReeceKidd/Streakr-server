@@ -312,7 +312,7 @@ describe("sendUpdatedPatchMiddleware", () => {
     expect(response.locals.user).toBeUndefined();
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(updatedResourceResponseCode);
-    expect(send).toBeCalledWith({ groupStreak: updatedGroupStreak });
+    expect(send).toBeCalledWith(updatedGroupStreak);
   });
 
   test("calls next with SendUpdatedGroupStreakMiddleware error on middleware failure", () => {

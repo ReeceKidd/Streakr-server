@@ -62,7 +62,7 @@ export const sendFormattedUsersMiddleware = (
 ) => {
   try {
     const { users } = response.locals;
-    return response.status(ResponseCodes.success).send({ users });
+    return response.status(ResponseCodes.success).send(users);
   } catch (err) {
     next(new CustomError(ErrorType.SendUsersMiddleware, err));
   }

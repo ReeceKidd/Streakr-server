@@ -1,6 +1,6 @@
-import streakoid from "../sdk/streakoid";
 import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
 import { trackMaintainedSoloStreaks } from "./trackMaintainedSoloStreaks";
+import streakoid from "../streakoid";
 
 describe("trackMaintainedSoloStreaks", () => {
   afterEach(() => {
@@ -36,19 +36,23 @@ describe("trackMaintainedSoloStreaks", () => {
       } as any
     ];
     await trackMaintainedSoloStreaks(maintainedSoloStreaks, currentLocalTime);
-    expect(streakoid.soloStreaks.update).toBeCalledWith(_id, timezone, {
-      activity: [
-        {
-          type: StreakTrackingEventType.MaintainedStreak,
-          time: currentLocalTime
-        }
-      ],
-      completedToday: false
+    expect(streakoid.soloStreaks.update).toBeCalledWith({
+      soloStreakId: _id,
+      timezone,
+      updateData: {
+        activity: [
+          {
+            type: StreakTrackingEventType.MaintainedStreak,
+            time: currentLocalTime
+          }
+        ],
+        completedToday: false
+      }
     });
-    expect(streakoid.streakTrackingEvents.create).toBeCalledWith(
-      StreakTrackingEventType.MaintainedStreak,
-      _id,
+    expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
+      type: StreakTrackingEventType.MaintainedStreak,
+      streakId: _id,
       userId
-    );
+    });
   });
 });

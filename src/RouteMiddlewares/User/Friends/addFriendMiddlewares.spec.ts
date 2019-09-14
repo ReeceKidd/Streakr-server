@@ -376,7 +376,7 @@ describe("addFriendMiddlewares", () => {
 
       expect(next).not.toBeCalled();
       expect(status).toBeCalledWith(201);
-      expect(send).toBeCalledWith({ user: userWithNewFriend });
+      expect(send).toBeCalledWith(userWithNewFriend);
     });
 
     test("calls next with SendUserWithNewFriendMiddleware error on middleware failure", async () => {

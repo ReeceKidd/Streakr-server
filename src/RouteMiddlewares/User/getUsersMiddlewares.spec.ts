@@ -193,7 +193,7 @@ describe("sendUsersMiddleware", () => {
 
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(ResponseCodes.success);
-    expect(send).toBeCalledWith({ users });
+    expect(send).toBeCalledWith(users);
   });
 
   test("calls next with SendUsersMiddleware error on middleware failure", () => {

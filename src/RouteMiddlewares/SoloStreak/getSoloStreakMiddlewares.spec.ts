@@ -152,7 +152,7 @@ describe("sendSoloStreakMiddleware", () => {
 
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(resourceCreatedCode);
-    expect(send).toBeCalledWith({ ...soloStreak });
+    expect(send).toBeCalledWith(soloStreak);
   });
 
   test("calls next with SendSoloStreakMiddleware error on middleware failure", async () => {

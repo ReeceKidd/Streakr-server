@@ -275,7 +275,7 @@ describe("sendGroupStreakMiddleware", () => {
 
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(resourceCreatedCode);
-    expect(send).toBeCalledWith({ ...groupStreak });
+    expect(send).toBeCalledWith(groupStreak);
   });
 
   test("calls next with SendGroupStreakMiddleware error on middleware failure", async () => {

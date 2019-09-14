@@ -213,7 +213,7 @@ describe("sendStreakTrackingEventDeletedResponseMiddleware", () => {
     sendStreakTrackingEventsResponseMiddleware(request, response, next);
 
     expect(status).toBeCalledWith(200);
-    expect(send).toBeCalledWith({ streakTrackingEvents });
+    expect(send).toBeCalledWith(streakTrackingEvents);
     expect(next).not.toBeCalled();
   });
 

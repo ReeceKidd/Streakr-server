@@ -12,7 +12,7 @@ const createFeedbackBodyValidationSchema = {
   pageUrl: Joi.string().required(),
   username: Joi.string().required(),
   userEmail: Joi.string().required(),
-  feedback: Joi.string().required()
+  feedbackText: Joi.string().required()
 };
 
 export const createFeedbackBodyValidationMiddleware = (
@@ -31,13 +31,13 @@ export const getCreateFeedbackFromRequestMiddleware = (
   feedbackModel: mongoose.Model<Feedback>
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userId, pageUrl, username, userEmail, feedback } = request.body;
+    const { userId, pageUrl, username, userEmail, feedbackText } = request.body;
     response.locals.newFeedback = new feedbackModel({
       userId,
       pageUrl,
       username,
       userEmail,
-      feedback
+      feedbackText
     });
     next();
   } catch (err) {

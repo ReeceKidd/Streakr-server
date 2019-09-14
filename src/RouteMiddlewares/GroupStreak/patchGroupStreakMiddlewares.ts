@@ -76,9 +76,7 @@ export const sendUpdatedGroupStreakMiddleware = (
 ) => {
   try {
     const { updatedGroupStreak } = response.locals;
-    return response
-      .status(ResponseCodes.success)
-      .send({ groupStreak: updatedGroupStreak });
+    return response.status(ResponseCodes.success).send(updatedGroupStreak);
   } catch (err) {
     next(new CustomError(ErrorType.SendUpdatedGroupStreakMiddleware, err));
   }

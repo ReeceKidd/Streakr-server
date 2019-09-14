@@ -361,7 +361,7 @@ describe(`sendFormattedUserMiddleware`, () => {
 
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(ResponseCodes.created);
-    expect(send).toBeCalledWith({ username: mockUsername, email: mockEmail });
+    expect(send).toBeCalledWith(savedUser);
   });
 
   test("calls next with SendFormattedUserMiddleware error on middleware failure", () => {

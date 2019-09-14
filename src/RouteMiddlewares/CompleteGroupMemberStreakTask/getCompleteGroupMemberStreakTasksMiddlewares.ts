@@ -79,7 +79,7 @@ export const sendCompleteGroupMemberStreakTasksResponseMiddleware = (
     const { completeGroupMemberStreakTasks } = response.locals;
     return response
       .status(ResponseCodes.success)
-      .send({ completeGroupMemberStreakTasks });
+      .send(completeGroupMemberStreakTasks);
   } catch (err) {
     next(
       new CustomError(

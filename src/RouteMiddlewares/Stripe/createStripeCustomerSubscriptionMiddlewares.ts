@@ -180,13 +180,7 @@ export const sendSuccessfulSubscriptionMiddleware = (
 ) => {
   try {
     const { user } = response.locals;
-    return response.status(ResponseCodes.created).send({
-      user: {
-        _id: user.id,
-        stripe: user.stripe,
-        type: user.type
-      }
-    });
+    return response.status(ResponseCodes.created).send(user);
   } catch (err) {
     next(new CustomError(ErrorType.SendSuccessfulSubscriptionMiddleware, err));
   }

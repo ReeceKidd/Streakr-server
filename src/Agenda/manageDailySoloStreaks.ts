@@ -1,17 +1,17 @@
 import moment from "moment-timezone";
 
-import streakoid from "../sdk/streakoid";
 import { trackMaintainedSoloStreaks } from "./trackMaintainedSoloStreaks";
 import { trackInactiveSoloStreaks } from "./trackInactiveSoloStreaks";
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
+import streakoid from "../streakoid";
 
 export const manageDailySoloStreaks = async (timezone: string) => {
   const currentLocalTime = moment.tz(timezone).toDate();
 
   const [
-    maintainedSoloStreakResponse,
-    inactiveSoloStreakResponse,
-    incompleteSoloStreaksResponse
+    maintainedSoloStreaks,
+    inactiveSoloStreaks,
+    incompleteSoloStreaks
   ] = await Promise.all([
     streakoid.soloStreaks.getAll({
       completedToday: true,
@@ -29,10 +29,6 @@ export const manageDailySoloStreaks = async (timezone: string) => {
       timezone: timezone
     })
   ]);
-
-  const maintainedSoloStreaks = maintainedSoloStreakResponse.data.soloStreaks;
-  const inactiveSoloStreaks = inactiveSoloStreakResponse.data.soloStreaks;
-  const incompleteSoloStreaks = incompleteSoloStreaksResponse.data.soloStreaks;
 
   return Promise.all([
     trackMaintainedSoloStreaks(maintainedSoloStreaks, currentLocalTime),

@@ -14,7 +14,7 @@ export const stripe = new Stripe(STRIPE_SHAREABLE_KEY);
 
 const cancelStripeCustomerSubscriptionBodySchema = {
   subscription: Joi.string().required(),
-  id: Joi.string().required()
+  userId: Joi.string().required()
 };
 
 export const cancelStripeCustomerSubscriptionBodyValidationMiddleware = (
@@ -33,8 +33,8 @@ export const getDoesUserHaveStripeSubscriptionMiddleware = (
   userModel: Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { id } = request.body;
-    const user = (await userModel.findById(id)) as User;
+    const { userId } = request.body;
+    const user = await userModel.findById(userId).lean();
     if (!user) {
       throw new CustomError(ErrorType.CancelStripeSubscriptionUserDoesNotExist);
     }
@@ -75,11 +75,10 @@ export const getRemoveSubscriptionFromUserMiddleware = (
   userModel: Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { id } = response.locals.user;
-    const updatedUser = await userModel.findByIdAndUpdate(id, {
+    const { userId } = request.body;
+    await userModel.findByIdAndUpdate(userId, {
       $set: { "stripe.subscription": undefined }
     });
-    response.locals.updatedUser = updatedUser;
     next();
   } catch (err) {
     next(new CustomError(ErrorType.RemoveSubscriptionFromUserMiddleware, err));
@@ -91,12 +90,18 @@ export const removeSubscriptionFromUserMiddleware = getRemoveSubscriptionFromUse
 );
 
 export const getSetUserTypeToBasicMiddleware = (
-  userModel: Model<User>,
-  basicUserType: UserTypes.basic
+  userModel: Model<User>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { id } = response.locals.user;
-    await userModel.findByIdAndUpdate(id, { $set: { type: basicUserType } });
+    const { userId } = request.body;
+    const updatedUser = await userModel
+      .findByIdAndUpdate(
+        userId,
+        { $set: { type: UserTypes.basic } },
+        { new: true }
+      )
+      .lean();
+    response.locals.updatedUser = updatedUser;
     next();
   } catch (err) {
     next(new CustomError(ErrorType.SetUserTypeToBasicMiddleware, err));
@@ -104,8 +109,7 @@ export const getSetUserTypeToBasicMiddleware = (
 };
 
 export const setUserTypeToBasicMiddleware = getSetUserTypeToBasicMiddleware(
-  userModel,
-  UserTypes.basic
+  userModel
 );
 
 export const sendSuccessfullyRemovedSubscriptionMiddleware = (
@@ -114,7 +118,8 @@ export const sendSuccessfullyRemovedSubscriptionMiddleware = (
   next: NextFunction
 ) => {
   try {
-    response.status(ResponseCodes.deleted).send();
+    const { updatedUser } = response.locals;
+    response.status(ResponseCodes.success).send(updatedUser);
   } catch (err) {
     next(
       new CustomError(

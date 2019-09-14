@@ -58,10 +58,6 @@ export const userSchema = new mongoose.Schema(
       enum: [UserTypes.basic, UserTypes.premium, UserTypes.admin],
       default: UserTypes.basic
     },
-    streaks: {
-      type: Array,
-      default: []
-    },
     profilePicture: {
       type: String
     },
@@ -70,15 +66,13 @@ export const userSchema = new mongoose.Schema(
       default: []
     },
     stripe: {
-      token: {
-        type: String
-      },
       customer: {
-        type: String
+        type: String,
+        default: null
       },
       subscription: {
         type: String,
-        default: undefined
+        default: null
       }
     }
   },

@@ -32,7 +32,6 @@ export const getRetreiveCompleteSoloStreakTasksMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId, streakId } = request.query;
-
     const query: {
       userId?: string;
       streakId?: string;
@@ -65,9 +64,7 @@ export const sendCompleteSoloStreakTasksResponseMiddleware = (
 ) => {
   try {
     const { completeSoloStreakTasks } = response.locals;
-    return response
-      .status(ResponseCodes.success)
-      .send({ completeSoloStreakTasks });
+    return response.status(ResponseCodes.success).send(completeSoloStreakTasks);
   } catch (err) {
     next(
       new CustomError(

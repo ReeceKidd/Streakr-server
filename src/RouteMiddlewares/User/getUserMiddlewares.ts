@@ -51,7 +51,7 @@ export const sendRetreiveUserResponseMiddleware = (
 ) => {
   try {
     const { user } = response.locals;
-    return response.status(ResponseCodes.success).send({ user });
+    return response.status(ResponseCodes.success).send(user);
   } catch (err) {
     next(new CustomError(ErrorType.SendRetreiveUserResponseMiddleware, err));
   }

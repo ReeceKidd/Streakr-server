@@ -351,7 +351,7 @@ describe(`sendCreateGroupMemberResponseMiddleware`, () => {
 
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(ResponseCodes.created);
-    expect(send).toBeCalledWith({ members: groupStreak.members });
+    expect(send).toBeCalledWith(groupStreak.members);
   });
 
   test("calls next with SendFormattedGroupMemberMiddleware error on middleware failure", () => {
