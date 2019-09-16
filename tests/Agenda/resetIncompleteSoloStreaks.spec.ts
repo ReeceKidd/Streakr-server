@@ -2,6 +2,7 @@ import { resetIncompleteSoloStreaks } from "../../src/Agenda/resetIncompleteSolo
 
 import streakoid from "../../src/streakoid";
 import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
+import { londonTimezone } from "@streakoid/streakoid-sdk/lib/streakoid";
 
 const username = "resetIncompleteSoloStreaksUsername";
 const email = "resetIncompleteSoloStreaks@gmail.com";
@@ -13,7 +14,6 @@ describe("resetIncompleteSoloStreaks", () => {
   let soloStreakId: string;
   const streakName = "Daily Programming";
   const streakDescription = "I will program for one hour everyday";
-  const timezone = "America/Louisville";
 
   beforeAll(async () => {
     const user = await streakoid.users.create({
@@ -39,15 +39,14 @@ describe("resetIncompleteSoloStreaks", () => {
     expect.assertions(11);
 
     const incompleteSoloStreaks = await streakoid.soloStreaks.getAll({
-      completedToday: false,
-      timezone
+      completedToday: false
     });
 
     const endDate = new Date();
     const resetIncompleteSoloStreaksPromise = await resetIncompleteSoloStreaks(
       incompleteSoloStreaks,
       endDate.toString(),
-      timezone
+      londonTimezone
     );
 
     await Promise.all(resetIncompleteSoloStreaksPromise);

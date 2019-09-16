@@ -14,7 +14,6 @@ describe("trackMaintainedSoloStreak", () => {
 
   const streakName = "Daily Programming";
   const streakDescription = "I will program for one hour everyday";
-  const timezone = "America/Louisville";
 
   beforeAll(async () => {
     const user = await streakoid.users.create({ username, email });
@@ -26,8 +25,6 @@ describe("trackMaintainedSoloStreak", () => {
       streakDescription
     });
     soloStreakId = soloStreak._id;
-
-    console.log(soloStreakId);
 
     const completeSoloStreakTask = await streakoid.completeSoloStreakTasks.create(
       {
@@ -48,8 +45,7 @@ describe("trackMaintainedSoloStreak", () => {
     expect.assertions(11);
 
     const maintainedSoloStreaks = await streakoid.soloStreaks.getAll({
-      completedToday: true,
-      timezone
+      completedToday: true
     });
 
     const endDate = new Date();

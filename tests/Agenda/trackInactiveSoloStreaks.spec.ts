@@ -1,6 +1,7 @@
 import { trackMaintainedSoloStreaks } from ".../../../src/Agenda/trackMaintainedSoloStreaks";
 import streakoid from "../../src/streakoid";
 import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
+import { londonTimezone } from "@streakoid/streakoid-sdk/lib/streakoid";
 
 const username = "trackInactiveSoloStreakUsername";
 const email = "trackInactiveSoloStreak@gmail.com";
@@ -13,7 +14,6 @@ describe("trackInactiveSoloStreak", () => {
 
   const streakName = "Daily Programming";
   const streakDescription = "I will program for one hour everyday";
-  const timezone = "America/Louisville";
 
   beforeAll(async () => {
     const user = await streakoid.users.create({ username, email });
@@ -37,8 +37,7 @@ describe("trackInactiveSoloStreak", () => {
 
     const inactiveSoloStreaks = await streakoid.soloStreaks.getAll({
       completedToday: false,
-      active: false,
-      timezone
+      active: false
     });
 
     const endDate = new Date();
