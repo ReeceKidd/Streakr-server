@@ -12,7 +12,6 @@ import {
   GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
 import { userModel, UserModel } from "../../Models/User";
-import { GroupStreak, GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 
 export interface GroupStreakRegistrationRequestBody {
   creatorId: string;

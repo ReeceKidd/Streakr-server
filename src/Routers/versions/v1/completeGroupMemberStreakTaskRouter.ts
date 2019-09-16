@@ -19,8 +19,6 @@ completeGroupMemberStreakTasksRouter.delete(
   ...deleteCompleteGroupMemberStreakTaskMiddlewares
 );
 
-completeGroupMemberStreakTasksRouter.use(...timezoneMiddlewares);
-
 completeGroupMemberStreakTasksRouter.post(
   `/`,
   ...createCompleteGroupMemberStreakTaskMiddlewares

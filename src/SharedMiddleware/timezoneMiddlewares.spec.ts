@@ -1,5 +1,5 @@
 import {
-  getRetreiveTimezoneHeaderMiddleware,
+  retreiveTimezoneHeaderMiddleware,
   getValidateTimezoneMiddleware
 } from "./timezoneMiddlewares";
 import { CustomError, ErrorType } from "../customError";
@@ -7,8 +7,8 @@ import { CustomError, ErrorType } from "../customError";
 describe("retreiveTimezoneHeaderMiddleware", () => {
   test("sets response.locals.timezone and calls next()", () => {
     expect.assertions(3);
-    const header = jest.fn(() => timezoneHeader);
-    const timezoneHeader = "Europe/London";
+    const header = jest.fn(() => timezone);
+    const timezone = "Europe/London";
     const request: any = {
       header
     };
@@ -16,13 +16,10 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
       locals: {}
     };
     const next = jest.fn();
-    const middleware = getRetreiveTimezoneHeaderMiddleware(
-      timezoneHeader as any
-    );
 
-    middleware(request, response, next);
+    retreiveTimezoneHeaderMiddleware(request, response, next);
 
-    expect(header).toBeCalledWith(timezoneHeader);
+    expect(header).toBeCalledWith("x-timezone");
     expect(response.locals.timezone).toBeDefined();
     expect(next).toBeCalledWith();
   });
@@ -38,11 +35,8 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
       locals: {}
     };
     const next = jest.fn();
-    const middleware = getRetreiveTimezoneHeaderMiddleware(
-      timezoneHeader as any
-    );
 
-    middleware(request, response, next);
+    retreiveTimezoneHeaderMiddleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(ErrorType.MissingTimezoneHeader)
@@ -51,17 +45,13 @@ describe("retreiveTimezoneHeaderMiddleware", () => {
 
   test("throws RetreiveTimezoneHeaderMiddleware when middleware fails", () => {
     expect.assertions(1);
-    const timezoneHeader = "Europe/London";
     const request: any = {};
     const response: any = {
       locals: {}
     };
     const next = jest.fn();
-    const middleware = getRetreiveTimezoneHeaderMiddleware(
-      timezoneHeader as any
-    );
 
-    middleware(request, response, next);
+    retreiveTimezoneHeaderMiddleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(

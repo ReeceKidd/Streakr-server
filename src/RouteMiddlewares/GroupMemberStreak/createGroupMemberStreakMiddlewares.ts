@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
-import moment from "moment-timezone";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
@@ -13,7 +12,6 @@ import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import { userModel, UserModel } from "../../Models/User";
 import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
-import { GroupStreak, GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 
 export interface GroupMemberStreakRegistrationRequestBody {
   userId: string;

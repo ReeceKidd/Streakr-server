@@ -43,7 +43,6 @@ describe("resetIncompleteSoloStreaks", () => {
 
     expect(streakoid.soloStreaks.update).toBeCalledWith({
       soloStreakId: _id,
-      timezone,
       updateData: {
         currentStreak: { startDate: "", numberOfDaysInARow: 0 },
         pastStreaks,

@@ -5,7 +5,6 @@ import { createSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStrea
 import { getSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStreak/getSoloStreakMiddlewares";
 import { patchSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStreak/patchSoloStreakMiddlewares";
 import { deleteSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStreak/deleteSoloStreakMiddlewares";
-import { timezoneMiddlewares } from "../../../SharedMiddleware/timezoneMiddlewares";
 
 export const soloStreakId = "soloStreakId";
 
@@ -16,8 +15,6 @@ soloStreaksRouter.get(`/`, ...getSoloStreaksMiddlewares);
 soloStreaksRouter.get(`/:${soloStreakId}`, ...getSoloStreakMiddlewares);
 
 soloStreaksRouter.delete(`/:${soloStreakId}`, ...deleteSoloStreakMiddlewares);
-
-soloStreaksRouter.use(...timezoneMiddlewares);
 
 soloStreaksRouter.post(`/`, ...createSoloStreakMiddlewares);
 

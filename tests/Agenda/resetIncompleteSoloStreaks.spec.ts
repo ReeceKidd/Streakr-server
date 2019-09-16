@@ -25,7 +25,6 @@ describe("resetIncompleteSoloStreaks", () => {
     const soloStreak = await streakoid.soloStreaks.create({
       userId,
       streakName,
-      timezone,
       streakDescription
     });
     soloStreakId = soloStreak._id;

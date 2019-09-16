@@ -32,8 +32,6 @@ groupStreaksRouter.delete(
   ...deleteGroupMemberMiddlewares
 );
 
-groupStreaksRouter.use(...timezoneMiddlewares);
-
 groupStreaksRouter.post(`/`, ...createGroupStreakMiddlewares);
 
 groupStreaksRouter.patch(`/:${groupStreakId}`, ...patchGroupStreakMiddlewares);

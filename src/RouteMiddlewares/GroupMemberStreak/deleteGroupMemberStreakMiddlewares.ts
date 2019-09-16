@@ -9,7 +9,6 @@ import {
 } from "../../Models/GroupMemberStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 
 const groupMemberStreakParamsValidationSchema = {
   groupMemberStreakId: Joi.string().required()

@@ -7,7 +7,6 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 import { soloStreakModel, SoloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { SoloStreak } from "@streakoid/streakoid-sdk/lib";
 
 const createSoloStreakBodyValidationSchema = {
   userId: Joi.string().required(),

@@ -8,8 +8,6 @@ export const trackMaintainedSoloStreaks = async (
 ) => {
   return Promise.all(
     maintainedSoloStreaks.map(async soloStreak => {
-      const timezone = soloStreak.timezone;
-
       const updatedActivity = [
         ...soloStreak.activity,
         {
@@ -20,7 +18,6 @@ export const trackMaintainedSoloStreaks = async (
 
       await streakoid.soloStreaks.update({
         soloStreakId: soloStreak._id,
-        timezone,
         updateData: {
           activity: updatedActivity,
           completedToday: false

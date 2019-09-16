@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import moment from "moment-timezone";
 import * as Joi from "joi";
 import * as mongoose from "mongoose";
+import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
+import { GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
+import StreakTypes from "@streakoid/streakoid-sdk/lib/streakTypes";
 
 import { ResponseCodes } from "../../Server/responseCodes";
 
@@ -16,13 +19,6 @@ import {
 } from "../../Models/CompleteGroupMemberStreakTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
-import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
-import {
-  GroupStreak,
-  GroupMemberStreak,
-  CompleteGroupMemberStreakTask
-} from "@streakoid/streakoid-sdk/lib";
-import StreakTypes from "@streakoid/streakoid-sdk/lib/streakTypes";
 
 export const completeGroupMemberStreakTaskBodyValidationSchema = {
   userId: Joi.string().required(),

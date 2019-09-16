@@ -23,16 +23,14 @@ describe("trackMaintainedSoloStreak", () => {
     const soloStreak = await streakoid.soloStreaks.create({
       userId,
       streakName,
-      streakDescription,
-      timezone
+      streakDescription
     });
     soloStreakId = soloStreak._id;
 
     const completeSoloStreakTask = await streakoid.completeSoloStreakTasks.create(
       {
         userId,
-        soloStreakId,
-        timezone
+        soloStreakId
       }
     );
     completeSoloStreakTaskId = completeSoloStreakTask._id;

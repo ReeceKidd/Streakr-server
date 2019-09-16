@@ -6,7 +6,6 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 import { feedbackModel, FeedbackModel } from "../../Models/Feedback";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { Feedback } from "@streakoid/streakoid-sdk/lib";
 
 const feedbackParamsValidationSchema = {
   feedbackId: Joi.string().required()

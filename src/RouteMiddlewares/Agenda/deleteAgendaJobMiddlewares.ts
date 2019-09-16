@@ -6,7 +6,6 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 import { agendaJobModel, AgendaJobModel } from "../../Models/AgendaJob";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { AgendaJob } from "@streakoid/streakoid-sdk/lib";
 
 const agendaJobParamsValidationSchema = {
   agendaJobId: Joi.string().required()

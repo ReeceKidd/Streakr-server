@@ -39,7 +39,6 @@ describe("trackInactiveSoloStreaks", () => {
     await trackInactiveSoloStreaks(inactiveSoloStreaks, currentLocalTime);
     expect(streakoid.soloStreaks.update).toBeCalledWith({
       soloStreakId: _id,
-      timezone,
       updateData: {
         activity: [
           {

@@ -39,7 +39,6 @@ export const resetIncompleteSoloStreaks = async (
 
       await streakoid.soloStreaks.update({
         soloStreakId: soloStreak._id,
-        timezone,
         updateData: {
           currentStreak,
           pastStreaks,

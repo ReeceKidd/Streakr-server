@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import moment from "moment-timezone";
 import * as Joi from "joi";
 import * as mongoose from "mongoose";
+import StreakTypes from "@streakoid/streakoid-sdk/lib/streakTypes";
+import { SoloStreak } from "@streakoid/streakoid-sdk/lib";
 
 import { ResponseCodes } from "../../Server/responseCodes";
 
@@ -13,11 +15,6 @@ import {
 } from "../../Models/CompleteSoloStreakTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
-import {
-  SoloStreak,
-  CompleteSoloStreakTask
-} from "@streakoid/streakoid-sdk/lib";
-import StreakTypes from "@streakoid/streakoid-sdk/lib/streakTypes";
 
 export const completeSoloStreakTaskBodyValidationSchema = {
   userId: Joi.string().required(),

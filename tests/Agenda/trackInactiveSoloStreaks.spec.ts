@@ -21,7 +21,6 @@ describe("trackInactiveSoloStreak", () => {
 
     const soloStreak = await streakoid.soloStreaks.create({
       userId,
-      timezone,
       streakName,
       streakDescription
     });

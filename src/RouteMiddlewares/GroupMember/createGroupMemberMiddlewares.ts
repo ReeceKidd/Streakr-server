@@ -14,7 +14,6 @@ import {
   groupMemberStreakModel,
   GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
-import { GroupStreak, GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 
 export const createGroupMemberParamsValidationSchema = {
   groupStreakId: Joi.string().required()

@@ -1,13 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import * as moment from "moment-timezone";
 import { CustomError, ErrorType } from "../customError";
-import { SupportedRequestHeaders } from "../Server/headers";
+import { SupportedRequestHeaders } from "@streakoid/streakoid-sdk/lib";
 
-export const getRetreiveTimezoneHeaderMiddleware = (
-  timezoneHeader: SupportedRequestHeaders
-) => (request: Request, response: Response, next: NextFunction) => {
+export const retreiveTimezoneHeaderMiddleware = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
   try {
-    const timezone = request.header(timezoneHeader);
+    const timezone = request.header(SupportedRequestHeaders.xTimezone);
     if (!timezone) {
       throw new CustomError(ErrorType.MissingTimezoneHeader);
     }
@@ -18,10 +20,6 @@ export const getRetreiveTimezoneHeaderMiddleware = (
     else next(new CustomError(ErrorType.RetreiveTimezoneHeaderMiddleware, err));
   }
 };
-
-export const retreiveTimezoneHeaderMiddleware = getRetreiveTimezoneHeaderMiddleware(
-  SupportedRequestHeaders.xTimezone
-);
 
 export const getValidateTimezoneMiddleware = (isValidTimezone: Function) => (
   request: Request,

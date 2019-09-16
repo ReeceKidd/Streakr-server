@@ -11,7 +11,6 @@ import {
   groupMemberStreakModel,
   GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
-import { GroupStreak, GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 
 const getGroupStreaksQueryValidationSchema = {
   creatorId: Joi.string(),

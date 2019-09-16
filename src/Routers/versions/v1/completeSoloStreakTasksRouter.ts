@@ -18,8 +18,6 @@ completeSoloStreakTasksRouter.delete(
   ...deleteCompleteSoloStreakTaskMiddlewares
 );
 
-completeSoloStreakTasksRouter.use(...timezoneMiddlewares);
-
 completeSoloStreakTasksRouter.post(
   `/`,
   ...createCompleteSoloStreakTaskMiddlewares

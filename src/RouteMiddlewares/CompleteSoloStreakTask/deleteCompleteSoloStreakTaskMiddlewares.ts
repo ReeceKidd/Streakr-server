@@ -9,7 +9,6 @@ import {
 } from "../../Models/CompleteSoloStreakTask";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { CompleteSoloStreakTask } from "@streakoid/streakoid-sdk/lib";
 
 const completeSoloStreakTaskParamsValidationSchema = {
   completeSoloStreakTaskId: Joi.string().required()

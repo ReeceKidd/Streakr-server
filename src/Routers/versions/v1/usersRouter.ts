@@ -32,8 +32,6 @@ usersRouter.delete(
   ...deleteFriendMiddlewares
 );
 
-usersRouter.use(...timezoneMiddlewares);
-
 usersRouter.post(`/`, ...registerUserMiddlewares);
 
 export default usersRouter;

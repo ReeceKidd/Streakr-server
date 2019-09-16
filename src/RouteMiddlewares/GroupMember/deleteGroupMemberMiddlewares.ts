@@ -7,7 +7,6 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
-import { GroupStreak } from "@streakoid/streakoid-sdk/lib";
 
 const groupMemberParamsValidationSchema = {
   groupStreakId: Joi.string().required(),

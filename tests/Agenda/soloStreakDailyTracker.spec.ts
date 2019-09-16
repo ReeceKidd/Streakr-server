@@ -99,16 +99,14 @@ describe("soloStreakDailyTracker", () => {
     const maintainedSoloStreak = await streakoid.soloStreaks.create({
       userId,
       streakName,
-      streakDescription,
-      timezone
+      streakDescription
     });
     maintainedSoloStreakId = maintainedSoloStreak._id;
 
     const completeSoloStreakTask = await streakoid.completeSoloStreakTasks.create(
       {
         userId,
-        soloStreakId: maintainedSoloStreakId,
-        timezone
+        soloStreakId: maintainedSoloStreakId
       }
     );
 
@@ -171,16 +169,14 @@ describe("soloStreakDailyTracker", () => {
     const lostSoloStreak = await streakoid.soloStreaks.create({
       userId,
       streakName,
-      streakDescription,
-      timezone
+      streakDescription
     });
     lostSoloStreakId = lostSoloStreak._id;
 
     const completeSoloStreakTask = await streakoid.completeSoloStreakTasks.create(
       {
         userId,
-        soloStreakId: lostSoloStreakId,
-        timezone
+        soloStreakId: lostSoloStreakId
       }
     );
 
@@ -253,7 +249,6 @@ describe("soloStreakDailyTracker", () => {
     const inactiveSoloStreak = await streakoid.soloStreaks.create({
       userId,
       streakName,
-      timezone,
       streakDescription
     });
     inactiveSoloStreakId = inactiveSoloStreak._id;

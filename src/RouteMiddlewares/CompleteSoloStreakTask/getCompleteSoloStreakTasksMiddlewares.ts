@@ -9,7 +9,6 @@ import {
 } from "../../Models/CompleteSoloStreakTask";
 import { CustomError, ErrorType } from "../../customError";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { CompleteSoloStreakTask } from "@streakoid/streakoid-sdk/lib";
 
 const completeSoloStreakTaskQueryValidationSchema = {
   userId: Joi.string(),

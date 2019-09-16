@@ -67,7 +67,7 @@ export const isAlreadyAFriendMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const user: UserModel = response.locals.user;
+    const user = response.locals.user as UserModel;
     const { friendId } = request.body;
 
     const isExistingFriend = user.friends.find(friend => friend === friendId);

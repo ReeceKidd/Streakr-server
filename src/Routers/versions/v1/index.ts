@@ -12,8 +12,11 @@ import streakTrackingEventRouter from "./streakTrackingEventRouter";
 import agendaJobsRouter from "./agendaJobRouter";
 import feedbackRouter from "./feedbackRouter";
 import groupMemberStreakRouter from "./groupMemberStreaksRouter";
+import { timezoneMiddlewares } from "../../../SharedMiddleware/timezoneMiddlewares";
 
 const v1Router = Router();
+
+v1Router.use(...timezoneMiddlewares);
 
 v1Router.use(`/${RouteCategories.soloStreaks}`, soloStreaksRouter);
 v1Router.use(`/${RouteCategories.users}`, usersRouter);
