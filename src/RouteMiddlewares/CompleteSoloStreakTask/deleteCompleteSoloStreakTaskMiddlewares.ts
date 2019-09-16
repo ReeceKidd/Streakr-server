@@ -5,10 +5,11 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import {
   completeSoloStreakTaskModel,
-  CompleteSoloStreakTask
+  CompleteSoloStreakTaskModel
 } from "../../Models/CompleteSoloStreakTask";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { CompleteSoloStreakTask } from "@streakoid/streakoid-sdk/lib";
 
 const completeSoloStreakTaskParamsValidationSchema = {
   completeSoloStreakTaskId: Joi.string().required()
@@ -27,7 +28,7 @@ export const completeSoloStreakTaskParamsValidationMiddleware = (
 };
 
 export const getDeleteCompleteSoloStreakTaskMiddleware = (
-  completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTask>
+  completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTaskModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { completeSoloStreakTaskId } = request.params;

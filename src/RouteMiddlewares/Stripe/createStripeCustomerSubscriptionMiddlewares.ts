@@ -6,7 +6,8 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 import { getServiceConfig } from "../../getServiceConfig";
 import { CustomError, ErrorType } from "../../customError";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { userModel, User, UserTypes } from "../../Models/User";
+import { userModel, UserModel } from "../../Models/User";
+import UserTypes from "@streakoid/streakoid-sdk/lib/userTypes";
 
 const { STRIPE_SHAREABLE_KEY, STRIPE_PLAN } = getServiceConfig();
 
@@ -30,12 +31,12 @@ export const createStripeCustomerSubscriptionBodyValidationMiddleware = (
 };
 
 export const getIsUserAnExistingStripeCustomerMiddleware = (
-  userModel: Model<User>
+  userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { id } = request.body;
 
-    const user: User = (await await userModel.findById(id)) as User;
+    const user: UserModel = (await await userModel.findById(id)) as UserModel;
     if (!user) {
       throw new CustomError(ErrorType.CreateStripeSubscriptionUserDoesNotExist);
     }
@@ -59,7 +60,7 @@ export const isUserAnExistingStripeCustomerMiddleware = getIsUserAnExistingStrip
 );
 
 export const getCreateStripeCustomerMiddleware = (
-  userModel: Model<User>
+  userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { token, id } = request.body;
@@ -133,7 +134,7 @@ export const handleInitialPaymentOutcomeMiddleware = (
 };
 
 export const getAddStripeSubscriptionToUserMiddleware = (
-  userModel: Model<User>
+  userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { user } = response.locals;
@@ -152,7 +153,7 @@ export const addStripeSubscriptionToUserMiddleware = getAddStripeSubscriptionToU
 );
 
 export const getSetUserTypeToPremiumMiddleware = (
-  userModel: Model<User>
+  userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { user } = response.locals;

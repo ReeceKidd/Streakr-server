@@ -1,29 +1,9 @@
 import * as mongoose from "mongoose";
 import { Collections } from "./Collections";
 import { Models } from "./Models";
-import { StreakTrackingEventType } from "./StreakTrackingEvent";
+import { GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 
-export interface GroupMemberStreak extends mongoose.Document {
-  userId: string;
-  groupStreakId: string;
-  completedToday: boolean;
-  active: boolean;
-  activity: Array<{
-    type: StreakTrackingEventType;
-    time: Date;
-  }>;
-  currentStreak: {
-    startDate: Date;
-    numberOfDaysInARow: number;
-    endDate: Date;
-  };
-  pastStreaks: Array<{
-    endDate: Date;
-    startDate: Date;
-    numberOfDaysInARow: number;
-  }>;
-  timezone: string;
-}
+export type GroupMemberStreakModel = GroupMemberStreak & mongoose.Document;
 
 export const groupMemberStreakSchema = new mongoose.Schema(
   {
@@ -79,8 +59,8 @@ export const groupMemberStreakSchema = new mongoose.Schema(
 );
 
 export const groupMemberStreakModel: mongoose.Model<
-  GroupMemberStreak
-> = mongoose.model<GroupMemberStreak>(
+  GroupMemberStreakModel
+> = mongoose.model<GroupMemberStreakModel>(
   Models.GroupMemberStreak,
   groupMemberStreakSchema
 );

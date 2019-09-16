@@ -1,6 +1,6 @@
 import { createSoloStreakDailyTrackerJob } from "../../src/scripts/initaliseSoloStreakTimezoneCheckers";
 import streakoid from "../../src/streakoid";
-import { StreakTrackingEventType } from "@streakoid/streakoid-sdk/lib/types";
+import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
 
 jest.setTimeout(120000);
 
@@ -204,7 +204,7 @@ describe("soloStreakDailyTracker", () => {
       pastStreaks
     } = updatedLostSoloStreak;
 
-    expect(currentStreak).toEqual({ numberOfDaysInARow: 0 });
+    expect(currentStreak).toEqual({ numberOfDaysInARow: 0, startDate: null });
     expect(completedToday).toEqual(false);
     expect(active).toEqual(false);
     expect(activity.length).toEqual(2);

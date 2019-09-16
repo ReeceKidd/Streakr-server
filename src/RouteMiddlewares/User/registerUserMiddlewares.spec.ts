@@ -290,7 +290,7 @@ describe(`doesUsernameExistMiddleware`, () => {
 describe(`saveUserToDatabaseMiddleware`, () => {
   test("sets response.locals.savedUser", async () => {
     expect.assertions(2);
-    const hashedPassword = "12$4354";
+    const timezone = "Europe/London";
     const username = "user";
     const email = "user@gmail.com";
     const save = jest.fn(() => {
@@ -299,12 +299,12 @@ describe(`saveUserToDatabaseMiddleware`, () => {
     class User {
       username: string;
       email: string;
-      password: string;
+      timezone: string;
 
-      constructor({ username, email, password }: any) {
+      constructor({ username, email, timezone }: any) {
         this.username = username;
         this.email = email;
-        this.password = password;
+        this.timezone = timezone;
       }
 
       save() {
@@ -312,7 +312,7 @@ describe(`saveUserToDatabaseMiddleware`, () => {
       }
     }
     const response: any = {
-      locals: { hashedPassword, lowerCaseUsername: username }
+      locals: { timezone, lowerCaseUsername: username }
     };
     const request: any = { body: { email } };
     const next = jest.fn();
@@ -325,9 +325,8 @@ describe(`saveUserToDatabaseMiddleware`, () => {
   });
 
   test("calls next with SaveUserToDatabaseMiddleware error on middleware failure", () => {
-    const user = { username: "username", email: "username@gmail.com" };
-    const response: any = { locals: { user } };
-    const request: any = { body: {} };
+    const response: any = {};
+    const request: any = {};
     const next = jest.fn();
     const middleware = getSaveUserToDatabaseMiddleware({} as any);
 

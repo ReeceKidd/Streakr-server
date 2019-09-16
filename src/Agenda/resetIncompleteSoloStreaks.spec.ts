@@ -1,7 +1,7 @@
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
-
-import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
 import streakoid from "../streakoid";
+import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
+import { SoloStreak } from "@streakoid/streakoid-sdk/lib";
 
 describe("resetIncompleteSoloStreaks", () => {
   afterEach(() => {
@@ -13,7 +13,7 @@ describe("resetIncompleteSoloStreaks", () => {
     streakoid.soloStreaks.update = jest.fn().mockResolvedValue({ data: {} });
     streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
     const _id = "1234";
-    const endDate = new Date();
+    const endDate = new Date().toString();
     const timezone = "Europe/London";
     const currentStreak = {
       startDate: undefined,
@@ -24,7 +24,7 @@ describe("resetIncompleteSoloStreaks", () => {
       {
         _id,
         currentStreak,
-        startDate: new Date(),
+        startDate: new Date().toString(),
         completedToday: false,
         activity: [],
         pastStreaks: [],
@@ -32,18 +32,20 @@ describe("resetIncompleteSoloStreaks", () => {
         streakDescription: "Each day I must do Danish",
         userId,
         timezone: "Europe/London",
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date().toString(),
+        updatedAt: new Date().toString()
       } as any
     ];
-    const pastStreaks = [{ ...currentStreak, endDate }];
+    const pastStreaks = [
+      { numberOfDaysInARow: 0, endDate, startDate: endDate }
+    ];
     await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate, timezone);
 
     expect(streakoid.soloStreaks.update).toBeCalledWith({
       soloStreakId: _id,
       timezone,
       updateData: {
-        currentStreak: { startDate: undefined, numberOfDaysInARow: 0 },
+        currentStreak: { startDate: "", numberOfDaysInARow: 0 },
         pastStreaks,
         activity: [{ type: StreakTrackingEventType.LostStreak, time: endDate }],
         active: false

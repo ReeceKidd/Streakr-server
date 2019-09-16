@@ -1,31 +1,9 @@
 import * as mongoose from "mongoose";
 import { Collections } from "./Collections";
 import { Models } from "./Models";
-import { StreakTrackingEventType } from "./StreakTrackingEvent";
+import { SoloStreak } from "@streakoid/streakoid-sdk/lib";
 
-export interface SoloStreak extends mongoose.Document {
-  userId: string;
-  streakName: string;
-  streakDescription: string;
-  numberOfMinutes: number;
-  completedToday: boolean;
-  active: boolean;
-  activity: Array<{
-    type: StreakTrackingEventType;
-    time: Date;
-  }>;
-  currentStreak: {
-    startDate: Date;
-    numberOfDaysInARow: number;
-    endDate: Date;
-  };
-  pastStreaks: Array<{
-    endDate: Date;
-    startDate: Date;
-    numberOfDaysInARow: number;
-  }>;
-  timezone: string;
-}
+export type SoloStreakModel = SoloStreak & mongoose.Document;
 
 export const soloStreakSchema = new mongoose.Schema(
   {
@@ -87,6 +65,6 @@ export const soloStreakSchema = new mongoose.Schema(
   }
 );
 
-export const soloStreakModel: mongoose.Model<SoloStreak> = mongoose.model<
-  SoloStreak
+export const soloStreakModel: mongoose.Model<SoloStreakModel> = mongoose.model<
+  SoloStreakModel
 >(Models.SoloStreak, soloStreakSchema);

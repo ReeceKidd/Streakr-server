@@ -17,7 +17,7 @@ import {
 } from "./createStripeCustomerSubscriptionMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { UserTypes } from "../../Models/User";
+import UserTypes from "@streakoid/streakoid-sdk/lib/userTypes";
 
 describe("createStripeCustomerSubscriptionMiddlewares", () => {
   afterEach(() => {

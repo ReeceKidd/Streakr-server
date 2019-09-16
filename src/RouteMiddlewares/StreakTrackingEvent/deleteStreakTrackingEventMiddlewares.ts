@@ -5,10 +5,11 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import {
   streakTrackingEventModel,
-  StreakTrackingEvent
+  StreakTrackingEventModel
 } from "../../Models/StreakTrackingEvent";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { StreakTrackingEvent } from "@streakoid/streakoid-sdk/lib";
 
 const streakTrackingEventParamsValidationSchema = {
   streakTrackingEventId: Joi.string().required()
@@ -27,7 +28,7 @@ export const streakTrackingEventParamsValidationMiddleware = (
 };
 
 export const getDeleteStreakTrackingEventMiddleware = (
-  streakTrackingEventModel: mongoose.Model<StreakTrackingEvent>
+  streakTrackingEventModel: mongoose.Model<StreakTrackingEventModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { streakTrackingEventId } = request.params;

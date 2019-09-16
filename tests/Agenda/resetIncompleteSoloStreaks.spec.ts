@@ -1,7 +1,7 @@
 import { resetIncompleteSoloStreaks } from "../../src/Agenda/resetIncompleteSoloStreaks";
 
 import streakoid from "../../src/streakoid";
-import { StreakTrackingEventType } from "@streakoid/streakoid-sdk/lib/types";
+import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
 
 const username = "resetIncompleteSoloStreaksUsername";
 const email = "resetIncompleteSoloStreaks@gmail.com";
@@ -47,7 +47,7 @@ describe("resetIncompleteSoloStreaks", () => {
     const endDate = new Date();
     const resetIncompleteSoloStreaksPromise = await resetIncompleteSoloStreaks(
       incompleteSoloStreaks,
-      endDate,
+      endDate.toString(),
       timezone
     );
 

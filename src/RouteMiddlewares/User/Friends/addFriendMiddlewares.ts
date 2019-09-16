@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
 import { Model } from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { User, userModel } from "../../../Models/User";
+import { userModel, UserModel } from "../../../Models/User";
 import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
 
@@ -42,11 +42,9 @@ export const addFriendBodyValidationMiddleware = (
   );
 };
 
-export const getRetreiveUserMiddleware = (userModel: Model<User>) => async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const getRetreiveUserMiddleware = (
+  userModel: Model<UserModel>
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.params;
     const user = await userModel.findOne({ _id: userId }).lean();
@@ -69,7 +67,7 @@ export const isAlreadyAFriendMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const user: User = response.locals.user;
+    const user: UserModel = response.locals.user;
     const { friendId } = request.body;
 
     const isExistingFriend = user.friends.find(friend => friend === friendId);
@@ -83,11 +81,9 @@ export const isAlreadyAFriendMiddleware = (
   }
 };
 
-export const getRetreiveFriendMiddleware = (userModel: Model<User>) => async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const getRetreiveFriendMiddleware = (
+  userModel: Model<UserModel>
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { friendId } = request.body;
     const friend = await userModel.findOne({ _id: friendId }).lean();
@@ -105,7 +101,7 @@ export const getRetreiveFriendMiddleware = (userModel: Model<User>) => async (
 export const retreiveFriendMiddleware = getRetreiveFriendMiddleware(userModel);
 
 export const getAddFriendToUsersFriendListMiddleware = (
-  userModel: Model<User>
+  userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.params;

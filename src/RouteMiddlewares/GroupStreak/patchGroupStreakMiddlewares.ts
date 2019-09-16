@@ -3,9 +3,10 @@ import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { groupStreakModel, GroupStreak } from "../../Models/GroupStreak";
+import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { GroupStreak } from "@streakoid/streakoid-sdk/lib";
 
 const groupStreakParamsValidationSchema = {
   groupStreakId: Joi.string().required()
@@ -44,7 +45,7 @@ export const groupStreakRequestBodyValidationMiddleware = (
 };
 
 export const getPatchGroupStreakMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreak>
+  groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreakId } = request.params;

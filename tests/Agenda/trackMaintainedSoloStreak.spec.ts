@@ -1,6 +1,6 @@
-import { StreakTrackingEventType } from ".../../../../src/Models/StreakTrackingEvent";
 import { trackMaintainedSoloStreaks } from ".../../../src/Agenda/trackMaintainedSoloStreaks";
 import streakoid from ".../../../src/streakoid";
+import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
 
 const username = "trackMaintainedSoloStreakUsername";
 const email = "trackMaintainedSoloStreak@gmail.com";
@@ -53,12 +53,8 @@ describe("trackMaintainedSoloStreak", () => {
     });
 
     const endDate = new Date();
-    const maintainedSoloStreaksPromises = await trackMaintainedSoloStreaks(
-      maintainedSoloStreaks,
-      endDate
-    );
 
-    await Promise.all(maintainedSoloStreaksPromises);
+    await trackMaintainedSoloStreaks(maintainedSoloStreaks, endDate.toString());
 
     const updatedSoloStreak = await streakoid.soloStreaks.getOne(soloStreakId);
 

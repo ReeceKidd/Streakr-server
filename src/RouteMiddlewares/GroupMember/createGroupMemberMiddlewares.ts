@@ -1,20 +1,20 @@
 import { Request, Response, NextFunction } from "express";
-import moment from "moment-timezone";
 import * as Joi from "joi";
 import * as mongoose from "mongoose";
 
 import { ResponseCodes } from "../../Server/responseCodes";
 
-import { User, userModel } from "../../Models/User";
+import { userModel, UserModel } from "../../Models/User";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
 
-import { GroupStreak, groupStreakModel } from "../../Models/GroupStreak";
+import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
 import {
-  GroupMemberStreak,
-  groupMemberStreakModel
+  groupMemberStreakModel,
+  GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
+import { GroupStreak, GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 
 export const createGroupMemberParamsValidationSchema = {
   groupStreakId: Joi.string().required()
@@ -49,7 +49,7 @@ export const createGroupMemberBodyValidationMiddleware = (
 };
 
 export const getFriendExistsMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { friendId } = request.body;
@@ -75,7 +75,7 @@ export const getFriendExistsMiddleware = (
 export const friendExistsMiddleware = getFriendExistsMiddleware(userModel);
 
 export const getGroupStreakExistsMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreak>
+  groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreakId } = request.params;
@@ -106,7 +106,7 @@ export const groupStreakExistsMiddleware = getGroupStreakExistsMiddleware(
 );
 
 export const getCreateGroupMemberStreakMiddleware = (
-  groupMemberStreak: mongoose.Model<GroupMemberStreak>
+  groupMemberStreak: mongoose.Model<GroupMemberStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
@@ -133,7 +133,7 @@ export const createGroupMemberStreakMiddleware = getCreateGroupMemberStreakMiddl
 );
 
 export const getAddFriendToGroupStreakMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreak>
+  groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreakId } = request.params;

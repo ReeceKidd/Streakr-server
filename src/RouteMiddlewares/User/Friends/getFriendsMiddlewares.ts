@@ -3,7 +3,7 @@ import * as Joi from "joi";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { User, userModel } from "../../../Models/User";
+import { userModel, UserModel } from "../../../Models/User";
 import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
 
@@ -27,7 +27,7 @@ export const getFriendsParamsValidationMiddleware = (
 };
 
 export const getRetreiveUserMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.params;
@@ -46,7 +46,7 @@ export const getRetreiveUserMiddleware = (
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
 export const getRetreiveFriendsMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { user } = response.locals;

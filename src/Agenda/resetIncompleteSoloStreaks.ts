@@ -1,29 +1,47 @@
-import { SoloStreak } from "../Models/SoloStreak";
-
-import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
 import streakoid from "../streakoid";
+import {
+  SoloStreak,
+  CurrentStreak,
+  Activtiy,
+  PastStreakArray,
+  PastStreak
+} from "@streakoid/streakoid-sdk/lib";
+import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
 
 export const resetIncompleteSoloStreaks = async (
   incompleteSoloStreaks: SoloStreak[],
-  endDate: Date,
+  endDate: string,
   timezone: string
 ) => {
   return Promise.all(
     incompleteSoloStreaks.map(async soloStreak => {
-      soloStreak.currentStreak.endDate = endDate;
-      const pastStreaks: any = [
+      const pastStreak: PastStreak = {
+        endDate: endDate,
+        startDate: soloStreak.currentStreak.startDate || endDate,
+        numberOfDaysInARow: soloStreak.currentStreak.numberOfDaysInARow
+      };
+
+      const pastStreaks: PastStreakArray = [
         ...soloStreak.pastStreaks,
-        soloStreak.currentStreak
+        pastStreak
       ];
-      const updatedActivity = [
-        ...soloStreak.activity,
-        { type: StreakTrackingEventType.LostStreak, time: endDate }
-      ];
+
+      const activity: Activtiy = {
+        type: StreakTrackingEventType.LostStreak,
+        time: endDate.toString()
+      };
+      const updatedActivity = [...soloStreak.activity, activity];
+
+      const currentStreak: CurrentStreak = {
+        startDate: "",
+        numberOfDaysInARow: 0
+      };
+
       await streakoid.soloStreaks.update({
         soloStreakId: soloStreak._id,
         timezone,
         updateData: {
-          currentStreak: { startDate: undefined, numberOfDaysInARow: 0 },
+          currentStreak,
           pastStreaks,
           activity: updatedActivity,
           active: false

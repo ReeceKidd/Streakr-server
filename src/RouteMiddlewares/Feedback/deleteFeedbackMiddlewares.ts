@@ -3,9 +3,10 @@ import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { feedbackModel, Feedback } from "../../Models/Feedback";
+import { feedbackModel, FeedbackModel } from "../../Models/Feedback";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { Feedback } from "@streakoid/streakoid-sdk/lib";
 
 const feedbackParamsValidationSchema = {
   feedbackId: Joi.string().required()
@@ -24,7 +25,7 @@ export const feedbackParamsValidationMiddleware = (
 };
 
 export const getDeleteFeedbackMiddleware = (
-  feedbackModel: mongoose.Model<Feedback>
+  feedbackModel: mongoose.Model<FeedbackModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { feedbackId } = request.params;

@@ -4,11 +4,12 @@ import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import {
-  StreakTrackingEvent,
-  streakTrackingEventModel
+  streakTrackingEventModel,
+  StreakTrackingEventModel
 } from "../../Models/StreakTrackingEvent";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { StreakTrackingEvent } from "@streakoid/streakoid-sdk/lib";
 
 export interface StreakTrackingEventRequestBody {
   type: StreakTrackingEvent;
@@ -37,7 +38,7 @@ export const createStreakTrackingEventBodyValidationMiddleware = (
 };
 
 export const getSaveStreakTrackingEventToDatabaseMiddleware = (
-  streakTrackingEvent: mongoose.Model<StreakTrackingEvent>
+  streakTrackingEvent: mongoose.Model<StreakTrackingEventModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { type, streakId, userId } = request.body;

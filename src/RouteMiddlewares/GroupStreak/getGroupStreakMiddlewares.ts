@@ -3,13 +3,13 @@ import * as Joi from "joi";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { groupStreakModel, GroupStreak } from "../../Models/GroupStreak";
+import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { User, userModel } from "../../Models/User";
+import { userModel, UserModel } from "../../Models/User";
 import {
-  GroupMemberStreak,
-  groupMemberStreakModel
+  groupMemberStreakModel,
+  GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
 
 const getGroupStreakParamsValidationSchema = {
@@ -29,7 +29,7 @@ export const getGroupStreakParamsValidationMiddleware = (
 };
 
 export const getRetreiveGroupStreakMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreak>
+  groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreakId } = request.params;
@@ -52,8 +52,8 @@ export const retreiveGroupStreakMiddleware = getRetreiveGroupStreakMiddleware(
 );
 
 export const getRetreiveGroupStreakMembersInformationMiddleware = (
-  userModel: mongoose.Model<User>,
-  groupMemberStreakModel: mongoose.Model<GroupMemberStreak>
+  userModel: mongoose.Model<UserModel>,
+  groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreak } = response.locals;
@@ -89,7 +89,7 @@ export const retreiveGroupStreakMembersInformationMiddleware = getRetreiveGroupS
 );
 
 export const getRetreiveGroupStreakCreatorInformationMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreak } = response.locals;

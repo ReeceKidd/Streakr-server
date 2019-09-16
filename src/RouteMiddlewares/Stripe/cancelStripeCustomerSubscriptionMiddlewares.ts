@@ -4,9 +4,10 @@ import { getServiceConfig } from "../../getServiceConfig";
 import Stripe from "stripe";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { Model } from "mongoose";
-import { User, UserTypes, userModel } from "../../Models/User";
+import { userModel, UserModel } from "../../Models/User";
 import { CustomError, ErrorType } from "../../customError";
 import { ResponseCodes } from "../../Server/responseCodes";
+import UserTypes from "@streakoid/streakoid-sdk/lib/userTypes";
 
 const { STRIPE_SHAREABLE_KEY } = getServiceConfig();
 
@@ -30,7 +31,7 @@ export const cancelStripeCustomerSubscriptionBodyValidationMiddleware = (
 };
 
 export const getDoesUserHaveStripeSubscriptionMiddleware = (
-  userModel: Model<User>
+  userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.body;
@@ -72,7 +73,7 @@ export const cancelStripeSubscriptionMiddleware = async (
 };
 
 export const getRemoveSubscriptionFromUserMiddleware = (
-  userModel: Model<User>
+  userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.body;
@@ -90,7 +91,7 @@ export const removeSubscriptionFromUserMiddleware = getRemoveSubscriptionFromUse
 );
 
 export const getSetUserTypeToBasicMiddleware = (
-  userModel: Model<User>
+  userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.body;

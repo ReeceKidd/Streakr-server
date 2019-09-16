@@ -5,15 +5,19 @@ import * as mongoose from "mongoose";
 
 import { ResponseCodes } from "../../Server/responseCodes";
 
-import { userModel, User } from "../../Models/User";
-import { soloStreakModel, SoloStreak } from "../../Models/SoloStreak";
+import { userModel, UserModel } from "../../Models/User";
+import { soloStreakModel, SoloStreakModel } from "../../Models/SoloStreak";
 import {
   completeSoloStreakTaskModel,
-  CompleteSoloStreakTask
+  CompleteSoloStreakTaskModel
 } from "../../Models/CompleteSoloStreakTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
-import { StreakTypes } from "../../Models/TypesOfStreak";
+import {
+  SoloStreak,
+  CompleteSoloStreakTask
+} from "@streakoid/streakoid-sdk/lib";
+import StreakTypes from "@streakoid/streakoid-sdk/lib/streakTypes";
 
 export const completeSoloStreakTaskBodyValidationSchema = {
   userId: Joi.string().required(),
@@ -33,7 +37,7 @@ export const completeSoloStreakTaskBodyValidationMiddleware = (
 };
 
 export const getSoloStreakExistsMiddleware = (
-  soloStreakModel: mongoose.Model<SoloStreak>
+  soloStreakModel: mongoose.Model<SoloStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { soloStreakId } = request.body;
@@ -54,7 +58,7 @@ export const soloStreakExistsMiddleware = getSoloStreakExistsMiddleware(
 );
 
 export const getRetreiveUserMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.body;
@@ -92,7 +96,7 @@ export const setTaskCompleteTimeMiddleware = getSetTaskCompleteTimeMiddleware(
 );
 
 export const getSetStreakStartDateMiddleware = (
-  soloStreakModel: mongoose.Model<SoloStreak>
+  soloStreakModel: mongoose.Model<SoloStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const soloStreak: SoloStreak = response.locals.soloStreak;
@@ -140,7 +144,7 @@ export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddlew
 );
 
 export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
-  completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTask>
+  completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTaskModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId, soloStreakId } = request.body;
@@ -202,7 +206,7 @@ export const createCompleteSoloStreakTaskDefinitionMiddleware = getCreateComplet
 );
 
 export const getSaveTaskCompleteMiddleware = (
-  completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTask>
+  completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTaskModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { completeSoloStreakTaskDefinition } = response.locals;
@@ -221,7 +225,7 @@ export const saveTaskCompleteMiddleware = getSaveTaskCompleteMiddleware(
 );
 
 export const getStreakMaintainedMiddleware = (
-  soloStreakModel: mongoose.Model<SoloStreak>
+  soloStreakModel: mongoose.Model<SoloStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { soloStreakId } = request.body;

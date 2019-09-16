@@ -3,9 +3,10 @@ import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { soloStreakModel, SoloStreak } from "../../Models/SoloStreak";
+import { soloStreakModel, SoloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { SoloStreak } from "@streakoid/streakoid-sdk/lib";
 
 const soloStreakParamsValidationSchema = {
   soloStreakId: Joi.string().required()
@@ -46,7 +47,7 @@ export const soloStreakRequestBodyValidationMiddleware = (
 };
 
 export const getPatchSoloStreakMiddleware = (
-  soloStreakModel: mongoose.Model<SoloStreak>
+  soloStreakModel: mongoose.Model<SoloStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { soloStreakId } = request.params;

@@ -3,9 +3,10 @@ import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { agendaJobModel, AgendaJob } from "../../Models/AgendaJob";
+import { agendaJobModel, AgendaJobModel } from "../../Models/AgendaJob";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { AgendaJob } from "@streakoid/streakoid-sdk/lib";
 
 const agendaJobParamsValidationSchema = {
   agendaJobId: Joi.string().required()
@@ -24,7 +25,7 @@ export const agendaJobParamsValidationMiddleware = (
 };
 
 export const getDeleteAgendaJobMiddleware = (
-  agendaJobModel: mongoose.Model<AgendaJob>
+  agendaJobModel: mongoose.Model<AgendaJobModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { agendaJobId } = request.params;

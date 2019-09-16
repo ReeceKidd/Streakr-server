@@ -3,9 +3,10 @@ import * as Joi from "joi";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { Feedback, feedbackModel } from "../../Models/Feedback";
+import { feedbackModel, FeedbackModel } from "../../Models/Feedback";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { Feedback } from "@streakoid/streakoid-sdk/lib";
 
 const createFeedbackBodyValidationSchema = {
   userId: Joi.string().required(),
@@ -28,7 +29,7 @@ export const createFeedbackBodyValidationMiddleware = (
 };
 
 export const getCreateFeedbackFromRequestMiddleware = (
-  feedbackModel: mongoose.Model<Feedback>
+  feedbackModel: mongoose.Model<FeedbackModel>
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId, pageUrl, username, userEmail, feedbackText } = request.body;
@@ -55,7 +56,7 @@ export const saveFeedbackToDatabaseMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const newFeedback: Feedback = response.locals.newFeedback;
+    const newFeedback: FeedbackModel = response.locals.newFeedback;
     response.locals.savedFeedback = await newFeedback.save();
     next();
   } catch (err) {

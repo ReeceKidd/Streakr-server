@@ -1,17 +1,10 @@
 import * as mongoose from "mongoose";
 import { Models } from "./Models";
 import { Collections } from "./Collections";
-import { StreakTypes } from "./TypesOfStreak";
+import { CompleteGroupMemberStreakTask } from "@streakoid/streakoid-sdk/lib";
 
-export interface CompleteGroupMemberStreakTask extends mongoose.Document {
-  streakId: string;
-  userId: string;
-  groupStreakId: string;
-  groupMemberStreakId: string;
-  taskCompleteTime: Date;
-  taskCompleteDay: string;
-  streakType: StreakTypes;
-}
+export type CompleteGroupMemberStreakTaskModel = CompleteGroupMemberStreakTask &
+  mongoose.Document;
 
 export const completeGroupMemberStreakTaskSchema = new mongoose.Schema(
   {
@@ -49,8 +42,8 @@ export const completeGroupMemberStreakTaskSchema = new mongoose.Schema(
 completeGroupMemberStreakTaskSchema.index({ userId: 1, streakId: 1 });
 
 export const completeGroupMemberStreakTaskModel: mongoose.Model<
-  CompleteGroupMemberStreakTask
-> = mongoose.model<CompleteGroupMemberStreakTask>(
+  CompleteGroupMemberStreakTaskModel
+> = mongoose.model<CompleteGroupMemberStreakTaskModel>(
   Models.CompleteGroupMemberStreakTask,
   completeGroupMemberStreakTaskSchema
 );

@@ -1,15 +1,9 @@
 import * as mongoose from "mongoose";
 import { Collections } from "./Collections";
 import { Models } from "./Models";
+import { GroupStreak } from "@streakoid/streakoid-sdk/lib";
 
-export interface GroupStreak extends mongoose.Document {
-  creatorId: string;
-  streakName: string;
-  streakDescription: string;
-  numberOfMinutes: number;
-  members: { memberId: string; groupMemberStreakId: string }[];
-  timezone: string;
-}
+export type GroupStreakModel = GroupStreak & mongoose.Document;
 
 export const groupStreakSchema = new mongoose.Schema(
   {
@@ -42,6 +36,6 @@ export const groupStreakSchema = new mongoose.Schema(
   }
 );
 
-export const groupStreakModel: mongoose.Model<GroupStreak> = mongoose.model<
-  GroupStreak
->(Models.GroupStreak, groupStreakSchema);
+export const groupStreakModel: mongoose.Model<
+  GroupStreakModel
+> = mongoose.model<GroupStreakModel>(Models.GroupStreak, groupStreakSchema);

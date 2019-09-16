@@ -4,9 +4,10 @@ import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
-import { SoloStreak, soloStreakModel } from "../../Models/SoloStreak";
+import { soloStreakModel, SoloStreakModel } from "../../Models/SoloStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { SoloStreak } from "@streakoid/streakoid-sdk/lib";
 
 const createSoloStreakBodyValidationSchema = {
   userId: Joi.string().required(),
@@ -28,7 +29,7 @@ export const createSoloStreakBodyValidationMiddleware = (
 };
 
 export const getCreateSoloStreakFromRequestMiddleware = (
-  soloStreak: mongoose.Model<SoloStreak>
+  soloStreak: mongoose.Model<SoloStreakModel>
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
@@ -61,7 +62,7 @@ export const saveSoloStreakToDatabaseMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const newSoloStreak: SoloStreak = response.locals.newSoloStreak;
+    const newSoloStreak: SoloStreakModel = response.locals.newSoloStreak;
     response.locals.savedSoloStreak = await newSoloStreak.save();
     next();
   } catch (err) {

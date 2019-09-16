@@ -6,7 +6,10 @@ import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
 import streakoid from "../streakoid";
 
 export const manageDailySoloStreaks = async (timezone: string) => {
-  const currentLocalTime = moment.tz(timezone).toDate();
+  const currentLocalTime = moment
+    .tz(timezone)
+    .toDate()
+    .toString();
 
   const [
     maintainedSoloStreaks,
@@ -31,7 +34,10 @@ export const manageDailySoloStreaks = async (timezone: string) => {
   ]);
 
   return Promise.all([
-    trackMaintainedSoloStreaks(maintainedSoloStreaks, currentLocalTime),
+    trackMaintainedSoloStreaks(
+      maintainedSoloStreaks,
+      currentLocalTime.toString()
+    ),
     trackInactiveSoloStreaks(inactiveSoloStreaks, currentLocalTime),
     resetIncompleteSoloStreaks(
       incompleteSoloStreaks,

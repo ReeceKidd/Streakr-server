@@ -1,20 +1,9 @@
 import * as mongoose from "mongoose";
 import { Collections } from "./Collections";
 import { Models } from "./Models";
+import { StreakTrackingEvent } from "@streakoid/streakoid-sdk/lib";
 
-export enum StreakTrackingEventType {
-  LostStreak = "lost-streak",
-  MaintainedStreak = "maintained-streak",
-  InactiveStreak = "inactive-streak"
-}
-
-export interface StreakTrackingEvent extends mongoose.Document {
-  type: StreakTrackingEvent;
-  streakId: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+export type StreakTrackingEventModel = StreakTrackingEvent & mongoose.Document;
 
 export const streakTrackingActivitySchema = new mongoose.Schema(
   {
@@ -29,8 +18,8 @@ export const streakTrackingActivitySchema = new mongoose.Schema(
 );
 
 export const streakTrackingEventModel: mongoose.Model<
-  StreakTrackingEvent
-> = mongoose.model<StreakTrackingEvent>(
+  StreakTrackingEventModel
+> = mongoose.model<StreakTrackingEventModel>(
   Models.StreakTrackingEvent,
   streakTrackingActivitySchema
 );

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { userModel, User } from "../../Models/User";
+import { userModel, UserModel } from "../../Models/User";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
@@ -26,7 +26,7 @@ export const userParamsValidationMiddleware = (
 };
 
 export const getRetreiveUserMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.params;

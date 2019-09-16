@@ -1,11 +1,10 @@
-import { SoloStreak } from "../Models/SoloStreak";
-
-import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
 import streakoid from "../streakoid";
+import { SoloStreak } from "@streakoid/streakoid-sdk/lib";
+import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
 
 export const trackMaintainedSoloStreaks = async (
   maintainedSoloStreaks: SoloStreak[],
-  currentLocalTime: Date
+  currentLocalTime: string
 ) => {
   return Promise.all(
     maintainedSoloStreaks.map(async soloStreak => {

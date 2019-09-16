@@ -5,7 +5,7 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { User, userModel } from "../../Models/User";
+import { userModel, UserModel } from "../../Models/User";
 
 const userParamsValidationSchema = {
   userId: Joi.string().required()
@@ -24,7 +24,7 @@ export const deleteUserParamsValidationMiddleware = (
 };
 
 export const getDeleteUserMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.params;

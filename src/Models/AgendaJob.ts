@@ -1,46 +1,42 @@
 import mongoose from "mongoose";
 import { Models } from "./Models";
 import { Collections } from "./Collections";
+import { AgendaJob } from "@streakoid/streakoid-sdk/lib";
 
-export interface AgendaJob extends mongoose.Document {
-    _id: string;
-    name: string;
-    data: object;
-    type: string;
-    nextRunAt: Date;
-    lastModifiedBy: string;
-    lockedAt: string;
-    lastFinishedAt: Date;
-}
+export type AgendaJobModel = AgendaJob & mongoose.Document;
 
 export const agendaJobSchema = new mongoose.Schema(
-    {
-        name: {
-            type: String,
-            required: true,
-            index: true
-        },
-        data: {},
-        type: {
-            type: String,
-        },
-        nextRunAt: {
-            type: Date,
-            default: Date.now,
-            index: true
-        },
-        lastModifiedBy: {
-            type: String,
-        },
-        lockedAt: {
-            type: Date,
-            index: true
-        },
-        lastFinishedAt: Date
-    }, {
-        collection: Collections.AgendaJobs
-    });
+  {
+    name: {
+      type: String,
+      required: true,
+      index: true
+    },
+    data: {},
+    type: {
+      type: String
+    },
+    nextRunAt: {
+      type: Date,
+      default: Date.now,
+      index: true
+    },
+    lastModifiedBy: {
+      type: String
+    },
+    lockedAt: {
+      type: Date,
+      index: true
+    },
+    lastFinishedAt: Date
+  },
+  {
+    collection: Collections.AgendaJobs
+  }
+);
 
 agendaJobSchema.index({ "data.timezone": "text" });
 
-export const agendaJobModel: mongoose.Model<AgendaJob> = mongoose.model<AgendaJob>(Models.AgendaJob, agendaJobSchema);
+export const agendaJobModel: mongoose.Model<AgendaJobModel> = mongoose.model<
+  AgendaJobModel
+>(Models.AgendaJob, agendaJobSchema);

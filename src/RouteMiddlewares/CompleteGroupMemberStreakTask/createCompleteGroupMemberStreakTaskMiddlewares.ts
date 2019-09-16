@@ -5,19 +5,24 @@ import * as mongoose from "mongoose";
 
 import { ResponseCodes } from "../../Server/responseCodes";
 
-import { userModel, User } from "../../Models/User";
+import { userModel, UserModel } from "../../Models/User";
 import {
   groupMemberStreakModel,
-  GroupMemberStreak
+  GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
 import {
   completeGroupMemberStreakTaskModel,
-  CompleteGroupMemberStreakTask
+  CompleteGroupMemberStreakTaskModel
 } from "../../Models/CompleteGroupMemberStreakTask";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
-import { StreakTypes } from "../../Models/TypesOfStreak";
-import { GroupStreak, groupStreakModel } from "../../Models/GroupStreak";
+import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
+import {
+  GroupStreak,
+  GroupMemberStreak,
+  CompleteGroupMemberStreakTask
+} from "@streakoid/streakoid-sdk/lib";
+import StreakTypes from "@streakoid/streakoid-sdk/lib/streakTypes";
 
 export const completeGroupMemberStreakTaskBodyValidationSchema = {
   userId: Joi.string().required(),
@@ -38,7 +43,7 @@ export const completeGroupMemberStreakTaskBodyValidationMiddleware = (
 };
 
 export const getGroupStreakExistsMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreak>
+  groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreakId } = request.body;
@@ -61,7 +66,7 @@ export const groupStreakExistsMiddleware = getGroupStreakExistsMiddleware(
 );
 
 export const getGroupMemberStreakExistsMiddleware = (
-  groupMemberStreakModel: mongoose.Model<GroupMemberStreak>
+  groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupMemberStreakId } = request.body;
@@ -85,7 +90,7 @@ export const groupMemberStreakExistsMiddleware = getGroupMemberStreakExistsMiddl
 );
 
 export const getRetreiveUserMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.body;
@@ -134,7 +139,7 @@ export const setTaskCompleteTimeMiddleware = getSetTaskCompleteTimeMiddleware(
 );
 
 export const getSetStreakStartDateMiddleware = (
-  groupMemberStreakModel: mongoose.Model<GroupMemberStreak>
+  groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const groupMemberStreak: GroupMemberStreak =
@@ -192,7 +197,7 @@ export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddlew
 
 export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
   completeGroupMemberStreakTaskModel: mongoose.Model<
-    CompleteGroupMemberStreakTask
+    CompleteGroupMemberStreakTaskModel
   >
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
@@ -230,7 +235,7 @@ export const hasTaskAlreadyBeenCompletedTodayMiddleware = getHasTaskAlreadyBeenC
 
 export const getCreateCompleteGroupMemberStreakTaskMiddleware = (
   completeGroupMemberStreakTaskModel: mongoose.Model<
-    CompleteGroupMemberStreakTask
+    CompleteGroupMemberStreakTaskModel
   >
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
@@ -263,7 +268,7 @@ export const createCompleteGroupMemberStreakTaskMiddleware = getCreateCompleteGr
 );
 
 export const getStreakMaintainedMiddleware = (
-  groupMemberStreakModel: mongoose.Model<GroupMemberStreak>
+  groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupMemberStreakId } = request.body;

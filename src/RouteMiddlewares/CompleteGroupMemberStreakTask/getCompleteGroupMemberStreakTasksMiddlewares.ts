@@ -5,10 +5,11 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import {
   completeGroupMemberStreakTaskModel,
-  CompleteGroupMemberStreakTask
+  CompleteGroupMemberStreakTaskModel
 } from "../../Models/CompleteGroupMemberStreakTask";
 import { CustomError, ErrorType } from "../../customError";
 import { ResponseCodes } from "../../Server/responseCodes";
+import { CompleteGroupMemberStreakTask } from "@streakoid/streakoid-sdk/lib";
 
 const completeGroupMemberStreakTaskQueryValidationSchema = {
   userId: Joi.string(),
@@ -30,7 +31,7 @@ export const completeGroupMemberStreakTaskQueryValidationMiddleware = (
 
 export const getRetreiveCompleteGroupMemberStreakTasksMiddleware = (
   completeGroupMemberStreakTaskModel: mongoose.Model<
-    CompleteGroupMemberStreakTask
+    CompleteGroupMemberStreakTaskModel
   >
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {

@@ -1,7 +1,6 @@
-import { StreakTrackingEventType } from "../Models/StreakTrackingEvent";
 import { trackInactiveSoloStreaks } from "./trackInactiveSoloStreaks";
 import streakoid from "../streakoid";
-import { soloStreakId } from "../Routers/versions/v1/soloStreaksRouter";
+import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
 
 describe("trackInactiveSoloStreaks", () => {
   afterEach(() => {
@@ -13,7 +12,7 @@ describe("trackInactiveSoloStreaks", () => {
     streakoid.soloStreaks.update = jest.fn().mockResolvedValue({ data: {} });
     streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
     const _id = 1;
-    const currentLocalTime = new Date();
+    const currentLocalTime = new Date().toString();
     const timezone = "Europe/London";
     const currentStreak = {
       startDate: new Date(),

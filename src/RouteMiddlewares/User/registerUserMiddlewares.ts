@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
 import { Model } from "mongoose";
 
-import { userModel, User } from "../../Models/User";
+import { userModel, UserModel } from "../../Models/User";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -27,7 +27,7 @@ export const userRegistrationValidationMiddleware = (
 };
 
 export const getDoesUserEmailExistMiddleware = (
-  userModel: Model<User>
+  userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { email } = request.body;
@@ -61,7 +61,7 @@ export const setUsernameToLowercaseMiddleware = (
 };
 
 export const getDoesUsernameExistMiddleware = (
-  userModel: Model<User>
+  userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { lowerCaseUsername } = response.locals;
@@ -80,17 +80,16 @@ export const doesUsernameExistMiddleware = getDoesUsernameExistMiddleware(
   userModel
 );
 
-export const getSaveUserToDatabaseMiddleware = (user: Model<User>) => async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const getSaveUserToDatabaseMiddleware = (
+  user: Model<UserModel>
+) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { lowerCaseUsername } = response.locals;
+    const { lowerCaseUsername, timezone } = response.locals;
     const { email } = request.body;
     const newUser = new user({
       username: lowerCaseUsername,
-      email
+      email,
+      timezone
     });
     response.locals.savedUser = await newUser.save();
     next();

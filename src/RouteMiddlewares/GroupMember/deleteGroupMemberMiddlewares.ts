@@ -6,7 +6,8 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { GroupStreak, groupStreakModel } from "../../Models/GroupStreak";
+import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
+import { GroupStreak } from "@streakoid/streakoid-sdk/lib";
 
 const groupMemberParamsValidationSchema = {
   groupStreakId: Joi.string().required(),
@@ -26,7 +27,7 @@ export const groupMemberParamsValidationMiddleware = (
 };
 
 export const getRetreiveGroupStreakMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreak>
+  groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreakId } = request.params;
@@ -75,7 +76,7 @@ export const retreiveGroupMemberMiddleware = async (
   }
 };
 export const getDeleteGroupMemberMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreak>
+  groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { memberId, groupStreakId } = request.params;

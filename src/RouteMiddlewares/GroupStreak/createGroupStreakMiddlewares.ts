@@ -4,14 +4,15 @@ import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
-import { GroupStreak, groupStreakModel } from "../../Models/GroupStreak";
+import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import {
   groupMemberStreakModel,
-  GroupMemberStreak
+  GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
-import { User, userModel } from "../../Models/User";
+import { userModel, UserModel } from "../../Models/User";
+import { GroupStreak, GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 
 export interface GroupStreakRegistrationRequestBody {
   creatorId: string;
@@ -49,7 +50,7 @@ export const createGroupStreakBodyValidationMiddleware = (
 };
 
 export const getCreateGroupStreakMiddleware = (
-  groupStreak: mongoose.Model<GroupStreak>
+  groupStreak: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
@@ -77,8 +78,8 @@ export const createGroupStreakMiddleware = getCreateGroupStreakMiddleware(
 );
 
 export const getCreateGroupMemberStreaksMiddleware = (
-  user: mongoose.Model<User>,
-  groupMemberStreak: mongoose.Model<GroupMemberStreak>
+  user: mongoose.Model<UserModel>,
+  groupMemberStreak: mongoose.Model<GroupMemberStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone, newGroupStreak } = response.locals;
@@ -124,7 +125,7 @@ export const createGroupMemberStreaksMiddleware = getCreateGroupMemberStreaksMid
 );
 
 export const getUpdateGroupStreakMembersArray = (
-  groupStreak: mongoose.Model<GroupStreak>
+  groupStreak: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { membersWithGroupMemberStreakIds, newGroupStreak } = response.locals;

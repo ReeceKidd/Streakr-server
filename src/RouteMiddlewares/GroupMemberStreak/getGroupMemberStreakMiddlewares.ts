@@ -5,10 +5,11 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import {
   groupMemberStreakModel,
-  GroupMemberStreak
+  GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 
 const getGroupMemberStreakParamsValidationSchema = {
   groupMemberStreakId: Joi.string().required()
@@ -27,7 +28,7 @@ export const getGroupMemberStreakParamsValidationMiddleware = (
 };
 
 export const getRetreiveGroupMemberStreakMiddleware = (
-  groupMemberStreakModel: mongoose.Model<GroupMemberStreak>
+  groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupMemberStreakId } = request.params;

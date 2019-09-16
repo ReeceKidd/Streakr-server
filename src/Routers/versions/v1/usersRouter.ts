@@ -8,6 +8,7 @@ import { getUserMiddlewares } from "../../../RouteMiddlewares/User/getUserMiddle
 import { getFriendsMiddlewares } from "../../../RouteMiddlewares/User/Friends/getFriendsMiddlewares";
 import { addFriendMiddlewares } from "../../../RouteMiddlewares/User/Friends/addFriendMiddlewares";
 import { deleteFriendMiddlewares } from "../../../RouteMiddlewares/User/Friends/deleteFriendsMiddlewares";
+import { timezoneMiddlewares } from "../../../SharedMiddleware/timezoneMiddlewares";
 
 export const userId = "userId";
 export const friendId = "friendId";
@@ -17,8 +18,6 @@ const usersRouter = Router();
 usersRouter.get("/", ...getUsersMiddlewares);
 
 usersRouter.get(`/:${userId}`, ...getUserMiddlewares);
-
-usersRouter.post(`/`, ...registerUserMiddlewares);
 
 usersRouter.delete(`/:${userId}`, ...deleteUserMiddlewares);
 
@@ -32,5 +31,9 @@ usersRouter.delete(
   `/:${userId}/friends/:${friendId}`,
   ...deleteFriendMiddlewares
 );
+
+usersRouter.use(...timezoneMiddlewares);
+
+usersRouter.post(`/`, ...registerUserMiddlewares);
 
 export default usersRouter;

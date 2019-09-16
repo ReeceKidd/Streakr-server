@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { User, userModel } from "../../../Models/User";
+import { userModel, UserModel } from "../../../Models/User";
 import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
 
@@ -29,7 +29,7 @@ export const deleteFriendParamsValidationMiddleware = (
 };
 
 export const getRetreiveUserMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.params;
@@ -54,7 +54,7 @@ export const doesFriendExistMiddleware = (
 ) => {
   try {
     const { friendId } = request.params;
-    const user: User = response.locals.user;
+    const user: UserModel = response.locals.user;
     const friend = user.friends!.find(friend => friend === friendId);
     if (!friend) {
       throw new CustomError(ErrorType.DeleteUserFriendDoesNotExist);
@@ -70,7 +70,7 @@ export const doesFriendExistMiddleware = (
 };
 
 export const getDeleteFriendMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId, friendId } = request.params;

@@ -6,13 +6,14 @@ import * as mongoose from "mongoose";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 
 import {
-  GroupMemberStreak,
-  groupMemberStreakModel
+  groupMemberStreakModel,
+  GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { User, userModel } from "../../Models/User";
-import { groupStreakModel, GroupStreak } from "../../Models/GroupStreak";
+import { userModel, UserModel } from "../../Models/User";
+import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
+import { GroupStreak, GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 
 export interface GroupMemberStreakRegistrationRequestBody {
   userId: string;
@@ -37,7 +38,7 @@ export const createGroupMemberStreakBodyValidationMiddleware = (
 };
 
 export const getRetreiveUserMiddleware = (
-  userModel: mongoose.Model<User>
+  userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.body;
@@ -62,7 +63,7 @@ export const getRetreiveUserMiddleware = (
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
 export const getRetreiveGroupStreakMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreak>
+  groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { groupStreakId } = request.body;
@@ -91,7 +92,7 @@ export const retreiveGroupStreakMiddleware = getRetreiveGroupStreakMiddleware(
 );
 
 export const getCreateGroupMemberStreakFromRequestMiddleware = (
-  groupMemberStreak: mongoose.Model<GroupMemberStreak>
+  groupMemberStreak: mongoose.Model<GroupMemberStreakModel>
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
@@ -122,7 +123,7 @@ export const saveGroupMemberStreakToDatabaseMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const newGroupMemberStreak: GroupMemberStreak =
+    const newGroupMemberStreak: GroupMemberStreakModel =
       response.locals.newGroupMemberStreak;
     response.locals.savedGroupMemberStreak = await newGroupMemberStreak.save();
     next();
