@@ -55,7 +55,7 @@ export const doesFriendExistMiddleware = (
   try {
     const { friendId } = request.params;
     const user: UserModel = response.locals.user;
-    const friend = user.friends.find(friend => friend === friendId);
+    const friend = user.friends.find((friend: string) => friend === friendId);
     if (!friend) {
       throw new CustomError(ErrorType.DeleteUserFriendDoesNotExist);
     }

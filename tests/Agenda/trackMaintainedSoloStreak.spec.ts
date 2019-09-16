@@ -27,6 +27,8 @@ describe("trackMaintainedSoloStreak", () => {
     });
     soloStreakId = soloStreak._id;
 
+    console.log(soloStreakId);
+
     const completeSoloStreakTask = await streakoid.completeSoloStreakTasks.create(
       {
         userId,
