@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
 import * as mongoose from "mongoose";
+import PopulatedGroupStreak from "@streakoid/streakoid-sdk/lib/models/PopulatedGroupStreak";
+import PopulatedMember from "@streakoid/streakoid-sdk/lib/models/PopulatedMember";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
@@ -23,6 +25,7 @@ export const getGroupStreaksQueryValidationMiddleware = (
   response: Response,
   next: NextFunction
 ) => {
+  console.log(1);
   Joi.validate(
     request.query,
     getGroupStreaksQueryValidationSchema,
@@ -34,8 +37,8 @@ export const getFindGroupStreaksMiddleware = (
   groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
+    console.log(2);
     const { memberId, timezone, creatorId } = request.query;
-
     const query: any = {};
 
     if (creatorId) {
@@ -64,37 +67,41 @@ export const getRetreiveGroupStreaksMembersInformationMiddleware = (
   groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
+    console.log(3);
     const { groupStreaks } = response.locals;
     const groupStreaksWithPopulatedData = await Promise.all(
-      groupStreaks.map(async (groupStreak: any) => {
-        const { members } = groupStreak;
-        groupStreak.members = await Promise.all(
-          members.map(
-            async (member: {
-              memberId: string;
-              groupMemberStreakId: string;
-            }) => {
-              const [memberInfo, groupMemberStreak] = await Promise.all([
-                userModel.findOne({ _id: member.memberId }).lean(),
-                groupMemberStreakModel
-                  .findOne({ _id: member.groupMemberStreakId })
-                  .lean()
-              ]);
-              return {
-                _id: memberInfo._id,
-                username: memberInfo.username,
-                groupMemberStreak
-              };
-            }
-          )
-        );
+      groupStreaks.map(
+        async (groupStreak: any): Promise<PopulatedGroupStreak> => {
+          const { members } = groupStreak;
+          groupStreak.members = await Promise.all(
+            members.map(
+              async (member: {
+                memberId: string;
+                groupMemberStreakId: string;
+              }): Promise<PopulatedMember> => {
+                const [memberInfo, groupMemberStreak] = await Promise.all([
+                  userModel.findOne({ _id: member.memberId }).lean(),
+                  groupMemberStreakModel
+                    .findOne({ _id: member.groupMemberStreakId })
+                    .lean()
+                ]);
+                return {
+                  _id: memberInfo._id,
+                  username: memberInfo.username,
+                  groupMemberStreak
+                };
+              }
+            )
+          );
 
-        return groupStreak;
-      })
+          return groupStreak;
+        }
+      )
     );
     response.locals.groupStreaks = groupStreaksWithPopulatedData;
     next();
   } catch (err) {
+    console.log(err);
     next(
       new CustomError(ErrorType.RetreiveGroupStreaksMembersInformation, err)
     );
@@ -112,6 +119,7 @@ export const sendGroupStreaksMiddleware = (
   next: NextFunction
 ) => {
   try {
+    console.log(4);
     const { groupStreaks } = response.locals;
     response.status(ResponseCodes.success).send(groupStreaks);
   } catch (err) {
