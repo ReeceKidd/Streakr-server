@@ -25,7 +25,6 @@ export const getGroupStreaksQueryValidationMiddleware = (
   response: Response,
   next: NextFunction
 ) => {
-  console.log(1);
   Joi.validate(
     request.query,
     getGroupStreaksQueryValidationSchema,
@@ -37,7 +36,6 @@ export const getFindGroupStreaksMiddleware = (
   groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(2);
     const { memberId, timezone, creatorId } = request.query;
     const query: any = {};
 
@@ -67,7 +65,6 @@ export const getRetreiveGroupStreaksMembersInformationMiddleware = (
   groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(3);
     const { groupStreaks } = response.locals;
     const groupStreaksWithPopulatedData = await Promise.all(
       groupStreaks.map(
@@ -101,7 +98,6 @@ export const getRetreiveGroupStreaksMembersInformationMiddleware = (
     response.locals.groupStreaks = groupStreaksWithPopulatedData;
     next();
   } catch (err) {
-    console.log(err);
     next(
       new CustomError(ErrorType.RetreiveGroupStreaksMembersInformation, err)
     );
@@ -119,7 +115,6 @@ export const sendGroupStreaksMiddleware = (
   next: NextFunction
 ) => {
   try {
-    console.log(4);
     const { groupStreaks } = response.locals;
     response.status(ResponseCodes.success).send(groupStreaks);
   } catch (err) {

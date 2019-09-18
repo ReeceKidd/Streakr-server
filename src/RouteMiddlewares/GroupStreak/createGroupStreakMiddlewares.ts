@@ -41,7 +41,6 @@ export const createGroupStreakBodyValidationMiddleware = (
   response: Response,
   next: NextFunction
 ): void => {
-  console.log(1);
   Joi.validate(
     request.body,
     createGroupStreakBodyValidationSchema,
@@ -53,7 +52,6 @@ export const getCreateGroupStreakMiddleware = (
   groupStreak: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(2);
     const { timezone } = response.locals;
     const {
       creatorId,
@@ -70,7 +68,6 @@ export const getCreateGroupStreakMiddleware = (
     }).save();
     next();
   } catch (err) {
-    console.log(err);
     next(new CustomError(ErrorType.CreateGroupStreakMiddleware, err));
   }
 };
@@ -84,17 +81,12 @@ export const getCreateGroupMemberStreaksMiddleware = (
   groupMemberStreak: mongoose.Model<GroupMemberStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(3);
     const { timezone, newGroupStreak } = response.locals;
     const { members } = request.body;
-    console.log(newGroupStreak);
-    console.log(members);
 
     const membersWithGroupMemberStreakIds = await Promise.all(
       members.map(async (member: { memberId: string }) => {
-        console.log("Entered loop ");
         const memberExists = await userModel.findOne({ _id: member.memberId });
-        console.log(member.memberId);
         if (!memberExists) {
           throw new CustomError(ErrorType.GroupMemberDoesNotExist);
         }
@@ -135,7 +127,6 @@ export const getUpdateGroupStreakMembersArray = (
   groupStreak: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(4);
     const { membersWithGroupMemberStreakIds, newGroupStreak } = response.locals;
 
     response.locals.newGroupStreak = await groupStreak
@@ -164,7 +155,6 @@ export const sendGroupStreakMiddleware = (
   next: NextFunction
 ) => {
   try {
-    console.log(5);
     const { newGroupStreak } = response.locals;
     return response.status(ResponseCodes.created).send(newGroupStreak);
   } catch (err) {
