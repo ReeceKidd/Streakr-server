@@ -482,6 +482,17 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to UpdatedUserNotFound`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.UpdatedUserNotFound);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-43`);
+    expect(message).toBe("User does not exist.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
     expect.assertions(3);
 
@@ -2360,6 +2371,28 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-149`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to PatchUserMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.PatchUserMiddleware);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-150`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendUpdatedUserMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.SendUpdatedUserMiddleware);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-151`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
