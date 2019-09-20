@@ -1,17 +1,19 @@
 import { Router } from "express";
 
-import { timezoneMiddlewares } from "../../../SharedMiddleware/timezoneMiddlewares";
 import { createGroupMemberStreakMiddlewares } from "../../../RouteMiddlewares/GroupMemberStreak/createGroupMemberStreakMiddlewares";
 import { deleteGroupMemberStreakMiddlewares } from "../../../RouteMiddlewares/GroupMemberStreak/deleteGroupMemberStreakMiddlewares";
-import { getGroupMemberStreakMiddlewares } from "../../../RouteMiddlewares/GroupMemberStreak/getGroupMemberStreakMiddlewares";
+import { getOneGroupMemberStreakMiddlewares } from "../../../RouteMiddlewares/GroupMemberStreak/getOneGroupMemberStreakMiddlewares";
+import { getAllGroupMemberStreaksMiddlewares } from "../../../RouteMiddlewares/GroupMemberStreak/getAllGroupMemberStreaksMiddlewares";
 
 export const groupMemberStreakId = "groupMemberStreakId";
 
 const groupMemberStreaksRouter = Router();
 
+groupMemberStreaksRouter.get(`/`, ...getAllGroupMemberStreaksMiddlewares);
+
 groupMemberStreaksRouter.get(
   `/:${groupMemberStreakId}`,
-  ...getGroupMemberStreakMiddlewares
+  ...getOneGroupMemberStreakMiddlewares
 );
 
 groupMemberStreaksRouter.delete(

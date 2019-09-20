@@ -67,7 +67,7 @@ export const sendGroupMemberStreakMiddleware = getSendGroupMemberStreakMiddlewar
   ResponseCodes.success
 );
 
-export const getGroupMemberStreakMiddlewares = [
+export const getOneGroupMemberStreakMiddlewares = [
   getGroupMemberStreakParamsValidationMiddleware,
   retreiveGroupMemberStreakMiddleware,
   sendGroupMemberStreakMiddleware

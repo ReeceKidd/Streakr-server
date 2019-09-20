@@ -81,7 +81,7 @@ export const sendGroupMemberStreaksMiddleware = (
   }
 };
 
-export const getGroupMemberStreaksMiddlewares = [
+export const getAllGroupMemberStreaksMiddlewares = [
   getGroupMemberStreaksQueryValidationMiddleware,
   findGroupMemberStreaksMiddleware,
   sendGroupMemberStreaksMiddleware

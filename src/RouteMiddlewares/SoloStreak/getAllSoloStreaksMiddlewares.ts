@@ -76,7 +76,7 @@ export const sendSoloStreaksMiddleware = (
   }
 };
 
-export const getSoloStreaksMiddlewares = [
+export const getAllSoloStreaksMiddlewares = [
   getSoloStreaksQueryValidationMiddleware,
   findSoloStreaksMiddleware,
   sendSoloStreaksMiddleware

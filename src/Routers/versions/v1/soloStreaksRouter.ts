@@ -1,8 +1,8 @@
 import { Router } from "express";
 
-import { getSoloStreaksMiddlewares } from "../../../RouteMiddlewares/SoloStreak/getSoloStreaksMiddlewares";
+import { getSoloStreaksMiddlewares } from "../../../RouteMiddlewares/SoloStreak/getAllSoloStreaksMiddlewares";
 import { createSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStreak/createSoloStreakMiddlewares";
-import { getSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStreak/getSoloStreakMiddlewares";
+import { getSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStreak/getOneSoloStreakMiddlewares";
 import { patchSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStreak/patchSoloStreakMiddlewares";
 import { deleteSoloStreakMiddlewares } from "../../../RouteMiddlewares/SoloStreak/deleteSoloStreakMiddlewares";
 

@@ -61,7 +61,7 @@ export const sendSoloStreakMiddleware = getSendSoloStreakMiddleware(
   ResponseCodes.success
 );
 
-export const getSoloStreakMiddlewares = [
+export const getOneSoloStreakMiddlewares = [
   getSoloStreakParamsValidationMiddleware,
   retreiveSoloStreakMiddleware,
   sendSoloStreakMiddleware

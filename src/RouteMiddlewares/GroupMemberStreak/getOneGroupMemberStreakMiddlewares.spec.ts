@@ -1,11 +1,11 @@
 import {
-  getGroupMemberStreakMiddlewares,
+  getOneGroupMemberStreakMiddlewares,
   retreiveGroupMemberStreakMiddleware,
   getRetreiveGroupMemberStreakMiddleware,
   sendGroupMemberStreakMiddleware,
   getGroupMemberStreakParamsValidationMiddleware,
   getSendGroupMemberStreakMiddleware
-} from "./getGroupMemberStreakMiddlewares";
+} from "./getOneGroupMemberStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { ErrorType, CustomError } from "../../customError";
 
@@ -193,14 +193,14 @@ describe("getGroupMemberStreakMiddlewares", () => {
   test("that getGroupMemberStreakMiddlewares are defined in the correct order", () => {
     expect.assertions(4);
 
-    expect(getGroupMemberStreakMiddlewares.length).toEqual(3);
-    expect(getGroupMemberStreakMiddlewares[0]).toEqual(
+    expect(getOneGroupMemberStreakMiddlewares.length).toEqual(3);
+    expect(getOneGroupMemberStreakMiddlewares[0]).toEqual(
       getGroupMemberStreakParamsValidationMiddleware
     );
-    expect(getGroupMemberStreakMiddlewares[1]).toEqual(
+    expect(getOneGroupMemberStreakMiddlewares[1]).toEqual(
       retreiveGroupMemberStreakMiddleware
     );
-    expect(getGroupMemberStreakMiddlewares[2]).toEqual(
+    expect(getOneGroupMemberStreakMiddlewares[2]).toEqual(
       sendGroupMemberStreakMiddleware
     );
   });

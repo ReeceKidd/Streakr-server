@@ -1,11 +1,11 @@
 import {
-  getSoloStreakMiddlewares,
+  getOneSoloStreakMiddlewares,
   retreiveSoloStreakMiddleware,
   getRetreiveSoloStreakMiddleware,
   sendSoloStreakMiddleware,
   getSoloStreakParamsValidationMiddleware,
   getSendSoloStreakMiddleware
-} from "./getSoloStreakMiddlewares";
+} from "./getOneSoloStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { ErrorType, CustomError } from "../../customError";
 
@@ -174,15 +174,17 @@ describe("sendSoloStreakMiddleware", () => {
   });
 });
 
-describe("getSoloStreakMiddlewares", () => {
+describe("getOneSoloStreakMiddlewares", () => {
   test("that getSoloStreakMiddlewares are defined in the correct order", () => {
     expect.assertions(4);
 
-    expect(getSoloStreakMiddlewares.length).toEqual(3);
-    expect(getSoloStreakMiddlewares[0]).toEqual(
+    expect(getOneSoloStreakMiddlewares.length).toEqual(3);
+    expect(getOneSoloStreakMiddlewares[0]).toEqual(
       getSoloStreakParamsValidationMiddleware
     );
-    expect(getSoloStreakMiddlewares[1]).toEqual(retreiveSoloStreakMiddleware);
-    expect(getSoloStreakMiddlewares[2]).toEqual(sendSoloStreakMiddleware);
+    expect(getOneSoloStreakMiddlewares[1]).toEqual(
+      retreiveSoloStreakMiddleware
+    );
+    expect(getOneSoloStreakMiddlewares[2]).toEqual(sendSoloStreakMiddleware);
   });
 });
