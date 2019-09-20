@@ -1,8 +1,8 @@
-import { resetIncompleteSoloStreaks } from "../../src/Agenda/resetIncompleteSoloStreaks";
-
 import streakoid from "../../src/streakoid";
 import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
 import { londonTimezone } from "@streakoid/streakoid-sdk/lib/streakoid";
+
+import { resetIncompleteSoloStreaks } from "../../src/Agenda/SoloStreaks/resetIncompleteSoloStreaks";
 
 const username = "resetIncompleteSoloStreaksUsername";
 const email = "resetIncompleteSoloStreaks@gmail.com";

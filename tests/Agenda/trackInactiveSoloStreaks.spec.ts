@@ -1,7 +1,6 @@
-import { trackMaintainedSoloStreaks } from ".../../../src/Agenda/trackMaintainedSoloStreaks";
+import { trackMaintainedSoloStreaks } from ".../../../src/Agenda/SoloStreaks/trackMaintainedSoloStreaks";
 import streakoid from "../../src/streakoid";
 import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
-import { londonTimezone } from "@streakoid/streakoid-sdk/lib/streakoid";
 
 const username = "trackInactiveSoloStreakUsername";
 const email = "trackInactiveSoloStreak@gmail.com";

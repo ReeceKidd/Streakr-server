@@ -1,4 +1,4 @@
-import { trackMaintainedSoloStreaks } from ".../../../src/Agenda/trackMaintainedSoloStreaks";
+import { trackMaintainedSoloStreaks } from ".../../../src/Agenda/SoloStreaks/trackMaintainedSoloStreaks";
 import streakoid from ".../../../src/streakoid";
 import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
 
