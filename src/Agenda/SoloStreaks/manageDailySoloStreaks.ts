@@ -19,7 +19,7 @@ export const manageDailySoloStreaks = async (timezone: string) => {
     streakoid.soloStreaks.getAll({
       completedToday: true,
       active: true,
-      timezone: timezone
+      timezone
     }),
     streakoid.soloStreaks.getAll({
       completedToday: false,
