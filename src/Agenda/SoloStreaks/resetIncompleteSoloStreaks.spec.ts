@@ -1,7 +1,6 @@
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
-import streakoid from "../streakoid";
+import streakoid from "../../streakoid";
 import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
-import { SoloStreak } from "@streakoid/streakoid-sdk/lib";
 
 describe("resetIncompleteSoloStreaks", () => {
   afterEach(() => {

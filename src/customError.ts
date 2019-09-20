@@ -191,7 +191,9 @@ export enum ErrorType {
   DeleteGroupMemberMiddleware,
   SendGroupMemberDeletedResponseMiddleware,
   NoGroupStreakFound,
-  NoGroupMemberFound
+  NoGroupMemberFound,
+  FindGroupMemberStreaksMiddleware,
+  SendGroupMemberStreaksMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -1596,6 +1598,20 @@ export class CustomError extends Error {
       case ErrorType.SendGroupMemberDeletedResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-147`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.FindGroupMemberStreaksMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-148`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendGroupMemberStreaksMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-149`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

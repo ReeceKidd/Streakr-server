@@ -1,4 +1,4 @@
-import streakoid from "../streakoid";
+import streakoid from "../../streakoid";
 import { SoloStreak, ActivityArray } from "@streakoid/streakoid-sdk/lib";
 import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
 import Activity from "@streakoid/streakoid-sdk/lib/models/Activity";

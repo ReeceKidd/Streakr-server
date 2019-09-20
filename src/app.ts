@@ -11,6 +11,8 @@ import v1Router from "./Routers/versions/v1";
 import { getServiceConfig } from "./getServiceConfig";
 import { errorHandler } from "./errorHandler";
 import { agenda } from "./Agenda/agenda";
+import { initialiseGroupMemberStreakTimezoneCheckerJobs } from "./scripts/initaliseGroupMemberStreakTimezoneCheckers";
+import { initialiseSoloStreakTimezoneCheckerJobs } from "./scripts/initaliseSoloStreakTimezoneCheckers";
 
 dotenv.config();
 
@@ -42,6 +44,10 @@ agenda
   });
 
 mongoose.set("useCreateIndex", true);
+
+// Scripts used to initialise the daily streak complete checks.
+//initialiseGroupMemberStreakTimezoneCheckerJobs()
+//initialiseSoloStreakTimezoneCheckerJobs()
 
 app.use(`/${ApiVersions.v1}`, v1Router);
 

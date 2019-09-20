@@ -2337,4 +2337,30 @@ describe("customError", () => {
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
+
+  test(`creates correct error when type is set to FindGroupMemberStreaksMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.FindGroupMemberStreaksMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-148`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendGroupMemberStreaksMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SendGroupMemberStreaksMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-149`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
 });

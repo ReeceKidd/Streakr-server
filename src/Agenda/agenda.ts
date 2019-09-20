@@ -1,13 +1,14 @@
 import Agenda from "agenda";
 
 import { getServiceConfig } from "../getServiceConfig";
-import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
+import { manageDailySoloStreaks } from "./SoloStreaks/manageDailySoloStreaks";
 import { sendEmail } from "../email";
 
 const { DATABASE_URI, NODE_ENV } = getServiceConfig();
 
 export enum AgendaJobs {
-  soloStreakDailyTracker = "soloStreakDailyTracker"
+  soloStreakDailyTracker = "soloStreakDailyTracker",
+  groupMemberStreakDailyTracker = "groupMemberStreakDailyTracker"
 }
 
 export enum AgendaTimeRanges {

@@ -9,4 +9,5 @@ const { APPLICATION_URL } = getServiceConfig();
 
 const streakoidClient = streakoidClientFactory(APPLICATION_URL, londonTimezone);
 
-export default streakoidFactory(streakoidClient);
+const streakoid = streakoidFactory(streakoidClient);
+export default streakoid;

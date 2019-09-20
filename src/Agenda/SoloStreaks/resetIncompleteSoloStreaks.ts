@@ -1,4 +1,4 @@
-import streakoid from "../streakoid";
+import streakoid from "../../streakoid";
 import {
   SoloStreak,
   CurrentStreak,

@@ -1,5 +1,5 @@
 import { trackMaintainedSoloStreaks } from "./trackMaintainedSoloStreaks";
-import streakoid from "../streakoid";
+import streakoid from "../../streakoid";
 import StreakTrackingEventType from "@streakoid/streakoid-sdk/lib/streakTrackingEventType";
 
 describe("trackMaintainedSoloStreaks", () => {

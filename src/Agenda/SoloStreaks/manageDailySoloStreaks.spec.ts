@@ -20,7 +20,7 @@ import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
 import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
 import { trackMaintainedSoloStreaks } from "./trackMaintainedSoloStreaks";
 import { trackInactiveSoloStreaks } from "./trackInactiveSoloStreaks";
-import streakoid from "../streakoid";
+import streakoid from "../../streakoid";
 
 describe("manageDailySoloStreaks", () => {
   afterEach(() => {
