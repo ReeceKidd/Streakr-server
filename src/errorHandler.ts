@@ -8,6 +8,7 @@ export const errorHandler = (
   response: Response,
   next: NextFunction
 ) => {
+  console.log(error);
   if (error.httpStatusCode) {
     return response.status(error.httpStatusCode).send(error);
   }
