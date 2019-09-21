@@ -13,7 +13,8 @@ export const maximumSearchQueryLength = 64;
 const getUsersValidationSchema = {
   searchQuery: Joi.string()
     .min(minimumSeachQueryLength)
-    .max(maximumSearchQueryLength)
+    .max(maximumSearchQueryLength),
+  username: Joi.string()
 };
 
 export const getUsersValidationMiddleware = (
@@ -28,32 +29,29 @@ export const getUsersValidationMiddleware = (
   );
 };
 
-export const getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware = (
+export const getRetreiveUsersMiddleware = (
   userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { searchQuery } = request.query;
+    const { searchQuery, username } = request.query;
     if (searchQuery) {
       response.locals.users = await userModel.find({
         username: { $regex: searchQuery.toLowerCase() }
+      });
+    } else if (username) {
+      response.locals.users = await userModel.find({
+        username
       });
     } else {
       response.locals.users = await userModel.find({});
     }
     next();
   } catch (err) {
-    next(
-      new CustomError(
-        ErrorType.RetreiveUsersByLowercaseUsernameRegexSearchMiddleware,
-        err
-      )
-    );
+    next(new CustomError(ErrorType.RetreiveUsersMiddleware, err));
   }
 };
 
-export const retreiveUsersByLowercaseUsernameRegexSearchMiddleware = getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware(
-  userModel
-);
+export const retreiveUsersMiddleware = getRetreiveUsersMiddleware(userModel);
 
 export const sendFormattedUsersMiddleware = (
   request: Request,
@@ -70,6 +68,6 @@ export const sendFormattedUsersMiddleware = (
 
 export const getUsersMiddlewares = [
   getUsersValidationMiddleware,
-  retreiveUsersByLowercaseUsernameRegexSearchMiddleware,
+  retreiveUsersMiddleware,
   sendFormattedUsersMiddleware
 ];

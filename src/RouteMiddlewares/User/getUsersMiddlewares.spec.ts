@@ -2,9 +2,9 @@ import {
   getUsersMiddlewares,
   getUsersValidationMiddleware,
   maximumSearchQueryLength,
-  getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware,
+  getRetreiveUsersMiddleware,
   sendFormattedUsersMiddleware,
-  retreiveUsersByLowercaseUsernameRegexSearchMiddleware
+  retreiveUsersMiddleware
 } from "./getUsersMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -98,9 +98,30 @@ describe(`getUsersValidationMiddleware`, () => {
     });
     expect(next).not.toBeCalled();
   });
+
+  test(`sends correct response when username is not a string`, () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      query: { username: 123 }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    getUsersValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message: 'child "username" fails because ["username" must be a string]'
+    });
+    expect(next).not.toBeCalled();
+  });
 });
 
-describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
+describe("getRetreiveUsersMiddleware", () => {
   test("retrieves users with searchQuery and sets response.locals.users", async () => {
     expect.assertions(3);
     const searchQuery = "searchQuery";
@@ -114,9 +135,7 @@ describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
       status
     };
     const next = jest.fn();
-    const middleware = getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware(
-      userModel as any
-    );
+    const middleware = getRetreiveUsersMiddleware(userModel as any);
 
     await middleware(request, response, next);
 
@@ -127,7 +146,31 @@ describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("retrieves users without searchQuery and sets response.locals.users", async () => {
+  test("retrieves users with searchQuery and sets response.locals.users", async () => {
+    expect.assertions(3);
+    const username = "username";
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const find = jest.fn(() => Promise.resolve(true));
+    const userModel = { find };
+    const request: any = { query: { username } };
+    const response: any = {
+      locals: {},
+      status
+    };
+    const next = jest.fn();
+    const middleware = getRetreiveUsersMiddleware(userModel as any);
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({
+      username
+    });
+    expect(response.locals.users).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("retrieves users without searchQuery or username and sets response.locals.users", async () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -139,9 +182,7 @@ describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
       status
     };
     const next = jest.fn();
-    const middleware = getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware(
-      userModel as any
-    );
+    const middleware = getRetreiveUsersMiddleware(userModel as any);
 
     await middleware(request, response, next);
 
@@ -150,7 +191,7 @@ describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("calls next with RetreiveUsersByUsernameRegexSearchMiddleware error on middleware failure", async () => {
+  test("calls next with RetreiveUsersMiddleware error on middleware failure", async () => {
     expect.assertions(2);
     const errorMessage = "error";
     const send = jest.fn();
@@ -163,18 +204,13 @@ describe("getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware", () => {
       locals: {}
     };
     const next = jest.fn();
-    const middleware = getRetreiveUsersByLowercaseUsernameRegexSearchMiddleware(
-      userModel as any
-    );
+    const middleware = getRetreiveUsersMiddleware(userModel as any);
 
     await middleware(request, response, next);
 
     expect(response.locals.users).not.toBeDefined();
     expect(next).toBeCalledWith(
-      new CustomError(
-        ErrorType.RetreiveUsersByLowercaseUsernameRegexSearchMiddleware,
-        expect.any(Error)
-      )
+      new CustomError(ErrorType.RetreiveUsersMiddleware, expect.any(Error))
     );
   });
 });
@@ -221,9 +257,7 @@ describe(`getUsersMiddlewares`, () => {
 
     expect(getUsersMiddlewares.length).toEqual(3);
     expect(getUsersMiddlewares[0]).toBe(getUsersValidationMiddleware);
-    expect(getUsersMiddlewares[1]).toBe(
-      retreiveUsersByLowercaseUsernameRegexSearchMiddleware
-    );
+    expect(getUsersMiddlewares[1]).toBe(retreiveUsersMiddleware);
     expect(getUsersMiddlewares[2]).toBe(sendFormattedUsersMiddleware);
   });
 });

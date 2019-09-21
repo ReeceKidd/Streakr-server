@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export interface AppConfigHttp {
   NODE_ENV: string;
   PORT: string;
@@ -15,9 +18,6 @@ export interface AppConfigHttp {
 }
 
 export type AppConfig = AppConfigHttp;
-
-import dotenv from "dotenv";
-dotenv.config();
 
 export const getServiceConfig = (
   environment: NodeJS.ProcessEnv = process.env

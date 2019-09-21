@@ -45,7 +45,7 @@ export enum ErrorType {
   PatchSoloStreakMiddleware,
   SendUpdatedSoloStreakMiddleware,
   SetSearchQueryToLowercaseMiddleware,
-  RetreiveUsersByLowercaseUsernameRegexSearchMiddleware,
+  RetreiveUsersMiddleware,
   FormatUsersMiddleware,
   SendUsersMiddleware,
   UserEmailAlreadyExists,
@@ -822,7 +822,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.RetreiveUsersByLowercaseUsernameRegexSearchMiddleware:
+      case ErrorType.RetreiveUsersMiddleware:
         return {
           code: `${ResponseCodes.warning}-35`,
           message: internalServerMessage,
