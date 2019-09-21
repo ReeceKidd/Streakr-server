@@ -28,6 +28,7 @@ const soloStreakBodyValidationSchema = {
   streakDescription: Joi.string(),
   numberOfMinutes: Joi.number(),
   completedToday: Joi.boolean(),
+  timezone: Joi.string(),
   active: Joi.boolean(),
   currentStreak: Joi.object(),
   pastStreaks: Joi.array(),
