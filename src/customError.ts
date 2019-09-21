@@ -543,7 +543,7 @@ export class CustomError extends Error {
 
       case ErrorType.UpdatedUserNotFound: {
         return {
-          code: `${ResponseCodes.badRequest}-42`,
+          code: `${ResponseCodes.badRequest}-43`,
           message: "User does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
