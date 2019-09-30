@@ -20,7 +20,7 @@ export const soloStreakSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: StreakStatus.active
+      default: StreakStatus.live
     },
     streakDescription: {
       type: String,

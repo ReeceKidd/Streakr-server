@@ -25,6 +25,7 @@ export const soloStreakParamsValidationMiddleware = (
 
 const soloStreakBodyValidationSchema = {
   streakName: Joi.string(),
+  status: Joi.string(),
   streakDescription: Joi.string(),
   numberOfMinutes: Joi.number(),
   completedToday: Joi.boolean(),

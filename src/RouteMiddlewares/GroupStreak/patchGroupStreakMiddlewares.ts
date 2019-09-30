@@ -28,7 +28,8 @@ const groupStreakBodyValidationSchema = {
   streakName: Joi.string(),
   streakDescription: Joi.string(),
   numberOfMinutes: Joi.number(),
-  timezone: Joi.string()
+  timezone: Joi.string(),
+  status: Joi.string()
 };
 
 export const groupStreakRequestBodyValidationMiddleware = (

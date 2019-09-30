@@ -128,12 +128,14 @@ describe("patchSoloStreakMiddleware", () => {
     const userId = "123cde";
     const streakName = "Daily programming";
     const streakDescription = "Do one hour of programming each day";
+    const status = "archived";
     const request: any = {
       params: { soloStreakId },
       body: {
         userId,
         streakName,
-        streakDescription
+        streakDescription,
+        status
       }
     };
     const response: any = { locals: {} };
@@ -148,7 +150,7 @@ describe("patchSoloStreakMiddleware", () => {
 
     expect(findByIdAndUpdate).toBeCalledWith(
       soloStreakId,
-      { userId, streakName, streakDescription },
+      { userId, streakName, streakDescription, status },
       { new: true }
     );
     expect(response.locals.updatedSoloStreak).toBeDefined();

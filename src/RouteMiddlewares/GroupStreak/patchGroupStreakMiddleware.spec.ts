@@ -61,13 +61,15 @@ describe("groupStreakRequestBodyValidationMiddleware", () => {
   const streakDescription = "streakDescription";
   const numberOfMinutes = 30;
   const timezone = "timezone";
+  const status = "active";
 
   const body = {
     creatorId,
     streakName,
     streakDescription,
     numberOfMinutes,
-    timezone
+    timezone,
+    status
   };
 
   test("sends correct error response when unsupported key is sent", () => {
@@ -189,6 +191,30 @@ describe("groupStreakRequestBodyValidationMiddleware", () => {
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "timezone" fails because ["timezone" must be a string]'
+    });
+    expect(next).not.toBeCalled();
+  });
+
+  test("sends correct error response when status is not a string", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      body: {
+        ...body,
+        status: 123
+      }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    groupStreakRequestBodyValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message: 'child "status" fails because ["status" must be a string]'
     });
     expect(next).not.toBeCalled();
   });

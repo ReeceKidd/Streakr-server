@@ -4,6 +4,7 @@ import { trackMaintainedSoloStreaks } from "./trackMaintainedSoloStreaks";
 import { trackInactiveSoloStreaks } from "./trackInactiveSoloStreaks";
 import { resetIncompleteSoloStreaks } from "./resetIncompleteSoloStreaks";
 import streakoid from "../../streakoid";
+import StreakStatus from "@streakoid/streakoid-sdk/lib/StreakStatus";
 
 export const manageDailySoloStreaks = async (timezone: string) => {
   const currentLocalTime = moment
@@ -19,15 +20,18 @@ export const manageDailySoloStreaks = async (timezone: string) => {
     streakoid.soloStreaks.getAll({
       completedToday: true,
       active: true,
+      status: StreakStatus.live,
       timezone
     }),
     streakoid.soloStreaks.getAll({
       completedToday: false,
+      status: StreakStatus.live,
       active: false,
       timezone
     }),
     streakoid.soloStreaks.getAll({
       completedToday: false,
+      status: StreakStatus.live,
       active: true,
       timezone: timezone
     })

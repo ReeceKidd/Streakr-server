@@ -21,6 +21,7 @@ import { manageDailySoloStreaks } from "./manageDailySoloStreaks";
 import { trackMaintainedSoloStreaks } from "./trackMaintainedSoloStreaks";
 import { trackInactiveSoloStreaks } from "./trackInactiveSoloStreaks";
 import streakoid from "../../streakoid";
+import StreakStatus from "@streakoid/streakoid-sdk/lib/StreakStatus";
 
 describe("manageDailySoloStreaks", () => {
   afterEach(() => {
@@ -37,6 +38,7 @@ describe("manageDailySoloStreaks", () => {
 
     expect(streakoid.soloStreaks.getAll).toBeCalledWith({
       completedToday: true,
+      status: StreakStatus.live,
       active: true,
       timezone
     });
@@ -48,6 +50,7 @@ describe("manageDailySoloStreaks", () => {
     expect(streakoid.soloStreaks.getAll).toBeCalledWith({
       completedToday: false,
       active: false,
+      status: StreakStatus.live,
       timezone
     });
     expect(trackInactiveSoloStreaks).toBeCalledWith(
@@ -58,6 +61,7 @@ describe("manageDailySoloStreaks", () => {
     expect(streakoid.soloStreaks.getAll).toBeCalledWith({
       completedToday: false,
       active: true,
+      status: StreakStatus.live,
       timezone
     });
     expect(resetIncompleteSoloStreaks).toBeCalledWith(
