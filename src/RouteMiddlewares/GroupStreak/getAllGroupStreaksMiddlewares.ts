@@ -126,7 +126,7 @@ export const sendGroupStreaksMiddleware = (
   }
 };
 
-export const getGroupStreaksMiddlewares = [
+export const getAllGroupStreaksMiddlewares = [
   getGroupStreaksQueryValidationMiddleware,
   findGroupStreaksMiddleware,
   retreiveGroupStreaksMembersInformationMiddleware,

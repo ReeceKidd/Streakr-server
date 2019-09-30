@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { timezoneMiddlewares } from "../../../SharedMiddleware/timezoneMiddlewares";
+
 import { createGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStreak/createGroupStreakMiddlewares";
-import { getGroupStreaksMiddlewares } from "../../../RouteMiddlewares/GroupStreak/getGroupStreaksMiddlewares";
+import { getAllGroupStreaksMiddlewares } from "../../../RouteMiddlewares/GroupStreak/getAllGroupStreaksMiddlewares";
 import { deleteGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStreak/deleteGroupStreakMiddlewares";
-import { getGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStreak/getGroupStreakMiddlewares";
+import { getOneGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStreak/getOneGroupStreakMiddlewares";
 import { patchGroupStreakMiddlewares } from "../../../RouteMiddlewares/GroupStreak/patchGroupStreakMiddlewares";
 import { createGroupMemberMiddlewares } from "../../../RouteMiddlewares/GroupMember/createGroupMemberMiddlewares";
 import { deleteGroupMemberMiddlewares } from "../../../RouteMiddlewares/GroupMember/deleteGroupMemberMiddlewares";
@@ -18,9 +18,9 @@ export enum GroupStreakRouteCategories {
   members = "members"
 }
 
-groupStreaksRouter.get(`/`, ...getGroupStreaksMiddlewares);
+groupStreaksRouter.get(`/`, ...getAllGroupStreaksMiddlewares);
 
-groupStreaksRouter.get(`/:${groupStreakId}`, ...getGroupStreakMiddlewares);
+groupStreaksRouter.get(`/:${groupStreakId}`, ...getOneGroupStreakMiddlewares);
 
 groupStreaksRouter.delete(
   `/:${groupStreakId}`,

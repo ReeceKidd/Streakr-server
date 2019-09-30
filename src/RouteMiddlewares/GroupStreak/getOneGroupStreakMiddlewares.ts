@@ -130,7 +130,7 @@ export const sendGroupStreakMiddleware = getSendGroupStreakMiddleware(
   ResponseCodes.success
 );
 
-export const getGroupStreakMiddlewares = [
+export const getOneGroupStreakMiddlewares = [
   getGroupStreakParamsValidationMiddleware,
   retreiveGroupStreakMiddleware,
   retreiveGroupStreakMembersInformationMiddleware,

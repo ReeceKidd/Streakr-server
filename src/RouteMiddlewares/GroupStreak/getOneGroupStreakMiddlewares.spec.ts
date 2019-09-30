@@ -1,5 +1,5 @@
 import {
-  getGroupStreakMiddlewares,
+  getOneGroupStreakMiddlewares,
   retreiveGroupStreakMiddleware,
   getRetreiveGroupStreakMiddleware,
   sendGroupStreakMiddleware,
@@ -9,7 +9,7 @@ import {
   getRetreiveGroupStreakMembersInformationMiddleware,
   retreiveGroupStreakCreatorInformationMiddleware,
   getRetreiveGroupStreakCreatorInformationMiddleware
-} from "./getGroupStreakMiddlewares";
+} from "./getOneGroupStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { ErrorType, CustomError } from "../../customError";
 
@@ -303,17 +303,19 @@ describe("getGroupStreakMiddlewares", () => {
   test("that getGroupStreakMiddlewares are defined in the correct order", () => {
     expect.assertions(6);
 
-    expect(getGroupStreakMiddlewares.length).toEqual(5);
-    expect(getGroupStreakMiddlewares[0]).toEqual(
+    expect(getOneGroupStreakMiddlewares.length).toEqual(5);
+    expect(getOneGroupStreakMiddlewares[0]).toEqual(
       getGroupStreakParamsValidationMiddleware
     );
-    expect(getGroupStreakMiddlewares[1]).toEqual(retreiveGroupStreakMiddleware);
-    expect(getGroupStreakMiddlewares[2]).toEqual(
+    expect(getOneGroupStreakMiddlewares[1]).toEqual(
+      retreiveGroupStreakMiddleware
+    );
+    expect(getOneGroupStreakMiddlewares[2]).toEqual(
       retreiveGroupStreakMembersInformationMiddleware
     );
-    expect(getGroupStreakMiddlewares[3]).toEqual(
+    expect(getOneGroupStreakMiddlewares[3]).toEqual(
       retreiveGroupStreakCreatorInformationMiddleware
     );
-    expect(getGroupStreakMiddlewares[4]).toEqual(sendGroupStreakMiddleware);
+    expect(getOneGroupStreakMiddlewares[4]).toEqual(sendGroupStreakMiddleware);
   });
 });

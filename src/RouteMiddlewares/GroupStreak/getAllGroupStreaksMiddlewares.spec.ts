@@ -1,12 +1,12 @@
 import {
-  getGroupStreaksMiddlewares,
+  getAllGroupStreaksMiddlewares,
   getGroupStreaksQueryValidationMiddleware,
   getFindGroupStreaksMiddleware,
   findGroupStreaksMiddleware,
   sendGroupStreaksMiddleware,
   retreiveGroupStreaksMembersInformationMiddleware,
   getRetreiveGroupStreaksMembersInformationMiddleware
-} from "./getGroupStreaksMiddlewares";
+} from "./getAllGroupStreaksMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
@@ -243,18 +243,18 @@ describe("sendGroupStreaksMiddleware", () => {
   });
 });
 
-describe(`getGroupStreaksMiddlewares`, () => {
+describe(`getAllGroupStreaksMiddlewares`, () => {
   test("that getGroupStreaksMiddlewares are defined in the correct order", async () => {
     expect.assertions(5);
 
-    expect(getGroupStreaksMiddlewares.length).toEqual(4);
-    expect(getGroupStreaksMiddlewares[0]).toBe(
+    expect(getAllGroupStreaksMiddlewares.length).toEqual(4);
+    expect(getAllGroupStreaksMiddlewares[0]).toBe(
       getGroupStreaksQueryValidationMiddleware
     );
-    expect(getGroupStreaksMiddlewares[1]).toBe(findGroupStreaksMiddleware);
-    expect(getGroupStreaksMiddlewares[2]).toBe(
+    expect(getAllGroupStreaksMiddlewares[1]).toBe(findGroupStreaksMiddleware);
+    expect(getAllGroupStreaksMiddlewares[2]).toBe(
       retreiveGroupStreaksMembersInformationMiddleware
     );
-    expect(getGroupStreaksMiddlewares[3]).toBe(sendGroupStreaksMiddleware);
+    expect(getAllGroupStreaksMiddlewares[3]).toBe(sendGroupStreaksMiddleware);
   });
 });
