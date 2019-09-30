@@ -11,7 +11,8 @@ const getSoloStreaksQueryValidationSchema = {
   userId: Joi.string(),
   timezone: Joi.string(),
   completedToday: Joi.boolean(),
-  active: Joi.boolean()
+  active: Joi.boolean(),
+  status: Joi.string()
 };
 
 export const getSoloStreaksQueryValidationMiddleware = (
@@ -30,13 +31,14 @@ export const getFindSoloStreaksMiddleware = (
   soloStreakModel: mongoose.Model<SoloStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userId, timezone, completedToday, active } = request.query;
+    const { userId, timezone, completedToday, active, status } = request.query;
 
     const query: {
       userId?: string;
       timezone?: string;
       completedToday?: boolean;
       active?: boolean;
+      status?: string;
     } = {};
 
     if (userId) {
@@ -50,6 +52,9 @@ export const getFindSoloStreaksMiddleware = (
     }
     if (active) {
       query.active = active === "true";
+    }
+    if (status) {
+      query.status = status;
     }
 
     response.locals.soloStreaks = await soloStreakModel.find(query);

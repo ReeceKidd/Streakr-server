@@ -2,6 +2,7 @@ import * as mongoose from "mongoose";
 import { Collections } from "./Collections";
 import { Models } from "./Models";
 import { SoloStreak } from "@streakoid/streakoid-sdk/lib";
+import StreakStatus from "@streakoid/streakoid-sdk/lib/StreakStatus";
 
 export type SoloStreakModel = SoloStreak & mongoose.Document;
 
@@ -16,6 +17,10 @@ export const soloStreakSchema = new mongoose.Schema(
       required: true,
       type: String,
       index: true
+    },
+    status: {
+      type: String,
+      default: StreakStatus.active
     },
     streakDescription: {
       type: String,

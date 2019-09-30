@@ -125,6 +125,25 @@ describe("findSoloStreaksMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
+  test("queries database with just status and sets response.locals.soloStreaks", async () => {
+    expect.assertions(3);
+    const find = jest.fn(() => Promise.resolve(true));
+    const soloStreakModel = {
+      find
+    };
+    const status = "active";
+    const request: any = { query: { status } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({ status });
+    expect(response.locals.soloStreaks).toEqual(true);
+    expect(next).toBeCalledWith();
+  });
+
   test("calls next with FindSoloStreaksMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const ERROR_MESSAGE = "error";

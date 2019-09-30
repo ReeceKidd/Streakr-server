@@ -8,7 +8,6 @@ import { getUserMiddlewares } from "../../../RouteMiddlewares/User/getUserMiddle
 import { getFriendsMiddlewares } from "../../../RouteMiddlewares/User/Friends/getFriendsMiddlewares";
 import { addFriendMiddlewares } from "../../../RouteMiddlewares/User/Friends/addFriendMiddlewares";
 import { deleteFriendMiddlewares } from "../../../RouteMiddlewares/User/Friends/deleteFriendsMiddlewares";
-import { timezoneMiddlewares } from "../../../SharedMiddleware/timezoneMiddlewares";
 import { patchUserMiddlewares } from "../../../RouteMiddlewares/User/patchUserMiddlewares";
 
 export const userId = "userId";

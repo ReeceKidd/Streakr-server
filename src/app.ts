@@ -11,8 +11,6 @@ import v1Router from "./Routers/versions/v1";
 import { getServiceConfig } from "./getServiceConfig";
 import { errorHandler } from "./errorHandler";
 import { agenda } from "./Agenda/agenda";
-import { initialiseGroupMemberStreakTimezoneCheckerJobs } from "./scripts/initaliseGroupMemberStreakTimezoneCheckers";
-import { initialiseSoloStreakTimezoneCheckerJobs } from "./scripts/initaliseSoloStreakTimezoneCheckers";
 
 dotenv.config();
 

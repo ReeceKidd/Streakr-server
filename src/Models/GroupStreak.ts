@@ -2,6 +2,7 @@ import * as mongoose from "mongoose";
 import { Collections } from "./Collections";
 import { Models } from "./Models";
 import { GroupStreak } from "@streakoid/streakoid-sdk/lib";
+import StreakStatus from "@streakoid/streakoid-sdk/lib/StreakStatus";
 
 export type GroupStreakModel = GroupStreak & mongoose.Document;
 
@@ -14,6 +15,10 @@ export const groupStreakSchema = new mongoose.Schema(
     streakName: {
       required: true,
       type: String
+    },
+    status: {
+      type: String,
+      default: StreakStatus.active
     },
     streakDescription: {
       type: String

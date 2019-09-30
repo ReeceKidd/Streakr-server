@@ -17,7 +17,8 @@ import {
 const getGroupStreaksQueryValidationSchema = {
   creatorId: Joi.string(),
   memberId: Joi.string(),
-  timezone: Joi.string()
+  timezone: Joi.string(),
+  status: Joi.string()
 };
 
 export const getGroupStreaksQueryValidationMiddleware = (
@@ -36,7 +37,7 @@ export const getFindGroupStreaksMiddleware = (
   groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { memberId, timezone, creatorId } = request.query;
+    const { memberId, timezone, creatorId, status } = request.query;
     const query: any = {};
 
     if (creatorId) {
@@ -47,6 +48,9 @@ export const getFindGroupStreaksMiddleware = (
     }
     if (timezone) {
       query.timezone = timezone;
+    }
+    if (status) {
+      query.status = status;
     }
 
     response.locals.groupStreaks = await groupStreakModel.find(query).lean();
