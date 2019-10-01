@@ -14,7 +14,8 @@ const getUsersValidationSchema = {
   searchQuery: Joi.string()
     .min(minimumSeachQueryLength)
     .max(maximumSearchQueryLength),
-  username: Joi.string()
+  username: Joi.string(),
+  email: Joi.string().email()
 };
 
 export const getUsersValidationMiddleware = (
@@ -33,7 +34,7 @@ export const getRetreiveUsersMiddleware = (
   userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { searchQuery, username } = request.query;
+    const { searchQuery, username, email } = request.query;
     if (searchQuery) {
       response.locals.users = await userModel.find({
         username: { $regex: searchQuery.toLowerCase() }
@@ -41,6 +42,10 @@ export const getRetreiveUsersMiddleware = (
     } else if (username) {
       response.locals.users = await userModel.find({
         username
+      });
+    } else if (email) {
+      response.locals.users = await userModel.find({
+        email
       });
     } else {
       response.locals.users = await userModel.find({});

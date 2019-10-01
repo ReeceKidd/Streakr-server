@@ -10,14 +10,22 @@ import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
 describe(`getUsersValidationMiddleware`, () => {
-  const mockSearchQuery = "searchQuery";
+  const searchQuery = "searchQuery";
+  const username = "username";
+  const email = "email@gmail.com";
+
+  const query = {
+    searchQuery,
+    username,
+    email
+  };
 
   test("valid request passes", () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      query: { searchQuery: mockSearchQuery }
+      query
     };
     const response: any = {
       status
@@ -119,6 +127,27 @@ describe(`getUsersValidationMiddleware`, () => {
     });
     expect(next).not.toBeCalled();
   });
+
+  test(`sends correct response when email is not an email`, () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      query: { email: "not-an-email" }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    getUsersValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message: 'child "email" fails because ["email" must be a valid email]'
+    });
+    expect(next).not.toBeCalled();
+  });
 });
 
 describe("getRetreiveUsersMiddleware", () => {
@@ -146,7 +175,7 @@ describe("getRetreiveUsersMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("retrieves users with searchQuery and sets response.locals.users", async () => {
+  test("retrieves users with username and sets response.locals.users", async () => {
     expect.assertions(3);
     const username = "username";
     const send = jest.fn();
@@ -165,6 +194,30 @@ describe("getRetreiveUsersMiddleware", () => {
 
     expect(find).toBeCalledWith({
       username
+    });
+    expect(response.locals.users).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("retrieves users with email and sets response.locals.users", async () => {
+    expect.assertions(3);
+    const email = "email";
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const find = jest.fn(() => Promise.resolve(true));
+    const userModel = { find };
+    const request: any = { query: { email } };
+    const response: any = {
+      locals: {},
+      status
+    };
+    const next = jest.fn();
+    const middleware = getRetreiveUsersMiddleware(userModel as any);
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({
+      email
     });
     expect(response.locals.users).toBeDefined();
     expect(next).toBeCalledWith();
