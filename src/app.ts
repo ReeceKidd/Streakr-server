@@ -37,7 +37,6 @@ agenda
     console.log("Agenda processing");
   })
   .catch(err => {
-    console.log("Agenda error");
     console.log(err);
   });
 
