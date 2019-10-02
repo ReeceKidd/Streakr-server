@@ -341,8 +341,8 @@ describe("addFriendMiddlewares", () => {
 
       expect(response.locals.friendRequest).toBeDefined();
       expect(findOne).toBeCalledWith({
-        requestee: userId,
-        requester: friendId,
+        requesteeId: userId,
+        requesterId: friendId,
         status: FriendRequestStatus.pending
       });
       expect(lean).toBeCalledWith();

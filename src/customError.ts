@@ -212,7 +212,10 @@ export enum ErrorType {
   NoFriendRequestToDeleteFound,
   FriendRequestDoesNotExist,
   RetreiveFriendRequestMiddleware,
-  UpdateFriendRequestStatusMiddleware
+  UpdateFriendRequestStatusMiddleware,
+  SendUpdatedFriendRequestMiddleware,
+  PatchFriendRequestMiddleware,
+  UpdatedFriendRequestNotFound
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -600,6 +603,14 @@ export class CustomError extends Error {
       case ErrorType.FriendRequestDoesNotExist: {
         return {
           code: `${ResponseCodes.badRequest}-48`,
+          message: "Friend request does not exist.",
+          httpStatusCode: ResponseCodes.badRequest
+        };
+      }
+
+      case ErrorType.UpdatedFriendRequestNotFound: {
+        return {
+          code: `${ResponseCodes.badRequest}-49`,
           message: "Friend request does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
@@ -1770,6 +1781,20 @@ export class CustomError extends Error {
       case ErrorType.UpdateFriendRequestStatusMiddleware:
         return {
           code: `${ResponseCodes.warning}-162`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.PatchFriendRequestMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-163`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendUpdatedFriendRequestMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-164`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

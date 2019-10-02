@@ -548,6 +548,17 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
+  test(`creates correct error when type is set to UpdatedFriendRequestNotFound`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.UpdatedFriendRequestNotFound);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`400-49`);
+    expect(message).toBe("Friend request does not exist.");
+    expect(httpStatusCode).toBe(400);
+  });
+
   test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
     expect.assertions(3);
 
@@ -2579,6 +2590,30 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-162`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to PatchFriendRequestMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.PatchFriendRequestMiddleware);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-163`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendUpdatedFriendRequestMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.SendUpdatedFriendRequestMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-164`);
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });

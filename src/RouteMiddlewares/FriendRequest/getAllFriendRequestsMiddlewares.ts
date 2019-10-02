@@ -32,6 +32,7 @@ export const getFindFriendRequestsMiddleware = (
   friendRequestModel: mongoose.Model<FriendRequestModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
+    console.log(request.query);
     const { requesterId, requesteeId, status } = request.query;
 
     const query: {
