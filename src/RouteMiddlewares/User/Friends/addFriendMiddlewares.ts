@@ -25,7 +25,6 @@ export const addFriendParamsValidationMiddleware = (
   response: Response,
   next: NextFunction
 ) => {
-  console.log(1);
   Joi.validate(
     request.params,
     addFriendParamsValidationSchema,
@@ -44,7 +43,6 @@ export const addFriendBodyValidationMiddleware = (
   response: Response,
   next: NextFunction
 ): void => {
-  console.log(2);
   Joi.validate(
     request.body,
     addFriendBodyValidationSchema,
@@ -56,7 +54,6 @@ export const getRetreiveUserMiddleware = (
   userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(3);
     const { userId } = request.params;
     const user = await userModel.findOne({ _id: userId }).lean();
     if (!user) {
@@ -77,7 +74,6 @@ export const isAlreadyAFriendMiddleware = (
   response: Response,
   next: NextFunction
 ) => {
-  console.log(4);
   try {
     const user = response.locals.user;
     const { friendId } = request.body;
@@ -99,7 +95,6 @@ export const getRetreiveFriendMiddleware = (
   userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(5);
     const { friendId } = request.body;
     const friend = await userModel.findOne({ _id: friendId }).lean();
     if (!friend) {
@@ -133,7 +128,6 @@ export const getRetreiveFriendRequestMiddleware = (
     }
     response.locals.friendRequest = friendRequest;
     next();
-    console.log(6);
   } catch (err) {
     if (err instanceof CustomError) next(err);
     else next(new CustomError(ErrorType.RetreiveFriendRequestMiddleware, err));
@@ -148,7 +142,6 @@ export const getAddFriendToUsersFriendListMiddleware = (
   userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(7);
     const { userId } = request.params;
     const { friendId } = request.body;
     const userWithNewFriend = await userModel.findByIdAndUpdate(
@@ -173,7 +166,6 @@ export const getUpdateFriendRequestStatusMiddleware = (
   friendRequestModel: Model<FriendRequestModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    console.log(8);
     const friendRequest: FriendRequest = response.locals.friendRequest;
     const updatedFriendRequest = await friendRequestModel.findByIdAndUpdate(
       friendRequest._id,
@@ -199,7 +191,6 @@ export const sendUserWithNewFriendMiddleware = (
   next: NextFunction
 ) => {
   try {
-    console.log(9);
     const { userWithNewFriend } = response.locals;
     return response.status(ResponseCodes.created).send(userWithNewFriend);
   } catch (err) {
