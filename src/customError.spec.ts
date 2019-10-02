@@ -2486,4 +2486,26 @@ describe("customError", () => {
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
+
+  test(`creates correct error when type is set to FindFriendRequestsMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.FindFriendRequestsMiddleware);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-157`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to SendFriendRequestsMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(ErrorType.SendFriendRequestsMiddleware);
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-158`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
 });

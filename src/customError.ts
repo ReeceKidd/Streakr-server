@@ -204,7 +204,9 @@ export enum ErrorType {
   SendFriendRequestMiddleware,
   RequesterDoesNotExist,
   RequesteeDoesNotExist,
-  RequesteeIsAlreadyAFriend
+  RequesteeIsAlreadyAFriend,
+  FindFriendRequestsMiddleware,
+  SendFriendRequestsMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -1704,6 +1706,20 @@ export class CustomError extends Error {
       case ErrorType.SendFriendRequestMiddleware:
         return {
           code: `${ResponseCodes.warning}-156`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.FindFriendRequestsMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-157`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.SendFriendRequestsMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-158`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

@@ -207,9 +207,10 @@ describe("sendSoloStreaksMiddleware", () => {
 });
 
 describe(`getAllSoloStreaksMiddlewares`, () => {
-  test("that getSoloStreaksMiddlewares are defined in the correct order", async () => {
-    expect.assertions(3);
+  test("are in the correct order", async () => {
+    expect.assertions(4);
 
+    expect(getAllSoloStreaksMiddlewares.length).toEqual(3);
     expect(getAllSoloStreaksMiddlewares[0]).toBe(
       getSoloStreaksQueryValidationMiddleware
     );
