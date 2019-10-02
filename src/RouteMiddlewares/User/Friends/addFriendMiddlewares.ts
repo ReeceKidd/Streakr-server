@@ -5,6 +5,14 @@ import { getValidationErrorMessageSenderMiddleware } from "../../../SharedMiddle
 import { userModel, UserModel } from "../../../Models/User";
 import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
+import {
+  FriendRequestModel,
+  friendRequestModel
+} from "../../../Models/FriendRequest";
+import {
+  FriendRequestStatus,
+  FriendRequest
+} from "@streakoid/streakoid-sdk/lib";
 
 const addFriendParamsValidationSchema = {
   userId: Joi.string()
@@ -102,6 +110,34 @@ export const getRetreiveFriendMiddleware = (
 
 export const retreiveFriendMiddleware = getRetreiveFriendMiddleware(userModel);
 
+export const getRetreiveFriendRequestMiddleware = (
+  friendRequestModel: Model<FriendRequestModel>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { userId } = request.params;
+    const { friendId } = request.body;
+    const friendRequest = await friendRequestModel
+      .findOne({
+        requestee: userId,
+        requester: friendId,
+        status: FriendRequestStatus.pending
+      })
+      .lean();
+    if (!friendRequest) {
+      throw new CustomError(ErrorType.FriendRequestDoesNotExist);
+    }
+    response.locals.friendRequest = friendRequest;
+    next();
+  } catch (err) {
+    if (err instanceof CustomError) next(err);
+    else next(new CustomError(ErrorType.RetreiveFriendRequestMiddleware, err));
+  }
+};
+
+export const retreiveFriendRequestMiddleware = getRetreiveFriendRequestMiddleware(
+  friendRequestModel
+);
+
 export const getAddFriendToUsersFriendListMiddleware = (
   userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
@@ -126,6 +162,29 @@ export const addFriendToUsersFriendListMiddleware = getAddFriendToUsersFriendLis
   userModel
 );
 
+export const getUpdateFriendRequestStatusMiddleware = (
+  friendRequestModel: Model<FriendRequestModel>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const friendRequest: FriendRequest = response.locals.friendRequest;
+    const updatedFriendRequest = await friendRequestModel.findByIdAndUpdate(
+      friendRequest._id,
+      {
+        $set: { status: FriendRequestStatus.accepted }
+      },
+      { new: true }
+    );
+    response.locals.updatedFriendRequest = updatedFriendRequest;
+    next();
+  } catch (err) {
+    next(new CustomError(ErrorType.UpdateFriendRequestStatusMiddleware, err));
+  }
+};
+
+export const updateFriendRequestStatusMiddleware = getUpdateFriendRequestStatusMiddleware(
+  friendRequestModel
+);
+
 export const sendUserWithNewFriendMiddleware = (
   request: Request,
   response: Response,
@@ -145,6 +204,8 @@ export const addFriendMiddlewares = [
   retreiveUserMiddleware,
   isAlreadyAFriendMiddleware,
   retreiveFriendMiddleware,
+  retreiveFriendRequestMiddleware,
   addFriendToUsersFriendListMiddleware,
+  updateFriendRequestStatusMiddleware,
   sendUserWithNewFriendMiddleware
 ];

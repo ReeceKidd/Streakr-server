@@ -9,9 +9,14 @@ import {
   sendUserWithNewFriendMiddleware,
   isAlreadyAFriendMiddleware,
   getAddFriendToUsersFriendListMiddleware,
-  retreiveFriendMiddleware
+  retreiveFriendMiddleware,
+  retreiveFriendRequestMiddleware,
+  updateFriendRequestStatusMiddleware,
+  getRetreiveFriendRequestMiddleware,
+  getUpdateFriendRequestStatusMiddleware
 } from "./addFriendMiddlewares";
 import { CustomError, ErrorType } from "../../../customError";
+import { FriendRequestStatus } from "@streakoid/streakoid-sdk/lib";
 
 describe("addFriendMiddlewares", () => {
   describe("addFriendParamsValidationMiddleware", () => {
@@ -317,6 +322,71 @@ describe("addFriendMiddlewares", () => {
     });
   });
 
+  describe("retreiveFriendRequestMiddleware", () => {
+    test("sets response.locals.friendrequest and calls next()", async () => {
+      expect.assertions(4);
+      const lean = jest.fn(() => true);
+      const findOne = jest.fn(() => ({ lean }));
+      const friendRequestModel = { findOne };
+      const userId = "1234";
+      const friendId = "abcdefg";
+      const request: any = { params: { userId }, body: { friendId } };
+      const response: any = { locals: {} };
+      const next = jest.fn();
+      const middleware = getRetreiveFriendRequestMiddleware(
+        friendRequestModel as any
+      );
+
+      await middleware(request, response, next);
+
+      expect(response.locals.friendRequest).toBeDefined();
+      expect(findOne).toBeCalledWith({
+        requestee: userId,
+        requester: friendId,
+        status: FriendRequestStatus.pending
+      });
+      expect(lean).toBeCalledWith();
+      expect(next).toBeCalledWith();
+    });
+
+    test("throws FriendRequestDoesNotExist error when friend request does not exist", async () => {
+      expect.assertions(1);
+      const userId = "1234";
+      const friendId = "abcd";
+      const lean = jest.fn(() => false);
+      const findOne = jest.fn(() => ({ lean }));
+      const friendRequestModel = { findOne };
+      const request: any = { params: { userId }, body: { friendId } };
+      const response: any = { locals: {} };
+      const next = jest.fn();
+      const middleware = getRetreiveFriendMiddleware(friendRequestModel as any);
+
+      await middleware(request, response, next);
+
+      expect(next).toBeCalledWith(
+        new CustomError(ErrorType.FriendDoesNotExist)
+      );
+    });
+
+    test("throws RetreiveFriendRequestMiddleware error on middleware failure", async () => {
+      expect.assertions(1);
+      const userModel = {};
+      const request: any = {};
+      const response: any = {};
+      const next = jest.fn();
+      const middleware = getRetreiveFriendRequestMiddleware(userModel as any);
+
+      await middleware(request, response, next);
+
+      expect(next).toBeCalledWith(
+        new CustomError(
+          ErrorType.RetreiveFriendRequestMiddleware,
+          expect.any(Error)
+        )
+      );
+    });
+  });
+
   describe("addFriendToUsersFriendListMiddleware", () => {
     test("adds friendId to users friends list and sets response.locals.userWithNewFriend", async () => {
       expect.assertions(3);
@@ -362,6 +432,55 @@ describe("addFriendMiddlewares", () => {
     });
   });
 
+  describe("getUpdateFriendRequestStatusMiddleware", () => {
+    test("updates friend request status to accepted and sets response.locals.updatedFriendRequest", async () => {
+      expect.assertions(3);
+
+      const _id = "id";
+      const friendRequest = {
+        _id
+      };
+      const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+      const friendRequestModel: any = { findByIdAndUpdate };
+      const request: any = {};
+      const response: any = { locals: { friendRequest } };
+      const next = jest.fn();
+
+      const middleware = getUpdateFriendRequestStatusMiddleware(
+        friendRequestModel
+      );
+      await middleware(request, response, next);
+
+      expect(findByIdAndUpdate).toBeCalledWith(
+        friendRequest._id,
+        {
+          $set: { status: FriendRequestStatus.accepted }
+        },
+        { new: true }
+      );
+      expect(response.locals.updatedFriendRequest).toBeDefined();
+      expect(next).toBeCalledWith();
+    });
+
+    test("throws UpdateFriendRequestStatusMiddleware error on middleware failure", async () => {
+      expect.assertions(1);
+
+      const request: any = {};
+      const response: any = {};
+      const next = jest.fn();
+
+      const middleware = getUpdateFriendRequestStatusMiddleware({} as any);
+      await middleware(request, response, next);
+
+      expect(next).toBeCalledWith(
+        new CustomError(
+          ErrorType.UpdateFriendRequestStatusMiddleware,
+          expect.any(Error)
+        )
+      );
+    });
+  });
+
   describe("sendUserWithNewFriendMiddleware", () => {
     test("sends user with new friends", () => {
       expect.assertions(3);
@@ -396,10 +515,10 @@ describe("addFriendMiddlewares", () => {
     });
   });
 
-  test("middlewares are defined in the correct order", () => {
-    expect.assertions(8);
+  test("are in the correct order", () => {
+    expect.assertions(10);
 
-    expect(addFriendMiddlewares.length).toEqual(7);
+    expect(addFriendMiddlewares.length).toEqual(9);
     expect(addFriendMiddlewares[0]).toEqual(
       addFriendParamsValidationMiddleware
     );
@@ -407,9 +526,13 @@ describe("addFriendMiddlewares", () => {
     expect(addFriendMiddlewares[2]).toEqual(retreiveUserMiddleware);
     expect(addFriendMiddlewares[3]).toEqual(isAlreadyAFriendMiddleware);
     expect(addFriendMiddlewares[4]).toEqual(retreiveFriendMiddleware);
-    expect(addFriendMiddlewares[5]).toEqual(
+    expect(addFriendMiddlewares[5]).toEqual(retreiveFriendRequestMiddleware);
+    expect(addFriendMiddlewares[6]).toEqual(
       addFriendToUsersFriendListMiddleware
     );
-    expect(addFriendMiddlewares[6]).toEqual(sendUserWithNewFriendMiddleware);
+    expect(addFriendMiddlewares[7]).toEqual(
+      updateFriendRequestStatusMiddleware
+    );
+    expect(addFriendMiddlewares[8]).toEqual(sendUserWithNewFriendMiddleware);
   });
 });
