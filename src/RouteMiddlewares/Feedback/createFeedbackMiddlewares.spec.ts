@@ -310,7 +310,7 @@ describe(`sendFormattedFeedbackMiddleware`, () => {
 });
 
 describe(`createFeedbackMiddlewares`, () => {
-  test("that createFeedback middlewares are defined in the correct order", async () => {
+  test("are defined in the correct order", async () => {
     expect.assertions(5);
 
     expect(createFeedbackMiddlewares.length).toEqual(4);

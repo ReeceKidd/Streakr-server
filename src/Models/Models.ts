@@ -7,5 +7,6 @@ export enum Models {
   CompleteGroupMemberStreakTask = "CompleteGroupMemberStreakTask",
   GroupStreak = "GroupStreak",
   StreakTrackingEvent = "StreakTrackingEvent",
-  GroupMemberStreak = "GroupMemberStreak"
+  GroupMemberStreak = "GroupMemberStreak",
+  FriendRequest = "FriendRequest"
 }
