@@ -9,5 +9,6 @@ export enum Collections {
   CompleteGroupMemberStreakTasks = "CompleteGroupMemberStreakTasks",
   System = "System",
   StreakTrackingEvents = "StreakTrackingEvents",
-  GroupMemberStreaks = "GroupMemberStreaks"
+  GroupMemberStreaks = "GroupMemberStreaks",
+  FriendRequests = "FriendRequests"
 }

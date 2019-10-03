@@ -22,7 +22,7 @@ export const friendRequestSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    collection: Collections.Feedback
+    collection: Collections.FriendRequests
   }
 );
 
