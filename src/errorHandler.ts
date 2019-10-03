@@ -9,11 +9,14 @@ export const errorHandler = (
   next: NextFunction
 ) => {
   console.log(error);
+  if (error.httpStatusCode === ResponseCodes.warning) {
+    return response.status(error.httpStatusCode).send({
+      ...error,
+      message: "Internal server error"
+    });
+  }
   if (error.httpStatusCode) {
     return response.status(error.httpStatusCode).send(error);
   }
-  return response.status(ResponseCodes.warning).send({
-    ...error,
-    message: "Internal server error"
-  });
+  return response.status(ResponseCodes.warning).send(error);
 };
