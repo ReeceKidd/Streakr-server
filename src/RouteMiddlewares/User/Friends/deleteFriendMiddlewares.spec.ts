@@ -218,12 +218,15 @@ describe("deleteFriendMiddlewares", () => {
   });
 
   describe("doesFriendExistMiddleware", () => {
-    test("calls next() if frined exists", () => {
+    test("calls next() if friend exists", () => {
       expect.assertions(1);
 
       const friendId = "friendId";
+      const friend = {
+        friendId
+      };
       const user = {
-        friends: [friendId]
+        friends: [friend]
       };
       const request: any = { params: { friendId } };
       const response: any = { locals: { user } };

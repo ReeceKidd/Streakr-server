@@ -544,7 +544,7 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-48`);
-    expect(message).toBe("Friend request does not exist.");
+    expect(message).toBe("Friend request must exist to add friend.");
     expect(httpStatusCode).toBe(400);
   });
 

@@ -11,7 +11,9 @@ import {
 } from "../../../Models/FriendRequest";
 import {
   FriendRequestStatus,
-  FriendRequest
+  FriendRequest,
+  User,
+  Friend
 } from "@streakoid/streakoid-sdk/lib";
 
 const addFriendParamsValidationSchema = {
@@ -75,11 +77,11 @@ export const isAlreadyAFriendMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const user = response.locals.user;
-    const { friendId } = request.body;
+    const user: User = response.locals.user;
+    const friendId: string = request.body.friendId;
 
     const isExistingFriend = user.friends.find(
-      (friend: string) => friend === friendId
+      friend => friend.friendId == friendId
     );
     if (isExistingFriend) {
       throw new CustomError(ErrorType.IsAlreadyAFriend);
@@ -96,7 +98,7 @@ export const getRetreiveFriendMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { friendId } = request.body;
-    const friend = await userModel.findOne({ _id: friendId }).lean();
+    const friend: User = await userModel.findOne({ _id: friendId }).lean();
     if (!friend) {
       throw new CustomError(ErrorType.FriendDoesNotExist);
     }
@@ -143,15 +145,19 @@ export const getAddFriendToUsersFriendListMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { userId } = request.params;
-    const { friendId } = request.body;
+    const friend: User = response.locals.friend;
+    const formattedFriend: Friend = {
+      friendId: friend._id,
+      username: friend.username
+    };
     const userWithNewFriend = await userModel.findByIdAndUpdate(
       userId,
       {
-        $addToSet: { friends: friendId }
+        $addToSet: { friends: formattedFriend }
       },
       { new: true }
     );
-    response.locals.userWithNewFriend = userWithNewFriend;
+    response.locals.updatedFriends = userWithNewFriend!.friends;
     next();
   } catch (err) {
     next(new CustomError(ErrorType.AddFriendToUsersFriendListMiddleware, err));
@@ -191,8 +197,8 @@ export const sendUserWithNewFriendMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const { userWithNewFriend } = response.locals;
-    return response.status(ResponseCodes.created).send(userWithNewFriend);
+    const { updatedFriends } = response.locals;
+    return response.status(ResponseCodes.created).send(updatedFriends);
   } catch (err) {
     next(new CustomError(ErrorType.SendUserWithNewFriendMiddleware, err));
   }

@@ -6,6 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from "../../../SharedMiddle
 import { userModel, UserModel } from "../../../Models/User";
 import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
+import { User } from "@streakoid/streakoid-sdk/lib";
 
 const deleteFriendParamsValidationSchema = {
   userId: Joi.string()
@@ -53,9 +54,9 @@ export const doesFriendExistMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const { friendId } = request.params;
-    const user: UserModel = response.locals.user;
-    const friend = user.friends.find((friend: string) => friend === friendId);
+    const friendId: string = request.params.friendId;
+    const user: User = response.locals.user;
+    const friend = user.friends.find(friend => friend.friendId == friendId);
     if (!friend) {
       throw new CustomError(ErrorType.DeleteUserFriendDoesNotExist);
     }

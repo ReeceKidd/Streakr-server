@@ -45,52 +45,14 @@ export const getRetreiveUserMiddleware = (
 
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
-export const getRetreiveFriendsMiddleware = (
-  userModel: mongoose.Model<UserModel>
-) => async (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { user } = response.locals;
-    const { friends } = user;
-    response.locals.friends = await userModel.find({ _id: friends });
-    next();
-  } catch (err) {
-    if (err instanceof CustomError) next(err);
-    else next(new CustomError(ErrorType.RetreiveFriendsMiddleware, err));
-  }
-};
-
-export const retreiveFriendsMiddleware = getRetreiveFriendsMiddleware(
-  userModel
-);
-
-export const formatFriendsMiddleware = (
+export const sendFriendsMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
-    const friends: { _id: string; username: string }[] =
-      response.locals.friends;
-    response.locals.formattedFriends = friends.map(friend => {
-      return {
-        username: friend.username,
-        _id: friend._id
-      };
-    });
-    next();
-  } catch (err) {
-    next(new CustomError(ErrorType.FormatFriendsMiddleware, err));
-  }
-};
-
-export const sendFormattedFriendsMiddleware = (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const { formattedFriends } = response.locals;
-    return response.status(ResponseCodes.success).send(formattedFriends);
+    const friends = response.locals.user.friends;
+    return response.status(ResponseCodes.success).send(friends);
   } catch (err) {
     next(new CustomError(ErrorType.SendFormattedFriendsMiddleware, err));
   }
@@ -99,7 +61,5 @@ export const sendFormattedFriendsMiddleware = (
 export const getFriendsMiddlewares = [
   getFriendsParamsValidationMiddleware,
   retreiveUserMiddleware,
-  retreiveFriendsMiddleware,
-  formatFriendsMiddleware,
-  sendFormattedFriendsMiddleware
+  sendFriendsMiddleware
 ];

@@ -217,7 +217,15 @@ describe("addFriendMiddlewares", () => {
       expect.assertions(1);
 
       const friendId = "friendId";
-      const friends = ["friend1", "friend2", "friend3"];
+      const friend1 = {
+        friendId: "friend1",
+        username: "friend1"
+      };
+      const friend2 = {
+        friendId: "friend2",
+        username: "friend2"
+      };
+      const friends = [friend1, friend2];
       const user = {
         friends
       };
@@ -235,7 +243,11 @@ describe("addFriendMiddlewares", () => {
       expect.assertions(1);
 
       const friendId = "friend1";
-      const friends = ["friend1", "friend2", "friend3"];
+      const friend1 = {
+        friendId,
+        username: "friend"
+      };
+      const friends = [friend1];
       const user = {
         friends
       };
@@ -393,10 +405,18 @@ describe("addFriendMiddlewares", () => {
 
       const userId = "userId";
       const friendId = "friendId";
-      const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+      const username = "username";
+      const friend = {
+        _id: friendId,
+        username,
+        otherKey: "otherKey"
+      };
+      const findByIdAndUpdate = jest
+        .fn()
+        .mockResolvedValue({ friends: [friend] });
       const userModel: any = { findByIdAndUpdate };
-      const request: any = { params: { userId }, body: { friendId } };
-      const response: any = { locals: {} };
+      const request: any = { params: { userId } };
+      const response: any = { locals: { friend } };
       const next = jest.fn();
 
       const middleware = getAddFriendToUsersFriendListMiddleware(userModel);
@@ -405,11 +425,11 @@ describe("addFriendMiddlewares", () => {
       expect(findByIdAndUpdate).toBeCalledWith(
         userId,
         {
-          $addToSet: { friends: friendId }
+          $addToSet: { friends: { friendId, username } }
         },
         { new: true }
       );
-      expect(response.locals.userWithNewFriend).toBeDefined();
+      expect(response.locals.updatedFriends).toBeDefined();
       expect(next).toBeCalledWith();
     });
 
@@ -482,20 +502,20 @@ describe("addFriendMiddlewares", () => {
   });
 
   describe("sendUserWithNewFriendMiddleware", () => {
-    test("sends user with new friends", () => {
+    test("sends updated friends list", () => {
       expect.assertions(3);
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
-      const userWithNewFriend = { _id: "abc" };
+      const updatedFriends = [{ friendId: "friendId", username: "username" }];
       const request: any = {};
-      const response: any = { locals: { userWithNewFriend }, status };
+      const response: any = { locals: { updatedFriends }, status };
       const next = jest.fn();
 
       sendUserWithNewFriendMiddleware(request, response, next);
 
       expect(next).not.toBeCalled();
       expect(status).toBeCalledWith(201);
-      expect(send).toBeCalledWith(userWithNewFriend);
+      expect(send).toBeCalledWith(updatedFriends);
     });
 
     test("calls next with SendUserWithNewFriendMiddleware error on middleware failure", async () => {

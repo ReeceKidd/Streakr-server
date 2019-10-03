@@ -603,7 +603,7 @@ export class CustomError extends Error {
       case ErrorType.FriendRequestDoesNotExist: {
         return {
           code: `${ResponseCodes.badRequest}-48`,
-          message: "Friend request does not exist.",
+          message: "Friend request must exist to add friend.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }

@@ -3,10 +3,7 @@ import {
   getRetreiveUserMiddleware,
   retreiveUserMiddleware,
   getFriendsParamsValidationMiddleware,
-  getRetreiveFriendsMiddleware,
-  sendFormattedFriendsMiddleware,
-  retreiveFriendsMiddleware,
-  formatFriendsMiddleware
+  sendFriendsMiddleware
 } from "./getFriendsMiddlewares";
 import { CustomError, ErrorType } from "../../../customError";
 
@@ -113,98 +110,24 @@ describe(`getFriendsMiddlewares`, () => {
     });
   });
 
-  describe("retreiveFriendsMiddleware", () => {
-    test("retreives users for userId with a regex search on friends.username", async () => {
-      expect.assertions(3);
-
-      const find = jest.fn(() =>
-        Promise.resolve([{ _id: "123", username: "username" }])
-      );
-      const userModel = { find };
-      const friends = ["123", "abc", "xyz"];
-      const user = {
-        friends
-      };
-      const request: any = {};
-      const response: any = {
-        locals: { user }
-      };
-      const next = jest.fn();
-      const middleware = getRetreiveFriendsMiddleware(userModel as any);
-
-      await middleware(request, response, next);
-
-      expect(find).toBeCalledWith({
-        _id: friends
-      });
-      expect(response.locals.friends).toBeDefined();
-      expect(next).toBeCalledWith();
-    });
-
-    test("calls next with RetreiveFriendsMiddleware error on middleware failure", async () => {
-      expect.assertions(1);
-
-      const request: any = {};
-      const response: any = {};
-      const next = jest.fn();
-      const middleware = getRetreiveFriendsMiddleware({} as any);
-
-      await middleware(request, response, next);
-
-      expect(next).toBeCalledWith(
-        new CustomError(ErrorType.RetreiveFriendsMiddleware, expect.any(Error))
-      );
-    });
-  });
-
-  describe("formatFriendsMiddleware", () => {
-    test("sets response.locals.formattedFriends with formatted user objects", () => {
-      expect.assertions(2);
-
-      const _id = "_id";
-      const username = "username";
-      const friends = [{ _id, username, password: "password" }];
-
-      const request: any = {};
-      const response: any = { locals: { friends } };
-      const next = jest.fn();
-
-      formatFriendsMiddleware(request, response, next);
-
-      expect(response.locals.formattedFriends).toEqual([{ _id, username }]);
-      expect(next).toBeCalledWith();
-    });
-
-    test("throws FormatFriendsMiddleware error on middleware failure", () => {
-      expect.assertions(1);
-
-      const request: any = {};
-      const response: any = {};
-      const next = jest.fn();
-
-      formatFriendsMiddleware(request, response, next);
-
-      expect(next).toBeCalledWith(
-        new CustomError(ErrorType.FormatFriendsMiddleware, expect.any(Error))
-      );
-    });
-  });
-
-  describe("sendFormattedFriendsMiddleware", () => {
-    test("sends users in response", () => {
+  describe("sendFriendsMiddleware", () => {
+    test("sends friends in response", () => {
       expect.assertions(3);
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const request: any = {};
-      const formattedFriends = [{ _id: "123", username: "username" }];
-      const response: any = { locals: { formattedFriends }, status };
+      const friends = [{ friendId: "123", username: "username" }];
+      const user = {
+        friends
+      };
+      const response: any = { locals: { user }, status };
       const next = jest.fn();
 
-      sendFormattedFriendsMiddleware(request, response, next);
+      sendFriendsMiddleware(request, response, next);
 
       expect(next).not.toBeCalled();
       expect(status).toBeCalledWith(200);
-      expect(send).toBeCalledWith(formattedFriends);
+      expect(send).toBeCalledWith(friends);
     });
 
     test("calls next with SendFormattedFriendsMiddleware on middleware failure", () => {
@@ -214,7 +137,7 @@ describe(`getFriendsMiddlewares`, () => {
       const request: any = {};
       const next = jest.fn();
 
-      sendFormattedFriendsMiddleware(request, response, next);
+      sendFriendsMiddleware(request, response, next);
 
       expect(next).toBeCalledWith(
         new CustomError(
@@ -226,16 +149,14 @@ describe(`getFriendsMiddlewares`, () => {
   });
 
   test("middlewares are defined in the correct order", () => {
-    expect.assertions(6);
+    expect.assertions(4);
 
-    expect(getFriendsMiddlewares.length).toBe(5);
+    expect(getFriendsMiddlewares.length).toBe(3);
 
     expect(getFriendsMiddlewares[0]).toEqual(
       getFriendsParamsValidationMiddleware
     );
     expect(getFriendsMiddlewares[1]).toEqual(retreiveUserMiddleware);
-    expect(getFriendsMiddlewares[2]).toEqual(retreiveFriendsMiddleware);
-    expect(getFriendsMiddlewares[3]).toEqual(formatFriendsMiddleware);
-    expect(getFriendsMiddlewares[4]).toEqual(sendFormattedFriendsMiddleware);
+    expect(getFriendsMiddlewares[2]).toEqual(sendFriendsMiddleware);
   });
 });
