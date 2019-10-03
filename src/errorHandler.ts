@@ -12,5 +12,8 @@ export const errorHandler = (
   if (error.httpStatusCode) {
     return response.status(error.httpStatusCode).send(error);
   }
-  return response.status(ResponseCodes.warning).send(error);
+  return response.status(ResponseCodes.warning).send({
+    ...error,
+    message: "Internal server error"
+  });
 };
