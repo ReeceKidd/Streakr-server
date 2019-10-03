@@ -3,11 +3,17 @@ import {
   friendRequestRequestBodyValidationMiddleware,
   getPatchFriendRequestMiddleware,
   patchFriendRequestMiddleware,
-  sendUpdatedFriendRequestMiddleware,
-  friendRequestParamsValidationMiddleware
+  sendUpdatedPopulatedFriendRequestMiddleware,
+  friendRequestParamsValidationMiddleware,
+  populateUpdatedFriendRequestMiddleware,
+  getPopulateUpdatedFriendRequestMiddleware
 } from "./patchFriendRequestMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import {
+  FriendRequest,
+  FriendRequestStatus
+} from "@streakoid/streakoid-sdk/lib";
 
 describe("friendRequestParamsValidationMiddleware", () => {
   test("sends correct error response when friendRequestId is not defined", () => {
@@ -180,44 +186,102 @@ describe("patchFriendRequestMiddleware", () => {
   });
 });
 
-describe("sendUpdatedPatchMiddleware", () => {
-  const ERROR_MESSAGE = "error";
-  const updatedFriendRequest = {
-    userId: "abc",
-    streakName: "Daily Spanish",
-    streakDescription: "Practice spanish every day",
-    startDate: new Date()
-  };
+describe("populateFriendRequestMiddleware", () => {
+  test("sets response.locals.updatedPopulatedFriendRequest and calls next", async () => {
+    expect.assertions(5);
+    const _id = "_id";
+    const status = FriendRequestStatus.pending;
+    const requesteeId = "requesteeId";
+    const requesterId = "requesterId";
+    const createdAt = "createdAt";
+    const updatedAt = "updatedAt";
+    const updatedFriendRequest: FriendRequest = {
+      _id,
+      status,
+      requesteeId,
+      requesterId,
+      createdAt,
+      updatedAt
+    };
+    const username = "username";
+    const findById = jest.fn(() => Promise.resolve({ _id, username }));
+    const userModel = { findById };
+    const request: any = {};
+    const response: any = { locals: { updatedFriendRequest } };
+    const next = jest.fn();
+    const populateFriendRequestMiddleware = getPopulateUpdatedFriendRequestMiddleware(
+      userModel as any
+    );
+    await populateFriendRequestMiddleware(request, response, next);
 
+    expect(response.locals.updatedPopulatedFriendRequest).toBeDefined();
+    const updatedPopulatedFriendRequest =
+      response.locals.updatedPopulatedFriendRequest;
+    expect(updatedPopulatedFriendRequest.requestee._id).toBeDefined();
+    expect(updatedPopulatedFriendRequest.requestee.username).toBeDefined();
+    expect(updatedPopulatedFriendRequest.requester._id).toBeDefined();
+    expect(updatedPopulatedFriendRequest.requester.username).toBeDefined();
+  });
+
+  test("calls next with PopulateFriendRequestMiddleware error on middleware failure", async () => {
+    expect.assertions(1);
+    const friendRequestModel = {};
+    const request: any = {};
+    const response: any = {};
+    const next = jest.fn();
+    const middleware = getPopulateUpdatedFriendRequestMiddleware(
+      friendRequestModel as any
+    );
+
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.PopulateFriendRequestMiddleware,
+        expect.any(Error)
+      )
+    );
+  });
+});
+
+describe("sendUpdatedPopulatedFriendRequestMiddleware", () => {
   test("sends updatedFriendRequest", () => {
     expect.assertions(4);
+    const updatedPopulatedFriendRequest = {
+      _id: "_id",
+      requestee: {
+        _id: "_id",
+        username: "requestee"
+      },
+      requester: {
+        _id: "_id",
+        username: "requester"
+      }
+    };
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-    const friendRequestResponseLocals = { updatedFriendRequest };
+    const friendRequestResponseLocals = { updatedPopulatedFriendRequest };
     const response: any = { locals: friendRequestResponseLocals, status };
     const request: any = {};
     const next = jest.fn();
     const updatedResourceResponseCode = 200;
 
-    sendUpdatedFriendRequestMiddleware(request, response, next);
+    sendUpdatedPopulatedFriendRequestMiddleware(request, response, next);
 
     expect(response.locals.user).toBeUndefined();
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(updatedResourceResponseCode);
-    expect(send).toBeCalledWith(updatedFriendRequest);
+    expect(send).toBeCalledWith(updatedPopulatedFriendRequest);
   });
 
   test("calls next with SendUpdatedFriendRequestMiddleware error on middleware failure", () => {
     expect.assertions(1);
-    const send = jest.fn(() => {
-      throw new Error(ERROR_MESSAGE);
-    });
-    const status = jest.fn(() => ({ send }));
-    const response: any = { locals: { updatedFriendRequest }, status };
+
+    const response: any = {};
     const request: any = {};
     const next = jest.fn();
 
-    sendUpdatedFriendRequestMiddleware(request, response, next);
+    sendUpdatedPopulatedFriendRequestMiddleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
@@ -230,9 +294,9 @@ describe("sendUpdatedPatchMiddleware", () => {
 
 describe("patchFriendRequestMiddlewares", () => {
   test("are defined in the correct order", () => {
-    expect.assertions(5);
+    expect.assertions(6);
 
-    expect(patchFriendRequestMiddlewares.length).toBe(4);
+    expect(patchFriendRequestMiddlewares.length).toBe(5);
     expect(patchFriendRequestMiddlewares[0]).toBe(
       friendRequestParamsValidationMiddleware
     );
@@ -241,7 +305,10 @@ describe("patchFriendRequestMiddlewares", () => {
     );
     expect(patchFriendRequestMiddlewares[2]).toBe(patchFriendRequestMiddleware);
     expect(patchFriendRequestMiddlewares[3]).toBe(
-      sendUpdatedFriendRequestMiddleware
+      populateUpdatedFriendRequestMiddleware
+    );
+    expect(patchFriendRequestMiddlewares[4]).toBe(
+      sendUpdatedPopulatedFriendRequestMiddleware
     );
   });
 });

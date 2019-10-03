@@ -215,7 +215,10 @@ export enum ErrorType {
   UpdateFriendRequestStatusMiddleware,
   SendUpdatedFriendRequestMiddleware,
   PatchFriendRequestMiddleware,
-  UpdatedFriendRequestNotFound
+  UpdatedFriendRequestNotFound,
+  PopulateFriendRequestsMiddleware,
+  PopulateFriendRequestMiddleware,
+  PopulateUpdatedFriendRequestMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -1795,6 +1798,27 @@ export class CustomError extends Error {
       case ErrorType.SendUpdatedFriendRequestMiddleware:
         return {
           code: `${ResponseCodes.warning}-164`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.PopulateFriendRequestsMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-165`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.PopulateFriendRequestMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-166`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.PopulateUpdatedFriendRequestMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-167`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };

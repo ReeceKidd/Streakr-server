@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
-import { Model } from "mongoose";
-import { User, FriendRequestStatus } from "@streakoid/streakoid-sdk/lib";
+import { Model, Mongoose } from "mongoose";
+import {
+  User,
+  FriendRequestStatus,
+  FriendRequest
+} from "@streakoid/streakoid-sdk/lib";
 
 import {
   friendRequestModel,
@@ -115,14 +119,49 @@ export const saveFriendRequestToDatabaseMiddleware = getSaveFriendRequestToDatab
   friendRequestModel
 );
 
-export const sendFriendRequestMiddleware = (
+export const getPopulateFriendRequestMiddleware = (
+  userModel: Model<UserModel>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const friendRequest: FriendRequest = response.locals.friendRequest;
+    const requestee = await userModel.findById(friendRequest.requesteeId);
+    const formattedRequestee = {
+      _id: requestee!._id,
+      username: requestee!.username
+    };
+
+    const requester = await userModel.findById(friendRequest.requesterId);
+    const formattedRequester = {
+      _id: requester!._id,
+      username: requester!.username
+    };
+
+    const populatedFriendRequest = {
+      ...friendRequest,
+      requsteeId: undefined,
+      requesterId: undefined,
+      requestee: formattedRequestee,
+      requester: formattedRequester
+    };
+    response.locals.populatedFriendRequest = populatedFriendRequest;
+    next();
+  } catch (err) {
+    next(new CustomError(ErrorType.PopulateFriendRequestMiddleware, err));
+  }
+};
+
+export const populateFriendRequestMiddleware = getPopulateFriendRequestMiddleware(
+  userModel
+);
+
+export const sendPopulatedFriendRequestMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
-    const { friendRequest } = response.locals;
-    response.status(ResponseCodes.created).send(friendRequest);
+    const { populatedFriendRequest } = response.locals;
+    response.status(ResponseCodes.created).send(populatedFriendRequest);
   } catch (err) {
     next(new CustomError(ErrorType.SendFriendRequestMiddleware, err));
   }
@@ -133,5 +172,6 @@ export const createFriendRequestMiddlewares = [
   retreiveRequesterMiddleware,
   retreiveRequesteeMiddleware,
   saveFriendRequestToDatabaseMiddleware,
-  sendFriendRequestMiddleware
+  populateFriendRequestMiddleware,
+  sendPopulatedFriendRequestMiddleware
 ];

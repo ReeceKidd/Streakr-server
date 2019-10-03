@@ -9,6 +9,8 @@ import {
 } from "../../Models/FriendRequest";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { FriendRequest } from "@streakoid/streakoid-sdk/lib";
+import { UserModel, userModel } from "../../Models/User";
 
 const friendRequestParamsValidationSchema = {
   friendRequestId: Joi.string().required()
@@ -68,14 +70,58 @@ export const patchFriendRequestMiddleware = getPatchFriendRequestMiddleware(
   friendRequestModel
 );
 
-export const sendUpdatedFriendRequestMiddleware = (
+export const getPopulateUpdatedFriendRequestMiddleware = (
+  userModel: mongoose.Model<UserModel>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const updatedFriendRequest: FriendRequest =
+      response.locals.updatedFriendRequest;
+    const requestee = await userModel.findById(
+      updatedFriendRequest.requesteeId
+    );
+    const formattedRequestee = {
+      _id: requestee!._id,
+      username: requestee!.username
+    };
+
+    const requester = await userModel.findById(
+      updatedFriendRequest.requesterId
+    );
+    const formattedRequester = {
+      _id: requester!._id,
+      username: requester!.username
+    };
+
+    const updatedPopulatedFriendRequest = {
+      ...updatedFriendRequest,
+      requsteeId: undefined,
+      requesterId: undefined,
+      requestee: formattedRequestee,
+      requester: formattedRequester
+    };
+    response.locals.updatedPopulatedFriendRequest = updatedPopulatedFriendRequest;
+    next();
+  } catch (err) {
+    next(
+      new CustomError(ErrorType.PopulateUpdatedFriendRequestMiddleware, err)
+    );
+  }
+};
+
+export const populateUpdatedFriendRequestMiddleware = getPopulateUpdatedFriendRequestMiddleware(
+  userModel
+);
+
+export const sendUpdatedPopulatedFriendRequestMiddleware = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
-    const { updatedFriendRequest } = response.locals;
-    return response.status(ResponseCodes.success).send(updatedFriendRequest);
+    const { updatedPopulatedFriendRequest } = response.locals;
+    return response
+      .status(ResponseCodes.success)
+      .send(updatedPopulatedFriendRequest);
   } catch (err) {
     next(new CustomError(ErrorType.SendUpdatedFriendRequestMiddleware, err));
   }
@@ -85,5 +131,6 @@ export const patchFriendRequestMiddlewares = [
   friendRequestParamsValidationMiddleware,
   friendRequestRequestBodyValidationMiddleware,
   patchFriendRequestMiddleware,
-  sendUpdatedFriendRequestMiddleware
+  populateUpdatedFriendRequestMiddleware,
+  sendUpdatedPopulatedFriendRequestMiddleware
 ];
