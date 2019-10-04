@@ -50,11 +50,9 @@ export const getPatchFriendRequestMiddleware = (
   try {
     const { friendRequestId } = request.params;
     const keysToUpdate = request.body;
-    const updatedFriendRequest = await friendRequestModel.findByIdAndUpdate(
-      friendRequestId,
-      { ...keysToUpdate },
-      { new: true }
-    );
+    const updatedFriendRequest = await friendRequestModel
+      .findByIdAndUpdate(friendRequestId, { ...keysToUpdate }, { new: true })
+      .lean();
     if (!updatedFriendRequest) {
       throw new CustomError(ErrorType.UpdatedFriendRequestNotFound);
     }
@@ -94,7 +92,7 @@ export const getPopulateUpdatedFriendRequestMiddleware = (
 
     const updatedPopulatedFriendRequest = {
       ...updatedFriendRequest,
-      requsteeId: undefined,
+      requesteeId: undefined,
       requesterId: undefined,
       requestee: formattedRequestee,
       requester: formattedRequester

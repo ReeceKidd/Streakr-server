@@ -9,7 +9,7 @@ import {
   FriendRequestModel,
   friendRequestModel
 } from "../../Models/FriendRequest";
-import { User, FriendRequest } from "@streakoid/streakoid-sdk/lib";
+import { FriendRequest } from "@streakoid/streakoid-sdk/lib";
 import { UserModel, userModel } from "../../Models/User";
 
 const getFriendRequestsQueryValidationSchema = {
@@ -52,7 +52,8 @@ export const getFindFriendRequestsMiddleware = (
       query.status = status;
     }
 
-    response.locals.friendRequests = await friendRequestModel.find(query);
+    const friendRequests = await friendRequestModel.find(query).lean();
+    response.locals.friendRequests = friendRequests;
     next();
   } catch (err) {
     next(new CustomError(ErrorType.FindFriendRequestsMiddleware, err));
@@ -70,13 +71,17 @@ export const getPopulateFriendRequestsMiddleware = (
     const friendRequests: FriendRequest[] = response.locals.friendRequests;
     const populatedFriendRequests = await Promise.all(
       friendRequests.map(async friendRequest => {
-        const requestee = await userModel.findById(friendRequest.requesteeId);
+        const requestee = await userModel
+          .findById(friendRequest.requesteeId)
+          .lean();
         const formattedRequestee = {
           _id: requestee!._id,
           username: requestee!.username
         };
 
-        const requester = await userModel.findById(friendRequest.requesterId);
+        const requester = await userModel
+          .findById(friendRequest.requesterId)
+          .lean();
         const formattedRequester = {
           _id: requester!._id,
           username: requester!.username
@@ -84,9 +89,9 @@ export const getPopulateFriendRequestsMiddleware = (
 
         return {
           ...friendRequest,
-          requsteeId: undefined,
-          requesterId: undefined,
+          requesteeId: undefined,
           requestee: formattedRequestee,
+          requesterId: undefined,
           requester: formattedRequester
         };
       })

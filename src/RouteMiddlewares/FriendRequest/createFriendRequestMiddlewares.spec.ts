@@ -331,7 +331,8 @@ describe("populateFriendRequestMiddleware", () => {
       updatedAt
     };
     const username = "username";
-    const findById = jest.fn(() => Promise.resolve({ _id, username }));
+    const lean = jest.fn().mockResolvedValue({ username, _id });
+    const findById = jest.fn(() => ({ lean }));
     const userModel = { findById };
     const request: any = {};
     const response: any = { locals: { friendRequest } };

@@ -124,23 +124,25 @@ export const getPopulateFriendRequestMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const friendRequest: FriendRequest = response.locals.friendRequest;
-    const requestee = await userModel.findById(friendRequest.requesteeId);
+    const requestee = await userModel
+      .findById(friendRequest.requesteeId)
+      .lean();
     const formattedRequestee = {
       _id: requestee!._id,
       username: requestee!.username
     };
-
-    const requester = await userModel.findById(friendRequest.requesterId);
+    const requester = await userModel
+      .findById(friendRequest.requesterId)
+      .lean();
     const formattedRequester = {
       _id: requester!._id,
       username: requester!.username
     };
-
     const populatedFriendRequest = {
       ...friendRequest,
-      requsteeId: undefined,
-      requesterId: undefined,
+      requesteeId: undefined,
       requestee: formattedRequestee,
+      requesterId: undefined,
       requester: formattedRequester
     };
     response.locals.populatedFriendRequest = populatedFriendRequest;

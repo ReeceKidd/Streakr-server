@@ -103,7 +103,8 @@ describe("patchFriendRequestMiddleware", () => {
     };
     const response: any = { locals: {} };
     const next = jest.fn();
-    const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+    const lean = jest.fn().mockResolvedValue(true);
+    const findByIdAndUpdate = jest.fn(() => ({ lean }));
     const friendRequestModel = {
       findByIdAndUpdate
     };
@@ -122,23 +123,18 @@ describe("patchFriendRequestMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("throws UpdatedFriendRequestNotFound error when solo streak is not found", async () => {
+  test("throws UpdatedFriendRequestNotFound error when friend request is not found", async () => {
     expect.assertions(1);
     const friendRequestId = "abc123";
-    const userId = "123cde";
-    const streakName = "Daily programming";
-    const streakDescription = "Do one hour of programming each day";
+
     const request: any = {
       params: { friendRequestId },
-      body: {
-        userId,
-        streakName,
-        streakDescription
-      }
+      body: {}
     };
     const response: any = { locals: {} };
     const next = jest.fn();
-    const findByIdAndUpdate = jest.fn(() => Promise.resolve(false));
+    const lean = jest.fn().mockResolvedValue(false);
+    const findByIdAndUpdate = jest.fn(() => ({ lean }));
     const friendRequestModel = {
       findByIdAndUpdate
     };

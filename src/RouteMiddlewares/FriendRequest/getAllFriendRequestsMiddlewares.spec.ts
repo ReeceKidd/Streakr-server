@@ -107,7 +107,8 @@ describe("getFriendRequestsValidationMiddleware", () => {
 describe("findFriendRequestsMiddleware", () => {
   test("queries database with just requesterId and sets response.locals.friendRequests", async () => {
     expect.assertions(3);
-    const find = jest.fn(() => Promise.resolve(true));
+    const lean = jest.fn().mockResolvedValue(true);
+    const find = jest.fn(() => ({ lean }));
     const friendRequestModel = {
       find
     };
@@ -128,7 +129,8 @@ describe("findFriendRequestsMiddleware", () => {
 
   test("queries database with just requesteeId and sets response.locals.friendRequests", async () => {
     expect.assertions(3);
-    const find = jest.fn(() => Promise.resolve(true));
+    const lean = jest.fn().mockResolvedValue(true);
+    const find = jest.fn(() => ({ lean }));
     const friendRequestModel = {
       find
     };
@@ -149,7 +151,8 @@ describe("findFriendRequestsMiddleware", () => {
 
   test("queries database with just status and sets response.locals.friendRequests", async () => {
     expect.assertions(3);
-    const find = jest.fn(() => Promise.resolve(true));
+    const lean = jest.fn().mockResolvedValue(true);
+    const find = jest.fn(() => ({ lean }));
     const friendRequestModel = {
       find
     };
@@ -205,7 +208,8 @@ describe("populateFriendRequestsMiddleware", () => {
     };
     const friendRequests: FriendRequest[] = [friendRequest];
     const username = "username";
-    const findById = jest.fn(() => Promise.resolve({ _id, username }));
+    const lean = jest.fn().mockResolvedValue({ username, _id });
+    const findById = jest.fn(() => ({ lean }));
     const userModel = { findById };
     const request: any = {};
     const response: any = { locals: { friendRequests } };
