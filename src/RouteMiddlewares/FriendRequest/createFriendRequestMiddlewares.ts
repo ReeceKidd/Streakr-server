@@ -145,7 +145,6 @@ export const getPopulateFriendRequestMiddleware = (
       requesterId: undefined,
       requester: formattedRequester
     };
-    console.log(populatedFriendRequest);
     response.locals.populatedFriendRequest = populatedFriendRequest;
     next();
   } catch (err) {

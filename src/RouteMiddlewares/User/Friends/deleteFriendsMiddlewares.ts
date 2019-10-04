@@ -7,6 +7,7 @@ import { userModel, UserModel } from "../../../Models/User";
 import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
 import { User } from "@streakoid/streakoid-sdk/lib";
+import { resolve } from "path";
 
 const deleteFriendParamsValidationSchema = {
   userId: Joi.string()
@@ -74,13 +75,20 @@ export const getDeleteFriendMiddleware = (
   userModel: mongoose.Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
+    const user: User = response.locals.user;
+    const { friends } = user;
     const { userId, friendId } = request.params;
-    const updatedUser = await userModel.findByIdAndUpdate(userId, {
-      $pull: {
-        friends: friendId
-      }
-    });
-    response.locals.updatedUser = updatedUser;
+    const updatedFriends = friends.filter(
+      friend => friend.friendId != friendId
+    );
+    await userModel
+      .findByIdAndUpdate(userId, {
+        $set: {
+          friends: updatedFriends
+        }
+      })
+      .lean();
+    response.locals.updatedFriends = updatedFriends;
     next();
   } catch (err) {
     next(new CustomError(ErrorType.DeleteFriendMiddleware, err));
@@ -95,7 +103,8 @@ export const sendFriendDeletedResponseMiddleware = (
   next: NextFunction
 ) => {
   try {
-    return response.status(ResponseCodes.deleted).send();
+    const { updatedFriends } = response.locals;
+    return response.status(ResponseCodes.success).send(updatedFriends);
   } catch (err) {
     next(new CustomError(ErrorType.SendUserDeletedResponseMiddleware, err));
   }

@@ -51,7 +51,7 @@ export const sendFriendsMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const friends = response.locals.user.friends;
+    const { friends } = response.locals.user;
     return response.status(ResponseCodes.success).send(friends);
   } catch (err) {
     next(new CustomError(ErrorType.SendFormattedFriendsMiddleware, err));

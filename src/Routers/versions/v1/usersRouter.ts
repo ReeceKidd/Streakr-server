@@ -29,7 +29,7 @@ usersRouter.get(`/:${userId}/friends`, ...getFriendsMiddlewares);
 
 usersRouter.post(`/:${userId}/friends`, ...addFriendMiddlewares);
 
-usersRouter.delete(
+usersRouter.patch(
   `/:${userId}/friends/:${friendId}`,
   ...deleteFriendMiddlewares
 );
