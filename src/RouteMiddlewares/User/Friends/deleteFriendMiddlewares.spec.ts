@@ -279,21 +279,25 @@ describe("deleteFriendMiddlewares", () => {
 
       const userId = "userId";
       const friendId = "friendId";
-
-      const findByIdAndUpdate = jest.fn().mockResolvedValue({ _id: "1234" });
+      const friends: any = [];
+      const user = {
+        friends
+      };
+      const lean = jest.fn().mockResolvedValue([]);
+      const findByIdAndUpdate = jest.fn(() => ({ lean }));
       const userModel: any = { findByIdAndUpdate };
 
       const request: any = { params: { userId, friendId } };
-      const response: any = { locals: {} };
+      const response: any = { locals: { user } };
       const next = jest.fn();
 
       const middleware = getDeleteFriendMiddleware(userModel);
       await middleware(request, response, next);
 
       expect(findByIdAndUpdate).toBeCalledWith(userId, {
-        $pull: { friends: friendId }
+        $set: { friends: [] }
       });
-      expect(response.locals.updatedUser).toEqual({ _id: "1234" });
+      expect(response.locals.updatedFriends).toEqual([]);
       expect(next).toBeCalledWith();
     });
 
@@ -314,17 +318,19 @@ describe("deleteFriendMiddlewares", () => {
   });
 
   describe("sendUserDeletedResponseMiddleware", () => {
-    test("responds with successful deletion", () => {
-      expect.assertions(2);
+    test("sends updated friends array", () => {
+      expect.assertions(3);
+      const updatedFriends: any = [];
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
       const request: any = {};
-      const response: any = { status };
+      const response: any = { status, locals: { updatedFriends } };
       const next = jest.fn();
 
       sendFriendDeletedResponseMiddleware(request, response, next);
 
-      expect(status).toBeCalledWith(204);
+      expect(status).toBeCalledWith(200);
+      expect(send).toBeCalledWith(updatedFriends);
       expect(next).not.toBeCalled();
     });
 
