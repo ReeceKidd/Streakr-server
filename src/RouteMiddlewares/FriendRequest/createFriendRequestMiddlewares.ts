@@ -123,7 +123,7 @@ export const getPopulateFriendRequestMiddleware = (
   userModel: Model<UserModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const friendRequest: FriendRequest = response.locals.friendRequest;
+    const friendRequest: FriendRequest = response.locals.friendRequest.toObject();
     const requestee = await userModel
       .findById(friendRequest.requesteeId)
       .lean();
@@ -145,6 +145,7 @@ export const getPopulateFriendRequestMiddleware = (
       requesterId: undefined,
       requester: formattedRequester
     };
+    console.log(populatedFriendRequest);
     response.locals.populatedFriendRequest = populatedFriendRequest;
     next();
   } catch (err) {

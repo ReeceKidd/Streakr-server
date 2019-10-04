@@ -322,13 +322,18 @@ describe("populateFriendRequestMiddleware", () => {
     const requesterId = "requesterId";
     const createdAt = "createdAt";
     const updatedAt = "updatedAt";
-    const friendRequest: FriendRequest = {
+    let friendRequest: any = {
       _id,
       status,
       requesteeId,
       requesterId,
       createdAt,
       updatedAt
+    };
+    const toObject = jest.fn(() => friendRequest);
+    friendRequest = {
+      ...friendRequest,
+      toObject
     };
     const username = "username";
     const lean = jest.fn().mockResolvedValue({ username, _id });
