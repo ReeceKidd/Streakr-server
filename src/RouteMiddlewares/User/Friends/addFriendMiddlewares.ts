@@ -187,7 +187,6 @@ export const getAddUserToFriendsFriendListMiddleware = (
     );
     next();
   } catch (err) {
-    console.log(err);
     next(new CustomError(ErrorType.AddUserToFriendsFriendListMiddleware, err));
   }
 };
