@@ -16,9 +16,11 @@ import {
 } from "./createGroupStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { GroupStreakType } from "@streakoid/streakoid-sdk/lib";
 
 describe(`createGroupStreakBodyValidationMiddleware`, () => {
   const creatorId = "abcdefgh";
+  const type = GroupStreakType.team;
   const streakName = "Followed our calorie level";
   const streakDescription = "Stuck to our recommended calorie level";
   const numberOfMinutes = 30;
@@ -28,6 +30,7 @@ describe(`createGroupStreakBodyValidationMiddleware`, () => {
 
   const body: GroupStreakRegistrationRequestBody = {
     creatorId,
+    type,
     streakName,
     streakDescription,
     numberOfMinutes,
@@ -71,6 +74,55 @@ describe(`createGroupStreakBodyValidationMiddleware`, () => {
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message: 'child "creatorId" fails because ["creatorId" is required]'
+    });
+    expect(next).not.toBeCalled();
+  });
+
+  test("sends type is missing error", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      body: {
+        ...body,
+        type: undefined
+      }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    createGroupStreakBodyValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message: 'child "type" fails because ["type" is required]'
+    });
+    expect(next).not.toBeCalled();
+  });
+
+  test("sends type is incorrect error", () => {
+    expect.assertions(3);
+    const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
+    const request: any = {
+      body: {
+        ...body,
+        type: "incorrect"
+      }
+    };
+    const response: any = {
+      status
+    };
+    const next = jest.fn();
+
+    createGroupStreakBodyValidationMiddleware(request, response, next);
+
+    expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+    expect(send).toBeCalledWith({
+      message:
+        'child "type" fails because ["type" must be one of [competition, team]]'
     });
     expect(next).not.toBeCalled();
   });
@@ -229,6 +281,7 @@ describe(`createGroupStreakMiddleware`, () => {
     expect.assertions(3);
     const timezone = "Europe/London";
     const creatorId = "creatorId";
+    const type = GroupStreakType.team;
     const streakName = "Daily BJJ";
     const streakDescription = "Everyday I must drill BJJ";
     const numberOfMinutes = 30;
@@ -236,6 +289,7 @@ describe(`createGroupStreakMiddleware`, () => {
     const save = jest.fn(() => Promise.resolve(true));
     class GroupStreakModel {
       creatorId: string;
+      type: string;
       streakName: string;
       streakDescription: string;
       numberOfMinutes: Date;
@@ -243,12 +297,14 @@ describe(`createGroupStreakMiddleware`, () => {
 
       constructor(
         creatorId: string,
+        type: string,
         streakName: string,
         streakDescription: string,
         numberOfMinutes: Date,
         timezone: string
       ) {
         this.creatorId = creatorId;
+        this.type = type;
         this.streakName = streakName;
         this.streakDescription = streakDescription;
         this.numberOfMinutes = numberOfMinutes;
@@ -258,7 +314,7 @@ describe(`createGroupStreakMiddleware`, () => {
       save = save;
     }
     const request: any = {
-      body: { creatorId, streakName, streakDescription, numberOfMinutes }
+      body: { creatorId, type, streakName, streakDescription, numberOfMinutes }
     };
     const response: any = {
       locals: { timezone }

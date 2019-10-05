@@ -1,13 +1,18 @@
 import * as mongoose from "mongoose";
 import { Collections } from "./Collections";
 import { Models } from "./Models";
-import { GroupStreak } from "@streakoid/streakoid-sdk/lib";
+import { GroupStreak, GroupStreakType } from "@streakoid/streakoid-sdk/lib";
 import StreakStatus from "@streakoid/streakoid-sdk/lib/StreakStatus";
 
 export type GroupStreakModel = GroupStreak & mongoose.Document;
 
 export const groupStreakSchema = new mongoose.Schema(
   {
+    type: {
+      default: GroupStreakType.team,
+      required: true,
+      type: GroupStreakType
+    },
     creatorId: {
       required: true,
       type: String
