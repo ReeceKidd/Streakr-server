@@ -149,6 +149,69 @@ export const updateGroupStreakMembersArrayMiddleware = getUpdateGroupStreakMembe
   groupStreakModel
 );
 
+export const getPopulateGroupStreakMembersInformationMiddleware = (
+  userModel: mongoose.Model<UserModel>,
+  groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { newGroupStreak } = response.locals;
+    const { members } = newGroupStreak;
+    newGroupStreak.members = await Promise.all(
+      members.map(
+        async (member: { memberId: string; groupMemberStreakId: string }) => {
+          const [memberInfo, groupMemberStreak] = await Promise.all([
+            userModel.findOne({ _id: member.memberId }).lean(),
+            groupMemberStreakModel
+              .findOne({ _id: member.groupMemberStreakId })
+              .lean()
+          ]);
+          return {
+            _id: memberInfo._id,
+            username: memberInfo.username,
+            groupMemberStreak
+          };
+        }
+      )
+    );
+    response.locals.newGroupStreak = newGroupStreak;
+    next();
+  } catch (err) {
+    next(new CustomError(ErrorType.PopulateGroupStreakMembersInformation, err));
+  }
+};
+
+export const populateGroupStreakMembersInformationMiddleware = getPopulateGroupStreakMembersInformationMiddleware(
+  userModel,
+  groupMemberStreakModel
+);
+
+export const getRetreiveCreatedGroupStreakCreatorInformationMiddleware = (
+  userModel: mongoose.Model<UserModel>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const { newGroupStreak } = response.locals;
+    const { creatorId } = newGroupStreak;
+    const creator = await userModel.findOne({ _id: creatorId }).lean();
+    newGroupStreak.creator = {
+      _id: creator._id,
+      username: creator.username
+    };
+    response.locals.newGroupStreak = newGroupStreak;
+    next();
+  } catch (err) {
+    next(
+      new CustomError(
+        ErrorType.RetreiveCreatedGroupStreakCreatorInformationMiddleware,
+        err
+      )
+    );
+  }
+};
+
+export const retreiveCreatedGroupStreakCreatorInformationMiddleware = getRetreiveCreatedGroupStreakCreatorInformationMiddleware(
+  userModel
+);
+
 export const sendGroupStreakMiddleware = (
   request: Request,
   response: Response,
@@ -167,5 +230,7 @@ export const createGroupStreakMiddlewares = [
   createGroupStreakMiddleware,
   createGroupMemberStreaksMiddleware,
   updateGroupStreakMembersArrayMiddleware,
+  populateGroupStreakMembersInformationMiddleware,
+  retreiveCreatedGroupStreakCreatorInformationMiddleware,
   sendGroupStreakMiddleware
 ];

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
-import { Model, Mongoose } from "mongoose";
+import { Model } from "mongoose";
 import {
   User,
   FriendRequestStatus,

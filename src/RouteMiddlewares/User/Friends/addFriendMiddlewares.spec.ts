@@ -13,7 +13,9 @@ import {
   retreiveFriendRequestMiddleware,
   updateFriendRequestStatusMiddleware,
   getRetreiveFriendRequestMiddleware,
-  getUpdateFriendRequestStatusMiddleware
+  getUpdateFriendRequestStatusMiddleware,
+  addUserToFriendsFriendListMiddleware,
+  getAddUserToFriendsFriendListMiddleware
 } from "./addFriendMiddlewares";
 import { CustomError, ErrorType } from "../../../customError";
 import { FriendRequestStatus } from "@streakoid/streakoid-sdk/lib";
@@ -452,6 +454,60 @@ describe("addFriendMiddlewares", () => {
     });
   });
 
+  describe("addUserToFriendsFriendListMiddleware", () => {
+    test("adds user to friends friends list", async () => {
+      expect.assertions(2);
+
+      const userId = "userId";
+      const username = "username";
+      const user = {
+        _id: userId,
+        username
+      };
+      const friendId = "friendId";
+      const friend = {
+        _id: friendId
+      };
+      const findByIdAndUpdate = jest
+        .fn()
+        .mockResolvedValue({ friends: [friend] });
+      const userModel: any = { findByIdAndUpdate };
+      const request: any = { params: { userId } };
+      const response: any = { locals: { user, friend } };
+      const next = jest.fn();
+
+      const middleware = getAddUserToFriendsFriendListMiddleware(userModel);
+      await middleware(request, response, next);
+
+      expect(findByIdAndUpdate).toBeCalledWith(
+        friend._id,
+        {
+          $addToSet: { friends: { friendId: user._id, username } }
+        },
+        { new: true }
+      );
+      expect(next).toBeCalledWith();
+    });
+
+    test("throws AddUserFriendsFriendListMiddleware error on middleware failure", async () => {
+      expect.assertions(1);
+
+      const request: any = {};
+      const response: any = {};
+      const next = jest.fn();
+
+      const middleware = getAddFriendToUsersFriendListMiddleware({} as any);
+      await middleware(request, response, next);
+
+      expect(next).toBeCalledWith(
+        new CustomError(
+          ErrorType.AddUserToFriendsFriendListMiddleware,
+          expect.any(Error)
+        )
+      );
+    });
+  });
+
   describe("getUpdateFriendRequestStatusMiddleware", () => {
     test("updates friend request status to accepted and sets response.locals.updatedFriendRequest", async () => {
       expect.assertions(3);
@@ -536,9 +592,9 @@ describe("addFriendMiddlewares", () => {
   });
 
   test("are in the correct order", () => {
-    expect.assertions(10);
+    expect.assertions(11);
 
-    expect(addFriendMiddlewares.length).toEqual(9);
+    expect(addFriendMiddlewares.length).toEqual(10);
     expect(addFriendMiddlewares[0]).toEqual(
       addFriendParamsValidationMiddleware
     );
@@ -551,8 +607,11 @@ describe("addFriendMiddlewares", () => {
       addFriendToUsersFriendListMiddleware
     );
     expect(addFriendMiddlewares[7]).toEqual(
+      addUserToFriendsFriendListMiddleware
+    );
+    expect(addFriendMiddlewares[8]).toEqual(
       updateFriendRequestStatusMiddleware
     );
-    expect(addFriendMiddlewares[8]).toEqual(sendUserWithNewFriendMiddleware);
+    expect(addFriendMiddlewares[9]).toEqual(sendUserWithNewFriendMiddleware);
   });
 });

@@ -168,6 +168,34 @@ export const addFriendToUsersFriendListMiddleware = getAddFriendToUsersFriendLis
   userModel
 );
 
+export const getAddUserToFriendsFriendListMiddleware = (
+  userModel: Model<UserModel>
+) => async (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const user: User = response.locals.user;
+    const friend: User = response.locals.friend;
+    const formattedUser: Friend = {
+      friendId: user._id,
+      username: user.username
+    };
+    await userModel.findByIdAndUpdate(
+      friend._id,
+      {
+        $addToSet: { friends: formattedUser }
+      },
+      { new: true }
+    );
+    next();
+  } catch (err) {
+    console.log(err);
+    next(new CustomError(ErrorType.AddUserToFriendsFriendListMiddleware, err));
+  }
+};
+
+export const addUserToFriendsFriendListMiddleware = getAddUserToFriendsFriendListMiddleware(
+  userModel
+);
+
 export const getUpdateFriendRequestStatusMiddleware = (
   friendRequestModel: Model<FriendRequestModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
@@ -212,6 +240,7 @@ export const addFriendMiddlewares = [
   retreiveFriendMiddleware,
   retreiveFriendRequestMiddleware,
   addFriendToUsersFriendListMiddleware,
+  addUserToFriendsFriendListMiddleware,
   updateFriendRequestStatusMiddleware,
   sendUserWithNewFriendMiddleware
 ];

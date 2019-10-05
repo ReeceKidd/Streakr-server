@@ -2656,4 +2656,43 @@ describe("customError", () => {
     expect(message).toBe("Internal Server Error.");
     expect(httpStatusCode).toBe(500);
   });
+
+  test(`creates correct error when type is set to PopulateGroupStreakMembersInformation`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.PopulateGroupStreakMembersInformation
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-168`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to RetreiveCreatedGroupStreakCreatorInformationMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.RetreiveCreatedGroupStreakCreatorInformationMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-169`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
+
+  test(`creates correct error when type is set to AddUserToFriendsFriendListMiddleware`, () => {
+    expect.assertions(3);
+
+    const customError = new CustomError(
+      ErrorType.AddUserToFriendsFriendListMiddleware
+    );
+    const { code, message, httpStatusCode } = customError;
+
+    expect(code).toBe(`500-170`);
+    expect(message).toBe("Internal Server Error.");
+    expect(httpStatusCode).toBe(500);
+  });
 });

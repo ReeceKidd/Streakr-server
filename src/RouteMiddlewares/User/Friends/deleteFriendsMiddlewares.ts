@@ -7,7 +7,6 @@ import { userModel, UserModel } from "../../../Models/User";
 import { CustomError, ErrorType } from "../../../customError";
 import { ResponseCodes } from "../../../Server/responseCodes";
 import { User } from "@streakoid/streakoid-sdk/lib";
-import { resolve } from "path";
 
 const deleteFriendParamsValidationSchema = {
   userId: Joi.string()

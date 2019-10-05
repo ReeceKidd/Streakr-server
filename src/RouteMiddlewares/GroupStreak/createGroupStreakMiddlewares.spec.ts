@@ -8,7 +8,11 @@ import {
   createGroupStreakMiddleware,
   getCreateGroupStreakMiddleware,
   updateGroupStreakMembersArrayMiddleware,
-  getUpdateGroupStreakMembersArray
+  getUpdateGroupStreakMembersArray,
+  populateGroupStreakMembersInformationMiddleware,
+  retreiveCreatedGroupStreakCreatorInformationMiddleware,
+  getRetreiveCreatedGroupStreakCreatorInformationMiddleware,
+  getPopulateGroupStreakMembersInformationMiddleware
 } from "./createGroupStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
@@ -573,11 +577,120 @@ describe(`sendGroupStreakMiddleware`, () => {
   });
 });
 
+describe("populateGroupStreakMembersInformation", () => {
+  test("populates group streak members information and sets response.locals.newGroupStreak", async () => {
+    expect.assertions(5);
+
+    const user = { _id: "12345678", username: "usernames" };
+    const lean = jest.fn().mockResolvedValue(user);
+    const findOne = jest.fn(() => ({ lean }));
+    const userModel: any = {
+      findOne
+    };
+    const groupStreakModel: any = {
+      findOne
+    };
+    const members = [{ memberId: "12345678", groupMemberStreakId: "ABC" }];
+    const newGroupStreak = { _id: "abc", members };
+    const request: any = {};
+    const response: any = { locals: { newGroupStreak } };
+    const next = jest.fn();
+
+    const middleware = getPopulateGroupStreakMembersInformationMiddleware(
+      userModel,
+      groupStreakModel
+    );
+    await middleware(request, response, next);
+
+    expect(findOne).toHaveBeenCalledTimes(2);
+    expect(lean).toHaveBeenCalledTimes(2);
+
+    expect(response.locals.newGroupStreak).toBeDefined();
+    const member = response.locals.newGroupStreak.members[0];
+    expect(Object.keys(member)).toEqual([
+      "_id",
+      "username",
+      "groupMemberStreak"
+    ]);
+
+    expect(next).toBeCalledWith();
+  });
+
+  test("calls next with PopulateGroupStreakMembersInformation on middleware failure", async () => {
+    expect.assertions(1);
+
+    const response: any = {};
+    const request: any = {};
+    const next = jest.fn();
+
+    const middleware = getPopulateGroupStreakMembersInformationMiddleware(
+      {} as any,
+      {} as any
+    );
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.RetreiveGroupStreakMembersInformation,
+        expect.any(Error)
+      )
+    );
+  });
+});
+
+describe("retreiveCreatedGroupStreakCreatorInformation", () => {
+  test("retreives group streak creator information and sets response.locals.newGroupStreak", async () => {
+    expect.assertions(4);
+
+    const user = { _id: "12345678", username: "usernames" };
+    const lean = jest.fn().mockResolvedValue(user);
+    const findOne = jest.fn(() => ({ lean }));
+    const userModel: any = {
+      findOne
+    };
+    const creatorId = "creatorId";
+    const newGroupStreak = { _id: "abc", creatorId };
+    const request: any = {};
+    const response: any = { locals: { newGroupStreak } };
+    const next = jest.fn();
+
+    const middleware = getRetreiveCreatedGroupStreakCreatorInformationMiddleware(
+      userModel
+    );
+    await middleware(request, response, next);
+
+    expect(findOne).toHaveBeenCalledWith({ _id: creatorId });
+    expect(lean).toHaveBeenCalled();
+    expect(response.locals.newGroupStreak.creator).toBeDefined();
+    expect(next).toBeCalledWith();
+  });
+
+  test("calls next with RetreiveCreatedGroupStreakCreatorInformationMiddleware on middleware failure", async () => {
+    expect.assertions(1);
+
+    const response: any = {};
+    const request: any = {};
+    const next = jest.fn();
+
+    const middleware = getRetreiveCreatedGroupStreakCreatorInformationMiddleware(
+      {} as any
+    );
+    await middleware(request, response, next);
+
+    expect(next).toBeCalledWith(
+      new CustomError(
+        ErrorType.RetreiveCreatedGroupStreakCreatorInformationMiddleware,
+        expect.any(Error)
+      )
+    );
+  });
+});
+
 describe(`createGroupStreakMiddlewares`, () => {
   test("are defined in the correct order", async () => {
-    expect.assertions(6);
+    expect.assertions(8);
 
-    expect(createGroupStreakMiddlewares.length).toEqual(5);
+    expect(createGroupStreakMiddlewares.length).toEqual(7);
     expect(createGroupStreakMiddlewares[0]).toBe(
       createGroupStreakBodyValidationMiddleware
     );
@@ -588,6 +701,12 @@ describe(`createGroupStreakMiddlewares`, () => {
     expect(createGroupStreakMiddlewares[3]).toBe(
       updateGroupStreakMembersArrayMiddleware
     );
-    expect(createGroupStreakMiddlewares[4]).toBe(sendGroupStreakMiddleware);
+    expect(createGroupStreakMiddlewares[4]).toBe(
+      populateGroupStreakMembersInformationMiddleware
+    );
+    expect(createGroupStreakMiddlewares[5]).toBe(
+      retreiveCreatedGroupStreakCreatorInformationMiddleware
+    );
+    expect(createGroupStreakMiddlewares[6]).toBe(sendGroupStreakMiddleware);
   });
 });

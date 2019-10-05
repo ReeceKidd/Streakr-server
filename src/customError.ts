@@ -218,7 +218,10 @@ export enum ErrorType {
   UpdatedFriendRequestNotFound,
   PopulateFriendRequestsMiddleware,
   PopulateFriendRequestMiddleware,
-  PopulateUpdatedFriendRequestMiddleware
+  PopulateUpdatedFriendRequestMiddleware,
+  PopulateGroupStreakMembersInformation,
+  RetreiveCreatedGroupStreakCreatorInformationMiddleware,
+  AddUserToFriendsFriendListMiddleware
 }
 
 const internalServerMessage = "Internal Server Error.";
@@ -1819,6 +1822,27 @@ export class CustomError extends Error {
       case ErrorType.PopulateUpdatedFriendRequestMiddleware:
         return {
           code: `${ResponseCodes.warning}-167`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.PopulateGroupStreakMembersInformation:
+        return {
+          code: `${ResponseCodes.warning}-168`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.RetreiveCreatedGroupStreakCreatorInformationMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-169`,
+          message: internalServerMessage,
+          httpStatusCode: ResponseCodes.warning
+        };
+
+      case ErrorType.AddUserToFriendsFriendListMiddleware:
+        return {
+          code: `${ResponseCodes.warning}-170`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
