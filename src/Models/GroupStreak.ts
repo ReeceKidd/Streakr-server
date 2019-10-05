@@ -9,7 +9,6 @@ export type GroupStreakModel = GroupStreak & mongoose.Document;
 export const groupStreakSchema = new mongoose.Schema(
   {
     type: {
-      default: GroupStreakType.team,
       required: true,
       type: GroupStreakType
     },

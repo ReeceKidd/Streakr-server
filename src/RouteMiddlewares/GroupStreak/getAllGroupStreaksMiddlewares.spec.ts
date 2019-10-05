@@ -9,14 +9,28 @@ import {
 } from "./getAllGroupStreaksMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
+import { GroupStreakType } from "@streakoid/streakoid-sdk/lib";
+import StreakStatus from "@streakoid/streakoid-sdk/lib/StreakStatus";
 
 describe("getGroupStreaksValidationMiddleware", () => {
+  const creatorId = "creatorId";
+  const type = GroupStreakType.team;
+  const memberId = "memberId";
+  const timezone = "timezone";
+  const status = StreakStatus.live;
+  const query = {
+    creatorId,
+    type,
+    memberId,
+    timezone,
+    status
+  };
   test("passes valid request", () => {
     expect.assertions(1);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      query: { memberId: "1234" }
+      query
     };
     const response: any = {
       status
@@ -69,6 +83,28 @@ describe("findGroupStreaksMiddleware", () => {
     await middleware(request, response, next);
 
     expect(find).toBeCalledWith({ "members.memberId": memberId });
+    expect(lean).toBeCalledWith();
+    expect(response.locals.groupStreaks).toEqual(true);
+    expect(next).toBeCalledWith();
+  });
+
+  test("queries database with just type and sets response.locals.groupStreaks", async () => {
+    expect.assertions(4);
+
+    const lean = jest.fn().mockResolvedValue(true);
+    const find = jest.fn(() => ({ lean }));
+    const groupStreakModel = {
+      find
+    };
+    const type = GroupStreakType.team;
+    const request: any = { query: { type } };
+    const response: any = { locals: {} };
+    const next = jest.fn();
+    const middleware = getFindGroupStreaksMiddleware(groupStreakModel as any);
+
+    await middleware(request, response, next);
+
+    expect(find).toBeCalledWith({ type });
     expect(lean).toBeCalledWith();
     expect(response.locals.groupStreaks).toEqual(true);
     expect(next).toBeCalledWith();
