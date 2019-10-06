@@ -3,7 +3,7 @@ import * as Joi from "joi";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/TeamStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import { userModel, UserModel } from "../../Models/User";

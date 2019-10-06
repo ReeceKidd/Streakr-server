@@ -10,7 +10,7 @@ import {
   GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
 import { userModel, UserModel } from "../../Models/User";
-import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/TeamStreak";
 
 export interface TeamStreakRegistrationRequestBody {
   creatorId: string;

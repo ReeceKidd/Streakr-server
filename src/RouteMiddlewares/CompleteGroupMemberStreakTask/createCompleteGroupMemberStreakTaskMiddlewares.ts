@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import moment from "moment-timezone";
 import * as Joi from "joi";
 import * as mongoose from "mongoose";
-import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/TeamStreak";
 import { GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 import StreakTypes from "@streakoid/streakoid-sdk/lib/streakTypes";
 

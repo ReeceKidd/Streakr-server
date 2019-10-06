@@ -11,7 +11,7 @@ import {
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import { userModel, UserModel } from "../../Models/User";
-import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/TeamStreak";
 
 export interface GroupMemberStreakRegistrationRequestBody {
   userId: string;

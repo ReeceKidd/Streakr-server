@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { teamStreakModel, TeamStreakModel } from "../../Models/teamStreak";
+import { teamStreakModel, TeamStreakModel } from "../../Models/TeamStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 

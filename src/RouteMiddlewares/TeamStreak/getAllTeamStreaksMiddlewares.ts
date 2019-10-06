@@ -5,7 +5,7 @@ import PopulatedTeamStreak from "@streakoid/streakoid-sdk/lib/models/PopulatedTe
 import PopulatedMember from "@streakoid/streakoid-sdk/lib/models/PopulatedMember";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/TeamStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import { userModel, UserModel } from "../../Models/User";

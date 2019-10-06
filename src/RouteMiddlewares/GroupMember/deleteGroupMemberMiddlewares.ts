@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/TeamStreak";
 
 const groupMemberParamsValidationSchema = {
   teamStreakId: Joi.string().required(),

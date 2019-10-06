@@ -9,11 +9,11 @@ import { userModel, UserModel } from "../../Models/User";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
 
-import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
 import {
   groupMemberStreakModel,
   GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/TeamStreak";
 
 export const createGroupMemberParamsValidationSchema = {
   teamStreakId: Joi.string().required()
