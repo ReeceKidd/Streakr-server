@@ -5,17 +5,17 @@ import {
   sendGroupMemberDeletedResponseMiddleware,
   retreiveGroupMemberMiddleware,
   getDeleteGroupMemberMiddleware,
-  getRetreiveGroupStreakMiddleware,
-  retreiveGroupStreakMiddleware
+  getRetreiveTeamStreakMiddleware,
+  retreiveTeamStreakMiddleware
 } from "./deleteGroupMemberMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
 describe("groupMemberParamsValidationMiddleware", () => {
-  const groupStreakId = "groupStreakId";
+  const teamStreakId = "teamStreakId";
   const memberId = "memberId";
   const params = {
-    groupStreakId,
+    teamStreakId,
     memberId
   };
 
@@ -64,14 +64,14 @@ describe("groupMemberParamsValidationMiddleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  test("sends groupStreakId is not defined error", () => {
+  test("sends teamStreakId is not defined error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
       params: {
         ...params,
-        groupStreakId: undefined
+        teamStreakId: undefined
       }
     };
     const response: any = {
@@ -83,18 +83,17 @@ describe("groupMemberParamsValidationMiddleware", () => {
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
-      message:
-        'child "groupStreakId" fails because ["groupStreakId" is required]'
+      message: 'child "teamStreakId" fails because ["teamStreakId" is required]'
     });
     expect(next).not.toBeCalled();
   });
 
-  test("sends groupStreakId is not a string error", () => {
+  test("sends teamStreakId is not a string error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      params: { ...params, groupStreakId: 123 }
+      params: { ...params, teamStreakId: 123 }
     };
     const response: any = {
       status
@@ -106,68 +105,64 @@ describe("groupMemberParamsValidationMiddleware", () => {
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
-        'child "groupStreakId" fails because ["groupStreakId" must be a string]'
+        'child "teamStreakId" fails because ["teamStreakId" must be a string]'
     });
     expect(next).not.toBeCalled();
   });
 });
 
-describe("retreiveGroupStreakMiddleware", () => {
-  test("sets response.locals.groupStreak and calls next()", async () => {
+describe("retreiveTeamStreakMiddleware", () => {
+  test("sets response.locals.teamStreak and calls next()", async () => {
     expect.assertions(4);
-    const groupStreakId = "abc";
+    const teamStreakId = "abc";
     const request: any = {
-      params: { groupStreakId }
+      params: { teamStreakId }
     };
     const response: any = { locals: {} };
     const next = jest.fn();
     const lean = jest.fn().mockResolvedValue(true);
     const findById = jest.fn(() => ({ lean }));
-    const groupStreakModel = { findById };
-    const middleware = getRetreiveGroupStreakMiddleware(
-      groupStreakModel as any
-    );
+    const TeamStreakModel = { findById };
+    const middleware = getRetreiveTeamStreakMiddleware(TeamStreakModel as any);
 
     await middleware(request, response, next);
 
-    expect(findById).toBeCalledWith(groupStreakId);
+    expect(findById).toBeCalledWith(teamStreakId);
     expect(lean).toBeCalled();
-    expect(response.locals.groupStreak).toBeDefined();
+    expect(response.locals.teamStreak).toBeDefined();
     expect(next).toBeCalledWith();
   });
 
-  test("throws NoGroupStreakFound error when group streak does not exist", async () => {
+  test("throws NoTeamStreakFound error when group streak does not exist", async () => {
     expect.assertions(1);
-    const groupStreakId = "abc";
+    const teamStreakId = "abc";
     const request: any = {
-      params: { groupStreakId }
+      params: { teamStreakId }
     };
     const response: any = { locals: {} };
     const next = jest.fn();
     const lean = jest.fn().mockResolvedValue(false);
     const findById = jest.fn(() => ({ lean }));
-    const groupStreakModel = { findById };
-    const middleware = getRetreiveGroupStreakMiddleware(
-      groupStreakModel as any
-    );
+    const TeamStreakModel = { findById };
+    const middleware = getRetreiveTeamStreakMiddleware(TeamStreakModel as any);
 
     await middleware(request, response, next);
 
-    expect(next).toBeCalledWith(new CustomError(ErrorType.NoGroupStreakFound));
+    expect(next).toBeCalledWith(new CustomError(ErrorType.NoTeamStreakFound));
   });
 
-  test("throws DeleteGroupMemberRetreiveGroupStreakMiddleware error on middleware failure", async () => {
+  test("throws DeleteGroupMemberRetreiveTeamStreakMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const request: any = {};
     const response: any = {};
     const next = jest.fn();
-    const middleware = getRetreiveGroupStreakMiddleware({} as any);
+    const middleware = getRetreiveTeamStreakMiddleware({} as any);
 
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.DeleteGroupMemberRetreiveGroupStreakMiddleware,
+        ErrorType.DeleteGroupMemberRetreiveTeamStreakMiddleware,
         expect.any(Error)
       )
     );
@@ -179,14 +174,14 @@ describe("retreiveGroupMemberMiddleware", () => {
     expect.assertions(2);
     const memberId = "abc";
     const members = [{ memberId }];
-    const groupStreak = {
+    const teamStreak = {
       members
     };
 
     const request: any = {
       params: { memberId }
     };
-    const response: any = { locals: { groupStreak } };
+    const response: any = { locals: { teamStreak } };
     const next = jest.fn();
 
     await retreiveGroupMemberMiddleware(request, response, next);
@@ -200,13 +195,13 @@ describe("retreiveGroupMemberMiddleware", () => {
     const request: any = {};
     const response: any = {};
     const next = jest.fn();
-    const middleware = getRetreiveGroupStreakMiddleware({} as any);
+    const middleware = getRetreiveTeamStreakMiddleware({} as any);
 
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.DeleteGroupMemberRetreiveGroupStreakMiddleware,
+        ErrorType.DeleteGroupMemberRetreiveTeamStreakMiddleware,
         expect.any(Error)
       )
     );
@@ -217,26 +212,26 @@ describe("deleteGroupMemberMiddleware", () => {
   test("sets response.locals.deletedGroupMember", async () => {
     expect.assertions(3);
     const memberId = "abc123";
-    const groupStreakId = "12345";
+    const teamStreakId = "12345";
     const members = [{ memberId }];
-    const groupStreak = {
+    const teamStreak = {
       members
     };
 
-    const request: any = { params: { memberId, groupStreakId } };
-    const response: any = { locals: { groupStreak } };
+    const request: any = { params: { memberId, teamStreakId } };
+    const response: any = { locals: { teamStreak } };
     const next = jest.fn();
     const lean = jest.fn().mockResolvedValue(true);
     const findByIdAndUpdate = jest.fn(() => ({ lean }));
-    const groupStreakModel = {
+    const TeamStreakModel = {
       findByIdAndUpdate
     };
-    const middleware = getDeleteGroupMemberMiddleware(groupStreakModel as any);
+    const middleware = getDeleteGroupMemberMiddleware(TeamStreakModel as any);
 
     await middleware(request, response, next);
 
     expect(findByIdAndUpdate).toBeCalledWith(
-      groupStreakId,
+      teamStreakId,
       { members: [] },
       { new: true }
     );
@@ -302,7 +297,7 @@ describe("deleteGroupMemberMiddlewares", () => {
       groupMemberParamsValidationMiddleware
     );
     expect(deleteGroupMemberMiddlewares[1]).toEqual(
-      retreiveGroupStreakMiddleware
+      retreiveTeamStreakMiddleware
     );
     expect(deleteGroupMemberMiddlewares[2]).toEqual(
       retreiveGroupMemberMiddleware

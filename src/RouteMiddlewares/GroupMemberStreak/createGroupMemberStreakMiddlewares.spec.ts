@@ -6,20 +6,20 @@ import {
   saveGroupMemberStreakToDatabaseMiddleware,
   sendFormattedGroupMemberStreakMiddleware,
   retreiveUserMiddleware,
-  getRetreiveGroupStreakMiddleware,
+  getRetreiveTeamStreakMiddleware,
   getRetreiveUserMiddleware,
-  retreiveGroupStreakMiddleware
+  retreiveTeamStreakMiddleware
 } from "./createGroupMemberStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
 describe(`createGroupMemberStreakBodyValidationMiddleware`, () => {
   const userId = "12345678";
-  const groupStreakId = "abcdefg";
+  const teamStreakId = "abcdefg";
 
   const body = {
     userId,
-    groupStreakId
+    teamStreakId
   };
 
   test("valid request passes validation", () => {
@@ -60,12 +60,12 @@ describe(`createGroupMemberStreakBodyValidationMiddleware`, () => {
     expect(next).not.toBeCalled();
   });
 
-  test("sends groupStreakId is missing error", () => {
+  test("sends teamStreakId is missing error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      body: { ...body, groupStreakId: undefined }
+      body: { ...body, teamStreakId: undefined }
     };
     const response: any = {
       status
@@ -76,8 +76,7 @@ describe(`createGroupMemberStreakBodyValidationMiddleware`, () => {
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
-      message:
-        'child "groupStreakId" fails because ["groupStreakId" is required]'
+      message: 'child "teamStreakId" fails because ["teamStreakId" is required]'
     });
     expect(next).not.toBeCalled();
   });
@@ -144,65 +143,59 @@ describe("retreiveUserMiddleware", () => {
   });
 });
 
-describe("retreiveGroupStreakMiddleware", () => {
-  test("sets response.locals.groupStreak and calls next()", async () => {
+describe("retreiveTeamStreakMiddleware", () => {
+  test("sets response.locals.teamStreak and calls next()", async () => {
     expect.assertions(3);
-    const groupStreakId = "abc";
+    const teamStreakId = "abc";
     const request: any = {
-      body: { groupStreakId }
+      body: { teamStreakId }
     };
     const response: any = { locals: {} };
     const next = jest.fn();
     const findOne = jest.fn(() => Promise.resolve(true));
-    const groupStreakModel = { findOne };
-    const middleware = getRetreiveGroupStreakMiddleware(
-      groupStreakModel as any
-    );
+    const teamStreakModel = { findOne };
+    const middleware = getRetreiveTeamStreakMiddleware(teamStreakModel as any);
 
     await middleware(request, response, next);
 
-    expect(findOne).toBeCalledWith({ _id: groupStreakId });
-    expect(response.locals.groupStreak).toBeDefined();
+    expect(findOne).toBeCalledWith({ _id: teamStreakId });
+    expect(response.locals.teamStreak).toBeDefined();
     expect(next).toBeCalledWith();
   });
 
-  test("throws CreateGroupMemberStreakGroupStreakDoesNotExist error when solo streak does not exist", async () => {
+  test("throws CreateGroupMemberStreakTeamStreakDoesNotExist error when solo streak does not exist", async () => {
     expect.assertions(1);
-    const groupStreakId = "abc";
+    const teamStreakId = "abc";
     const request: any = {
-      body: { groupStreakId }
+      body: { teamStreakId }
     };
     const response: any = { locals: {} };
     const next = jest.fn();
     const findOne = jest.fn(() => Promise.resolve(false));
-    const groupStreakModel = { findOne };
-    const middleware = getRetreiveGroupStreakMiddleware(
-      groupStreakModel as any
-    );
+    const teamStreakModel = { findOne };
+    const middleware = getRetreiveTeamStreakMiddleware(teamStreakModel as any);
 
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
-      new CustomError(ErrorType.CreateGroupMemberStreakGroupStreakDoesNotExist)
+      new CustomError(ErrorType.CreateGroupMemberStreakTeamStreakDoesNotExist)
     );
   });
 
-  test("throws CreateGroupMemberStreakRetreiveGroupStreakMiddleware error on middleware failure", async () => {
+  test("throws CreateGroupMemberStreakRetreiveTeamStreakMiddleware error on middleware failure", async () => {
     expect.assertions(1);
     const request: any = {};
     const response: any = { locals: {} };
     const next = jest.fn();
     const findOne = jest.fn(() => Promise.resolve(true));
-    const groupStreakModel = { findOne };
-    const middleware = getRetreiveGroupStreakMiddleware(
-      groupStreakModel as any
-    );
+    const teamStreakModel = { findOne };
+    const middleware = getRetreiveTeamStreakMiddleware(teamStreakModel as any);
 
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.CreateGroupMemberStreakRetreiveGroupStreakMiddleware,
+        ErrorType.CreateGroupMemberStreakRetreiveTeamStreakMiddleware,
         expect.any(Error)
       )
     );
@@ -213,25 +206,25 @@ describe(`createGroupMemberStreakFromRequestMiddleware`, () => {
   test("sets response.locals.newGroupMemberStreak", async () => {
     expect.assertions(2);
     const userId = "abcdefg";
-    const groupStreakId = "1a2b3c";
+    const teamStreakId = "1a2b3c";
     const timezone = "Europe/London";
     class GroupMemberStreak {
       userId: string;
-      groupStreakId: string;
+      teamStreakId: string;
       timezone: string;
 
-      constructor({ userId, groupStreakId, timezone }: any) {
+      constructor({ userId, teamStreakId, timezone }: any) {
         this.userId = userId;
-        this.groupStreakId = groupStreakId;
+        this.teamStreakId = teamStreakId;
         this.timezone = timezone;
       }
     }
     const response: any = { locals: { timezone } };
-    const request: any = { body: { userId, groupStreakId } };
+    const request: any = { body: { userId, teamStreakId } };
     const next = jest.fn();
     const newGroupMemberStreak = new GroupMemberStreak({
       userId,
-      groupStreakId,
+      teamStreakId,
       timezone
     });
     const middleware = getCreateGroupMemberStreakFromRequestMiddleware(
@@ -375,7 +368,7 @@ describe(`createGroupMemberStreakMiddlewares`, () => {
     );
     expect(createGroupMemberStreakMiddlewares[1]).toBe(retreiveUserMiddleware);
     expect(createGroupMemberStreakMiddlewares[2]).toBe(
-      retreiveGroupStreakMiddleware
+      retreiveTeamStreakMiddleware
     );
     expect(createGroupMemberStreakMiddlewares[3]).toBe(
       createGroupMemberStreakFromRequestMiddleware

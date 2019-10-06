@@ -3,7 +3,7 @@ export enum RouteCategories {
   feedbacks = "feedbacks",
   users = "users",
   soloStreaks = "solo-streaks",
-  groupStreaks = "group-streaks",
+  teamStreaks = "team-streaks",
   completeSoloStreakTasks = "complete-solo-streak-tasks",
   completeGroupMemberStreakTasks = "complete-group-member-streak-tasks",
   test = "test",

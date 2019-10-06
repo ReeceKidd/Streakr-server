@@ -9,11 +9,10 @@ import {
 } from "../../Models/CompleteGroupMemberStreakTask";
 import { CustomError, ErrorType } from "../../customError";
 import { ResponseCodes } from "../../Server/responseCodes";
-import { CompleteGroupMemberStreakTask } from "@streakoid/streakoid-sdk/lib";
 
 const completeGroupMemberStreakTaskQueryValidationSchema = {
   userId: Joi.string(),
-  groupStreakId: Joi.string(),
+  teamStreakId: Joi.string(),
   groupMemberStreakId: Joi.string()
 };
 
@@ -35,19 +34,19 @@ export const getRetreiveCompleteGroupMemberStreakTasksMiddleware = (
   >
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userId, groupStreakId, groupMemberStreakId } = request.query;
+    const { userId, teamStreakId, groupMemberStreakId } = request.query;
 
     const query: {
       userId?: string;
-      groupStreakId?: string;
+      teamStreakId?: string;
       groupMemberStreakId?: string;
     } = {};
 
     if (userId) {
       query.userId = userId;
     }
-    if (groupStreakId) {
-      query.groupStreakId = groupStreakId;
+    if (teamStreakId) {
+      query.teamStreakId = teamStreakId;
     }
     if (groupMemberStreakId) {
       query.groupMemberStreakId = groupMemberStreakId;

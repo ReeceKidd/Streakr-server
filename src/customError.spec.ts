@@ -251,27 +251,27 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to NoGroupStreakToDeleteFound`, () => {
+  test(`creates correct error when type is set to NoTeamStreakToDeleteFound`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.NoGroupStreakToDeleteFound);
+    const customError = new CustomError(ErrorType.NoTeamStreakToDeleteFound);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-24`);
-    expect(message).toBe("Group streak does not exist.");
+    expect(message).toBe("Team streak does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to GetGroupStreakNoGroupStreakFound`, () => {
+  test(`creates correct error when type is set to GetTeamStreakNoTeamStreakFound`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.GetGroupStreakNoGroupStreakFound
+      ErrorType.GetTeamStreakNoTeamStreakFound
     );
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-25`);
-    expect(message).toBe("Group streak does not exist.");
+    expect(message).toBe("Team streak does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
@@ -336,16 +336,16 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to CreateGroupMemberStreakGroupStreakDoesNotExist`, () => {
+  test(`creates correct error when type is set to CreateGroupMemberStreakTeamStreakDoesNotExist`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.CreateGroupMemberStreakGroupStreakDoesNotExist
+      ErrorType.CreateGroupMemberStreakTeamStreakDoesNotExist
     );
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-31`);
-    expect(message).toBe("Group streak does not exist.");
+    expect(message).toBe("Team streak does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
@@ -388,14 +388,14 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to GroupStreakDoesNotExist`, () => {
+  test(`creates correct error when type is set to TeamStreakDoesNotExist`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.GroupStreakDoesNotExist);
+    const customError = new CustomError(ErrorType.TeamStreakDoesNotExist);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-35`);
-    expect(message).toBe("Group streak does not exist.");
+    expect(message).toBe("Team streak does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
@@ -423,14 +423,14 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to UpdatedGroupStreakNotFound`, () => {
+  test(`creates correct error when type is set to UpdatedTeamStreakNotFound`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.UpdatedGroupStreakNotFound);
+    const customError = new CustomError(ErrorType.UpdatedTeamStreakNotFound);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-38`);
-    expect(message).toBe("Group streak does not exist.");
+    expect(message).toBe("Team streak does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
@@ -447,27 +447,27 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to CreateGroupMemberGroupStreakDoesNotExist`, () => {
+  test(`creates correct error when type is set to CreateGroupMemberTeamStreakDoesNotExist`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.CreateGroupMemberGroupStreakDoesNotExist
+      ErrorType.CreateGroupMemberTeamStreakDoesNotExist
     );
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-40`);
-    expect(message).toBe("Group streak does not exist.");
+    expect(message).toBe("Team streak does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
-  test(`creates correct error when type is set to NoGroupStreakFound`, () => {
+  test(`creates correct error when type is set to NoTeamStreakFound`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.NoGroupStreakFound);
+    const customError = new CustomError(ErrorType.NoTeamStreakFound);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-41`);
-    expect(message).toBe("Group streak does not exist.");
+    expect(message).toBe("Team streak does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
@@ -478,7 +478,7 @@ describe("customError", () => {
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`400-42`);
-    expect(message).toBe("Group streak member does not exist.");
+    expect(message).toBe("Team streak member does not exist.");
     expect(httpStatusCode).toBe(400);
   });
 
@@ -1536,11 +1536,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to GroupStreakDefineCurrentTimeMiddleware`, () => {
+  test(`creates correct error when type is set to TeamStreakDefineCurrentTimeMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.GroupStreakDefineCurrentTimeMiddleware
+      ErrorType.TeamStreakDefineCurrentTimeMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1549,11 +1549,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to GroupStreakDefineStartDayMiddleware`, () => {
+  test(`creates correct error when type is set to TeamStreakDefineStartDayMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.GroupStreakDefineStartDayMiddleware
+      ErrorType.TeamStreakDefineStartDayMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1562,11 +1562,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to GroupStreakDefineEndOfDayMiddleware`, () => {
+  test(`creates correct error when type is set to TeamStreakDefineEndOfDayMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.GroupStreakDefineEndOfDayMiddleware
+      ErrorType.TeamStreakDefineEndOfDayMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1575,10 +1575,10 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to CreateGroupStreakFromRequestMiddleware`, () => {
+  test(`creates correct error when type is set to CreateTeamStreakFromRequestMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.CreateGroupStreakMiddleware);
+    const customError = new CustomError(ErrorType.CreateTeamStreakMiddleware);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-82`);
@@ -1586,11 +1586,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to SaveGroupStreakToDatabaseMiddleware`, () => {
+  test(`creates correct error when type is set to SaveTeamStreakToDatabaseMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.SaveGroupStreakToDatabaseMiddleware
+      ErrorType.SaveTeamStreakToDatabaseMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1599,11 +1599,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to SendFormattedGroupStreakMiddleware`, () => {
+  test(`creates correct error when type is set to SendFormattedTeamStreakMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.SendFormattedGroupStreakMiddleware
+      ErrorType.SendFormattedTeamStreakMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1612,10 +1612,10 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to FindGroupStreaksMiddleware`, () => {
+  test(`creates correct error when type is set to FindTeamStreaksMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.FindGroupStreaksMiddleware);
+    const customError = new CustomError(ErrorType.FindTeamStreaksMiddleware);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-85`);
@@ -1623,10 +1623,10 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to SendGroupStreaksMiddleware`, () => {
+  test(`creates correct error when type is set to SendTeamStreaksMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.SendGroupStreaksMiddleware);
+    const customError = new CustomError(ErrorType.SendTeamStreaksMiddleware);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-86`);
@@ -1634,11 +1634,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to RetreiveGroupStreaksMembersInformation`, () => {
+  test(`creates correct error when type is set to RetreiveTeamStreaksMembersInformation`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.RetreiveGroupStreaksMembersInformation
+      ErrorType.RetreiveTeamStreaksMembersInformation
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1647,10 +1647,10 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to DeleteGroupStreakMiddleware`, () => {
+  test(`creates correct error when type is set to DeleteTeamStreakMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.DeleteGroupStreakMiddleware);
+    const customError = new CustomError(ErrorType.DeleteTeamStreakMiddleware);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-88`);
@@ -1658,11 +1658,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to SendGroupStreakDeletedResponseMiddleware`, () => {
+  test(`creates correct error when type is set to SendTeamStreakDeletedResponseMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.SendGroupStreakDeletedResponseMiddleware
+      ErrorType.SendTeamStreakDeletedResponseMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1671,12 +1671,10 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to RetreiveGroupStreakMiddleware`, () => {
+  test(`creates correct error when type is set to RetreiveTeamStreakMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(
-      ErrorType.RetreiveGroupStreakMiddleware
-    );
+    const customError = new CustomError(ErrorType.RetreiveTeamStreakMiddleware);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-90`);
@@ -1684,10 +1682,10 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to SendGroupStreakMiddleware`, () => {
+  test(`creates correct error when type is set to SendTeamStreakMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.SendGroupStreakMiddleware);
+    const customError = new CustomError(ErrorType.SendTeamStreakMiddleware);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-91`);
@@ -1695,11 +1693,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to RetreiveGroupStreakMembersInformation`, () => {
+  test(`creates correct error when type is set to RetreiveTeamStreakMembersInformation`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.RetreiveGroupStreakMembersInformation
+      ErrorType.RetreiveTeamStreakMembersInformation
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1912,11 +1910,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to RetreiveGroupStreakCreatorInformationMiddleware`, () => {
+  test(`creates correct error when type is set to RetreiveTeamStreakCreatorInformationMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.RetreiveGroupStreakCreatorInformationMiddleware
+      ErrorType.RetreiveTeamStreakCreatorInformationMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -1977,11 +1975,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to CreateGroupMemberStreakRetreiveGroupStreakMiddleware`, () => {
+  test(`creates correct error when type is set to CreateGroupMemberStreakRetreiveTeamStreakMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.CreateGroupMemberStreakRetreiveGroupStreakMiddleware
+      ErrorType.CreateGroupMemberStreakRetreiveTeamStreakMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -2172,10 +2170,10 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to GroupStreakExistsMiddleware`, () => {
+  test(`creates correct error when type is set to TeamStreakExistsMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.GroupStreakExistsMiddleware);
+    const customError = new CustomError(ErrorType.TeamStreakExistsMiddleware);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-129`);
@@ -2248,11 +2246,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to CreateGroupStreakCreateMemberStreakFromRequestMiddleware`, () => {
+  test(`creates correct error when type is set to CreateTeamStreakCreateMemberStreakFromRequestMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.CreateGroupStreakCreateMemberStreakMiddleware
+      ErrorType.CreateTeamStreakCreateMemberStreakMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -2261,12 +2259,10 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to UpdateGroupStreakMembersArray`, () => {
+  test(`creates correct error when type is set to UpdateTeamStreakMembersArray`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(
-      ErrorType.UpdateGroupStreakMembersArray
-    );
+    const customError = new CustomError(ErrorType.UpdateTeamStreakMembersArray);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-136`);
@@ -2274,10 +2270,10 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to PatchGroupStreakMiddleware`, () => {
+  test(`creates correct error when type is set to PatchTeamStreakMiddleware`, () => {
     expect.assertions(3);
 
-    const customError = new CustomError(ErrorType.PatchGroupStreakMiddleware);
+    const customError = new CustomError(ErrorType.PatchTeamStreakMiddleware);
     const { code, message, httpStatusCode } = customError;
 
     expect(code).toBe(`500-137`);
@@ -2285,11 +2281,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to SendUpdatedGroupStreakMiddleware`, () => {
+  test(`creates correct error when type is set to SendUpdatedTeamStreakMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.SendUpdatedGroupStreakMiddleware
+      ErrorType.SendUpdatedTeamStreakMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -2311,11 +2307,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to CreateGroupMemberGroupStreakExistsMiddleware`, () => {
+  test(`creates correct error when type is set to CreateGroupMemberTeamStreakExistsMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.CreateGroupMemberGroupStreakExistsMiddleware
+      ErrorType.CreateGroupMemberTeamStreakExistsMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -2350,11 +2346,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to AddFriendToGroupStreakMiddleware`, () => {
+  test(`creates correct error when type is set to AddFriendToTeamStreakMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.AddFriendToGroupStreakMiddleware
+      ErrorType.AddFriendToTeamStreakMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -2363,11 +2359,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to DeleteGroupMemberRetreiveGroupStreakMiddleware`, () => {
+  test(`creates correct error when type is set to DeleteGroupMemberRetreiveTeamStreakMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.DeleteGroupMemberRetreiveGroupStreakMiddleware
+      ErrorType.DeleteGroupMemberRetreiveTeamStreakMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -2657,11 +2653,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to PopulateGroupStreakMembersInformation`, () => {
+  test(`creates correct error when type is set to PopulateTeamStreakMembersInformation`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.PopulateGroupStreakMembersInformation
+      ErrorType.PopulateTeamStreakMembersInformation
     );
     const { code, message, httpStatusCode } = customError;
 
@@ -2670,11 +2666,11 @@ describe("customError", () => {
     expect(httpStatusCode).toBe(500);
   });
 
-  test(`creates correct error when type is set to RetreiveCreatedGroupStreakCreatorInformationMiddleware`, () => {
+  test(`creates correct error when type is set to RetreiveCreatedTeamStreakCreatorInformationMiddleware`, () => {
     expect.assertions(3);
 
     const customError = new CustomError(
-      ErrorType.RetreiveCreatedGroupStreakCreatorInformationMiddleware
+      ErrorType.RetreiveCreatedTeamStreakCreatorInformationMiddleware
     );
     const { code, message, httpStatusCode } = customError;
 

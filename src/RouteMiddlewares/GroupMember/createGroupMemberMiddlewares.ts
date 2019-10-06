@@ -9,14 +9,14 @@ import { userModel, UserModel } from "../../Models/User";
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { CustomError, ErrorType } from "../../customError";
 
-import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
 import {
   groupMemberStreakModel,
   GroupMemberStreakModel
 } from "../../Models/GroupMemberStreak";
 
 export const createGroupMemberParamsValidationSchema = {
-  groupStreakId: Joi.string().required()
+  teamStreakId: Joi.string().required()
 };
 
 export const createGroupMemberParamsValidationMiddleware = (
@@ -73,35 +73,35 @@ export const getFriendExistsMiddleware = (
 
 export const friendExistsMiddleware = getFriendExistsMiddleware(userModel);
 
-export const getGroupStreakExistsMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreakModel>
+export const getTeamStreakExistsMiddleware = (
+  teamStreakModel: mongoose.Model<TeamStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { groupStreakId } = request.params;
-    const groupStreak = await groupStreakModel
+    const { teamStreakId } = request.params;
+    const teamStreak = await teamStreakModel
       .findOne({
-        _id: groupStreakId
+        _id: teamStreakId
       })
       .lean();
-    if (!groupStreak) {
-      throw new CustomError(ErrorType.CreateGroupMemberGroupStreakDoesNotExist);
+    if (!teamStreak) {
+      throw new CustomError(ErrorType.CreateGroupMemberTeamStreakDoesNotExist);
     }
-    response.locals.groupStreak = groupStreak;
+    response.locals.teamStreak = teamStreak;
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
     else
       next(
         new CustomError(
-          ErrorType.CreateGroupMemberGroupStreakExistsMiddleware,
+          ErrorType.CreateGroupMemberTeamStreakExistsMiddleware,
           err
         )
       );
   }
 };
 
-export const groupStreakExistsMiddleware = getGroupStreakExistsMiddleware(
-  groupStreakModel
+export const teamStreakExistsMiddleware = getTeamStreakExistsMiddleware(
+  teamStreakModel
 );
 
 export const getCreateGroupMemberStreakMiddleware = (
@@ -109,11 +109,11 @@ export const getCreateGroupMemberStreakMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
-    const { groupStreakId } = request.params;
+    const { teamStreakId } = request.params;
     const { friendId } = request.body;
     response.locals.groupMemberStreak = await new groupMemberStreak({
       userId: friendId,
-      groupStreakId,
+      teamStreakId,
       timezone
     }).save();
     next();
@@ -131,36 +131,36 @@ export const createGroupMemberStreakMiddleware = getCreateGroupMemberStreakMiddl
   groupMemberStreakModel
 );
 
-export const getAddFriendToGroupStreakMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreakModel>
+export const getAddFriendToTeamStreakMiddleware = (
+  teamStreakModel: mongoose.Model<TeamStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { groupStreakId } = request.params;
+    const { teamStreakId } = request.params;
     const { friendId } = request.body;
-    const { groupStreak, groupMemberStreak } = response.locals;
-    let { members } = groupStreak;
+    const { teamStreak, groupMemberStreak } = response.locals;
+    let { members } = teamStreak;
     members = [
       ...members,
       { memberId: friendId, groupMemberStreakId: groupMemberStreak._id }
     ];
-    const updatedGroupStreak = await groupStreakModel
+    const updatedTeamStreak = await teamStreakModel
       .findByIdAndUpdate(
-        groupStreakId,
+        teamStreakId,
         {
           members
         },
         { new: true }
       )
       .lean();
-    response.locals.groupStreak = updatedGroupStreak;
+    response.locals.teamStreak = updatedTeamStreak;
     next();
   } catch (err) {
-    next(new CustomError(ErrorType.AddFriendToGroupStreakMiddleware, err));
+    next(new CustomError(ErrorType.AddFriendToTeamStreakMiddleware, err));
   }
 };
 
-export const addFriendToGroupStreakMiddleware = getAddFriendToGroupStreakMiddleware(
-  groupStreakModel
+export const addFriendToTeamStreakMiddleware = getAddFriendToTeamStreakMiddleware(
+  teamStreakModel
 );
 
 export const sendCreateGroupMemberResponseMiddleware = (
@@ -169,8 +169,8 @@ export const sendCreateGroupMemberResponseMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const { groupStreak } = response.locals;
-    return response.status(ResponseCodes.created).send(groupStreak.members);
+    const { teamStreak } = response.locals;
+    return response.status(ResponseCodes.created).send(teamStreak.members);
   } catch (err) {
     next(
       new CustomError(ErrorType.SendCreateGroupMemberResponseMiddleware, err)
@@ -182,8 +182,8 @@ export const createGroupMemberMiddlewares = [
   createGroupMemberParamsValidationMiddleware,
   createGroupMemberBodyValidationMiddleware,
   friendExistsMiddleware,
-  groupStreakExistsMiddleware,
+  teamStreakExistsMiddleware,
   createGroupMemberStreakMiddleware,
-  addFriendToGroupStreakMiddleware,
+  addFriendToTeamStreakMiddleware,
   sendCreateGroupMemberResponseMiddleware
 ];

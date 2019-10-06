@@ -12,7 +12,7 @@ export const groupMemberStreakSchema = new mongoose.Schema(
       type: String,
       index: true
     },
-    groupStreakId: {
+    teamStreakId: {
       required: true,
       type: String,
       index: true

@@ -103,22 +103,22 @@ export enum ErrorType {
   GetFriendsUserDoesNotExist,
   GetFriendsRetreiveUserMiddleware,
   FormatFriendsMiddleware,
-  GroupStreakDefineCurrentTimeMiddleware,
-  GroupStreakDefineStartDayMiddleware,
-  GroupStreakDefineEndOfDayMiddleware,
-  CreateGroupStreakMiddleware,
-  SaveGroupStreakToDatabaseMiddleware,
-  SendFormattedGroupStreakMiddleware,
-  FindGroupStreaksMiddleware,
-  SendGroupStreaksMiddleware,
-  RetreiveGroupStreaksMembersInformation,
-  SendGroupStreakDeletedResponseMiddleware,
-  DeleteGroupStreakMiddleware,
-  NoGroupStreakToDeleteFound,
-  GetGroupStreakNoGroupStreakFound,
-  RetreiveGroupStreakMiddleware,
-  SendGroupStreakMiddleware,
-  RetreiveGroupStreakMembersInformation,
+  TeamStreakDefineCurrentTimeMiddleware,
+  TeamStreakDefineStartDayMiddleware,
+  TeamStreakDefineEndOfDayMiddleware,
+  CreateTeamStreakMiddleware,
+  SaveTeamStreakToDatabaseMiddleware,
+  SendFormattedTeamStreakMiddleware,
+  FindTeamStreaksMiddleware,
+  SendTeamStreaksMiddleware,
+  RetreiveTeamStreaksMembersInformation,
+  SendTeamStreakDeletedResponseMiddleware,
+  DeleteTeamStreakMiddleware,
+  NoTeamStreakToDeleteFound,
+  GetTeamStreakNoTeamStreakFound,
+  RetreiveTeamStreakMiddleware,
+  SendTeamStreakMiddleware,
+  RetreiveTeamStreakMembersInformation,
   CreateStreakTrackingEventFromRequestMiddleware,
   SaveStreakTrackingEventToDatabaseMiddleware,
   SendFormattedStreakTrackingEventMiddleware,
@@ -139,14 +139,14 @@ export enum ErrorType {
   DeleteFeedbackMiddleware,
   SendFeedbackDeletedResponseMiddleware,
   NoFeedbackToDeleteFound,
-  RetreiveGroupStreakCreatorInformationMiddleware,
+  RetreiveTeamStreakCreatorInformationMiddleware,
   CreateGroupMemberStreakFromRequestMiddleware,
   SaveGroupMemberStreakToDatabaseMiddleware,
   SendFormattedGroupMemberStreakMiddleware,
   CreateGroupMemberStreakRetreiveUserMiddleware,
   CreateGroupMemberStreakUserDoesNotExist,
-  CreateGroupMemberStreakGroupStreakDoesNotExist,
-  CreateGroupMemberStreakRetreiveGroupStreakMiddleware,
+  CreateGroupMemberStreakTeamStreakDoesNotExist,
+  CreateGroupMemberStreakRetreiveTeamStreakMiddleware,
   DeleteGroupMemberStreakMiddleware,
   SendGroupMemberStreakDeletedResponseMiddleware,
   NoGroupMemberStreakToDeleteFound,
@@ -165,32 +165,32 @@ export enum ErrorType {
   RetreiveGroupMemberStreakMiddleware,
   SendGroupMemberStreakMiddleware,
   GetGroupMemberStreakNoGroupMemberStreakFound,
-  GroupStreakDoesNotExist,
-  GroupStreakExistsMiddleware,
+  TeamStreakDoesNotExist,
+  TeamStreakExistsMiddleware,
   CreateCompleteGroupMemberStreakTaskMiddleware,
   DeleteCompleteGroupMemberStreakTaskMiddleware,
   SendCompleteGroupMemberStreakTaskDeletedResponseMiddleware,
   NoCompleteGroupMemberStreakTaskToDeleteFound,
   GetCompleteGroupMemberStreakTasksMiddleware,
   SendCompleteGroupMemberStreakTasksResponseMiddleware,
-  CreateGroupStreakCreateMemberStreakMiddleware,
+  CreateTeamStreakCreateMemberStreakMiddleware,
   GroupMemberDoesNotExist,
-  UpdateGroupStreakMembersArray,
-  PatchGroupStreakMiddleware,
-  SendUpdatedGroupStreakMiddleware,
-  UpdatedGroupStreakNotFound,
+  UpdateTeamStreakMembersArray,
+  PatchTeamStreakMiddleware,
+  SendUpdatedTeamStreakMiddleware,
+  UpdatedTeamStreakNotFound,
   CreateGroupMemberFriendExistsMiddleware,
-  CreateGroupMemberGroupStreakExistsMiddleware,
+  CreateGroupMemberTeamStreakExistsMiddleware,
   SendCreateGroupMemberResponseMiddleware,
   CreateGroupMemberFriendDoesNotExist,
-  CreateGroupMemberGroupStreakDoesNotExist,
+  CreateGroupMemberTeamStreakDoesNotExist,
   CreateGroupMemberCreateGroupMemberStreakMiddleware,
-  AddFriendToGroupStreakMiddleware,
-  DeleteGroupMemberRetreiveGroupStreakMiddleware,
+  AddFriendToTeamStreakMiddleware,
+  DeleteGroupMemberRetreiveTeamStreakMiddleware,
   RetreiveGroupMemberMiddleware,
   DeleteGroupMemberMiddleware,
   SendGroupMemberDeletedResponseMiddleware,
-  NoGroupStreakFound,
+  NoTeamStreakFound,
   NoGroupMemberFound,
   FindGroupMemberStreaksMiddleware,
   SendGroupMemberStreaksMiddleware,
@@ -219,8 +219,8 @@ export enum ErrorType {
   PopulateFriendRequestsMiddleware,
   PopulateFriendRequestMiddleware,
   PopulateUpdatedFriendRequestMiddleware,
-  PopulateGroupStreakMembersInformation,
-  RetreiveCreatedGroupStreakCreatorInformationMiddleware,
+  PopulateTeamStreakMembersInformation,
+  RetreiveCreatedTeamStreakCreatorInformationMiddleware,
   AddUserToFriendsFriendListMiddleware
 }
 
@@ -414,18 +414,18 @@ export class CustomError extends Error {
         };
       }
 
-      case ErrorType.NoGroupStreakToDeleteFound: {
+      case ErrorType.NoTeamStreakToDeleteFound: {
         return {
           code: `${ResponseCodes.badRequest}-24`,
-          message: "Group streak does not exist.",
+          message: "Team streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
 
-      case ErrorType.GetGroupStreakNoGroupStreakFound: {
+      case ErrorType.GetTeamStreakNoTeamStreakFound: {
         return {
           code: `${ResponseCodes.badRequest}-25`,
-          message: "Group streak does not exist.",
+          message: "Team streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -470,10 +470,10 @@ export class CustomError extends Error {
         };
       }
 
-      case ErrorType.CreateGroupMemberStreakGroupStreakDoesNotExist: {
+      case ErrorType.CreateGroupMemberStreakTeamStreakDoesNotExist: {
         return {
           code: `${ResponseCodes.badRequest}-31`,
-          message: "Group streak does not exist.",
+          message: "Team streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -502,10 +502,10 @@ export class CustomError extends Error {
         };
       }
 
-      case ErrorType.GroupStreakDoesNotExist: {
+      case ErrorType.TeamStreakDoesNotExist: {
         return {
           code: `${ResponseCodes.badRequest}-35`,
-          message: "Group streak does not exist.",
+          message: "Team streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -526,10 +526,10 @@ export class CustomError extends Error {
         };
       }
 
-      case ErrorType.UpdatedGroupStreakNotFound: {
+      case ErrorType.UpdatedTeamStreakNotFound: {
         return {
           code: `${ResponseCodes.badRequest}-38`,
-          message: "Group streak does not exist.",
+          message: "Team streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -542,18 +542,18 @@ export class CustomError extends Error {
         };
       }
 
-      case ErrorType.CreateGroupMemberGroupStreakDoesNotExist: {
+      case ErrorType.CreateGroupMemberTeamStreakDoesNotExist: {
         return {
           code: `${ResponseCodes.badRequest}-40`,
-          message: "Group streak does not exist.",
+          message: "Team streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
 
-      case ErrorType.NoGroupStreakFound: {
+      case ErrorType.NoTeamStreakFound: {
         return {
           code: `${ResponseCodes.badRequest}-41`,
-          message: "Group streak does not exist.",
+          message: "Team streak does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -561,7 +561,7 @@ export class CustomError extends Error {
       case ErrorType.NoGroupMemberFound: {
         return {
           code: `${ResponseCodes.badRequest}-42`,
-          message: "Group streak member does not exist.",
+          message: "Team streak member does not exist.",
           httpStatusCode: ResponseCodes.badRequest
         };
       }
@@ -1203,98 +1203,98 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.GroupStreakDefineCurrentTimeMiddleware:
+      case ErrorType.TeamStreakDefineCurrentTimeMiddleware:
         return {
           code: `${ResponseCodes.warning}-79`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.GroupStreakDefineStartDayMiddleware:
+      case ErrorType.TeamStreakDefineStartDayMiddleware:
         return {
           code: `${ResponseCodes.warning}-80`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.GroupStreakDefineEndOfDayMiddleware:
+      case ErrorType.TeamStreakDefineEndOfDayMiddleware:
         return {
           code: `${ResponseCodes.warning}-81`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.CreateGroupStreakMiddleware:
+      case ErrorType.CreateTeamStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-82`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SaveGroupStreakToDatabaseMiddleware:
+      case ErrorType.SaveTeamStreakToDatabaseMiddleware:
         return {
           code: `${ResponseCodes.warning}-83`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SendFormattedGroupStreakMiddleware:
+      case ErrorType.SendFormattedTeamStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-84`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.FindGroupStreaksMiddleware:
+      case ErrorType.FindTeamStreaksMiddleware:
         return {
           code: `${ResponseCodes.warning}-85`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SendGroupStreaksMiddleware:
+      case ErrorType.SendTeamStreaksMiddleware:
         return {
           code: `${ResponseCodes.warning}-86`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.RetreiveGroupStreaksMembersInformation:
+      case ErrorType.RetreiveTeamStreaksMembersInformation:
         return {
           code: `${ResponseCodes.warning}-87`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.DeleteGroupStreakMiddleware:
+      case ErrorType.DeleteTeamStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-88`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SendGroupStreakDeletedResponseMiddleware:
+      case ErrorType.SendTeamStreakDeletedResponseMiddleware:
         return {
           code: `${ResponseCodes.warning}-89`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.RetreiveGroupStreakMiddleware:
+      case ErrorType.RetreiveTeamStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-90`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SendGroupStreakMiddleware:
+      case ErrorType.SendTeamStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-91`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.RetreiveGroupStreakMembersInformation:
+      case ErrorType.RetreiveTeamStreakMembersInformation:
         return {
           code: `${ResponseCodes.warning}-92`,
           message: internalServerMessage,
@@ -1413,7 +1413,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.RetreiveGroupStreakCreatorInformationMiddleware:
+      case ErrorType.RetreiveTeamStreakCreatorInformationMiddleware:
         return {
           code: `${ResponseCodes.warning}-109`,
           message: internalServerMessage,
@@ -1448,7 +1448,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.CreateGroupMemberStreakRetreiveGroupStreakMiddleware:
+      case ErrorType.CreateGroupMemberStreakRetreiveTeamStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-114`,
           message: internalServerMessage,
@@ -1553,7 +1553,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.GroupStreakExistsMiddleware:
+      case ErrorType.TeamStreakExistsMiddleware:
         return {
           code: `${ResponseCodes.warning}-129`,
           message: internalServerMessage,
@@ -1595,28 +1595,28 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.CreateGroupStreakCreateMemberStreakMiddleware:
+      case ErrorType.CreateTeamStreakCreateMemberStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-135`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.UpdateGroupStreakMembersArray:
+      case ErrorType.UpdateTeamStreakMembersArray:
         return {
           code: `${ResponseCodes.warning}-136`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.PatchGroupStreakMiddleware:
+      case ErrorType.PatchTeamStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-137`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.SendUpdatedGroupStreakMiddleware:
+      case ErrorType.SendUpdatedTeamStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-138`,
           message: internalServerMessage,
@@ -1630,7 +1630,7 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.CreateGroupMemberGroupStreakExistsMiddleware:
+      case ErrorType.CreateGroupMemberTeamStreakExistsMiddleware:
         return {
           code: `${ResponseCodes.warning}-140`,
           message: internalServerMessage,
@@ -1651,14 +1651,14 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.AddFriendToGroupStreakMiddleware:
+      case ErrorType.AddFriendToTeamStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-143`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.DeleteGroupMemberRetreiveGroupStreakMiddleware:
+      case ErrorType.DeleteGroupMemberRetreiveTeamStreakMiddleware:
         return {
           code: `${ResponseCodes.warning}-144`,
           message: internalServerMessage,
@@ -1826,14 +1826,14 @@ export class CustomError extends Error {
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.PopulateGroupStreakMembersInformation:
+      case ErrorType.PopulateTeamStreakMembersInformation:
         return {
           code: `${ResponseCodes.warning}-168`,
           message: internalServerMessage,
           httpStatusCode: ResponseCodes.warning
         };
 
-      case ErrorType.RetreiveCreatedGroupStreakCreatorInformationMiddleware:
+      case ErrorType.RetreiveCreatedTeamStreakCreatorInformationMiddleware:
         return {
           code: `${ResponseCodes.warning}-169`,
           message: internalServerMessage,

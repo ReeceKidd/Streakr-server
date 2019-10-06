@@ -3,7 +3,7 @@ export enum Collections {
   Feedback = "Feedback",
   StripeCustomers = "StripeCustomers",
   SoloStreaks = "SoloStreaks",
-  GroupStreaks = "GroupStreaks",
+  TeamStreaks = "TeamStreaks",
   AgendaJobs = "AgendaJobs",
   CompleteSoloStreakTasks = "CompleteSoloStreakTasks",
   CompleteGroupMemberStreakTasks = "CompleteGroupMemberStreakTasks",

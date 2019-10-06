@@ -1,16 +1,16 @@
 import {
-  deleteGroupStreakMiddlewares,
-  groupStreakParamsValidationMiddleware,
-  deleteGroupStreakMiddleware,
-  getDeleteGroupStreakMiddleware,
-  sendGroupStreakDeletedResponseMiddleware,
-  getSendGroupStreakDeletedResponseMiddleware
-} from "./deleteGroupStreakMiddlewares";
+  deleteTeamStreakMiddlewares,
+  teamStreakParamsValidationMiddleware,
+  deleteTeamStreakMiddleware,
+  getDeleteTeamStreakMiddleware,
+  sendTeamStreakDeletedResponseMiddleware,
+  getSendTeamStreakDeletedResponseMiddleware
+} from "./deleteTeamStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
-describe("groupStreakParamsValidationMiddleware", () => {
-  test("sends groupStreakId is not defined error", () => {
+describe("teamStreakParamsValidationMiddleware", () => {
+  test("sends teamStreakId is not defined error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -22,100 +22,99 @@ describe("groupStreakParamsValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    groupStreakParamsValidationMiddleware(request, response, next);
+    teamStreakParamsValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
-      message:
-        'child "groupStreakId" fails because ["groupStreakId" is required]'
+      message: 'child "teamStreakId" fails because ["teamStreakId" is required]'
     });
     expect(next).not.toBeCalled();
   });
 
-  test("sends groupStreakId is not a string error", () => {
+  test("sends teamStreakId is not a string error", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      params: { groupStreakId: 123 }
+      params: { teamStreakId: 123 }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    groupStreakParamsValidationMiddleware(request, response, next);
+    teamStreakParamsValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
-        'child "groupStreakId" fails because ["groupStreakId" must be a string]'
+        'child "teamStreakId" fails because ["teamStreakId" must be a string]'
     });
     expect(next).not.toBeCalled();
   });
 });
 
-describe("deleteGroupStreakMiddleware", () => {
-  test("sets response.locals.deletedGroupStreak", async () => {
+describe("deleteTeamStreakMiddleware", () => {
+  test("sets response.locals.deletedTeamStreak", async () => {
     expect.assertions(3);
-    const groupStreakId = "abc123";
+    const teamStreakId = "abc123";
     const findByIdAndDelete = jest.fn(() => Promise.resolve(true));
-    const groupStreakModel = {
+    const TeamStreakModel = {
       findByIdAndDelete
     };
-    const request: any = { params: { groupStreakId } };
+    const request: any = { params: { teamStreakId } };
     const response: any = { locals: {} };
     const next = jest.fn();
-    const middleware = getDeleteGroupStreakMiddleware(groupStreakModel as any);
+    const middleware = getDeleteTeamStreakMiddleware(TeamStreakModel as any);
 
     await middleware(request, response, next);
 
-    expect(findByIdAndDelete).toBeCalledWith(groupStreakId);
-    expect(response.locals.deletedGroupStreak).toBeDefined();
+    expect(findByIdAndDelete).toBeCalledWith(teamStreakId);
+    expect(response.locals.deletedTeamStreak).toBeDefined();
     expect(next).toBeCalledWith();
   });
 
-  test("throws NoGroupStreakToDeleteFound error when no group streak is found", async () => {
+  test("throws NoTeamStreakToDeleteFound error when no group streak is found", async () => {
     expect.assertions(1);
-    const groupStreakId = "abc123";
+    const teamStreakId = "abc123";
     const findByIdAndDelete = jest.fn(() => Promise.resolve(false));
-    const groupStreakModel = {
+    const TeamStreakModel = {
       findByIdAndDelete
     };
-    const request: any = { params: { groupStreakId } };
+    const request: any = { params: { teamStreakId } };
     const response: any = { locals: {} };
     const next = jest.fn();
-    const middleware = getDeleteGroupStreakMiddleware(groupStreakModel as any);
+    const middleware = getDeleteTeamStreakMiddleware(TeamStreakModel as any);
 
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
-      new CustomError(ErrorType.NoGroupStreakToDeleteFound)
+      new CustomError(ErrorType.NoTeamStreakToDeleteFound)
     );
   });
 
-  test("calls next with DeleteGroupStreakMiddleware error on failure", async () => {
+  test("calls next with DeleteTeamStreakMiddleware error on failure", async () => {
     expect.assertions(1);
-    const groupStreakId = "abc123";
+    const teamStreakId = "abc123";
     const error = "error";
     const findByIdAndDelete = jest.fn(() => Promise.reject(error));
-    const groupStreakModel = {
+    const teamStreakModel = {
       findByIdAndDelete
     };
-    const request: any = { params: { groupStreakId } };
+    const request: any = { params: { teamStreakId } };
     const response: any = { locals: {} };
     const next = jest.fn();
-    const middleware = getDeleteGroupStreakMiddleware(groupStreakModel as any);
+    const middleware = getDeleteTeamStreakMiddleware(teamStreakModel as any);
 
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
-      new CustomError(ErrorType.DeleteGroupStreakMiddleware, expect.any(Error))
+      new CustomError(ErrorType.DeleteTeamStreakMiddleware, expect.any(Error))
     );
   });
 });
 
-describe("sendGroupStreakDeletedResponseMiddleware", () => {
+describe("sendTeamStreakDeletedResponseMiddleware", () => {
   test("responds with successful deletion", () => {
     expect.assertions(2);
     const successfulDeletionResponseCode = 204;
@@ -124,7 +123,7 @@ describe("sendGroupStreakDeletedResponseMiddleware", () => {
     const request: any = {};
     const response: any = { status };
     const next = jest.fn();
-    const middleware = getSendGroupStreakDeletedResponseMiddleware(
+    const middleware = getSendTeamStreakDeletedResponseMiddleware(
       successfulDeletionResponseCode
     );
 
@@ -140,7 +139,7 @@ describe("sendGroupStreakDeletedResponseMiddleware", () => {
     const request: any = {};
     const response: any = {};
     const next = jest.fn();
-    const middleware = getSendGroupStreakDeletedResponseMiddleware(
+    const middleware = getSendTeamStreakDeletedResponseMiddleware(
       successfulDeletionResponseCode
     );
 
@@ -148,26 +147,24 @@ describe("sendGroupStreakDeletedResponseMiddleware", () => {
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.SendGroupStreakDeletedResponseMiddleware,
+        ErrorType.SendTeamStreakDeletedResponseMiddleware,
         expect.any(Error)
       )
     );
   });
 });
 
-describe("deleteGroupStreakMiddlewares", () => {
-  test("that deleteGroupStreakMiddlewares are defined in the correct order", () => {
+describe("deleteTeamStreakMiddlewares", () => {
+  test("that deleteTeamStreakMiddlewares are defined in the correct order", () => {
     expect.assertions(4);
 
-    expect(deleteGroupStreakMiddlewares.length).toEqual(3);
-    expect(deleteGroupStreakMiddlewares[0]).toEqual(
-      groupStreakParamsValidationMiddleware
+    expect(deleteTeamStreakMiddlewares.length).toEqual(3);
+    expect(deleteTeamStreakMiddlewares[0]).toEqual(
+      teamStreakParamsValidationMiddleware
     );
-    expect(deleteGroupStreakMiddlewares[1]).toEqual(
-      deleteGroupStreakMiddleware
-    );
-    expect(deleteGroupStreakMiddlewares[2]).toEqual(
-      sendGroupStreakDeletedResponseMiddleware
+    expect(deleteTeamStreakMiddlewares[1]).toEqual(deleteTeamStreakMiddleware);
+    expect(deleteTeamStreakMiddlewares[2]).toEqual(
+      sendTeamStreakDeletedResponseMiddleware
     );
   });
 });

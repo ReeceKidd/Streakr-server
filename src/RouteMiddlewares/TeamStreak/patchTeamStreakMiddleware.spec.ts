@@ -1,16 +1,16 @@
 import {
-  patchGroupStreakMiddlewares,
-  groupStreakRequestBodyValidationMiddleware,
-  getPatchGroupStreakMiddleware,
-  patchGroupStreakMiddleware,
-  sendUpdatedGroupStreakMiddleware,
-  groupStreakParamsValidationMiddleware
-} from "./patchGroupStreakMiddlewares";
+  patchTeamStreakMiddlewares,
+  teamStreakRequestBodyValidationMiddleware,
+  getPatchTeamStreakMiddleware,
+  patchTeamStreakMiddleware,
+  sendUpdatedTeamStreakMiddleware,
+  teamStreakParamsValidationMiddleware
+} from "./patchTeamStreakMiddlewares";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 
-describe("groupStreakParamsValidationMiddleware", () => {
-  test("sends correct error response when groupStreakId is not defined", () => {
+describe("teamStreakParamsValidationMiddleware", () => {
+  test("sends correct error response when teamStreakId is not defined", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
@@ -22,40 +22,39 @@ describe("groupStreakParamsValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    groupStreakParamsValidationMiddleware(request, response, next);
+    teamStreakParamsValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
-      message:
-        'child "groupStreakId" fails because ["groupStreakId" is required]'
+      message: 'child "teamStreakId" fails because ["teamStreakId" is required]'
     });
     expect(next).not.toBeCalled();
   });
 
-  test("sends correct error response when groupStreakId is not a string", () => {
+  test("sends correct error response when teamStreakId is not a string", () => {
     expect.assertions(3);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const request: any = {
-      params: { groupStreakId: 123 }
+      params: { teamStreakId: 123 }
     };
     const response: any = {
       status
     };
     const next = jest.fn();
 
-    groupStreakParamsValidationMiddleware(request, response, next);
+    teamStreakParamsValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
       message:
-        'child "groupStreakId" fails because ["groupStreakId" must be a string]'
+        'child "teamStreakId" fails because ["teamStreakId" must be a string]'
     });
     expect(next).not.toBeCalled();
   });
 });
 
-describe("groupStreakRequestBodyValidationMiddleware", () => {
+describe("teamStreakRequestBodyValidationMiddleware", () => {
   const creatorId = "creatorId";
   const streakName = "streakName";
   const streakDescription = "streakDescription";
@@ -87,7 +86,7 @@ describe("groupStreakRequestBodyValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    groupStreakRequestBodyValidationMiddleware(request, response, next);
+    teamStreakRequestBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
     expect(send).toBeCalledWith({
@@ -111,7 +110,7 @@ describe("groupStreakRequestBodyValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    groupStreakRequestBodyValidationMiddleware(request, response, next);
+    teamStreakRequestBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -136,7 +135,7 @@ describe("groupStreakRequestBodyValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    groupStreakRequestBodyValidationMiddleware(request, response, next);
+    teamStreakRequestBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -161,7 +160,7 @@ describe("groupStreakRequestBodyValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    groupStreakRequestBodyValidationMiddleware(request, response, next);
+    teamStreakRequestBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -186,7 +185,7 @@ describe("groupStreakRequestBodyValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    groupStreakRequestBodyValidationMiddleware(request, response, next);
+    teamStreakRequestBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -210,7 +209,7 @@ describe("groupStreakRequestBodyValidationMiddleware", () => {
     };
     const next = jest.fn();
 
-    groupStreakRequestBodyValidationMiddleware(request, response, next);
+    teamStreakRequestBodyValidationMiddleware(request, response, next);
 
     expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
     expect(send).toBeCalledWith({
@@ -220,15 +219,15 @@ describe("groupStreakRequestBodyValidationMiddleware", () => {
   });
 });
 
-describe("patchGroupStreakMiddleware", () => {
-  test("sets response.locals.updatedGroupStreak", async () => {
+describe("patchTeamStreakMiddleware", () => {
+  test("sets response.locals.updatedTeamStreak", async () => {
     expect.assertions(3);
-    const groupStreakId = "abc123";
+    const teamStreakId = "abc123";
     const userId = "123cde";
     const name = "Daily programming";
     const description = "Do one hour of programming each day";
     const request: any = {
-      params: { groupStreakId },
+      params: { teamStreakId },
       body: {
         userId,
         name,
@@ -238,30 +237,30 @@ describe("patchGroupStreakMiddleware", () => {
     const response: any = { locals: {} };
     const next = jest.fn();
     const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
-    const groupStreakModel = {
+    const teamStreakModel = {
       findByIdAndUpdate
     };
-    const middleware = getPatchGroupStreakMiddleware(groupStreakModel as any);
+    const middleware = getPatchTeamStreakMiddleware(teamStreakModel as any);
 
     await middleware(request, response, next);
 
     expect(findByIdAndUpdate).toBeCalledWith(
-      groupStreakId,
+      teamStreakId,
       { userId, name, description },
       { new: true }
     );
-    expect(response.locals.updatedGroupStreak).toBeDefined();
+    expect(response.locals.updatedTeamStreak).toBeDefined();
     expect(next).toBeCalledWith();
   });
 
-  test("throws UpdatedGroupStreakNotFound error when solo streak is not found", async () => {
+  test("throws UpdatedTeamStreakNotFound error when solo streak is not found", async () => {
     expect.assertions(1);
-    const groupStreakId = "abc123";
+    const teamStreakId = "abc123";
     const userId = "123cde";
     const name = "Daily programming";
     const description = "Do one hour of programming each day";
     const request: any = {
-      params: { groupStreakId },
+      params: { teamStreakId },
       body: {
         userId,
         name,
@@ -271,26 +270,26 @@ describe("patchGroupStreakMiddleware", () => {
     const response: any = { locals: {} };
     const next = jest.fn();
     const findByIdAndUpdate = jest.fn(() => Promise.resolve(false));
-    const groupStreakModel = {
+    const teamStreakModel = {
       findByIdAndUpdate
     };
-    const middleware = getPatchGroupStreakMiddleware(groupStreakModel as any);
+    const middleware = getPatchTeamStreakMiddleware(teamStreakModel as any);
 
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
-      new CustomError(ErrorType.UpdatedGroupStreakNotFound)
+      new CustomError(ErrorType.UpdatedTeamStreakNotFound)
     );
   });
 
-  test("calls next with PatchGroupStreakMiddleware on middleware failure", async () => {
+  test("calls next with PatchTeamStreakMiddleware on middleware failure", async () => {
     expect.assertions(1);
-    const groupStreakId = "abc123";
+    const teamStreakId = "abc123";
     const userId = "123cde";
     const name = "Daily programming";
     const description = "Do one hour of programming each day";
     const request: any = {
-      params: { groupStreakId },
+      params: { teamStreakId },
       body: {
         userId,
         name,
@@ -301,81 +300,79 @@ describe("patchGroupStreakMiddleware", () => {
     const next = jest.fn();
     const errorMessage = "error";
     const findByIdAndUpdate = jest.fn(() => Promise.reject(errorMessage));
-    const groupStreakModel = {
+    const TeamStreakModel = {
       findByIdAndUpdate
     };
-    const middleware = getPatchGroupStreakMiddleware(groupStreakModel as any);
+    const middleware = getPatchTeamStreakMiddleware(TeamStreakModel as any);
 
     await middleware(request, response, next);
 
     expect(next).toBeCalledWith(
-      new CustomError(ErrorType.PatchGroupStreakMiddleware)
+      new CustomError(ErrorType.PatchTeamStreakMiddleware)
     );
   });
 });
 
 describe("sendUpdatedPatchMiddleware", () => {
   const ERROR_MESSAGE = "error";
-  const updatedGroupStreak = {
+  const updatedTeamStreak = {
     userId: "abc",
     streakName: "Daily Spanish",
     streakDescription: "Practice spanish every day",
     startDate: new Date()
   };
 
-  test("sends updatedGroupStreak", () => {
+  test("sends updatedTeamStreak", () => {
     expect.assertions(4);
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
-    const groupStreakResponseLocals = { updatedGroupStreak };
-    const response: any = { locals: groupStreakResponseLocals, status };
+    const teamStreakResponseLocals = { updatedTeamStreak };
+    const response: any = { locals: teamStreakResponseLocals, status };
     const request: any = {};
     const next = jest.fn();
     const updatedResourceResponseCode = 200;
 
-    sendUpdatedGroupStreakMiddleware(request, response, next);
+    sendUpdatedTeamStreakMiddleware(request, response, next);
 
     expect(response.locals.user).toBeUndefined();
     expect(next).not.toBeCalled();
     expect(status).toBeCalledWith(updatedResourceResponseCode);
-    expect(send).toBeCalledWith(updatedGroupStreak);
+    expect(send).toBeCalledWith(updatedTeamStreak);
   });
 
-  test("calls next with SendUpdatedGroupStreakMiddleware error on middleware failure", () => {
+  test("calls next with SendUpdatedTeamStreakMiddleware error on middleware failure", () => {
     expect.assertions(1);
     const send = jest.fn(() => {
       throw new Error(ERROR_MESSAGE);
     });
     const status = jest.fn(() => ({ send }));
-    const response: any = { locals: { updatedGroupStreak }, status };
+    const response: any = { locals: { updatedTeamStreak }, status };
     const request: any = {};
     const next = jest.fn();
 
-    sendUpdatedGroupStreakMiddleware(request, response, next);
+    sendUpdatedTeamStreakMiddleware(request, response, next);
 
     expect(next).toBeCalledWith(
       new CustomError(
-        ErrorType.SendUpdatedGroupStreakMiddleware,
+        ErrorType.SendUpdatedTeamStreakMiddleware,
         expect.any(Error)
       )
     );
   });
 });
 
-describe("patchGroupStreakMiddlewares", () => {
+describe("patchTeamStreakMiddlewares", () => {
   test("are defined in the correct order", () => {
     expect.assertions(5);
 
-    expect(patchGroupStreakMiddlewares.length).toBe(4);
-    expect(patchGroupStreakMiddlewares[0]).toBe(
-      groupStreakParamsValidationMiddleware
+    expect(patchTeamStreakMiddlewares.length).toBe(4);
+    expect(patchTeamStreakMiddlewares[0]).toBe(
+      teamStreakParamsValidationMiddleware
     );
-    expect(patchGroupStreakMiddlewares[1]).toBe(
-      groupStreakRequestBodyValidationMiddleware
+    expect(patchTeamStreakMiddlewares[1]).toBe(
+      teamStreakRequestBodyValidationMiddleware
     );
-    expect(patchGroupStreakMiddlewares[2]).toBe(patchGroupStreakMiddleware);
-    expect(patchGroupStreakMiddlewares[3]).toBe(
-      sendUpdatedGroupStreakMiddleware
-    );
+    expect(patchTeamStreakMiddlewares[2]).toBe(patchTeamStreakMiddleware);
+    expect(patchTeamStreakMiddlewares[3]).toBe(sendUpdatedTeamStreakMiddleware);
   });
 });

@@ -6,10 +6,10 @@ import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddlewar
 
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
-import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
 
 const groupMemberParamsValidationSchema = {
-  groupStreakId: Joi.string().required(),
+  teamStreakId: Joi.string().required(),
   memberId: Joi.string().required()
 };
 
@@ -25,31 +25,31 @@ export const groupMemberParamsValidationMiddleware = (
   );
 };
 
-export const getRetreiveGroupStreakMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreakModel>
+export const getRetreiveTeamStreakMiddleware = (
+  teamStreakModel: mongoose.Model<TeamStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { groupStreakId } = request.params;
-    const groupStreak = await groupStreakModel.findById(groupStreakId).lean();
-    if (!groupStreak) {
-      throw new CustomError(ErrorType.NoGroupStreakFound);
+    const { teamStreakId } = request.params;
+    const teamStreak = await teamStreakModel.findById(teamStreakId).lean();
+    if (!teamStreak) {
+      throw new CustomError(ErrorType.NoTeamStreakFound);
     }
-    response.locals.groupStreak = groupStreak;
+    response.locals.teamStreak = teamStreak;
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
     else
       next(
         new CustomError(
-          ErrorType.DeleteGroupMemberRetreiveGroupStreakMiddleware,
+          ErrorType.DeleteGroupMemberRetreiveTeamStreakMiddleware,
           err
         )
       );
   }
 };
 
-export const retreiveGroupStreakMiddleware = getRetreiveGroupStreakMiddleware(
-  groupStreakModel
+export const retreiveTeamStreakMiddleware = getRetreiveTeamStreakMiddleware(
+  teamStreakModel
 );
 
 export const retreiveGroupMemberMiddleware = async (
@@ -59,8 +59,8 @@ export const retreiveGroupMemberMiddleware = async (
 ) => {
   try {
     const { memberId } = request.params;
-    const { groupStreak } = response.locals;
-    const { members } = groupStreak;
+    const { teamStreak } = response.locals;
+    const { members } = teamStreak;
     const member = members.find((member: { memberId: string }) => {
       return member.memberId === memberId;
     });
@@ -75,17 +75,17 @@ export const retreiveGroupMemberMiddleware = async (
   }
 };
 export const getDeleteGroupMemberMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreakModel>
+  teamStreakModel: mongoose.Model<TeamStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { memberId, groupStreakId } = request.params;
-    const { groupStreak } = response.locals;
-    let { members } = groupStreak;
+    const { memberId, teamStreakId } = request.params;
+    const { teamStreak } = response.locals;
+    let { members } = teamStreak;
     members = members.filter((member: { memberId: string }) => {
       return member.memberId !== memberId;
     });
-    await groupStreakModel
-      .findByIdAndUpdate(groupStreakId, { members }, { new: true })
+    await teamStreakModel
+      .findByIdAndUpdate(teamStreakId, { members }, { new: true })
       .lean();
     next();
   } catch (err) {
@@ -95,7 +95,7 @@ export const getDeleteGroupMemberMiddleware = (
 };
 
 export const deleteGroupMemberMiddleware = getDeleteGroupMemberMiddleware(
-  groupStreakModel
+  teamStreakModel
 );
 
 export const sendGroupMemberDeletedResponseMiddleware = (
@@ -114,7 +114,7 @@ export const sendGroupMemberDeletedResponseMiddleware = (
 
 export const deleteGroupMemberMiddlewares = [
   groupMemberParamsValidationMiddleware,
-  retreiveGroupStreakMiddleware,
+  retreiveTeamStreakMiddleware,
   retreiveGroupMemberMiddleware,
   deleteGroupMemberMiddleware,
   sendGroupMemberDeletedResponseMiddleware

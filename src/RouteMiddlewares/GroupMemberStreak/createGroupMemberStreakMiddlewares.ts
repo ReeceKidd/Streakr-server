@@ -11,16 +11,16 @@ import {
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import { userModel, UserModel } from "../../Models/User";
-import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
 
 export interface GroupMemberStreakRegistrationRequestBody {
   userId: string;
-  groupStreakId: string;
+  teamStreakId: string;
 }
 
 const createGroupMemberStreakBodyValidationSchema = {
   userId: Joi.string().required(),
-  groupStreakId: Joi.string().required()
+  teamStreakId: Joi.string().required()
 };
 
 export const createGroupMemberStreakBodyValidationMiddleware = (
@@ -60,33 +60,33 @@ export const getRetreiveUserMiddleware = (
 
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
-export const getRetreiveGroupStreakMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreakModel>
+export const getRetreiveTeamStreakMiddleware = (
+  teamStreakModel: mongoose.Model<TeamStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { groupStreakId } = request.body;
-    const groupStreak = await groupStreakModel.findOne({ _id: groupStreakId });
-    if (!groupStreak) {
+    const { teamStreakId } = request.body;
+    const teamStreak = await teamStreakModel.findOne({ _id: teamStreakId });
+    if (!teamStreak) {
       throw new CustomError(
-        ErrorType.CreateGroupMemberStreakGroupStreakDoesNotExist
+        ErrorType.CreateGroupMemberStreakTeamStreakDoesNotExist
       );
     }
-    response.locals.groupStreak = groupStreak;
+    response.locals.teamStreak = teamStreak;
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
     else
       next(
         new CustomError(
-          ErrorType.CreateGroupMemberStreakRetreiveGroupStreakMiddleware,
+          ErrorType.CreateGroupMemberStreakRetreiveTeamStreakMiddleware,
           err
         )
       );
   }
 };
 
-export const retreiveGroupStreakMiddleware = getRetreiveGroupStreakMiddleware(
-  groupStreakModel
+export const retreiveTeamStreakMiddleware = getRetreiveTeamStreakMiddleware(
+  teamStreakModel
 );
 
 export const getCreateGroupMemberStreakFromRequestMiddleware = (
@@ -94,10 +94,10 @@ export const getCreateGroupMemberStreakFromRequestMiddleware = (
 ) => (request: Request, response: Response, next: NextFunction) => {
   try {
     const { timezone } = response.locals;
-    const { userId, groupStreakId } = request.body;
+    const { userId, teamStreakId } = request.body;
     response.locals.newGroupMemberStreak = new groupMemberStreak({
       userId,
-      groupStreakId,
+      teamStreakId,
       timezone
     });
     next();
@@ -150,7 +150,7 @@ export const sendFormattedGroupMemberStreakMiddleware = (
 export const createGroupMemberStreakMiddlewares = [
   createGroupMemberStreakBodyValidationMiddleware,
   retreiveUserMiddleware,
-  retreiveGroupStreakMiddleware,
+  retreiveTeamStreakMiddleware,
   createGroupMemberStreakFromRequestMiddleware,
   saveGroupMemberStreakToDatabaseMiddleware,
   sendFormattedGroupMemberStreakMiddleware

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import moment from "moment-timezone";
 import * as Joi from "joi";
 import * as mongoose from "mongoose";
-import { groupStreakModel, GroupStreakModel } from "../../Models/GroupStreak";
+import { TeamStreakModel, teamStreakModel } from "../../Models/teamStreak";
 import { GroupMemberStreak } from "@streakoid/streakoid-sdk/lib";
 import StreakTypes from "@streakoid/streakoid-sdk/lib/streakTypes";
 
@@ -22,7 +22,7 @@ import { CustomError, ErrorType } from "../../customError";
 
 export const completeGroupMemberStreakTaskBodyValidationSchema = {
   userId: Joi.string().required(),
-  groupStreakId: Joi.string().required(),
+  teamStreakId: Joi.string().required(),
   groupMemberStreakId: Joi.string().required()
 };
 
@@ -38,27 +38,27 @@ export const completeGroupMemberStreakTaskBodyValidationMiddleware = (
   );
 };
 
-export const getGroupStreakExistsMiddleware = (
-  groupStreakModel: mongoose.Model<GroupStreakModel>
+export const getTeamStreakExistsMiddleware = (
+  teamStreakModel: mongoose.Model<TeamStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { groupStreakId } = request.body;
-    const groupStreak = await groupStreakModel.findOne({
-      _id: groupStreakId
+    const { teamStreakId } = request.body;
+    const teamStreak = await teamStreakModel.findOne({
+      _id: teamStreakId
     });
-    if (!groupStreak) {
-      throw new CustomError(ErrorType.GroupStreakDoesNotExist);
+    if (!teamStreak) {
+      throw new CustomError(ErrorType.TeamStreakDoesNotExist);
     }
-    response.locals.groupStreak = groupStreak;
+    response.locals.teamStreak = teamStreak;
     next();
   } catch (err) {
     if (err instanceof CustomError) next(err);
-    else next(new CustomError(ErrorType.GroupStreakExistsMiddleware, err));
+    else next(new CustomError(ErrorType.TeamStreakExistsMiddleware, err));
   }
 };
 
-export const groupStreakExistsMiddleware = getGroupStreakExistsMiddleware(
-  groupStreakModel
+export const teamStreakExistsMiddleware = getTeamStreakExistsMiddleware(
+  teamStreakModel
 );
 
 export const getGroupMemberStreakExistsMiddleware = (
@@ -197,12 +197,12 @@ export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
   >
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userId, groupStreakId, groupMemberStreakId } = request.body;
+    const { userId, teamStreakId, groupMemberStreakId } = request.body;
     const { taskCompleteDay } = response.locals;
     const taskAlreadyCompletedToday = await completeGroupMemberStreakTaskModel.findOne(
       {
         userId,
-        groupStreakId,
+        teamStreakId,
         groupMemberStreakId,
         taskCompleteDay
       }
@@ -235,11 +235,11 @@ export const getCreateCompleteGroupMemberStreakTaskMiddleware = (
   >
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { userId, groupStreakId, groupMemberStreakId } = request.body;
+    const { userId, teamStreakId, groupMemberStreakId } = request.body;
     const { taskCompleteTime, taskCompleteDay } = response.locals;
     const completeGroupMemberStreakTaskDefinition = {
       userId,
-      groupStreakId,
+      teamStreakId,
       groupMemberStreakId,
       taskCompleteTime: taskCompleteTime,
       taskCompleteDay,
@@ -308,7 +308,7 @@ export const sendCompleteGroupMemberStreakTaskResponseMiddleware = (
 
 export const createCompleteGroupMemberStreakTaskMiddlewares = [
   completeGroupMemberStreakTaskBodyValidationMiddleware,
-  groupStreakExistsMiddleware,
+  teamStreakExistsMiddleware,
   groupMemberStreakExistsMiddleware,
   retreiveUserMiddleware,
   setTaskCompleteTimeMiddleware,
