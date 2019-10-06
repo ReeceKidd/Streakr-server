@@ -8,10 +8,6 @@ export type GroupStreakModel = GroupStreak & mongoose.Document;
 
 export const groupStreakSchema = new mongoose.Schema(
   {
-    type: {
-      required: true,
-      type: GroupStreakType
-    },
     creatorId: {
       required: true,
       type: String
@@ -19,6 +15,10 @@ export const groupStreakSchema = new mongoose.Schema(
     streakName: {
       required: true,
       type: String
+    },
+    groupStreakType: {
+      required: true,
+      type: GroupStreakType
     },
     status: {
       type: String,

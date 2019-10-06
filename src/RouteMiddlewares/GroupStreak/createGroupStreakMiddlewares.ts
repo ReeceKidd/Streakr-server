@@ -16,7 +16,7 @@ import { GroupStreakType } from "@streakoid/streakoid-sdk/lib";
 
 export interface GroupStreakRegistrationRequestBody {
   creatorId: string;
-  type: GroupStreakType;
+  groupStreakType: GroupStreakType;
   streakName: string;
   streakDescription: string;
   numberOfMinutes: number;
@@ -30,7 +30,7 @@ const member = Joi.object().keys({
 
 const createGroupStreakBodyValidationSchema = {
   creatorId: Joi.string().required(),
-  type: Joi.string()
+  groupStreakType: Joi.string()
     .valid(Object.keys(GroupStreakType))
     .required(),
   streakName: Joi.string().required(),
@@ -60,14 +60,14 @@ export const getCreateGroupStreakMiddleware = (
     const { timezone } = response.locals;
     const {
       creatorId,
-      type,
+      groupStreakType,
       streakName,
       streakDescription,
       numberOfMinutes
     } = request.body;
     response.locals.newGroupStreak = await new groupStreak({
       creatorId,
-      type,
+      groupStreakType,
       streakName,
       streakDescription,
       numberOfMinutes,

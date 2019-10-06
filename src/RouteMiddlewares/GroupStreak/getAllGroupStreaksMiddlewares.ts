@@ -18,7 +18,7 @@ import StreakStatus from "@streakoid/streakoid-sdk/lib/StreakStatus";
 
 const getGroupStreaksQueryValidationSchema = {
   creatorId: Joi.string(),
-  type: Joi.string().valid(Object.keys(GroupStreakType)),
+  groupStreakType: Joi.string().valid(Object.keys(GroupStreakType)),
   memberId: Joi.string(),
   timezone: Joi.string(),
   status: Joi.string().valid(Object.keys(StreakStatus))
@@ -40,14 +40,20 @@ export const getFindGroupStreaksMiddleware = (
   groupStreakModel: mongoose.Model<GroupStreakModel>
 ) => async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const { creatorId, type, memberId, timezone, status } = request.query;
+    const {
+      creatorId,
+      groupStreakType,
+      memberId,
+      timezone,
+      status
+    } = request.query;
     const query: any = {};
 
     if (creatorId) {
       query.creatorId = creatorId;
     }
-    if (type) {
-      query.type = type;
+    if (groupStreakType) {
+      query.groupStreakType = groupStreakType;
     }
     if (memberId) {
       query["members.memberId"] = memberId;

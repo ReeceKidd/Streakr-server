@@ -14,13 +14,13 @@ import StreakStatus from "@streakoid/streakoid-sdk/lib/StreakStatus";
 
 describe("getGroupStreaksValidationMiddleware", () => {
   const creatorId = "creatorId";
-  const type = GroupStreakType.team;
+  const groupStreakType = GroupStreakType.team;
   const memberId = "memberId";
   const timezone = "timezone";
   const status = StreakStatus.live;
   const query = {
     creatorId,
-    type,
+    groupStreakType,
     memberId,
     timezone,
     status
@@ -88,7 +88,7 @@ describe("findGroupStreaksMiddleware", () => {
     expect(next).toBeCalledWith();
   });
 
-  test("queries database with just type and sets response.locals.groupStreaks", async () => {
+  test("queries database with just groupStreakType and sets response.locals.groupStreaks", async () => {
     expect.assertions(4);
 
     const lean = jest.fn().mockResolvedValue(true);
@@ -96,15 +96,15 @@ describe("findGroupStreaksMiddleware", () => {
     const groupStreakModel = {
       find
     };
-    const type = GroupStreakType.team;
-    const request: any = { query: { type } };
+    const groupStreakType = GroupStreakType.team;
+    const request: any = { query: { groupStreakType } };
     const response: any = { locals: {} };
     const next = jest.fn();
     const middleware = getFindGroupStreaksMiddleware(groupStreakModel as any);
 
     await middleware(request, response, next);
 
-    expect(find).toBeCalledWith({ type });
+    expect(find).toBeCalledWith({ groupStreakType });
     expect(lean).toBeCalledWith();
     expect(response.locals.groupStreaks).toEqual(true);
     expect(next).toBeCalledWith();
