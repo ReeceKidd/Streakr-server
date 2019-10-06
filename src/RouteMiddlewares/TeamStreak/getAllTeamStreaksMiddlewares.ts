@@ -22,6 +22,8 @@ const getTeamStreaksQueryValidationSchema = {
   status: Joi.string().valid(Object.keys(StreakStatus))
 };
 
+// Fix server error
+
 export const getTeamStreaksQueryValidationMiddleware = (
   request: Request,
   response: Response,
