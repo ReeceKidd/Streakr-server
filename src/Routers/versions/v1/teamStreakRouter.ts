@@ -1,12 +1,11 @@
 import { Router } from "express";
-
-import { createTeamStreakMiddlewares } from "../../../RouteMiddlewares/teamStreak/createTeamStreakMiddlewares";
-import { getAllTeamStreaksMiddlewares } from "../../../RouteMiddlewares/teamStreak/getAllTeamStreaksMiddlewares";
-import { deleteTeamStreakMiddlewares } from "../../../RouteMiddlewares/teamStreak/deleteTeamStreakMiddlewares";
-import { getOneTeamStreakMiddlewares } from "../../../RouteMiddlewares/teamStreak/getOneTeamStreakMiddlewares";
-import { patchTeamStreakMiddlewares } from "../../../RouteMiddlewares/teamStreak/patchTeamStreakMiddlewares";
-import { createGroupMemberMiddlewares } from "../../../RouteMiddlewares/GroupMember/createGroupMemberMiddlewares";
+import { getAllTeamStreaksMiddlewares } from "../../../RouteMiddlewares/TeamStreak/getAllTeamStreaksMiddlewares";
+import { getOneTeamStreakMiddlewares } from "../../../RouteMiddlewares/TeamStreak/getOneTeamStreakMiddlewares";
+import { deleteTeamStreakMiddlewares } from "../../../RouteMiddlewares/TeamStreak/deleteTeamStreakMiddlewares";
 import { deleteGroupMemberMiddlewares } from "../../../RouteMiddlewares/GroupMember/deleteGroupMemberMiddlewares";
+import { createTeamStreakMiddlewares } from "../../../RouteMiddlewares/TeamStreak/createTeamStreakMiddlewares";
+import { patchTeamStreakMiddlewares } from "../../../RouteMiddlewares/TeamStreak/patchTeamStreakMiddlewares";
+import { createGroupMemberMiddlewares } from "../../../RouteMiddlewares/GroupMember/createGroupMemberMiddlewares";
 
 export const teamStreakId = "teamStreakId";
 

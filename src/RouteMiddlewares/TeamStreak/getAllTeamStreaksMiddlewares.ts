@@ -1,19 +1,19 @@
 import { Request, Response, NextFunction } from "express";
 import * as Joi from "joi";
 import * as mongoose from "mongoose";
-import PopulatedTeamStreak from "@streakoid/streakoid-sdk/lib/models/PopulatedTeamStreak";
-import PopulatedMember from "@streakoid/streakoid-sdk/lib/models/PopulatedMember";
 
 import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
 import { TeamStreakModel, teamStreakModel } from "../../Models/TeamStreak";
 import { ResponseCodes } from "../../Server/responseCodes";
 import { CustomError, ErrorType } from "../../customError";
 import { userModel, UserModel } from "../../Models/User";
-import {
-  groupMemberStreakModel,
-  GroupMemberStreakModel
-} from "../../Models/GroupMemberStreak";
 import StreakStatus from "@streakoid/streakoid-sdk/lib/StreakStatus";
+import { GroupMemberStreakModel } from "../../Models/GroupMemberStreak";
+import {
+  PopulatedTeamStreak,
+  PopulatedMember
+} from "@streakoid/streakoid-sdk/lib";
+import { groupMemberStreakModel } from "../../Models/GroupMemberStreak";
 
 const getTeamStreaksQueryValidationSchema = {
   creatorId: Joi.string(),

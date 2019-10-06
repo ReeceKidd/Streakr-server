@@ -7,7 +7,7 @@ import usersRouter from "./usersRouter";
 import stripeRouter from "./stripeRouter";
 import completeSoloStreakTasksRouter from "./completeSoloStreakTasksRouter";
 import completeGroupMemberStreakTasksRouter from "./completeGroupMemberStreakTaskRouter";
-import TeamStreaksRouter from "./teamStreakRouter";
+import teamStreaksRouter from "./teamStreakRouter";
 import streakTrackingEventRouter from "./streakTrackingEventRouter";
 import agendaJobsRouter from "./agendaJobRouter";
 import feedbackRouter from "./feedbackRouter";
@@ -30,7 +30,7 @@ v1Router.use(
   `/${RouteCategories.completeGroupMemberStreakTasks}`,
   completeGroupMemberStreakTasksRouter
 );
-v1Router.use(`/${RouteCategories.teamStreaks}`, TeamStreaksRouter);
+v1Router.use(`/${RouteCategories.teamStreaks}`, teamStreaksRouter);
 v1Router.use(
   `/${RouteCategories.streakTrackingEvents}`,
   streakTrackingEventRouter
