@@ -16,7 +16,6 @@ export const deleteUserParamsValidationMiddleware = (
     response: Response,
     next: NextFunction,
 ): void => {
-    console.log(1);
     Joi.validate(
         request.params,
         userParamsValidationSchema,
@@ -30,7 +29,6 @@ export const getDeleteUserMiddleware = (userModel: mongoose.Model<UserModel>) =>
     next: NextFunction,
 ): Promise<void> => {
     try {
-        console.log(2);
         const { userId } = request.params;
         const deletedUser = await userModel.findByIdAndDelete(userId);
         if (!deletedUser) {
@@ -48,7 +46,6 @@ export const deleteUserMiddleware = getDeleteUserMiddleware(userModel);
 
 export const sendUserDeletedResponseMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        console.log(3);
         response.status(ResponseCodes.deleted).send();
     } catch (err) {
         next(new CustomError(ErrorType.SendUserDeletedResponseMiddleware, err));

@@ -240,9 +240,6 @@ export class CustomError extends Error {
     constructor(type: ErrorType, ...params: any[]) {
         super(...params);
         const { code, message, httpStatusCode } = this.createCustomErrorData(type);
-        console.log(`Code: ${code}`);
-        console.log(message);
-        console.log(httpStatusCode);
         this.code = code;
         this.message = message;
         this.httpStatusCode = httpStatusCode;
