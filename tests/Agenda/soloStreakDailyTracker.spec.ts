@@ -2,6 +2,7 @@
 import { createSoloStreakDailyTrackerJob } from '../../src/scripts/initaliseSoloStreakTimezoneCheckers';
 import streakoid from '../../src/streakoid';
 import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
+import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 
 jest.setTimeout(120000);
 
@@ -77,7 +78,7 @@ describe('soloStreakDailyTracker', () => {
     });
 
     test('maintains streaks correctly', async () => {
-        expect.assertions(8);
+        expect.assertions(22);
 
         const timezone = 'Europe/London';
 
@@ -102,23 +103,40 @@ describe('soloStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedMaintainedSoloStreak = await streakoid.soloStreaks.getOne(maintainedSoloStreakId);
+        const updatedSoloStreak = await streakoid.soloStreaks.getOne(maintainedSoloStreakId);
 
-        const { currentStreak, completedToday, active, activity, pastStreaks } = updatedMaintainedSoloStreak;
-
-        expect(currentStreak).toEqual({
-            startDate: expect.any(String),
-            numberOfDaysInARow: 1,
-        });
-        expect(completedToday).toEqual(false);
-        expect(active).toEqual(true);
-        expect(activity).toEqual([
-            {
-                type: StreakTrackingEventType.MaintainedStreak,
-                time: expect.any(String),
-            },
-        ]);
-        expect(pastStreaks).toEqual([]);
+        expect(updatedSoloStreak.streakName).toEqual(streakName);
+        expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
+        expect(updatedSoloStreak.streakDescription).toEqual(streakDescription);
+        expect(updatedSoloStreak.userId).toEqual(userId);
+        expect(updatedSoloStreak.completedToday).toEqual(false);
+        expect(updatedSoloStreak.active).toEqual(true);
+        expect(updatedSoloStreak.pastStreaks.length).toEqual(0);
+        expect(updatedSoloStreak.timezone).toEqual(expect.any(String));
+        const currentStreak = updatedSoloStreak.currentStreak;
+        expect(currentStreak.numberOfDaysInARow).toEqual(1);
+        expect(currentStreak.startDate).toEqual(expect.any(String));
+        expect(Object.keys(currentStreak)).toEqual(['startDate', 'numberOfDaysInARow']);
+        expect(updatedSoloStreak._id).toEqual(expect.any(String));
+        expect(updatedSoloStreak.createdAt).toEqual(expect.any(String));
+        expect(updatedSoloStreak.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(updatedSoloStreak).sort()).toEqual(
+            [
+                '_id',
+                'status',
+                'currentStreak',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                'streakName',
+                'streakDescription',
+                'userId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
         const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
             userId,
@@ -129,13 +147,19 @@ describe('soloStreakDailyTracker', () => {
         expect(streakTrackingEvent.type).toEqual(StreakTrackingEventType.MaintainedStreak);
         expect(streakTrackingEvent.streakId).toEqual(maintainedSoloStreakId);
         expect(streakTrackingEvent.userId).toEqual(userId);
+        expect(streakTrackingEvent._id).toEqual(expect.any(String));
+        expect(streakTrackingEvent.createdAt).toEqual(expect.any(String));
+        expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(streakTrackingEvent).sort()).toEqual(
+            ['_id', 'type', 'streakId', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
 
         maintainedSoloStreakAgendaJobId = String(job.attrs._id);
         maintainedStreakTrackingEventId = streakTrackingEvent._id;
     });
 
     test('manages lost streaks correctly', async () => {
-        expect.assertions(10);
+        expect.assertions(26);
 
         const timezone = 'Europe/London';
 
@@ -162,29 +186,45 @@ describe('soloStreakDailyTracker', () => {
         // Simulates an additional day passing
         await job.run();
 
-        const updatedLostSoloStreak = await streakoid.soloStreaks.getOne(lostSoloStreakId);
+        const updatedSoloStreak = await streakoid.soloStreaks.getOne(lostSoloStreakId);
 
-        const { currentStreak, completedToday, active, activity, pastStreaks } = updatedLostSoloStreak;
-
-        expect(currentStreak).toEqual({ numberOfDaysInARow: 0, startDate: null });
-        expect(completedToday).toEqual(false);
-        expect(active).toEqual(false);
-        expect(activity.length).toEqual(2);
-        const lostStreakEvent = activity.find((event: any) => {
-            return event.type === StreakTrackingEventType.LostStreak;
-        });
-        expect(lostStreakEvent).toBeDefined();
-        const maintainedStreakEvent = activity.find(
-            (event: any) => event.type === StreakTrackingEventType.MaintainedStreak,
+        expect(updatedSoloStreak.streakName).toEqual(streakName);
+        expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
+        expect(updatedSoloStreak.streakDescription).toEqual(streakDescription);
+        expect(updatedSoloStreak.userId).toEqual(userId);
+        expect(updatedSoloStreak.completedToday).toEqual(false);
+        expect(updatedSoloStreak.active).toEqual(false);
+        expect(updatedSoloStreak.pastStreaks.length).toEqual(1);
+        const pastStreak = updatedSoloStreak.pastStreaks[0];
+        expect(pastStreak.endDate).toEqual(expect.any(String));
+        expect(pastStreak.numberOfDaysInARow).toEqual(1);
+        expect(pastStreak.startDate).toEqual(expect.any(String));
+        expect(Object.keys(pastStreak).sort()).toEqual(['endDate', 'numberOfDaysInARow', 'startDate'].sort());
+        expect(updatedSoloStreak.timezone).toEqual(expect.any(String));
+        const currentStreak = updatedSoloStreak.currentStreak;
+        expect(currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(currentStreak.startDate).toEqual(null);
+        expect(Object.keys(currentStreak)).toEqual(['startDate', 'numberOfDaysInARow']);
+        expect(updatedSoloStreak._id).toEqual(expect.any(String));
+        expect(updatedSoloStreak.createdAt).toEqual(expect.any(String));
+        expect(updatedSoloStreak.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(updatedSoloStreak).sort()).toEqual(
+            [
+                '_id',
+                'status',
+                'currentStreak',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                'streakName',
+                'streakDescription',
+                'userId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
         );
-        expect(maintainedStreakEvent).toBeDefined();
-        expect(pastStreaks).toEqual([
-            {
-                endDate: expect.any(String),
-                numberOfDaysInARow: 1,
-                startDate: expect.any(String),
-            },
-        ]);
 
         const lostStreakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
             userId,
@@ -196,13 +236,19 @@ describe('soloStreakDailyTracker', () => {
         expect(lostStreakTrackingEvent.type).toEqual(StreakTrackingEventType.LostStreak);
         expect(lostStreakTrackingEvent.streakId).toEqual(lostSoloStreakId);
         expect(lostStreakTrackingEvent.userId).toEqual(userId);
+        expect(lostStreakTrackingEvent._id).toEqual(expect.any(String));
+        expect(lostStreakTrackingEvent.createdAt).toEqual(expect.any(String));
+        expect(lostStreakTrackingEvent.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(lostStreakTrackingEvent).sort()).toEqual(
+            ['_id', 'type', 'streakId', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
 
         lostSoloStreakAgendaJobId = String(job.attrs._id);
         lostStreakTrackingEventId = lostStreakTrackingEvent._id;
     });
 
     test('manages inactive streaks correctly', async () => {
-        expect.assertions(8);
+        expect.assertions(21);
 
         const timezone = 'Europe/London';
         const streakName = 'Singing';
@@ -220,15 +266,39 @@ describe('soloStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedInactiveSoloStreak = await streakoid.soloStreaks.getOne(inactiveSoloStreakId);
+        const updatedSoloStreak = await streakoid.soloStreaks.getOne(inactiveSoloStreakId);
 
-        const { currentStreak, completedToday, active, activity, pastStreaks } = updatedInactiveSoloStreak;
-
-        expect(currentStreak).toEqual({ numberOfDaysInARow: 0 });
-        expect(completedToday).toEqual(false);
-        expect(active).toEqual(false);
-        expect(activity).toEqual([{ type: StreakTrackingEventType.InactiveStreak, time: expect.any(String) }]);
-        expect(pastStreaks).toEqual([]);
+        expect(updatedSoloStreak.streakName).toEqual(streakName);
+        expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
+        expect(updatedSoloStreak.streakDescription).toEqual(streakDescription);
+        expect(updatedSoloStreak.userId).toEqual(userId);
+        expect(updatedSoloStreak.completedToday).toEqual(false);
+        expect(updatedSoloStreak.active).toEqual(false);
+        expect(updatedSoloStreak.pastStreaks.length).toEqual(0);
+        expect(updatedSoloStreak.timezone).toEqual(expect.any(String));
+        const currentStreak = updatedSoloStreak.currentStreak;
+        expect(currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
+        expect(updatedSoloStreak._id).toEqual(expect.any(String));
+        expect(updatedSoloStreak.createdAt).toEqual(expect.any(String));
+        expect(updatedSoloStreak.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(updatedSoloStreak).sort()).toEqual(
+            [
+                '_id',
+                'status',
+                'currentStreak',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                'streakName',
+                'streakDescription',
+                'userId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
         const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
             userId,
@@ -238,7 +308,13 @@ describe('soloStreakDailyTracker', () => {
         inactiveStreakTrackingEventId = streakTrackingEvent._id;
 
         expect(streakTrackingEvent.type).toEqual(StreakTrackingEventType.InactiveStreak);
-        expect(streakTrackingEvent.streakId).toEqual(inactiveSoloStreakId);
-        expect(streakTrackingEvent.userId).toEqual(userId);
+        expect(streakTrackingEvent.userId).toBeDefined();
+        expect(streakTrackingEvent.streakId).toBeDefined();
+        expect(streakTrackingEvent._id).toEqual(expect.any(String));
+        expect(streakTrackingEvent.createdAt).toEqual(expect.any(String));
+        expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(streakTrackingEvent).sort()).toEqual(
+            ['_id', 'type', 'streakId', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
     });
 });
