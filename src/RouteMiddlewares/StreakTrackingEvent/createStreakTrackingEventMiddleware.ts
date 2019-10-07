@@ -1,87 +1,75 @@
-import { Request, Response, NextFunction } from "express";
-import * as Joi from "joi";
-import * as mongoose from "mongoose";
+import { Request, Response, NextFunction } from 'express';
+import * as Joi from 'joi';
+import * as mongoose from 'mongoose';
 
-import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import {
-  streakTrackingEventModel,
-  StreakTrackingEventModel
-} from "../../Models/StreakTrackingEvent";
-import { ResponseCodes } from "../../Server/responseCodes";
-import { CustomError, ErrorType } from "../../customError";
-import { StreakTrackingEvent } from "@streakoid/streakoid-sdk/lib";
+import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
+import { streakTrackingEventModel, StreakTrackingEventModel } from '../../Models/StreakTrackingEvent';
+import { ResponseCodes } from '../../Server/responseCodes';
+import { CustomError, ErrorType } from '../../customError';
+import { StreakTrackingEvent } from '@streakoid/streakoid-sdk/lib';
 
 export interface StreakTrackingEventRequestBody {
-  type: StreakTrackingEvent;
-  streakId: string;
-  userId: string;
-  createdAt: Date;
-  modifiedAt: Date;
+    type: StreakTrackingEvent;
+    streakId: string;
+    userId: string;
+    createdAt: Date;
+    modifiedAt: Date;
 }
 
 const createStreakTrackingEventBodyValidationSchema = {
-  type: Joi.string().required(),
-  streakId: Joi.string().required(),
-  userId: Joi.string().required()
+    type: Joi.string().required(),
+    streakId: Joi.string().required(),
+    userId: Joi.string().required(),
 };
 
 export const createStreakTrackingEventBodyValidationMiddleware = (
-  request: Request,
-  response: Response,
-  next: NextFunction
+    request: Request,
+    response: Response,
+    next: NextFunction,
 ): void => {
-  Joi.validate(
-    request.body,
-    createStreakTrackingEventBodyValidationSchema,
-    getValidationErrorMessageSenderMiddleware(request, response, next)
-  );
+    Joi.validate(
+        request.body,
+        createStreakTrackingEventBodyValidationSchema,
+        getValidationErrorMessageSenderMiddleware(request, response, next),
+    );
 };
 
 export const getSaveStreakTrackingEventToDatabaseMiddleware = (
-  streakTrackingEvent: mongoose.Model<StreakTrackingEventModel>
-) => async (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { type, streakId, userId } = request.body;
-    const newStreakTrackingEvent = new streakTrackingEvent({
-      type,
-      streakId,
-      userId
-    });
-    response.locals.savedStreakTrackingEvent = await newStreakTrackingEvent.save();
-    next();
-  } catch (err) {
-    next(
-      new CustomError(
-        ErrorType.CreateStreakTrackingEventFromRequestMiddleware,
-        err
-      )
-    );
-  }
+    streakTrackingEvent: mongoose.Model<StreakTrackingEventModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { type, streakId, userId } = request.body;
+        const newStreakTrackingEvent = new streakTrackingEvent({
+            type,
+            streakId,
+            userId,
+        });
+        response.locals.savedStreakTrackingEvent = await newStreakTrackingEvent.save();
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateStreakTrackingEventFromRequestMiddleware, err));
+    }
 };
 
 export const saveStreakTrackingEventToDatabaseMiddleware = getSaveStreakTrackingEventToDatabaseMiddleware(
-  streakTrackingEventModel
+    streakTrackingEventModel,
 );
 
 export const sendFormattedStreakTrackingEventMiddleware = (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const { savedStreakTrackingEvent } = response.locals;
-    return response
-      .status(ResponseCodes.created)
-      .send(savedStreakTrackingEvent);
-  } catch (err) {
-    next(
-      new CustomError(ErrorType.SendFormattedStreakTrackingEventMiddleware, err)
-    );
-  }
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const { savedStreakTrackingEvent } = response.locals;
+        response.status(ResponseCodes.created).send(savedStreakTrackingEvent);
+    } catch (err) {
+        next(new CustomError(ErrorType.SendFormattedStreakTrackingEventMiddleware, err));
+    }
 };
 
 export const createStreakTrackingEventMiddlewares = [
-  createStreakTrackingEventBodyValidationMiddleware,
-  saveStreakTrackingEventToDatabaseMiddleware,
-  sendFormattedStreakTrackingEventMiddleware
+    createStreakTrackingEventBodyValidationMiddleware,
+    saveStreakTrackingEventToDatabaseMiddleware,
+    sendFormattedStreakTrackingEventMiddleware,
 ];

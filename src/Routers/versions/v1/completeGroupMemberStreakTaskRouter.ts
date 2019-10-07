@@ -1,27 +1,19 @@
-import { Router } from "express";
-import { createCompleteGroupMemberStreakTaskMiddlewares } from "../../../RouteMiddlewares/CompleteGroupMemberStreakTask/createCompleteGroupMemberStreakTaskMiddlewares";
-import { timezoneMiddlewares } from "../../../SharedMiddleware/timezoneMiddlewares";
-import { deleteCompleteGroupMemberStreakTaskMiddlewares } from "../../../RouteMiddlewares/CompleteGroupMemberStreakTask/deleteGroupMemberStreakTaskMiddlewares";
-import { getCompleteGroupMemberStreakTasksMiddlewares } from "../../../RouteMiddlewares/CompleteGroupMemberStreakTask/getCompleteGroupMemberStreakTasksMiddlewares";
+import { Router } from 'express';
+import { createCompleteGroupMemberStreakTaskMiddlewares } from '../../../RouteMiddlewares/CompleteGroupMemberStreakTask/createCompleteGroupMemberStreakTaskMiddlewares';
+import { deleteCompleteGroupMemberStreakTaskMiddlewares } from '../../../RouteMiddlewares/CompleteGroupMemberStreakTask/deleteGroupMemberStreakTaskMiddlewares';
+import { getCompleteGroupMemberStreakTasksMiddlewares } from '../../../RouteMiddlewares/CompleteGroupMemberStreakTask/getCompleteGroupMemberStreakTasksMiddlewares';
 
-export const completeGroupMemberStreakTaskId =
-  "completeGroupMemberStreakTaskId";
+export const completeGroupMemberStreakTaskId = 'completeGroupMemberStreakTaskId';
 
 const completeGroupMemberStreakTasksRouter = Router();
 
-completeGroupMemberStreakTasksRouter.get(
-  `/`,
-  ...getCompleteGroupMemberStreakTasksMiddlewares
-);
+completeGroupMemberStreakTasksRouter.get(`/`, ...getCompleteGroupMemberStreakTasksMiddlewares);
 
 completeGroupMemberStreakTasksRouter.delete(
-  `/:${completeGroupMemberStreakTaskId}`,
-  ...deleteCompleteGroupMemberStreakTaskMiddlewares
+    `/:${completeGroupMemberStreakTaskId}`,
+    ...deleteCompleteGroupMemberStreakTaskMiddlewares,
 );
 
-completeGroupMemberStreakTasksRouter.post(
-  `/`,
-  ...createCompleteGroupMemberStreakTaskMiddlewares
-);
+completeGroupMemberStreakTasksRouter.post(`/`, ...createCompleteGroupMemberStreakTaskMiddlewares);
 
 export default completeGroupMemberStreakTasksRouter;

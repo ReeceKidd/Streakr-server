@@ -1,77 +1,63 @@
-import * as Joi from "joi";
-import { Request, Response, NextFunction } from "express";
-import * as mongoose from "mongoose";
+import * as Joi from 'joi';
+import { Request, Response, NextFunction } from 'express';
+import * as mongoose from 'mongoose';
 
-import { getValidationErrorMessageSenderMiddleware } from "../../SharedMiddleware/validationErrorMessageSenderMiddleware";
-import {
-  streakTrackingEventModel,
-  StreakTrackingEventModel
-} from "../../Models/StreakTrackingEvent";
-import { ResponseCodes } from "../../Server/responseCodes";
-import { CustomError, ErrorType } from "../../customError";
-import { StreakTrackingEvent } from "@streakoid/streakoid-sdk/lib";
+import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
+import { streakTrackingEventModel, StreakTrackingEventModel } from '../../Models/StreakTrackingEvent';
+import { ResponseCodes } from '../../Server/responseCodes';
+import { CustomError, ErrorType } from '../../customError';
 
 const streakTrackingEventParamsValidationSchema = {
-  streakTrackingEventId: Joi.string().required()
+    streakTrackingEventId: Joi.string().required(),
 };
 
 export const streakTrackingEventParamsValidationMiddleware = (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  Joi.validate(
-    request.params,
-    streakTrackingEventParamsValidationSchema,
-    getValidationErrorMessageSenderMiddleware(request, response, next)
-  );
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    Joi.validate(
+        request.params,
+        streakTrackingEventParamsValidationSchema,
+        getValidationErrorMessageSenderMiddleware(request, response, next),
+    );
 };
 
 export const getDeleteStreakTrackingEventMiddleware = (
-  streakTrackingEventModel: mongoose.Model<StreakTrackingEventModel>
-) => async (request: Request, response: Response, next: NextFunction) => {
-  try {
-    const { streakTrackingEventId } = request.params;
-    const deletedStreakTrackingEvent = await streakTrackingEventModel.findByIdAndDelete(
-      streakTrackingEventId
-    );
-    if (!deletedStreakTrackingEvent) {
-      throw new CustomError(ErrorType.NoStreakTrackingEventToDeleteFound);
+    streakTrackingEventModel: mongoose.Model<StreakTrackingEventModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { streakTrackingEventId } = request.params;
+        const deletedStreakTrackingEvent = await streakTrackingEventModel.findByIdAndDelete(streakTrackingEventId);
+        if (!deletedStreakTrackingEvent) {
+            throw new CustomError(ErrorType.NoStreakTrackingEventToDeleteFound);
+        }
+        response.locals.deletedStreakTrackingEvent = deletedStreakTrackingEvent;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.DeleteStreakTrackingEventMiddleware, err));
     }
-    response.locals.deletedStreakTrackingEvent = deletedStreakTrackingEvent;
-    next();
-  } catch (err) {
-    if (err instanceof CustomError) next(err);
-    else
-      next(new CustomError(ErrorType.DeleteStreakTrackingEventMiddleware, err));
-  }
 };
 
-export const deleteStreakTrackingEventMiddleware = getDeleteStreakTrackingEventMiddleware(
-  streakTrackingEventModel
-);
+export const deleteStreakTrackingEventMiddleware = getDeleteStreakTrackingEventMiddleware(streakTrackingEventModel);
 
 export const getSendStreakTrackingEventDeletedResponseMiddleware = (
-  successfulDeletetionResponseCode: ResponseCodes
-) => (request: Request, response: Response, next: NextFunction) => {
-  try {
-    return response.status(successfulDeletetionResponseCode).send();
-  } catch (err) {
-    next(
-      new CustomError(
-        ErrorType.SendStreakTrackingEventDeletedResponseMiddleware,
-        err
-      )
-    );
-  }
+    successfulDeletetionResponseCode: ResponseCodes,
+) => (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        response.status(successfulDeletetionResponseCode).send();
+    } catch (err) {
+        next(new CustomError(ErrorType.SendStreakTrackingEventDeletedResponseMiddleware, err));
+    }
 };
 
 export const sendStreakTrackingEventDeletedResponseMiddleware = getSendStreakTrackingEventDeletedResponseMiddleware(
-  ResponseCodes.deleted
+    ResponseCodes.deleted,
 );
 
 export const deleteStreakTrackingEventMiddlewares = [
-  streakTrackingEventParamsValidationMiddleware,
-  deleteStreakTrackingEventMiddleware,
-  sendStreakTrackingEventDeletedResponseMiddleware
+    streakTrackingEventParamsValidationMiddleware,
+    deleteStreakTrackingEventMiddleware,
+    sendStreakTrackingEventDeletedResponseMiddleware,
 ];

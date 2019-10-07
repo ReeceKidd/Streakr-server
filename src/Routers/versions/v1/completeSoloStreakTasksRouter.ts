@@ -1,26 +1,16 @@
-import { Router } from "express";
-import { getCompleteSoloStreakTasksMiddlewares } from "../../../RouteMiddlewares/CompleteSoloStreakTask/getCompleteSoloStreakTasksMiddlewares";
-import { deleteCompleteSoloStreakTaskMiddlewares } from "../../../RouteMiddlewares/CompleteSoloStreakTask/deleteCompleteSoloStreakTaskMiddlewares";
-import { createCompleteSoloStreakTaskMiddlewares } from "../../../RouteMiddlewares/CompleteSoloStreakTask/createCompleteSoloStreakTaskMiddlewares";
-import { timezoneMiddlewares } from "../../../SharedMiddleware/timezoneMiddlewares";
+import { Router } from 'express';
+import { getCompleteSoloStreakTasksMiddlewares } from '../../../RouteMiddlewares/CompleteSoloStreakTask/getCompleteSoloStreakTasksMiddlewares';
+import { deleteCompleteSoloStreakTaskMiddlewares } from '../../../RouteMiddlewares/CompleteSoloStreakTask/deleteCompleteSoloStreakTaskMiddlewares';
+import { createCompleteSoloStreakTaskMiddlewares } from '../../../RouteMiddlewares/CompleteSoloStreakTask/createCompleteSoloStreakTaskMiddlewares';
 
-export const completeSoloStreakTaskId = "completeSoloStreakTaskId";
+export const completeSoloStreakTaskId = 'completeSoloStreakTaskId';
 
 const completeSoloStreakTasksRouter = Router();
 
-completeSoloStreakTasksRouter.get(
-  `/`,
-  ...getCompleteSoloStreakTasksMiddlewares
-);
+completeSoloStreakTasksRouter.get(`/`, ...getCompleteSoloStreakTasksMiddlewares);
 
-completeSoloStreakTasksRouter.delete(
-  `/:${completeSoloStreakTaskId}`,
-  ...deleteCompleteSoloStreakTaskMiddlewares
-);
+completeSoloStreakTasksRouter.delete(`/:${completeSoloStreakTaskId}`, ...deleteCompleteSoloStreakTaskMiddlewares);
 
-completeSoloStreakTasksRouter.post(
-  `/`,
-  ...createCompleteSoloStreakTaskMiddlewares
-);
+completeSoloStreakTasksRouter.post(`/`, ...createCompleteSoloStreakTaskMiddlewares);
 
 export default completeSoloStreakTasksRouter;

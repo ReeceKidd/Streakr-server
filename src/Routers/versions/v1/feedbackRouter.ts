@@ -1,9 +1,9 @@
-import { Router } from "express";
+import { Router } from 'express';
 
-import { createFeedbackMiddlewares } from "../../../RouteMiddlewares/Feedback/createFeedbackMiddlewares";
-import { deleteFeedbackMiddlewares } from "../../../RouteMiddlewares/Feedback/deleteFeedbackMiddlewares";
+import { createFeedbackMiddlewares } from '../../../RouteMiddlewares/Feedback/createFeedbackMiddlewares';
+import { deleteFeedbackMiddlewares } from '../../../RouteMiddlewares/Feedback/deleteFeedbackMiddlewares';
 
-export const feedbackId = "feedbackId";
+export const feedbackId = 'feedbackId';
 
 const feedbackRouter = Router();
 

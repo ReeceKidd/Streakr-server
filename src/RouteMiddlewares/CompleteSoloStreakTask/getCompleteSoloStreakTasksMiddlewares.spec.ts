@@ -1,232 +1,211 @@
-import { ResponseCodes } from "../../Server/responseCodes";
-import { CustomError, ErrorType } from "../../customError";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ResponseCodes } from '../../Server/responseCodes';
+import { CustomError, ErrorType } from '../../customError';
 import {
-  completeSoloStreakTaskQueryValidationMiddleware,
-  getRetreiveCompleteSoloStreakTasksMiddleware,
-  sendCompleteSoloStreakTasksResponseMiddleware,
-  getCompleteSoloStreakTasksMiddlewares,
-  retreiveCompleteSoloStreakTasksMiddleware
-} from "./getCompleteSoloStreakTasksMiddlewares";
+    completeSoloStreakTaskQueryValidationMiddleware,
+    getRetreiveCompleteSoloStreakTasksMiddleware,
+    sendCompleteSoloStreakTasksResponseMiddleware,
+    getCompleteSoloStreakTasksMiddlewares,
+    retreiveCompleteSoloStreakTasksMiddleware,
+} from './getCompleteSoloStreakTasksMiddlewares';
 
-describe("completeSoloStreakTaskQueryValidationMiddleware", () => {
-  test("allows userId as a query paramater", () => {
-    expect.assertions(1);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      query: {
-        userId: "userId"
-      }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
+describe('completeSoloStreakTaskQueryValidationMiddleware', () => {
+    test('allows userId as a query paramater', () => {
+        expect.assertions(1);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            query: {
+                userId: 'userId',
+            },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
 
-    completeSoloStreakTaskQueryValidationMiddleware(request, response, next);
+        completeSoloStreakTaskQueryValidationMiddleware(request, response, next);
 
-    expect(next).toBeCalled();
-  });
-
-  test("allows streakId as a query paramater", () => {
-    expect.assertions(1);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      query: {
-        streakId: "userId"
-      }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    completeSoloStreakTaskQueryValidationMiddleware(request, response, next);
-
-    expect(next).toBeCalled();
-  });
-
-  test("sends unsupported query error", () => {
-    expect.assertions(3);
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {
-      query: {
-        unsupportedQuery: "unsupportedQuery"
-      }
-    };
-    const response: any = {
-      status
-    };
-    const next = jest.fn();
-
-    completeSoloStreakTaskQueryValidationMiddleware(request, response, next);
-
-    expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
-    expect(send).toBeCalledWith({
-      message: '"unsupportedQuery" is not allowed'
+        expect(next).toBeCalled();
     });
-    expect(next).not.toBeCalled();
-  });
+
+    test('allows streakId as a query paramater', () => {
+        expect.assertions(1);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            query: {
+                streakId: 'userId',
+            },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        completeSoloStreakTaskQueryValidationMiddleware(request, response, next);
+
+        expect(next).toBeCalled();
+    });
+
+    test('sends unsupported query error', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            query: {
+                unsupportedQuery: 'unsupportedQuery',
+            },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        completeSoloStreakTaskQueryValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
+        expect(send).toBeCalledWith({
+            message: '"unsupportedQuery" is not allowed',
+        });
+        expect(next).not.toBeCalled();
+    });
 });
 
-describe("getRetreiveCompleteSoloStreakTasksMiddleware", () => {
-  test("queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with just userId", async () => {
-    expect.assertions(3);
+describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
+    test('queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with just userId', async () => {
+        expect.assertions(3);
 
-    const find = jest.fn(() => Promise.resolve(true));
-    const completeSoloStreakTaskModel = {
-      find
-    };
-    const userId = "userId";
-    const request: any = { query: { userId } };
-    const response: any = { locals: {} };
-    const next = jest.fn();
-    const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(
-      completeSoloStreakTaskModel as any
-    );
+        const find = jest.fn(() => Promise.resolve(true));
+        const completeSoloStreakTaskModel = {
+            find,
+        };
+        const userId = 'userId';
+        const request: any = { query: { userId } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
 
-    await middleware(request, response, next);
+        await middleware(request, response, next);
 
-    expect(find).toBeCalledWith({ userId });
-    expect(response.locals.completeSoloStreakTasks).toBeDefined();
-    expect(next).toBeCalledWith();
-  });
+        expect(find).toBeCalledWith({ userId });
+        expect(response.locals.completeSoloStreakTasks).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
 
-  test("queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with just streakId", async () => {
-    expect.assertions(3);
+    test('queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with just streakId', async () => {
+        expect.assertions(3);
 
-    const find = jest.fn(() => Promise.resolve(true));
-    const completeSoloStreakTaskModel = {
-      find
-    };
-    const streakId = "streakId";
-    const request: any = { query: { streakId } };
-    const response: any = { locals: {} };
-    const next = jest.fn();
-    const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(
-      completeSoloStreakTaskModel as any
-    );
+        const find = jest.fn(() => Promise.resolve(true));
+        const completeSoloStreakTaskModel = {
+            find,
+        };
+        const streakId = 'streakId';
+        const request: any = { query: { streakId } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
 
-    await middleware(request, response, next);
+        await middleware(request, response, next);
 
-    expect(find).toBeCalledWith({ streakId });
-    expect(response.locals.completeSoloStreakTasks).toBeDefined();
-    expect(next).toBeCalledWith();
-  });
+        expect(find).toBeCalledWith({ streakId });
+        expect(response.locals.completeSoloStreakTasks).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
 
-  test("queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with both a userId and streakId", async () => {
-    expect.assertions(3);
+    test('queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with both a userId and streakId', async () => {
+        expect.assertions(3);
 
-    const find = jest.fn().mockResolvedValue(true);
-    const completeSoloStreakTaskModel = {
-      find
-    };
-    const userId = "userId";
-    const streakId = "streakId";
-    const request: any = { query: { userId, streakId } };
-    const response: any = { locals: {} };
-    const next = jest.fn();
-    const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(
-      completeSoloStreakTaskModel as any
-    );
+        const find = jest.fn().mockResolvedValue(true);
+        const completeSoloStreakTaskModel = {
+            find,
+        };
+        const userId = 'userId';
+        const streakId = 'streakId';
+        const request: any = { query: { userId, streakId } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
 
-    await middleware(request, response, next);
+        await middleware(request, response, next);
 
-    expect(find).toBeCalledWith({ userId, streakId });
-    expect(response.locals.completeSoloStreakTasks).toBeDefined();
-    expect(next).toBeCalledWith();
-  });
+        expect(find).toBeCalledWith({ userId, streakId });
+        expect(response.locals.completeSoloStreakTasks).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
 
-  test("queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with no query paramaters", async () => {
-    expect.assertions(3);
+    test('queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with no query paramaters', async () => {
+        expect.assertions(3);
 
-    const find = jest.fn(() => Promise.resolve(true));
-    const completeSoloStreakTaskModel = {
-      find
-    };
-    const request: any = { query: {} };
-    const response: any = { locals: {} };
-    const next = jest.fn();
-    const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(
-      completeSoloStreakTaskModel as any
-    );
+        const find = jest.fn(() => Promise.resolve(true));
+        const completeSoloStreakTaskModel = {
+            find,
+        };
+        const request: any = { query: {} };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
 
-    await middleware(request, response, next);
+        await middleware(request, response, next);
 
-    expect(find).toBeCalledWith({});
-    expect(response.locals.completeSoloStreakTasks).toBeDefined();
-    expect(next).toBeCalledWith();
-  });
+        expect(find).toBeCalledWith({});
+        expect(response.locals.completeSoloStreakTasks).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
 
-  test("calls next with GetCompleteSoloStreakTasksMiddleware error on middleware failure", async () => {
-    expect.assertions(1);
+    test('calls next with GetCompleteSoloStreakTasksMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
 
-    const request: any = {};
-    const response: any = {};
-    const next = jest.fn();
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
 
-    const middleware = getRetreiveCompleteSoloStreakTasksMiddleware({} as any);
+        const middleware = getRetreiveCompleteSoloStreakTasksMiddleware({} as any);
 
-    await middleware(request, response, next);
+        await middleware(request, response, next);
 
-    expect(next).toBeCalledWith(
-      new CustomError(
-        ErrorType.GetCompleteSoloStreakTasksMiddleware,
-        expect.any(Error)
-      )
-    );
-  });
+        expect(next).toBeCalledWith(new CustomError(ErrorType.GetCompleteSoloStreakTasksMiddleware, expect.any(Error)));
+    });
 });
 
-describe("sendCompleteSoloStreakTaskDeletedResponseMiddleware", () => {
-  test("responds with successful deletion", () => {
-    expect.assertions(3);
+describe('sendCompleteSoloStreakTaskDeletedResponseMiddleware', () => {
+    test('responds with successful deletion', () => {
+        expect.assertions(3);
 
-    const send = jest.fn();
-    const status = jest.fn(() => ({ send }));
-    const request: any = {};
-    const completeSoloStreakTasks = true;
-    const response: any = { status, locals: { completeSoloStreakTasks } };
-    const next = jest.fn();
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {};
+        const completeSoloStreakTasks = true;
+        const response: any = { status, locals: { completeSoloStreakTasks } };
+        const next = jest.fn();
 
-    sendCompleteSoloStreakTasksResponseMiddleware(request, response, next);
+        sendCompleteSoloStreakTasksResponseMiddleware(request, response, next);
 
-    expect(status).toBeCalledWith(200);
-    expect(send).toBeCalledWith(completeSoloStreakTasks);
-    expect(next).not.toBeCalled();
-  });
+        expect(status).toBeCalledWith(200);
+        expect(send).toBeCalledWith(completeSoloStreakTasks);
+        expect(next).not.toBeCalled();
+    });
 
-  test("that on error next is called with error", () => {
-    expect.assertions(1);
-    const request: any = {};
-    const response: any = {};
-    const next = jest.fn();
-    sendCompleteSoloStreakTasksResponseMiddleware(request, response, next);
+    test('that on error next is called with error', () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        sendCompleteSoloStreakTasksResponseMiddleware(request, response, next);
 
-    expect(next).toBeCalledWith(
-      new CustomError(
-        ErrorType.SendCompleteSoloStreakTasksResponseMiddleware,
-        expect.any(Error)
-      )
-    );
-  });
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.SendCompleteSoloStreakTasksResponseMiddleware, expect.any(Error)),
+        );
+    });
 });
 
-describe("getCompleteSoloStreakTaskMiddlewares", () => {
-  test("that getCompleteSoloStreakTaskMiddlewares are defined in the correct order", () => {
-    expect.assertions(4);
+describe('getCompleteSoloStreakTaskMiddlewares', () => {
+    test('that getCompleteSoloStreakTaskMiddlewares are defined in the correct order', () => {
+        expect.assertions(4);
 
-    expect(getCompleteSoloStreakTasksMiddlewares.length).toEqual(3);
-    expect(getCompleteSoloStreakTasksMiddlewares[0]).toEqual(
-      completeSoloStreakTaskQueryValidationMiddleware
-    );
-    expect(getCompleteSoloStreakTasksMiddlewares[1]).toEqual(
-      retreiveCompleteSoloStreakTasksMiddleware
-    );
-    expect(getCompleteSoloStreakTasksMiddlewares[2]).toEqual(
-      sendCompleteSoloStreakTasksResponseMiddleware
-    );
-  });
+        expect(getCompleteSoloStreakTasksMiddlewares.length).toEqual(3);
+        expect(getCompleteSoloStreakTasksMiddlewares[0]).toEqual(completeSoloStreakTaskQueryValidationMiddleware);
+        expect(getCompleteSoloStreakTasksMiddlewares[1]).toEqual(retreiveCompleteSoloStreakTasksMiddleware);
+        expect(getCompleteSoloStreakTasksMiddlewares[2]).toEqual(sendCompleteSoloStreakTasksResponseMiddleware);
+    });
 });

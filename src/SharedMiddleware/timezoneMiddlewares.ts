@@ -1,49 +1,40 @@
-import { Request, Response, NextFunction } from "express";
-import * as moment from "moment-timezone";
-import { CustomError, ErrorType } from "../customError";
-import { SupportedRequestHeaders } from "@streakoid/streakoid-sdk/lib";
+import { Request, Response, NextFunction } from 'express';
+import * as moment from 'moment-timezone';
+import { CustomError, ErrorType } from '../customError';
+import { SupportedRequestHeaders } from '@streakoid/streakoid-sdk/lib';
 
-export const retreiveTimezoneHeaderMiddleware = (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const timezone = request.header(SupportedRequestHeaders.xTimezone);
-    if (!timezone) {
-      throw new CustomError(ErrorType.MissingTimezoneHeader);
+export const retreiveTimezoneHeaderMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const timezone = request.header(SupportedRequestHeaders.xTimezone);
+        if (!timezone) {
+            throw new CustomError(ErrorType.MissingTimezoneHeader);
+        }
+        response.locals.timezone = timezone;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.RetreiveTimezoneHeaderMiddleware, err));
     }
-    response.locals.timezone = timezone;
-    next();
-  } catch (err) {
-    if (err instanceof CustomError) next(err);
-    else next(new CustomError(ErrorType.RetreiveTimezoneHeaderMiddleware, err));
-  }
 };
 
 export const getValidateTimezoneMiddleware = (isValidTimezone: Function) => (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  try {
-    const { timezone } = response.locals;
-    const validTimezone = isValidTimezone(timezone);
-    if (!validTimezone) {
-      throw new CustomError(ErrorType.InvalidTimezone);
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const { timezone } = response.locals;
+        const validTimezone = isValidTimezone(timezone);
+        if (!validTimezone) {
+            throw new CustomError(ErrorType.InvalidTimezone);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.ValidateTimezoneMiddleware, err));
     }
-    next();
-  } catch (err) {
-    if (err instanceof CustomError) next(err);
-    else next(new CustomError(ErrorType.ValidateTimezoneMiddleware, err));
-  }
 };
 
-export const validateTimezoneMiddleware = getValidateTimezoneMiddleware(
-  moment.tz.zone
-);
+export const validateTimezoneMiddleware = getValidateTimezoneMiddleware(moment.tz.zone);
 
-export const timezoneMiddlewares = [
-  retreiveTimezoneHeaderMiddleware,
-  validateTimezoneMiddleware
-];
+export const timezoneMiddlewares = [retreiveTimezoneHeaderMiddleware, validateTimezoneMiddleware];

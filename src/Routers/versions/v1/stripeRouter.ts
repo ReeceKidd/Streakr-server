@@ -1,22 +1,16 @@
-import { Router } from "express";
-import { createStripeCustomerSubscriptionMiddlewares } from "../../../RouteMiddlewares/Stripe/createStripeCustomerSubscriptionMiddlewares";
-import { cancelStripeCustomerSubscriptionMiddlewares } from "../../../RouteMiddlewares/Stripe/cancelStripeCustomerSubscriptionMiddlewares";
+import { Router } from 'express';
+import { createStripeCustomerSubscriptionMiddlewares } from '../../../RouteMiddlewares/Stripe/createStripeCustomerSubscriptionMiddlewares';
+import { cancelStripeCustomerSubscriptionMiddlewares } from '../../../RouteMiddlewares/Stripe/cancelStripeCustomerSubscriptionMiddlewares';
 
 const stripeRouter = Router();
 
 export enum stripeRouterPaths {
-  subscriptions = "subscriptions",
-  deleteSubscriptions = "delete-subscriptions"
+    subscriptions = 'subscriptions',
+    deleteSubscriptions = 'delete-subscriptions',
 }
 
-stripeRouter.post(
-  `/${stripeRouterPaths.subscriptions}`,
-  ...createStripeCustomerSubscriptionMiddlewares
-);
+stripeRouter.post(`/${stripeRouterPaths.subscriptions}`, ...createStripeCustomerSubscriptionMiddlewares);
 
-stripeRouter.post(
-  `/${stripeRouterPaths.deleteSubscriptions}`,
-  ...cancelStripeCustomerSubscriptionMiddlewares
-);
+stripeRouter.post(`/${stripeRouterPaths.deleteSubscriptions}`, ...cancelStripeCustomerSubscriptionMiddlewares);
 
 export default stripeRouter;
