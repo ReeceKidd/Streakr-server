@@ -9,11 +9,10 @@ describe('trackInactiveSoloStreaks', () => {
     });
 
     test('that inactive solo streak activity gets updated and a solo streak tracking event is created', async () => {
-        expect.assertions(2);
+        expect.assertions(1);
         streakoid.soloStreaks.update = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = '1';
-        const currentLocalTime = new Date().toString();
         const currentStreak = {
             startDate: '24/02/95',
             numberOfDaysInARow: 1,

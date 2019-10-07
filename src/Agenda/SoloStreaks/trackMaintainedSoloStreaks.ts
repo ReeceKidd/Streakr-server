@@ -7,6 +7,12 @@ export const trackMaintainedSoloStreaks = async (
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(
         maintainedSoloStreaks.map(async soloStreak => {
+            await streakoid.soloStreaks.update({
+                soloStreakId: soloStreak._id,
+                updateData: {
+                    completedToday: false,
+                },
+            });
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventType.MaintainedStreak,
                 streakId: soloStreak._id,
