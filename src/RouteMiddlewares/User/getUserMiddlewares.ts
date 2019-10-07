@@ -32,7 +32,6 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
         if (!user) {
             throw new CustomError(ErrorType.NoUserFound);
         }
-        console.log('Passed error message');
         response.locals.user = user;
         next();
     } catch (err) {
@@ -45,7 +44,6 @@ export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
 export const sendRetreiveUserResponseMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        console.log(2);
         const { user } = response.locals;
         response.status(ResponseCodes.success).send(user);
     } catch (err) {

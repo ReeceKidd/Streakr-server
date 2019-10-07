@@ -1892,7 +1892,6 @@ export class CustomError extends Error {
                 };
 
             default:
-                console.log('ENtered DEFUALT ERROR');
                 return {
                     code: `${ResponseCodes.warning}-01`,
                     message: internalServerMessage,
