@@ -13,7 +13,6 @@ describe('trackMaintainedSoloStreaks', () => {
         streakoid.soloStreaks.update = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = 1;
-        const currentLocalTime = new Date().toString();
         const currentStreak = {
             startDate: '24/02/95',
             numberOfDaysInARow: 1,
@@ -35,16 +34,10 @@ describe('trackMaintainedSoloStreaks', () => {
                 updatedAt: new Date(),
             } as any,
         ];
-        await trackMaintainedSoloStreaks(maintainedSoloStreaks as any, currentLocalTime);
+        await trackMaintainedSoloStreaks(maintainedSoloStreaks as any);
         expect(streakoid.soloStreaks.update).toBeCalledWith({
             soloStreakId: _id,
             updateData: {
-                activity: [
-                    {
-                        type: StreakTrackingEventType.MaintainedStreak,
-                        time: currentLocalTime,
-                    },
-                ],
                 completedToday: false,
             },
         });

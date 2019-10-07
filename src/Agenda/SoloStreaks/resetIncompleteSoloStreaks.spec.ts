@@ -25,7 +25,6 @@ describe('resetIncompleteSoloStreaks', () => {
                 currentStreak,
                 startDate: new Date().toString(),
                 completedToday: false,
-                activity: [],
                 pastStreaks: [],
                 streakName: 'Daily Danish',
                 streakDescription: 'Each day I must do Danish',
@@ -43,7 +42,6 @@ describe('resetIncompleteSoloStreaks', () => {
             updateData: {
                 currentStreak: { startDate: '', numberOfDaysInARow: 0 },
                 pastStreaks,
-                activity: [{ type: StreakTrackingEventType.LostStreak, time: endDate }],
                 active: false,
             },
         });

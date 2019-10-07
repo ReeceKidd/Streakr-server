@@ -5,7 +5,6 @@ import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import streakoid from '../../streakoid';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const manageDailySoloStreaks = async (timezone: string) => {
     const currentLocalTime = moment
         .tz(timezone)
@@ -31,8 +30,8 @@ export const manageDailySoloStreaks = async (timezone: string) => {
     ]);
 
     return Promise.all([
-        trackMaintainedSoloStreaks(maintainedSoloStreaks, currentLocalTime.toString()),
-        trackInactiveSoloStreaks(inactiveSoloStreaks, currentLocalTime),
+        trackMaintainedSoloStreaks(maintainedSoloStreaks),
+        trackInactiveSoloStreaks(inactiveSoloStreaks),
         resetIncompleteSoloStreaks(incompleteSoloStreaks, currentLocalTime),
     ]);
 };

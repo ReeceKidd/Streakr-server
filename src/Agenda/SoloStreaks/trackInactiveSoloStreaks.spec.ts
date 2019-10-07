@@ -35,18 +35,8 @@ describe('trackInactiveSoloStreaks', () => {
             updatedAt: new Date(),
         } as any;
         const inactiveSoloStreaks = [inactiveSoloStreak];
-        await trackInactiveSoloStreaks(inactiveSoloStreaks as any, currentLocalTime);
-        expect(streakoid.soloStreaks.update).toBeCalledWith({
-            soloStreakId: _id,
-            updateData: {
-                activity: [
-                    {
-                        type: StreakTrackingEventType.InactiveStreak,
-                        time: currentLocalTime,
-                    },
-                ],
-            },
-        });
+        await trackInactiveSoloStreaks(inactiveSoloStreaks as any);
+
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
             type: StreakTrackingEventType.InactiveStreak,
             streakId: _id,

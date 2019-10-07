@@ -40,14 +40,14 @@ describe('manageDailySoloStreaks', () => {
             active: true,
             timezone,
         });
-        expect(trackMaintainedSoloStreaks).toBeCalledWith(expect.any(Array), expect.any(String));
+        expect(trackMaintainedSoloStreaks).toBeCalledWith(expect.any(Array));
 
         expect(streakoid.soloStreaks.getAll).toBeCalledWith({
             completedToday: false,
             active: false,
             timezone,
         });
-        expect(trackInactiveSoloStreaks).toBeCalledWith(expect.any(Array), expect.any(String));
+        expect(trackInactiveSoloStreaks).toBeCalledWith(expect.any(Array));
 
         expect(streakoid.soloStreaks.getAll).toBeCalledWith({
             completedToday: false,

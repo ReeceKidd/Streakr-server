@@ -1,5 +1,5 @@
 import streakoid from '../../streakoid';
-import { SoloStreak, CurrentStreak, Activtiy, PastStreak, StreakTrackingEvent } from '@streakoid/streakoid-sdk/lib';
+import { SoloStreak, CurrentStreak, PastStreak, StreakTrackingEvent } from '@streakoid/streakoid-sdk/lib';
 import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
 
 export const resetIncompleteSoloStreaks = async (
@@ -16,12 +16,6 @@ export const resetIncompleteSoloStreaks = async (
 
             const pastStreaks: PastStreak[] = [...soloStreak.pastStreaks, pastStreak];
 
-            const activity: Activtiy = {
-                type: StreakTrackingEventType.LostStreak,
-                time: endDate.toString(),
-            };
-            const updatedActivity = [...soloStreak.activity, activity];
-
             const currentStreak: CurrentStreak = {
                 startDate: '',
                 numberOfDaysInARow: 0,
@@ -32,7 +26,6 @@ export const resetIncompleteSoloStreaks = async (
                 updateData: {
                     currentStreak,
                     pastStreaks,
-                    activity: updatedActivity,
                     active: false,
                 },
             });
