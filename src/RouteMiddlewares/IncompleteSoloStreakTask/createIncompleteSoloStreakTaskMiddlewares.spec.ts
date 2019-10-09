@@ -18,6 +18,9 @@ import {
     incompleteSoloStreakMiddleware,
     getSendTaskIncompleteResponseMiddleware,
     incompleteSoloStreakTaskBodyValidationMiddleware,
+    ensureSoloStreakTaskHasBeenCompletedTodayMiddleware,
+    resetStreakStartDateMiddleware,
+    getResetStreakStartDateMiddleware,
 } from './createIncompleteSoloStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -158,6 +161,117 @@ describe('soloStreakExistsMiddleware', () => {
         expect(next).toBeCalledWith(
             new CustomError(ErrorType.CreateIncompleteSoloStreakTaskSoloStreakExistsMiddleware, expect.any(Error)),
         );
+    });
+});
+
+describe('ensureSoloStreakTaskHasBeenCompletedTodayMiddleware', () => {
+    test('if soloStreak.completedToday is true it calls next middleware', () => {
+        const soloStreak = {
+            completedToday: true,
+        };
+        const request: any = {};
+        const response: any = { locals: { soloStreak } };
+        const next = jest.fn();
+
+        ensureSoloStreakTaskHasBeenCompletedTodayMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith();
+    });
+
+    test('if soloStreak.completedToday is false it throws SoloStreakHasNotBeenCompletedToday error message', () => {
+        const soloStreak = {
+            completedToday: false,
+        };
+        const request: any = {};
+        const response: any = { locals: { soloStreak } };
+        const next = jest.fn();
+
+        ensureSoloStreakTaskHasBeenCompletedTodayMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.SoloStreakHasNotBeenCompletedToday));
+    });
+
+    test('throws EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getRetreiveUserMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe('resetStreakStartDateMiddleware', () => {
+    test('if currentStreak number of days is 0 and this is the first streak it resets the current streak', async () => {
+        expect.assertions(2);
+        const updateOne = jest.fn().mockResolvedValue(true);
+        const soloStreakModel: any = {
+            updateOne,
+        };
+        const soloStreakId = 1;
+        const soloStreak = {
+            _id: soloStreakId,
+            currentStreak: {
+                startDate: undefined,
+                numberOfDaysInARow: 0,
+            },
+            pastStreaks: [],
+        };
+        const request: any = {};
+        const response: any = { locals: { soloStreak } };
+        const next: any = jest.fn();
+        const middleware = await getResetStreakStartDateMiddleware(soloStreakModel);
+
+        await middleware(request, response, next);
+
+        expect(updateOne).toBeCalledWith(
+            { _id: soloStreakId },
+            {
+                currentStreak: { startDate: null, numberOfDaysInARow: 0 },
+            },
+        );
+        expect(next).toBeCalledWith();
+    });
+
+    test("doesn't update soloStreak in number of days in a row > 0", async () => {
+        expect.assertions(2);
+        const findByIdAndUpdate = jest.fn();
+        const soloStreakModel: any = {
+            findByIdAndUpdate,
+        };
+        const soloStreakId = 1;
+        const soloStreak = {
+            currentStreak: {
+                startDate: new Date(),
+                numberOfDaysInARow: 1,
+            },
+        };
+        const request: any = { params: { soloStreakId } };
+        const response: any = { locals: { soloStreak } };
+        const next: any = jest.fn();
+        const middleware = await getResetStreakStartDateMiddleware(soloStreakModel);
+
+        await middleware(request, response, next);
+
+        expect(findByIdAndUpdate).not.toBeCalled();
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws ResetStreakStartDateMiddleware on middleware failure', () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getResetStreakStartDateMiddleware(undefined as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.ResetStreakStartDateMiddleware, expect.any(Error)));
     });
 });
 
@@ -497,17 +611,19 @@ describe('sendTaskIncompleteResponseMiddleware', () => {
 
 describe(`createIncompleteSoloStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(10);
+        expect.assertions(12);
 
-        expect(createIncompleteSoloStreakTaskMiddlewares.length).toEqual(9);
+        expect(createIncompleteSoloStreakTaskMiddlewares.length).toEqual(11);
         expect(createIncompleteSoloStreakTaskMiddlewares[0]).toBe(incompleteSoloStreakTaskBodyValidationMiddleware),
             expect(createIncompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
-        expect(createIncompleteSoloStreakTaskMiddlewares[2]).toBe(retreiveUserMiddleware);
-        expect(createIncompleteSoloStreakTaskMiddlewares[3]).toBe(setTaskIncompleteTimeMiddleware);
-        expect(createIncompleteSoloStreakTaskMiddlewares[4]).toBe(setDayTaskWasIncompletedMiddleware);
-        expect(createIncompleteSoloStreakTaskMiddlewares[5]).toBe(createIncompleteSoloStreakTaskDefinitionMiddleware);
-        expect(createIncompleteSoloStreakTaskMiddlewares[6]).toBe(saveTaskIncompleteMiddleware);
-        expect(createIncompleteSoloStreakTaskMiddlewares[7]).toBe(incompleteSoloStreakMiddleware);
-        expect(createIncompleteSoloStreakTaskMiddlewares[8]).toBe(sendTaskIncompleteResponseMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[2]).toBe(ensureSoloStreakTaskHasBeenCompletedTodayMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[3]).toBe(resetStreakStartDateMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[4]).toBe(retreiveUserMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[5]).toBe(setTaskIncompleteTimeMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[6]).toBe(setDayTaskWasIncompletedMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[7]).toBe(createIncompleteSoloStreakTaskDefinitionMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[8]).toBe(saveTaskIncompleteMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[9]).toBe(incompleteSoloStreakMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[10]).toBe(sendTaskIncompleteResponseMiddleware);
     });
 });

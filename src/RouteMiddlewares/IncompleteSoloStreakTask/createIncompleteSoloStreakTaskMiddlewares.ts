@@ -10,6 +10,7 @@ import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { incompleteSoloStreakTaskModel, IncompleteSoloStreakTaskModel } from '../../Models/IncompleteSoloStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
+import { SoloStreak } from '@streakoid/streakoid-sdk/lib';
 
 export const incompleteSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -48,6 +49,49 @@ export const getSoloStreakExistsMiddleware = (soloStreakModel: mongoose.Model<So
 };
 
 export const soloStreakExistsMiddleware = getSoloStreakExistsMiddleware(soloStreakModel);
+
+export const ensureSoloStreakTaskHasBeenCompletedTodayMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        if (!soloStreak.completedToday) {
+            throw new CustomError(ErrorType.SoloStreakHasNotBeenCompletedToday);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware, err));
+    }
+};
+
+export const getResetStreakStartDateMiddleware = (soloStreakModel: mongoose.Model<SoloStreakModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        if (soloStreak.currentStreak.numberOfDaysInARow === 0 && soloStreak.pastStreaks.length === 0) {
+            await soloStreakModel.updateOne(
+                { _id: soloStreak._id },
+                {
+                    currentStreak: {
+                        startDate: null,
+                        numberOfDaysInARow: 0,
+                    },
+                },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.ResetStreakStartDateMiddleware, err));
+    }
+};
+
+export const resetStreakStartDateMiddleware = getResetStreakStartDateMiddleware(soloStreakModel);
 
 export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
@@ -186,6 +230,8 @@ export const sendTaskIncompleteResponseMiddleware = getSendTaskIncompleteRespons
 export const createIncompleteSoloStreakTaskMiddlewares = [
     incompleteSoloStreakTaskBodyValidationMiddleware,
     soloStreakExistsMiddleware,
+    ensureSoloStreakTaskHasBeenCompletedTodayMiddleware,
+    resetStreakStartDateMiddleware,
     retreiveUserMiddleware,
     setTaskIncompleteTimeMiddleware,
     setDayTaskWasIncompletedMiddleware,

@@ -243,6 +243,9 @@ export enum ErrorType {
     SendIncompleteSoloStreakTaskDeletedResponseMiddleware,
     GetIncompleteSoloStreakTasksMiddleware,
     SendIncompleteSoloStreakTasksResponseMiddleware,
+    SoloStreakHasNotBeenCompletedToday,
+    EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware,
+    ResetStreakStartDateMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -688,6 +691,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-55`,
                     message: 'Complete solo streak task does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.SoloStreakHasNotBeenCompletedToday: {
+                return {
+                    code: `${ResponseCodes.badRequest}-56`,
+                    message: 'Solo streak has not been completed today.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2011,6 +2022,20 @@ export class CustomError extends Error {
             case ErrorType.SendIncompleteSoloStreakTasksResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-184`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-185`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ResetStreakStartDateMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-186`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
