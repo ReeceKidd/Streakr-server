@@ -14,6 +14,7 @@ import feedbackRouter from './feedbackRouter';
 import groupMemberStreakRouter from './groupMemberStreaksRouter';
 import friendRequestsRouter from './friendRequestRouter';
 import { timezoneMiddlewares } from '../../../SharedMiddleware/timezoneMiddlewares';
+import incompleteSoloStreakTasksRouter from './incompleteSoloStreakTaskRouter';
 
 const v1Router = Router();
 
@@ -23,6 +24,7 @@ v1Router.use(`/${RouteCategories.soloStreaks}`, soloStreaksRouter);
 v1Router.use(`/${RouteCategories.users}`, usersRouter);
 v1Router.use(`/${RouteCategories.stripe}`, stripeRouter);
 v1Router.use(`/${RouteCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);
+v1Router.use(`/${RouteCategories.incompleteSoloStreakTasks}`, incompleteSoloStreakTasksRouter);
 v1Router.use(`/${RouteCategories.completeGroupMemberStreakTasks}`, completeGroupMemberStreakTasksRouter);
 v1Router.use(`/${RouteCategories.teamStreaks}`, teamStreaksRouter);
 v1Router.use(`/${RouteCategories.streakTrackingEvents}`, streakTrackingEventRouter);

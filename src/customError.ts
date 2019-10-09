@@ -241,6 +241,8 @@ export enum ErrorType {
     NoIncompleteSoloStreakTaskToDeleteFound,
     DeleteIncompleteSoloStreakTaskMiddleware,
     SendIncompleteSoloStreakTaskDeletedResponseMiddleware,
+    GetIncompleteSoloStreakTasksMiddleware,
+    SendIncompleteSoloStreakTasksResponseMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1995,6 +1997,20 @@ export class CustomError extends Error {
             case ErrorType.SendIncompleteSoloStreakTaskDeletedResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-182`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetIncompleteSoloStreakTasksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-183`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendIncompleteSoloStreakTasksResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-184`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
