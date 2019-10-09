@@ -63,7 +63,7 @@ export const ensureSoloStreakTaskHasBeenCompletedTodayMiddleware = (
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware, err));
+        else next(new CustomError(ErrorType.EnsureSoloStreakTaskHasBeenCompletedTodayMiddleware, err));
     }
 };
 

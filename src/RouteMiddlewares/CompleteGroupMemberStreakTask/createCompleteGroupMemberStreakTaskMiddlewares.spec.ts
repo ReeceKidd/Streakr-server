@@ -451,7 +451,7 @@ describe('hasTaskAlreadyBeenCompletedTodayMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.TaskAlreadyCompletedToday));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.GroupMemberStreakTaskAlreadyCompletedToday));
     });
 
     test('throws HasTaskAlreadyBeenCompletedTodayMiddleware error on middleware failure', async () => {

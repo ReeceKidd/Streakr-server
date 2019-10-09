@@ -21,7 +21,7 @@ export enum ErrorType {
     RetreiveUserMiddleware,
     SetTaskCompleteTimeMiddleware,
     SetStreakStartDateMiddleware,
-    TaskAlreadyCompletedToday,
+    SoloStreakHasBeenCompletedToday,
     HasTaskAlreadyBeenCompletedTodayMiddleware,
     CreateCompleteSoloStreakTaskDefinitionMiddleware,
     SaveTaskCompleteMiddleware,
@@ -244,8 +244,9 @@ export enum ErrorType {
     GetIncompleteSoloStreakTasksMiddleware,
     SendIncompleteSoloStreakTasksResponseMiddleware,
     SoloStreakHasNotBeenCompletedToday,
-    EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware,
+    EnsureSoloStreakTaskHasBeenCompletedTodayMiddleware,
     ResetStreakStartDateMiddleware,
+    EnsureSoloStreakTaskHasNotBeenCompletedTodayMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -695,25 +696,25 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.SoloStreakHasNotBeenCompletedToday: {
+            case ErrorType.SoloStreakHasBeenCompletedToday: {
                 return {
-                    code: `${ResponseCodes.badRequest}-56`,
-                    message: 'Solo streak has not been completed today.',
-                    httpStatusCode: ResponseCodes.badRequest,
+                    code: `${ResponseCodes.unprocessableEntity}-01`,
+                    message: 'Solo streak task already completed today.',
+                    httpStatusCode: ResponseCodes.unprocessableEntity,
                 };
             }
 
-            case ErrorType.TaskAlreadyCompletedToday: {
+            case ErrorType.SoloStreakHasNotBeenCompletedToday: {
                 return {
-                    code: `${ResponseCodes.unprocessableEntity}-01`,
-                    message: 'Task already completed today.',
+                    code: `${ResponseCodes.unprocessableEntity}-02`,
+                    message: 'Solo streak has not been completed today.',
                     httpStatusCode: ResponseCodes.unprocessableEntity,
                 };
             }
 
             case ErrorType.GroupMemberStreakTaskAlreadyCompletedToday: {
                 return {
-                    code: `${ResponseCodes.unprocessableEntity}-02`,
+                    code: `${ResponseCodes.unprocessableEntity}-03`,
                     message: 'Task already completed today.',
                     httpStatusCode: ResponseCodes.unprocessableEntity,
                 };
@@ -2026,7 +2027,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware:
+            case ErrorType.EnsureSoloStreakTaskHasBeenCompletedTodayMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-185`,
                     message: internalServerMessage,
@@ -2036,6 +2037,13 @@ export class CustomError extends Error {
             case ErrorType.ResetStreakStartDateMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-186`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.EnsureSoloStreakTaskHasNotBeenCompletedTodayMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-187`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

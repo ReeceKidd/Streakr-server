@@ -50,6 +50,23 @@ export const getSoloStreakExistsMiddleware = (soloStreakModel: mongoose.Model<So
 
 export const soloStreakExistsMiddleware = getSoloStreakExistsMiddleware(soloStreakModel);
 
+export const ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        if (soloStreak.completedToday) {
+            throw new CustomError(ErrorType.SoloStreakHasBeenCompletedToday);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.EnsureSoloStreakTaskHasNotBeenCompletedTodayMiddleware, err));
+    }
+};
+
 export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
@@ -212,6 +229,7 @@ export const sendTaskCompleteResponseMiddleware = getSendTaskCompleteResponseMid
 export const createCompleteSoloStreakTaskMiddlewares = [
     completeSoloStreakTaskBodyValidationMiddleware,
     soloStreakExistsMiddleware,
+    ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware,
     retreiveUserMiddleware,
     setTaskCompleteTimeMiddleware,
     setStreakStartDateMiddleware,

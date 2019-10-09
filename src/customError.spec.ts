@@ -596,25 +596,25 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to SoloStreakHasBeenCompletedToday`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SoloStreakHasBeenCompletedToday);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`422-01`);
+        expect(message).toBe('Solo streak task already completed today.');
+        expect(httpStatusCode).toBe(422);
+    });
+
     test(`creates correct error when type is set to SoloStreakHasNotBeenCompletedToday`, () => {
         expect.assertions(3);
 
         const customError = new CustomError(ErrorType.SoloStreakHasNotBeenCompletedToday);
         const { code, message, httpStatusCode } = customError;
 
-        expect(code).toBe(`400-56`);
+        expect(code).toBe(`422-02`);
         expect(message).toBe('Solo streak has not been completed today.');
-        expect(httpStatusCode).toBe(400);
-    });
-
-    test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.TaskAlreadyCompletedToday);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`422-01`);
-        expect(message).toBe('Task already completed today.');
         expect(httpStatusCode).toBe(422);
     });
 
@@ -624,7 +624,7 @@ describe('customError', () => {
         const customError = new CustomError(ErrorType.GroupMemberStreakTaskAlreadyCompletedToday);
         const { code, message, httpStatusCode } = customError;
 
-        expect(code).toBe(`422-02`);
+        expect(code).toBe(`422-03`);
         expect(message).toBe('Task already completed today.');
         expect(httpStatusCode).toBe(422);
     });
@@ -2665,10 +2665,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware`, () => {
+    test(`creates correct error when type is set to EnsureSoloStreakTaskHasBeenCompletedTodayMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware);
+        const customError = new CustomError(ErrorType.EnsureSoloStreakTaskHasBeenCompletedTodayMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-185`);
@@ -2683,6 +2683,17 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-186`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to EnsureSoloStreakTaskHasNotBeenCompletedTodayMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.EnsureSoloStreakTaskHasNotBeenCompletedTodayMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-187`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

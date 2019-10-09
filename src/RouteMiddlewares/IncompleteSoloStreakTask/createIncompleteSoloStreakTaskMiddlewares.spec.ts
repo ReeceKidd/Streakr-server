@@ -201,7 +201,7 @@ describe('ensureSoloStreakTaskHasBeenCompletedTodayMiddleware', () => {
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.EnsureSoloStreakTaskHasBeeenCompletedTodayMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.EnsureSoloStreakTaskHasBeenCompletedTodayMiddleware, expect.any(Error)),
         );
     });
 });
@@ -614,8 +614,8 @@ describe(`createIncompleteSoloStreakTaskMiddlewares`, () => {
         expect.assertions(12);
 
         expect(createIncompleteSoloStreakTaskMiddlewares.length).toEqual(11);
-        expect(createIncompleteSoloStreakTaskMiddlewares[0]).toBe(incompleteSoloStreakTaskBodyValidationMiddleware),
-            expect(createIncompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[0]).toBe(incompleteSoloStreakTaskBodyValidationMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[2]).toBe(ensureSoloStreakTaskHasBeenCompletedTodayMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[3]).toBe(resetStreakStartDateMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[4]).toBe(retreiveUserMiddleware);
