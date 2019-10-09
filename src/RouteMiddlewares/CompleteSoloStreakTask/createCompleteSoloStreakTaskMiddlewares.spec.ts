@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     createCompleteSoloStreakTaskMiddlewares,
-    hasTaskAlreadyBeenCompletedTodayMiddleware,
     retreiveUserMiddleware,
     setTaskCompleteTimeMiddleware,
     setDayTaskWasCompletedMiddleware,
@@ -15,7 +14,6 @@ import {
     getRetreiveUserMiddleware,
     getSetDayTaskWasCompletedMiddleware,
     getSetTaskCompleteTimeMiddleware,
-    getHasTaskAlreadyBeenCompletedTodayMiddleware,
     getSaveTaskCompleteMiddleware,
     getStreakMaintainedMiddleware,
     getSendTaskCompleteResponseMiddleware,
@@ -354,64 +352,6 @@ describe('setDayTaskWasCompletedMiddleware', () => {
     });
 });
 
-describe('hasTaskAlreadyBeenCompletedTodayMiddleware', () => {
-    test('checks task has not already been completed today', async () => {
-        expect.assertions(2);
-        const findOne = jest.fn(() => Promise.resolve(false));
-        const completeSoloStreakTaskModel = { findOne };
-        const soloStreakId = 'abcd';
-        const taskCompleteDay = '26/04/2012';
-        const userId = 'Abcde';
-        const request: any = { body: { userId, soloStreakId } };
-        const response: any = { locals: { taskCompleteDay } };
-        const next = jest.fn();
-        const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(completeSoloStreakTaskModel as any);
-
-        await middleware(request, response, next);
-
-        expect(findOne).toBeCalledWith({
-            userId,
-            streakId: soloStreakId,
-            taskCompleteDay,
-        });
-        expect(next).toBeCalledWith();
-    });
-
-    test('throws TaskAlreadyCompletedToday error if task has already been completed today', async () => {
-        expect.assertions(1);
-        const findOne = jest.fn(() => Promise.resolve(true));
-        const completeSoloStreakTaskModel = { findOne };
-        const soloStreakId = 'abcd';
-        const taskCompleteDay = '26/04/2012';
-        const userId = 'abcde';
-        const request: any = { params: { soloStreakId }, body: { userId } };
-        const response: any = { locals: { taskCompleteDay } };
-        const next = jest.fn();
-        const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(completeSoloStreakTaskModel as any);
-
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith(new CustomError(ErrorType.TaskAlreadyCompletedToday));
-    });
-
-    test('throws HasTaskAlreadyBeenCompletedTodayMiddleware error on middleware failure', async () => {
-        expect.assertions(1);
-        const findOne = jest.fn(() => Promise.resolve(true));
-        const completeSoloStreakTaskModel = { findOne };
-        const taskCompleteDay = '26/04/2012';
-        const request: any = {};
-        const response: any = { locals: { taskCompleteDay } };
-        const next = jest.fn();
-        const middleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(completeSoloStreakTaskModel as any);
-
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith(
-            new CustomError(ErrorType.HasTaskAlreadyBeenCompletedTodayMiddleware, expect.any(Error)),
-        );
-    });
-});
-
 describe('createCompleteSoloStreakTaskDefinitionMiddleware', () => {
     test('sets completeSoloStreakTaskDefinition and calls next()', () => {
         expect.assertions(3);
@@ -625,19 +565,18 @@ describe('sendTaskCompleteResponseMiddleware', () => {
 
 describe(`createCompleteSoloStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(12);
+        expect.assertions(11);
 
-        expect(createCompleteSoloStreakTaskMiddlewares.length).toEqual(11);
+        expect(createCompleteSoloStreakTaskMiddlewares.length).toEqual(10);
         expect(createCompleteSoloStreakTaskMiddlewares[0]).toBe(completeSoloStreakTaskBodyValidationMiddleware),
             expect(createCompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[2]).toBe(retreiveUserMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[3]).toBe(setTaskCompleteTimeMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[4]).toBe(setStreakStartDateMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[5]).toBe(setDayTaskWasCompletedMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[6]).toBe(hasTaskAlreadyBeenCompletedTodayMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[7]).toBe(createCompleteSoloStreakTaskDefinitionMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[8]).toBe(saveTaskCompleteMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[9]).toBe(streakMaintainedMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[10]).toBe(sendTaskCompleteResponseMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[6]).toBe(createCompleteSoloStreakTaskDefinitionMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[7]).toBe(saveTaskCompleteMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[8]).toBe(streakMaintainedMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[9]).toBe(sendTaskCompleteResponseMiddleware);
     });
 });

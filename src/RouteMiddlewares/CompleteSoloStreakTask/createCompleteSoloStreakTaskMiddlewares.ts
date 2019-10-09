@@ -135,31 +135,6 @@ export const dayFormat = 'YYYY-MM-DD';
 
 export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddleware(dayFormat);
 
-export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
-    completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTaskModel>,
-) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-    try {
-        const { userId, soloStreakId } = request.body;
-        const { taskCompleteDay } = response.locals;
-        const taskAlreadyCompletedToday = await completeSoloStreakTaskModel.findOne({
-            userId,
-            streakId: soloStreakId,
-            taskCompleteDay,
-        });
-        if (taskAlreadyCompletedToday) {
-            throw new CustomError(ErrorType.TaskAlreadyCompletedToday);
-        }
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.HasTaskAlreadyBeenCompletedTodayMiddleware, err));
-    }
-};
-
-export const hasTaskAlreadyBeenCompletedTodayMiddleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
-    completeSoloStreakTaskModel,
-);
-
 export const createCompleteSoloStreakTaskDefinitionMiddleware = (
     request: Request,
     response: Response,
@@ -241,7 +216,6 @@ export const createCompleteSoloStreakTaskMiddlewares = [
     setTaskCompleteTimeMiddleware,
     setStreakStartDateMiddleware,
     setDayTaskWasCompletedMiddleware,
-    hasTaskAlreadyBeenCompletedTodayMiddleware,
     createCompleteSoloStreakTaskDefinitionMiddleware,
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
