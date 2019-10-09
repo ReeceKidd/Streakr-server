@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { ResponseCodes } from './Server/responseCodes';
 
 export enum ErrorType {
@@ -227,6 +228,16 @@ export enum ErrorType {
     RetreiveFormattedRequesteeDoesNotExist,
     RetreiveFormattedRequesterMiddleware,
     RetreiveFormattedRequesteeMiddleware,
+    SetTaskIncompleteTimeMiddleware,
+    SetDayTaskWasIncompletedMiddleware,
+    CreateIncompleteSoloStreakTaskDefinitionMiddleware,
+    SaveTaskIncompleteMiddleware,
+    SendTaskIncompleteResponseMiddleware,
+    CreateIncompleteSoloStreakTaskSoloStreakExistsMiddleware,
+    CreateIncompleteSoloStreakTaskRetreiveUserMiddleware,
+    IncompleteSoloStreakMiddleware,
+    CreateIncompleteSoloStreakTaskSoloStreakDoesNotExist,
+    CreateIncompleteSoloStreakTaskUserDoesNotExist,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -648,6 +659,22 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-52`,
                     message: 'Requester does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateIncompleteSoloStreakTaskSoloStreakDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-53`,
+                    message: 'Solo streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateIncompleteSoloStreakTaskUserDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-54`,
+                    message: 'User does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -1887,6 +1914,62 @@ export class CustomError extends Error {
             case ErrorType.RetreiveFormattedRequesteeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-172`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SetTaskIncompleteTimeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-173`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SetDayTaskWasIncompletedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-174`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteSoloStreakTaskDefinitionMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-175`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SaveTaskIncompleteMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-176`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendTaskIncompleteResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-177`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteSoloStreakTaskSoloStreakExistsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-178`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteSoloStreakTaskRetreiveUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-179`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncompleteSoloStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-180`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

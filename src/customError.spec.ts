@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { CustomError, ErrorType } from './customError';
 
 describe('customError', () => {
@@ -559,6 +560,28 @@ describe('customError', () => {
 
         expect(code).toBe(`400-52`);
         expect(message).toBe('Requester does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to CreateIncompleteSoloStreakTaskSoloStreakDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIncompleteSoloStreakTaskSoloStreakDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-53`);
+        expect(message).toBe('Solo streak does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to CreateIncompleteSoloStreakTaskUserDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIncompleteSoloStreakTaskUserDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-54`);
+        expect(message).toBe('User does not exist.');
         expect(httpStatusCode).toBe(400);
     });
 
@@ -2484,6 +2507,94 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-172`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SetTaskIncompleteTimeMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SetTaskIncompleteTimeMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-173`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SetDayTaskWasIncompletedMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SetDayTaskWasIncompletedMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-174`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateIncompleteSoloStreakTaskDefinitionMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIncompleteSoloStreakTaskDefinitionMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-175`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SaveTaskIncompleteMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SaveTaskIncompleteMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-176`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendTaskIncompleteResponseMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendTaskIncompleteResponseMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-177`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateIncompleteSoloStreakTaskSoloStreakExistsMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIncompleteSoloStreakTaskSoloStreakExistsMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-178`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateIncompleteSoloStreakTaskRetreiveUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIncompleteSoloStreakTaskRetreiveUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-179`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to IncompleteSoloStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.IncompleteSoloStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-180`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
