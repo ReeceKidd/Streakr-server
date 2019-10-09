@@ -238,6 +238,9 @@ export enum ErrorType {
     IncompleteSoloStreakMiddleware,
     CreateIncompleteSoloStreakTaskSoloStreakDoesNotExist,
     CreateIncompleteSoloStreakTaskUserDoesNotExist,
+    NoIncompleteSoloStreakTaskToDeleteFound,
+    DeleteIncompleteSoloStreakTaskMiddleware,
+    SendIncompleteSoloStreakTaskDeletedResponseMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -675,6 +678,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-54`,
                     message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.NoIncompleteSoloStreakTaskToDeleteFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-55`,
+                    message: 'Complete solo streak task does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -1970,6 +1981,20 @@ export class CustomError extends Error {
             case ErrorType.IncompleteSoloStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-180`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DeleteIncompleteSoloStreakTaskMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-181`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendIncompleteSoloStreakTaskDeletedResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-182`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

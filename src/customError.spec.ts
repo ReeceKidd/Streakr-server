@@ -585,6 +585,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to NoIncompleteSoloStreakTaskToDeleteFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.NoIncompleteSoloStreakTaskToDeleteFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-55`);
+        expect(message).toBe('Complete solo streak task does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
         expect.assertions(3);
 
@@ -2595,6 +2606,28 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-180`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to DeleteIncompleteSoloStreakTaskMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.DeleteIncompleteSoloStreakTaskMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-181`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendIncompleteSoloStreakTaskDeletedResponseMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendIncompleteSoloStreakTaskDeletedResponseMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-182`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
