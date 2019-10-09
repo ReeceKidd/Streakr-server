@@ -25,10 +25,6 @@ export const completeSoloStreakTaskSchema = new mongoose.Schema(
             required: true,
             type: String,
         },
-        streakType: {
-            required: true,
-            type: String,
-        },
     },
     {
         timestamps: true,

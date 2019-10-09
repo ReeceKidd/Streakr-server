@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
-import StreakTypes from '@streakoid/streakoid-sdk/lib/streakTypes';
 import { SoloStreak } from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -161,7 +160,7 @@ export const hasTaskAlreadyBeenCompletedTodayMiddleware = getHasTaskAlreadyBeenC
     completeSoloStreakTaskModel,
 );
 
-export const getCreateCompleteSoloStreakTaskDefinitionMiddleware = (streakType: string) => (
+export const createCompleteSoloStreakTaskDefinitionMiddleware = (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -174,7 +173,6 @@ export const getCreateCompleteSoloStreakTaskDefinitionMiddleware = (streakType: 
             streakId: soloStreakId,
             taskCompleteTime: taskCompleteTime.toDate(),
             taskCompleteDay,
-            streakType,
         };
         response.locals.completeSoloStreakTaskDefinition = completeSoloStreakTaskDefinition;
         next();
@@ -182,10 +180,6 @@ export const getCreateCompleteSoloStreakTaskDefinitionMiddleware = (streakType: 
         next(new CustomError(ErrorType.CreateCompleteSoloStreakTaskDefinitionMiddleware, err));
     }
 };
-
-export const createCompleteSoloStreakTaskDefinitionMiddleware = getCreateCompleteSoloStreakTaskDefinitionMiddleware(
-    StreakTypes.soloStreak,
-);
 
 export const getSaveTaskCompleteMiddleware = (
     completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTaskModel>,

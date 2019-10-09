@@ -16,7 +16,6 @@ import {
     getSetDayTaskWasCompletedMiddleware,
     getSetTaskCompleteTimeMiddleware,
     getHasTaskAlreadyBeenCompletedTodayMiddleware,
-    getCreateCompleteSoloStreakTaskDefinitionMiddleware,
     getSaveTaskCompleteMiddleware,
     getStreakMaintainedMiddleware,
     getSendTaskCompleteResponseMiddleware,
@@ -433,17 +432,14 @@ describe('createCompleteSoloStreakTaskDefinitionMiddleware', () => {
             },
         };
         const next = jest.fn();
-        const streakType = 'soloStreak';
-        const middleware = getCreateCompleteSoloStreakTaskDefinitionMiddleware(streakType);
 
-        middleware(request, response, next);
+        createCompleteSoloStreakTaskDefinitionMiddleware(request, response, next);
 
         expect(response.locals.completeSoloStreakTaskDefinition).toEqual({
             userId,
             streakId: soloStreakId,
             taskCompleteTime: taskCompleteTime.toDate(),
             taskCompleteDay,
-            streakType,
         });
         expect(toDate).toBeCalledWith();
         expect(next).toBeCalledWith();
@@ -451,25 +447,11 @@ describe('createCompleteSoloStreakTaskDefinitionMiddleware', () => {
 
     test('throws CreateCompleteSoloStreakTaskDefinitionMiddlware error on middleware failure', () => {
         expect.assertions(1);
-        const soloStreakId = 'abcd123';
-        const taskCompleteTime = {};
-        const taskCompleteDay = '09/05/2019';
-        const userId = 'abcd';
-        const request: any = {
-            params: { soloStreakId },
-            body: { userId },
-        };
-        const response: any = {
-            locals: {
-                taskCompleteTime,
-                taskCompleteDay,
-            },
-        };
+        const request: any = {};
+        const response: any = {};
         const next = jest.fn();
-        const streakType = 'soloStreak';
-        const middleware = getCreateCompleteSoloStreakTaskDefinitionMiddleware(streakType);
 
-        middleware(request, response, next);
+        createCompleteSoloStreakTaskDefinitionMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(
             new CustomError(ErrorType.CreateCompleteSoloStreakTaskDefinitionMiddleware, expect.any(Error)),
