@@ -74,16 +74,19 @@ export const getResetStreakStartDateMiddleware = (soloStreakModel: mongoose.Mode
 ): Promise<void> => {
     try {
         const soloStreak: SoloStreak = response.locals.soloStreak;
-        if (soloStreak.currentStreak.numberOfDaysInARow === 0 && soloStreak.pastStreaks.length === 0) {
-            await soloStreakModel.updateOne(
-                { _id: soloStreak._id },
-                {
-                    currentStreak: {
-                        startDate: null,
-                        numberOfDaysInARow: 0,
+        if (soloStreak.currentStreak.numberOfDaysInARow === 1) {
+            response.locals.soloStreak = await soloStreakModel
+                .findByIdAndUpdate(
+                    soloStreak._id,
+                    {
+                        currentStreak: {
+                            startDate: null,
+                            numberOfDaysInARow: 0,
+                        },
                     },
-                },
-            );
+                    { new: true },
+                )
+                .lean();
         }
         next();
     } catch (err) {
@@ -195,15 +198,26 @@ export const getIncompleteSoloStreakMiddleware = (soloStreakModel: mongoose.Mode
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { soloStreakId } = request.body;
-        await soloStreakModel.updateOne(
-            { _id: soloStreakId },
-            {
-                completedToday: false,
-                $inc: { 'currentStreak.numberOfDaysInARow': -1 },
-                active: false,
-            },
-        );
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        if (soloStreak.currentStreak.numberOfDaysInARow !== 0) {
+            await soloStreakModel.updateOne(
+                { _id: soloStreak._id },
+                {
+                    completedToday: false,
+                    $inc: { 'currentStreak.numberOfDaysInARow': -1 },
+                    active: false,
+                },
+            );
+        } else {
+            await soloStreakModel.updateOne(
+                { _id: soloStreak._id },
+                {
+                    completedToday: false,
+                    'currentStreak.numberOfDaysInARow': 0,
+                    active: false,
+                },
+            );
+        }
         next();
     } catch (err) {
         next(new CustomError(ErrorType.IncompleteSoloStreakMiddleware, err));

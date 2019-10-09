@@ -207,18 +207,19 @@ describe('ensureSoloStreakTaskHasBeenCompletedTodayMiddleware', () => {
 });
 
 describe('resetStreakStartDateMiddleware', () => {
-    test('if currentStreak number of days is 0 and this is the first streak it resets the current streak', async () => {
-        expect.assertions(2);
-        const updateOne = jest.fn().mockResolvedValue(true);
+    test('if currentStreak number of days is 1 and this is the first streak it resets the current streak', async () => {
+        expect.assertions(3);
+        const lean = jest.fn(() => true);
+        const findByIdAndUpdate = jest.fn(() => ({ lean }));
         const soloStreakModel: any = {
-            updateOne,
+            findByIdAndUpdate,
         };
         const soloStreakId = 1;
         const soloStreak = {
             _id: soloStreakId,
             currentStreak: {
                 startDate: undefined,
-                numberOfDaysInARow: 0,
+                numberOfDaysInARow: 1,
             },
             pastStreaks: [],
         };
@@ -229,26 +230,28 @@ describe('resetStreakStartDateMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(updateOne).toBeCalledWith(
-            { _id: soloStreakId },
+        expect(findByIdAndUpdate).toBeCalledWith(
+            soloStreakId,
             {
                 currentStreak: { startDate: null, numberOfDaysInARow: 0 },
             },
+            { new: true },
         );
+        expect(lean).toBeCalledWith();
         expect(next).toBeCalledWith();
     });
 
-    test("doesn't update soloStreak in number of days in a row > 0", async () => {
+    test("doesn't update soloStreak in number of days in a row > 1", async () => {
         expect.assertions(2);
         const findByIdAndUpdate = jest.fn();
         const soloStreakModel: any = {
             findByIdAndUpdate,
         };
-        const soloStreakId = 1;
+        const soloStreakId = 2;
         const soloStreak = {
             currentStreak: {
                 startDate: new Date(),
-                numberOfDaysInARow: 1,
+                numberOfDaysInARow: 2,
             },
         };
         const request: any = { params: { soloStreakId } };
@@ -524,15 +527,52 @@ describe(`saveTaskIncompleteMiddleware`, () => {
 });
 
 describe('incompleteSoloStreakMiddleware', () => {
-    test('updates streak completedToday, descrements number of days, sets active to false and calls next', async () => {
+    test('if number of days in a row of current streak is not equal to 0 it updates streak completedToday, descrements number of days by one, sets active to false and calls next', async () => {
         expect.assertions(2);
         const soloStreakId = '123abc';
+        const soloStreak = {
+            _id: soloStreakId,
+            currentStreak: {
+                numberOfDaysInARow: 1,
+            },
+        };
         const updateOne = jest.fn(() => Promise.resolve(true));
         const soloStreakModel = {
             updateOne,
         };
-        const request: any = { body: { soloStreakId } };
-        const response: any = {};
+        const request: any = {};
+        const response: any = { locals: { soloStreak } };
+        const next = jest.fn();
+        const middleware = getIncompleteSoloStreakMiddleware(soloStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(updateOne).toBeCalledWith(
+            { _id: soloStreakId },
+            {
+                completedToday: false,
+                $inc: { 'currentStreak.numberOfDaysInARow': -1 },
+                active: false,
+            },
+        );
+        expect(next).toBeCalledWith();
+    });
+
+    test('if number of days in a row of current streak is equal to 0 it updates streak completedToday, set currentStreak.numberOfDays in a row to 0, sets active to false and calls next', async () => {
+        expect.assertions(2);
+        const soloStreakId = '123abc';
+        const soloStreak = {
+            _id: soloStreakId,
+            currentStreak: {
+                numberOfDaysInARow: 1,
+            },
+        };
+        const updateOne = jest.fn(() => Promise.resolve(true));
+        const soloStreakModel = {
+            updateOne,
+        };
+        const request: any = {};
+        const response: any = { locals: { soloStreak } };
         const next = jest.fn();
         const middleware = getIncompleteSoloStreakMiddleware(soloStreakModel as any);
 
