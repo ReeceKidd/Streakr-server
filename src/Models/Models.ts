@@ -4,6 +4,7 @@ export enum Models {
     SoloStreak = 'SoloStreak',
     AgendaJob = 'AgendaJob',
     CompleteSoloStreakTask = 'CompleteSoloStreakTask',
+    IncompleteSoloStreakTask = 'IncompleteSoloStreakTask',
     CompleteGroupMemberStreakTask = 'CompleteGroupMemberStreakTask',
     TeamStreak = 'TeamStreak',
     StreakTrackingEvent = 'StreakTrackingEvent',
