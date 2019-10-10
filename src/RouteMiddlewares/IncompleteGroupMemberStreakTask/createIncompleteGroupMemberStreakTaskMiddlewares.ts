@@ -21,6 +21,7 @@ export const incompleteGroupMemberStreakTaskBodyValidationSchema = {
     groupStreakType: Joi.string()
         .valid(Object.keys(GroupStreakTypes))
         .required(),
+    teamStreakId: Joi.string().required(),
 };
 
 export const incompleteGroupMemberStreakTaskBodyValidationMiddleware = (
@@ -165,7 +166,7 @@ export const createIncompleteGroupMemberStreakTaskDefinitionMiddleware = (
     next: NextFunction,
 ): void => {
     try {
-        const { userId, groupMemberStreakId, groupStreakType } = request.body;
+        const { userId, groupMemberStreakId, groupStreakType, teamStreakId } = request.body;
         const { taskIncompleteTime, taskIncompleteDay } = response.locals;
         const incompleteGroupMemberStreakTaskDefinition = {
             userId,
@@ -173,6 +174,7 @@ export const createIncompleteGroupMemberStreakTaskDefinitionMiddleware = (
             taskIncompleteTime: taskIncompleteTime.toDate(),
             taskIncompleteDay,
             groupStreakType,
+            teamStreakId,
         };
         response.locals.incompleteGroupMemberStreakTaskDefinition = incompleteGroupMemberStreakTaskDefinition;
         next();

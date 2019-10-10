@@ -30,11 +30,13 @@ describe(`incompleteGroupMemberStreakTaskBodyValidationMiddleware`, () => {
     const userId = 'abcdefgh';
     const groupMemberStreakId = '123456';
     const groupStreakType = GroupStreakTypes.team;
+    const teamStreakId = 'teamStreakId';
 
     const body = {
         userId,
         groupMemberStreakId,
         groupStreakType,
+        teamStreakId,
     };
 
     test('calls next() when correct body is supplied', () => {
@@ -155,6 +157,27 @@ describe(`incompleteGroupMemberStreakTaskBodyValidationMiddleware`, () => {
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "groupStreakType" fails because ["groupStreakType" must be one of [team, competition]]',
+        });
+        expect(next).not.toBeCalled();
+    });
+
+    test('sends correct error response when teamStreakId is missing', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: { ...body, teamStreakId: undefined },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        incompleteGroupMemberStreakTaskBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "teamStreakId" fails because ["teamStreakId" is required]',
         });
         expect(next).not.toBeCalled();
     });
