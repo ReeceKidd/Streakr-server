@@ -33,7 +33,6 @@ const soloStreakBodyValidationSchema = {
     active: Joi.boolean(),
     currentStreak: Joi.object(),
     pastStreaks: Joi.array(),
-    activity: Joi.array(),
 };
 
 export const soloStreakRequestBodyValidationMiddleware = (

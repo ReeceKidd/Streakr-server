@@ -642,6 +642,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to UpdatedGroupMemberStreakNotFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.UpdatedGroupMemberStreakNotFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-60`);
+        expect(message).toBe('Group member streak does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to SoloStreakHasBeenCompletedToday`, () => {
         expect.assertions(3);
 
@@ -2909,6 +2920,28 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-202`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PatchGroupMemberStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PatchGroupMemberStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-203`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendUpdatedGroupMemberStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendUpdatedGroupMemberStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-204`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
