@@ -4,6 +4,7 @@ import { createGroupMemberStreakMiddlewares } from '../../../RouteMiddlewares/Gr
 import { deleteGroupMemberStreakMiddlewares } from '../../../RouteMiddlewares/GroupMemberStreak/deleteGroupMemberStreakMiddlewares';
 import { getOneGroupMemberStreakMiddlewares } from '../../../RouteMiddlewares/GroupMemberStreak/getOneGroupMemberStreakMiddlewares';
 import { getAllGroupMemberStreaksMiddlewares } from '../../../RouteMiddlewares/GroupMemberStreak/getAllGroupMemberStreaksMiddlewares';
+import { patchGroupMemberStreakMiddlewares } from '../../../RouteMiddlewares/GroupMemberStreak/patchGroupMemberStreakMiddlewares';
 
 export const groupMemberStreakId = 'groupMemberStreakId';
 
@@ -16,5 +17,7 @@ groupMemberStreaksRouter.get(`/:${groupMemberStreakId}`, ...getOneGroupMemberStr
 groupMemberStreaksRouter.delete(`/:${groupMemberStreakId}`, ...deleteGroupMemberStreakMiddlewares);
 
 groupMemberStreaksRouter.post(`/`, ...createGroupMemberStreakMiddlewares);
+
+groupMemberStreaksRouter.patch(`/:${groupMemberStreakId}`, ...patchGroupMemberStreakMiddlewares);
 
 export default groupMemberStreaksRouter;
