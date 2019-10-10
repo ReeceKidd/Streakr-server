@@ -141,7 +141,7 @@ describe('incompleteGroupMemberStreakTaskQueryValidationMiddleware', () => {
 });
 
 describe('getRetreiveIncompleteGroupMemberStreakTasksMiddleware', () => {
-    test('queries incompleteGroupMemberStreakTask model and sets response.locals.incompleteGroupMemberStreakTasks with all query paramaters', async () => {
+    test('queries with all query paramaters', async () => {
         expect.assertions(3);
 
         const find = jest.fn().mockResolvedValue(true);
@@ -166,7 +166,7 @@ describe('getRetreiveIncompleteGroupMemberStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries incompleteGroupMemberStreakTask model and sets response.locals.incompleteGroupMemberStreakTasks with just userId', async () => {
+    test('queries withjust userId', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));
@@ -188,7 +188,7 @@ describe('getRetreiveIncompleteGroupMemberStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries incompleteGroupMemberStreakTask model and sets response.locals.incompleteGroupMemberStreakTasks with just groupMemberStreakId', async () => {
+    test('queries withjust groupMemberStreakId', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));
@@ -210,7 +210,7 @@ describe('getRetreiveIncompleteGroupMemberStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries incompleteGroupMemberStreakTask model and sets response.locals.incompleteGroupMemberStreakTasks with just groupStreakType', async () => {
+    test('queries withjust groupStreakType', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));
@@ -232,7 +232,7 @@ describe('getRetreiveIncompleteGroupMemberStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries incompleteGroupMemberStreakTask model and sets response.locals.incompleteGroupMemberStreakTasks with just teamStreakId', async () => {
+    test('queries withjust teamStreakId', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));
@@ -254,7 +254,7 @@ describe('getRetreiveIncompleteGroupMemberStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries incompleteGroupMemberStreakTask model and sets response.locals.incompleteGroupMemberStreakTasks with no query paramaters', async () => {
+    test('queries withno query paramaters', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));

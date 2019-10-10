@@ -73,7 +73,7 @@ describe('completeSoloStreakTaskQueryValidationMiddleware', () => {
 });
 
 describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
-    test('queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with just userId', async () => {
+    test('queries with just userId', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));
@@ -93,7 +93,7 @@ describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with just streakId', async () => {
+    test('queries with just streakId', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));
@@ -113,7 +113,7 @@ describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with both a userId and streakId', async () => {
+    test('queries with both a userId and streakId', async () => {
         expect.assertions(3);
 
         const find = jest.fn().mockResolvedValue(true);
@@ -134,7 +134,7 @@ describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries completeSoloStreakTask model and sets response.locals.completeSoloStreakTasks with no query paramaters', async () => {
+    test('queries with no query paramaters', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));

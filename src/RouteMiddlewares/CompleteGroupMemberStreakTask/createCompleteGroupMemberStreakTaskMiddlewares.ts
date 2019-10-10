@@ -18,11 +18,11 @@ import { CustomError, ErrorType } from '../../customError';
 
 export const completeGroupMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
-    teamStreakId: Joi.string().required(),
     groupMemberStreakId: Joi.string().required(),
     groupStreakType: Joi.string()
         .valid(Object.keys(GroupStreakTypes))
         .required(),
+    teamStreakId: Joi.string().required(),
 };
 
 export const completeGroupMemberStreakTaskBodyValidationMiddleware = (
