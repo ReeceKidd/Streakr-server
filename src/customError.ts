@@ -160,7 +160,7 @@ export enum ErrorType {
     SaveGroupMemberStreakTaskCompleteMiddleware,
     GroupMemberStreakMaintainedMiddleware,
     SendCompleteGroupMemberStreakTaskResponseMiddleware,
-    GroupMemberStreakTaskAlreadyCompletedToday,
+    GroupMemberStreakTaskHasBeenCompletedToday,
     GroupMemberStreakDoesNotExist,
     CreateCompleteGroupMemberStreakTaskDefinitionMiddleware,
     RetreiveGroupMemberStreakMiddleware,
@@ -247,6 +247,7 @@ export enum ErrorType {
     EnsureSoloStreakTaskHasBeenCompletedTodayMiddleware,
     ResetStreakStartDateMiddleware,
     EnsureSoloStreakTaskHasNotBeenCompletedTodayMiddleware,
+    EnsureGroupMemberStreakTaskHasNotBeenCompletedTodayMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -712,10 +713,10 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.GroupMemberStreakTaskAlreadyCompletedToday: {
+            case ErrorType.GroupMemberStreakTaskHasBeenCompletedToday: {
                 return {
                     code: `${ResponseCodes.unprocessableEntity}-03`,
-                    message: 'Task already completed today.',
+                    message: 'Group member streak task already completed today.',
                     httpStatusCode: ResponseCodes.unprocessableEntity,
                 };
             }
@@ -2044,6 +2045,13 @@ export class CustomError extends Error {
             case ErrorType.EnsureSoloStreakTaskHasNotBeenCompletedTodayMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-187`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.EnsureGroupMemberStreakTaskHasNotBeenCompletedTodayMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-188`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

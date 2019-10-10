@@ -3,8 +3,7 @@ import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { GroupMemberStreak } from '@streakoid/streakoid-sdk/lib';
-import StreakTypes from '@streakoid/streakoid-sdk/lib/streakTypes';
+import { GroupMemberStreak, GroupStreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -21,6 +20,9 @@ export const completeGroupMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
     teamStreakId: Joi.string().required(),
     groupMemberStreakId: Joi.string().required(),
+    groupStreakType: Joi.string()
+        .valid(Object.keys(GroupStreakTypes))
+        .required(),
 };
 
 export const completeGroupMemberStreakTaskBodyValidationMiddleware = (
@@ -78,6 +80,23 @@ export const getGroupMemberStreakExistsMiddleware = (
 };
 
 export const groupMemberStreakExistsMiddleware = getGroupMemberStreakExistsMiddleware(groupMemberStreakModel);
+
+export const ensureGroupMemberStreakTaskHasNotBeenCompletedTodayMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const groupMemberStreak: GroupMemberStreak = response.locals.groupMemberStreak;
+        if (groupMemberStreak.completedToday) {
+            throw new CustomError(ErrorType.GroupMemberStreakTaskHasBeenCompletedToday);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.EnsureGroupMemberStreakTaskHasNotBeenCompletedTodayMiddleware, err));
+    }
+};
 
 export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
@@ -162,45 +181,19 @@ export const dayFormat = 'YYYY-MM-DD';
 
 export const setDayTaskWasCompletedMiddleware = getSetDayTaskWasCompletedMiddleware(dayFormat);
 
-export const getHasTaskAlreadyBeenCompletedTodayMiddleware = (
-    completeGroupMemberStreakTaskModel: mongoose.Model<CompleteGroupMemberStreakTaskModel>,
-) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-    try {
-        const { userId, teamStreakId, groupMemberStreakId } = request.body;
-        const { taskCompleteDay } = response.locals;
-        const taskAlreadyCompletedToday = await completeGroupMemberStreakTaskModel.findOne({
-            userId,
-            teamStreakId,
-            groupMemberStreakId,
-            taskCompleteDay,
-        });
-        if (taskAlreadyCompletedToday) {
-            throw new CustomError(ErrorType.GroupMemberStreakTaskAlreadyCompletedToday);
-        }
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.HasGroupMemberStreakTaskAlreadyBeenCompletedTodayMiddleware, err));
-    }
-};
-
-export const hasTaskAlreadyBeenCompletedTodayMiddleware = getHasTaskAlreadyBeenCompletedTodayMiddleware(
-    completeGroupMemberStreakTaskModel,
-);
-
 export const getCreateCompleteGroupMemberStreakTaskMiddleware = (
     completeGroupMemberStreakTaskModel: mongoose.Model<CompleteGroupMemberStreakTaskModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, teamStreakId, groupMemberStreakId } = request.body;
+        const { userId, teamStreakId, groupMemberStreakId, groupStreakType } = request.body;
         const { taskCompleteTime, taskCompleteDay } = response.locals;
         const completeGroupMemberStreakTaskDefinition = {
             userId,
             teamStreakId,
             groupMemberStreakId,
+            groupStreakType,
             taskCompleteTime: taskCompleteTime,
             taskCompleteDay,
-            streakType: StreakTypes.groupMemberStreak,
         };
         response.locals.completeGroupMemberStreakTask = await new completeGroupMemberStreakTaskModel(
             completeGroupMemberStreakTaskDefinition,
@@ -255,11 +248,11 @@ export const createCompleteGroupMemberStreakTaskMiddlewares = [
     completeGroupMemberStreakTaskBodyValidationMiddleware,
     teamStreakExistsMiddleware,
     groupMemberStreakExistsMiddleware,
+    ensureGroupMemberStreakTaskHasNotBeenCompletedTodayMiddleware,
     retreiveUserMiddleware,
     setTaskCompleteTimeMiddleware,
     setStreakStartDateMiddleware,
     setDayTaskWasCompletedMiddleware,
-    hasTaskAlreadyBeenCompletedTodayMiddleware,
     createCompleteGroupMemberStreakTaskMiddleware,
     streakMaintainedMiddleware,
     sendCompleteGroupMemberStreakTaskResponseMiddleware,

@@ -621,11 +621,11 @@ describe('customError', () => {
     test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.GroupMemberStreakTaskAlreadyCompletedToday);
+        const customError = new CustomError(ErrorType.GroupMemberStreakTaskHasBeenCompletedToday);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`422-03`);
-        expect(message).toBe('Task already completed today.');
+        expect(message).toBe('Group member streak task already completed today.');
         expect(httpStatusCode).toBe(422);
     });
 
@@ -2694,6 +2694,17 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-187`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to EnsureGroupMemberStreakTaskHasNotBeenCompletedTodayMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.EnsureGroupMemberStreakTaskHasNotBeenCompletedTodayMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-188`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
