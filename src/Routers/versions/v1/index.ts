@@ -15,6 +15,7 @@ import groupMemberStreakRouter from './groupMemberStreaksRouter';
 import friendRequestsRouter from './friendRequestRouter';
 import { timezoneMiddlewares } from '../../../SharedMiddleware/timezoneMiddlewares';
 import incompleteSoloStreakTasksRouter from './incompleteSoloStreakTaskRouter';
+import incompleteGroupMemberStreakTasksRouter from './incompleteGroupMemberStreakTaskRouter';
 
 const v1Router = Router();
 
@@ -26,6 +27,7 @@ v1Router.use(`/${RouteCategories.stripe}`, stripeRouter);
 v1Router.use(`/${RouteCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);
 v1Router.use(`/${RouteCategories.incompleteSoloStreakTasks}`, incompleteSoloStreakTasksRouter);
 v1Router.use(`/${RouteCategories.completeGroupMemberStreakTasks}`, completeGroupMemberStreakTasksRouter);
+v1Router.use(`/${RouteCategories.incompleteGroupMemberStreakTasks}`, incompleteGroupMemberStreakTasksRouter);
 v1Router.use(`/${RouteCategories.teamStreaks}`, teamStreaksRouter);
 v1Router.use(`/${RouteCategories.streakTrackingEvents}`, streakTrackingEventRouter);
 v1Router.use(`/${RouteCategories.agendaJobs}`, agendaJobsRouter);
