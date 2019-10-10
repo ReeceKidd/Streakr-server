@@ -484,6 +484,8 @@ describe('createIncompleteGroupMemberStreakTaskDefinitionMiddleware', () => {
     test('sets incompleteGroupMemberStreakTaskDefinition and calls next()', () => {
         expect.assertions(3);
         const groupMemberStreakId = 'abcd123';
+        const groupStreakType = GroupStreakTypes.team;
+        const teamStreakId = 'teamStreakId';
         const toDate = jest.fn(() => '27/03/2019');
         const taskIncompleteTime = {
             toDate,
@@ -491,7 +493,7 @@ describe('createIncompleteGroupMemberStreakTaskDefinitionMiddleware', () => {
         const taskIncompleteDay = '09/05/2019';
         const userId = 'abc';
         const request: any = {
-            body: { userId, groupMemberStreakId },
+            body: { userId, groupMemberStreakId, groupStreakType, teamStreakId },
         };
         const response: any = {
             locals: {
@@ -505,9 +507,11 @@ describe('createIncompleteGroupMemberStreakTaskDefinitionMiddleware', () => {
 
         expect(response.locals.incompleteGroupMemberStreakTaskDefinition).toEqual({
             userId,
-            streakId: groupMemberStreakId,
+            groupMemberStreakId,
             taskIncompleteTime: taskIncompleteTime.toDate(),
             taskIncompleteDay,
+            groupStreakType,
+            teamStreakId,
         });
         expect(toDate).toBeCalledWith();
         expect(next).toBeCalledWith();
