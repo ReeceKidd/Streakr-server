@@ -248,6 +248,24 @@ export enum ErrorType {
     ResetStreakStartDateMiddleware,
     EnsureSoloStreakTaskHasNotBeenCompletedTodayMiddleware,
     EnsureGroupMemberStreakTaskHasNotBeenCompletedTodayMiddleware,
+    CreateIncompleteGroupMemberStreakTaskGroupMemberStreakDoesNotExist,
+    GroupMemberStreakHasNotBeenCompletedToday,
+    CreateIncompleteGroupMemberStreakTaskUserDoesNotExist,
+    CreateIncompleteGroupMemberStreakTaskGroupMemberStreakExistsMiddleware,
+    EnsureGroupMemberStreakTaskHasBeenCompletedTodayMiddleware,
+    CreateIncompleteGroupMemberStreakTaskRetreiveUserMiddleware,
+    CreateIncompleteGroupMemberStreakSetTaskIncompleteTimeMiddleware,
+    CreateIncompleteGroupMemberStreakSetDayTaskWasIncompletedMiddleware,
+    CreateIncompleteGroupMemberStreakTaskDefinitionMiddleware,
+    SaveGroupMemberStreakTaskIncompleteMiddleware,
+    IncompleteGroupMemberStreakMiddleware,
+    SendGroupMemberStreakTaskIncompleteResponseMiddleware,
+    ResetGroupMemberStreakStartDateMiddleware,
+    NoIncompleteGroupMemberStreakTaskToDeleteFound,
+    DeleteIncompleteGroupMemberStreakTaskMiddleware,
+    SendIncompleteGroupMemberStreakTaskDeletedResponseMiddleware,
+    GetIncompleteGroupMemberStreakTasksMiddleware,
+    SendIncompleteGroupMemberStreakTasksResponseMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -693,6 +711,38 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-55`,
                     message: 'Complete solo streak task does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateIncompleteGroupMemberStreakTaskGroupMemberStreakDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-56`,
+                    message: 'Group member streak task does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.GroupMemberStreakHasNotBeenCompletedToday: {
+                return {
+                    code: `${ResponseCodes.badRequest}-57`,
+                    message: 'Group member streak task does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateIncompleteGroupMemberStreakTaskUserDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-58`,
+                    message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.NoIncompleteGroupMemberStreakTaskToDeleteFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-59`,
+                    message: 'Group member streak task does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2052,6 +2102,104 @@ export class CustomError extends Error {
             case ErrorType.EnsureGroupMemberStreakTaskHasNotBeenCompletedTodayMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-188`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteGroupMemberStreakTaskGroupMemberStreakExistsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-189`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.EnsureGroupMemberStreakTaskHasBeenCompletedTodayMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-190`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteGroupMemberStreakTaskRetreiveUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-191`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteGroupMemberStreakSetTaskIncompleteTimeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-192`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteGroupMemberStreakSetDayTaskWasIncompletedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-193`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteGroupMemberStreakTaskDefinitionMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-194`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SaveGroupMemberStreakTaskIncompleteMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-195`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncompleteGroupMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-196`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendGroupMemberStreakTaskIncompleteResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-197`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ResetGroupMemberStreakStartDateMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-198`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DeleteIncompleteGroupMemberStreakTaskMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-199`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendIncompleteGroupMemberStreakTaskDeletedResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-200`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetIncompleteGroupMemberStreakTasksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-201`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendIncompleteGroupMemberStreakTasksResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-202`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

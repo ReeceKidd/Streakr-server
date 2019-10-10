@@ -8,6 +8,7 @@ export enum Collections {
     CompleteSoloStreakTasks = 'CompleteSoloStreakTasks',
     IncompleteSoloStreakTasks = 'IncompleteSoloStreakTasks',
     CompleteGroupMemberStreakTasks = 'CompleteGroupMemberStreakTasks',
+    IncompleteGroupMemberStreakTasks = 'IncompleteGroupMemberStreakTasks',
     System = 'System',
     StreakTrackingEvents = 'StreakTrackingEvents',
     GroupMemberStreaks = 'GroupMemberStreaks',

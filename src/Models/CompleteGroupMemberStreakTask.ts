@@ -11,11 +11,11 @@ export const completeGroupMemberStreakTaskSchema = new mongoose.Schema(
             required: true,
             type: String,
         },
-        teamStreakId: {
+        groupMemberStreakId: {
             required: true,
             type: String,
         },
-        groupMemberStreakId: {
+        groupStreakType: {
             required: true,
             type: String,
         },
@@ -27,8 +27,7 @@ export const completeGroupMemberStreakTaskSchema = new mongoose.Schema(
             required: true,
             type: String,
         },
-        streakType: {
-            required: true,
+        teamStreakId: {
             type: String,
         },
     },
