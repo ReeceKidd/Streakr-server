@@ -29,10 +29,6 @@ export const groupMemberStreakSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        activity: {
-            type: Array,
-            default: [],
-        },
         currentStreak: {
             startDate: {
                 type: Date,
