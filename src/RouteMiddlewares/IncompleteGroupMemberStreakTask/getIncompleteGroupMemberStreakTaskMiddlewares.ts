@@ -15,6 +15,7 @@ const incompleteGroupMemberStreakTaskQueryValidationSchema = {
     userId: Joi.string(),
     groupMemberStreakId: Joi.string(),
     groupStreakType: Joi.string().valid(Object.keys(GroupStreakTypes)),
+    teamStreakId: Joi.string(),
 };
 
 export const incompleteGroupMemberStreakTaskQueryValidationMiddleware = (
@@ -33,11 +34,12 @@ export const getRetreiveIncompleteGroupMemberStreakTasksMiddleware = (
     incompleteGroupMemberStreakTaskModel: mongoose.Model<IncompleteGroupMemberStreakTaskModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, groupMemberStreakId, groupStreakType } = request.query;
+        const { userId, groupMemberStreakId, groupStreakType, teamStreakId } = request.query;
         const query: {
             userId?: string;
             groupMemberStreakId?: string;
             groupStreakType?: string;
+            teamStreakId?: string;
         } = {};
 
         if (userId) {
@@ -48,6 +50,9 @@ export const getRetreiveIncompleteGroupMemberStreakTasksMiddleware = (
         }
         if (groupStreakType) {
             query.groupStreakType = groupStreakType;
+        }
+        if (teamStreakId) {
+            query.teamStreakId = teamStreakId;
         }
 
         response.locals.incompleteGroupMemberStreakTasks = await incompleteGroupMemberStreakTaskModel.find(query);
