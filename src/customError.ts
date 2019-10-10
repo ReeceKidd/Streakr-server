@@ -726,14 +726,6 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.GroupMemberStreakHasNotBeenCompletedToday: {
-                return {
-                    code: `${ResponseCodes.badRequest}-57`,
-                    message: 'Group member streak task does not exist.',
-                    httpStatusCode: ResponseCodes.badRequest,
-                };
-            }
-
             case ErrorType.CreateIncompleteGroupMemberStreakTaskUserDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-58`,
@@ -778,6 +770,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.unprocessableEntity}-03`,
                     message: 'Group member streak task already completed today.',
+                    httpStatusCode: ResponseCodes.unprocessableEntity,
+                };
+            }
+
+            case ErrorType.GroupMemberStreakHasNotBeenCompletedToday: {
+                return {
+                    code: `${ResponseCodes.unprocessableEntity}-04`,
+                    message: 'Group member streak task has not been completed today.',
                     httpStatusCode: ResponseCodes.unprocessableEntity,
                 };
             }

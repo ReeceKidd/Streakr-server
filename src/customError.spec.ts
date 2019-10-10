@@ -609,17 +609,6 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
-    test(`creates correct error when type is set to GroupMemberStreakHasNotBeenCompletedToday`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.GroupMemberStreakHasNotBeenCompletedToday);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`400-57`);
-        expect(message).toBe('Group member streak task does not exist.');
-        expect(httpStatusCode).toBe(400);
-    });
-
     test(`creates correct error when type is set to CreateIncompleteGroupMemberStreakTaskUserDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -683,6 +672,17 @@ describe('customError', () => {
 
         expect(code).toBe(`422-03`);
         expect(message).toBe('Group member streak task already completed today.');
+        expect(httpStatusCode).toBe(422);
+    });
+
+    test(`creates correct error when type is set to GroupMemberStreakHasNotBeenCompletedToday`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.GroupMemberStreakHasNotBeenCompletedToday);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`422-04`);
+        expect(message).toBe('Group member streak task has not been completed today.');
         expect(httpStatusCode).toBe(422);
     });
 

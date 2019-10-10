@@ -170,7 +170,7 @@ export const createIncompleteGroupMemberStreakTaskDefinitionMiddleware = (
         const { taskIncompleteTime, taskIncompleteDay } = response.locals;
         const incompleteGroupMemberStreakTaskDefinition = {
             userId,
-            streakId: groupMemberStreakId,
+            groupMemberStreakId,
             taskIncompleteTime: taskIncompleteTime.toDate(),
             taskIncompleteDay,
             groupStreakType,
