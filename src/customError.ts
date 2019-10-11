@@ -269,8 +269,9 @@ export enum ErrorType {
     UpdatedGroupMemberStreakNotFound,
     PatchGroupMemberStreakMiddleware,
     SendUpdatedGroupMemberStreakMiddleware,
-    InvalidStreakTrackingEventBody,
+    GroupStreakTypeShouldNotBeDefined,
     ValidateStreakTrackingEventBody,
+    GroupStreakTypeMustBeDefined,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -752,10 +753,18 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.InvalidStreakTrackingEventBody: {
+            case ErrorType.GroupStreakTypeShouldNotBeDefined: {
                 return {
                     code: `${ResponseCodes.badRequest}-61`,
-                    message: 'Invalid streak tracking event body.',
+                    message: 'groupStreakType should not be defined for a soloStreak.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.GroupStreakTypeMustBeDefined: {
+                return {
+                    code: `${ResponseCodes.badRequest}-62`,
+                    message: 'groupStreakType must be defined.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }

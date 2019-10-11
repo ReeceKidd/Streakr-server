@@ -44,7 +44,10 @@ export const validateStreakTrackingEventBody = (request: Request, response: Resp
     try {
         const { streakType, groupStreakType } = request.body;
         if (streakType === StreakTypes.soloStreak && groupStreakType) {
-            throw new CustomError(ErrorType.InvalidStreakTrackingEventBody);
+            throw new CustomError(ErrorType.GroupStreakTypeShouldNotBeDefined);
+        }
+        if (streakType === StreakTypes.groupMemberStreak && !groupStreakType) {
+            throw new CustomError(ErrorType.GroupStreakTypeMustBeDefined);
         }
         next();
     } catch (err) {

@@ -167,7 +167,7 @@ describe('createStreakTrackingEventBodyValidationMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('if streak type equals soloStreak and groupStreakType is defined throw InvalidStreakTrackingEventBody', () => {
+    test('if streak type equals soloStreak and groupStreakType is defined throw GroupStreakTypeShouldNotBeDefined', () => {
         const streakType = StreakTypes.soloStreak;
         const groupStreakType = GroupStreakTypes.team;
         const request: any = {
@@ -181,7 +181,24 @@ describe('createStreakTrackingEventBodyValidationMiddleware', () => {
 
         validateStreakTrackingEventBody(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.InvalidStreakTrackingEventBody));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.GroupStreakTypeShouldNotBeDefined));
+    });
+
+    test('if streak type equals groupMemberStreak and groupStreakType in undefined throw GroupStreakTypeMustBeDefined', () => {
+        const streakType = StreakTypes.soloStreak;
+        const groupStreakType = GroupStreakTypes.team;
+        const request: any = {
+            body: {
+                streakType,
+                groupStreakType,
+            },
+        };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+
+        validateStreakTrackingEventBody(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.GroupStreakTypeShouldNotBeDefined));
     });
 
     test('throws ValidateStreakTrackingEventBody error on middleware failure', async () => {

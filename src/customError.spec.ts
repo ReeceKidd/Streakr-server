@@ -645,11 +645,22 @@ describe('customError', () => {
     test(`creates correct error when type is set to InvalidStreakTrackingEventBody`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.InvalidStreakTrackingEventBody);
+        const customError = new CustomError(ErrorType.GroupStreakTypeShouldNotBeDefined);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-61`);
-        expect(message).toBe('Invalid streak tracking event body.');
+        expect(message).toBe('groupStreakType should not be defined for a soloStreak.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to GroupStreakTypeMustBeDefined`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.GroupStreakTypeMustBeDefined);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-62`);
+        expect(message).toBe('groupStreakType must be defined.');
         expect(httpStatusCode).toBe(400);
     });
 
