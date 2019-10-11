@@ -3,13 +3,9 @@ import Agenda from 'agenda';
 import { getServiceConfig } from '../getServiceConfig';
 import { manageDailySoloStreaks } from './SoloStreaks/manageDailySoloStreaks';
 import { sendEmail } from '../email';
+import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
 
 const { DATABASE_URI, NODE_ENV } = getServiceConfig();
-
-export enum AgendaJobs {
-    soloStreakDailyTracker = 'soloStreakDailyTracker',
-    groupMemberStreakDailyTracker = 'groupMemberStreakDailyTracker',
-}
 
 export enum AgendaTimeRanges {
     day = 'day',
@@ -61,7 +57,7 @@ agenda.on('fail', async (err, job) => {
     }
 });
 
-agenda.define(AgendaJobs.soloStreakDailyTracker, { priority: 'high' }, async (job, done) => {
+agenda.define(AgendaJobNames.soloStreakDailyTracker, { priority: 'high' }, async (job, done) => {
     try {
         const { timezone } = job.attrs.data;
         await manageDailySoloStreaks(timezone);

@@ -13,4 +13,5 @@ export enum Collections {
     StreakTrackingEvents = 'StreakTrackingEvents',
     GroupMemberStreaks = 'GroupMemberStreaks',
     FriendRequests = 'FriendRequests',
+    TimezoneJobs = 'TimezoneJobs',
 }

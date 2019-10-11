@@ -184,13 +184,11 @@ describe('createStreakTrackingEventBodyValidationMiddleware', () => {
         expect(next).toBeCalledWith(new CustomError(ErrorType.GroupStreakTypeShouldNotBeDefined));
     });
 
-    test('if streak type equals groupMemberStreak and groupStreakType in undefined throw GroupStreakTypeMustBeDefined', () => {
-        const streakType = StreakTypes.soloStreak;
-        const groupStreakType = GroupStreakTypes.team;
+    test('if streak type equals groupMemberStreak and groupStreakType is undefined throw GroupStreakTypeMustBeDefined', () => {
+        const streakType = StreakTypes.groupMemberStreak;
         const request: any = {
             body: {
                 streakType,
-                groupStreakType,
             },
         };
         const response: any = { locals: {} };
