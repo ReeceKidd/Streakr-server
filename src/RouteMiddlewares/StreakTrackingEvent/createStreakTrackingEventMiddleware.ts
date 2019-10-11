@@ -40,6 +40,19 @@ export const createStreakTrackingEventBodyValidationMiddleware = (
     );
 };
 
+export const validateStreakTrackingEventBody = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const { streakType, groupStreakType } = request.body;
+        if (streakType === StreakTypes.soloStreak && groupStreakType) {
+            throw new CustomError(ErrorType.InvalidStreakTrackingEventBody);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        next(new CustomError(ErrorType.ValidateStreakTrackingEventBody, err));
+    }
+};
+
 export const getSaveStreakTrackingEventToDatabaseMiddleware = (
     streakTrackingEvent: mongoose.Model<StreakTrackingEventModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -78,6 +91,7 @@ export const sendFormattedStreakTrackingEventMiddleware = (
 
 export const createStreakTrackingEventMiddlewares = [
     createStreakTrackingEventBodyValidationMiddleware,
+    validateStreakTrackingEventBody,
     saveStreakTrackingEventToDatabaseMiddleware,
     sendFormattedStreakTrackingEventMiddleware,
 ];

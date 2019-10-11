@@ -269,6 +269,8 @@ export enum ErrorType {
     UpdatedGroupMemberStreakNotFound,
     PatchGroupMemberStreakMiddleware,
     SendUpdatedGroupMemberStreakMiddleware,
+    InvalidStreakTrackingEventBody,
+    ValidateStreakTrackingEventBody,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -746,6 +748,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-60`,
                     message: 'Group member streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.InvalidStreakTrackingEventBody: {
+                return {
+                    code: `${ResponseCodes.badRequest}-61`,
+                    message: 'Invalid streak tracking event body.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2225,6 +2235,13 @@ export class CustomError extends Error {
             case ErrorType.SendUpdatedGroupMemberStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-204`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ValidateStreakTrackingEventBody:
+                return {
+                    code: `${ResponseCodes.warning}-205`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

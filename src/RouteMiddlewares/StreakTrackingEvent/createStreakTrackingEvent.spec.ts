@@ -8,19 +8,31 @@ import {
     sendFormattedStreakTrackingEventMiddleware,
     createStreakTrackingEventMiddlewares,
     saveStreakTrackingEventToDatabaseMiddleware,
+    validateStreakTrackingEventBody,
 } from './createStreakTrackingEventMiddleware';
+import { GroupStreakTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
     const type = 'LostStreak';
     const streakId = 'streakId';
     const userId = 'userId';
+    const streakType = 'soloStreak';
+    const groupStreakType = GroupStreakTypes.team;
+
+    const body = {
+        type,
+        streakId,
+        userId,
+        streakType,
+        groupStreakType,
+    };
 
     test('check that valid request passes', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { type, streakId, userId },
+            body,
         };
         const response: any = {
             status,
@@ -37,7 +49,7 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { streakId, userId },
+            body: { ...body, type: undefined },
         };
         const response: any = {
             status,
@@ -58,7 +70,7 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { type, userId },
+            body: { ...body, streakId: undefined },
         };
         const response: any = {
             status,
@@ -79,7 +91,7 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { type, streakId },
+            body: { ...body, userId: undefined },
         };
         const response: any = {
             status,
@@ -95,18 +107,12 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
         expect(next).not.toBeCalled();
     });
 
-    test('sends correct error response when invalid paramater is sent', () => {
+    test('sends correct error response when streakType is not valid', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
-        const notAllowed = '123';
         const request: any = {
-            body: {
-                notAllowed,
-                type,
-                streakId,
-                userId,
-            },
+            body: { ...body, streakType: 'invalid' },
         };
         const response: any = {
             status,
@@ -115,9 +121,77 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
 
         createStreakTrackingEventBodyValidationMiddleware(request, response, next);
 
-        expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
-        expect(send).toBeCalledWith({ message: '"notAllowed" is not allowed' });
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "streakType" fails because ["streakType" must be one of [soloStreak, groupMemberStreak]]',
+        });
         expect(next).not.toBeCalled();
+    });
+
+    test('sends correct error response when groupStreakType is not valid', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: { ...body, groupStreakType: 'invalid' },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        createStreakTrackingEventBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "groupStreakType" fails because ["groupStreakType" must be one of [team, competition]]',
+        });
+        expect(next).not.toBeCalled();
+    });
+});
+
+describe('createStreakTrackingEventBodyValidationMiddleware', () => {
+    test('if streak type equals soloStreak and groupStreakType is not defined call next', () => {
+        const streakType = StreakTypes.soloStreak;
+        const request: any = {
+            body: {
+                streakType,
+            },
+        };
+        const response: any = {};
+        const next = jest.fn();
+
+        validateStreakTrackingEventBody(request, response, next);
+
+        expect(next).toBeCalledWith();
+    });
+
+    test('if streak type equals soloStreak and groupStreakType is defined throw InvalidStreakTrackingEventBody', () => {
+        const streakType = StreakTypes.soloStreak;
+        const groupStreakType = GroupStreakTypes.team;
+        const request: any = {
+            body: {
+                streakType,
+                groupStreakType,
+            },
+        };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+
+        validateStreakTrackingEventBody(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.InvalidStreakTrackingEventBody));
+    });
+
+    test('throws ValidateStreakTrackingEventBody error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+
+        validateStreakTrackingEventBody(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.ValidateStreakTrackingEventBody, expect.any(Error)));
     });
 });
 
@@ -210,11 +284,12 @@ describe(`sendFormattedStreakTrackingEventMiddleware`, () => {
 
 describe(`createStreakTrackingEventMiddlewares`, () => {
     test('are defined in the correct order', () => {
-        expect.assertions(4);
+        expect.assertions(5);
 
-        expect(createStreakTrackingEventMiddlewares.length).toEqual(3);
+        expect(createStreakTrackingEventMiddlewares.length).toEqual(4);
         expect(createStreakTrackingEventMiddlewares[0]).toBe(createStreakTrackingEventBodyValidationMiddleware);
-        expect(createStreakTrackingEventMiddlewares[1]).toBe(saveStreakTrackingEventToDatabaseMiddleware);
-        expect(createStreakTrackingEventMiddlewares[2]).toBe(sendFormattedStreakTrackingEventMiddleware);
+        expect(createStreakTrackingEventMiddlewares[1]).toBe(validateStreakTrackingEventBody);
+        expect(createStreakTrackingEventMiddlewares[2]).toBe(saveStreakTrackingEventToDatabaseMiddleware);
+        expect(createStreakTrackingEventMiddlewares[3]).toBe(sendFormattedStreakTrackingEventMiddleware);
     });
 });
