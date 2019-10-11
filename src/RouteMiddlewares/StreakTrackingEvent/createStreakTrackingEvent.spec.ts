@@ -10,13 +10,13 @@ import {
     saveStreakTrackingEventToDatabaseMiddleware,
     validateStreakTrackingEventBody,
 } from './createStreakTrackingEventMiddleware';
-import { GroupStreakTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { GroupStreakTypes, StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
-    const type = 'LostStreak';
+    const type = StreakTrackingEventTypes.lostStreak;
     const streakId = 'streakId';
     const userId = 'userId';
-    const streakType = 'soloStreak';
+    const streakType = StreakTypes.soloStreak;
     const groupStreakType = GroupStreakTypes.team;
 
     const body = {
@@ -44,12 +44,12 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
         expect(next).toBeCalled();
     });
 
-    test('sends correct correct response when type is missing', () => {
+    test('sends correct correct response when type is incorrect', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { ...body, type: undefined },
+            body: { ...body, type: 'incorrect' },
         };
         const response: any = {
             status,
@@ -60,7 +60,8 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "type" fails because ["type" is required]',
+            message:
+                'child "type" fails because ["type" must be one of [lostStreak, maintainedStreak, inactiveStreak]]',
         });
         expect(next).not.toBeCalled();
     });

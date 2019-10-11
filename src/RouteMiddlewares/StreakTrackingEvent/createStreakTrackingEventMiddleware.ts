@@ -6,10 +6,10 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { streakTrackingEventModel, StreakTrackingEventModel } from '../../Models/StreakTrackingEvent';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakTrackingEvent, StreakTypes, GroupStreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, GroupStreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 export interface StreakTrackingEventRequestBody {
-    type: StreakTrackingEvent;
+    type: StreakTrackingEventTypes;
     streakId: string;
     userId: string;
     streakType: StreakTypes;
@@ -19,7 +19,7 @@ export interface StreakTrackingEventRequestBody {
 }
 
 const createStreakTrackingEventBodyValidationSchema = {
-    type: Joi.string().required(),
+    type: Joi.string().valid(Object.keys(StreakTrackingEventTypes)),
     streakId: Joi.string().required(),
     userId: Joi.string().required(),
     streakType: Joi.string()

@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { createStreakTrackingEventMiddlewares } from '../../../RouteMiddlewares/StreakTrackingEvent/createStreakTrackingEventMiddleware';
 import { getStreakTrackingEventMiddlewares } from '../../../RouteMiddlewares/StreakTrackingEvent/getStreakTrackingEventMiddlewares';
-import { getStreakTrackingEventsMiddlewares } from '../../../RouteMiddlewares/StreakTrackingEvent/getStreakTrackingEventsMiddlewares';
+import { getAllStreakTrackingEventsMiddlewares } from '../../../RouteMiddlewares/StreakTrackingEvent/getAllStreakTrackingEventsMiddlewares';
 import { deleteStreakTrackingEventMiddlewares } from '../../../RouteMiddlewares/StreakTrackingEvent/deleteStreakTrackingEventMiddlewares';
 
 const streakTrackingEventRouter = Router();
 
 const streakTrackingEventId = 'streakTrackingEventId';
 
-streakTrackingEventRouter.get(`/`, ...getStreakTrackingEventsMiddlewares);
+streakTrackingEventRouter.get(`/`, ...getAllStreakTrackingEventsMiddlewares);
 
 streakTrackingEventRouter.get(`/:${streakTrackingEventId}`, ...getStreakTrackingEventMiddlewares);
 

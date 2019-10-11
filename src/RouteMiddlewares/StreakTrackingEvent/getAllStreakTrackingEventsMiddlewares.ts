@@ -6,11 +6,14 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { streakTrackingEventModel, StreakTrackingEventModel } from '../../Models/StreakTrackingEvent';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
+import { StreakTypes, GroupStreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
 
 const streakTrackingEventQueryValidationSchema = {
-    type: Joi.string(),
-    userId: Joi.string(),
+    type: Joi.string().valid(Object.keys(StreakTrackingEventTypes)),
     streakId: Joi.string(),
+    userId: Joi.string(),
+    streakType: Joi.string().valid(Object.keys(StreakTypes)),
+    groupStreakType: Joi.string().valid(Object.keys(GroupStreakTypes)),
 };
 
 export const streakTrackingEventQueryValidationMiddleware = (
@@ -31,19 +34,27 @@ export const getRetreiveStreakTrackingEventsMiddleware = (
     try {
         const query: {
             type?: string;
-            userId?: string;
             streakId?: string;
+            userId?: string;
+            streakType?: StreakTypes;
+            groupStreakType?: GroupStreakTypes;
         } = {};
 
-        const { type, userId, streakId } = request.query;
+        const { type, userId, streakId, streakType, groupStreakType } = request.query;
         if (type) {
             query.type = type;
+        }
+        if (streakId) {
+            query.streakId = streakId;
         }
         if (userId) {
             query.userId = userId;
         }
-        if (streakId) {
-            query.streakId = streakId;
+        if (streakType) {
+            query.streakType = streakType;
+        }
+        if (groupStreakType) {
+            query.groupStreakType;
         }
 
         response.locals.streakTrackingEvents = await streakTrackingEventModel.find(query);
@@ -71,7 +82,7 @@ export const sendStreakTrackingEventsResponseMiddleware = (
     }
 };
 
-export const getStreakTrackingEventsMiddlewares = [
+export const getAllStreakTrackingEventsMiddlewares = [
     streakTrackingEventQueryValidationMiddleware,
     retreiveStreakTrackingEventsMiddleware,
     sendStreakTrackingEventsResponseMiddleware,

@@ -5,9 +5,10 @@ import {
     streakTrackingEventQueryValidationMiddleware,
     getRetreiveStreakTrackingEventsMiddleware,
     sendStreakTrackingEventsResponseMiddleware,
-    getStreakTrackingEventsMiddlewares,
+    getAllStreakTrackingEventsMiddlewares,
     retreiveStreakTrackingEventsMiddleware,
-} from './getStreakTrackingEventsMiddlewares';
+} from './getAllStreakTrackingEventsMiddlewares';
+import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe('streakTrackingEventQueryValidationMiddleware', () => {
     test('allows type as a query paramater', () => {
@@ -16,7 +17,7 @@ describe('streakTrackingEventQueryValidationMiddleware', () => {
         const status = jest.fn(() => ({ send }));
         const request: any = {
             query: {
-                type: 'type',
+                type: StreakTrackingEventTypes.lostStreak,
             },
         };
         const response: any = {
@@ -218,13 +219,13 @@ describe('sendStreakTrackingEventDeletedResponseMiddleware', () => {
     });
 });
 
-describe('getStreakTrackingEventMiddlewares', () => {
+describe('getAllStreakTrackingEventMiddlewares', () => {
     test('that getStreakTrackingEventMiddlewares are defined in the correct order', () => {
         expect.assertions(4);
 
-        expect(getStreakTrackingEventsMiddlewares.length).toEqual(3);
-        expect(getStreakTrackingEventsMiddlewares[0]).toEqual(streakTrackingEventQueryValidationMiddleware);
-        expect(getStreakTrackingEventsMiddlewares[1]).toEqual(retreiveStreakTrackingEventsMiddleware);
-        expect(getStreakTrackingEventsMiddlewares[2]).toEqual(sendStreakTrackingEventsResponseMiddleware);
+        expect(getAllStreakTrackingEventsMiddlewares.length).toEqual(3);
+        expect(getAllStreakTrackingEventsMiddlewares[0]).toEqual(streakTrackingEventQueryValidationMiddleware);
+        expect(getAllStreakTrackingEventsMiddlewares[1]).toEqual(retreiveStreakTrackingEventsMiddleware);
+        expect(getAllStreakTrackingEventsMiddlewares[2]).toEqual(sendStreakTrackingEventsResponseMiddleware);
     });
 });
