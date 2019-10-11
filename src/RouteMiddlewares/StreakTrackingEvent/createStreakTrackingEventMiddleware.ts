@@ -6,20 +6,26 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { streakTrackingEventModel, StreakTrackingEventModel } from '../../Models/StreakTrackingEvent';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakTrackingEvent } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEvent, StreakTypes, GroupStreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 export interface StreakTrackingEventRequestBody {
     type: StreakTrackingEvent;
     streakId: string;
     userId: string;
+    streakType: StreakTypes;
     createdAt: Date;
     modifiedAt: Date;
+    groupStreakType: GroupStreakTypes;
 }
 
 const createStreakTrackingEventBodyValidationSchema = {
     type: Joi.string().required(),
     streakId: Joi.string().required(),
     userId: Joi.string().required(),
+    streakType: Joi.string()
+        .valid(Object.keys(StreakTypes))
+        .required(),
+    groupStreakType: Joi.string().valid(Object.keys(GroupStreakTypes)),
 };
 
 export const createStreakTrackingEventBodyValidationMiddleware = (
@@ -38,11 +44,13 @@ export const getSaveStreakTrackingEventToDatabaseMiddleware = (
     streakTrackingEvent: mongoose.Model<StreakTrackingEventModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { type, streakId, userId } = request.body;
+        const { type, streakId, userId, streakType, groupStreakType } = request.body;
         const newStreakTrackingEvent = new streakTrackingEvent({
             type,
             streakId,
             userId,
+            streakType,
+            groupStreakType,
         });
         response.locals.savedStreakTrackingEvent = await newStreakTrackingEvent.save();
         next();
