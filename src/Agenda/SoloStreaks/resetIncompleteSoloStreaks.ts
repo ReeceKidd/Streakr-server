@@ -1,6 +1,12 @@
 import streakoid from '../../streakoid';
-import { SoloStreak, CurrentStreak, PastStreak, StreakTrackingEvent } from '@streakoid/streakoid-sdk/lib';
-import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
+import {
+    SoloStreak,
+    CurrentStreak,
+    PastStreak,
+    StreakTrackingEvent,
+    StreakTrackingEventTypes,
+    StreakTypes,
+} from '@streakoid/streakoid-sdk/lib';
 
 export const resetIncompleteSoloStreaks = async (
     incompleteSoloStreaks: SoloStreak[],
@@ -31,9 +37,10 @@ export const resetIncompleteSoloStreaks = async (
             });
 
             return streakoid.streakTrackingEvents.create({
-                type: StreakTrackingEventType.LostStreak,
+                type: StreakTrackingEventTypes.lostStreak,
                 streakId: soloStreak._id,
                 userId: soloStreak.userId,
+                streakType: StreakTypes.solo,
             });
         }),
     );

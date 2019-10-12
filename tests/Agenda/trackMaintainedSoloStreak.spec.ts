@@ -1,7 +1,8 @@
 import { trackMaintainedSoloStreaks } from '.../../../src/Agenda/SoloStreaks/trackMaintainedSoloStreaks';
 import streakoid from '.../../../src/streakoid';
-import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
+
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
+import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
 
 const username = 'trackMaintainedSoloStreakUsername';
 const email = 'trackMaintainedSoloStreak@gmail.com';
@@ -93,7 +94,7 @@ describe('trackMaintainedSoloStreak', () => {
 
         streakTrackingEventId = streakTrackingEvent._id;
 
-        expect(streakTrackingEvent.type).toEqual(StreakTrackingEventType.MaintainedStreak);
+        expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.maintainedStreak);
         expect(streakTrackingEvent.userId).toBeDefined();
         expect(streakTrackingEvent.streakId).toBeDefined();
         expect(streakTrackingEvent._id).toEqual(expect.any(String));

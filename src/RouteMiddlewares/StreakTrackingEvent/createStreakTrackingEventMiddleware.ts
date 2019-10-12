@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { streakTrackingEventModel, StreakTrackingEventModel } from '../../Models/StreakTrackingEvent';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakTrackingEventTypes, StreakTypes, GroupStreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 export interface StreakTrackingEventRequestBody {
     type: StreakTrackingEventTypes;
@@ -15,7 +15,6 @@ export interface StreakTrackingEventRequestBody {
     streakType: StreakTypes;
     createdAt: Date;
     modifiedAt: Date;
-    groupStreakType: GroupStreakTypes;
 }
 
 const createStreakTrackingEventBodyValidationSchema = {
@@ -25,7 +24,6 @@ const createStreakTrackingEventBodyValidationSchema = {
     streakType: Joi.string()
         .valid(Object.keys(StreakTypes))
         .required(),
-    groupStreakType: Joi.string().valid(Object.keys(GroupStreakTypes)),
 };
 
 export const createStreakTrackingEventBodyValidationMiddleware = (
@@ -40,33 +38,16 @@ export const createStreakTrackingEventBodyValidationMiddleware = (
     );
 };
 
-export const validateStreakTrackingEventBody = (request: Request, response: Response, next: NextFunction): void => {
-    try {
-        const { streakType, groupStreakType } = request.body;
-        if (streakType === StreakTypes.soloStreak && groupStreakType) {
-            throw new CustomError(ErrorType.GroupStreakTypeShouldNotBeDefined);
-        }
-        if (streakType === StreakTypes.groupMemberStreak && !groupStreakType) {
-            throw new CustomError(ErrorType.GroupStreakTypeMustBeDefined);
-        }
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        next(new CustomError(ErrorType.ValidateStreakTrackingEventBody, err));
-    }
-};
-
 export const getSaveStreakTrackingEventToDatabaseMiddleware = (
     streakTrackingEvent: mongoose.Model<StreakTrackingEventModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { type, streakId, userId, streakType, groupStreakType } = request.body;
+        const { type, streakId, userId, streakType } = request.body;
         const newStreakTrackingEvent = new streakTrackingEvent({
             type,
             streakId,
             userId,
             streakType,
-            groupStreakType,
         });
         response.locals.savedStreakTrackingEvent = await newStreakTrackingEvent.save();
         next();
@@ -94,7 +75,6 @@ export const sendFormattedStreakTrackingEventMiddleware = (
 
 export const createStreakTrackingEventMiddlewares = [
     createStreakTrackingEventBodyValidationMiddleware,
-    validateStreakTrackingEventBody,
     saveStreakTrackingEventToDatabaseMiddleware,
     sendFormattedStreakTrackingEventMiddleware,
 ];

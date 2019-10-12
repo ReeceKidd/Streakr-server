@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSoloStreakDailyTrackerJob } from '../../src/scripts/initaliseSoloStreakTimezoneCheckers';
 import streakoid from '../../src/streakoid';
-import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
+
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
+import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
 
 jest.setTimeout(120000);
 
@@ -144,7 +145,7 @@ describe('soloStreakDailyTracker', () => {
         });
         const streakTrackingEvent = streakTrackingEvents[0];
 
-        expect(streakTrackingEvent.type).toEqual(StreakTrackingEventType.MaintainedStreak);
+        expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.maintainedStreak);
         expect(streakTrackingEvent.streakId).toEqual(maintainedSoloStreakId);
         expect(streakTrackingEvent.userId).toEqual(userId);
         expect(streakTrackingEvent._id).toEqual(expect.any(String));
@@ -229,11 +230,11 @@ describe('soloStreakDailyTracker', () => {
         const lostStreakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
             userId,
             streakId: lostSoloStreakId,
-            type: StreakTrackingEventType.LostStreak,
+            type: StreakTrackingEventTypes.lostStreak,
         });
         const lostStreakTrackingEvent = lostStreakTrackingEvents[0];
 
-        expect(lostStreakTrackingEvent.type).toEqual(StreakTrackingEventType.LostStreak);
+        expect(lostStreakTrackingEvent.type).toEqual(StreakTrackingEventTypes.lostStreak);
         expect(lostStreakTrackingEvent.streakId).toEqual(lostSoloStreakId);
         expect(lostStreakTrackingEvent.userId).toEqual(userId);
         expect(lostStreakTrackingEvent._id).toEqual(expect.any(String));
@@ -307,7 +308,7 @@ describe('soloStreakDailyTracker', () => {
         const streakTrackingEvent = streakTrackingEvents[0];
         inactiveStreakTrackingEventId = streakTrackingEvent._id;
 
-        expect(streakTrackingEvent.type).toEqual(StreakTrackingEventType.InactiveStreak);
+        expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.inactiveStreak);
         expect(streakTrackingEvent.userId).toBeDefined();
         expect(streakTrackingEvent.streakId).toBeDefined();
         expect(streakTrackingEvent._id).toEqual(expect.any(String));

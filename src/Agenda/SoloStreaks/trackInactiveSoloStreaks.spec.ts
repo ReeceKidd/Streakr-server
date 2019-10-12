@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
 import streakoid from '../../streakoid';
-import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
+
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe('trackInactiveSoloStreaks', () => {
     afterEach(() => {
@@ -37,9 +38,10 @@ describe('trackInactiveSoloStreaks', () => {
         await trackInactiveSoloStreaks(inactiveSoloStreaks as any);
 
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
-            type: StreakTrackingEventType.InactiveStreak,
+            type: StreakTrackingEventTypes.inactiveStreak,
             streakId: _id,
             userId,
+            streakType: StreakTypes.solo,
         });
     });
 });

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import streakoid from '../../streakoid';
-import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe('resetIncompleteSoloStreaks', () => {
     afterEach(() => {
@@ -47,9 +47,10 @@ describe('resetIncompleteSoloStreaks', () => {
         });
 
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
-            type: StreakTrackingEventType.LostStreak,
+            type: StreakTrackingEventTypes.lostStreak,
             streakId: _id,
             userId,
+            streakType: StreakTypes.solo,
         });
     });
 });

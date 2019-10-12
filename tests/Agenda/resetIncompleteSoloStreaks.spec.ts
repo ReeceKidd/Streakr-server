@@ -1,8 +1,8 @@
 import streakoid from '../../src/streakoid';
-import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
 
 import { resetIncompleteSoloStreaks } from '../../src/Agenda/SoloStreaks/resetIncompleteSoloStreaks';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
+import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
 
 const username = 'resetIncompleteSoloStreaksUsername';
 const email = 'resetIncompleteSoloStreaks@gmail.com';
@@ -98,7 +98,7 @@ describe('resetIncompleteSoloStreaks', () => {
         const streakTrackingEvent = streakTrackingEvents[0];
         streakTrackingEventId = streakTrackingEvent._id;
 
-        expect(streakTrackingEvent.type).toEqual(StreakTrackingEventType.LostStreak);
+        expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.lostStreak);
         expect(streakTrackingEvent.userId).toBeDefined();
         expect(streakTrackingEvent.streakId).toBeDefined();
         expect(streakTrackingEvent._id).toEqual(expect.any(String));

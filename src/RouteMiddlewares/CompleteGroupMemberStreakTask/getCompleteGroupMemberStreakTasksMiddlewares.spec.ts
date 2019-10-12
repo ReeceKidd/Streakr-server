@@ -8,18 +8,18 @@ import {
     getCompleteGroupMemberStreakTasksMiddlewares,
     retreiveCompleteGroupMemberStreakTasksMiddleware,
 } from './getCompleteGroupMemberStreakTasksMiddlewares';
-import { GroupStreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe('completeGroupMemberStreakTaskQueryValidationMiddleware', () => {
     const userId = 'userId';
     const groupMemberStreakId = 'groupMemberStreakId';
-    const groupStreakType = GroupStreakTypes.team;
     const teamStreakId = 'teamStreakId';
+    const streakType = StreakTypes.team;
     const query = {
         userId,
         groupMemberStreakId,
-        groupStreakType,
         teamStreakId,
+        streakType,
     };
     test('allows userId as a query paramater', () => {
         expect.assertions(1);
@@ -59,13 +59,13 @@ describe('completeGroupMemberStreakTaskQueryValidationMiddleware', () => {
         expect(next).toBeCalled();
     });
 
-    test('allows groupStreakType as a query paramater', () => {
+    test('allows teamStreakId as a query paramater', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
             query: {
-                groupStreakType,
+                teamStreakId,
             },
         };
         const response: any = {
@@ -78,13 +78,13 @@ describe('completeGroupMemberStreakTaskQueryValidationMiddleware', () => {
         expect(next).toBeCalled();
     });
 
-    test('allows teamStreakId as a query paramater', () => {
+    test('allows streakType as a query paramater', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
             query: {
-                teamStreakId,
+                streakType,
             },
         };
         const response: any = {
@@ -183,28 +183,6 @@ describe('getRetreiveCompleteGroupMemberStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries with just groupStreakType', async () => {
-        expect.assertions(3);
-
-        const find = jest.fn(() => Promise.resolve(true));
-        const completeGroupMemberStreakTaskModel = {
-            find,
-        };
-        const groupStreakType = 'groupStreakType';
-        const request: any = { query: { groupStreakType } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getRetreiveCompleteGroupMemberStreakTasksMiddleware(
-            completeGroupMemberStreakTaskModel as any,
-        );
-
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ groupStreakType });
-        expect(response.locals.completeGroupMemberStreakTasks).toBeDefined();
-        expect(next).toBeCalledWith();
-    });
-
     test('queries with just teamStreakId', async () => {
         expect.assertions(3);
 
@@ -227,7 +205,7 @@ describe('getRetreiveCompleteGroupMemberStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries with userId, groupMemberStreakId, groupStreakType and teamId', async () => {
+    test('queries with userId, groupMemberStreakId and teamId', async () => {
         expect.assertions(3);
 
         const find = jest.fn().mockResolvedValue(true);
@@ -236,10 +214,9 @@ describe('getRetreiveCompleteGroupMemberStreakTasksMiddleware', () => {
         };
         const userId = 'userId';
         const groupMemberStreakId = 'groupMemberStreakId';
-        const groupStreakType = GroupStreakTypes.team;
         const teamStreakId = 'teamStreakId';
         const request: any = {
-            query: { userId, groupMemberStreakId, groupStreakType, teamStreakId },
+            query: { userId, groupMemberStreakId, teamStreakId },
         };
         const response: any = { locals: {} };
         const next = jest.fn();
@@ -249,7 +226,7 @@ describe('getRetreiveCompleteGroupMemberStreakTasksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ userId, teamStreakId, groupStreakType, groupMemberStreakId });
+        expect(find).toBeCalledWith({ userId, teamStreakId, groupMemberStreakId });
         expect(response.locals.completeGroupMemberStreakTasks).toBeDefined();
         expect(next).toBeCalledWith();
     });

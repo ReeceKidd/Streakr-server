@@ -2,12 +2,11 @@ import streakoid from '../../streakoid';
 import {
     GroupMemberStreak,
     CurrentStreak,
-    Activtiy,
-    PastStreakArray,
     PastStreak,
     StreakTrackingEvent,
+    StreakTrackingEventTypes,
+    StreakTypes,
 } from '@streakoid/streakoid-sdk/lib';
-import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
 
 export const resetIncompleteGroupMemberStreaks = async (
     incompleteGroupMemberStreaks: GroupMemberStreak[],
@@ -21,7 +20,7 @@ export const resetIncompleteGroupMemberStreaks = async (
                 numberOfDaysInARow: groupMemberStreak.currentStreak.numberOfDaysInARow,
             };
 
-            const pastStreaks: PastStreakArray = [...groupMemberStreak.pastStreaks, pastStreak];
+            const pastStreaks: PastStreak[] = [...groupMemberStreak.pastStreaks, pastStreak];
 
             const currentStreak: CurrentStreak = {
                 startDate: '',
@@ -38,9 +37,10 @@ export const resetIncompleteGroupMemberStreaks = async (
             });
 
             return streakoid.streakTrackingEvents.create({
-                type: StreakTrackingEventType.LostStreak,
+                type: StreakTrackingEventTypes.lostStreak,
                 streakId: groupMemberStreak._id,
                 userId: groupMemberStreak.userId,
+                streakType: StreakTypes.team,
             });
         }),
     );

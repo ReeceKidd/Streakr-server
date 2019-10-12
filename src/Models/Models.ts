@@ -11,5 +11,5 @@ export enum Models {
     StreakTrackingEvent = 'StreakTrackingEvent',
     GroupMemberStreak = 'GroupMemberStreak',
     FriendRequest = 'FriendRequest',
-    TimezoneJob = 'TimezoneJob',
+    DailyJob = 'DailyJob',
 }

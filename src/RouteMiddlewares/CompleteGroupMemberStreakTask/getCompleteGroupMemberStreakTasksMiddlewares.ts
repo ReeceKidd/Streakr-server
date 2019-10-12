@@ -9,13 +9,12 @@ import {
 } from '../../Models/CompleteGroupMemberStreakTask';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
-import { GroupStreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 const completeGroupMemberStreakTaskQueryValidationSchema = {
     userId: Joi.string(),
     groupMemberStreakId: Joi.string(),
-    groupStreakType: Joi.string().valid(Object.keys(GroupStreakTypes)),
     teamStreakId: Joi.string(),
+    streakType: Joi.string(),
 };
 
 export const completeGroupMemberStreakTaskQueryValidationMiddleware = (
@@ -34,26 +33,26 @@ export const getRetreiveCompleteGroupMemberStreakTasksMiddleware = (
     completeGroupMemberStreakTaskModel: mongoose.Model<CompleteGroupMemberStreakTaskModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, groupMemberStreakId, groupStreakType, teamStreakId } = request.query;
+        const { userId, groupMemberStreakId, teamStreakId, streakType } = request.query;
 
         const query: {
             userId?: string;
             groupMemberStreakId?: string;
-            groupStreakType?: GroupStreakTypes;
             teamStreakId?: string;
+            streakType?: string;
         } = {};
 
         if (userId) {
             query.userId = userId;
-        }
-        if (groupStreakType) {
-            query.groupStreakType = groupStreakType;
         }
         if (groupMemberStreakId) {
             query.groupMemberStreakId = groupMemberStreakId;
         }
         if (teamStreakId) {
             query.teamStreakId = teamStreakId;
+        }
+        if (streakType) {
+            query.streakType = streakType;
         }
 
         response.locals.completeGroupMemberStreakTasks = await completeGroupMemberStreakTaskModel.find(query);

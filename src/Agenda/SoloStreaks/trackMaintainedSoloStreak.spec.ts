@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import streakoid from '../../streakoid';
-import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
+import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe('trackMaintainedSoloStreaks', () => {
     afterEach(() => {
         jest.resetAllMocks();
     });
 
-    test('that maintained solo streak activity gets updated and a solo streak tracking event is created', async () => {
+    test('creates a streak tracking event for each streak that is maintained', async () => {
         expect.assertions(2);
         streakoid.soloStreaks.update = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
@@ -42,9 +42,10 @@ describe('trackMaintainedSoloStreaks', () => {
             },
         });
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
-            type: StreakTrackingEventType.MaintainedStreak,
+            type: StreakTrackingEventTypes.maintainedStreak,
             streakId: _id,
             userId,
+            streakType: StreakTypes.solo,
         });
     });
 });

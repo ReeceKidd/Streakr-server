@@ -23,9 +23,6 @@ export const streakTrackingActivitySchema = new mongoose.Schema(
             type: StreakTypes,
             required: true,
         },
-        groupStreakType: {
-            type: String,
-        },
     },
     {
         timestamps: true,

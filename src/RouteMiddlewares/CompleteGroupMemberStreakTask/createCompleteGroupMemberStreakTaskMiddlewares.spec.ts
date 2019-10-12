@@ -23,19 +23,19 @@ import {
 } from './createCompleteGroupMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { GroupStreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe(`completeGroupMemberStreakTaskBodyValidationMiddleware`, () => {
     const userId = 'abcdefgh';
     const teamStreakId = 'a1b2c3d4';
     const groupMemberStreakId = '123456';
-    const groupStreakType = GroupStreakTypes.team;
+    const streakType = StreakTypes.team;
 
     const body = {
         userId,
         teamStreakId,
         groupMemberStreakId,
-        groupStreakType,
+        streakType,
     };
 
     test('calls next() when correct body is supplied', () => {
@@ -118,12 +118,12 @@ describe(`completeGroupMemberStreakTaskBodyValidationMiddleware`, () => {
         expect(next).not.toBeCalled();
     });
 
-    test('sends correct error response when groupStreakType is missing', () => {
+    test('sends correct error response when streakType is solo streak', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { ...body, groupStreakType: undefined },
+            body: { ...body, streakType: StreakTypes.solo },
         };
         const response: any = {
             status,
@@ -134,28 +134,7 @@ describe(`completeGroupMemberStreakTaskBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "groupStreakType" fails because ["groupStreakType" is required]',
-        });
-        expect(next).not.toBeCalled();
-    });
-
-    test('sends correct error response when groupStreakType is not valid', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: { ...body, groupStreakType: 'invalid' },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        completeGroupMemberStreakTaskBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message: 'child "groupStreakType" fails because ["groupStreakType" must be one of [team, competition]]',
+            message: 'child "streakType" fails because ["streakType" must be one of [team]]',
         });
         expect(next).not.toBeCalled();
     });

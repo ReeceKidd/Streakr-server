@@ -1,6 +1,5 @@
 import streakoid from '../../streakoid';
-import { SoloStreak, StreakTrackingEvent } from '@streakoid/streakoid-sdk/lib';
-import StreakTrackingEventType from '@streakoid/streakoid-sdk/lib/streakTrackingEventType';
+import { SoloStreak, StreakTrackingEvent, StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 export const trackMaintainedSoloStreaks = async (
     maintainedSoloStreaks: SoloStreak[],
@@ -14,9 +13,10 @@ export const trackMaintainedSoloStreaks = async (
                 },
             });
             return streakoid.streakTrackingEvents.create({
-                type: StreakTrackingEventType.MaintainedStreak,
+                type: StreakTrackingEventTypes.maintainedStreak,
                 streakId: soloStreak._id,
                 userId: soloStreak.userId,
+                streakType: StreakTypes.solo,
             });
         }),
     );

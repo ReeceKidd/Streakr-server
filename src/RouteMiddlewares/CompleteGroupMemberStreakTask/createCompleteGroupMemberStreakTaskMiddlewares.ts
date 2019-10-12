@@ -3,7 +3,7 @@ import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { GroupMemberStreak, GroupStreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { GroupMemberStreak, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -19,10 +19,10 @@ import { CustomError, ErrorType } from '../../customError';
 export const completeGroupMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
     groupMemberStreakId: Joi.string().required(),
-    groupStreakType: Joi.string()
-        .valid(Object.keys(GroupStreakTypes))
-        .required(),
     teamStreakId: Joi.string().required(),
+    streakType: Joi.string()
+        .valid([StreakTypes.team])
+        .required(),
 };
 
 export const completeGroupMemberStreakTaskBodyValidationMiddleware = (
@@ -185,15 +185,15 @@ export const getCreateCompleteGroupMemberStreakTaskMiddleware = (
     completeGroupMemberStreakTaskModel: mongoose.Model<CompleteGroupMemberStreakTaskModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, teamStreakId, groupMemberStreakId, groupStreakType } = request.body;
+        const { userId, teamStreakId, groupMemberStreakId, streakType } = request.body;
         const { taskCompleteTime, taskCompleteDay } = response.locals;
         const completeGroupMemberStreakTaskDefinition = {
             userId,
             teamStreakId,
             groupMemberStreakId,
-            groupStreakType,
             taskCompleteTime: taskCompleteTime,
             taskCompleteDay,
+            streakType,
         };
         response.locals.completeGroupMemberStreakTask = await new completeGroupMemberStreakTaskModel(
             completeGroupMemberStreakTaskDefinition,

@@ -272,6 +272,11 @@ export enum ErrorType {
     GroupStreakTypeShouldNotBeDefined,
     ValidateStreakTrackingEventBody,
     GroupStreakTypeMustBeDefined,
+    ValidateDailyJobBodyGroupStreakTypeShouldNotBeDefined,
+    ValidateDailyJobBodyGroupStreakTypeMustBeDefined,
+    ValidateDailyJobBody,
+    CreateDailyJobFromRequestMiddleware,
+    SendFormattedDailyJobMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -749,22 +754,6 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-60`,
                     message: 'Group member streak does not exist.',
-                    httpStatusCode: ResponseCodes.badRequest,
-                };
-            }
-
-            case ErrorType.GroupStreakTypeShouldNotBeDefined: {
-                return {
-                    code: `${ResponseCodes.badRequest}-61`,
-                    message: 'groupStreakType should not be defined for a soloStreak.',
-                    httpStatusCode: ResponseCodes.badRequest,
-                };
-            }
-
-            case ErrorType.GroupStreakTypeMustBeDefined: {
-                return {
-                    code: `${ResponseCodes.badRequest}-62`,
-                    message: 'groupStreakType must be defined.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2251,6 +2240,27 @@ export class CustomError extends Error {
             case ErrorType.ValidateStreakTrackingEventBody:
                 return {
                     code: `${ResponseCodes.warning}-205`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ValidateDailyJobBody:
+                return {
+                    code: `${ResponseCodes.warning}-206`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateDailyJobFromRequestMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-207`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendFormattedDailyJobMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-208`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

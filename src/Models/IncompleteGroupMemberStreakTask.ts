@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Models } from './Models';
 import { Collections } from './Collections';
-import { IncompleteGroupMemberStreakTask } from '@streakoid/streakoid-sdk/lib';
+import { IncompleteGroupMemberStreakTask, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 export type IncompleteGroupMemberStreakTaskModel = IncompleteGroupMemberStreakTask & mongoose.Document;
 
@@ -15,9 +15,10 @@ export const incompleteGroupMemberStreakTaskSchema = new mongoose.Schema(
             required: true,
             type: String,
         },
-        groupStreakType: {
+        streakType: {
             required: true,
             type: String,
+            enum: [StreakTypes.team],
         },
         taskIncompleteTime: {
             required: true,
