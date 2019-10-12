@@ -58,6 +58,7 @@ describe('manageDailySoloStreaks', () => {
             timezone,
         });
         expect(resetIncompleteSoloStreaks).toBeCalledWith(expect.any(Array), expect.any(String));
+
         expect(streakoid.dailyJobs.create).toBeCalledWith({
             agendaJobId,
             jobName: AgendaJobNames.soloStreakDailyTracker,

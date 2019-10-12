@@ -17,7 +17,6 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
     const timezone = 'Europe/London';
     const localisedJobCompleteTime = new Date().toString();
     const streakType = StreakTypes.team;
-    const wasSuccessful = true;
 
     const body = {
         agendaJobId,
@@ -25,7 +24,6 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
         timezone,
         localisedJobCompleteTime,
         streakType,
-        wasSuccessful,
     };
 
     test('check that valid request passes', () => {
@@ -147,27 +145,6 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "streakType" fails because ["streakType" must be one of [solo, team]]',
-        });
-        expect(next).not.toBeCalled();
-    });
-
-    test('sends correct type when wasSuccessful is missing', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: { ...body, wasSuccessful: undefined },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        createDailyJobBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message: 'child "wasSuccessful" fails because ["wasSuccessful" is required]',
         });
         expect(next).not.toBeCalled();
     });
