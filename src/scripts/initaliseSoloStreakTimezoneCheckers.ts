@@ -1,13 +1,14 @@
 import moment from 'moment';
 
 import { agendaJobModel } from '../Models/AgendaJob';
-import { agenda, AgendaJobs, AgendaTimeRanges, AgendaProcessTimes } from '../Agenda/agenda';
+import { agenda, AgendaTimeRanges, AgendaProcessTimes } from '../Agenda/agenda';
 import Agenda from 'agenda';
+import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
 
 export const createSoloStreakDailyTrackerJob = async (timezone: string): Promise<Agenda.Job<{ timezone: string }>> => {
     const endOfDay = moment.tz(timezone).endOf(AgendaTimeRanges.day);
     return (async (): Promise<Agenda.Job<{ timezone: string }>> => {
-        const soloStreakDailyTrackerJob = agenda.create(AgendaJobs.soloStreakDailyTracker, { timezone });
+        const soloStreakDailyTrackerJob = agenda.create(AgendaJobNames.soloStreakDailyTracker, { timezone });
         soloStreakDailyTrackerJob.schedule(endOfDay.toDate());
         await agenda.start();
         await soloStreakDailyTrackerJob.repeatEvery(AgendaProcessTimes.oneDay).save();
@@ -21,7 +22,7 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
     const numberOfTimezones = timezones.length;
 
     const numberOfSoloStreakTimezoneCheckerJobs = await agendaJobModel.countDocuments({
-        name: AgendaJobs.soloStreakDailyTracker,
+        name: AgendaJobNames.soloStreakDailyTracker,
     });
     console.log(`Number of solo streak daily tracker jobs: ${numberOfSoloStreakTimezoneCheckerJobs}`);
     console.log(`Number of timezones: ${numberOfTimezones}`);
@@ -34,7 +35,7 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
 
     return timezones.map(async (timezone: string) => {
         const existingTimezone = await agendaJobModel.findOne({
-            name: AgendaJobs.soloStreakDailyTracker,
+            name: AgendaJobNames.soloStreakDailyTracker,
             'data.timezone': timezone,
         });
 
