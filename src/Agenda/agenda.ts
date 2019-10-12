@@ -1,11 +1,9 @@
 import Agenda from 'agenda';
-import moment from 'moment-timezone';
 
 import { getServiceConfig } from '../getServiceConfig';
 import { manageDailySoloStreaks } from './SoloStreaks/manageDailySoloStreaks';
 import { sendEmail } from '../email';
-import { AgendaJobNames, StreakTypes } from '@streakoid/streakoid-sdk/lib';
-import streakoid from '../../src/streakoid';
+import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
 
 const { DATABASE_URI, NODE_ENV } = getServiceConfig();
 
@@ -63,40 +61,11 @@ agenda.define(AgendaJobNames.soloStreakDailyTracker, { priority: 'high' }, async
     try {
         const { timezone } = job.attrs.data;
 
-        await manageDailySoloStreaks(timezone);
+        await manageDailySoloStreaks({ agendaJobId: String(job.attrs._id), timezone });
 
-        const localisedJobCompleteTime = moment
-            .tz(timezone)
-            .toDate()
-            .toString();
-
-        await streakoid.dailyJobs.create({
-            agendaJobId: String(job.attrs._id),
-            jobName: AgendaJobNames.soloStreakDailyTracker,
-            timezone,
-            localisedJobCompleteTime,
-            streakType: StreakTypes.solo,
-            wasSuccessful: true,
-        });
         done();
     } catch (err) {
-        try {
-            const { timezone } = job.attrs.data;
-            const localisedJobCompleteTime = moment
-                .tz(timezone)
-                .toDate()
-                .toString();
-            await streakoid.dailyJobs.create({
-                agendaJobId: String(job.attrs._id),
-                jobName: AgendaJobNames.soloStreakDailyTracker,
-                timezone,
-                localisedJobCompleteTime,
-                streakType: StreakTypes.solo,
-                wasSuccessful: false,
-            });
-        } catch (err) {
-            done(err);
-        }
+        console.log(err);
         done(err);
     }
 });

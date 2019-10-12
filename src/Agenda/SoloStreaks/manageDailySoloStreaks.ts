@@ -4,9 +4,10 @@ import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import streakoid from '../../streakoid';
+import { AgendaJobNames, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const manageDailySoloStreaks = async (timezone: string) => {
+export const manageDailySoloStreaks = async ({ agendaJobId, timezone }: { agendaJobId: string; timezone: string }) => {
     const currentLocalTime = moment
         .tz(timezone)
         .toDate()
@@ -30,9 +31,22 @@ export const manageDailySoloStreaks = async (timezone: string) => {
         }),
     ]);
 
-    return Promise.all([
+    await Promise.all([
         trackMaintainedSoloStreaks(maintainedSoloStreaks),
         trackInactiveSoloStreaks(inactiveSoloStreaks),
         resetIncompleteSoloStreaks(incompleteSoloStreaks, currentLocalTime),
     ]);
+
+    const localisedJobCompleteTime = moment
+        .tz(timezone)
+        .toDate()
+        .toString();
+
+    return streakoid.dailyJobs.create({
+        agendaJobId: String(agendaJobId),
+        jobName: AgendaJobNames.soloStreakDailyTracker,
+        timezone,
+        localisedJobCompleteTime,
+        streakType: StreakTypes.solo,
+    });
 };

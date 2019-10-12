@@ -27,10 +27,6 @@ export const dailyJobSchema = new mongoose.Schema(
             type: StreakTypes,
             required: true,
         },
-        wasSuccessful: {
-            type: Boolean,
-            required: true,
-        },
     },
     {
         timestamps: true,

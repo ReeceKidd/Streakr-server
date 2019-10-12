@@ -3,7 +3,7 @@ import { createSoloStreakDailyTrackerJob } from '../../src/scripts/initaliseSolo
 import streakoid from '../../src/streakoid';
 
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 jest.setTimeout(120000);
 
@@ -147,12 +147,13 @@ describe('soloStreakDailyTracker', () => {
 
         expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.maintainedStreak);
         expect(streakTrackingEvent.streakId).toEqual(maintainedSoloStreakId);
+        expect(streakTrackingEvent.streakType).toEqual(StreakTypes.solo);
         expect(streakTrackingEvent.userId).toEqual(userId);
         expect(streakTrackingEvent._id).toEqual(expect.any(String));
         expect(streakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
-            ['_id', 'type', 'streakId', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+            ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
         maintainedSoloStreakAgendaJobId = String(job.attrs._id);
@@ -236,12 +237,13 @@ describe('soloStreakDailyTracker', () => {
 
         expect(lostStreakTrackingEvent.type).toEqual(StreakTrackingEventTypes.lostStreak);
         expect(lostStreakTrackingEvent.streakId).toEqual(lostSoloStreakId);
+        expect(lostStreakTrackingEvent.streakType).toEqual(StreakTypes.solo);
         expect(lostStreakTrackingEvent.userId).toEqual(userId);
         expect(lostStreakTrackingEvent._id).toEqual(expect.any(String));
         expect(lostStreakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(lostStreakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(lostStreakTrackingEvent).sort()).toEqual(
-            ['_id', 'type', 'streakId', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+            ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
         lostSoloStreakAgendaJobId = String(job.attrs._id);
@@ -311,11 +313,12 @@ describe('soloStreakDailyTracker', () => {
         expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.inactiveStreak);
         expect(streakTrackingEvent.userId).toBeDefined();
         expect(streakTrackingEvent.streakId).toBeDefined();
+        expect(streakTrackingEvent.streakType).toEqual(StreakTypes.solo);
         expect(streakTrackingEvent._id).toEqual(expect.any(String));
         expect(streakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
-            ['_id', 'type', 'streakId', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+            ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
     });
 });
