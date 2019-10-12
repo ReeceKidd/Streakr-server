@@ -7,6 +7,10 @@ export type DailyJobModel = DailyJob & mongoose.Document;
 
 export const dailyJobSchema = new mongoose.Schema(
     {
+        agendaJobId: {
+            type: String,
+            required: true,
+        },
         jobName: {
             type: AgendaJobNames,
             required: true,
