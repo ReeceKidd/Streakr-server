@@ -21,7 +21,6 @@ import { manageDailySoloStreaks } from './manageDailySoloStreaks';
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
 import streakoid from '../../streakoid';
-import { AgendaJobNames, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe('manageDailySoloStreaks', () => {
     afterEach(() => {
@@ -29,7 +28,7 @@ describe('manageDailySoloStreaks', () => {
     });
 
     test('calls trackMaintainedSoloStreaks, trackInactiveSoloStreaks and resetIncompleteSoloStreaks', async () => {
-        expect.assertions(6);
+        expect.assertions(7);
         streakoid.dailyJobs.create = jest.fn(() => ({}));
         streakoid.soloStreaks.getAll = jest.fn(() => {
             return [];
@@ -59,12 +58,6 @@ describe('manageDailySoloStreaks', () => {
         });
         expect(resetIncompleteSoloStreaks).toBeCalledWith(expect.any(Array), expect.any(String));
 
-        expect(streakoid.dailyJobs.create).toBeCalledWith({
-            agendaJobId,
-            jobName: AgendaJobNames.soloStreakDailyTracker,
-            timezone,
-            localisedCompleteTime: expect.any(String),
-            streakType: StreakTypes.solo,
-        });
+        expect(streakoid.dailyJobs.create).toBeCalled();
     });
 });
