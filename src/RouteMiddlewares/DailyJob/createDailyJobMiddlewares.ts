@@ -39,8 +39,9 @@ export const getSaveDailyJobToDatabaseMiddleware = (dailyJob: mongoose.Model<Dai
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { jobName, timezone, localisedJobCompleteTime, streakType, wasSuccessful } = request.body;
+        const { agendaJobId, jobName, timezone, localisedJobCompleteTime, streakType, wasSuccessful } = request.body;
         const newDailyJob = new dailyJob({
+            agendaJobId,
             jobName,
             timezone,
             localisedJobCompleteTime,
