@@ -17,6 +17,7 @@ const createDailyJobBodyValidationSchema = {
     streakType: Joi.string()
         .valid(Object.keys(StreakTypes))
         .required(),
+    wasSuccessful: Joi.boolean().required(),
 };
 
 export const createDailyJobBodyValidationMiddleware = (
@@ -37,12 +38,13 @@ export const getSaveDailyJobToDatabaseMiddleware = (dailyJob: mongoose.Model<Dai
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { jobName, timezone, localisedJobCompleteTime, streakType } = request.body;
+        const { jobName, timezone, localisedJobCompleteTime, streakType, wasSuccessful } = request.body;
         const newDailyJob = new dailyJob({
             jobName,
             timezone,
             localisedJobCompleteTime,
             streakType,
+            wasSuccessful,
         });
         response.locals.savedDailyJob = await newDailyJob.save();
         next();

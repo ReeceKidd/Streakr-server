@@ -16,6 +16,7 @@ import friendRequestsRouter from './friendRequestRouter';
 import { timezoneMiddlewares } from '../../../SharedMiddleware/timezoneMiddlewares';
 import incompleteSoloStreakTasksRouter from './incompleteSoloStreakTaskRouter';
 import incompleteGroupMemberStreakTasksRouter from './incompleteGroupMemberStreakTaskRouter';
+import dailyJobsRouter from './dailyJobsRouter';
 
 const v1Router = Router();
 
@@ -34,5 +35,6 @@ v1Router.use(`/${RouteCategories.agendaJobs}`, agendaJobsRouter);
 v1Router.use(`/${RouteCategories.feedbacks}`, feedbackRouter);
 v1Router.use(`/${RouteCategories.groupMemberStreaks}`, groupMemberStreakRouter);
 v1Router.use(`/${RouteCategories.friendRequests}`, friendRequestsRouter);
+v1Router.use(`/${RouteCategories.dailyJobs}`, dailyJobsRouter);
 
 export default v1Router;

@@ -14,6 +14,7 @@ export enum RouteCategories {
     streakTrackingEvents = 'streak-tracking-events',
     groupMemberStreaks = 'group-member-streaks',
     friendRequests = 'friend-requests',
+    dailyJobs = 'daily-jobs',
 }
 
 export enum UserProperties {
