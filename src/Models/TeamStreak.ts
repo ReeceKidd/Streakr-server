@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { TeamStreak } from '@streakoid/streakoid-sdk/lib';
+import { TeamStreak, TeamStreakStatus } from '@streakoid/streakoid-sdk/lib';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 
 export type TeamStreakModel = TeamStreak & mongoose.Document;
@@ -17,8 +17,29 @@ export const teamStreakSchema = new mongoose.Schema(
             type: String,
         },
         status: {
-            type: String,
+            type: StreakStatus,
             default: StreakStatus.live,
+        },
+        teamStreakStatus: {
+            type: TeamStreakStatus,
+        },
+        currentStreak: {
+            startDate: {
+                type: Date,
+                default: undefined,
+            },
+            numberOfDaysInARow: {
+                type: Number,
+                default: 0,
+            },
+            endDate: {
+                type: Date,
+                default: undefined,
+            },
+        },
+        pastStreaks: {
+            type: Array,
+            default: [],
         },
         streakDescription: {
             type: String,

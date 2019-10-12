@@ -6,6 +6,8 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
+import { TeamStreakStatus } from '@streakoid/streakoid-sdk/lib';
 
 const teamStreakParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -29,7 +31,10 @@ const teamStreakBodyValidationSchema = {
     streakDescription: Joi.string(),
     numberOfMinutes: Joi.number(),
     timezone: Joi.string(),
-    status: Joi.string(),
+    currentStreak: Joi.object(),
+    pastStreaks: Joi.array(),
+    status: Joi.string().valid(Object.keys(StreakStatus)),
+    teamStreakStatus: Joi.string().valid(Object.keys(TeamStreakStatus)),
 };
 
 export const teamStreakRequestBodyValidationMiddleware = (

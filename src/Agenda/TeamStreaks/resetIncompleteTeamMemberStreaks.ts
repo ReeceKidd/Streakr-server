@@ -6,6 +6,7 @@ import {
     StreakTrackingEvent,
     StreakTrackingEventTypes,
     StreakTypes,
+    TeamStreakStatus,
 } from '@streakoid/streakoid-sdk/lib';
 
 export const resetIncompleteGroupMemberStreaks = async (
@@ -36,9 +37,16 @@ export const resetIncompleteGroupMemberStreaks = async (
                 },
             });
 
+            await streakoid.teamStreaks.update({
+                teamStreakId: groupMemberStreak.teamStreakId,
+                updateData: {
+                    teamStreakStatus: TeamStreakStatus.failed,
+                },
+            });
+
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventTypes.lostStreak,
-                streakId: groupMemberStreak._id,
+                streakId: groupMemberStreak.teamStreakId,
                 userId: groupMemberStreak.userId,
                 streakType: StreakTypes.team,
             });
