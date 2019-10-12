@@ -2,7 +2,7 @@ import { trackMaintainedSoloStreaks } from '.../../../src/Agenda/SoloStreaks/tra
 import streakoid from '.../../../src/streakoid';
 
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 const username = 'trackMaintainedSoloStreakUsername';
 const email = 'trackMaintainedSoloStreak@gmail.com';
@@ -44,7 +44,7 @@ describe('trackMaintainedSoloStreak', () => {
     });
 
     test('updates solo streak activity and creates a streak maintained tracking event', async () => {
-        expect.assertions(22);
+        expect.assertions(23);
 
         const maintainedSoloStreaks = await streakoid.soloStreaks.getAll({
             completedToday: true,
@@ -97,6 +97,7 @@ describe('trackMaintainedSoloStreak', () => {
         expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.maintainedStreak);
         expect(streakTrackingEvent.userId).toBeDefined();
         expect(streakTrackingEvent.streakId).toBeDefined();
+        expect(streakTrackingEvent.streakType).toEqual(StreakTypes.solo);
         expect(streakTrackingEvent._id).toEqual(expect.any(String));
         expect(streakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));

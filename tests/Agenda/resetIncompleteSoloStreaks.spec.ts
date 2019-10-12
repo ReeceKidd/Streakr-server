@@ -2,7 +2,7 @@ import streakoid from '../../src/streakoid';
 
 import { resetIncompleteSoloStreaks } from '../../src/Agenda/SoloStreaks/resetIncompleteSoloStreaks';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 const username = 'resetIncompleteSoloStreaksUsername';
 const email = 'resetIncompleteSoloStreaks@gmail.com';
@@ -37,8 +37,8 @@ describe('resetIncompleteSoloStreaks', () => {
         await streakoid.streakTrackingEvents.deleteOne(streakTrackingEventId);
     });
 
-    test('adds current streak to past streak, updates streak acitity with a lost streak event, resets the current streak and creats a lost streak tracking event.', async () => {
-        expect.assertions(26);
+    test('adds current streak to past streak,  resets the current streak and creats a lost streak tracking event.', async () => {
+        expect.assertions(27);
 
         const incompleteSoloStreaks = await streakoid.soloStreaks.getAll({
             completedToday: false,
@@ -101,6 +101,7 @@ describe('resetIncompleteSoloStreaks', () => {
         expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.lostStreak);
         expect(streakTrackingEvent.userId).toBeDefined();
         expect(streakTrackingEvent.streakId).toBeDefined();
+        expect(streakTrackingEvent.streakType).toEqual(StreakTypes.solo);
         expect(streakTrackingEvent._id).toEqual(expect.any(String));
         expect(streakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));

@@ -2,7 +2,7 @@ import { trackMaintainedSoloStreaks } from '.../../../src/Agenda/SoloStreaks/tra
 import streakoid from '../../src/streakoid';
 
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 const username = 'trackInactiveSoloStreakUsername';
 const email = 'trackInactiveSoloStreak@gmail.com';
@@ -35,8 +35,8 @@ describe('trackInactiveSoloStreak', () => {
         await streakoid.streakTrackingEvents.deleteOne(streakTrackingEventId);
     });
 
-    test('updates solo streak activity and creates a streak inactive tracking event', async () => {
-        expect.assertions(21);
+    test('creates a streak inactive tracking event', async () => {
+        expect.assertions(22);
 
         const inactiveSoloStreaks = await streakoid.soloStreaks.getAll({
             completedToday: false,
@@ -91,11 +91,12 @@ describe('trackInactiveSoloStreak', () => {
         expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.maintainedStreak);
         expect(streakTrackingEvent.userId).toBeDefined();
         expect(streakTrackingEvent.streakId).toBeDefined();
+        expect(streakTrackingEvent.streakType).toEqual(StreakTypes.solo);
         expect(streakTrackingEvent._id).toEqual(expect.any(String));
         expect(streakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
-            ['_id', 'type', 'streakId', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+            ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
     });
 });
