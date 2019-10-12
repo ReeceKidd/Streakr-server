@@ -79,7 +79,7 @@ describe('soloStreakDailyTracker', () => {
     });
 
     test('maintains streaks correctly', async () => {
-        expect.assertions(22);
+        expect.assertions(23);
 
         const timezone = 'Europe/London';
 
@@ -161,7 +161,7 @@ describe('soloStreakDailyTracker', () => {
     });
 
     test('manages lost streaks correctly', async () => {
-        expect.assertions(26);
+        expect.assertions(27);
 
         const timezone = 'Europe/London';
 
@@ -251,7 +251,7 @@ describe('soloStreakDailyTracker', () => {
     });
 
     test('manages inactive streaks correctly', async () => {
-        expect.assertions(21);
+        expect.assertions(22);
 
         const timezone = 'Europe/London';
         const streakName = 'Singing';

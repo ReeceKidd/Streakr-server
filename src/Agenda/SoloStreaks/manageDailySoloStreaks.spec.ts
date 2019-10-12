@@ -27,7 +27,7 @@ describe('manageDailySoloStreaks', () => {
         jest.resetAllMocks();
     });
 
-    test('calls trackMaintainedSoloStreaks, trackInactiveSoloStreaks and resetIncompleteSoloStreaks', async () => {
+    test('calls trackMaintainedSoloStreaks, trackInactiveSoloStreaks, resetIncompleteSoloStreaks and creates DailyJob', async () => {
         expect.assertions(7);
         streakoid.dailyJobs.create = jest.fn(() => ({}));
         streakoid.soloStreaks.getAll = jest.fn(() => {
