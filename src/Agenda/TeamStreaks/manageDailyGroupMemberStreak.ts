@@ -1,8 +1,9 @@
 import moment from 'moment-timezone';
 
-import { trackMaintainedSoloStreaks } from '../SoloStreaks/trackMaintainedSoloStreaks';
-import { trackInactiveSoloStreaks } from '../SoloStreaks/trackInactiveSoloStreaks';
-import { resetIncompleteSoloStreaks } from '../SoloStreaks/resetIncompleteSoloStreaks';
+// import { trackMaintainedSoloStreaks } from '../SoloStreaks/trackMaintainedSoloStreaks';
+// import { trackInactiveSoloStreaks } from '../SoloStreaks/trackInactiveSoloStreaks';
+// import { resetIncompleteSoloStreaks } from '../SoloStreaks/resetIncompleteSoloStreaks';
+
 import streakoid from '../../streakoid';
 
 export const manageDailyTeamMemberStreaks = async (timezone: string) => {
@@ -30,8 +31,8 @@ export const manageDailyTeamMemberStreaks = async (timezone: string) => {
     ]);
 
     return Promise.all([
-        trackMaintainedGroupMemberStreaks(maintainedGroupMemberStreaks, currentLocalTime.toString()),
-        trackInactiveGroupMemberStreaks(inactiveGroupMemberStreaks, currentLocalTime),
-        resetIncompleteGroupMemberStreaks(incompleteGroupMemberStreaks, currentLocalTime, timezone),
+        // trackMaintainedGroupMemberStreaks(maintainedGroupMemberStreaks, currentLocalTime.toString()),
+        // trackInactiveGroupMemberStreaks(inactiveGroupMemberStreaks, currentLocalTime),
+        // resetIncompleteGroupMemberStreaks(incompleteGroupMemberStreaks, currentLocalTime, timezone),
     ]);
 };
