@@ -9,6 +9,7 @@ import { CustomError, ErrorType } from '../../customError';
 import { StreakTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
 
 const createDailyJobBodyValidationSchema = {
+    agendaJobId: Joi.string().required(),
     jobName: Joi.string()
         .valid(Object.keys(AgendaJobNames))
         .required(),

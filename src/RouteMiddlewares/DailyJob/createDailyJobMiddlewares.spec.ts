@@ -12,6 +12,7 @@ import {
 import { StreakTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
 
 describe(`createDailyJobBodyValidationMiddleware`, () => {
+    const agendaJobId = 'agendaJobId';
     const jobName = AgendaJobNames.soloStreakDailyTracker;
     const timezone = 'Europe/London';
     const localisedJobCompleteTime = new Date().toString();
@@ -19,6 +20,7 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
     const wasSuccessful = true;
 
     const body = {
+        agendaJobId,
         jobName,
         timezone,
         localisedJobCompleteTime,
@@ -41,6 +43,27 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
         createDailyJobBodyValidationMiddleware(request, response, next);
 
         expect(next).toBeCalled();
+    });
+
+    test('sends correct error response when agendaJobId is missing', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: { ...body, agendaJobId: undefined },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        createDailyJobBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "agendaJobId" fails because ["agendaJobId" is required]',
+        });
+        expect(next).not.toBeCalled();
     });
 
     test('sends correct correct response when jobName is incorrect', () => {
