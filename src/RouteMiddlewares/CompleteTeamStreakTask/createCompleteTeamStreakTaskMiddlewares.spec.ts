@@ -130,7 +130,7 @@ describe('teamStreakExistsMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws TeamStreakDoesNotExist error when team streak does not exist', async () => {
+    test('throws CreateCompleteTeamStreakTaskTeamStreakDoesNotExist error when team streak does not exist', async () => {
         expect.assertions(1);
         const teamStreakId = 'abc';
         const request: any = {
@@ -144,10 +144,10 @@ describe('teamStreakExistsMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.TeamStreakDoesNotExist));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.CreateCompleteTeamStreakTaskTeamStreakDoesNotExist));
     });
 
-    test('throws TeamStreakExistsMiddleware error on middleware failure', async () => {
+    test('throws CreateCompleteTeamStreakTaskTeamStreakExistsMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = { locals: {} };
@@ -158,7 +158,9 @@ describe('teamStreakExistsMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.TeamStreakExistsMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateCompleteTeamStreakTaskTeamStreakExistsMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -224,7 +226,7 @@ describe('retreiveUserMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws UserDoesNotExistError when user does not exist', async () => {
+    test('throws CreateCompleteTeamStreakTaskUserDoesNotExist when user does not exist', async () => {
         expect.assertions(1);
         const userId = 'abcd';
         const lean = jest.fn(() => false);
@@ -237,10 +239,10 @@ describe('retreiveUserMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.UserDoesNotExist));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.CreateCompleteTeamStreakTaskUserDoesNotExist));
     });
 
-    test('throws RetreiveUserMiddleware error on middleware failure', async () => {
+    test('throws CreateCompleteTeamStreakTaskRetreiveUserMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -254,7 +256,9 @@ describe('retreiveUserMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveUserMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateCompleteTeamStreakTaskRetreiveUserMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -277,7 +281,7 @@ describe('setTaskCompleteTimeMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws SetTaskCompleteTimeMiddlewre error on middleware failure', () => {
+    test('throws CreateCompleteTeamStreakTaskSetTaskCompleteTimeMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const tz = jest.fn(() => true);
         const moment = jest.fn(() => ({ tz }));
@@ -288,7 +292,9 @@ describe('setTaskCompleteTimeMiddleware', () => {
 
         middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.SetTaskCompleteTimeMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateCompleteTeamStreakTaskSetTaskCompleteTimeMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -357,7 +363,9 @@ describe('setStreakStartDateMiddleware', () => {
 
         middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.SetStreakStartDateMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateCompleteTeamStreakTaskSetStreakStartDateMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -381,7 +389,7 @@ describe('setDayTaskWasCompletedMiddleware', () => {
         expect(next).toBeDefined();
     });
 
-    test('throws setDayTaskWasCompletedMiddleware error on middleware failure', () => {
+    test('throws CreateCompleteTeamStreakTaskSetDayTaskWasCompletedMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const dayFormat = 'DD/MM/YYYY';
         const request: any = {};
@@ -391,7 +399,9 @@ describe('setDayTaskWasCompletedMiddleware', () => {
 
         middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.SetDayTaskWasCompletedMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateCompleteTeamStreakTaskSetDayTaskWasCompletedMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -494,7 +504,7 @@ describe(`saveTaskCompleteMiddleware`, () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws SaveTaskCompleteMiddleware error on Middleware failure', async () => {
+    test('throws CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware error on Middleware failure', async () => {
         expect.assertions(1);
         const userId = 'abcd';
         const streakId = '1234';
@@ -515,7 +525,9 @@ describe(`saveTaskCompleteMiddleware`, () => {
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.SaveTaskCompleteMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -545,7 +557,7 @@ describe('streakMaintainedMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws StreakMaintainedMiddleware error on middleware failure', async () => {
+    test('throws CreateCompleteTeamStreakTaskStreakMaintainedMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const teamStreakId = '123abc';
         const teamStreakModel = {};
@@ -556,7 +568,9 @@ describe('streakMaintainedMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.StreakMaintainedMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateCompleteTeamStreakTaskStreakMaintainedMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -585,7 +599,7 @@ describe('sendTaskCompleteResponseMiddleware', () => {
         expect(next).not.toBeCalled();
     });
 
-    test('throws SendTaskCompleteResponseMiddleware error on middleware failure', () => {
+    test('throws CreateCompleteTeamStreakTaskSendTaskCompleteResponseMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const completeTeamStreakTask = {
             userId: 'abcd',
@@ -602,7 +616,12 @@ describe('sendTaskCompleteResponseMiddleware', () => {
 
         middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.SendTaskCompleteResponseMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(
+            new CustomError(
+                ErrorType.CreateCompleteTeamStreakTaskSendTaskCompleteResponseMiddleware,
+                expect.any(Error),
+            ),
+        );
     });
 });
 
