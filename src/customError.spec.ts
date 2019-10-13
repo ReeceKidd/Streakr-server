@@ -642,6 +642,28 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskTeamStreakDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskTeamStreakDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-61`);
+        expect(message).toBe('Team streak does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskUserDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskUserDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-62`);
+        expect(message).toBe('User does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to SoloStreakHasBeenCompletedToday`, () => {
         expect.assertions(3);
 
@@ -664,7 +686,7 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(422);
     });
 
-    test(`creates correct error when type is set to TaskAlreadyCompletedToday`, () => {
+    test(`creates correct error when type is set to GroupMemberStreakTaskTaskHasBeenCompletedToday`, () => {
         expect.assertions(3);
 
         const customError = new CustomError(ErrorType.GroupMemberStreakTaskHasBeenCompletedToday);
@@ -683,6 +705,17 @@ describe('customError', () => {
 
         expect(code).toBe(`422-04`);
         expect(message).toBe('Group member streak task has not been completed today.');
+        expect(httpStatusCode).toBe(422);
+    });
+
+    test(`creates correct error when type is set to TeamStreakHasBeenCompletedToday`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.TeamStreakHasBeenCompletedToday);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`422-05`);
+        expect(message).toBe('Team streak task already completed today.');
         expect(httpStatusCode).toBe(422);
     });
 
@@ -2986,6 +3019,116 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-208`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskTeamStreakExistsMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskTeamStreakExistsMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-209`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to EnsureTeamStreakTaskHasNotBeenCompletedTodayMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.EnsureTeamStreakTaskHasNotBeenCompletedTodayMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-210`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskRetreiveUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskRetreiveUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-211`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskSetTaskCompleteTimeMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskSetTaskCompleteTimeMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-212`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskSetStreakStartDateMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskSetStreakStartDateMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-213`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskSetDayTaskWasCompletedMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskSetDayTaskWasCompletedMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-214`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskDefinitionMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskDefinitionMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-215`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-216`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskStreakMaintainedMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskStreakMaintainedMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-217`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamStreakTaskSendTaskCompleteResponseMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakTaskSendTaskCompleteResponseMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-218`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

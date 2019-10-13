@@ -277,6 +277,19 @@ export enum ErrorType {
     ValidateDailyJobBody,
     CreateDailyJobFromRequestMiddleware,
     SendFormattedDailyJobMiddleware,
+    CreateCompleteTeamStreakTaskTeamStreakExistsMiddleware,
+    EnsureTeamStreakTaskHasNotBeenCompletedTodayMiddleware,
+    CreateCompleteTeamStreakTaskRetreiveUserMiddleware,
+    CreateCompleteTeamStreakTaskSetTaskCompleteTimeMiddleware,
+    CreateCompleteTeamStreakTaskSetStreakStartDateMiddleware,
+    CreateCompleteTeamStreakTaskSetDayTaskWasCompletedMiddleware,
+    CreateCompleteTeamStreakTaskDefinitionMiddleware,
+    CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware,
+    CreateCompleteTeamStreakTaskStreakMaintainedMiddleware,
+    CreateCompleteTeamStreakTaskSendTaskCompleteResponseMiddleware,
+    TeamStreakHasBeenCompletedToday,
+    CreateCompleteTeamStreakTaskTeamStreakDoesNotExist,
+    CreateCompleteTeamStreakTaskUserDoesNotExist,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -758,6 +771,22 @@ export class CustomError extends Error {
                 };
             }
 
+            case ErrorType.CreateCompleteTeamStreakTaskTeamStreakDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-61`,
+                    message: 'Team streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateCompleteTeamStreakTaskTeamStreakDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-62`,
+                    message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
             case ErrorType.SoloStreakHasBeenCompletedToday: {
                 return {
                     code: `${ResponseCodes.unprocessableEntity}-01`,
@@ -786,6 +815,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.unprocessableEntity}-04`,
                     message: 'Group member streak task has not been completed today.',
+                    httpStatusCode: ResponseCodes.unprocessableEntity,
+                };
+            }
+
+            case ErrorType.TeamStreakHasBeenCompletedToday: {
+                return {
+                    code: `${ResponseCodes.unprocessableEntity}-05`,
+                    message: 'Team streak task already completed today.',
                     httpStatusCode: ResponseCodes.unprocessableEntity,
                 };
             }
@@ -2261,6 +2298,76 @@ export class CustomError extends Error {
             case ErrorType.SendFormattedDailyJobMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-208`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteTeamStreakTaskTeamStreakExistsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-209`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.EnsureTeamStreakTaskHasNotBeenCompletedTodayMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-210`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteTeamStreakTaskRetreiveUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-211`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteTeamStreakTaskSetTaskCompleteTimeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-212`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteTeamStreakTaskSetStreakStartDateMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-213`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteTeamStreakTaskSetDayTaskWasCompletedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-214`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteTeamStreakTaskDefinitionMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-215`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-216`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteTeamStreakTaskStreakMaintainedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-217`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteTeamStreakTaskSendTaskCompleteResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-218`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
