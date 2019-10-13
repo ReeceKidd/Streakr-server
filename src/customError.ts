@@ -781,7 +781,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.CreateCompleteTeamStreakTaskTeamStreakDoesNotExist: {
+            case ErrorType.CreateCompleteTeamStreakTaskUserDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-62`,
                     message: 'User does not exist.',
