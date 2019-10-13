@@ -9,7 +9,7 @@ import { CustomError, ErrorType } from '../../customError';
 import { userModel, UserModel } from '../../Models/User';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { GroupMemberStreakModel } from '../../Models/GroupMemberStreak';
-import { PopulatedMember } from '@streakoid/streakoid-sdk/lib';
+import { TeamStreak, GroupMemberStreak } from '@streakoid/streakoid-sdk/lib';
 import { groupMemberStreakModel } from '../../Models/GroupMemberStreak';
 
 const getTeamStreaksQueryValidationSchema = {
@@ -82,38 +82,41 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
     groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { teamStreaks } = response.locals;
+        const teamStreaks: TeamStreak[] = response.locals.teamStreaks;
         const teamStreaksWithPopulatedData = await Promise.all(
-            teamStreaks.map(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                async (teamStreak: any): Promise<any> => {
-                    const { members } = teamStreak;
-                    teamStreak.members = await Promise.all(
-                        members.map(
-                            async (member: {
-                                memberId: string;
-                                groupMemberStreakId: string;
-                            }): Promise<PopulatedMember> => {
-                                const [memberInfo, groupMemberStreak] = await Promise.all([
-                                    userModel.findOne({ _id: member.memberId }).lean(),
-                                    groupMemberStreakModel.findOne({ _id: member.groupMemberStreakId }).lean(),
-                                ]);
-                                return {
-                                    _id: memberInfo._id,
-                                    username: memberInfo.username,
-                                    groupMemberStreak,
-                                };
-                            },
-                        ),
-                    );
+            teamStreaks.map(async teamStreak => {
+                const { members } = teamStreak;
+                const teamStreakMembers = await Promise.all(
+                    members.map(
+                        async (member: {
+                            memberId: string;
+                            groupMemberStreakId: string;
+                        }): Promise<{ _id: string; username: string; groupMemberStreak: GroupMemberStreak }> => {
+                            const memberInfo = await userModel.findOne({ _id: member.memberId }).lean();
+                            const groupMemberStreak = await groupMemberStreakModel
+                                .findOne({ _id: member.groupMemberStreakId })
+                                .lean();
+                            console.log(memberInfo);
+                            console.log(groupMemberStreak);
+                            return {
+                                _id: memberInfo._id,
+                                username: memberInfo.username,
+                                groupMemberStreak,
+                            };
+                        },
+                    ),
+                );
 
-                    return teamStreak;
-                },
-            ),
+                return {
+                    ...teamStreak,
+                    members: teamStreakMembers,
+                };
+            }),
         );
         response.locals.teamStreaks = teamStreaksWithPopulatedData;
         next();
     } catch (err) {
+        console.log(err);
         next(new CustomError(ErrorType.RetreiveTeamStreaksMembersInformation, err));
     }
 };

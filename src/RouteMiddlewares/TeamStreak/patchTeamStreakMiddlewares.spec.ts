@@ -62,6 +62,8 @@ describe('teamStreakRequestBodyValidationMiddleware', () => {
     const numberOfMinutes = 30;
     const timezone = 'timezone';
     const status = StreakStatus.archived;
+    const completedToday = true;
+    const active = true;
 
     const body = {
         creatorId,
@@ -70,6 +72,8 @@ describe('teamStreakRequestBodyValidationMiddleware', () => {
         numberOfMinutes,
         timezone,
         status,
+        completedToday,
+        active,
     };
 
     test('sends correct error response when unsupported key is sent', () => {
@@ -120,7 +124,7 @@ describe('teamStreakRequestBodyValidationMiddleware', () => {
         expect(next).not.toBeCalled();
     });
 
-    test('sends correct response is sent when streakDescription is not a string', () => {
+    test('sends correct response when streakDescription is not a string', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -192,6 +196,54 @@ describe('teamStreakRequestBodyValidationMiddleware', () => {
         expect(next).not.toBeCalled();
     });
 
+    test('sends correct error response when currentStreak is not an object', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: {
+                ...body,
+                currentStreak: 'currentStreak',
+            },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        teamStreakRequestBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "currentStreak" fails because ["currentStreak" must be an object]',
+        });
+        expect(next).not.toBeCalled();
+    });
+
+    test('sends correct error response when pastStreaks is an array', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: {
+                ...body,
+                pastStreaks: 'pastStreaks',
+            },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        teamStreakRequestBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "pastStreaks" fails because ["pastStreaks" must be an array]',
+        });
+        expect(next).not.toBeCalled();
+    });
+
     test('sends correct error response when status is not valid', () => {
         expect.assertions(3);
         const send = jest.fn();
@@ -212,6 +264,54 @@ describe('teamStreakRequestBodyValidationMiddleware', () => {
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "status" fails because ["status" must be one of [live, archived, deleted]]',
+        });
+        expect(next).not.toBeCalled();
+    });
+
+    test('sends correct error response when completedToday is not a boolean', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: {
+                ...body,
+                completedToday: 'completedToday',
+            },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        teamStreakRequestBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "completedToday" fails because ["completedToday" must be a boolean]',
+        });
+        expect(next).not.toBeCalled();
+    });
+
+    test('sends correct error response when active is not a boolean', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: {
+                ...body,
+                active: 'active',
+            },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        teamStreakRequestBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "active" fails because ["active" must be a boolean]',
         });
         expect(next).not.toBeCalled();
     });

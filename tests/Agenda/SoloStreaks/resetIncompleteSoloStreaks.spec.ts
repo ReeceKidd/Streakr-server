@@ -1,6 +1,6 @@
-import streakoid from '../../src/streakoid';
+import streakoid from '../../../src/streakoid';
 
-import { resetIncompleteSoloStreaks } from '../../src/Agenda/SoloStreaks/resetIncompleteSoloStreaks';
+import { resetIncompleteSoloStreaks } from '../../../src/Agenda/SoloStreaks/resetIncompleteSoloStreaks';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createSoloStreakDailyTrackerJob } from '../../src/scripts/initaliseSoloStreakTimezoneCheckers';
-import streakoid from '../../src/streakoid';
+import { createSoloStreakDailyTrackerJob } from '../../../src/scripts/initaliseSoloStreakTimezoneCheckers';
+import streakoid from '../../../src/streakoid';
 
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';

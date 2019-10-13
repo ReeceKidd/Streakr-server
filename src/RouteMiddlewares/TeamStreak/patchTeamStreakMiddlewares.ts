@@ -33,6 +33,8 @@ const teamStreakBodyValidationSchema = {
     currentStreak: Joi.object(),
     pastStreaks: Joi.array(),
     status: Joi.string().valid(Object.keys(StreakStatus)),
+    completedToday: Joi.boolean(),
+    active: Joi.boolean(),
 };
 
 export const teamStreakRequestBodyValidationMiddleware = (
