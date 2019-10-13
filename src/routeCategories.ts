@@ -8,6 +8,7 @@ export enum RouteCategories {
     incompleteSoloStreakTasks = 'incomplete-solo-streak-tasks',
     completeGroupMemberStreakTasks = 'complete-group-member-streak-tasks',
     incompleteGroupMemberStreakTasks = 'incomplete-group-member-streak-tasks',
+    completeTeamStreakTasks = 'complete-team-streak-tasks',
     test = 'test',
     stripe = 'stripe',
     friends = 'friends',

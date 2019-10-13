@@ -16,4 +16,4 @@ incompleteGroupMemberStreakTasksRouter.delete(
 
 incompleteGroupMemberStreakTasksRouter.post(`/`, ...createIncompleteGroupMemberStreakTaskMiddlewares);
 
-export default incompleteGroupMemberStreakTasksRouter;
+export { incompleteGroupMemberStreakTasksRouter };

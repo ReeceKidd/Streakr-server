@@ -20,4 +20,4 @@ groupMemberStreaksRouter.post(`/`, ...createGroupMemberStreakMiddlewares);
 
 groupMemberStreaksRouter.patch(`/:${groupMemberStreakId}`, ...patchGroupMemberStreakMiddlewares);
 
-export default groupMemberStreaksRouter;
+export { groupMemberStreaksRouter };

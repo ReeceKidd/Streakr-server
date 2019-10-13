@@ -7,4 +7,4 @@ const dailyJobsRouter = Router();
 
 dailyJobsRouter.post(`/`, ...createDailyJobMiddlewares);
 
-export default dailyJobsRouter;
+export { dailyJobsRouter };

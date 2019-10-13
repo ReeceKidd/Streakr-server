@@ -13,4 +13,4 @@ completeSoloStreakTasksRouter.delete(`/:${completeSoloStreakTaskId}`, ...deleteC
 
 completeSoloStreakTasksRouter.post(`/`, ...createCompleteSoloStreakTaskMiddlewares);
 
-export default completeSoloStreakTasksRouter;
+export { completeSoloStreakTasksRouter };

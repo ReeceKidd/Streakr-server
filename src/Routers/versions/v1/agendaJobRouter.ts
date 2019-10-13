@@ -7,4 +7,4 @@ const agendaJobsRouter = Router();
 
 agendaJobsRouter.delete(`/:${agendaJobId}`, ...deleteAgendaJobMiddlewares);
 
-export default agendaJobsRouter;
+export { agendaJobsRouter };

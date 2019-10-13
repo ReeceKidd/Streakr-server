@@ -34,4 +34,4 @@ teamStreaksRouter.patch(`/:${teamStreakId}`, ...patchTeamStreakMiddlewares);
 
 teamStreaksRouter.post(`/:${teamStreakId}/${TeamStreakRouteCategories.members}`, ...createGroupMemberMiddlewares);
 
-export default teamStreaksRouter;
+export { teamStreaksRouter };

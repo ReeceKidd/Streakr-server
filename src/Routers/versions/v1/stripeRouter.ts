@@ -13,4 +13,4 @@ stripeRouter.post(`/${stripeRouterPaths.subscriptions}`, ...createStripeCustomer
 
 stripeRouter.post(`/${stripeRouterPaths.deleteSubscriptions}`, ...cancelStripeCustomerSubscriptionMiddlewares);
 
-export default stripeRouter;
+export { stripeRouter };

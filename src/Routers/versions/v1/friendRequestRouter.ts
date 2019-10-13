@@ -17,4 +17,4 @@ friendRequestsRouter.patch(`/:${friendRequestId}`, ...patchFriendRequestMiddlewa
 
 friendRequestsRouter.post(`/`, ...createFriendRequestMiddlewares);
 
-export default friendRequestsRouter;
+export { friendRequestsRouter };

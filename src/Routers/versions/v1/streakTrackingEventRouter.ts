@@ -16,4 +16,4 @@ streakTrackingEventRouter.post(`/`, ...createStreakTrackingEventMiddlewares);
 
 streakTrackingEventRouter.delete(`/:${streakTrackingEventId}`, ...deleteStreakTrackingEventMiddlewares);
 
-export default streakTrackingEventRouter;
+export { streakTrackingEventRouter };

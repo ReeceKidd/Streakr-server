@@ -16,4 +16,4 @@ completeGroupMemberStreakTasksRouter.delete(
 
 completeGroupMemberStreakTasksRouter.post(`/`, ...createCompleteGroupMemberStreakTaskMiddlewares);
 
-export default completeGroupMemberStreakTasksRouter;
+export { completeGroupMemberStreakTasksRouter };

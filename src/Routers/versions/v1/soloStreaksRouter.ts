@@ -20,4 +20,4 @@ soloStreaksRouter.post(`/`, ...createSoloStreakMiddlewares);
 
 soloStreaksRouter.patch(`/:${soloStreakId}`, ...patchSoloStreakMiddlewares);
 
-export default soloStreaksRouter;
+export { soloStreaksRouter };

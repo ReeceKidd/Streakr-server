@@ -13,4 +13,4 @@ incompleteSoloStreakTasksRouter.delete(`/:${incompleteSoloStreakTaskId}`, ...del
 
 incompleteSoloStreakTasksRouter.post(`/`, ...createIncompleteSoloStreakTaskMiddlewares);
 
-export default incompleteSoloStreakTasksRouter;
+export { incompleteSoloStreakTasksRouter };

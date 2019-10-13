@@ -33,4 +33,4 @@ usersRouter.patch(`/:${userId}/friends/:${friendId}`, ...deleteFriendMiddlewares
 
 usersRouter.post(`/`, ...registerUserMiddlewares);
 
-export default usersRouter;
+export { usersRouter };

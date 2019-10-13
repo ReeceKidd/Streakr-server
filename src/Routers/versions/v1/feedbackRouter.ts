@@ -11,4 +11,4 @@ feedbackRouter.post(`/`, ...createFeedbackMiddlewares);
 
 feedbackRouter.delete(`/:${feedbackId}`, ...deleteFeedbackMiddlewares);
 
-export default feedbackRouter;
+export { feedbackRouter };
