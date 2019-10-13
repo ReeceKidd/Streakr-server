@@ -15,13 +15,12 @@ export const streakTrackingActivitySchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        userId: {
-            type: String,
-            required: true,
-        },
         streakType: {
             type: StreakTypes,
             required: true,
+        },
+        userId: {
+            type: String,
         },
     },
     {
