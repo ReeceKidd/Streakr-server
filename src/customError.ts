@@ -292,6 +292,9 @@ export enum ErrorType {
     CreateCompleteTeamStreakTaskUserDoesNotExist,
     GetCompleteTeamStreakTasksMiddleware,
     SendCompleteTeamStreakTasksResponseMiddleware,
+    SendCompleteTeamStreakTaskDeletedResponseMiddleware,
+    DeleteCompleteTeamStreakTaskMiddleware,
+    NoCompleteTeamStreakTaskToDeleteFound,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -785,6 +788,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-62`,
                     message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.NoCompleteTeamStreakTaskToDeleteFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-63`,
+                    message: 'Complete team streak task does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2384,6 +2395,20 @@ export class CustomError extends Error {
             case ErrorType.SendCompleteTeamStreakTasksResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-220`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DeleteCompleteTeamStreakTaskMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-221`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendCompleteTeamStreakTaskDeletedResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-222`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

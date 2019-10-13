@@ -664,6 +664,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to NoCompleteTeamStreakTaskToDeleteFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.NoCompleteTeamStreakTaskToDeleteFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-63`);
+        expect(message).toBe('Complete team streak task does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to SoloStreakHasBeenCompletedToday`, () => {
         expect.assertions(3);
 
@@ -3151,6 +3162,28 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-220`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to DeleteCompleteTeamStreakTaskMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.DeleteCompleteTeamStreakTaskMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-221`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendCompleteTeamStreakTaskDeletedResponseMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendCompleteTeamStreakTaskDeletedResponseMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-222`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
