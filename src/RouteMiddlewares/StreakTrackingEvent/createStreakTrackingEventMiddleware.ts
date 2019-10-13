@@ -11,19 +11,19 @@ import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/
 export interface StreakTrackingEventRequestBody {
     type: StreakTrackingEventTypes;
     streakId: string;
-    userId: string;
     streakType: StreakTypes;
     createdAt: Date;
     modifiedAt: Date;
+    userId?: string;
 }
 
 const createStreakTrackingEventBodyValidationSchema = {
     type: Joi.string().valid(Object.keys(StreakTrackingEventTypes)),
     streakId: Joi.string().required(),
-    userId: Joi.string().required(),
     streakType: Joi.string()
         .valid(Object.keys(StreakTypes))
         .required(),
+    userId: Joi.string(),
 };
 
 export const createStreakTrackingEventBodyValidationMiddleware = (
@@ -42,12 +42,12 @@ export const getSaveStreakTrackingEventToDatabaseMiddleware = (
     streakTrackingEvent: mongoose.Model<StreakTrackingEventModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { type, streakId, userId, streakType } = request.body;
+        const { type, streakId, streakType, userId } = request.body;
         const newStreakTrackingEvent = new streakTrackingEvent({
             type,
             streakId,
-            userId,
             streakType,
+            userId,
         });
         response.locals.savedStreakTrackingEvent = await newStreakTrackingEvent.save();
         next();

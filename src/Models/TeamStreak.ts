@@ -55,6 +55,14 @@ export const teamStreakSchema = new mongoose.Schema(
             required: true,
             type: String,
         },
+        completedToday: {
+            type: Boolean,
+            default: false,
+        },
+        active: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

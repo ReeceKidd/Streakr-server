@@ -17,11 +17,15 @@ describe('getTeamStreaksValidationMiddleware', () => {
     const memberId = 'memberId';
     const timezone = 'timezone';
     const status = StreakStatus.live;
+    const completedToday = true;
+    const active = true;
     const query = {
         creatorId,
         memberId,
         timezone,
         status,
+        completedToday,
+        active,
     };
     test('passes valid request', () => {
         expect.assertions(1);

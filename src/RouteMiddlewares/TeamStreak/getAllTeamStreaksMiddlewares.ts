@@ -17,6 +17,8 @@ const getTeamStreaksQueryValidationSchema = {
     memberId: Joi.string(),
     timezone: Joi.string(),
     status: Joi.string().valid(Object.keys(StreakStatus)),
+    completedToday: Joi.boolean(),
+    active: Joi.boolean(),
 };
 
 export const getTeamStreaksQueryValidationMiddleware = (
@@ -37,12 +39,14 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { creatorId, memberId, timezone, status } = request.query;
+        const { creatorId, memberId, timezone, status, completedToday, active } = request.query;
         const query: {
             creatorId?: string;
             ['members.memberId']?: string;
             timezone?: string;
             status?: string;
+            completedToday?: boolean;
+            active?: boolean;
         } = {};
 
         if (creatorId) {
@@ -56,6 +60,12 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
         }
         if (status) {
             query.status = status;
+        }
+        if (completedToday) {
+            query.completedToday = completedToday;
+        }
+        if (active) {
+            query.active = active;
         }
 
         response.locals.teamStreaks = await teamStreakModel.find(query).lean();

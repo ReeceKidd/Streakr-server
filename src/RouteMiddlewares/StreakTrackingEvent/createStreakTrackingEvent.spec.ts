@@ -84,12 +84,12 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
         expect(next).not.toBeCalled();
     });
 
-    test('sends correct error response when userId is missing', () => {
+    test('sends correct error response when userId is not a string', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { ...body, userId: undefined },
+            body: { ...body, userId: 1234 },
         };
         const response: any = {
             status,
@@ -100,7 +100,7 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "userId" fails because ["userId" is required]',
+            message: 'child "userId" fails because ["userId" must be a string]',
         });
         expect(next).not.toBeCalled();
     });
@@ -121,7 +121,7 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "streakType" fails because ["streakType" must be one of [solo, team]]',
+            message: 'child "streakType" fails because ["streakType" must be one of [solo, team, teamMember]]',
         });
         expect(next).not.toBeCalled();
     });
