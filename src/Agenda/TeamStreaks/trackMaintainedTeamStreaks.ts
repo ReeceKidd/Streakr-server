@@ -1,8 +1,13 @@
 import streakoid from '../../streakoid';
-import { TeamStreak, StreakTrackingEvent, StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import {
+    StreakTrackingEvent,
+    StreakTrackingEventTypes,
+    StreakTypes,
+    PopulatedTeamStreak,
+} from '@streakoid/streakoid-sdk/lib';
 
 export const trackMaintainedTeamStreaks = async (
-    maintainedTeamStreaks: TeamStreak[],
+    maintainedTeamStreaks: PopulatedTeamStreak[],
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(
         maintainedTeamStreaks.map(async teamStreak => {

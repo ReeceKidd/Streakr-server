@@ -4,10 +4,15 @@ import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import streakoid from '../../streakoid';
-import { AgendaJobNames, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { AgendaJobNames, StreakTypes, DailyJob } from '@streakoid/streakoid-sdk/lib';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const manageDailySoloStreaks = async ({ agendaJobId, timezone }: { agendaJobId: string; timezone: string }) => {
+export const manageDailySoloStreaks = async ({
+    agendaJobId,
+    timezone,
+}: {
+    agendaJobId: string;
+    timezone: string;
+}): Promise<DailyJob> => {
     const currentLocalTime = moment
         .tz(timezone)
         .toDate()

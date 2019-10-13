@@ -1,15 +1,15 @@
 import streakoid from '../../streakoid';
 import {
-    TeamStreak,
     CurrentStreak,
     PastStreak,
     StreakTrackingEvent,
     StreakTrackingEventTypes,
     StreakTypes,
+    PopulatedTeamStreak,
 } from '@streakoid/streakoid-sdk/lib';
 
 export const resetIncompleteTeamStreaks = async (
-    incompleteTeamStreaks: TeamStreak[],
+    incompleteTeamStreaks: PopulatedTeamStreak[],
     endDate: string,
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(

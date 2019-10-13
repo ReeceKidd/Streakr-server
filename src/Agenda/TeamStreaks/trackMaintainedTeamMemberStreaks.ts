@@ -6,7 +6,7 @@ import {
     StreakTypes,
 } from '@streakoid/streakoid-sdk/lib';
 
-export const trackMaintainedGroupMemberStreaks = async (
+export const trackMaintainedTeamMemberStreaks = async (
     maintainedGroupMemberStreaks: GroupMemberStreak[],
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(
