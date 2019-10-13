@@ -6,6 +6,7 @@ import {
     StreakTrackingEvent,
     StreakTrackingEventTypes,
     StreakTypes,
+    TeamStreakStatus,
 } from '@streakoid/streakoid-sdk/lib';
 
 export const resetIncompleteTeamMemberStreaks = async (
@@ -40,6 +41,8 @@ export const resetIncompleteTeamMemberStreaks = async (
                 teamStreakId: groupMemberStreak.teamStreakId,
                 updateData: {
                     completedToday: false,
+                    active: false,
+                    teamStreakStatus: TeamStreakStatus.failed,
                 },
             });
 
