@@ -1,7 +1,5 @@
 import { Router } from 'express';
 
-import { RouteCategories } from '../../../routeCategories';
-
 import { soloStreaksRouter } from './soloStreaksRouter';
 import { usersRouter } from './usersRouter';
 import { stripeRouter } from './stripeRouter';
@@ -18,25 +16,26 @@ import { incompleteSoloStreakTasksRouter } from './incompleteSoloStreakTaskRoute
 import { incompleteGroupMemberStreakTasksRouter } from './incompleteGroupMemberStreakTaskRouter';
 import { dailyJobsRouter } from './dailyJobsRouter';
 import { completeTeamStreakTasksRouter } from './completeTeamStreakTasksRouter';
+import { RouterCategories } from '@streakoid/streakoid-sdk/lib';
 
 const v1Router = Router();
 
 v1Router.use(...timezoneMiddlewares);
 
-v1Router.use(`/${RouteCategories.soloStreaks}`, soloStreaksRouter);
-v1Router.use(`/${RouteCategories.users}`, usersRouter);
-v1Router.use(`/${RouteCategories.stripe}`, stripeRouter);
-v1Router.use(`/${RouteCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);
-v1Router.use(`/${RouteCategories.incompleteSoloStreakTasks}`, incompleteSoloStreakTasksRouter);
-v1Router.use(`/${RouteCategories.completeGroupMemberStreakTasks}`, completeGroupMemberStreakTasksRouter);
-v1Router.use(`/${RouteCategories.incompleteGroupMemberStreakTasks}`, incompleteGroupMemberStreakTasksRouter);
-v1Router.use(`/${RouteCategories.completeTeamStreakTasks}`, completeTeamStreakTasksRouter);
-v1Router.use(`/${RouteCategories.teamStreaks}`, teamStreaksRouter);
-v1Router.use(`/${RouteCategories.streakTrackingEvents}`, streakTrackingEventRouter);
-v1Router.use(`/${RouteCategories.agendaJobs}`, agendaJobsRouter);
-v1Router.use(`/${RouteCategories.feedbacks}`, feedbackRouter);
-v1Router.use(`/${RouteCategories.groupMemberStreaks}`, groupMemberStreaksRouter);
-v1Router.use(`/${RouteCategories.friendRequests}`, friendRequestsRouter);
-v1Router.use(`/${RouteCategories.dailyJobs}`, dailyJobsRouter);
+v1Router.use(`/${RouterCategories.soloStreaks}`, soloStreaksRouter);
+v1Router.use(`/${RouterCategories.users}`, usersRouter);
+v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
+v1Router.use(`/${RouterCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);
+v1Router.use(`/${RouterCategories.incompleteSoloStreakTasks}`, incompleteSoloStreakTasksRouter);
+v1Router.use(`/${RouterCategories.completeGroupMemberStreakTasks}`, completeGroupMemberStreakTasksRouter);
+v1Router.use(`/${RouterCategories.incompleteGroupMemberStreakTasks}`, incompleteGroupMemberStreakTasksRouter);
+v1Router.use(`/${RouterCategories.completeTeamStreakTasks}`, completeTeamStreakTasksRouter);
+v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
+v1Router.use(`/${RouterCategories.streakTrackingEvents}`, streakTrackingEventRouter);
+v1Router.use(`/${RouterCategories.agendaJobs}`, agendaJobsRouter);
+v1Router.use(`/${RouterCategories.feedbacks}`, feedbackRouter);
+v1Router.use(`/${RouterCategories.groupMemberStreaks}`, groupMemberStreaksRouter);
+v1Router.use(`/${RouterCategories.friendRequests}`, friendRequestsRouter);
+v1Router.use(`/${RouterCategories.dailyJobs}`, dailyJobsRouter);
 
 export default v1Router;
