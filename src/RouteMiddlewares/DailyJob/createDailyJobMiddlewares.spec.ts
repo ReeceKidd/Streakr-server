@@ -81,7 +81,7 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message:
-                'child "jobName" fails because ["jobName" must be one of [soloStreakDailyTracker, groupMemberStreakDailyTracker]]',
+                'child "jobName" fails because ["jobName" must be one of [soloStreakDailyTracker, teamStreakDailyTracker]]',
         });
         expect(next).not.toBeCalled();
     });
@@ -144,7 +144,7 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "streakType" fails because ["streakType" must be one of [solo, team]]',
+            message: 'child "streakType" fails because ["streakType" must be one of [solo, team, teamMember]]',
         });
         expect(next).not.toBeCalled();
     });
