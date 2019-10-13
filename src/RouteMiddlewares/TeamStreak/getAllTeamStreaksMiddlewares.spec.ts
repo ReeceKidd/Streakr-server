@@ -11,14 +11,12 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { TeamStreakStatus } from '@streakoid/streakoid-sdk/lib';
 
 describe('getTeamStreaksValidationMiddleware', () => {
     const creatorId = 'creatorId';
     const memberId = 'memberId';
     const timezone = 'timezone';
     const status = StreakStatus.live;
-    const teamStreakStatus = TeamStreakStatus.ongoing;
     const completedToday = true;
     const active = true;
     const query = {
@@ -26,7 +24,6 @@ describe('getTeamStreaksValidationMiddleware', () => {
         memberId,
         timezone,
         status,
-        teamStreakStatus,
         completedToday,
         active,
     };

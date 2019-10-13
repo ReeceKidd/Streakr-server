@@ -9,7 +9,7 @@ import { CustomError, ErrorType } from '../../customError';
 import { userModel, UserModel } from '../../Models/User';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { GroupMemberStreakModel } from '../../Models/GroupMemberStreak';
-import { PopulatedMember, TeamStreakStatus } from '@streakoid/streakoid-sdk/lib';
+import { PopulatedMember } from '@streakoid/streakoid-sdk/lib';
 import { groupMemberStreakModel } from '../../Models/GroupMemberStreak';
 
 const getTeamStreaksQueryValidationSchema = {
@@ -17,7 +17,6 @@ const getTeamStreaksQueryValidationSchema = {
     memberId: Joi.string(),
     timezone: Joi.string(),
     status: Joi.string().valid(Object.keys(StreakStatus)),
-    teamStreakStatus: Joi.string().valid(Object.keys(TeamStreakStatus)),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
 };

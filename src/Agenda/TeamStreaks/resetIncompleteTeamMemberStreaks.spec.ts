@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resetIncompleteTeamMemberStreaks } from './resetIncompleteTeamMemberStreaks';
 import streakoid from '../../streakoid';
-import { StreakTrackingEventTypes, StreakTypes, TeamStreakStatus } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe('resetIncompleteSoloStreaks', () => {
     afterEach(() => {
@@ -54,7 +54,6 @@ describe('resetIncompleteSoloStreaks', () => {
             updateData: {
                 completedToday: false,
                 active: false,
-                teamStreakStatus: TeamStreakStatus.failed,
             },
         });
 

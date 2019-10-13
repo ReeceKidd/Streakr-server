@@ -10,7 +10,6 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { TeamStreakStatus } from '@streakoid/streakoid-sdk/lib';
 
 describe('teamStreakParamsValidationMiddleware', () => {
     test('sends correct error response when teamStreakId is not defined', () => {
@@ -63,7 +62,6 @@ describe('teamStreakRequestBodyValidationMiddleware', () => {
     const numberOfMinutes = 30;
     const timezone = 'timezone';
     const status = StreakStatus.archived;
-    const teamStreakStatus = TeamStreakStatus.ongoing;
 
     const body = {
         creatorId,
@@ -72,7 +70,6 @@ describe('teamStreakRequestBodyValidationMiddleware', () => {
         numberOfMinutes,
         timezone,
         status,
-        teamStreakStatus,
     };
 
     test('sends correct error response when unsupported key is sent', () => {
@@ -215,31 +212,6 @@ describe('teamStreakRequestBodyValidationMiddleware', () => {
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "status" fails because ["status" must be one of [live, archived, deleted]]',
-        });
-        expect(next).not.toBeCalled();
-    });
-
-    test('sends correct error response when teamStreakStatus is not valid', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: {
-                ...body,
-                teamStreakStatus: 'not valid',
-            },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        teamStreakRequestBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message:
-                'child "teamStreakStatus" fails because ["teamStreakStatus" must be one of [ongoing, failed, ended]]',
         });
         expect(next).not.toBeCalled();
     });
