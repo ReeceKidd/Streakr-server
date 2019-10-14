@@ -20,7 +20,7 @@ export const incompleteGroupMemberStreakTaskBodyValidationSchema = {
     groupMemberStreakId: Joi.string().required(),
     teamStreakId: Joi.string().required(),
     streakType: Joi.string()
-        .valid([StreakTypes.team])
+        .valid([StreakTypes.teamMember])
         .required(),
 };
 

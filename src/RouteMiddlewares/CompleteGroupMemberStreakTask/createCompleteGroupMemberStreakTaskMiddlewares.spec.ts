@@ -29,7 +29,7 @@ describe(`completeGroupMemberStreakTaskBodyValidationMiddleware`, () => {
     const userId = 'abcdefgh';
     const teamStreakId = 'a1b2c3d4';
     const groupMemberStreakId = '123456';
-    const streakType = StreakTypes.team;
+    const streakType = StreakTypes.teamMember;
 
     const body = {
         userId,
@@ -134,7 +134,7 @@ describe(`completeGroupMemberStreakTaskBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "streakType" fails because ["streakType" must be one of [team]]',
+            message: 'child "streakType" fails because ["streakType" must be one of [teamMember]]',
         });
         expect(next).not.toBeCalled();
     });

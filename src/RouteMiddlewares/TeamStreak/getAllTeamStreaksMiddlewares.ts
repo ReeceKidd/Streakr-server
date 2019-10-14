@@ -83,6 +83,8 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const teamStreaks: TeamStreak[] = response.locals.teamStreaks;
+        console.log('TEAM STREAKS');
+        console.log(teamStreaks);
         const teamStreaksWithPopulatedData = await Promise.all(
             teamStreaks.map(async teamStreak => {
                 const { members } = teamStreak;
@@ -91,15 +93,18 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
                         async (member: {
                             memberId: string;
                             groupMemberStreakId: string;
-                        }): Promise<{ _id: string; username: string; groupMemberStreak: GroupMemberStreak }> => {
+                        }): Promise<
+                            { _id: string; username: string; groupMemberStreak: GroupMemberStreak } | undefined
+                        > => {
                             const memberInfo = await userModel.findOne({ _id: member.memberId }).lean();
                             const groupMemberStreak = await groupMemberStreakModel
                                 .findOne({ _id: member.groupMemberStreakId })
                                 .lean();
-                            console.log(memberInfo);
-                            console.log(groupMemberStreak);
+                            if (!memberInfo) {
+                                return;
+                            }
                             return {
-                                _id: memberInfo._id,
+                                _id: memberInfo && memberInfo._id,
                                 username: memberInfo.username,
                                 groupMemberStreak,
                             };
@@ -109,7 +114,7 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
 
                 return {
                     ...teamStreak,
-                    members: teamStreakMembers,
+                    members: teamStreakMembers.filter(member => member !== undefined),
                 };
             }),
         );

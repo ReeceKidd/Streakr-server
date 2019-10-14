@@ -18,7 +18,7 @@ export const completeGroupMemberStreakTaskSchema = new mongoose.Schema(
         streakType: {
             required: true,
             type: String,
-            enum: [StreakTypes.team],
+            enum: [StreakTypes.teamMember],
         },
         taskCompleteTime: {
             required: true,
