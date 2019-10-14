@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import { getUsersMiddlewares } from '../../../RouteMiddlewares/User/getUsersMiddlewares';
-import { registerUserMiddlewares } from '../../../RouteMiddlewares/User/registerUserMiddlewares';
 import { deleteUserMiddlewares } from '../../../RouteMiddlewares/User/deleteUserMiddlewares';
 import { getUserMiddlewares } from '../../../RouteMiddlewares/User/getUserMiddlewares';
 
