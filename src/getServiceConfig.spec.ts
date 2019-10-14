@@ -15,6 +15,7 @@ describe('getServiceConfig', () => {
         EMAIL_PASSWORD: 'EMAIL_PASSWORD',
         EMAIL_FROM: 'EMAIL_FROM',
         EMAIL_TO: 'EMAIL_TO',
+        COGNITO_APP_CLIENT_ID: 'COGNITO_APP_CLIENT_ID',
     };
 
     test('that correct error is thrown when NODE_ENV is not provided', () => {
@@ -196,6 +197,20 @@ describe('getServiceConfig', () => {
             getServiceConfig(environment);
         } catch (err) {
             expect(err.message).toEqual('EMAIL_TO is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when COGNITO_APP_CLIENT_ID is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            COGNITO_APP_CLIENT_ID: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('COGNTIO_APP_CLIENT_ID is not provided.');
         }
     });
 });

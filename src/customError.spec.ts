@@ -675,6 +675,50 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to TokenDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.TokenDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`401-01`);
+        expect(message).toBe('Not authorized.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to AuthUserDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.AuthUserDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`401-02`);
+        expect(message).toBe('Not authorized.');
+        expect(httpStatusCode).toBe(401);
+    });
+
+    test(`creates correct error when type is set to AuthInvalidTokenNoCognitoUsername`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.AuthInvalidTokenNoCognitoUsername);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`401-03`);
+        expect(message).toBe('Not authorised.');
+        expect(httpStatusCode).toBe(401);
+    });
+
+    test(`creates correct error when type is set to AudienceDoesNotMatchCognitoAppClientId`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.AudienceDoesNotMatchCognitoAppClientId);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`401-04`);
+        expect(message).toBe('Not authorised.');
+        expect(httpStatusCode).toBe(401);
+    });
+
     test(`creates correct error when type is set to SoloStreakHasBeenCompletedToday`, () => {
         expect.assertions(3);
 
@@ -3184,6 +3228,39 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-222`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to DecodeJWTMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.DecodeJWTMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-223`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to AuthRetreiveUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.AuthRetreiveUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-224`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to EnsureAudienceMatchesCognitoUserPool`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.EnsureAudienceMatchesCognitoUserPool);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-225`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

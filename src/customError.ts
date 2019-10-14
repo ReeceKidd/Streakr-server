@@ -295,9 +295,17 @@ export enum ErrorType {
     SendCompleteTeamStreakTaskDeletedResponseMiddleware,
     DeleteCompleteTeamStreakTaskMiddleware,
     NoCompleteTeamStreakTaskToDeleteFound,
+    TokenDoesNotExist,
+    DecodeJWTMiddleware,
+    AuthUserDoesNotExist,
+    AuthRetreiveUserMiddleware,
+    AuthInvalidTokenNoCognitoUsername,
+    AudienceDoesNotMatchCognitoAppClientId,
+    EnsureAudienceMatchesCognitoUserPool,
 }
 
 const internalServerMessage = 'Internal Server Error.';
+const notAuthorizedErrorMessage = 'Not authorized.';
 
 export class CustomError extends Error {
     public code: string;
@@ -796,6 +804,38 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-63`,
                     message: 'Complete team streak task does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.TokenDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.unautohorized}-01`,
+                    message: notAuthorizedErrorMessage,
+                    httpStatusCode: ResponseCodes.unautohorized,
+                };
+            }
+
+            case ErrorType.AuthUserDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.unautohorized}-02`,
+                    message: notAuthorizedErrorMessage,
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.AuthInvalidTokenNoCognitoUsername: {
+                return {
+                    code: `${ResponseCodes.unautohorized}-03`,
+                    message: notAuthorizedErrorMessage,
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.AudienceDoesNotMatchCognitoAppClientId: {
+                return {
+                    code: `${ResponseCodes.unautohorized}-04`,
+                    message: notAuthorizedErrorMessage,
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2409,6 +2449,27 @@ export class CustomError extends Error {
             case ErrorType.SendCompleteTeamStreakTaskDeletedResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-222`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DecodeJWTMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-223`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.AuthRetreiveUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-224`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.EnsureAudienceMatchesCognitoUserPool:
+                return {
+                    code: `${ResponseCodes.warning}-225`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

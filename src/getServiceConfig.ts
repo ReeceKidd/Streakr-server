@@ -15,6 +15,7 @@ export interface AppConfigHttp {
     EMAIL_PASSWORD: string;
     EMAIL_FROM: string;
     EMAIL_TO: string;
+    COGNITO_APP_CLIENT_ID: string;
 }
 
 export type AppConfig = AppConfigHttp;
@@ -34,6 +35,7 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         EMAIL_PASSWORD,
         EMAIL_FROM,
         EMAIL_TO,
+        COGNITO_APP_CLIENT_ID,
     } = environment;
 
     if (!NODE_ENV) throw new Error('NODE_ENV is not provided.');
@@ -82,6 +84,10 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         throw new Error('EMAIL_TO is not provided.');
     }
 
+    if (!COGNITO_APP_CLIENT_ID) {
+        throw new Error('COGNTIO_APP_CLIENT_ID is not provided.');
+    }
+
     return {
         NODE_ENV,
         PORT,
@@ -96,5 +102,6 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         EMAIL_PASSWORD,
         EMAIL_FROM,
         EMAIL_TO,
+        COGNITO_APP_CLIENT_ID,
     } as AppConfigHttp;
 };
