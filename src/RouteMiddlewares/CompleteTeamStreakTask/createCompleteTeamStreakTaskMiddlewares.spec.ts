@@ -347,7 +347,7 @@ describe('createCompleteTeamStreakTaskDefinitionMiddleware', () => {
         createCompleteTeamStreakTaskDefinitionMiddleware(request, response, next);
 
         expect(response.locals.completeTeamStreakTaskDefinition).toEqual({
-            streakId: teamStreakId,
+            teamStreakId,
             taskCompleteTime: taskCompleteTime.toDate(),
             taskCompleteDay,
         });
