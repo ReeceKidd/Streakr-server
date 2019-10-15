@@ -25,27 +25,27 @@ export const manageDailyTeamStreaks = async ({
         .toDate()
         .toString();
 
-    const [incompleteGroupMemberStreaks, maintainedGroupMemberStreaks, inactiveGroupMemberStreaks] = await Promise.all([
-        streakoid.groupMemberStreaks.getAll({
+    const [incompleteTeamMemberStreaks, maintainedTeamMemberStreaks, inactiveTeamMemberStreaks] = await Promise.all([
+        streakoid.teamMemberStreaks.getAll({
             completedToday: false,
             active: true,
             timezone: timezone,
         }),
-        streakoid.groupMemberStreaks.getAll({
+        streakoid.teamMemberStreaks.getAll({
             completedToday: true,
             active: true,
             timezone,
         }),
-        streakoid.groupMemberStreaks.getAll({
+        streakoid.teamMemberStreaks.getAll({
             completedToday: false,
             active: false,
             timezone,
         }),
     ]);
 
-    await resetIncompleteTeamMemberStreaks(incompleteGroupMemberStreaks, currentLocalTime);
-    await trackMaintainedTeamMemberStreaks(maintainedGroupMemberStreaks);
-    await trackInactiveTeamMemberStreaks(inactiveGroupMemberStreaks);
+    await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks, currentLocalTime);
+    await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks);
+    await trackInactiveTeamMemberStreaks(inactiveTeamMemberStreaks);
 
     const [incompleteTeamStreaks, maintainedTeamStreaks, inactiveTeamStreaks] = await Promise.all([
         streakoid.teamStreaks.getAll({

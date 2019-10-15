@@ -4,8 +4,8 @@ import {
     createTeamStreakBodyValidationMiddleware,
     sendTeamStreakMiddleware,
     TeamStreakRegistrationRequestBody,
-    createGroupMemberStreaksMiddleware,
-    getCreateGroupMemberStreaksMiddleware,
+    createTeamMemberStreaksMiddleware,
+    getCreateTeamMemberStreaksMiddleware,
     createTeamStreakMiddleware,
     getCreateTeamStreakMiddleware,
     updateTeamStreakMembersArrayMiddleware,
@@ -24,8 +24,8 @@ describe(`createTeamStreakBodyValidationMiddleware`, () => {
     const streakDescription = 'Stuck to our recommended calorie level';
     const numberOfMinutes = 30;
     const memberId = 'memberId';
-    const groupMemberStreakId = 'groupMemberStreakId';
-    const members = [{ memberId, groupMemberStreakId }];
+    const teamMemberStreakId = 'teamMemberStreakId';
+    const members = [{ memberId, teamMemberStreakId }];
 
     const body: TeamStreakRegistrationRequestBody = {
         creatorId,
@@ -155,7 +155,7 @@ describe(`createTeamStreakBodyValidationMiddleware`, () => {
         const request: any = {
             body: {
                 ...body,
-                members: [{ groupMemberStreakId }],
+                members: [{ teamMemberStreakId }],
             },
         };
         const response: any = {
@@ -173,14 +173,14 @@ describe(`createTeamStreakBodyValidationMiddleware`, () => {
         expect(next).not.toBeCalled();
     });
 
-    test('sends members must contain an object with groupMemberStreakMemberId property', () => {
+    test('sends members must contain an object with teamMemberStreakMemberId property', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
             body: {
                 ...body,
-                members: [{ memberId, groupMemberStreakId: 123 }],
+                members: [{ memberId, teamMemberStreakId: 123 }],
             },
         };
         const response: any = {
@@ -193,7 +193,7 @@ describe(`createTeamStreakBodyValidationMiddleware`, () => {
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message:
-                'child "members" fails because ["members" at position 0 fails because [child "groupMemberStreakId" fails because ["groupMemberStreakId" must be a string]]]',
+                'child "members" fails because ["members" at position 0 fails because [child "teamMemberStreakId" fails because ["teamMemberStreakId" must be a string]]]',
         });
         expect(next).not.toBeCalled();
     });
@@ -292,8 +292,8 @@ describe(`createTeamStreakMiddleware`, () => {
     });
 });
 
-describe(`createGroupMemberStreaksMiddleware`, () => {
-    test('for each member create a new group member streak and return the memberId and the groupMemberStreakId', async () => {
+describe(`createTeamMemberStreaksMiddleware`, () => {
+    test('for each member create a new team member streak and return the memberId and the teamMemberStreakId', async () => {
         expect.assertions(3);
         const timezone = 'Europe/London';
         const memberId = 'memberId';
@@ -307,7 +307,7 @@ describe(`createGroupMemberStreaksMiddleware`, () => {
         const userModel = { findOne };
 
         const save = jest.fn(() => Promise.resolve(true));
-        class GroupMemberStreakModel {
+        class TeamMemberStreakModel {
             userId: string;
             teamStreakId: string;
             timezone: string;
@@ -327,7 +327,7 @@ describe(`createGroupMemberStreaksMiddleware`, () => {
             locals: { timezone, newTeamStreak },
         };
         const next = jest.fn();
-        const middleware = getCreateGroupMemberStreaksMiddleware(userModel as any, GroupMemberStreakModel as any);
+        const middleware = getCreateTeamMemberStreaksMiddleware(userModel as any, TeamMemberStreakModel as any);
 
         await middleware(request, response, next);
 
@@ -336,7 +336,7 @@ describe(`createGroupMemberStreaksMiddleware`, () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws GroupMemberDoesNotExist error when group member does not exist', async () => {
+    test('throws TeamMemberDoesNotExist error when team member does not exist', async () => {
         expect.assertions(1);
         const timezone = 'Europe/London';
         const memberId = 'memberId';
@@ -350,7 +350,7 @@ describe(`createGroupMemberStreaksMiddleware`, () => {
         const userModel = { findOne };
 
         const save = jest.fn(() => Promise.resolve(true));
-        class GroupMemberStreakModel {
+        class TeamMemberStreakModel {
             userId: string;
             teamStreakId: string;
             timezone: string;
@@ -370,11 +370,11 @@ describe(`createGroupMemberStreaksMiddleware`, () => {
             locals: { timezone, newTeamStreak },
         };
         const next = jest.fn();
-        const middleware = getCreateGroupMemberStreaksMiddleware(userModel as any, GroupMemberStreakModel as any);
+        const middleware = getCreateTeamMemberStreaksMiddleware(userModel as any, TeamMemberStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.GroupMemberDoesNotExist));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.TeamMemberDoesNotExist));
     });
 
     test('throws CreateTeamStreakCreateMemberStreakMiddleware error on Middleware failure', async () => {
@@ -384,7 +384,7 @@ describe(`createGroupMemberStreaksMiddleware`, () => {
             locals: {},
         };
         const next = jest.fn();
-        const middleware = getCreateGroupMemberStreaksMiddleware({} as any, {} as any);
+        const middleware = getCreateTeamMemberStreaksMiddleware({} as any, {} as any);
 
         await middleware(request, response, next);
 
@@ -461,14 +461,14 @@ describe(`createTeamStreakMiddleware`, () => {
 describe(`updateTeamStreakMembersArrayMiddleware`, () => {
     test('updates teamStreak members array', async () => {
         expect.assertions(3);
-        const membersWithGroupMemberStreakIds: string[] = [];
+        const membersWithTeamMemberStreakIds: string[] = [];
         const _id = '_id';
         const newTeamStreak = {
             _id,
         };
         const request: any = {};
         const response: any = {
-            locals: { membersWithGroupMemberStreakIds, newTeamStreak },
+            locals: { membersWithTeamMemberStreakIds, newTeamStreak },
         };
         const next = jest.fn();
         const lean = jest.fn().mockResolvedValue(true);
@@ -483,7 +483,7 @@ describe(`updateTeamStreakMembersArrayMiddleware`, () => {
         expect(findByIdAndUpdate).toBeCalledWith(
             _id,
             {
-                members: membersWithGroupMemberStreakIds,
+                members: membersWithTeamMemberStreakIds,
             },
             { new: true },
         );
@@ -552,7 +552,7 @@ describe(`sendTeamStreakMiddleware`, () => {
 });
 
 describe('populateTeamStreakMembersInformation', () => {
-    test('populates group streak members information and sets response.locals.newTeamStreak', async () => {
+    test('populates team streak members information and sets response.locals.newTeamStreak', async () => {
         expect.assertions(5);
 
         const user = { _id: '12345678', username: 'usernames' };
@@ -564,7 +564,7 @@ describe('populateTeamStreakMembersInformation', () => {
         const teamStreakModel: any = {
             findOne,
         };
-        const members = [{ memberId: '12345678', groupMemberStreakId: 'ABC' }];
+        const members = [{ memberId: '12345678', teamMemberStreakId: 'ABC' }];
         const newTeamStreak = { _id: 'abc', members };
         const request: any = {};
         const response: any = { locals: { newTeamStreak } };
@@ -578,7 +578,7 @@ describe('populateTeamStreakMembersInformation', () => {
 
         expect(response.locals.newTeamStreak).toBeDefined();
         const member = response.locals.newTeamStreak.members[0];
-        expect(Object.keys(member)).toEqual(['_id', 'username', 'groupMemberStreak']);
+        expect(Object.keys(member)).toEqual(['_id', 'username', 'teamMemberStreak']);
 
         expect(next).toBeCalledWith();
     });
@@ -598,7 +598,7 @@ describe('populateTeamStreakMembersInformation', () => {
 });
 
 describe('retreiveCreatedTeamStreakCreatorInformation', () => {
-    test('retreives group streak creator information and sets response.locals.newTeamStreak', async () => {
+    test('retreives team streak creator information and sets response.locals.newTeamStreak', async () => {
         expect.assertions(4);
 
         const user = { _id: '12345678', username: 'usernames' };
@@ -645,7 +645,7 @@ describe(`createTeamStreakMiddlewares`, () => {
         expect(createTeamStreakMiddlewares.length).toEqual(7);
         expect(createTeamStreakMiddlewares[0]).toBe(createTeamStreakBodyValidationMiddleware);
         expect(createTeamStreakMiddlewares[1]).toBe(createTeamStreakMiddleware);
-        expect(createTeamStreakMiddlewares[2]).toBe(createGroupMemberStreaksMiddleware);
+        expect(createTeamStreakMiddlewares[2]).toBe(createTeamMemberStreaksMiddleware);
         expect(createTeamStreakMiddlewares[3]).toBe(updateTeamStreakMembersArrayMiddleware);
         expect(createTeamStreakMiddlewares[4]).toBe(populateTeamStreakMembersInformationMiddleware);
         expect(createTeamStreakMiddlewares[5]).toBe(retreiveCreatedTeamStreakCreatorInformationMiddleware);

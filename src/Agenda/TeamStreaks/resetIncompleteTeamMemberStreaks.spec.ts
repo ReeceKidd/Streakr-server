@@ -8,9 +8,9 @@ describe('resetIncompleteSoloStreaks', () => {
         jest.resetAllMocks();
     });
 
-    test('that incomplete groupMemberStreaks default current streak is reset, past streak is pushed to past streaks, and the teamStreak the groupMemberStreak belongs to completed today gets set to false and lost streak activity is recorded', async () => {
+    test('that incomplete teamMemberStreaks default current streak is reset, past streak is pushed to past streaks, and the teamStreak the teamMemberStreak belongs to completed today gets set to false and lost streak activity is recorded', async () => {
         expect.assertions(3);
-        streakoid.groupMemberStreaks.update = jest.fn().mockResolvedValue({ data: {} });
+        streakoid.teamMemberStreaks.update = jest.fn().mockResolvedValue({ data: {} });
         streakoid.teamStreaks.update = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = '1234';
@@ -21,7 +21,7 @@ describe('resetIncompleteSoloStreaks', () => {
         };
         const userId = '5c35116059f7ba19e4e248a9';
         const teamStreakId = 'teamStreakId';
-        const incompleteGroupMemberStreaks = [
+        const incompleteTeamMemberStreaks = [
             {
                 _id,
                 teamStreakId,
@@ -38,10 +38,10 @@ describe('resetIncompleteSoloStreaks', () => {
             } as any,
         ];
         const pastStreaks = [{ numberOfDaysInARow: 0, endDate, startDate: endDate }];
-        await resetIncompleteTeamMemberStreaks(incompleteGroupMemberStreaks as any, endDate);
+        await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks as any, endDate);
 
-        expect(streakoid.groupMemberStreaks.update).toBeCalledWith({
-            groupMemberStreakId: _id,
+        expect(streakoid.teamMemberStreaks.update).toBeCalledWith({
+            teamMemberStreakId: _id,
             updateData: {
                 currentStreak: { startDate: '', numberOfDaysInARow: 0 },
                 pastStreaks,

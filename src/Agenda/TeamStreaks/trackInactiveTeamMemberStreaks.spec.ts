@@ -4,14 +4,14 @@ import streakoid from '../../streakoid';
 
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
-describe('trackInactiveGroupMemberStreaks', () => {
+describe('trackInactiveTeamMemberStreaks', () => {
     afterEach(() => {
         jest.resetAllMocks();
     });
 
-    test('that inactive groupMember streak activity gets updated and a groupMember streak tracking event is created', async () => {
+    test('that inactive teamMember streak activity gets updated and a teamMember streak tracking event is created', async () => {
         expect.assertions(1);
-        streakoid.groupMemberStreaks.update = jest.fn().mockResolvedValue({ data: {} });
+        streakoid.teamMemberStreaks.update = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = '1';
         const currentStreak = {
@@ -19,7 +19,7 @@ describe('trackInactiveGroupMemberStreaks', () => {
             numberOfDaysInARow: 1,
         };
         const userId = 'userId';
-        const inactiveGroupMemberStreak = {
+        const inactiveTeamMemberStreak = {
             _id,
             currentStreak,
             startDate: new Date(),
@@ -34,8 +34,8 @@ describe('trackInactiveGroupMemberStreaks', () => {
             createdAt: new Date(),
             updatedAt: new Date(),
         } as any;
-        const inactiveGroupMemberStreaks = [inactiveGroupMemberStreak];
-        await trackInactiveTeamMemberStreaks(inactiveGroupMemberStreaks as any);
+        const inactiveTeamMemberStreaks = [inactiveTeamMemberStreak];
+        await trackInactiveTeamMemberStreaks(inactiveTeamMemberStreaks as any);
 
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
             type: StreakTrackingEventTypes.inactiveStreak,

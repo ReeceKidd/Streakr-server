@@ -33,7 +33,7 @@ describe('trackMaintainedTeamMemberStreak', () => {
         });
         teamStreakId = teamStreak._id;
 
-        const teamMemberStreak = await streakoid.groupMemberStreaks.create({
+        const teamMemberStreak = await streakoid.teamMemberStreaks.create({
             userId,
             teamStreakId,
         });
@@ -43,15 +43,15 @@ describe('trackMaintainedTeamMemberStreak', () => {
     test('updates teamMember streak activity and creates a streak maintained tracking event', async () => {
         expect.assertions(31);
 
-        const completeTeamMemberStreakTask = await streakoid.completeGroupMemberStreakTasks.create({
+        const completeTeamMemberStreakTask = await streakoid.completeTeamMemberStreakTasks.create({
             userId,
             teamStreakId,
-            groupMemberStreakId: teamMemberStreakId,
+            teamMemberStreakId: teamMemberStreakId,
             streakType: StreakTypes.teamMember,
         });
 
         expect(completeTeamMemberStreakTask._id).toBeDefined();
-        expect(completeTeamMemberStreakTask.groupMemberStreakId).toEqual(teamMemberStreakId);
+        expect(completeTeamMemberStreakTask.teamMemberStreakId).toEqual(teamMemberStreakId);
         expect(completeTeamMemberStreakTask.teamStreakId).toEqual(teamStreakId);
         expect(completeTeamMemberStreakTask.streakType).toEqual(StreakTypes.teamMember);
         expect(completeTeamMemberStreakTask.userId).toEqual(userId);
@@ -62,7 +62,7 @@ describe('trackMaintainedTeamMemberStreak', () => {
         expect(Object.keys(completeTeamMemberStreakTask).sort()).toEqual(
             [
                 '_id',
-                'groupMemberStreakId',
+                'teamMemberStreakId',
                 'teamStreakId',
                 'streakType',
                 'taskCompleteTime',
@@ -74,13 +74,13 @@ describe('trackMaintainedTeamMemberStreak', () => {
             ].sort(),
         );
 
-        const maintainedTeamMemberStreaks = await streakoid.groupMemberStreaks.getAll({
+        const maintainedTeamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
             completedToday: true,
         });
 
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks);
 
-        const teamMemberStreak = await streakoid.groupMemberStreaks.getOne(teamMemberStreakId);
+        const teamMemberStreak = await streakoid.teamMemberStreaks.getOne(teamMemberStreakId);
 
         expect(teamMemberStreak._id).toEqual(expect.any(String));
         expect(teamMemberStreak.currentStreak.startDate).toEqual(expect.any(String));

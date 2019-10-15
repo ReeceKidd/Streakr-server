@@ -98,7 +98,7 @@ describe('retreiveTeamStreakMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws GetTeamStreakNoTeamStreakFound when group streak is not found', async () => {
+    test('throws GetTeamStreakNoTeamStreakFound when team streak is not found', async () => {
         expect.assertions(1);
         const lean = jest.fn(() => Promise.resolve(false));
         const findOne = jest.fn(() => ({ lean }));
@@ -137,7 +137,7 @@ describe('retreiveTeamStreakMiddleware', () => {
 });
 
 describe('retreiveTeamStreakMembersInformation', () => {
-    test('retreives group streak members information and sets response.locals.TeamStreaksWithUsers', async () => {
+    test('retreives team streak members information and sets response.locals.TeamStreaksWithUsers', async () => {
         expect.assertions(5);
 
         const user = { _id: '12345678', username: 'usernames' };
@@ -163,7 +163,7 @@ describe('retreiveTeamStreakMembersInformation', () => {
 
         expect(response.locals.teamStreak).toBeDefined();
         const member = response.locals.teamStreak.members[0];
-        expect(Object.keys(member)).toEqual(['_id', 'username', 'groupMemberStreak']);
+        expect(Object.keys(member)).toEqual(['_id', 'username', 'teamMemberStreak']);
 
         expect(next).toBeCalledWith();
     });
@@ -183,7 +183,7 @@ describe('retreiveTeamStreakMembersInformation', () => {
 });
 
 describe('retreiveTeamStreakCreatorInformation', () => {
-    test('retreives group streak creator information and sets response.locals.teamStreak', async () => {
+    test('retreives team streak creator information and sets response.locals.teamStreak', async () => {
         expect.assertions(4);
 
         const user = { _id: '12345678', username: 'usernames' };

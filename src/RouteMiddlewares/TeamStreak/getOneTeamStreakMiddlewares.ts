@@ -7,7 +7,7 @@ import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { userModel, UserModel } from '../../Models/User';
-import { groupMemberStreakModel, GroupMemberStreakModel } from '../../Models/GroupMemberStreak';
+import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 
 const getTeamStreakParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -48,21 +48,21 @@ export const retreiveTeamStreakMiddleware = getRetreiveTeamStreakMiddleware(team
 
 export const getRetreiveTeamStreakMembersInformationMiddleware = (
     userModel: mongoose.Model<UserModel>,
-    groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>,
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { teamStreak } = response.locals;
         const { members } = teamStreak;
         teamStreak.members = await Promise.all(
-            members.map(async (member: { memberId: string; groupMemberStreakId: string }) => {
-                const [memberInfo, groupMemberStreak] = await Promise.all([
+            members.map(async (member: { memberId: string; teamMemberStreakId: string }) => {
+                const [memberInfo, teamMemberStreak] = await Promise.all([
                     userModel.findOne({ _id: member.memberId }).lean(),
-                    groupMemberStreakModel.findOne({ _id: member.groupMemberStreakId }).lean(),
+                    teamMemberStreakModel.findOne({ _id: member.teamMemberStreakId }).lean(),
                 ]);
                 return {
                     _id: memberInfo._id,
                     username: memberInfo.username,
-                    groupMemberStreak,
+                    teamMemberStreak,
                 };
             }),
         );
@@ -76,7 +76,7 @@ export const getRetreiveTeamStreakMembersInformationMiddleware = (
 
 export const retreiveTeamStreakMembersInformationMiddleware = getRetreiveTeamStreakMembersInformationMiddleware(
     userModel,
-    groupMemberStreakModel,
+    teamMemberStreakModel,
 );
 
 export const getRetreiveTeamStreakCreatorInformationMiddleware = (userModel: mongoose.Model<UserModel>) => async (

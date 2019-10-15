@@ -74,7 +74,7 @@ describe('deleteTeamStreakMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws NoTeamStreakToDeleteFound error when no group streak is found', async () => {
+    test('throws NoTeamStreakToDeleteFound error when no team streak is found', async () => {
         expect.assertions(1);
         const teamStreakId = 'abc123';
         const findByIdAndDelete = jest.fn(() => Promise.resolve(false));

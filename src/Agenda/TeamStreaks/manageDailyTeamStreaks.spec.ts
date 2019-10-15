@@ -45,7 +45,7 @@ describe('manageDailyStreaks', () => {
     test('calls trackMaintainedTeamMemberStreaks, trackInactiveTeamMemberStreaks, resetIncompleteTeamMemberStreaks, trackMaintainedTeamStreaks, trackInactiveTeamStreaks, resetIncompleteTeamStreaks and creates a team streak DailyJob', async () => {
         expect.assertions(13);
         streakoid.dailyJobs.create = jest.fn(() => ({}));
-        streakoid.groupMemberStreaks.getAll = jest.fn(() => {
+        streakoid.teamMemberStreaks.getAll = jest.fn(() => {
             return [];
         });
         streakoid.teamStreaks.getAll = jest.fn(() => {
@@ -55,19 +55,21 @@ describe('manageDailyStreaks', () => {
         const timezone = 'Europe/London';
         await manageDailyTeamStreaks({ agendaJobId, timezone });
 
-        expect(streakoid.groupMemberStreaks.getAll).toBeCalledWith({
+        expect(streakoid.teamMemberStreaks.getAll).toBeCalledWith({
             completedToday: true,
             active: true,
             timezone,
         });
 
-        expect(streakoid.groupMemberStreaks.getAll).toBeCalledWith({
+        // Import new SDK and make changes.
+
+        expect(streakoid.teamMemberStreaks.getAll).toBeCalledWith({
             completedToday: false,
             active: false,
             timezone,
         });
 
-        expect(streakoid.groupMemberStreaks.getAll).toBeCalledWith({
+        expect(streakoid.teamMemberStreaks.getAll).toBeCalledWith({
             completedToday: false,
             active: true,
             timezone,

@@ -1,6 +1,6 @@
 import streakoid from '../../streakoid';
 import {
-    GroupMemberStreak,
+    TeamMemberStreak,
     CurrentStreak,
     PastStreak,
     StreakTrackingEvent,
@@ -9,26 +9,26 @@ import {
 } from '@streakoid/streakoid-sdk/lib';
 
 export const resetIncompleteTeamMemberStreaks = async (
-    incompleteGroupMemberStreaks: GroupMemberStreak[],
+    incompleteTeamMemberStreaks: TeamMemberStreak[],
     endDate: string,
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(
-        incompleteGroupMemberStreaks.map(async groupMemberStreak => {
+        incompleteTeamMemberStreaks.map(async teamMemberStreak => {
             const pastStreak: PastStreak = {
                 endDate: endDate,
-                startDate: groupMemberStreak.currentStreak.startDate || endDate,
-                numberOfDaysInARow: groupMemberStreak.currentStreak.numberOfDaysInARow,
+                startDate: teamMemberStreak.currentStreak.startDate || endDate,
+                numberOfDaysInARow: teamMemberStreak.currentStreak.numberOfDaysInARow,
             };
 
-            const pastStreaks: PastStreak[] = [...groupMemberStreak.pastStreaks, pastStreak];
+            const pastStreaks: PastStreak[] = [...teamMemberStreak.pastStreaks, pastStreak];
 
             const currentStreak: CurrentStreak = {
                 startDate: '',
                 numberOfDaysInARow: 0,
             };
 
-            await streakoid.groupMemberStreaks.update({
-                groupMemberStreakId: groupMemberStreak._id,
+            await streakoid.teamMemberStreaks.update({
+                teamMemberStreakId: teamMemberStreak._id,
                 updateData: {
                     currentStreak,
                     pastStreaks,
@@ -37,7 +37,7 @@ export const resetIncompleteTeamMemberStreaks = async (
             });
 
             await streakoid.teamStreaks.update({
-                teamStreakId: groupMemberStreak.teamStreakId,
+                teamStreakId: teamMemberStreak.teamStreakId,
                 updateData: {
                     completedToday: false,
                 },
@@ -45,8 +45,8 @@ export const resetIncompleteTeamMemberStreaks = async (
 
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventTypes.lostStreak,
-                streakId: groupMemberStreak._id,
-                userId: groupMemberStreak.userId,
+                streakId: teamMemberStreak._id,
+                userId: teamMemberStreak.userId,
                 streakType: StreakTypes.teamMember,
             });
         }),

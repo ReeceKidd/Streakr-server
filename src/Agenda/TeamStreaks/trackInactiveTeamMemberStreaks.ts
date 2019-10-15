@@ -3,14 +3,14 @@ import {
     StreakTrackingEvent,
     StreakTrackingEventTypes,
     StreakTypes,
-    GroupMemberStreak,
+    TeamMemberStreak,
 } from '@streakoid/streakoid-sdk/lib';
 
 export const trackInactiveTeamMemberStreaks = async (
-    inactiveGroupMemberStreaks: GroupMemberStreak[],
+    inactiveTeamMemberStreaks: TeamMemberStreak[],
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(
-        inactiveGroupMemberStreaks.map(async teamMemberStreak => {
+        inactiveTeamMemberStreaks.map(async teamMemberStreak => {
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventTypes.inactiveStreak,
                 streakId: teamMemberStreak._id,

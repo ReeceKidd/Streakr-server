@@ -40,7 +40,7 @@ agenda
 mongoose.set('useCreateIndex', true);
 
 // Scripts used to initialise the daily streak complete checks.
-//initialiseGroupMemberStreakTimezoneCheckerJobs()
+//initialiseTeamMemberStreakTimezoneCheckerJobs()
 //initialiseSoloStreakTimezoneCheckerJobs()
 
 app.use(`/${ApiVersions.v1}`, v1Router);

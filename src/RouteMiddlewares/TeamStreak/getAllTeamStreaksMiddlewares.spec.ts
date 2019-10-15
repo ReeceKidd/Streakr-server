@@ -149,7 +149,7 @@ describe('findTeamStreaksMiddleware', () => {
 });
 
 describe('retreiveTeamStreakMembersInformation', () => {
-    test('retreives group streak members information for each group group and sets response.locals.TeamStreaks', async () => {
+    test('retreives team streak members information for each team team and sets response.locals.TeamStreaks', async () => {
         expect.assertions(5);
 
         const user = { _id: '12345678', username: 'usernames' };
@@ -176,7 +176,7 @@ describe('retreiveTeamStreakMembersInformation', () => {
 
         expect(response.locals.teamStreaks).toBeDefined();
         const member = response.locals.teamStreaks[0].members[0];
-        expect(Object.keys(member)).toEqual(['_id', 'username', 'groupMemberStreak']);
+        expect(Object.keys(member)).toEqual(['_id', 'username', 'teamMemberStreak']);
 
         expect(next).toBeCalledWith();
     });

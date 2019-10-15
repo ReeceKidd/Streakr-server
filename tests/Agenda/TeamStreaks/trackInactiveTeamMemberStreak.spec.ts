@@ -33,7 +33,7 @@ describe('trackInactiveTeamMemberStreak', () => {
         });
         teamStreakId = teamStreak._id;
 
-        const teamMemberStreak = await streakoid.groupMemberStreaks.create({
+        const teamMemberStreak = await streakoid.teamMemberStreaks.create({
             userId,
             teamStreakId,
         });
@@ -43,14 +43,14 @@ describe('trackInactiveTeamMemberStreak', () => {
     test('updates teamMember streak activity and creates a streak inactive tracking event', async () => {
         expect.assertions(21);
 
-        const inactiveTeamMemberStreaks = await streakoid.groupMemberStreaks.getAll({
+        const inactiveTeamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
             completedToday: false,
             active: false,
         });
 
         await trackInactiveTeamMemberStreaks(inactiveTeamMemberStreaks);
 
-        const teamMemberStreak = await streakoid.groupMemberStreaks.getOne(teamMemberStreakId);
+        const teamMemberStreak = await streakoid.teamMemberStreaks.getOne(teamMemberStreakId);
 
         expect(teamMemberStreak._id).toEqual(expect.any(String));
         expect(teamMemberStreak.currentStreak.startDate).toBeUndefined();

@@ -5,7 +5,7 @@ import * as mongoose from 'mongoose';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { groupMemberStreakModel, GroupMemberStreakModel } from '../../Models/GroupMemberStreak';
+import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { userModel, UserModel } from '../../Models/User';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 
@@ -14,12 +14,12 @@ export interface TeamStreakRegistrationRequestBody {
     streakName: string;
     streakDescription: string;
     numberOfMinutes: number;
-    members: { memberId: string; groupMemberStreakId: string }[];
+    members: { memberId: string; teamMemberStreakId: string }[];
 }
 
 const member = Joi.object().keys({
     memberId: Joi.string().required(),
-    groupMemberStreakId: Joi.string(),
+    teamMemberStreakId: Joi.string(),
 });
 
 const createTeamStreakBodyValidationSchema = {
@@ -68,22 +68,22 @@ export const getCreateTeamStreakMiddleware = (teamStreak: mongoose.Model<TeamStr
 
 export const createTeamStreakMiddleware = getCreateTeamStreakMiddleware(teamStreakModel);
 
-export const getCreateGroupMemberStreaksMiddleware = (
+export const getCreateTeamMemberStreaksMiddleware = (
     userModel: mongoose.Model<UserModel>,
-    groupMemberStreak: mongoose.Model<GroupMemberStreakModel>,
+    teamMemberStreak: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { timezone, newTeamStreak } = response.locals;
         const { members } = request.body;
 
-        const membersWithGroupMemberStreakIds = await Promise.all(
+        const membersWithTeamMemberStreakIds = await Promise.all(
             members.map(async (member: { memberId: string }) => {
                 const memberExists = await userModel.findOne({ _id: member.memberId });
                 if (!memberExists) {
-                    throw new CustomError(ErrorType.GroupMemberDoesNotExist);
+                    throw new CustomError(ErrorType.TeamMemberDoesNotExist);
                 }
 
-                const newGroupMemberStreak = await new groupMemberStreak({
+                const newTeamMemberStreak = await new teamMemberStreak({
                     userId: member.memberId,
                     teamStreakId: newTeamStreak._id,
                     timezone,
@@ -91,12 +91,12 @@ export const getCreateGroupMemberStreaksMiddleware = (
 
                 return {
                     memberId: member.memberId,
-                    groupMemberStreakId: newGroupMemberStreak._id,
+                    teamMemberStreakId: newTeamMemberStreak._id,
                 };
             }),
         );
 
-        response.locals.membersWithGroupMemberStreakIds = membersWithGroupMemberStreakIds;
+        response.locals.membersWithTeamMemberStreakIds = membersWithTeamMemberStreakIds;
 
         next();
     } catch (err) {
@@ -105,10 +105,7 @@ export const getCreateGroupMemberStreaksMiddleware = (
     }
 };
 
-export const createGroupMemberStreaksMiddleware = getCreateGroupMemberStreaksMiddleware(
-    userModel,
-    groupMemberStreakModel,
-);
+export const createTeamMemberStreaksMiddleware = getCreateTeamMemberStreaksMiddleware(userModel, teamMemberStreakModel);
 
 export const getUpdateTeamStreakMembersArray = (teamStreak: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
@@ -116,13 +113,13 @@ export const getUpdateTeamStreakMembersArray = (teamStreak: mongoose.Model<TeamS
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { membersWithGroupMemberStreakIds, newTeamStreak } = response.locals;
+        const { membersWithTeamMemberStreakIds, newTeamStreak } = response.locals;
 
         response.locals.newTeamStreak = await teamStreak
             .findByIdAndUpdate(
                 newTeamStreak._id,
                 {
-                    members: membersWithGroupMemberStreakIds,
+                    members: membersWithTeamMemberStreakIds,
                 },
                 { new: true },
             )
@@ -138,21 +135,21 @@ export const updateTeamStreakMembersArrayMiddleware = getUpdateTeamStreakMembers
 
 export const getPopulateTeamStreakMembersInformationMiddleware = (
     userModel: mongoose.Model<UserModel>,
-    groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>,
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { newTeamStreak } = response.locals;
         const { members } = newTeamStreak;
         newTeamStreak.members = await Promise.all(
-            members.map(async (member: { memberId: string; groupMemberStreakId: string }) => {
-                const [memberInfo, groupMemberStreak] = await Promise.all([
+            members.map(async (member: { memberId: string; teamMemberStreakId: string }) => {
+                const [memberInfo, teamMemberStreak] = await Promise.all([
                     userModel.findOne({ _id: member.memberId }).lean(),
-                    groupMemberStreakModel.findOne({ _id: member.groupMemberStreakId }).lean(),
+                    teamMemberStreakModel.findOne({ _id: member.teamMemberStreakId }).lean(),
                 ]);
                 return {
                     _id: memberInfo._id,
                     username: memberInfo.username,
-                    groupMemberStreak,
+                    teamMemberStreak,
                 };
             }),
         );
@@ -165,7 +162,7 @@ export const getPopulateTeamStreakMembersInformationMiddleware = (
 
 export const populateTeamStreakMembersInformationMiddleware = getPopulateTeamStreakMembersInformationMiddleware(
     userModel,
-    groupMemberStreakModel,
+    teamMemberStreakModel,
 );
 
 export const getRetreiveCreatedTeamStreakCreatorInformationMiddleware = (
@@ -202,7 +199,7 @@ export const sendTeamStreakMiddleware = (request: Request, response: Response, n
 export const createTeamStreakMiddlewares = [
     createTeamStreakBodyValidationMiddleware,
     createTeamStreakMiddleware,
-    createGroupMemberStreaksMiddleware,
+    createTeamMemberStreaksMiddleware,
     updateTeamStreakMembersArrayMiddleware,
     populateTeamStreakMembersInformationMiddleware,
     retreiveCreatedTeamStreakCreatorInformationMiddleware,

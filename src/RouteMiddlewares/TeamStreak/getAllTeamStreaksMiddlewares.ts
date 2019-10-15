@@ -8,9 +8,9 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { userModel, UserModel } from '../../Models/User';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { GroupMemberStreakModel } from '../../Models/GroupMemberStreak';
-import { TeamStreak, GroupMemberStreak } from '@streakoid/streakoid-sdk/lib';
-import { groupMemberStreakModel } from '../../Models/GroupMemberStreak';
+import { TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
+import { TeamStreak, TeamMemberStreak } from '@streakoid/streakoid-sdk/lib';
+import { teamMemberStreakModel } from '../../Models/TeamMemberStreak';
 
 const getTeamStreaksQueryValidationSchema = {
     creatorId: Joi.string(),
@@ -79,7 +79,7 @@ export const findTeamStreaksMiddleware = getFindTeamStreaksMiddleware(teamStreak
 
 export const getRetreiveTeamStreaksMembersInformationMiddleware = (
     userModel: mongoose.Model<UserModel>,
-    groupMemberStreakModel: mongoose.Model<GroupMemberStreakModel>,
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const teamStreaks: TeamStreak[] = response.locals.teamStreaks;
@@ -92,13 +92,13 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
                     members.map(
                         async (member: {
                             memberId: string;
-                            groupMemberStreakId: string;
+                            teamMemberStreakId: string;
                         }): Promise<
-                            { _id: string; username: string; groupMemberStreak: GroupMemberStreak } | undefined
+                            { _id: string; username: string; teamMemberStreak: TeamMemberStreak } | undefined
                         > => {
                             const memberInfo = await userModel.findOne({ _id: member.memberId }).lean();
-                            const groupMemberStreak = await groupMemberStreakModel
-                                .findOne({ _id: member.groupMemberStreakId })
+                            const teamMemberStreak = await teamMemberStreakModel
+                                .findOne({ _id: member.teamMemberStreakId })
                                 .lean();
                             if (!memberInfo) {
                                 return;
@@ -106,7 +106,7 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
                             return {
                                 _id: memberInfo && memberInfo._id,
                                 username: memberInfo.username,
-                                groupMemberStreak,
+                                teamMemberStreak,
                             };
                         },
                     ),
@@ -128,7 +128,7 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
 
 export const retreiveTeamStreaksMembersInformationMiddleware = getRetreiveTeamStreaksMembersInformationMiddleware(
     userModel,
-    groupMemberStreakModel,
+    teamMemberStreakModel,
 );
 
 export const sendTeamStreaksMiddleware = (request: Request, response: Response, next: NextFunction): void => {

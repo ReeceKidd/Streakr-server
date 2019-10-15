@@ -74,9 +74,9 @@ describe('trackInactiveTeamStreak', () => {
 
         const member = updatedTeamStreak.members[0];
         expect(member._id).toEqual(userId);
-        expect(member.groupMemberStreak).toEqual(expect.any(Object));
+        expect(member.teamMemberStreak).toEqual(expect.any(Object));
         expect(member.username).toEqual(expect.any(String));
-        expect(Object.keys(member).sort()).toEqual(['_id', 'groupMemberStreak', 'username'].sort());
+        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak).sort()).toEqual(

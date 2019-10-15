@@ -3,14 +3,14 @@ import { trackMaintainedTeamMemberStreaks } from './trackMaintainedTeamMemberStr
 import streakoid from '../../streakoid';
 import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
 
-describe('trackMaintainedGroupMemberStreaks', () => {
+describe('trackMaintainedTeamMemberStreaks', () => {
     afterEach(() => {
         jest.resetAllMocks();
     });
 
     test('creates a streak tracking event for each streak that is maintained', async () => {
         expect.assertions(2);
-        streakoid.groupMemberStreaks.update = jest.fn().mockResolvedValue({ data: {} });
+        streakoid.teamMemberStreaks.update = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = 1;
         const currentStreak = {
@@ -18,7 +18,7 @@ describe('trackMaintainedGroupMemberStreaks', () => {
             numberOfDaysInARow: 1,
         };
         const userId = '5c35116059f7ba19e4e248a9';
-        const maintainedGroupMemberStreaks = [
+        const maintainedTeamMemberStreaks = [
             {
                 _id,
                 currentStreak,
@@ -34,9 +34,9 @@ describe('trackMaintainedGroupMemberStreaks', () => {
                 updatedAt: new Date(),
             } as any,
         ];
-        await trackMaintainedTeamMemberStreaks(maintainedGroupMemberStreaks as any);
-        expect(streakoid.groupMemberStreaks.update).toBeCalledWith({
-            groupMemberStreakId: _id,
+        await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
+        expect(streakoid.teamMemberStreaks.update).toBeCalledWith({
+            teamMemberStreakId: _id,
             updateData: {
                 completedToday: false,
             },

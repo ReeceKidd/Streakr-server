@@ -2,10 +2,10 @@ import { Router } from 'express';
 import { getAllTeamStreaksMiddlewares } from '../../../RouteMiddlewares/TeamStreak/getAllTeamStreaksMiddlewares';
 import { getOneTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/getOneTeamStreakMiddlewares';
 import { deleteTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/deleteTeamStreakMiddlewares';
-import { deleteGroupMemberMiddlewares } from '../../../RouteMiddlewares/GroupMember/deleteGroupMemberMiddlewares';
+import { deleteTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMember/deleteTeamMemberMiddlewares';
 import { createTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/createTeamStreakMiddlewares';
 import { patchTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/patchTeamStreakMiddlewares';
-import { createGroupMemberMiddlewares } from '../../../RouteMiddlewares/GroupMember/createGroupMemberMiddlewares';
+import { createTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMember/createTeamMemberMiddlewares';
 
 export const teamStreakId = 'teamStreakId';
 
@@ -25,13 +25,13 @@ teamStreaksRouter.delete(`/:${teamStreakId}`, ...deleteTeamStreakMiddlewares);
 
 teamStreaksRouter.delete(
     `/:${teamStreakId}/${TeamStreakRouteCategories.members}/:${memberId}`,
-    ...deleteGroupMemberMiddlewares,
+    ...deleteTeamMemberMiddlewares,
 );
 
 teamStreaksRouter.post(`/`, ...createTeamStreakMiddlewares);
 
 teamStreaksRouter.patch(`/:${teamStreakId}`, ...patchTeamStreakMiddlewares);
 
-teamStreaksRouter.post(`/:${teamStreakId}/${TeamStreakRouteCategories.members}`, ...createGroupMemberMiddlewares);
+teamStreaksRouter.post(`/:${teamStreakId}/${TeamStreakRouteCategories.members}`, ...createTeamMemberMiddlewares);
 
 export { teamStreaksRouter };

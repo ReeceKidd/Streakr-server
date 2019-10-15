@@ -1,26 +1,26 @@
 import streakoid from '../../streakoid';
 import {
-    GroupMemberStreak,
+    TeamMemberStreak,
     StreakTrackingEvent,
     StreakTrackingEventTypes,
     StreakTypes,
 } from '@streakoid/streakoid-sdk/lib';
 
 export const trackMaintainedTeamMemberStreaks = async (
-    maintainedGroupMemberStreaks: GroupMemberStreak[],
+    maintainedTeamMemberStreaks: TeamMemberStreak[],
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(
-        maintainedGroupMemberStreaks.map(async groupMemberStreak => {
-            await streakoid.groupMemberStreaks.update({
-                groupMemberStreakId: groupMemberStreak._id,
+        maintainedTeamMemberStreaks.map(async teamMemberStreak => {
+            await streakoid.teamMemberStreaks.update({
+                teamMemberStreakId: teamMemberStreak._id,
                 updateData: {
                     completedToday: false,
                 },
             });
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventTypes.maintainedStreak,
-                streakId: groupMemberStreak._id,
-                userId: groupMemberStreak.userId,
+                streakId: teamMemberStreak._id,
+                userId: teamMemberStreak.userId,
                 streakType: StreakTypes.teamMember,
             });
         }),
