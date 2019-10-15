@@ -6,14 +6,12 @@ import { TeamStreak } from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
-import { userModel, UserModel } from '../../Models/User';
 import { teamStreakModel, TeamStreakModel } from '../../Models/TeamStreak';
 import { completeTeamStreakTaskModel, CompleteTeamStreakTaskModel } from '../../Models/CompleteTeamStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
 
 export const completeTeamStreakTaskBodyValidationSchema = {
-    userId: Joi.string().required(),
     teamStreakId: Joi.string().required(),
 };
 
@@ -66,27 +64,6 @@ export const ensureTeamStreakTaskHasNotBeenCompletedTodayMiddleware = (
         else next(new CustomError(ErrorType.EnsureTeamStreakTaskHasNotBeenCompletedTodayMiddleware, err));
     }
 };
-
-export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const { userId } = request.body;
-        const user = await userModel.findOne({ _id: userId }).lean();
-        if (!user) {
-            throw new CustomError(ErrorType.CreateCompleteTeamStreakTaskUserDoesNotExist);
-        }
-        response.locals.user = user;
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateCompleteTeamStreakTaskRetreiveUserMiddleware, err));
-    }
-};
-
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getSetTaskCompleteTimeMiddleware = (moment: any) => (
@@ -158,11 +135,10 @@ export const createCompleteTeamStreakTaskDefinitionMiddleware = (
     next: NextFunction,
 ): void => {
     try {
-        const { userId, teamStreakId } = request.body;
+        const { teamStreakId } = request.body;
         const { taskCompleteTime, taskCompleteDay } = response.locals;
         const completeTeamStreakTaskDefinition = {
-            userId,
-            streakId: teamStreakId,
+            teamStreakId,
             taskCompleteTime: taskCompleteTime.toDate(),
             taskCompleteDay,
         };
@@ -182,6 +158,7 @@ export const getSaveTaskCompleteMiddleware = (
         response.locals.completeTeamStreakTask = completeTeamStreakTask;
         next();
     } catch (err) {
+        console.log(err);
         next(new CustomError(ErrorType.CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware, err));
     }
 };
@@ -230,7 +207,6 @@ export const createCompleteTeamStreakTaskMiddlewares = [
     completeTeamStreakTaskBodyValidationMiddleware,
     teamStreakExistsMiddleware,
     ensureTeamStreakTaskHasNotBeenCompletedTodayMiddleware,
-    retreiveUserMiddleware,
     setTaskCompleteTimeMiddleware,
     setStreakStartDateMiddleware,
     setDayTaskWasCompletedMiddleware,

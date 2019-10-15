@@ -68,9 +68,7 @@ describe(`ensureAudienceMatchesCognitoUserPool`, () => {
     test('if decodedJWT audience matches cognito app client ID call next.', () => {
         expect.assertions(1);
         const decodedJwt = {
-            payload: {
-                aud: COGNITO_APP_CLIENT_ID,
-            },
+            aud: COGNITO_APP_CLIENT_ID,
         };
         const request: any = {};
         const response: any = { locals: { decodedJwt } };
@@ -84,9 +82,7 @@ describe(`ensureAudienceMatchesCognitoUserPool`, () => {
     test('if decodedJWT audience does not equal Cognito App Client ID throw AudienceDoesNotMatchCognitoAppClientId', () => {
         expect.assertions(1);
         const decodedJwt = {
-            payload: {
-                aud: 'invalid',
-            },
+            aud: 'invalid',
         };
         const request: any = {};
         const response: any = { locals: { decodedJwt } };

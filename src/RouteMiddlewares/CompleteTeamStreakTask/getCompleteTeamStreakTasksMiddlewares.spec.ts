@@ -10,25 +10,6 @@ import {
 } from './getCompleteTeamStreakTasksMiddlewares';
 
 describe('completeTeamStreakTaskQueryValidationMiddleware', () => {
-    test('allows userId as a query paramater', () => {
-        expect.assertions(1);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            query: {
-                userId: 'userId',
-            },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        completeTeamStreakTaskQueryValidationMiddleware(request, response, next);
-
-        expect(next).toBeCalled();
-    });
-
     test('allows teamStreakId as a query paramater', () => {
         expect.assertions(1);
         const send = jest.fn();
@@ -73,27 +54,7 @@ describe('completeTeamStreakTaskQueryValidationMiddleware', () => {
 });
 
 describe('getRetreiveCompleteTeamStreakTasksMiddleware', () => {
-    const userId = 'userId';
     const teamStreakId = 'teamStreakId';
-
-    test('queries with just userId', async () => {
-        expect.assertions(3);
-
-        const find = jest.fn(() => Promise.resolve(true));
-        const completeTeamStreakTaskModel = {
-            find,
-        };
-        const request: any = { query: { userId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getRetreiveCompleteTeamStreakTasksMiddleware(completeTeamStreakTaskModel as any);
-
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ userId });
-        expect(response.locals.completeTeamStreakTasks).toBeDefined();
-        expect(next).toBeCalledWith();
-    });
 
     test('queries with just teamStreakId', async () => {
         expect.assertions(3);
@@ -110,26 +71,6 @@ describe('getRetreiveCompleteTeamStreakTasksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ teamStreakId });
-        expect(response.locals.completeTeamStreakTasks).toBeDefined();
-        expect(next).toBeCalledWith();
-    });
-
-    test('queries with both a userId and teamStreakId', async () => {
-        expect.assertions(3);
-
-        const find = jest.fn().mockResolvedValue(true);
-        const completeTeamStreakTaskModel = {
-            find,
-        };
-
-        const request: any = { query: { userId, teamStreakId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getRetreiveCompleteTeamStreakTasksMiddleware(completeTeamStreakTaskModel as any);
-
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ userId, teamStreakId });
         expect(response.locals.completeTeamStreakTasks).toBeDefined();
         expect(next).toBeCalledWith();
     });

@@ -25,7 +25,12 @@ export const manageDailyTeamStreaks = async ({
         .toDate()
         .toString();
 
-    const [maintainedGroupMemberStreaks, inactiveGroupMemberStreaks, incompleteGroupMemberStreaks] = await Promise.all([
+    const [incompleteGroupMemberStreaks, maintainedGroupMemberStreaks, inactiveGroupMemberStreaks] = await Promise.all([
+        streakoid.groupMemberStreaks.getAll({
+            completedToday: false,
+            active: true,
+            timezone: timezone,
+        }),
         streakoid.groupMemberStreaks.getAll({
             completedToday: true,
             active: true,
@@ -35,11 +40,6 @@ export const manageDailyTeamStreaks = async ({
             completedToday: false,
             active: false,
             timezone,
-        }),
-        streakoid.groupMemberStreaks.getAll({
-            completedToday: false,
-            active: true,
-            timezone: timezone,
         }),
     ]);
 
@@ -47,7 +47,12 @@ export const manageDailyTeamStreaks = async ({
     await trackMaintainedTeamMemberStreaks(maintainedGroupMemberStreaks);
     await trackInactiveTeamMemberStreaks(inactiveGroupMemberStreaks);
 
-    const [maintainedTeamStreaks, inactiveTeamStreaks, incompleteTeamStreaks] = await Promise.all([
+    const [incompleteTeamStreaks, maintainedTeamStreaks, inactiveTeamStreaks] = await Promise.all([
+        streakoid.teamStreaks.getAll({
+            completedToday: false,
+            active: true,
+            timezone: timezone,
+        }),
         streakoid.teamStreaks.getAll({
             completedToday: true,
             active: true,
@@ -58,18 +63,11 @@ export const manageDailyTeamStreaks = async ({
             active: false,
             timezone,
         }),
-        streakoid.teamStreaks.getAll({
-            completedToday: false,
-            active: true,
-            timezone: timezone,
-        }),
     ]);
 
-    await Promise.all([
-        trackMaintainedTeamStreaks(maintainedTeamStreaks),
-        trackInactiveTeamStreaks(inactiveTeamStreaks),
-        resetIncompleteTeamStreaks(incompleteTeamStreaks, currentLocalTime),
-    ]);
+    await resetIncompleteTeamStreaks(incompleteTeamStreaks, currentLocalTime);
+    await trackMaintainedTeamStreaks(maintainedTeamStreaks);
+    await trackInactiveTeamStreaks(inactiveTeamStreaks);
 
     const localisedJobCompleteTime = moment
         .tz(timezone)

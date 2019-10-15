@@ -40,7 +40,6 @@ export const resetIncompleteTeamMemberStreaks = async (
                 teamStreakId: groupMemberStreak.teamStreakId,
                 updateData: {
                     completedToday: false,
-                    active: false,
                 },
             });
 

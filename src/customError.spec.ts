@@ -683,7 +683,7 @@ describe('customError', () => {
 
         expect(code).toBe(`401-01`);
         expect(message).toBe('Not authorized.');
-        expect(httpStatusCode).toBe(400);
+        expect(httpStatusCode).toBe(401);
     });
 
     test(`creates correct error when type is set to AuthUserDoesNotExist`, () => {
@@ -704,7 +704,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`401-03`);
-        expect(message).toBe('Not authorised.');
+        expect(message).toBe('Not authorized.');
         expect(httpStatusCode).toBe(401);
     });
 
@@ -715,7 +715,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`401-04`);
-        expect(message).toBe('Not authorised.');
+        expect(message).toBe('Not authorized.');
         expect(httpStatusCode).toBe(401);
     });
 

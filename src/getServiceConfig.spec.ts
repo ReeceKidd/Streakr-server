@@ -16,6 +16,11 @@ describe('getServiceConfig', () => {
         EMAIL_FROM: 'EMAIL_FROM',
         EMAIL_TO: 'EMAIL_TO',
         COGNITO_APP_CLIENT_ID: 'COGNITO_APP_CLIENT_ID',
+        COGNITO_REGION: 'COGNITO_REGION',
+        COGNITO_USER_POOL_ID: 'COGNITO_USER_POOL_ID',
+        COGNITO_USERNAME: 'COGNITO_USERNAME',
+        COGNITO_EMAIL: 'COGNITO_EMAIL',
+        COGNITO_PASSWORD: 'COGNITO_PASSWORD',
     };
 
     test('that correct error is thrown when NODE_ENV is not provided', () => {
@@ -211,6 +216,76 @@ describe('getServiceConfig', () => {
             getServiceConfig(environment);
         } catch (err) {
             expect(err.message).toEqual('COGNTIO_APP_CLIENT_ID is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when COGNITO_REGION is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            COGNITO_REGION: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('COGNTIO_REGION is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when COGNITO_USER_POOL_ID is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            COGNITO_USER_POOL_ID: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('COGNITO_USER_POOL_ID is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when COGNITO_USERNAME is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            COGNITO_USERNAME: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('COGNITO_USERNAME is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when COGNITO_EMAIL is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            COGNITO_EMAIL: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('COGNITO_EMAIL is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when COGNITO_PASSWORD is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            COGNITO_PASSWORD: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('COGNITO_PASSWORD is not provided.');
         }
     });
 });

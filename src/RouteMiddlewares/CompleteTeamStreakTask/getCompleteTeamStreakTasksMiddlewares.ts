@@ -8,7 +8,6 @@ import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
 
 const completeTeamStreakTaskQueryValidationSchema = {
-    userId: Joi.string(),
     teamStreakId: Joi.string(),
 };
 
@@ -28,15 +27,11 @@ export const getRetreiveCompleteTeamStreakTasksMiddleware = (
     completeTeamStreakTaskModel: mongoose.Model<CompleteTeamStreakTaskModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, teamStreakId } = request.query;
+        const { teamStreakId } = request.query;
         const query: {
-            userId?: string;
             teamStreakId?: string;
         } = {};
 
-        if (userId) {
-            query.userId = userId;
-        }
         if (teamStreakId) {
             query.teamStreakId = teamStreakId;
         }

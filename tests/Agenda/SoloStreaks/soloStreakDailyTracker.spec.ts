@@ -13,8 +13,6 @@ describe('soloStreakDailyTracker', () => {
     let maintainedSoloStreakAgendaJobId: string;
     let maintainedStreakTrackingEventId: string;
 
-    let completeSoloStreakTaskId: string;
-
     let lostSoloStreakId: string;
     let lostSoloStreakAgendaJobId: string;
     let lostStreakTrackingEventId: string;
@@ -32,8 +30,6 @@ describe('soloStreakDailyTracker', () => {
     });
 
     afterAll(async () => {
-        await streakoid.users.deleteOne(userId);
-
         await streakoid.soloStreaks.deleteOne(maintainedSoloStreakId);
         await streakoid.agendaJobs.deleteOne(maintainedSoloStreakAgendaJobId);
         await streakoid.streakTrackingEvents.deleteOne(maintainedStreakTrackingEventId);
@@ -45,8 +41,6 @@ describe('soloStreakDailyTracker', () => {
         await streakoid.soloStreaks.deleteOne(inactiveSoloStreakId);
         await streakoid.agendaJobs.deleteOne(inactiveSoloStreakAgendaJobId);
         await streakoid.streakTrackingEvents.deleteOne(inactiveStreakTrackingEventId);
-
-        await streakoid.completeSoloStreakTasks.deleteOne(completeSoloStreakTaskId);
     });
 
     test('initialises soloStreakDailyTracker job correctly', async () => {
@@ -79,7 +73,7 @@ describe('soloStreakDailyTracker', () => {
     });
 
     test('maintains streaks correctly', async () => {
-        expect.assertions(23);
+        expect.assertions(31);
 
         const timezone = 'Europe/London';
 
@@ -98,7 +92,25 @@ describe('soloStreakDailyTracker', () => {
             soloStreakId: maintainedSoloStreakId,
         });
 
-        completeSoloStreakTaskId = completeSoloStreakTask._id;
+        expect(completeSoloStreakTask._id).toBeDefined();
+        expect(completeSoloStreakTask.userId).toEqual(userId);
+        expect(completeSoloStreakTask.streakId).toEqual(maintainedSoloStreakId);
+        expect(completeSoloStreakTask.taskCompleteTime).toEqual(expect.any(String));
+        expect(completeSoloStreakTask.taskCompleteDay).toEqual(expect.any(String));
+        expect(completeSoloStreakTask.createdAt).toEqual(expect.any(String));
+        expect(completeSoloStreakTask.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(completeSoloStreakTask).sort()).toEqual(
+            [
+                '_id',
+                'userId',
+                'streakId',
+                'taskCompleteTime',
+                'taskCompleteDay',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
         const job = await createSoloStreakDailyTrackerJob(timezone);
 
@@ -161,7 +173,7 @@ describe('soloStreakDailyTracker', () => {
     });
 
     test('manages lost streaks correctly', async () => {
-        expect.assertions(27);
+        expect.assertions(35);
 
         const timezone = 'Europe/London';
 
@@ -180,7 +192,25 @@ describe('soloStreakDailyTracker', () => {
             soloStreakId: lostSoloStreakId,
         });
 
-        completeSoloStreakTaskId = completeSoloStreakTask._id;
+        expect(completeSoloStreakTask._id).toBeDefined();
+        expect(completeSoloStreakTask.userId).toEqual(userId);
+        expect(completeSoloStreakTask.streakId).toEqual(lostSoloStreak._id);
+        expect(completeSoloStreakTask.taskCompleteTime).toEqual(expect.any(String));
+        expect(completeSoloStreakTask.taskCompleteDay).toEqual(expect.any(String));
+        expect(completeSoloStreakTask.createdAt).toEqual(expect.any(String));
+        expect(completeSoloStreakTask.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(completeSoloStreakTask).sort()).toEqual(
+            [
+                '_id',
+                'userId',
+                'streakId',
+                'taskCompleteTime',
+                'taskCompleteDay',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
         const job = await createSoloStreakDailyTrackerJob(timezone);
 

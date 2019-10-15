@@ -30,7 +30,7 @@ export const ensureAudienceMatchesCognitoUserPool = (
 ): void => {
     try {
         const { decodedJwt } = response.locals;
-        if (decodedJwt.payload.aud !== COGNITO_APP_CLIENT_ID) {
+        if (decodedJwt.aud !== COGNITO_APP_CLIENT_ID) {
             throw new CustomError(ErrorType.AudienceDoesNotMatchCognitoAppClientId);
         }
         next();
@@ -58,6 +58,7 @@ export const getRetreiveUserMiddleware = (userModel: Model<UserModel>) => async 
         response.locals.user = user;
         next();
     } catch (err) {
+        console.log(err);
         if (err instanceof CustomError) next(err);
         else next(new CustomError(ErrorType.AuthRetreiveUserMiddleware, err));
     }

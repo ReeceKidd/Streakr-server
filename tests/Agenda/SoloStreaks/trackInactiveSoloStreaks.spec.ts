@@ -1,8 +1,8 @@
-import { trackMaintainedSoloStreaks } from '.../../../src/Agenda/SoloStreaks/trackMaintainedSoloStreaks';
 import streakoid from '../../../src/streakoid';
 
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { trackInactiveSoloStreaks } from '../../../src/Agenda/SoloStreaks/trackInactiveSoloStreaks';
 
 const username = 'trackInactiveSoloStreakUsername';
 const email = 'trackInactiveSoloStreak@gmail.com';
@@ -43,9 +43,7 @@ describe('trackInactiveSoloStreak', () => {
             active: false,
         });
 
-        const maintainedSoloStreaksPromises = await trackMaintainedSoloStreaks(inactiveSoloStreaks);
-
-        await Promise.all(maintainedSoloStreaksPromises);
+        await trackInactiveSoloStreaks(inactiveSoloStreaks);
 
         const updatedSoloStreak = await streakoid.soloStreaks.getOne(soloStreakId);
 
@@ -88,7 +86,7 @@ describe('trackInactiveSoloStreak', () => {
 
         streakTrackingEventId = streakTrackingEvent._id;
 
-        expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.maintainedStreak);
+        expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.inactiveStreak);
         expect(streakTrackingEvent.userId).toBeDefined();
         expect(streakTrackingEvent.streakId).toBeDefined();
         expect(streakTrackingEvent.streakType).toEqual(StreakTypes.solo);

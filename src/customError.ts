@@ -820,7 +820,7 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.unautohorized}-02`,
                     message: notAuthorizedErrorMessage,
-                    httpStatusCode: ResponseCodes.badRequest,
+                    httpStatusCode: ResponseCodes.unautohorized,
                 };
             }
 
@@ -828,7 +828,7 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.unautohorized}-03`,
                     message: notAuthorizedErrorMessage,
-                    httpStatusCode: ResponseCodes.badRequest,
+                    httpStatusCode: ResponseCodes.unautohorized,
                 };
             }
 
@@ -836,7 +836,7 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.unautohorized}-04`,
                     message: notAuthorizedErrorMessage,
-                    httpStatusCode: ResponseCodes.badRequest,
+                    httpStatusCode: ResponseCodes.unautohorized,
                 };
             }
 

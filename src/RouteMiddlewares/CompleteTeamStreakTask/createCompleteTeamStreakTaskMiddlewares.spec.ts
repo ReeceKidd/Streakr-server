@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     createCompleteTeamStreakTaskMiddlewares,
-    retreiveUserMiddleware,
     setTaskCompleteTimeMiddleware,
     setDayTaskWasCompletedMiddleware,
     sendTaskCompleteResponseMiddleware,
@@ -11,7 +10,6 @@ import {
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
     getTeamStreakExistsMiddleware,
-    getRetreiveUserMiddleware,
     getSetDayTaskWasCompletedMiddleware,
     getSetTaskCompleteTimeMiddleware,
     getSaveTaskCompleteMiddleware,
@@ -26,28 +24,10 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 
 describe(`completeTeamStreakTaskBodyValidationMiddleware`, () => {
-    const userId = 'abcdefgh';
     const teamStreakId = '123456';
 
     test('calls next() when correct body is supplied', () => {
         expect.assertions(1);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: { userId, teamStreakId },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        completeTeamStreakTaskBodyValidationMiddleware(request, response, next);
-
-        expect(next).toBeCalled();
-    });
-
-    test('sends correct error response when userId is missing', () => {
-        expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
@@ -60,11 +40,7 @@ describe(`completeTeamStreakTaskBodyValidationMiddleware`, () => {
 
         completeTeamStreakTaskBodyValidationMiddleware(request, response, next);
 
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message: 'child "userId" fails because ["userId" is required]',
-        });
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
     });
 
     test('sends correct error response when teamStreakId is missing', () => {
@@ -72,7 +48,7 @@ describe(`completeTeamStreakTaskBodyValidationMiddleware`, () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { userId },
+            body: {},
         };
         const response: any = {
             status,
@@ -93,7 +69,7 @@ describe(`completeTeamStreakTaskBodyValidationMiddleware`, () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { teamStreakId: 1234, userId },
+            body: { teamStreakId: 1234 },
         };
         const response: any = {
             status,
@@ -196,68 +172,11 @@ describe('ensureTeamStreakTaskHasNotBeenCompletedTodayMiddleware', () => {
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware({} as any);
 
-        await middleware(request, response, next);
+        ensureTeamStreakTaskHasNotBeenCompletedTodayMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(
             new CustomError(ErrorType.EnsureTeamStreakTaskHasNotBeenCompletedTodayMiddleware, expect.any(Error)),
-        );
-    });
-});
-
-describe('retreiveUserMiddleware', () => {
-    test('sets response.locals.user and calls next()', async () => {
-        expect.assertions(4);
-        const lean = jest.fn(() => true);
-        const findOne = jest.fn(() => ({ lean }));
-        const userModel = { findOne };
-        const userId = 'abcdefg';
-        const request: any = { body: { userId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
-
-        await middleware(request, response, next);
-
-        expect(response.locals.user).toBeDefined();
-        expect(findOne).toBeCalledWith({ _id: userId });
-        expect(lean).toBeCalledWith();
-        expect(next).toBeCalledWith();
-    });
-
-    test('throws CreateCompleteTeamStreakTaskUserDoesNotExist when user does not exist', async () => {
-        expect.assertions(1);
-        const userId = 'abcd';
-        const lean = jest.fn(() => false);
-        const findOne = jest.fn(() => ({ lean }));
-        const userModel = { findOne };
-        const request: any = { body: { userId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
-
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith(new CustomError(ErrorType.CreateCompleteTeamStreakTaskUserDoesNotExist));
-    });
-
-    test('throws CreateCompleteTeamStreakTaskRetreiveUserMiddleware error on middleware failure', async () => {
-        expect.assertions(1);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const userId = 'abcd';
-        const findOne = jest.fn(() => ({}));
-        const userModel = { findOne };
-        const request: any = { body: { userId } };
-        const response: any = { status, locals: {} };
-        const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
-
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreateCompleteTeamStreakTaskRetreiveUserMiddleware, expect.any(Error)),
         );
     });
 });
@@ -414,9 +333,8 @@ describe('createCompleteTeamStreakTaskDefinitionMiddleware', () => {
             toDate,
         };
         const taskCompleteDay = '09/05/2019';
-        const userId = 'abc';
         const request: any = {
-            body: { userId, teamStreakId },
+            body: { teamStreakId },
         };
         const response: any = {
             locals: {
@@ -429,7 +347,6 @@ describe('createCompleteTeamStreakTaskDefinitionMiddleware', () => {
         createCompleteTeamStreakTaskDefinitionMiddleware(request, response, next);
 
         expect(response.locals.completeTeamStreakTaskDefinition).toEqual({
-            userId,
             streakId: teamStreakId,
             taskCompleteTime: taskCompleteTime.toDate(),
             taskCompleteDay,
@@ -455,13 +372,11 @@ describe('createCompleteTeamStreakTaskDefinitionMiddleware', () => {
 describe(`saveTaskCompleteMiddleware`, () => {
     test('sets response.locals.completeTeamStreakTask and calls next', async () => {
         expect.assertions(3);
-        const userId = 'abcd';
         const streakId = '1234';
         const taskCompleteTime = new Date();
         const taskCompleteDay = '09/05/2019';
         const streakType = 'teamStreak';
         const completeTeamStreakTaskDefinition = {
-            userId,
             streakId,
             taskCompleteTime,
             taskCompleteDay,
@@ -469,20 +384,12 @@ describe(`saveTaskCompleteMiddleware`, () => {
         };
         const save = jest.fn(() => Promise.resolve(true));
         class CompleteTeamStreakTaskModel {
-            userId: string;
             streakId: string;
             taskCompleteTime: Date;
             taskCompleteDay: string;
             streakType: string;
 
-            constructor(
-                userId: string,
-                streakId: string,
-                taskCompleteTime: Date,
-                taskCompleteDay: string,
-                streakType: string,
-            ) {
-                this.userId = userId;
+            constructor(streakId: string, taskCompleteTime: Date, taskCompleteDay: string, streakType: string) {
                 (this.streakId = streakId), (this.taskCompleteTime = taskCompleteTime);
                 this.taskCompleteDay = taskCompleteDay;
                 this.streakType = streakType;
@@ -506,13 +413,11 @@ describe(`saveTaskCompleteMiddleware`, () => {
 
     test('throws CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware error on Middleware failure', async () => {
         expect.assertions(1);
-        const userId = 'abcd';
         const streakId = '1234';
         const taskCompleteTime = new Date();
         const taskCompleteDay = '09/05/2019';
         const streakType = 'teamStreak';
         const completeTeamStreakTaskDefinition = {
-            userId,
             streakId,
             taskCompleteTime,
             taskCompleteDay,
@@ -580,7 +485,6 @@ describe('sendTaskCompleteResponseMiddleware', () => {
         const send = jest.fn(() => true);
         const status = jest.fn(() => ({ send }));
         const completeTeamStreakTask = {
-            userId: 'abcd',
             streakId: '1234',
             taskCompleteTime: new Date(),
             taskCompleteDay: '10/05/2019',
@@ -602,7 +506,6 @@ describe('sendTaskCompleteResponseMiddleware', () => {
     test('throws CreateCompleteTeamStreakTaskSendTaskCompleteResponseMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const completeTeamStreakTask = {
-            userId: 'abcd',
             streakId: '1234',
             taskCompleteTime: new Date(),
             taskCompleteDay: '10/05/2019',
@@ -627,19 +530,18 @@ describe('sendTaskCompleteResponseMiddleware', () => {
 
 describe(`createCompleteTeamStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(12);
+        expect.assertions(11);
 
-        expect(createCompleteTeamStreakTaskMiddlewares.length).toEqual(11);
+        expect(createCompleteTeamStreakTaskMiddlewares.length).toEqual(10);
         expect(createCompleteTeamStreakTaskMiddlewares[0]).toBe(completeTeamStreakTaskBodyValidationMiddleware);
         expect(createCompleteTeamStreakTaskMiddlewares[1]).toBe(teamStreakExistsMiddleware);
         expect(createCompleteTeamStreakTaskMiddlewares[2]).toBe(ensureTeamStreakTaskHasNotBeenCompletedTodayMiddleware);
-        expect(createCompleteTeamStreakTaskMiddlewares[3]).toBe(retreiveUserMiddleware);
-        expect(createCompleteTeamStreakTaskMiddlewares[4]).toBe(setTaskCompleteTimeMiddleware);
-        expect(createCompleteTeamStreakTaskMiddlewares[5]).toBe(setStreakStartDateMiddleware);
-        expect(createCompleteTeamStreakTaskMiddlewares[6]).toBe(setDayTaskWasCompletedMiddleware);
-        expect(createCompleteTeamStreakTaskMiddlewares[7]).toBe(createCompleteTeamStreakTaskDefinitionMiddleware);
-        expect(createCompleteTeamStreakTaskMiddlewares[8]).toBe(saveTaskCompleteMiddleware);
-        expect(createCompleteTeamStreakTaskMiddlewares[9]).toBe(streakMaintainedMiddleware);
-        expect(createCompleteTeamStreakTaskMiddlewares[10]).toBe(sendTaskCompleteResponseMiddleware);
+        expect(createCompleteTeamStreakTaskMiddlewares[3]).toBe(setTaskCompleteTimeMiddleware);
+        expect(createCompleteTeamStreakTaskMiddlewares[4]).toBe(setStreakStartDateMiddleware);
+        expect(createCompleteTeamStreakTaskMiddlewares[5]).toBe(setDayTaskWasCompletedMiddleware);
+        expect(createCompleteTeamStreakTaskMiddlewares[6]).toBe(createCompleteTeamStreakTaskDefinitionMiddleware);
+        expect(createCompleteTeamStreakTaskMiddlewares[7]).toBe(saveTaskCompleteMiddleware);
+        expect(createCompleteTeamStreakTaskMiddlewares[8]).toBe(streakMaintainedMiddleware);
+        expect(createCompleteTeamStreakTaskMiddlewares[9]).toBe(sendTaskCompleteResponseMiddleware);
     });
 });
