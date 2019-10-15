@@ -233,6 +233,27 @@ export const getStreakMaintainedMiddleware = (teamMemberStreakModel: mongoose.Mo
 
 export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(teamMemberStreakModel);
 
+export const getMakeTeamStreakActiveMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { teamStreakId } = request.body;
+        await teamStreakModel.updateOne(
+            { _id: teamStreakId },
+            {
+                active: true,
+            },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.MakeTeamStreakActive, err));
+    }
+};
+
+export const makeTeamStreakActiveMiddleware = getMakeTeamStreakActiveMiddleware(teamStreakModel);
+
 export const sendCompleteTeamMemberStreakTaskResponseMiddleware = (
     request: Request,
     response: Response,
@@ -257,5 +278,6 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     setDayTaskWasCompletedMiddleware,
     createCompleteTeamMemberStreakTaskMiddleware,
     streakMaintainedMiddleware,
+    makeTeamStreakActiveMiddleware,
     sendCompleteTeamMemberStreakTaskResponseMiddleware,
 ];

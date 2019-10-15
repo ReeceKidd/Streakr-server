@@ -20,6 +20,8 @@ import {
     getTeamStreakExistsMiddleware,
     teamStreakExistsMiddleware,
     ensureTeamMemberStreakTaskHasNotBeenCompletedTodayMiddleware,
+    makeTeamStreakActiveMiddleware,
+    getMakeTeamStreakActiveMiddleware,
 } from './createCompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -585,6 +587,45 @@ describe('streakMaintainedMiddleware', () => {
     });
 });
 
+describe('makeTeamStreakActiveMiddleware', () => {
+    test('updates team streak active property to be true', async () => {
+        expect.assertions(2);
+        const teamStreakId = '123abc';
+        const updateOne = jest.fn(() => Promise.resolve(true));
+        const teamStreakModel = {
+            updateOne,
+        };
+        const request: any = { body: { teamStreakId } };
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getMakeTeamStreakActiveMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(updateOne).toBeCalledWith(
+            { _id: teamStreakId },
+            {
+                active: true,
+            },
+        );
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws MakeTeamStreakActive error on middleware failure', async () => {
+        expect.assertions(1);
+        const teamStreakId = '123abc';
+        const teamStreakModel = {};
+        const request: any = { params: { teamStreakId } };
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getMakeTeamStreakActiveMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.StreakMaintainedMiddleware, expect.any(Error)));
+    });
+});
+
 describe('sendCompleteTeamMemberStreakTaskResponseMiddleware', () => {
     test('sends completeTeamMemberStreakTask response', () => {
         expect.assertions(3);
@@ -631,9 +672,9 @@ describe('sendCompleteTeamMemberStreakTaskResponseMiddleware', () => {
 
 describe(`createCompleteTeamMemberStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(12);
+        expect.assertions(13);
 
-        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(11);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(12);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[0]).toBe(
             completeTeamMemberStreakTaskBodyValidationMiddleware,
         );
@@ -648,7 +689,8 @@ describe(`createCompleteTeamMemberStreakTaskMiddlewares`, () => {
         expect(createCompleteTeamMemberStreakTaskMiddlewares[7]).toBe(setDayTaskWasCompletedMiddleware);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[8]).toBe(createCompleteTeamMemberStreakTaskMiddleware);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[9]).toBe(streakMaintainedMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[10]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[10]).toBe(makeTeamStreakActiveMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[11]).toBe(
             sendCompleteTeamMemberStreakTaskResponseMiddleware,
         );
     });

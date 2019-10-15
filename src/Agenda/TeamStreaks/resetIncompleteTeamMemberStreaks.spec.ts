@@ -53,7 +53,6 @@ describe('resetIncompleteSoloStreaks', () => {
             teamStreakId,
             updateData: {
                 completedToday: false,
-                active: false,
             },
         });
 

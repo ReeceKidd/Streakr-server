@@ -302,6 +302,7 @@ export enum ErrorType {
     AuthInvalidTokenNoCognitoUsername,
     AudienceDoesNotMatchCognitoAppClientId,
     EnsureAudienceMatchesCognitoUserPool,
+    MakeTeamStreakActive,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -2470,6 +2471,13 @@ export class CustomError extends Error {
             case ErrorType.EnsureAudienceMatchesCognitoUserPool:
                 return {
                     code: `${ResponseCodes.warning}-225`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.MakeTeamStreakActive:
+                return {
+                    code: `${ResponseCodes.warning}-226`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
