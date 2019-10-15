@@ -3,7 +3,7 @@ import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { TeamMemberStreak, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { TeamMemberStreak, StreakTypes, TeamStreak } from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -240,12 +240,18 @@ export const getMakeTeamStreakActiveMiddleware = (teamStreakModel: mongoose.Mode
 ): Promise<void> => {
     try {
         const { teamStreakId } = request.body;
-        await teamStreakModel.updateOne(
-            { _id: teamStreakId },
-            {
-                active: true,
-            },
-        );
+        const teamStreak = await teamStreakModel
+            .updateOne(
+                { _id: teamStreakId },
+                {
+                    active: true,
+                },
+                {
+                    new: true,
+                },
+            )
+            .lean();
+        response.locals.teamStreak = teamStreak;
         next();
     } catch (err) {
         next(new CustomError(ErrorType.MakeTeamStreakActive, err));
@@ -253,6 +259,44 @@ export const getMakeTeamStreakActiveMiddleware = (teamStreakModel: mongoose.Mode
 };
 
 export const makeTeamStreakActiveMiddleware = getMakeTeamStreakActiveMiddleware(teamStreakModel);
+
+export const getHaveAllTeamMembersCompletedTasksMiddleware = (
+    teamStreakModel: mongoose.Model<TeamStreakModel>,
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        let teamStreakCompletedToday = true;
+        await Promise.all(
+            teamStreak.members.map(async member => {
+                const teamMemberStreak: TeamMemberStreak | null = await teamMemberStreakModel.findOne({
+                    userId: member.memberId,
+                });
+                if (!teamMemberStreak) {
+                    throw new CustomError(ErrorType.CompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist);
+                }
+                if (teamMemberStreak.completedToday === false) {
+                    teamStreakCompletedToday = false;
+                }
+            }),
+        );
+        if (teamStreakCompletedToday) {
+            await teamStreakModel.updateOne(
+                { _id: teamStreak._id },
+                {
+                    active: true,
+                    completedToday: true,
+                },
+            );
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        next(new CustomError(ErrorType.HaveAllTeamMembersCompletedTasksMiddlewares, err));
+    }
+};
+
+export const haveAllTeamMembersCompletedTasksMiddleware = getMakeTeamStreakActiveMiddleware(teamStreakModel);
 
 export const sendCompleteTeamMemberStreakTaskResponseMiddleware = (
     request: Request,
@@ -279,5 +323,6 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     createCompleteTeamMemberStreakTaskMiddleware,
     streakMaintainedMiddleware,
     makeTeamStreakActiveMiddleware,
+    haveAllTeamMembersCompletedTasksMiddleware,
     sendCompleteTeamMemberStreakTaskResponseMiddleware,
 ];

@@ -303,6 +303,8 @@ export enum ErrorType {
     AudienceDoesNotMatchCognitoAppClientId,
     EnsureAudienceMatchesCognitoUserPool,
     MakeTeamStreakActive,
+    CompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist,
+    HaveAllTeamMembersCompletedTasksMiddlewares,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -805,6 +807,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-63`,
                     message: 'Complete team streak task does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-64`,
+                    message: 'Team member streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2478,6 +2488,13 @@ export class CustomError extends Error {
             case ErrorType.MakeTeamStreakActive:
                 return {
                     code: `${ResponseCodes.warning}-226`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.HaveAllTeamMembersCompletedTasksMiddlewares:
+                return {
+                    code: `${ResponseCodes.warning}-227`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

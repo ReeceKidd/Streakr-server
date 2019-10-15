@@ -158,7 +158,6 @@ export const getSaveTaskCompleteMiddleware = (
         response.locals.completeTeamStreakTask = completeTeamStreakTask;
         next();
     } catch (err) {
-        console.log(err);
         next(new CustomError(ErrorType.CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware, err));
     }
 };

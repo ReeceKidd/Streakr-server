@@ -83,8 +83,6 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const teamStreaks: TeamStreak[] = response.locals.teamStreaks;
-        console.log('TEAM STREAKS');
-        console.log(teamStreaks);
         const teamStreaksWithPopulatedData = await Promise.all(
             teamStreaks.map(async teamStreak => {
                 const { members } = teamStreak;
@@ -121,7 +119,6 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
         response.locals.teamStreaks = teamStreaksWithPopulatedData;
         next();
     } catch (err) {
-        console.log(err);
         next(new CustomError(ErrorType.RetreiveTeamStreaksMembersInformation, err));
     }
 };

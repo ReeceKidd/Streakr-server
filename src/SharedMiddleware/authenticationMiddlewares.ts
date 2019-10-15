@@ -58,7 +58,6 @@ export const getRetreiveUserMiddleware = (userModel: Model<UserModel>) => async 
         response.locals.user = user;
         next();
     } catch (err) {
-        console.log(err);
         if (err instanceof CustomError) next(err);
         else next(new CustomError(ErrorType.AuthRetreiveUserMiddleware, err));
     }
