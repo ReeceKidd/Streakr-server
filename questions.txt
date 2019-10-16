@@ -1,3 +1,4 @@
 1) What do you think of the solution to initialise solo streak tracker jobs? 
 2) How would you intergration test the solo streak tracker jobs to ensure they are going to work in production? 
 3) How would you clear the database after each intergration test? 
+4) What do you think about the complete team member task being responsible for manipulating the team streak, should it return the updated team streak in the response? I think not because it's restful. 

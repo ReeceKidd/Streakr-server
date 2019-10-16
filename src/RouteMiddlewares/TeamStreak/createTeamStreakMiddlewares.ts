@@ -51,10 +51,9 @@ export const getCreateTeamStreakMiddleware = (teamStreak: mongoose.Model<TeamStr
 ): Promise<void> => {
     try {
         const { timezone } = response.locals;
-        const { creatorId, teamStreakType, streakName, streakDescription, numberOfMinutes } = request.body;
+        const { creatorId, streakName, streakDescription, numberOfMinutes } = request.body;
         response.locals.newTeamStreak = await new teamStreak({
             creatorId,
-            teamStreakType,
             streakName,
             streakDescription,
             numberOfMinutes,

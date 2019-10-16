@@ -37,17 +37,17 @@ describe('trackMaintainedTeamStreak', () => {
     test('updates team streak activity and creates a streak maintained tracking event', async () => {
         expect.assertions(37);
 
-        const completeTeamStreakTask = await streakoid.completeTeamStreakTasks.create({
+        const completeTeamStreak = await streakoid.completeTeamStreaks.create({
             teamStreakId,
         });
 
-        expect(completeTeamStreakTask._id).toBeDefined();
-        expect(completeTeamStreakTask.teamStreakId).toEqual(teamStreakId);
-        expect(completeTeamStreakTask.taskCompleteTime).toEqual(expect.any(String));
-        expect(completeTeamStreakTask.taskCompleteDay).toEqual(expect.any(String));
-        expect(completeTeamStreakTask.createdAt).toEqual(expect.any(String));
-        expect(completeTeamStreakTask.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(completeTeamStreakTask).sort()).toEqual(
+        expect(completeTeamStreak._id).toBeDefined();
+        expect(completeTeamStreak.teamStreakId).toEqual(teamStreakId);
+        expect(completeTeamStreak.taskCompleteTime).toEqual(expect.any(String));
+        expect(completeTeamStreak.taskCompleteDay).toEqual(expect.any(String));
+        expect(completeTeamStreak.createdAt).toEqual(expect.any(String));
+        expect(completeTeamStreak.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(completeTeamStreak).sort()).toEqual(
             ['_id', 'teamStreakId', 'taskCompleteTime', 'taskCompleteDay', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 

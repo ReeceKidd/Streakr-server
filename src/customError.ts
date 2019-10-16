@@ -277,24 +277,24 @@ export enum ErrorType {
     ValidateDailyJobBody,
     CreateDailyJobFromRequestMiddleware,
     SendFormattedDailyJobMiddleware,
-    CreateCompleteTeamStreakTaskTeamStreakExistsMiddleware,
+    CreateCompleteTeamStreakTeamStreakExistsMiddleware,
     EnsureTeamStreakTaskHasNotBeenCompletedTodayMiddleware,
-    CreateCompleteTeamStreakTaskRetreiveUserMiddleware,
-    CreateCompleteTeamStreakTaskSetTaskCompleteTimeMiddleware,
-    CreateCompleteTeamStreakTaskSetStreakStartDateMiddleware,
-    CreateCompleteTeamStreakTaskSetDayTaskWasCompletedMiddleware,
-    CreateCompleteTeamStreakTaskDefinitionMiddleware,
-    CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware,
-    CreateCompleteTeamStreakTaskStreakMaintainedMiddleware,
-    CreateCompleteTeamStreakTaskSendTaskCompleteResponseMiddleware,
+    CreateCompleteTeamStreakRetreiveUserMiddleware,
+    CreateCompleteTeamStreakSetTaskCompleteTimeMiddleware,
+    CreateCompleteTeamStreakSetStreakStartDateMiddleware,
+    CreateCompleteTeamStreakSetDayTaskWasCompletedMiddleware,
+    CreateCompleteTeamStreakDefinitionMiddleware,
+    CreateCompleteTeamStreakSaveTaskCompleteMiddleware,
+    CreateCompleteTeamStreakStreakMaintainedMiddleware,
+    CreateCompleteTeamStreakSendTaskCompleteResponseMiddleware,
     TeamStreakHasBeenCompletedToday,
-    CreateCompleteTeamStreakTaskTeamStreakDoesNotExist,
-    CreateCompleteTeamStreakTaskUserDoesNotExist,
-    GetCompleteTeamStreakTasksMiddleware,
-    SendCompleteTeamStreakTasksResponseMiddleware,
-    SendCompleteTeamStreakTaskDeletedResponseMiddleware,
-    DeleteCompleteTeamStreakTaskMiddleware,
-    NoCompleteTeamStreakTaskToDeleteFound,
+    CreateCompleteTeamStreakTeamStreakDoesNotExist,
+    CreateCompleteTeamStreakUserDoesNotExist,
+    GetCompleteTeamStreaksMiddleware,
+    SendCompleteTeamStreaksResponseMiddleware,
+    SendCompleteTeamStreakDeletedResponseMiddleware,
+    DeleteCompleteTeamStreakMiddleware,
+    NoCompleteTeamStreakToDeleteFound,
     TokenDoesNotExist,
     DecodeJWTMiddleware,
     AuthUserDoesNotExist,
@@ -787,7 +787,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.CreateCompleteTeamStreakTaskTeamStreakDoesNotExist: {
+            case ErrorType.CreateCompleteTeamStreakTeamStreakDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-61`,
                     message: 'Team streak does not exist.',
@@ -795,7 +795,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.CreateCompleteTeamStreakTaskUserDoesNotExist: {
+            case ErrorType.CreateCompleteTeamStreakUserDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-62`,
                     message: 'User does not exist.',
@@ -803,7 +803,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.NoCompleteTeamStreakTaskToDeleteFound: {
+            case ErrorType.NoCompleteTeamStreakToDeleteFound: {
                 return {
                     code: `${ResponseCodes.badRequest}-63`,
                     message: 'Complete team streak task does not exist.',
@@ -2366,7 +2366,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamStreakTaskTeamStreakExistsMiddleware:
+            case ErrorType.CreateCompleteTeamStreakTeamStreakExistsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-209`,
                     message: internalServerMessage,
@@ -2380,84 +2380,84 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamStreakTaskRetreiveUserMiddleware:
+            case ErrorType.CreateCompleteTeamStreakRetreiveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-211`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamStreakTaskSetTaskCompleteTimeMiddleware:
+            case ErrorType.CreateCompleteTeamStreakSetTaskCompleteTimeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-212`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamStreakTaskSetStreakStartDateMiddleware:
+            case ErrorType.CreateCompleteTeamStreakSetStreakStartDateMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-213`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamStreakTaskSetDayTaskWasCompletedMiddleware:
+            case ErrorType.CreateCompleteTeamStreakSetDayTaskWasCompletedMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-214`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamStreakTaskDefinitionMiddleware:
+            case ErrorType.CreateCompleteTeamStreakDefinitionMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-215`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamStreakTaskSaveTaskCompleteMiddleware:
+            case ErrorType.CreateCompleteTeamStreakSaveTaskCompleteMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-216`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamStreakTaskStreakMaintainedMiddleware:
+            case ErrorType.CreateCompleteTeamStreakStreakMaintainedMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-217`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamStreakTaskSendTaskCompleteResponseMiddleware:
+            case ErrorType.CreateCompleteTeamStreakSendTaskCompleteResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-218`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.GetCompleteTeamStreakTasksMiddleware:
+            case ErrorType.GetCompleteTeamStreaksMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-219`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.SendCompleteTeamStreakTasksResponseMiddleware:
+            case ErrorType.SendCompleteTeamStreaksResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-220`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.DeleteCompleteTeamStreakTaskMiddleware:
+            case ErrorType.DeleteCompleteTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-221`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.SendCompleteTeamStreakTaskDeletedResponseMiddleware:
+            case ErrorType.SendCompleteTeamStreakDeletedResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-222`,
                     message: internalServerMessage,

@@ -8,19 +8,16 @@ import {
     getIncompleteTeamMemberStreakTasksMiddlewares,
     retreiveIncompleteTeamMemberStreakTasksMiddleware,
 } from './getIncompleteTeamMemberStreakTaskMiddlewares';
-import { StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe('incompleteTeamMemberStreakTaskQueryValidationMiddleware', () => {
     const userId = 'userId';
     const teamMemberStreakId = 'teamMemberStreakId';
     const teamStreakId = 'teamStreakId';
-    const streakType = StreakTypes.team;
 
     const query = {
         userId,
         teamMemberStreakId,
         teamStreakId,
-        streakType,
     };
 
     test('allows userId, teamMemberStreak, and teamStreakId as query paramaters', () => {
@@ -85,25 +82,6 @@ describe('incompleteTeamMemberStreakTaskQueryValidationMiddleware', () => {
         const request: any = {
             query: {
                 teamStreakId,
-            },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        incompleteTeamMemberStreakTaskQueryValidationMiddleware(request, response, next);
-
-        expect(next).toBeCalled();
-    });
-
-    test('allows just streakType as a query paramater', () => {
-        expect.assertions(1);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            query: {
-                streakType,
             },
         };
         const response: any = {

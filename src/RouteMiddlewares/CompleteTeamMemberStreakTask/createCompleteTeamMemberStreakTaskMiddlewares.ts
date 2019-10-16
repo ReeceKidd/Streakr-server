@@ -3,7 +3,7 @@ import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { TeamMemberStreak, StreakTypes, TeamStreak } from '@streakoid/streakoid-sdk/lib';
+import { TeamMemberStreak, TeamStreak } from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -15,14 +15,12 @@ import {
 } from '../../Models/CompleteTeamMemberStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
+import { completeTeamStreakModel, CompleteTeamStreakModel } from '../../Models/CompleteTeamStreak';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
     teamMemberStreakId: Joi.string().required(),
     teamStreakId: Joi.string().required(),
-    streakType: Joi.string()
-        .valid([StreakTypes.teamMember])
-        .required(),
 };
 
 export const completeTeamMemberStreakTaskBodyValidationMiddleware = (
@@ -187,7 +185,7 @@ export const getCreateCompleteTeamMemberStreakTaskMiddleware = (
     completeTeamMemberStreakTaskModel: mongoose.Model<CompleteTeamMemberStreakTaskModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, teamStreakId, teamMemberStreakId, streakType } = request.body;
+        const { userId, teamStreakId, teamMemberStreakId } = request.body;
         const { taskCompleteTime, taskCompleteDay } = response.locals;
         const completeTeamMemberStreakTaskDefinition = {
             userId,
@@ -195,7 +193,6 @@ export const getCreateCompleteTeamMemberStreakTaskMiddleware = (
             teamMemberStreakId,
             taskCompleteTime: taskCompleteTime,
             taskCompleteDay,
-            streakType,
         };
         response.locals.completeTeamMemberStreakTask = await new completeTeamMemberStreakTaskModel(
             completeTeamMemberStreakTaskDefinition,
@@ -233,35 +230,7 @@ export const getStreakMaintainedMiddleware = (teamMemberStreakModel: mongoose.Mo
 
 export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(teamMemberStreakModel);
 
-export const getMakeTeamStreakActiveMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const { teamStreakId } = request.body;
-        const teamStreak = await teamStreakModel
-            .updateOne(
-                { _id: teamStreakId },
-                {
-                    active: true,
-                },
-                {
-                    new: true,
-                },
-            )
-            .lean();
-        response.locals.teamStreak = teamStreak;
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.MakeTeamStreakActive, err));
-    }
-};
-
-export const makeTeamStreakActiveMiddleware = getMakeTeamStreakActiveMiddleware(teamStreakModel);
-
 export const getHaveAllTeamMembersCompletedTasksMiddleware = (
-    teamStreakModel: mongoose.Model<TeamStreakModel>,
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -280,15 +249,7 @@ export const getHaveAllTeamMembersCompletedTasksMiddleware = (
                 }
             }),
         );
-        if (teamStreakCompletedToday) {
-            await teamStreakModel.updateOne(
-                { _id: teamStreak._id },
-                {
-                    active: true,
-                    completedToday: true,
-                },
-            );
-        }
+        response.locals.teamStreakCompletedToday = teamStreakCompletedToday;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -296,7 +257,120 @@ export const getHaveAllTeamMembersCompletedTasksMiddleware = (
     }
 };
 
-export const haveAllTeamMembersCompletedTasksMiddleware = getMakeTeamStreakActiveMiddleware(teamStreakModel);
+export const haveAllTeamMembersCompletedTasksMiddleware = getHaveAllTeamMembersCompletedTasksMiddleware(
+    teamMemberStreakModel,
+);
+
+export const getSetTeamStreakStartDateMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        const { teamStreakCompletedToday, taskCompleteTime } = response.locals;
+        if (teamStreakCompletedToday && !teamStreak.currentStreak.startDate) {
+            await teamStreakModel.updateOne(
+                { _id: teamStreak._id },
+                {
+                    currentStreak: {
+                        startDate: taskCompleteTime,
+                        numberOfDaysInARow: teamStreak.currentStreak.numberOfDaysInARow,
+                    },
+                },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateCompleteTeamStreakSetStreakStartDateMiddleware, err));
+    }
+};
+
+export const setTeamStreakStartDateMiddleware = getSetTeamStreakStartDateMiddleware(teamStreakModel);
+
+export const getSetDayTeamStreakWasCompletedMiddleware = (dayFormat: string) => (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const { teamStreakCompletedToday, taskCompleteTime } = response.locals;
+        if (teamStreakCompletedToday) {
+            const taskCompleteDay = taskCompleteTime.format(dayFormat);
+            response.locals.taskCompleteDay = taskCompleteDay;
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateCompleteTeamStreakSetDayTaskWasCompletedMiddleware, err));
+    }
+};
+
+export const setDayTeamStreakWasCompletedMiddleware = getSetDayTeamStreakWasCompletedMiddleware(dayFormat);
+
+export const createCompleteTeamStreakDefinitionMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const { teamStreakId } = request.body;
+        const { teamStreakCompletedToday, taskCompleteTime, taskCompleteDay } = response.locals;
+        if (teamStreakCompletedToday) {
+            const completeTeamStreakDefinition = {
+                teamStreakId,
+                taskCompleteTime: taskCompleteTime.toDate(),
+                taskCompleteDay,
+            };
+            response.locals.completeTeamStreakDefinition = completeTeamStreakDefinition;
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateCompleteTeamStreakDefinitionMiddleware, err));
+    }
+};
+
+export const getSaveCompleteTeamStreakMiddleware = (
+    completeTeamStreakModel: mongoose.Model<CompleteTeamStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { teamStreakCompletedToday, completeTeamStreakDefinition } = response.locals;
+        if (teamStreakCompletedToday) {
+            const completeTeamStreak = await new completeTeamStreakModel(completeTeamStreakDefinition).save();
+            response.locals.completeTeamStreak = completeTeamStreak;
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateCompleteTeamStreakSaveTaskCompleteMiddleware, err));
+    }
+};
+
+export const saveCompleteTeamStreakMiddleware = getSaveCompleteTeamStreakMiddleware(completeTeamStreakModel);
+
+export const getTeamStreakMaintainedMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { teamStreakCompletedToday } = response.locals;
+        const { teamStreakId } = request.body;
+        if (teamStreakCompletedToday) {
+            await teamStreakModel.updateOne(
+                { _id: teamStreakId },
+                {
+                    completedToday: true,
+                    $inc: { 'currentStreak.numberOfDaysInARow': 1 },
+                    active: true,
+                },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateCompleteTeamStreakStreakMaintainedMiddleware, err));
+    }
+};
+
+export const teamStreakMaintainedMiddleware = getTeamStreakMaintainedMiddleware(teamStreakModel);
 
 export const sendCompleteTeamMemberStreakTaskResponseMiddleware = (
     request: Request,
@@ -322,7 +396,11 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     setDayTaskWasCompletedMiddleware,
     createCompleteTeamMemberStreakTaskMiddleware,
     streakMaintainedMiddleware,
-    makeTeamStreakActiveMiddleware,
     haveAllTeamMembersCompletedTasksMiddleware,
+    setTeamStreakStartDateMiddleware,
+    setDayTeamStreakWasCompletedMiddleware,
+    createCompleteTeamStreakDefinitionMiddleware,
+    saveCompleteTeamStreakMiddleware,
+    teamStreakMaintainedMiddleware,
     sendCompleteTeamMemberStreakTaskResponseMiddleware,
 ];

@@ -456,13 +456,11 @@ describe(`saveTaskIncompleteMiddleware`, () => {
         const streakId = '1234';
         const taskIncompleteTime = new Date();
         const taskIncompleteDay = '09/05/2019';
-        const streakType = 'soloStreak';
         const incompleteSoloStreakTaskDefinition = {
             userId,
             streakId,
             taskIncompleteTime,
             taskIncompleteDay,
-            streakType,
         };
         const save = jest.fn(() => Promise.resolve(true));
         class IncompleteSoloStreakTaskModel {
@@ -470,19 +468,11 @@ describe(`saveTaskIncompleteMiddleware`, () => {
             streakId: string;
             taskIncompleteTime: Date;
             taskIncompleteDay: string;
-            streakType: string;
 
-            constructor(
-                userId: string,
-                streakId: string,
-                taskIncompleteTime: Date,
-                taskIncompleteDay: string,
-                streakType: string,
-            ) {
+            constructor(userId: string, streakId: string, taskIncompleteTime: Date, taskIncompleteDay: string) {
                 this.userId = userId;
                 (this.streakId = streakId), (this.taskIncompleteTime = taskIncompleteTime);
                 this.taskIncompleteDay = taskIncompleteDay;
-                this.streakType = streakType;
             }
 
             save() {
@@ -507,13 +497,11 @@ describe(`saveTaskIncompleteMiddleware`, () => {
         const streakId = '1234';
         const taskIncompleteTime = new Date();
         const taskIncompleteDay = '09/05/2019';
-        const streakType = 'soloStreak';
         const incompleteSoloStreakTaskDefinition = {
             userId,
             streakId,
             taskIncompleteTime,
             taskIncompleteDay,
-            streakType,
         };
         const request: any = {};
         const response: any = { locals: { incompleteSoloStreakTaskDefinition } };
@@ -613,7 +601,6 @@ describe('sendTaskIncompleteResponseMiddleware', () => {
             streakId: '1234',
             taskIncompleteTime: new Date(),
             taskIncompleteDay: '10/05/2019',
-            streakType: 'solo-streak',
         };
         const successResponseCode = 200;
         const middleware = getSendTaskIncompleteResponseMiddleware(successResponseCode);
@@ -635,7 +622,6 @@ describe('sendTaskIncompleteResponseMiddleware', () => {
             streakId: '1234',
             taskIncompleteTime: new Date(),
             taskIncompleteDay: '10/05/2019',
-            streakType: 'solo-streak',
         };
         const successResponseCode = 200;
         const middleware = getSendTaskIncompleteResponseMiddleware(successResponseCode);

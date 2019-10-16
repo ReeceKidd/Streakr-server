@@ -16,7 +16,7 @@ import { authenticationMiddlewares } from '../../../SharedMiddleware/authenticat
 import { incompleteSoloStreakTasksRouter } from './incompleteSoloStreakTaskRouter';
 import { incompleteTeamMemberStreakTasksRouter } from './incompleteTeamMemberStreakTaskRouter';
 import { dailyJobsRouter } from './dailyJobsRouter';
-import { completeTeamStreakTasksRouter } from './completeTeamStreakTasksRouter';
+import { completeTeamStreaksRouter } from './completeTeamStreaksRouter';
 import { RouterCategories } from '@streakoid/streakoid-sdk/lib';
 import { registerUserMiddlewares } from '../../../RouteMiddlewares/User/registerUserMiddlewares';
 
@@ -33,7 +33,7 @@ v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
 v1Router.use(`/${RouterCategories.streakTrackingEvents}`, streakTrackingEventRouter);
 v1Router.use(`/${RouterCategories.teamMemberStreaks}`, teamMemberStreaksRouter);
 v1Router.use(`/${RouterCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);
-v1Router.use(`/${RouterCategories.completeTeamStreakTasks}`, completeTeamStreakTasksRouter);
+v1Router.use(`/${RouterCategories.completeTeamStreaks}`, completeTeamStreaksRouter);
 v1Router.use(`/${RouterCategories.completeTeamMemberStreakTasks}`, completeTeamMemberStreakTasksRouter);
 
 // Should be admin only routes

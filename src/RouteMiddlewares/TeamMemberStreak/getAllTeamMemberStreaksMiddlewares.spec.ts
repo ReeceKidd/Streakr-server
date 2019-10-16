@@ -10,12 +10,26 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 
 describe('getTeamMemberStreaksValidationMiddleware', () => {
+    const userId = 'userId';
+    const teamStreakId = 'teamStreakId';
+    const completedToday = true;
+    const timezone = 'Europe/London';
+    const active = true;
+
+    const query = {
+        userId,
+        teamStreakId,
+        completedToday,
+        timezone,
+        active,
+    };
+
     test('passes valid request', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            query: { userId: '1234' },
+            query,
         };
         const response: any = {
             status,
@@ -25,27 +39,6 @@ describe('getTeamMemberStreaksValidationMiddleware', () => {
         getTeamMemberStreaksQueryValidationMiddleware(request, response, next);
 
         expect(next).toBeCalledWith();
-    });
-
-    test('sends userId cannot be a number error', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            query: { userId: 123 },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        getTeamMemberStreaksQueryValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message: 'child "userId" fails because ["userId" must be a string]',
-        });
-        expect(next).not.toBeCalled();
     });
 });
 

@@ -2,14 +2,14 @@
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import {
-    completeTeamStreakTaskQueryValidationMiddleware,
-    getRetreiveCompleteTeamStreakTasksMiddleware,
-    sendCompleteTeamStreakTasksResponseMiddleware,
-    getCompleteTeamStreakTasksMiddlewares,
-    retreiveCompleteTeamStreakTasksMiddleware,
-} from './getCompleteTeamStreakTasksMiddlewares';
+    completeTeamStreakQueryValidationMiddleware,
+    getRetreiveCompleteTeamStreaksMiddleware,
+    sendCompleteTeamStreaksResponseMiddleware,
+    getCompleteTeamStreaksMiddlewares,
+    retreiveCompleteTeamStreaksMiddleware,
+} from './getCompleteTeamStreaksMiddlewares';
 
-describe('completeTeamStreakTaskQueryValidationMiddleware', () => {
+describe('completeTeamStreakQueryValidationMiddleware', () => {
     test('allows teamStreakId as a query paramater', () => {
         expect.assertions(1);
         const send = jest.fn();
@@ -24,7 +24,7 @@ describe('completeTeamStreakTaskQueryValidationMiddleware', () => {
         };
         const next = jest.fn();
 
-        completeTeamStreakTaskQueryValidationMiddleware(request, response, next);
+        completeTeamStreakQueryValidationMiddleware(request, response, next);
 
         expect(next).toBeCalled();
     });
@@ -43,7 +43,7 @@ describe('completeTeamStreakTaskQueryValidationMiddleware', () => {
         };
         const next = jest.fn();
 
-        completeTeamStreakTaskQueryValidationMiddleware(request, response, next);
+        completeTeamStreakQueryValidationMiddleware(request, response, next);
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
         expect(send).toBeCalledWith({
@@ -53,25 +53,25 @@ describe('completeTeamStreakTaskQueryValidationMiddleware', () => {
     });
 });
 
-describe('getRetreiveCompleteTeamStreakTasksMiddleware', () => {
+describe('getRetreiveCompleteTeamStreaksMiddleware', () => {
     const teamStreakId = 'teamStreakId';
 
     test('queries with just teamStreakId', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));
-        const completeTeamStreakTaskModel = {
+        const completeTeamStreakModel = {
             find,
         };
         const request: any = { query: { teamStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteTeamStreakTasksMiddleware(completeTeamStreakTaskModel as any);
+        const middleware = getRetreiveCompleteTeamStreaksMiddleware(completeTeamStreakModel as any);
 
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ teamStreakId });
-        expect(response.locals.completeTeamStreakTasks).toBeDefined();
+        expect(response.locals.completeTeamStreaks).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
@@ -79,51 +79,51 @@ describe('getRetreiveCompleteTeamStreakTasksMiddleware', () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));
-        const completeTeamStreakTaskModel = {
+        const completeTeamStreakModel = {
             find,
         };
         const request: any = { query: {} };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteTeamStreakTasksMiddleware(completeTeamStreakTaskModel as any);
+        const middleware = getRetreiveCompleteTeamStreaksMiddleware(completeTeamStreakModel as any);
 
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({});
-        expect(response.locals.completeTeamStreakTasks).toBeDefined();
+        expect(response.locals.completeTeamStreaks).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
-    test('calls next with GetCompleteTeamStreakTasksMiddleware error on middleware failure', async () => {
+    test('calls next with GetCompleteTeamStreaksMiddleware error on middleware failure', async () => {
         expect.assertions(1);
 
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
 
-        const middleware = getRetreiveCompleteTeamStreakTasksMiddleware({} as any);
+        const middleware = getRetreiveCompleteTeamStreaksMiddleware({} as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.GetCompleteTeamStreakTasksMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.GetCompleteTeamStreaksMiddleware, expect.any(Error)));
     });
 });
 
-describe('sendCompleteTeamStreakTaskDeletedResponseMiddleware', () => {
+describe('sendCompleteTeamStreakDeletedResponseMiddleware', () => {
     test('responds with successful deletion', () => {
         expect.assertions(3);
 
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {};
-        const completeTeamStreakTasks = true;
-        const response: any = { status, locals: { completeTeamStreakTasks } };
+        const completeTeamStreaks = true;
+        const response: any = { status, locals: { completeTeamStreaks } };
         const next = jest.fn();
 
-        sendCompleteTeamStreakTasksResponseMiddleware(request, response, next);
+        sendCompleteTeamStreaksResponseMiddleware(request, response, next);
 
         expect(status).toBeCalledWith(200);
-        expect(send).toBeCalledWith(completeTeamStreakTasks);
+        expect(send).toBeCalledWith(completeTeamStreaks);
         expect(next).not.toBeCalled();
     });
 
@@ -132,21 +132,21 @@ describe('sendCompleteTeamStreakTaskDeletedResponseMiddleware', () => {
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        sendCompleteTeamStreakTasksResponseMiddleware(request, response, next);
+        sendCompleteTeamStreaksResponseMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.SendCompleteTeamStreakTasksResponseMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.SendCompleteTeamStreaksResponseMiddleware, expect.any(Error)),
         );
     });
 });
 
-describe('getCompleteTeamStreakTaskMiddlewares', () => {
-    test('that getCompleteTeamStreakTaskMiddlewares are defined in the correct order', () => {
+describe('getCompleteTeamStreakMiddlewares', () => {
+    test('that getCompleteTeamStreakMiddlewares are defined in the correct order', () => {
         expect.assertions(4);
 
-        expect(getCompleteTeamStreakTasksMiddlewares.length).toEqual(3);
-        expect(getCompleteTeamStreakTasksMiddlewares[0]).toEqual(completeTeamStreakTaskQueryValidationMiddleware);
-        expect(getCompleteTeamStreakTasksMiddlewares[1]).toEqual(retreiveCompleteTeamStreakTasksMiddleware);
-        expect(getCompleteTeamStreakTasksMiddlewares[2]).toEqual(sendCompleteTeamStreakTasksResponseMiddleware);
+        expect(getCompleteTeamStreaksMiddlewares.length).toEqual(3);
+        expect(getCompleteTeamStreaksMiddlewares[0]).toEqual(completeTeamStreakQueryValidationMiddleware);
+        expect(getCompleteTeamStreaksMiddlewares[1]).toEqual(retreiveCompleteTeamStreaksMiddleware);
+        expect(getCompleteTeamStreaksMiddlewares[2]).toEqual(sendCompleteTeamStreaksResponseMiddleware);
     });
 });

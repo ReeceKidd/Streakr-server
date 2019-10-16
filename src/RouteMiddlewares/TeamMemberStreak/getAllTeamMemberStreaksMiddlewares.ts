@@ -9,6 +9,7 @@ import { CustomError, ErrorType } from '../../customError';
 
 const getTeamMemberStreaksQueryValidationSchema = {
     userId: Joi.string(),
+    teamStreakId: Joi.string(),
     timezone: Joi.string(),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
@@ -30,10 +31,11 @@ export const getFindTeamMemberStreaksMiddleware = (
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, timezone, completedToday, active } = request.query;
+        const { userId, teamStreakId, timezone, completedToday, active } = request.query;
 
         const query: {
             userId?: string;
+            teamStreakId?: string;
             timezone?: string;
             completedToday?: boolean;
             active?: boolean;
@@ -41,6 +43,9 @@ export const getFindTeamMemberStreaksMiddleware = (
 
         if (userId) {
             query.userId = userId;
+        }
+        if (teamStreakId) {
+            query.teamStreakId = teamStreakId;
         }
         if (timezone) {
             query.timezone = timezone;

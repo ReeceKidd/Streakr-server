@@ -449,13 +449,11 @@ describe(`saveTaskCompleteMiddleware`, () => {
         const streakId = '1234';
         const taskCompleteTime = new Date();
         const taskCompleteDay = '09/05/2019';
-        const streakType = 'soloStreak';
         const completeSoloStreakTaskDefinition = {
             userId,
             streakId,
             taskCompleteTime,
             taskCompleteDay,
-            streakType,
         };
         const save = jest.fn(() => Promise.resolve(true));
         class CompleteSoloStreakTaskModel {
@@ -463,19 +461,11 @@ describe(`saveTaskCompleteMiddleware`, () => {
             streakId: string;
             taskCompleteTime: Date;
             taskCompleteDay: string;
-            streakType: string;
 
-            constructor(
-                userId: string,
-                streakId: string,
-                taskCompleteTime: Date,
-                taskCompleteDay: string,
-                streakType: string,
-            ) {
+            constructor(userId: string, streakId: string, taskCompleteTime: Date, taskCompleteDay: string) {
                 this.userId = userId;
                 (this.streakId = streakId), (this.taskCompleteTime = taskCompleteTime);
                 this.taskCompleteDay = taskCompleteDay;
-                this.streakType = streakType;
             }
 
             save() {
@@ -500,13 +490,11 @@ describe(`saveTaskCompleteMiddleware`, () => {
         const streakId = '1234';
         const taskCompleteTime = new Date();
         const taskCompleteDay = '09/05/2019';
-        const streakType = 'soloStreak';
         const completeSoloStreakTaskDefinition = {
             userId,
             streakId,
             taskCompleteTime,
             taskCompleteDay,
-            streakType,
         };
         const request: any = {};
         const response: any = { locals: { completeSoloStreakTaskDefinition } };
@@ -570,7 +558,6 @@ describe('sendTaskCompleteResponseMiddleware', () => {
             streakId: '1234',
             taskCompleteTime: new Date(),
             taskCompleteDay: '10/05/2019',
-            streakType: 'solo-streak',
         };
         const successResponseCode = 200;
         const middleware = getSendTaskCompleteResponseMiddleware(successResponseCode);
@@ -592,7 +579,6 @@ describe('sendTaskCompleteResponseMiddleware', () => {
             streakId: '1234',
             taskCompleteTime: new Date(),
             taskCompleteDay: '10/05/2019',
-            streakType: 'solo-streak',
         };
         const successResponseCode = 200;
         const middleware = getSendTaskCompleteResponseMiddleware(successResponseCode);

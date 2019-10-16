@@ -13,15 +13,12 @@ import {
 } from '../../Models/IncompleteTeamMemberStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import { TeamMemberStreak, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { TeamMemberStreak } from '@streakoid/streakoid-sdk/lib';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
     teamMemberStreakId: Joi.string().required(),
     teamStreakId: Joi.string().required(),
-    streakType: Joi.string()
-        .valid([StreakTypes.teamMember])
-        .required(),
 };
 
 export const incompleteTeamMemberStreakTaskBodyValidationMiddleware = (
@@ -163,7 +160,7 @@ export const createIncompleteTeamMemberStreakTaskDefinitionMiddleware = (
     next: NextFunction,
 ): void => {
     try {
-        const { userId, teamMemberStreakId, teamStreakId, streakType } = request.body;
+        const { userId, teamMemberStreakId, teamStreakId } = request.body;
         const { taskIncompleteTime, taskIncompleteDay } = response.locals;
         const incompleteTeamMemberStreakTaskDefinition = {
             userId,
@@ -171,7 +168,6 @@ export const createIncompleteTeamMemberStreakTaskDefinitionMiddleware = (
             taskIncompleteTime: taskIncompleteTime.toDate(),
             taskIncompleteDay,
             teamStreakId,
-            streakType,
         };
         response.locals.incompleteTeamMemberStreakTaskDefinition = incompleteTeamMemberStreakTaskDefinition;
         next();

@@ -6,13 +6,12 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { streakTrackingEventModel, StreakTrackingEventModel } from '../../Models/StreakTrackingEvent';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
-import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
 
 const streakTrackingEventQueryValidationSchema = {
     type: Joi.string().valid(Object.keys(StreakTrackingEventTypes)),
     streakId: Joi.string(),
     userId: Joi.string(),
-    streakType: Joi.string().valid(Object.keys(StreakTypes)),
 };
 
 export const streakTrackingEventQueryValidationMiddleware = (
@@ -35,10 +34,9 @@ export const getRetreiveStreakTrackingEventsMiddleware = (
             type?: string;
             streakId?: string;
             userId?: string;
-            streakType?: StreakTypes;
         } = {};
 
-        const { type, userId, streakId, streakType } = request.query;
+        const { type, userId, streakId } = request.query;
         if (type) {
             query.type = type;
         }
@@ -47,9 +45,6 @@ export const getRetreiveStreakTrackingEventsMiddleware = (
         }
         if (userId) {
             query.userId = userId;
-        }
-        if (streakType) {
-            query.streakType = streakType;
         }
 
         response.locals.streakTrackingEvents = await streakTrackingEventModel.find(query);

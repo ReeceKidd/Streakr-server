@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Models } from './Models';
 import { Collections } from './Collections';
-import { CompleteTeamMemberStreakTask, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { CompleteTeamMemberStreakTask } from '@streakoid/streakoid-sdk/lib';
 
 export type CompleteTeamMemberStreakTaskModel = CompleteTeamMemberStreakTask & mongoose.Document;
 
@@ -14,11 +14,6 @@ export const completeTeamMemberStreakTaskSchema = new mongoose.Schema(
         teamMemberStreakId: {
             required: true,
             type: String,
-        },
-        streakType: {
-            required: true,
-            type: String,
-            enum: [StreakTypes.teamMember],
         },
         taskCompleteTime: {
             required: true,

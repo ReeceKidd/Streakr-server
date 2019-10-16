@@ -14,7 +14,6 @@ const completeTeamMemberStreakTaskQueryValidationSchema = {
     userId: Joi.string(),
     teamMemberStreakId: Joi.string(),
     teamStreakId: Joi.string(),
-    streakType: Joi.string(),
 };
 
 export const completeTeamMemberStreakTaskQueryValidationMiddleware = (
@@ -33,13 +32,12 @@ export const getRetreiveCompleteTeamMemberStreakTasksMiddleware = (
     completeTeamMemberStreakTaskModel: mongoose.Model<CompleteTeamMemberStreakTaskModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, teamMemberStreakId, teamStreakId, streakType } = request.query;
+        const { userId, teamMemberStreakId, teamStreakId } = request.query;
 
         const query: {
             userId?: string;
             teamMemberStreakId?: string;
             teamStreakId?: string;
-            streakType?: string;
         } = {};
 
         if (userId) {
@@ -50,9 +48,6 @@ export const getRetreiveCompleteTeamMemberStreakTasksMiddleware = (
         }
         if (teamStreakId) {
             query.teamStreakId = teamStreakId;
-        }
-        if (streakType) {
-            query.streakType = streakType;
         }
 
         response.locals.completeTeamMemberStreakTasks = await completeTeamMemberStreakTaskModel.find(query);
