@@ -305,6 +305,7 @@ export enum ErrorType {
     MakeTeamStreakActive,
     CompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist,
     HaveAllTeamMembersCompletedTasksMiddlewares,
+    SetTeamStreakToActive,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -2495,6 +2496,13 @@ export class CustomError extends Error {
             case ErrorType.HaveAllTeamMembersCompletedTasksMiddlewares:
                 return {
                     code: `${ResponseCodes.warning}-227`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SetTeamStreakToActive:
+                return {
+                    code: `${ResponseCodes.warning}-228`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

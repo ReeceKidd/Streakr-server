@@ -214,13 +214,14 @@ export const getStreakMaintainedMiddleware = (teamMemberStreakModel: mongoose.Mo
 ): Promise<void> => {
     try {
         const { teamMemberStreakId } = request.body;
-        await teamMemberStreakModel.updateOne(
-            { _id: teamMemberStreakId },
+        await teamMemberStreakModel.findByIdAndUpdate(
+            teamMemberStreakId,
             {
                 completedToday: true,
                 $inc: { 'currentStreak.numberOfDaysInARow': 1 },
                 active: true,
             },
+            { new: true },
         );
         next();
     } catch (err) {
@@ -229,6 +230,31 @@ export const getStreakMaintainedMiddleware = (teamMemberStreakModel: mongoose.Mo
 };
 
 export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(teamMemberStreakModel);
+
+export const getSetTeamStreakToActiveMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { teamStreakId } = request.body;
+        const teamStreak = await teamStreakModel
+            .findByIdAndUpdate(
+                teamStreakId,
+                {
+                    active: true,
+                },
+                { new: true },
+            )
+            .lean();
+        response.locals.teamStreak = teamStreak;
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.SetTeamStreakToActive, err));
+    }
+};
+
+export const setTeamStreakToActiveMiddleware = getSetTeamStreakToActiveMiddleware(teamStreakModel);
 
 export const getHaveAllTeamMembersCompletedTasksMiddleware = (
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
@@ -396,6 +422,7 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     setDayTaskWasCompletedMiddleware,
     createCompleteTeamMemberStreakTaskMiddleware,
     streakMaintainedMiddleware,
+    setTeamStreakToActiveMiddleware,
     haveAllTeamMembersCompletedTasksMiddleware,
     setTeamStreakStartDateMiddleware,
     setDayTeamStreakWasCompletedMiddleware,
