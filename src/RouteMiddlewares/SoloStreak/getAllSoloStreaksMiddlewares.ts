@@ -10,9 +10,9 @@ import { CustomError, ErrorType } from '../../customError';
 const getSoloStreaksQueryValidationSchema = {
     userId: Joi.string(),
     timezone: Joi.string(),
+    status: Joi.string(),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
-    status: Joi.string(),
 };
 
 export const getSoloStreaksQueryValidationMiddleware = (
@@ -38,9 +38,9 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
         const query: {
             userId?: string;
             timezone?: string;
+            status?: string;
             completedToday?: boolean;
             active?: boolean;
-            status?: string;
         } = {};
 
         if (userId) {
@@ -49,14 +49,14 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
         if (timezone) {
             query.timezone = timezone;
         }
+        if (status) {
+            query.status = status;
+        }
         if (completedToday) {
             query.completedToday = completedToday === 'true';
         }
         if (active) {
             query.active = active === 'true';
-        }
-        if (status) {
-            query.status = status;
         }
 
         response.locals.soloStreaks = await soloStreakModel.find(query);

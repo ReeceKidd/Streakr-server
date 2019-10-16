@@ -62,10 +62,10 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
             query.status = status;
         }
         if (completedToday) {
-            query.completedToday = completedToday;
+            query.completedToday = completedToday === 'true';
         }
         if (active) {
-            query.active = active;
+            query.active = active === 'true';
         }
 
         response.locals.teamStreaks = await teamStreakModel.find(query).lean();

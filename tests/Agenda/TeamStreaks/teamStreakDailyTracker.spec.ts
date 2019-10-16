@@ -4,7 +4,7 @@ import { createTeamStreakDailyTrackerJob } from '../../../src/scripts/initaliseT
 import { StreakTypes, StreakStatus, StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
 import { londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
 
-const username = 'soloStreakDailyTrackerName';
+const username = 'solo-streak-daily-tracker-name';
 const email = 'solostreaktracker@gmail.com';
 
 jest.setTimeout(120000);
@@ -44,7 +44,7 @@ describe('soloStreakDailyTracker', () => {
         ]);
     });
 
-    test.only('maintains team streaks correctly', async () => {
+    test.only('maintains team streaks correctly when a lone user has completed their task', async () => {
         expect.assertions(31);
 
         const timezone = 'Europe/London';
@@ -62,47 +62,32 @@ describe('soloStreakDailyTracker', () => {
             members,
         });
 
-        const teamMemberStreak = await streakoid.teamMemberStreaks.create({
+        console.log('Original');
+        console.log(teamStreak);
+
+        const teamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
             userId,
             teamStreakId: teamStreak._id,
         });
+        const teamMemberStreak = teamMemberStreaks[0];
 
-        const completeTeamMemberStreakTask = await streakoid.completeTeamMemberStreakTasks.create({
+        const completeTeamMemberStreak = await streakoid.completeTeamMemberStreakTasks.create({
             userId,
             teamStreakId: teamStreak._id,
             teamMemberStreakId: teamMemberStreak._id,
-            streakType: StreakTypes.teamMember,
         });
 
-        expect(completeTeamMemberStreakTask._id).toBeDefined();
-        expect(completeTeamMemberStreakTask.teamMemberStreakId).toEqual(teamMemberStreak._id);
-        expect(completeTeamMemberStreakTask.teamStreakId).toEqual(teamStreak._id);
-        expect(completeTeamMemberStreakTask.streakType).toEqual(StreakTypes.teamMember);
-        expect(completeTeamMemberStreakTask.userId).toEqual(userId);
-        expect(completeTeamMemberStreakTask.taskCompleteTime).toEqual(expect.any(String));
-        expect(completeTeamMemberStreakTask.taskCompleteDay).toEqual(expect.any(String));
-        expect(completeTeamMemberStreakTask.createdAt).toEqual(expect.any(String));
-        expect(completeTeamMemberStreakTask.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(completeTeamMemberStreakTask).sort()).toEqual(
-            [
-                '_id',
-                'teamMemberStreakId',
-                'teamStreakId',
-                'streakType',
-                'taskCompleteTime',
-                'taskCompleteDay',
-                'createdAt',
-                'updatedAt',
-                'userId',
-                '__v',
-            ].sort(),
-        );
+        console.log(completeTeamMemberStreak);
 
         const job = await createTeamStreakDailyTrackerJob(timezone);
 
         await job.run();
 
+        console.log('Updated');
+
         const updatedTeamStreak = await streakoid.teamStreaks.getOne(teamStreak._id);
+
+        console.log(updatedTeamStreak);
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -159,12 +144,11 @@ describe('soloStreakDailyTracker', () => {
         expect(teamStreakTrackingEvent.type).toEqual(StreakTrackingEventTypes.maintainedStreak);
         expect(teamStreakTrackingEvent.streakId).toEqual(teamStreak._id);
         expect(teamStreakTrackingEvent.streakType).toEqual(StreakTypes.team);
-        expect(teamStreakTrackingEvent.userId).toEqual(userId);
         expect(teamStreakTrackingEvent._id).toEqual(expect.any(String));
         expect(teamStreakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(teamStreakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(teamStreakTrackingEvent).sort()).toEqual(
-            ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+            ['_id', 'type', 'streakId', 'streakType', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
         const updatedTeamMemberStreak = await streakoid.teamMemberStreaks.getOne(teamMemberStreak._id);
@@ -213,6 +197,28 @@ describe('soloStreakDailyTracker', () => {
         expect(teamMemberStreakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(teamMemberStreakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+
+        expect(dailyJob._id).toEqual(expect.any(String));
+        expect(dailyJob.agendaJobId).toEqual(agendaJobId);
+        expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
+        expect(dailyJob.timezone).toEqual('Europe/London');
+        expect(dailyJob.localisedJobCompleteTime).toEqual(localisedJobCompleteTime);
+        expect(dailyJob.streakType).toEqual(StreakTypes.solo);
+        expect(dailyJob.createdAt).toEqual(expect.any(String));
+        expect(dailyJob.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(dailyJob).sort()).toEqual(
+            [
+                '_id',
+                'agendaJobId',
+                'jobName',
+                'timezone',
+                'localisedJobCompleteTime',
+                'streakType',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
         );
     });
 

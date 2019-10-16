@@ -65,6 +65,11 @@ export const manageDailyTeamStreaks = async ({
         }),
     ]);
 
+    console.log('Number of maintained team streaks');
+    console.log(trackMaintainedTeamStreaks.length);
+    console.log(`Number of incomplete: ${incompleteTeamStreaks.length}`);
+    console.log(`Number of inactive team streaks: ${inactiveTeamStreaks.length}`);
+
     await resetIncompleteTeamStreaks(incompleteTeamStreaks, currentLocalTime);
     await trackMaintainedTeamStreaks(maintainedTeamStreaks);
     await trackInactiveTeamStreaks(inactiveTeamStreaks);

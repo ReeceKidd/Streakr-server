@@ -306,6 +306,8 @@ export enum ErrorType {
     CompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist,
     HaveAllTeamMembersCompletedTasksMiddlewares,
     SetTeamStreakToActive,
+    FindDailyJobsMiddleware,
+    SendDailyJobsMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -2503,6 +2505,20 @@ export class CustomError extends Error {
             case ErrorType.SetTeamStreakToActive:
                 return {
                     code: `${ResponseCodes.warning}-228`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindDailyJobsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-229`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendDailyJobsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-230`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
