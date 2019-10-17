@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import mongoose from 'mongoose';
+
 import streakoid from '../../../src/streakoid';
 import { createTeamStreakDailyTrackerJob } from '../../../src/scripts/initaliseTeamStreakTimezoneCheckers';
 import { StreakTypes, StreakStatus, StreakTrackingEventTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
 import { londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
-import mongoose from 'mongoose';
 
 import { getServiceConfig } from '../../../src/getServiceConfig';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';

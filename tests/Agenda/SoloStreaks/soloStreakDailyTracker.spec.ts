@@ -1,46 +1,49 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import mongoose from 'mongoose';
+
 import { createSoloStreakDailyTrackerJob } from '../../../src/scripts/initaliseSoloStreakTimezoneCheckers';
 import streakoid from '../../../src/streakoid';
 
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { getServiceConfig } from '../../../src/getServiceConfig';
+import { soloStreakModel } from '../../../src/Models/SoloStreak';
+import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEvent';
+import { dailyJobModel } from '../../../src/Models/DailyJob';
+import { completeSoloStreakTaskModel } from '../../../src/Models/CompleteSoloStreakTask';
+
+const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
 
 jest.setTimeout(120000);
 
+const username = 'solo-streak-daily-tracker-name';
+const email = 'solostreaktracker@gmail.com';
+
 describe('soloStreakDailyTracker', () => {
     let userId: string;
-    let maintainedSoloStreakId: string;
-    let maintainedSoloStreakAgendaJobId: string;
-    let maintainedStreakTrackingEventId: string;
-
-    let lostSoloStreakId: string;
-    let lostSoloStreakAgendaJobId: string;
-    let lostStreakTrackingEventId: string;
-
-    let inactiveSoloStreakId: string;
-    let inactiveSoloStreakAgendaJobId: string;
-    let inactiveStreakTrackingEventId: string;
 
     beforeAll(async () => {
-        const username = 'soloStreakDailyTrackerName';
-        const email = 'solostreaktracker@gmail.com';
-
-        const user = await streakoid.users.create({ username, email });
-        userId = user._id;
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+            const user = await streakoid.users.create({ username, email });
+            userId = user._id;
+        }
     });
 
     afterAll(async () => {
-        await streakoid.soloStreaks.deleteOne(maintainedSoloStreakId);
-        await streakoid.agendaJobs.deleteOne(maintainedSoloStreakAgendaJobId);
-        await streakoid.streakTrackingEvents.deleteOne(maintainedStreakTrackingEventId);
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            mongoose.connection.dropDatabase();
+            mongoose.disconnect();
+        }
+    });
 
-        await streakoid.soloStreaks.deleteOne(lostSoloStreakId);
-        await streakoid.agendaJobs.deleteOne(lostSoloStreakAgendaJobId);
-        await streakoid.streakTrackingEvents.deleteOne(lostStreakTrackingEventId);
-
-        await streakoid.soloStreaks.deleteOne(inactiveSoloStreakId);
-        await streakoid.agendaJobs.deleteOne(inactiveSoloStreakAgendaJobId);
-        await streakoid.streakTrackingEvents.deleteOne(inactiveStreakTrackingEventId);
+    afterEach(async () => {
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            await soloStreakModel.deleteMany({});
+            await streakTrackingEventModel.deleteMany({});
+            await completeSoloStreakTaskModel.deleteMany({});
+            await dailyJobModel.deleteMany({});
+        }
     });
 
     test('initialises soloStreakDailyTracker job correctly', async () => {
@@ -85,7 +88,7 @@ describe('soloStreakDailyTracker', () => {
             streakName,
             streakDescription,
         });
-        maintainedSoloStreakId = maintainedSoloStreak._id;
+        const maintainedSoloStreakId = maintainedSoloStreak._id;
 
         const completeSoloStreakTask = await streakoid.completeSoloStreakTasks.create({
             userId,
@@ -167,9 +170,6 @@ describe('soloStreakDailyTracker', () => {
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
-
-        maintainedSoloStreakAgendaJobId = String(job.attrs._id);
-        maintainedStreakTrackingEventId = streakTrackingEvent._id;
     });
 
     test('manages lost streaks correctly', async () => {
@@ -185,7 +185,7 @@ describe('soloStreakDailyTracker', () => {
             streakName,
             streakDescription,
         });
-        lostSoloStreakId = lostSoloStreak._id;
+        const lostSoloStreakId = lostSoloStreak._id;
 
         const completeSoloStreakTask = await streakoid.completeSoloStreakTasks.create({
             userId,
@@ -275,9 +275,6 @@ describe('soloStreakDailyTracker', () => {
         expect(Object.keys(lostStreakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
-
-        lostSoloStreakAgendaJobId = String(job.attrs._id);
-        lostStreakTrackingEventId = lostStreakTrackingEvent._id;
     });
 
     test('manages inactive streaks correctly', async () => {
@@ -292,10 +289,9 @@ describe('soloStreakDailyTracker', () => {
             streakName,
             streakDescription,
         });
-        inactiveSoloStreakId = inactiveSoloStreak._id;
+        const inactiveSoloStreakId = inactiveSoloStreak._id;
 
         const job = await createSoloStreakDailyTrackerJob(timezone);
-        inactiveSoloStreakAgendaJobId = String(job.attrs._id);
 
         await job.run();
 
@@ -338,7 +334,6 @@ describe('soloStreakDailyTracker', () => {
             streakId: inactiveSoloStreakId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];
-        inactiveStreakTrackingEventId = streakTrackingEvent._id;
 
         expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.inactiveStreak);
         expect(streakTrackingEvent.userId).toBeDefined();
