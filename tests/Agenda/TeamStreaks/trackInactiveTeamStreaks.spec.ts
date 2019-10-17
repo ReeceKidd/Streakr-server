@@ -1,8 +1,13 @@
+import mongoose from 'mongoose';
+
 import streakoid from '../../../src/streakoid';
 
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 import { trackInactiveTeamStreaks } from '../../../src/Agenda/TeamStreaks/trackInactiveTeamStreaks';
+import { getServiceConfig } from '../../../src/getServiceConfig';
+
+const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
 
 const username = 'trackinactiveieamstreakUsername';
 const email = 'trackinactiveteamstreak@gmail.com';
@@ -11,38 +16,31 @@ jest.setTimeout(120000);
 
 describe('trackInactiveTeamStreak', () => {
     let userId: string;
-    let teamStreakId: string;
-    let streakTrackingEventId: string;
-
-    const streakName = 'Daily Programming';
-    const streakDescription = 'I will program for one hour everyday';
+    const streakName = 'Daily Spanish';
 
     beforeAll(async () => {
-        const user = await streakoid.users.create({
-            email,
-            username,
-        });
-        userId = user._id;
-        const creatorId = userId;
-        const members = [{ memberId: userId }];
-
-        const teamStreak = await streakoid.teamStreaks.create({
-            creatorId,
-            streakName,
-            streakDescription,
-            members,
-        });
-        teamStreakId = teamStreak._id;
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+            const user = await streakoid.users.create({ username, email });
+            userId = user._id;
+        }
     });
 
     afterAll(async () => {
-        await streakoid.users.deleteOne(userId);
-        await streakoid.teamStreaks.deleteOne(teamStreakId);
-        await streakoid.streakTrackingEvents.deleteOne(streakTrackingEventId);
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            mongoose.connection.dropDatabase();
+            mongoose.disconnect();
+        }
     });
 
     test('creates a streak inactive tracking event', async () => {
-        expect.assertions(29);
+        expect.assertions(28);
+
+        const creatorId = userId;
+        const members = [{ memberId: userId }];
+        const teamStreak = await streakoid.teamStreaks.create({ creatorId, streakName, members });
+
+        const teamStreakId = teamStreak._id;
 
         const inactiveTeamStreaks = await streakoid.teamStreaks.getAll({
             completedToday: false,
@@ -55,7 +53,6 @@ describe('trackInactiveTeamStreak', () => {
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
-        expect(updatedTeamStreak.streakDescription).toEqual(streakDescription);
         expect(updatedTeamStreak.completedToday).toEqual(false);
         expect(updatedTeamStreak.active).toEqual(false);
         expect(updatedTeamStreak.pastStreaks.length).toEqual(0);
@@ -88,7 +85,6 @@ describe('trackInactiveTeamStreak', () => {
                 'active',
                 'pastStreaks',
                 'streakName',
-                'streakDescription',
                 'timezone',
                 'creator',
                 'creatorId',

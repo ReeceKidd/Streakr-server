@@ -36,6 +36,26 @@ export const resetIncompleteTeamStreaks = async (
                 },
             });
 
+            await Promise.all(
+                teamStreak.members.map(async member => {
+                    const pastStreaks: PastStreak[] = [...teamStreak.pastStreaks, pastStreak];
+                    await streakoid.teamMemberStreaks.update({
+                        teamMemberStreakId: member.teamMemberStreak._id,
+                        updateData: {
+                            currentStreak,
+                            pastStreaks,
+                            active: false,
+                        },
+                    });
+                    return streakoid.streakTrackingEvents.create({
+                        type: StreakTrackingEventTypes.forcedToLoseStreakBecauseTeamMemberDidNotCompleteTask,
+                        streakId: member.teamMemberStreak._id,
+                        streakType: StreakTypes.teamMember,
+                        userId: member._id,
+                    });
+                }),
+            );
+
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventTypes.lostStreak,
                 streakId: teamStreak._id,

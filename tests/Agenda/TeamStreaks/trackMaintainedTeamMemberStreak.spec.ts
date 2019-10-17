@@ -1,8 +1,13 @@
+import mongoose from 'mongoose';
+
 import streakoid from '.../../../src/streakoid';
 
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 import { trackMaintainedTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/trackMaintainedTeamMemberStreaks';
 import { londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { getServiceConfig } from '../../../src/getServiceConfig';
+
+const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
 
 const username = 'trackmaintainedteammemberstreakusername';
 const email = 'trackMaintainedteammemberStreak@gmail.com';
@@ -11,49 +16,46 @@ jest.setTimeout(120000);
 
 describe('trackMaintainedTeamMemberStreak', () => {
     let userId: string;
-    let teamStreakId: string;
-    let teamMemberStreakId: string;
-
-    const streakName = 'Daily Programming';
-    const streakDescription = 'I will program for one hour everyday';
+    const streakName = 'Daily Spanish';
 
     beforeAll(async () => {
-        const user = await streakoid.users.create({
-            username,
-            email,
-        });
-        userId = user._id;
-        const members = [{ memberId: userId }];
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+            const user = await streakoid.users.create({ username, email });
+            userId = user._id;
+        }
+    });
 
-        const teamStreak = await streakoid.teamStreaks.create({
-            creatorId: userId,
-            streakName,
-            streakDescription,
-            members,
-        });
-        teamStreakId = teamStreak._id;
-
-        const teamMemberStreak = await streakoid.teamMemberStreaks.create({
-            userId,
-            teamStreakId,
-        });
-        teamMemberStreakId = teamMemberStreak._id;
+    afterAll(async () => {
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            mongoose.connection.dropDatabase();
+            mongoose.disconnect();
+        }
     });
 
     test('updates teamMember streak activity and creates a streak maintained tracking event', async () => {
-        expect.assertions(31);
+        expect.assertions(30);
+
+        const creatorId = userId;
+        const members = [{ memberId: userId }];
+        const teamStreak = await streakoid.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreakId = teamStreak._id;
+
+        const teamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId,
+        });
+        const teamMemberStreakId = teamMemberStreaks[0]._id;
 
         const completeTeamMemberStreakTask = await streakoid.completeTeamMemberStreakTasks.create({
             userId,
             teamStreakId,
             teamMemberStreakId: teamMemberStreakId,
-            streakType: StreakTypes.teamMember,
         });
 
         expect(completeTeamMemberStreakTask._id).toBeDefined();
         expect(completeTeamMemberStreakTask.teamMemberStreakId).toEqual(teamMemberStreakId);
         expect(completeTeamMemberStreakTask.teamStreakId).toEqual(teamStreakId);
-        expect(completeTeamMemberStreakTask.streakType).toEqual(StreakTypes.teamMember);
         expect(completeTeamMemberStreakTask.userId).toEqual(userId);
         expect(completeTeamMemberStreakTask.taskCompleteTime).toEqual(expect.any(String));
         expect(completeTeamMemberStreakTask.taskCompleteDay).toEqual(expect.any(String));
@@ -64,7 +66,6 @@ describe('trackMaintainedTeamMemberStreak', () => {
                 '_id',
                 'teamMemberStreakId',
                 'teamStreakId',
-                'streakType',
                 'taskCompleteTime',
                 'taskCompleteDay',
                 'createdAt',

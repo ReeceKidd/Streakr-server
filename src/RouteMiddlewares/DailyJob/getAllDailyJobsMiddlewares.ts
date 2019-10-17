@@ -3,13 +3,14 @@ import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
-import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
+import { dailyJobModel, DailyJobModel } from '../../../src/Models/DailyJob';
 
 const getDailyJobsQueryValidationSchema = {
     agendaJobId: Joi.string(),
-    jobName: Joi.string(),
+    jobName: Joi.string().valid(Object.keys(AgendaJobNames)),
     timezone: Joi.string(),
 };
 
@@ -25,7 +26,7 @@ export const getDailyJobsQueryValidationMiddleware = (
     );
 };
 
-export const getFindDailyJobsMiddleware = (soloStreakModel: mongoose.Model<SoloStreakModel>) => async (
+export const getFindDailyJobsMiddleware = (dailyJobModel: mongoose.Model<DailyJobModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -49,14 +50,14 @@ export const getFindDailyJobsMiddleware = (soloStreakModel: mongoose.Model<SoloS
             query.timezone = timezone;
         }
 
-        response.locals.dailyJobs = await soloStreakModel.find(query);
+        response.locals.dailyJobs = await dailyJobModel.find(query);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FindDailyJobsMiddleware, err));
     }
 };
 
-export const findDailyJobsMiddleware = getFindDailyJobsMiddleware(soloStreakModel);
+export const findDailyJobsMiddleware = getFindDailyJobsMiddleware(dailyJobModel);
 
 export const sendDailyJobsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {

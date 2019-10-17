@@ -1,47 +1,51 @@
+import mongoose from 'mongoose';
+
 import streakoid from '.../../../src/streakoid';
 
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 import { londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
 import { trackInactiveTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/trackInactiveTeamMemberStreaks';
+import { getServiceConfig } from '../../../src/getServiceConfig';
 
 const username = 'trackinactiveteammemberstreakusername';
 const email = 'track-inactive-team-member-streak@gmail.com';
+
+const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
 
 jest.setTimeout(120000);
 
 describe('trackInactiveTeamMemberStreak', () => {
     let userId: string;
-    let teamStreakId: string;
-    let teamMemberStreakId: string;
-
-    const streakName = 'Daily Programming';
-    const streakDescription = 'I will program for one hour everyday';
+    const streakName = 'Daily Spanish';
 
     beforeAll(async () => {
-        const user = await streakoid.users.create({
-            username,
-            email,
-        });
-        userId = user._id;
-        const members = [{ memberId: userId }];
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+            const user = await streakoid.users.create({ username, email });
+            userId = user._id;
+        }
+    });
 
-        const teamStreak = await streakoid.teamStreaks.create({
-            creatorId: userId,
-            streakName,
-            streakDescription,
-            members,
-        });
-        teamStreakId = teamStreak._id;
-
-        const teamMemberStreak = await streakoid.teamMemberStreaks.create({
-            userId,
-            teamStreakId,
-        });
-        teamMemberStreakId = teamMemberStreak._id;
+    afterAll(async () => {
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            mongoose.connection.dropDatabase();
+            mongoose.disconnect();
+        }
     });
 
     test('updates teamMember streak activity and creates a streak inactive tracking event', async () => {
         expect.assertions(21);
+
+        const creatorId = userId;
+        const members = [{ memberId: userId }];
+        const teamStreak = await streakoid.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreakId = teamStreak._id;
+
+        const teamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId,
+        });
+        const teamMemberStreakId = teamMemberStreaks[0]._id;
 
         const inactiveTeamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
             completedToday: false,

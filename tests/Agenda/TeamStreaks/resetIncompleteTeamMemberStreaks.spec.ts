@@ -1,9 +1,14 @@
+import mongoose from 'mongoose';
+
 import streakoid from '../../../src/streakoid';
 
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 import { resetIncompleteTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/resetIncompleteTeamMemberStreaks';
 import { resetIncompleteTeamStreaks } from '../../../src/Agenda/TeamStreaks/resetIncompleteTeamStreaks';
+import { getServiceConfig } from '../../../src/getServiceConfig';
+
+const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
 
 const username = 'resetincompleteteammemberstreaksusername';
 const email = 'resetIncompleteTeamMemberStreaks@gmail.com';
@@ -12,50 +17,43 @@ jest.setTimeout(120000);
 
 describe('resetIncompleteTeamMemberStreaks', () => {
     let userId: string;
-    let teamStreakId: string;
-    let teamMemberStreakId: string;
-    let streakTrackingEventId: string;
-    const streakName = 'Daily Programming';
-    const streakDescription = 'I will program for one hour everyday';
+    const streakName = 'Daily Spanish';
 
     beforeAll(async () => {
-        const user = await streakoid.users.create({
-            username,
-            email,
-        });
-        userId = user._id;
-        const members = [{ memberId: userId }];
-
-        const teamStreak = await streakoid.teamStreaks.create({
-            creatorId: userId,
-            streakName,
-            streakDescription,
-            members,
-        });
-        teamStreakId = teamStreak._id;
-
-        const teamMemberStreak = await streakoid.teamMemberStreaks.create({
-            userId,
-            teamStreakId,
-        });
-        teamMemberStreakId = teamMemberStreak._id;
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+            const user = await streakoid.users.create({ username, email });
+            userId = user._id;
+        }
     });
 
     afterAll(async () => {
-        await streakoid.users.deleteOne(userId);
-        await streakoid.teamStreaks.deleteOne(teamStreakId);
-        await streakoid.teamMemberStreaks.deleteOne(teamMemberStreakId);
-        await streakoid.streakTrackingEvents.deleteOne(streakTrackingEventId);
+        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+            mongoose.connection.dropDatabase();
+            mongoose.disconnect();
+        }
     });
 
     test('adds current team member streak to past streak, resets the current streak and creats a lost streak tracking event. Sets teamStreak completedToday to false', async () => {
-        expect.assertions(34);
+        expect.assertions(33);
+
+        const creatorId = userId;
+        const members = [{ memberId: userId }];
+        const teamStreak = await streakoid.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreakId = teamStreak._id;
 
         //Emulate team streak being active so the incomplete team member streak can reset it.
         await streakoid.teamStreaks.update({
             teamStreakId,
             updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
         });
+
+        const teamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+        const teamMemberStreakId = teamMemberStreak._id;
 
         // Emulate team member streak being active
         await streakoid.teamMemberStreaks.update({
@@ -83,7 +81,6 @@ describe('resetIncompleteTeamMemberStreaks', () => {
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
-        expect(updatedTeamStreak.streakDescription).toEqual(streakDescription);
         expect(updatedTeamStreak.completedToday).toEqual(false);
         expect(updatedTeamStreak.active).toEqual(false);
         expect(updatedTeamStreak.pastStreaks.length).toEqual(1);
@@ -118,7 +115,6 @@ describe('resetIncompleteTeamMemberStreaks', () => {
                 'active',
                 'pastStreaks',
                 'streakName',
-                'streakDescription',
                 'timezone',
                 'creator',
                 'creatorId',
@@ -133,7 +129,6 @@ describe('resetIncompleteTeamMemberStreaks', () => {
             streakId: teamMemberStreakId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];
-        streakTrackingEventId = streakTrackingEvent._id;
 
         expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.lostStreak);
         expect(streakTrackingEvent.streakId).toBeDefined();

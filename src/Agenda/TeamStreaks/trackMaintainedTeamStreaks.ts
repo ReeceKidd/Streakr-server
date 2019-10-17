@@ -9,7 +9,6 @@ import {
 export const trackMaintainedTeamStreaks = async (
     maintainedTeamStreaks: PopulatedTeamStreak[],
 ): Promise<StreakTrackingEvent[]> => {
-    console.log('Entered track maintained team streaks');
     return Promise.all(
         maintainedTeamStreaks.map(async teamStreak => {
             await streakoid.teamStreaks.update({
