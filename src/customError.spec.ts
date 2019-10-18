@@ -3339,4 +3339,15 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to FormatUpdatedUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FormatUpdatedUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-232`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

@@ -6,6 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { User } from '@streakoid/streakoid-sdk/lib';
 
 const userParamsValidationSchema = {
     userId: Joi.string().required(),
@@ -39,7 +40,7 @@ export const getPatchUserMiddleware = (userModel: mongoose.Model<UserModel>) => 
     try {
         const { userId } = request.params;
         const keysToUpdate = request.body;
-        const updatedUser = await userModel.findByIdAndUpdate(userId, { ...keysToUpdate }, { new: true });
+        const updatedUser = await userModel.findByIdAndUpdate(userId, { ...keysToUpdate }, { new: true }).lean();
         if (!updatedUser) {
             throw new CustomError(ErrorType.UpdatedUserNotFound);
         }
@@ -52,6 +53,19 @@ export const getPatchUserMiddleware = (userModel: mongoose.Model<UserModel>) => 
 };
 
 export const patchUserMiddleware = getPatchUserMiddleware(userModel);
+
+export const formatUpdatedUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const user: User = response.locals.user;
+        response.locals.user = {
+            ...user,
+            email: undefined,
+        };
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.FormatUpdatedUserMiddleware, err));
+    }
+};
 
 export const sendUpdatedUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -66,5 +80,6 @@ export const patchUserMiddlewares = [
     userParamsValidationMiddleware,
     userRequestBodyValidationMiddleware,
     patchUserMiddleware,
+    formatUpdatedUserMiddleware,
     sendUpdatedUserMiddleware,
 ];

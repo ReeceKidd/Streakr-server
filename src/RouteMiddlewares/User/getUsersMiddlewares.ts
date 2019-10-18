@@ -46,7 +46,7 @@ export const getRetreiveUsersMiddleware = (userModel: mongoose.Model<UserModel>)
         } else if (email) {
             query.email = email;
         }
-        response.locals.users = await userModel.find(query);
+        response.locals.users = await userModel.find(query).lean();
         next();
     } catch (err) {
         next(new CustomError(ErrorType.RetreiveUsersMiddleware, err));

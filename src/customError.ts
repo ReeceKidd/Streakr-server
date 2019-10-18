@@ -309,6 +309,7 @@ export enum ErrorType {
     FindDailyJobsMiddleware,
     SendDailyJobsMiddleware,
     FormatUserMiddleware,
+    FormatUpdatedUserMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -2527,6 +2528,13 @@ export class CustomError extends Error {
             case ErrorType.FormatUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-231`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FormatUpdatedUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-232`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

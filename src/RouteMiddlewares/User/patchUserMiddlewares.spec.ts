@@ -6,6 +6,7 @@ import {
     patchUserMiddleware,
     sendUpdatedUserMiddleware,
     userParamsValidationMiddleware,
+    formatUpdatedUserMiddleware,
 } from './patchUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -140,6 +141,39 @@ describe('patchUserMiddleware', () => {
     });
 });
 
+describe('formatUpdatedUserMiddleware', () => {
+    test('sends users in response', () => {
+        expect.assertions(2);
+        const request: any = {};
+        const _id = '_id';
+        const username = 'username';
+        const email = 'email';
+        const user = {
+            _id,
+            username,
+            email,
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        formatUpdatedUserMiddleware(request, response, next);
+
+        expect(next).toBeCalled();
+        expect(response.locals.user.email).toBeUndefined();
+    });
+
+    test('calls next with FormatUpdatedUserMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        formatUpdatedUserMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.FormatUpdatedUserMiddleware, expect.any(Error)));
+    });
+});
+
 describe('sendUpdatedPatchMiddleware', () => {
     const ERROR_MESSAGE = 'error';
     const updatedTimezone = 'Europe/Paris';
@@ -184,12 +218,13 @@ describe('sendUpdatedPatchMiddleware', () => {
 
 describe('patchUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(5);
+        expect.assertions(6);
 
-        expect(patchUserMiddlewares.length).toBe(4);
+        expect(patchUserMiddlewares.length).toBe(5);
         expect(patchUserMiddlewares[0]).toBe(userParamsValidationMiddleware);
         expect(patchUserMiddlewares[1]).toBe(userRequestBodyValidationMiddleware);
         expect(patchUserMiddlewares[2]).toBe(patchUserMiddleware);
-        expect(patchUserMiddlewares[3]).toBe(sendUpdatedUserMiddleware);
+        expect(patchUserMiddlewares[3]).toBe(formatUpdatedUserMiddleware);
+        expect(patchUserMiddlewares[4]).toBe(sendUpdatedUserMiddleware);
     });
 });

@@ -29,7 +29,7 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
 ): Promise<void> => {
     try {
         const { userId } = request.params;
-        const user = await userModel.findOne({ _id: userId });
+        const user = await userModel.findOne({ _id: userId }).lean();
         if (!user) {
             throw new CustomError(ErrorType.NoUserFound);
         }
