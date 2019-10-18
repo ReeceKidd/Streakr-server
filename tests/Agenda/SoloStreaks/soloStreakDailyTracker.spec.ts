@@ -72,8 +72,6 @@ describe('soloStreakDailyTracker', () => {
             'repeatTimezone',
             '_id',
         ]);
-
-        await streakoid.agendaJobs.deleteOne(String(_id));
     });
 
     test('maintains streaks correctly', async () => {
