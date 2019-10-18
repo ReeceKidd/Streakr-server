@@ -91,7 +91,8 @@ describe('patchUserMiddleware', () => {
         };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+        const lean = jest.fn().mockResolvedValue(true);
+        const findByIdAndUpdate = jest.fn(() => ({ lean }));
         const userModel = {
             findByIdAndUpdate,
         };
@@ -104,7 +105,7 @@ describe('patchUserMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws UpdatedUserNotFound error when solo streak is not found', async () => {
+    test('throws UpdatedUserNotFound error when user is not found', async () => {
         expect.assertions(1);
         const userId = '123cde';
         const request: any = {
@@ -116,7 +117,8 @@ describe('patchUserMiddleware', () => {
         };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const findByIdAndUpdate = jest.fn(() => Promise.resolve(false));
+        const lean = jest.fn().mockResolvedValue(false);
+        const findByIdAndUpdate = jest.fn(() => ({ lean }));
         const userModel = {
             findByIdAndUpdate,
         };
@@ -142,24 +144,24 @@ describe('patchUserMiddleware', () => {
 });
 
 describe('formatUpdatedUserMiddleware', () => {
-    test('sends users in response', () => {
+    test('removes email from updatedUser and removes updated user email', () => {
         expect.assertions(2);
         const request: any = {};
         const _id = '_id';
         const username = 'username';
         const email = 'email';
-        const user = {
+        const updatedUser = {
             _id,
             username,
             email,
         };
-        const response: any = { locals: { user } };
+        const response: any = { locals: { updatedUser } };
         const next = jest.fn();
 
         formatUpdatedUserMiddleware(request, response, next);
 
         expect(next).toBeCalled();
-        expect(response.locals.user.email).toBeUndefined();
+        expect(response.locals.updatedUser.email).toBeUndefined();
     });
 
     test('calls next with FormatUpdatedUserMiddleware error on middleware failure', () => {
@@ -175,38 +177,31 @@ describe('formatUpdatedUserMiddleware', () => {
 });
 
 describe('sendUpdatedPatchMiddleware', () => {
-    const ERROR_MESSAGE = 'error';
-    const updatedTimezone = 'Europe/Paris';
-    const updatedUser = {
-        userId: 'abc',
-        timezone: updatedTimezone,
-    };
-
     test('sends updatedUser', () => {
-        expect.assertions(4);
+        expect.assertions(3);
+        const updatedTimezone = 'Europe/Paris';
+        const updatedUser = {
+            userId: 'abc',
+            timezone: updatedTimezone,
+        };
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const userResponseLocals = { updatedUser };
         const response: any = { locals: userResponseLocals, status };
         const request: any = {};
         const next = jest.fn();
-        const updatedResourceResponseCode = 200;
 
         sendUpdatedUserMiddleware(request, response, next);
 
-        expect(response.locals.user).toBeUndefined();
         expect(next).not.toBeCalled();
-        expect(status).toBeCalledWith(updatedResourceResponseCode);
+        expect(status).toBeCalledWith(ResponseCodes.success);
         expect(send).toBeCalledWith(updatedUser);
     });
 
     test('calls next with SendUpdatedUserMiddleware error on middleware failure', () => {
         expect.assertions(1);
-        const send = jest.fn(() => {
-            throw new Error(ERROR_MESSAGE);
-        });
-        const status = jest.fn(() => ({ send }));
-        const response: any = { locals: { updatedUser }, status };
+
+        const response: any = {};
         const request: any = {};
         const next = jest.fn();
 

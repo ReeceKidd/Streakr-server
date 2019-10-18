@@ -56,8 +56,8 @@ export const patchUserMiddleware = getPatchUserMiddleware(userModel);
 
 export const formatUpdatedUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const user: User = response.locals.user;
-        response.locals.user = {
+        const user: User = response.locals.updatedUser;
+        response.locals.updatedUser = {
             ...user,
             email: undefined,
         };

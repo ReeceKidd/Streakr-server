@@ -154,14 +154,12 @@ describe('getRetreiveUsersMiddleware', () => {
     test('retrieves users with searchQuery and sets response.locals.users', async () => {
         expect.assertions(3);
         const searchQuery = 'searchQuery';
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const find = jest.fn(() => Promise.resolve(true));
+        const lean = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ lean }));
         const userModel = { find };
         const request: any = { query: { searchQuery } };
         const response: any = {
             locals: {},
-            status,
         };
         const next = jest.fn();
         const middleware = getRetreiveUsersMiddleware(userModel as any);
@@ -178,14 +176,12 @@ describe('getRetreiveUsersMiddleware', () => {
     test('retrieves users with username and sets response.locals.users', async () => {
         expect.assertions(3);
         const username = 'username';
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const find = jest.fn(() => Promise.resolve(true));
+        const lean = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ lean }));
         const userModel = { find };
         const request: any = { query: { username } };
         const response: any = {
             locals: {},
-            status,
         };
         const next = jest.fn();
         const middleware = getRetreiveUsersMiddleware(userModel as any);
@@ -202,14 +198,12 @@ describe('getRetreiveUsersMiddleware', () => {
     test('retrieves users with email and sets response.locals.users', async () => {
         expect.assertions(3);
         const email = 'email';
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const find = jest.fn(() => Promise.resolve(true));
+        const lean = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ lean }));
         const userModel = { find };
         const request: any = { query: { email } };
         const response: any = {
             locals: {},
-            status,
         };
         const next = jest.fn();
         const middleware = getRetreiveUsersMiddleware(userModel as any);
@@ -225,14 +219,12 @@ describe('getRetreiveUsersMiddleware', () => {
 
     test('retrieves users without searchQuery or username and sets response.locals.users', async () => {
         expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const find = jest.fn(() => Promise.resolve(true));
+        const lean = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ lean }));
         const userModel = { find };
         const request: any = { query: {} };
         const response: any = {
             locals: {},
-            status,
         };
         const next = jest.fn();
         const middleware = getRetreiveUsersMiddleware(userModel as any);
@@ -247,13 +239,11 @@ describe('getRetreiveUsersMiddleware', () => {
     test('calls next with RetreiveUsersMiddleware error on middleware failure', async () => {
         expect.assertions(2);
         const errorMessage = 'error';
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const find = jest.fn(() => Promise.reject(errorMessage));
+        const lean = jest.fn().mockRejectedValue(errorMessage);
+        const find = jest.fn(() => ({ lean }));
         const userModel = { find };
         const request: any = {};
         const response: any = {
-            status,
             locals: {},
         };
         const next = jest.fn();

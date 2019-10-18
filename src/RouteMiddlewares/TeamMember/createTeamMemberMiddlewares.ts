@@ -129,7 +129,6 @@ export const getAddFriendToTeamStreakMiddleware = (teamStreakModel: mongoose.Mod
         const teamStreak: TeamStreak = response.locals.teamStreak;
         let members: TeamMember[] = teamStreak.members;
         members = [...members, { memberId: friendId, teamMemberStreakId: teamMemberStreak._id }];
-        console.log(members);
         const updatedTeamStreak = await teamStreakModel
             .findByIdAndUpdate(
                 teamStreakId,
@@ -142,7 +141,6 @@ export const getAddFriendToTeamStreakMiddleware = (teamStreakModel: mongoose.Mod
         response.locals.teamStreak = updatedTeamStreak;
         next();
     } catch (err) {
-        console.log(err);
         next(new CustomError(ErrorType.AddFriendToTeamStreakMiddleware, err));
     }
 };
@@ -156,7 +154,6 @@ export const sendCreateTeamMemberResponseMiddleware = (
 ): void => {
     try {
         const { teamStreak } = response.locals;
-        console.log(teamStreak);
         response.status(ResponseCodes.created).send(teamStreak.members);
     } catch (err) {
         next(new CustomError(ErrorType.SendCreateTeamMemberResponseMiddleware, err));
