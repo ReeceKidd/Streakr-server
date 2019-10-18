@@ -8,9 +8,10 @@ describe('resetIncompleteTeamStreaks', () => {
         jest.resetAllMocks();
     });
 
-    test('that incomplete team streaks default current streak is reset and old streak is pushed to past streaks and lost streak activity is recorded', async () => {
-        expect.assertions(2);
+    test('incomplete team streaks current streak is reset and old streak is pushed to past streaks, lost streak activity is recorded and each teamMemberStreak is reset', async () => {
+        expect.assertions(3);
         streakoid.teamStreaks.update = jest.fn().mockResolvedValue({ data: {} });
+        streakoid.teamMemberStreaks.update = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = '1234';
         const endDate = new Date().toString();
@@ -19,6 +20,21 @@ describe('resetIncompleteTeamStreaks', () => {
             numberOfDaysInARow: 0,
         };
         const userId = '5c35116059f7ba19e4e248a9';
+        const member = {
+            _id,
+            teamMemberStreak: {
+                _id,
+                currentStreak,
+                startDate: new Date().toString(),
+                completedToday: false,
+                pastStreaks: [],
+                userId,
+                timezone: 'Europe/London',
+                createdAt: new Date().toString(),
+                updatedAt: new Date().toString(),
+            },
+        };
+        const members = [member];
         const incompleteTeamStreaks = [
             {
                 _id,
@@ -32,6 +48,7 @@ describe('resetIncompleteTeamStreaks', () => {
                 timezone: 'Europe/London',
                 createdAt: new Date().toString(),
                 updatedAt: new Date().toString(),
+                members,
             } as any,
         ];
         const pastStreaks = [{ numberOfDaysInARow: 0, endDate, startDate: endDate }];
@@ -39,6 +56,15 @@ describe('resetIncompleteTeamStreaks', () => {
 
         expect(streakoid.teamStreaks.update).toBeCalledWith({
             teamStreakId: _id,
+            updateData: {
+                currentStreak: { startDate: '', numberOfDaysInARow: 0 },
+                pastStreaks,
+                active: false,
+            },
+        });
+
+        expect(streakoid.teamMemberStreaks.update).toBeCalledWith({
+            teamMemberStreakId: _id,
             updateData: {
                 currentStreak: { startDate: '', numberOfDaysInARow: 0 },
                 pastStreaks,

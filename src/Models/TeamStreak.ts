@@ -45,7 +45,7 @@ export const teamStreakSchema = new mongoose.Schema(
             type: Number,
         },
         members: {
-            type: [],
+            type: Array,
             default: [],
         },
         timezone: {

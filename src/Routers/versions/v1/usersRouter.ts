@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import { getUsersMiddlewares } from '../../../RouteMiddlewares/User/getUsersMiddlewares';
-import { deleteUserMiddlewares } from '../../../RouteMiddlewares/User/deleteUserMiddlewares';
 import { getUserMiddlewares } from '../../../RouteMiddlewares/User/getUserMiddlewares';
 
 import { getFriendsMiddlewares } from '../../../RouteMiddlewares/User/Friends/getFriendsMiddlewares';
@@ -19,8 +18,6 @@ usersRouter.get('/', ...getUsersMiddlewares);
 usersRouter.get(`/:${userId}`, ...getUserMiddlewares);
 
 usersRouter.patch(`/:${userId}`, ...patchUserMiddlewares);
-
-usersRouter.delete(`/:${userId}`, ...deleteUserMiddlewares);
 
 // Friends routes
 

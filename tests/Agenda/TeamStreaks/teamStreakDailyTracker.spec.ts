@@ -29,7 +29,8 @@ describe('teamStreakDailyTracker', () => {
 
     beforeAll(async () => {
         if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+            await mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+            await mongoose.connection.dropDatabase();
             const user = await streakoid.users.create({ username, email });
             userId = user._id;
             const friend = await streakoid.users.create({ username: friendUsername, email: friendEmail });
@@ -39,8 +40,8 @@ describe('teamStreakDailyTracker', () => {
 
     afterAll(async () => {
         if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            mongoose.connection.dropDatabase();
-            mongoose.disconnect();
+            await mongoose.connection.dropDatabase();
+            await mongoose.disconnect();
         }
     });
 

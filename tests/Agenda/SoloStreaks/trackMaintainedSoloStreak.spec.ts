@@ -21,7 +21,8 @@ describe('trackMaintainedSoloStreak', () => {
 
     beforeAll(async () => {
         if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+            await mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+            await mongoose.connection.dropDatabase();
             const user = await streakoid.users.create({ username, email });
             userId = user._id;
         }
@@ -29,8 +30,8 @@ describe('trackMaintainedSoloStreak', () => {
 
     afterAll(async () => {
         if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            mongoose.connection.dropDatabase();
-            mongoose.disconnect();
+            await mongoose.connection.dropDatabase();
+            await mongoose.disconnect();
         }
     });
 

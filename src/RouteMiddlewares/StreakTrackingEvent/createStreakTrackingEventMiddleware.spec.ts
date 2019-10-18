@@ -58,7 +58,7 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message:
-                'child "type" fails because ["type" must be one of [lostStreak, maintainedStreak, inactiveStreak]]',
+                'child "type" fails because ["type" must be one of [lostStreak, maintainedStreak, inactiveStreak, forcedToLoseStreakBecauseTeamMemberDidNotCompleteTask]]',
         });
         expect(next).not.toBeCalled();
     });

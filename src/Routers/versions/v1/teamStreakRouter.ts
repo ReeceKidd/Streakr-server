@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { getAllTeamStreaksMiddlewares } from '../../../RouteMiddlewares/TeamStreak/getAllTeamStreaksMiddlewares';
 import { getOneTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/getOneTeamStreakMiddlewares';
-import { deleteTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/deleteTeamStreakMiddlewares';
 import { deleteTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMember/deleteTeamMemberMiddlewares';
 import { createTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/createTeamStreakMiddlewares';
 import { patchTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/patchTeamStreakMiddlewares';
@@ -20,8 +19,6 @@ export enum TeamStreakRouteCategories {
 teamStreaksRouter.get(`/`, ...getAllTeamStreaksMiddlewares);
 
 teamStreaksRouter.get(`/:${teamStreakId}`, ...getOneTeamStreakMiddlewares);
-
-teamStreaksRouter.delete(`/:${teamStreakId}`, ...deleteTeamStreakMiddlewares);
 
 teamStreaksRouter.delete(
     `/:${teamStreakId}/${TeamStreakRouteCategories.members}/:${memberId}`,

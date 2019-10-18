@@ -7,7 +7,6 @@ import { completeSoloStreakTasksRouter } from './completeSoloStreakTasksRouter';
 import { completeTeamMemberStreakTasksRouter } from './completeTeamMemberStreakTaskRouter';
 import { teamStreaksRouter } from './teamStreakRouter';
 import { streakTrackingEventRouter } from './streakTrackingEventRouter';
-import { agendaJobsRouter } from './agendaJobRouter';
 import { feedbackRouter } from './feedbackRouter';
 import { teamMemberStreaksRouter } from './teamMemberStreaksRouter';
 import { friendRequestsRouter } from './friendRequestRouter';
@@ -38,7 +37,6 @@ v1Router.use(`/${RouterCategories.completeTeamMemberStreakTasks}`, completeTeamM
 
 // Should be admin only routes
 v1Router.use(`/${RouterCategories.dailyJobs}`, dailyJobsRouter);
-v1Router.use(`/${RouterCategories.agendaJobs}`, agendaJobsRouter);
 
 // Authenticated User Routes
 v1Router.use(...authenticationMiddlewares);
