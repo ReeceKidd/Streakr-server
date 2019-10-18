@@ -6,6 +6,7 @@ import {
     getRetreiveUsersMiddleware,
     sendFormattedUsersMiddleware,
     retreiveUsersMiddleware,
+    formatUsersMiddleware,
 } from './getUsersMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -265,6 +266,40 @@ describe('getRetreiveUsersMiddleware', () => {
     });
 });
 
+describe('formatUsersMiddleware', () => {
+    test('sends users in response', () => {
+        expect.assertions(2);
+        const request: any = {};
+        const _id = '_id';
+        const username = 'username';
+        const email = 'email';
+        const user = {
+            _id,
+            username,
+            email,
+        };
+        const users = [user];
+        const response: any = { locals: { users } };
+        const next = jest.fn();
+
+        formatUsersMiddleware(request, response, next);
+
+        expect(next).toBeCalled();
+        expect(response.locals.users[0].email).toBeUndefined();
+    });
+
+    test('calls next with FormatUsersMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        formatUsersMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.FormatUsersMiddleware, expect.any(Error)));
+    });
+});
+
 describe('sendUsersMiddleware', () => {
     test('sends users in response', () => {
         expect.assertions(3);
@@ -301,11 +336,12 @@ describe('sendUsersMiddleware', () => {
 
 describe(`getUsersMiddlewares`, () => {
     test('that getUsersMiddlewares are defined in the correct order', () => {
-        expect.assertions(4);
+        expect.assertions(5);
 
-        expect(getUsersMiddlewares.length).toEqual(3);
+        expect(getUsersMiddlewares.length).toEqual(4);
         expect(getUsersMiddlewares[0]).toBe(getUsersValidationMiddleware);
         expect(getUsersMiddlewares[1]).toBe(retreiveUsersMiddleware);
-        expect(getUsersMiddlewares[2]).toBe(sendFormattedUsersMiddleware);
+        expect(getUsersMiddlewares[2]).toBe(formatUsersMiddleware);
+        expect(getUsersMiddlewares[3]).toBe(sendFormattedUsersMiddleware);
     });
 });

@@ -6,6 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { User } from '@streakoid/streakoid-sdk/lib';
 
 export const minimumSeachQueryLength = 1;
 export const maximumSearchQueryLength = 64;
@@ -33,21 +34,19 @@ export const getRetreiveUsersMiddleware = (userModel: mongoose.Model<UserModel>)
 ): Promise<void> => {
     try {
         const { searchQuery, username, email } = request.query;
+
+        const query: {
+            username?: { $regex: string } | string;
+            email?: string;
+        } = {};
         if (searchQuery) {
-            response.locals.users = await userModel.find({
-                username: { $regex: searchQuery.toLowerCase() },
-            });
+            query.username = { $regex: searchQuery.toLowerCase() };
         } else if (username) {
-            response.locals.users = await userModel.find({
-                username,
-            });
+            query.username = username;
         } else if (email) {
-            response.locals.users = await userModel.find({
-                email,
-            });
-        } else {
-            response.locals.users = await userModel.find({});
+            query.email = email;
         }
+        response.locals.users = await userModel.find(query);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.RetreiveUsersMiddleware, err));
@@ -55,6 +54,16 @@ export const getRetreiveUsersMiddleware = (userModel: mongoose.Model<UserModel>)
 };
 
 export const retreiveUsersMiddleware = getRetreiveUsersMiddleware(userModel);
+
+export const formatUsersMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const users: User[] = response.locals.users;
+        response.locals.users = users.map(user => ({ ...user, email: undefined }));
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.FormatUsersMiddleware, err));
+    }
+};
 
 export const sendFormattedUsersMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -68,5 +77,6 @@ export const sendFormattedUsersMiddleware = (request: Request, response: Respons
 export const getUsersMiddlewares = [
     getUsersValidationMiddleware,
     retreiveUsersMiddleware,
+    formatUsersMiddleware,
     sendFormattedUsersMiddleware,
 ];

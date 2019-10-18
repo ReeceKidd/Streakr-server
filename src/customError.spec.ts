@@ -1499,10 +1499,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to SendRetreiveUserResponseMiddleware`, () => {
+    test(`creates correct error when type is set to SendUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.SendRetreiveUserResponseMiddleware);
+        const customError = new CustomError(ErrorType.SendUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-65`);
@@ -3325,6 +3325,17 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-230`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to FormatUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FormatUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-231`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

@@ -6,6 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { User } from '@streakoid/streakoid-sdk/lib';
 
 const userParamsValidationSchema = {
     userId: Joi.string()
@@ -42,17 +43,31 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
 
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
-export const sendRetreiveUserResponseMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const user: User = response.locals.user;
+        response.locals.user = {
+            ...user,
+            email: undefined,
+        };
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.FormatUserMiddleware, err));
+    }
+};
+
+export const sendUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { user } = response.locals;
         response.status(ResponseCodes.success).send(user);
     } catch (err) {
-        next(new CustomError(ErrorType.SendRetreiveUserResponseMiddleware, err));
+        next(new CustomError(ErrorType.SendUserMiddleware, err));
     }
 };
 
 export const getUserMiddlewares = [
     userParamsValidationMiddleware,
     retreiveUserMiddleware,
-    sendRetreiveUserResponseMiddleware,
+    formatUserMiddleware,
+    sendUserMiddleware,
 ];

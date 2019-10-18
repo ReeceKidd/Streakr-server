@@ -2,9 +2,10 @@
 import {
     userParamsValidationMiddleware,
     getRetreiveUserMiddleware,
-    sendRetreiveUserResponseMiddleware,
+    sendUserMiddleware,
     getUserMiddlewares,
     retreiveUserMiddleware,
+    formatUserMiddleware,
 } from './getUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
@@ -159,7 +160,7 @@ describe('sendRetreiveUserResponseMiddleware', () => {
         const response: any = { locals: { user }, status };
         const next = jest.fn();
 
-        sendRetreiveUserResponseMiddleware(request, response, next);
+        sendUserMiddleware(request, response, next);
 
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(200);
@@ -175,19 +176,53 @@ describe('sendRetreiveUserResponseMiddleware', () => {
         const response: any = { status };
         const next = jest.fn();
 
-        await sendRetreiveUserResponseMiddleware(request, response, next);
+        await sendUserMiddleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.SendRetreiveUserResponseMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.SendUserMiddleware, expect.any(Error)));
+    });
+});
+
+describe('formatUserMiddleware', () => {
+    test('sends users in response', () => {
+        expect.assertions(2);
+        const request: any = {};
+        const _id = '_id';
+        const username = 'username';
+        const email = 'email';
+        const user = {
+            _id,
+            username,
+            email,
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        formatUserMiddleware(request, response, next);
+
+        expect(next).toBeCalled();
+        expect(response.locals.user.email).toBeUndefined();
+    });
+
+    test('calls next with FormatUserMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        formatUserMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.FormatUserMiddleware, expect.any(Error)));
     });
 });
 
 describe('getUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(4);
+        expect.assertions(5);
 
-        expect(getUserMiddlewares.length).toEqual(3);
+        expect(getUserMiddlewares.length).toEqual(4);
         expect(getUserMiddlewares[0]).toEqual(userParamsValidationMiddleware);
         expect(getUserMiddlewares[1]).toEqual(retreiveUserMiddleware);
-        expect(getUserMiddlewares[2]).toEqual(sendRetreiveUserResponseMiddleware);
+        expect(getUserMiddlewares[2]).toEqual(formatUserMiddleware);
+        expect(getUserMiddlewares[3]).toEqual(sendUserMiddleware);
     });
 });

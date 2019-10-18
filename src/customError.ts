@@ -84,7 +84,7 @@ export enum ErrorType {
     SendCompleteSoloStreakTaskDeletedResponseMiddleware,
     NoUserFound,
     GetRetreiveUserMiddleware,
-    SendRetreiveUserResponseMiddleware,
+    SendUserMiddleware,
     RetreiveIncompleteSoloStreaksMiddleware,
     RetreiveFriendsMiddleware,
     SendFormattedFriendsMiddleware,
@@ -308,6 +308,7 @@ export enum ErrorType {
     SetTeamStreakToActive,
     FindDailyJobsMiddleware,
     SendDailyJobsMiddleware,
+    FormatUserMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1361,7 +1362,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.SendRetreiveUserResponseMiddleware:
+            case ErrorType.SendUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-65`,
                     message: internalServerMessage,
@@ -2519,6 +2520,13 @@ export class CustomError extends Error {
             case ErrorType.SendDailyJobsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-230`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FormatUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-231`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
