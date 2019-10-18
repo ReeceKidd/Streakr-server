@@ -35,7 +35,7 @@ describe('trackMaintainedSoloStreak', () => {
         }
     });
 
-    test('updates solo streak activity and creates a streak maintained tracking event', async () => {
+    test('updates solo streak completedToday field and creates a streak maintained tracking event', async () => {
         expect.assertions(23);
 
         const soloStreak = await streakoid.soloStreaks.create({ userId, streakName, streakDescription });

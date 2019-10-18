@@ -5,7 +5,7 @@ import { createSoloStreakDailyTrackerJob } from '../../../src/scripts/initaliseS
 import streakoid from '../../../src/streakoid';
 
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
 import { getServiceConfig } from '../../../src/getServiceConfig';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEvent';
@@ -75,7 +75,7 @@ describe('soloStreakDailyTracker', () => {
     });
 
     test('maintains streaks correctly', async () => {
-        expect.assertions(31);
+        expect.assertions(40);
 
         const timezone = 'Europe/London';
 
@@ -169,10 +169,36 @@ describe('soloStreakDailyTracker', () => {
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
+
+        const agendaJobId = String(job.attrs._id);
+        const dailyJobs = await streakoid.dailyJobs.getAll({ agendaJobId });
+        const dailyJob = dailyJobs[0];
+
+        expect(dailyJob._id).toEqual(expect.any(String));
+        expect(dailyJob.agendaJobId).toEqual(agendaJobId);
+        expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
+        expect(dailyJob.timezone).toEqual('Europe/London');
+        expect(dailyJob.localisedJobCompleteTime).toEqual(expect.any(String));
+        expect(dailyJob.streakType).toEqual(StreakTypes.solo);
+        expect(dailyJob.createdAt).toEqual(expect.any(String));
+        expect(dailyJob.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(dailyJob).sort()).toEqual(
+            [
+                '_id',
+                'agendaJobId',
+                'jobName',
+                'timezone',
+                'localisedJobCompleteTime',
+                'streakType',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
     });
 
     test('manages lost streaks correctly', async () => {
-        expect.assertions(35);
+        expect.assertions(44);
 
         const timezone = 'Europe/London';
 
@@ -274,10 +300,36 @@ describe('soloStreakDailyTracker', () => {
         expect(Object.keys(lostStreakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
+
+        const agendaJobId = String(job.attrs._id);
+        const dailyJobs = await streakoid.dailyJobs.getAll({ agendaJobId });
+        const dailyJob = dailyJobs[0];
+
+        expect(dailyJob._id).toEqual(expect.any(String));
+        expect(dailyJob.agendaJobId).toEqual(agendaJobId);
+        expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
+        expect(dailyJob.timezone).toEqual('Europe/London');
+        expect(dailyJob.localisedJobCompleteTime).toEqual(expect.any(String));
+        expect(dailyJob.streakType).toEqual(StreakTypes.solo);
+        expect(dailyJob.createdAt).toEqual(expect.any(String));
+        expect(dailyJob.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(dailyJob).sort()).toEqual(
+            [
+                '_id',
+                'agendaJobId',
+                'jobName',
+                'timezone',
+                'localisedJobCompleteTime',
+                'streakType',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
     });
 
     test('manages inactive streaks correctly', async () => {
-        expect.assertions(22);
+        expect.assertions(31);
 
         const timezone = 'Europe/London';
         const streakName = 'Singing';
@@ -343,6 +395,32 @@ describe('soloStreakDailyTracker', () => {
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+
+        const agendaJobId = String(job.attrs._id);
+        const dailyJobs = await streakoid.dailyJobs.getAll({ agendaJobId });
+        const dailyJob = dailyJobs[0];
+
+        expect(dailyJob._id).toEqual(expect.any(String));
+        expect(dailyJob.agendaJobId).toEqual(agendaJobId);
+        expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
+        expect(dailyJob.timezone).toEqual('Europe/London');
+        expect(dailyJob.localisedJobCompleteTime).toEqual(expect.any(String));
+        expect(dailyJob.streakType).toEqual(StreakTypes.solo);
+        expect(dailyJob.createdAt).toEqual(expect.any(String));
+        expect(dailyJob.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(dailyJob).sort()).toEqual(
+            [
+                '_id',
+                'agendaJobId',
+                'jobName',
+                'timezone',
+                'localisedJobCompleteTime',
+                'streakType',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
         );
     });
 });
