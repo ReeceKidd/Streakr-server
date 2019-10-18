@@ -9,7 +9,7 @@ export interface AppConfigHttp {
     AWS_ACCESS_KEY_ID: string;
     AWS_SECRET_ACCESS_KEY: string;
     AWS_REGION: string;
-    STRIPE_SHAREABLE_KEY: string;
+    STRIPE_SECRET_KEY: string;
     STRIPE_PLAN: string;
     APPLICATION_URL: string;
     EMAIL_USER: string;
@@ -35,7 +35,7 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         AWS_ACCESS_KEY_ID,
         AWS_SECRET_ACCESS_KEY,
         AWS_REGION,
-        STRIPE_SHAREABLE_KEY,
+        STRIPE_SECRET_KEY,
         STRIPE_PLAN,
         APPLICATION_URL,
         EMAIL_USER,
@@ -70,8 +70,8 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         throw new Error('AWS_REGION is not provided.');
     }
 
-    if (!STRIPE_SHAREABLE_KEY) {
-        throw new Error('STRIPE_SHAREABLE_KEY is not provided.');
+    if (!STRIPE_SECRET_KEY) {
+        throw new Error('STRIPE_SECRET_KEY is not provided.');
     }
 
     if (!STRIPE_PLAN) {
@@ -130,7 +130,7 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         AWS_ACCESS_KEY_ID,
         AWS_SECRET_ACCESS_KEY,
         AWS_REGION,
-        STRIPE_SHAREABLE_KEY,
+        STRIPE_SECRET_KEY,
         STRIPE_PLAN,
         APPLICATION_URL,
         EMAIL_USER,

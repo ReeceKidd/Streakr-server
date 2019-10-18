@@ -9,7 +9,7 @@ describe('getServiceConfig', () => {
         AWS_ACCESS_KEY_ID: 'AWS_ACCESS_KEY_ID',
         AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY',
         AWS_REGION: 'AWS_REGION',
-        STRIPE_SHAREABLE_KEY: 'STRIPE_SHAREABLE_KEY',
+        STRIPE_SECRET_KEY: 'STRIPE_SECRET_KEY',
         STRIPE_PLAN: 'STRIPE_PLAN',
         APPLICATION_URL: 'APPLICATION_URL',
         EMAIL_USER: 'EMAIL_USER',
@@ -122,17 +122,17 @@ describe('getServiceConfig', () => {
         }
     });
 
-    test('that correct error is thrown when STRIPE_SHAREABLE_KEY is not provided.', () => {
+    test('that correct error is thrown when STRIPE_SECRET_KEY is not provided.', () => {
         expect.assertions(1);
         const environment = {
             ...environmentMock,
-            STRIPE_SHAREABLE_KEY: undefined,
+            STRIPE_SECRET_KEY: undefined,
         };
 
         try {
             getServiceConfig(environment);
         } catch (err) {
-            expect(err.message).toEqual('STRIPE_SHAREABLE_KEY is not provided.');
+            expect(err.message).toEqual('STRIPE_SECRET_KEY is not provided.');
         }
     });
 

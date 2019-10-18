@@ -9,13 +9,13 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { userModel, UserModel } from '../../Models/User';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
-const { STRIPE_SHAREABLE_KEY, STRIPE_PLAN } = getServiceConfig();
+const { STRIPE_SECRET_KEY, STRIPE_PLAN } = getServiceConfig();
 
-export const stripe = new Stripe(STRIPE_SHAREABLE_KEY);
+export const stripe = new Stripe(STRIPE_SECRET_KEY);
 
 const createStripeCustomerBodySchema = {
     token: Joi.string().required(),
-    id: Joi.string().required(),
+    userId: Joi.string().required(),
 };
 
 export const createStripeCustomerSubscriptionBodyValidationMiddleware = (
@@ -36,9 +36,9 @@ export const getIsUserAnExistingStripeCustomerMiddleware = (userModel: Model<Use
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { id } = request.body;
+        const { userId } = request.body;
 
-        const user = await userModel.findById(id);
+        const user = await userModel.findById(userId);
         if (!user) {
             throw new CustomError(ErrorType.CreateStripeSubscriptionUserDoesNotExist);
         }
@@ -63,13 +63,13 @@ export const getCreateStripeCustomerMiddleware = (userModel: Model<UserModel>) =
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { token, id } = request.body;
+        const { token, userId } = request.body;
         const { user } = response.locals;
         const createdStripeCustomer = await stripe.customers.create({
             source: token,
             email: user.email,
         });
-        await userModel.findByIdAndUpdate(id, {
+        await userModel.findByIdAndUpdate(userId, {
             $set: { 'stripe.customer': createdStripeCustomer.id },
         });
         response.locals.stripeCustomer = createdStripeCustomer;
