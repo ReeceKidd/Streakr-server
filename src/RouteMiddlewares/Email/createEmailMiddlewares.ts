@@ -70,7 +70,7 @@ export const getSendEmailMiddleware = (sendEmail: (subject: string, text: string
 ): Promise<void> => {
     const { name, email, message, userId, username } = response.locals.email;
     try {
-        const subject = 'Feedback';
+        const subject = 'Support';
         const text = `
         Name: ${name}
         Email: ${email}
