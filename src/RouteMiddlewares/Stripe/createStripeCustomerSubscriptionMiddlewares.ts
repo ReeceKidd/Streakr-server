@@ -14,7 +14,7 @@ const { STRIPE_SECRET_KEY, STRIPE_PLAN } = getServiceConfig();
 export const stripe = new Stripe(STRIPE_SECRET_KEY);
 
 const createStripeCustomerBodySchema = {
-    token: Joi.string().required(),
+    token: Joi.object().required(),
     userId: Joi.string().required(),
 };
 
@@ -96,7 +96,6 @@ export const getCreateStripeSubscriptionMiddleware = (stripePlan: string) => asy
         response.locals.stripeSubscription = stripeSubscription;
         next();
     } catch (err) {
-        console.log(err);
         next(new CustomError(ErrorType.CreateStripeSubscriptionMiddleware, err));
     }
 };

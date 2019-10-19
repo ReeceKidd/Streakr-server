@@ -27,8 +27,8 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
     });
 
     describe('createStripeCustomerSubscriptionBodyValidationMiddleware', () => {
-        const token = '1234';
         const userId = 'id';
+        const token = { id: 'tok_1' };
 
         test('sends correct error response when unsupported key is sent', () => {
             expect.assertions(3);
