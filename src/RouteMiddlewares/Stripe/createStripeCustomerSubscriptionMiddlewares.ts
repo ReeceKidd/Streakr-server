@@ -14,7 +14,7 @@ const { STRIPE_SECRET_KEY, STRIPE_PLAN } = getServiceConfig();
 export const stripe = new Stripe(STRIPE_SECRET_KEY);
 
 const createStripeCustomerBodySchema = {
-    token: Joi.object().required(),
+    token: Joi.any().required(),
     userId: Joi.string().required(),
 };
 
