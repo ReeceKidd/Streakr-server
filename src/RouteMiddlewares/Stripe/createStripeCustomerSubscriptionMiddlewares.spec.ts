@@ -72,6 +72,27 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             expect(next).not.toBeCalled();
         });
 
+        test('sends correct error response when token is not an object', () => {
+            expect.assertions(3);
+            const send = jest.fn();
+            const status = jest.fn(() => ({ send }));
+            const request: any = {
+                body: { userId, token: 'token' },
+            };
+            const response: any = {
+                status,
+            };
+            const next = jest.fn();
+
+            createStripeCustomerSubscriptionBodyValidationMiddleware(request, response, next);
+
+            expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+            expect(send).toBeCalledWith({
+                message: 'child "token" fails because ["token" must be an object]',
+            });
+            expect(next).not.toBeCalled();
+        });
+
         test('sends correct error response when userId is not defined', () => {
             expect.assertions(3);
             const send = jest.fn();
@@ -214,12 +235,13 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
     describe('createStripeCustomerMiddleware', () => {
         test('creates stripe customer and sets response.locals.customer', async () => {
             expect.assertions(4);
-            const token = 'token';
-            const userId = 'userId';
+            const tokenId = 'tokenId';
             const email = 'test@gmail.com';
-            const user = {
+            const token = {
+                id: tokenId,
                 email,
             };
+            const userId = 'userId';
             const customerId = '123';
             stripe.customers.create = jest.fn().mockResolvedValue({ id: customerId });
             const findByIdAndUpdate = jest.fn().mockResolvedValue({});
@@ -233,16 +255,14 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                 },
             };
             const response: any = {
-                locals: {
-                    user,
-                },
+                locals: {},
             };
             const next = jest.fn();
             const createStripeCustomerMiddleware = getCreateStripeCustomerMiddleware(userModel as any);
 
             await createStripeCustomerMiddleware(request, response, next);
 
-            expect(stripe.customers.create).toBeCalledWith({ source: token, email });
+            expect(stripe.customers.create).toBeCalledWith({ source: token.id, email: token.email });
             expect(findByIdAndUpdate).toBeCalledWith(userId, {
                 $set: { 'stripe.customer': customerId },
             });

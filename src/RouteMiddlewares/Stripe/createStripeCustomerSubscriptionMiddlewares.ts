@@ -14,7 +14,7 @@ const { STRIPE_SECRET_KEY, STRIPE_PLAN } = getServiceConfig();
 export const stripe = new Stripe(STRIPE_SECRET_KEY);
 
 const createStripeCustomerBodySchema = {
-    token: Joi.any().required(),
+    token: Joi.object().required(),
     userId: Joi.string().required(),
 };
 
@@ -64,10 +64,9 @@ export const getCreateStripeCustomerMiddleware = (userModel: Model<UserModel>) =
 ): Promise<void> => {
     try {
         const { token, userId } = request.body;
-        const { user } = response.locals;
         const createdStripeCustomer = await stripe.customers.create({
-            source: token,
-            email: user.email,
+            source: token.id,
+            email: token.email,
         });
         await userModel.findByIdAndUpdate(userId, {
             $set: { 'stripe.customer': createdStripeCustomer.id },
