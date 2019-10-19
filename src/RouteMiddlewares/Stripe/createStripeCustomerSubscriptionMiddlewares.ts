@@ -96,6 +96,7 @@ export const getCreateStripeSubscriptionMiddleware = (stripePlan: string) => asy
         response.locals.stripeSubscription = stripeSubscription;
         next();
     } catch (err) {
+        console.log(err);
         next(new CustomError(ErrorType.CreateStripeSubscriptionMiddleware, err));
     }
 };

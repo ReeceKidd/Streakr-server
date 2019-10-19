@@ -9,9 +9,9 @@ import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
-const { STRIPE_SHAREABLE_KEY } = getServiceConfig();
+const { STRIPE_SECRET_KEY } = getServiceConfig();
 
-export const stripe = new Stripe(STRIPE_SHAREABLE_KEY);
+export const stripe = new Stripe(STRIPE_SECRET_KEY);
 
 const cancelStripeCustomerSubscriptionBodySchema = {
     subscription: Joi.string().required(),
