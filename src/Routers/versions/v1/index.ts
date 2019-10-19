@@ -18,6 +18,7 @@ import { dailyJobsRouter } from './dailyJobsRouter';
 import { completeTeamStreaksRouter } from './completeTeamStreaksRouter';
 import { RouterCategories } from '@streakoid/streakoid-sdk/lib';
 import { registerUserMiddlewares } from '../../../RouteMiddlewares/User/registerUserMiddlewares';
+import { emailRouter } from './emailRouter';
 
 const v1Router = Router();
 
@@ -25,6 +26,7 @@ v1Router.use(...timezoneMiddlewares);
 
 // Unauthenticated routes
 v1Router.post(`/${RouterCategories.users}`, ...registerUserMiddlewares);
+v1Router.post(`/${RouterCategories.emails}`, emailRouter);
 
 // Temporarily unauthenticated so agenda jobs still work.
 v1Router.use(`/${RouterCategories.soloStreaks}`, soloStreaksRouter);

@@ -3350,4 +3350,48 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to CreateEmailFromRequestMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateEmailFromRequestMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-233`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SaveEmailToDatabaseMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SaveEmailToDatabaseMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-234`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to EmailSentResponseMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.EmailSentResponseMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-235`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendEmailMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendEmailMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-236`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

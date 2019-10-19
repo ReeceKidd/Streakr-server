@@ -310,6 +310,10 @@ export enum ErrorType {
     SendDailyJobsMiddleware,
     FormatUserMiddleware,
     FormatUpdatedUserMiddleware,
+    EmailSentResponseMiddleware,
+    SaveEmailToDatabaseMiddleware,
+    CreateEmailFromRequestMiddleware,
+    SendEmailMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -2535,6 +2539,34 @@ export class CustomError extends Error {
             case ErrorType.FormatUpdatedUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-232`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateEmailFromRequestMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-233`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SaveEmailToDatabaseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-234`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.EmailSentResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-235`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendEmailMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-236`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

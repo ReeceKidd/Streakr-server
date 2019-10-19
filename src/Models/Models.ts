@@ -13,4 +13,5 @@ export enum Models {
     TeamMemberStreak = 'TeamMemberStreak',
     FriendRequest = 'FriendRequest',
     DailyJob = 'DailyJob',
+    Email = 'Email',
 }
