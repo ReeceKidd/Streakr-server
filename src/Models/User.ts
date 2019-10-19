@@ -20,7 +20,7 @@ export const userSchema = new mongoose.Schema(
             unique: true,
             trim: true,
         },
-        type: {
+        userType: {
             type: String,
             enum: [UserTypes.basic, UserTypes.premium, UserTypes.admin],
             default: UserTypes.basic,

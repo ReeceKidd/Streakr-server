@@ -42,7 +42,7 @@ export const getIsUserAnExistingStripeCustomerMiddleware = (userModel: Model<Use
         if (!user) {
             throw new CustomError(ErrorType.CreateStripeSubscriptionUserDoesNotExist);
         }
-        if (user.type === UserTypes.premium) {
+        if (user.userType === UserTypes.premium) {
             throw new CustomError(ErrorType.CustomerIsAlreadySubscribed);
         }
         response.locals.user = user;
@@ -150,13 +150,15 @@ export const getSetUserTypeToPremiumMiddleware = (userModel: Model<UserModel>) =
 ): Promise<void> => {
     try {
         const { user } = response.locals;
-        response.locals.user = await userModel.findByIdAndUpdate(
-            user._id,
-            {
-                $set: { type: UserTypes.premium },
-            },
-            { new: true },
-        );
+        response.locals.user = await userModel
+            .findByIdAndUpdate(
+                user._id,
+                {
+                    $set: { userType: UserTypes.premium },
+                },
+                { new: true },
+            )
+            .lean();
         next();
     } catch (err) {
         next(new CustomError(ErrorType.SetUserTypeToPremiumMiddleware, err));

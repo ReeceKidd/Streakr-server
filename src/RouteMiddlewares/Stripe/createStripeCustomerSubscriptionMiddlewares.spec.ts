@@ -140,7 +140,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         test('calls next if user exists and is not premium already', async () => {
             expect.assertions(2);
             const userId = 'id';
-            const findById = jest.fn().mockResolvedValue({ type: 'basic' });
+            const findById = jest.fn().mockResolvedValue({ userType: 'basic' });
             const userModel: any = {
                 findById,
             };
@@ -184,10 +184,10 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             expect(next).toBeCalledWith(new CustomError(ErrorType.CreateStripeSubscriptionUserDoesNotExist));
         });
 
-        test('calls next with CustomerIsAlreadySubscribed error if user type is set to premium', async () => {
+        test('calls next with CustomerIsAlreadySubscribed error if user userType is set to premium', async () => {
             expect.assertions(1);
             const findById = jest.fn().mockResolvedValue({
-                type: UserTypes.premium,
+                userType: UserTypes.premium,
             });
             const userModel: any = {
                 findById,
@@ -452,8 +452,8 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
     });
 
     describe('setUserTypeToPremiumMiddleware', () => {
-        test('updates user model type to be premium', async () => {
-            expect.assertions(2);
+        test('updates user model userType to be premium', async () => {
+            expect.assertions(3);
             const user = {
                 _id: '123',
             };
@@ -464,7 +464,8 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                 },
             };
             const next = jest.fn();
-            const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+            const lean = jest.fn().mockResolvedValue(true);
+            const findByIdAndUpdate = jest.fn(() => ({ lean }));
             const userModel = {
                 findByIdAndUpdate,
             };
@@ -472,10 +473,11 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
 
             await setUserTypeToPremiumMiddleware(request, response, next);
 
+            expect(lean).toBeCalledWith();
             expect(findByIdAndUpdate).toBeCalledWith(
                 user._id,
                 {
-                    $set: { type: 'premium' },
+                    $set: { userType: 'premium' },
                 },
                 { new: true },
             );
@@ -503,7 +505,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const user = {
                 id: 'abc',
                 stripe: { customer: 'customer', subscription: 'subscription' },
-                type: 'type',
+                userType: 'userType',
             };
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));

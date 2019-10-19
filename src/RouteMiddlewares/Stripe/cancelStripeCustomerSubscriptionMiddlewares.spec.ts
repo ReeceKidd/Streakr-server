@@ -14,6 +14,7 @@ import {
     getSetUserTypeToBasicMiddleware,
     setUserTypeToBasicMiddleware,
 } from './cancelStripeCustomerSubscriptionMiddlewares';
+import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe('cancelStripeCustomerSubscriptionMiddlewares', () => {
     afterEach(() => {
@@ -118,7 +119,7 @@ describe('cancelStripeCustomerSubscriptionMiddlewares', () => {
         test('calls next if user exists and has a premium type', async () => {
             expect.assertions(2);
             const userId = 'id';
-            const lean = jest.fn().mockResolvedValue({ type: 'premium' });
+            const lean = jest.fn().mockResolvedValue({ userType: UserTypes.premium });
             const findById = jest.fn(() => ({ lean }));
             const userModel: any = {
                 findById,
@@ -295,7 +296,7 @@ describe('cancelStripeCustomerSubscriptionMiddlewares', () => {
 
             await setUserTypeToBasicMiddleware(request, response, next);
 
-            expect(findByIdAndUpdate).toBeCalledWith(userId, { $set: { type: 'basic' } }, { new: true });
+            expect(findByIdAndUpdate).toBeCalledWith(userId, { $set: { userType: 'basic' } }, { new: true });
             expect(lean).toBeCalled();
             expect(next).toBeCalledWith();
         });

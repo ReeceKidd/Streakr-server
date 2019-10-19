@@ -41,7 +41,7 @@ export const getDoesUserHaveStripeSubscriptionMiddleware = (userModel: Model<Use
         if (!user) {
             throw new CustomError(ErrorType.CancelStripeSubscriptionUserDoesNotExist);
         }
-        if (user.type !== UserTypes.premium) {
+        if (user.userType !== UserTypes.premium) {
             throw new CustomError(ErrorType.CustomerIsNotSubscribed);
         }
         response.locals.user = user;
@@ -96,7 +96,7 @@ export const getSetUserTypeToBasicMiddleware = (userModel: Model<UserModel>) => 
     try {
         const { userId } = request.body;
         const updatedUser = await userModel
-            .findByIdAndUpdate(userId, { $set: { type: UserTypes.basic } }, { new: true })
+            .findByIdAndUpdate(userId, { $set: { userType: UserTypes.basic } }, { new: true })
             .lean();
         response.locals.updatedUser = updatedUser;
         next();
