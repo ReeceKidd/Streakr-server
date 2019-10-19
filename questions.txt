@@ -8,3 +8,4 @@
 8) One of my big concerns at the moment is uptime of the agenda jobs what can I do to make sure it stays updated
 9) What should I add to my beanstalk instance to keep up up time. Right now it's just one beanstalk instance. 
 10) Need to ask Maxime what I should be doing for monitoring off the application. 
+11) Ask Maxime what should be testing what should the SDK have intergration tests or should these be running against the local host? Or should the server just have the tests. 
