@@ -24,11 +24,11 @@ export const initialiseTeamStreakTimezoneCheckerJobs = async () => {
     const numberOfTeamStreakTimezoneCheckerJobs = await agendaJobModel.countDocuments({
         name: AgendaJobNames.teamStreakDailyTracker,
     });
-    console.log(`Number of solo streak daily tracker jobs: ${numberOfTeamStreakTimezoneCheckerJobs}`);
+    console.log(`Number of team streak daily tracker jobs: ${numberOfTeamStreakTimezoneCheckerJobs}`);
     console.log(`Number of timezones: ${numberOfTimezones}`);
     if (numberOfTimezones === numberOfTeamStreakTimezoneCheckerJobs) {
         console.log(
-            'Number of timezones matches number of solo streak timezone checker jobs. No jobs need to be created',
+            'Number of timezones matches number of team streak timezone checker jobs. No jobs need to be created',
         );
         return;
     }
