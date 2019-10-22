@@ -684,6 +684,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to FriendRequestAlreadySent`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FriendRequestAlreadySent);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-65`);
+        expect(message).toBe('Friend request already sent.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -3391,6 +3402,17 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-236`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to HasRequesterAlreadySentInvite`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.HasRequesterAlreadySentInvite);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-237`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

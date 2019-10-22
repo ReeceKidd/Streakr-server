@@ -68,12 +68,38 @@ export const getRetreiveRequesteeMiddleware = (userModel: Model<UserModel>) => a
 
 export const retreiveRequesteeMiddleware = getRetreiveRequesteeMiddleware(userModel);
 
+export const getHasRequesterHasAlreadySentInviteMiddleware = (friendRequestModel: Model<FriendRequestModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { requesteeId, requesterId } = request.body;
+        const existingFriendRequest = await friendRequestModel.findOne({
+            requesteeId,
+            requesterId,
+            status: FriendRequestStatus.pending,
+        });
+        if (existingFriendRequest) {
+            throw new CustomError(ErrorType.FriendRequestAlreadySent);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.HasRequesterAlreadySentInvite, err));
+    }
+};
+
+export const hasRequesterAlreadySentInviteMiddleware = getHasRequesterHasAlreadySentInviteMiddleware(
+    friendRequestModel,
+);
+
 export const requesteeIsAlreadyAFriendMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const requester: User = response.locals.requester;
         const { requesteeId } = request.body;
 
-        const requesteeIsExistingFriend = requester.friends.find(friend => friend === requesteeId);
+        const requesteeIsExistingFriend = requester.friends.find(friend => friend.friendId == requesteeId);
         if (requesteeIsExistingFriend) {
             throw new CustomError(ErrorType.RequesteeIsAlreadyAFriend);
         }
@@ -155,6 +181,8 @@ export const createFriendRequestMiddlewares = [
     createFriendRequestBodyValidationMiddleware,
     retreiveRequesterMiddleware,
     retreiveRequesteeMiddleware,
+    hasRequesterAlreadySentInviteMiddleware,
+    requesteeIsAlreadyAFriendMiddleware,
     saveFriendRequestToDatabaseMiddleware,
     populateFriendRequestMiddleware,
     sendPopulatedFriendRequestMiddleware,

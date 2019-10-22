@@ -314,6 +314,8 @@ export enum ErrorType {
     SaveEmailToDatabaseMiddleware,
     CreateEmailFromRequestMiddleware,
     SendEmailMiddleware,
+    FriendRequestAlreadySent,
+    HasRequesterAlreadySentInvite,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -824,6 +826,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-64`,
                     message: 'Team member streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.FriendRequestAlreadySent: {
+                return {
+                    code: `${ResponseCodes.badRequest}-65`,
+                    message: 'Friend request already sent.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2567,6 +2577,13 @@ export class CustomError extends Error {
             case ErrorType.SendEmailMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-236`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.HasRequesterAlreadySentInvite:
+                return {
+                    code: `${ResponseCodes.warning}-237`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

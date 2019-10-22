@@ -13,6 +13,8 @@ import {
     saveFriendRequestToDatabaseMiddleware,
     populateFriendRequestMiddleware,
     getPopulateFriendRequestMiddleware,
+    hasRequesterAlreadySentInviteMiddleware,
+    getHasRequesterHasAlreadySentInviteMiddleware,
 } from './createFriendRequestMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -195,17 +197,77 @@ describe('retreiveRequesteeMiddleware', () => {
     });
 });
 
+describe('hasRequesterAlreadySentInviteMiddleware', () => {
+    test('calls next if no existing friend request exists', async () => {
+        expect.assertions(2);
+
+        const findOne = jest.fn().mockResolvedValue(false);
+        const friendRequestModel = {
+            findOne,
+        };
+        const requesteeId = 'requesteeId';
+        const requesterId = 'requesterId';
+
+        const request: any = { body: { requesterId, requesteeId } };
+        const response: any = {};
+        const next = jest.fn();
+
+        const middleware = getHasRequesterHasAlreadySentInviteMiddleware(friendRequestModel as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith();
+        expect(findOne).toBeCalledWith({ requesteeId, requesterId, status: FriendRequestStatus.pending });
+    });
+
+    test('throws FriendRequestAlreadySent error if friend request has already been sent', async () => {
+        expect.assertions(2);
+
+        const findOne = jest.fn().mockResolvedValue(true);
+        const friendRequestModel = {
+            findOne,
+        };
+        const requesteeId = 'requesteeId';
+        const requesterId = 'requesterId';
+
+        const request: any = { body: { requesterId, requesteeId } };
+        const response: any = {};
+        const next = jest.fn();
+
+        const middleware = getHasRequesterHasAlreadySentInviteMiddleware(friendRequestModel as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.FriendRequestAlreadySent));
+        expect(findOne).toBeCalledWith({ requesteeId, requesterId, status: FriendRequestStatus.pending });
+    });
+
+    test('throws HasRequesterAlreadySentInvite error on middleware failure', () => {
+        expect.assertions(1);
+
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+
+        requesteeIsAlreadyAFriendMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.HasRequesterAlreadySentInvite, expect.any(Error)));
+    });
+});
+
 describe('requesteeIsAlreadyAFriendMiddleware', () => {
     test('calls next if friend does not exist on requesters friend list', () => {
         expect.assertions(1);
 
         const friendId = 'friendId';
-        const friends = ['friend1', 'friend2', 'friend3'];
+        const friend = {
+            friendId,
+        };
+        const requesteeId = 'requesteeId';
+        const friends = [friend];
         const requester = {
             friends,
         };
 
-        const request: any = { body: { friendId } };
+        const request: any = { body: { requesteeId } };
         const response: any = { locals: { requester } };
         const next = jest.fn();
 
@@ -217,8 +279,12 @@ describe('requesteeIsAlreadyAFriendMiddleware', () => {
     test('throws RequesteeIsAlreadyAFriend error if friend already exists on requesters friend list', () => {
         expect.assertions(1);
 
-        const requesteeId = 'friend1';
-        const friends = [requesteeId, 'friend2', 'friend3'];
+        const friendId = 'friendId';
+        const friend = {
+            friendId,
+        };
+        const requesteeId = 'friendId';
+        const friends = [friend];
         const requester = {
             friends,
         };
@@ -384,14 +450,16 @@ describe(`sendPopulatedFriendRequestMiddleware`, () => {
 
 describe(`createFriendRequestMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(7);
+        expect.assertions(9);
 
-        expect(createFriendRequestMiddlewares.length).toEqual(6);
+        expect(createFriendRequestMiddlewares.length).toEqual(8);
         expect(createFriendRequestMiddlewares[0]).toBe(createFriendRequestBodyValidationMiddleware);
         expect(createFriendRequestMiddlewares[1]).toBe(retreiveRequesterMiddleware);
         expect(createFriendRequestMiddlewares[2]).toBe(retreiveRequesteeMiddleware);
-        expect(createFriendRequestMiddlewares[3]).toBe(saveFriendRequestToDatabaseMiddleware);
-        expect(createFriendRequestMiddlewares[4]).toBe(populateFriendRequestMiddleware);
-        expect(createFriendRequestMiddlewares[5]).toBe(sendPopulatedFriendRequestMiddleware);
+        expect(createFriendRequestMiddlewares[3]).toBe(hasRequesterAlreadySentInviteMiddleware);
+        expect(createFriendRequestMiddlewares[4]).toBe(requesteeIsAlreadyAFriendMiddleware);
+        expect(createFriendRequestMiddlewares[5]).toBe(saveFriendRequestToDatabaseMiddleware);
+        expect(createFriendRequestMiddlewares[6]).toBe(populateFriendRequestMiddleware);
+        expect(createFriendRequestMiddlewares[7]).toBe(sendPopulatedFriendRequestMiddleware);
     });
 });
