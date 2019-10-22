@@ -316,6 +316,9 @@ export enum ErrorType {
     SendEmailMiddleware,
     FriendRequestAlreadySent,
     HasRequesterAlreadySentInvite,
+    StripeTokenMissingId,
+    StripeTokenMissingEmail,
+    ValidateStripeTokenMiddlware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -834,6 +837,22 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-65`,
                     message: 'Friend request already sent.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.StripeTokenMissingId: {
+                return {
+                    code: `${ResponseCodes.badRequest}-66`,
+                    message: 'Stripe token missing id.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.StripeTokenMissingEmail: {
+                return {
+                    code: `${ResponseCodes.badRequest}-67`,
+                    message: 'Stripe token missing email.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2584,6 +2603,13 @@ export class CustomError extends Error {
             case ErrorType.HasRequesterAlreadySentInvite:
                 return {
                     code: `${ResponseCodes.warning}-237`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ValidateStripeTokenMiddlware:
+                return {
+                    code: `${ResponseCodes.warning}-238`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

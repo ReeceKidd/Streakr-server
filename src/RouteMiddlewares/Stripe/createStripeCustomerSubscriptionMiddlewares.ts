@@ -57,28 +57,65 @@ export const getIsUserAnExistingStripeCustomerMiddleware = (userModel: Model<Use
 
 export const isUserAnExistingStripeCustomerMiddleware = getIsUserAnExistingStripeCustomerMiddleware(userModel);
 
-export const getCreateStripeCustomerMiddleware = (userModel: Model<UserModel>) => async (
+export const validateStripeTokenMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const { token } = request.body;
+        if (!token.id) {
+            throw new CustomError(ErrorType.StripeTokenMissingId);
+        }
+        if (!token.email) {
+            throw new CustomError(ErrorType.StripeTokenMissingEmail);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else {
+            next(new CustomError(ErrorType.ValidateStripeTokenMiddlware, err));
+        }
+    }
+};
+
+export const createStripeCustomerMiddleware = async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { token, userId } = request.body;
-        const createdStripeCustomer = await stripe.customers.create({
-            source: token.id,
-            email: token.email,
-        });
+        try {
+            const { token } = request.body;
+            const stripeCustomer = await stripe.customers.create({
+                source: token.id,
+                email: token.email,
+            });
+            response.locals.stripeCustomer = stripeCustomer;
+            next();
+        } catch (err) {
+            response.status(ResponseCodes.badRequest).send(err);
+            return;
+        }
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateStripeCustomerMiddleware, err));
+    }
+};
+
+export const getUpdateUserStripeCustomerIdMiddleware = (userModel: Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        const { stripeCustomer } = response.locals;
         await userModel.findByIdAndUpdate(userId, {
-            $set: { 'stripe.customer': createdStripeCustomer.id },
+            $set: { 'stripe.customer': stripeCustomer.id },
         });
-        response.locals.stripeCustomer = createdStripeCustomer;
         next();
     } catch (err) {
         next(new CustomError(ErrorType.CreateStripeCustomerMiddleware, err));
     }
 };
 
-export const createStripeCustomerMiddleware = getCreateStripeCustomerMiddleware(userModel);
+export const updateUserStripeCustomerIdMiddleware = getUpdateUserStripeCustomerIdMiddleware(userModel);
 
 export const getCreateStripeSubscriptionMiddleware = (stripePlan: string) => async (
     request: Request,
@@ -87,13 +124,18 @@ export const getCreateStripeSubscriptionMiddleware = (stripePlan: string) => asy
 ): Promise<void> => {
     try {
         const { stripeCustomer } = response.locals;
-        const stripeSubscription = await stripe.subscriptions.create({
-            customer: stripeCustomer.id,
-            items: [{ plan: stripePlan }],
-            expand: ['latest_invoice.payment_intent'],
-        });
-        response.locals.stripeSubscription = stripeSubscription;
-        next();
+        try {
+            const stripeSubscription = await stripe.subscriptions.create({
+                customer: stripeCustomer.id,
+                items: [{ plan: stripePlan }],
+                expand: ['latest_invoice.payment_intent'],
+            });
+            response.locals.stripeSubscription = stripeSubscription;
+            next();
+        } catch (err) {
+            response.status(ResponseCodes.badRequest).send(err);
+            return;
+        }
     } catch (err) {
         next(new CustomError(ErrorType.CreateStripeSubscriptionMiddleware, err));
     }
@@ -183,7 +225,9 @@ export const sendSuccessfulSubscriptionMiddleware = (
 export const createStripeCustomerSubscriptionMiddlewares = [
     createStripeCustomerSubscriptionBodyValidationMiddleware,
     isUserAnExistingStripeCustomerMiddleware,
+    validateStripeTokenMiddleware,
     createStripeCustomerMiddleware,
+    updateUserStripeCustomerIdMiddleware,
     createStripeSubscriptionMiddleware,
     handleInitialPaymentOutcomeMiddleware,
     addStripeSubscriptionToUserMiddleware,

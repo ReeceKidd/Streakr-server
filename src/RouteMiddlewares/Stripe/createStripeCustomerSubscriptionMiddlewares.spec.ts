@@ -8,7 +8,6 @@ import {
     handleInitialPaymentOutcomeMiddleware,
     sendSuccessfulSubscriptionMiddleware,
     stripe,
-    getCreateStripeCustomerMiddleware,
     getCreateStripeSubscriptionMiddleware,
     isUserAnExistingStripeCustomerMiddleware,
     getIsUserAnExistingStripeCustomerMiddleware,
@@ -16,6 +15,9 @@ import {
     getAddStripeSubscriptionToUserMiddleware,
     setUserTypeToPremiumMiddleware,
     getSetUserTypeToPremiumMiddleware,
+    validateStripeTokenMiddleware,
+    updateUserStripeCustomerIdMiddleware,
+    getUpdateUserStripeCustomerIdMiddleware,
 } from './createStripeCustomerSubscriptionMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -232,8 +234,103 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         });
     });
 
+    describe('validateStripeTokenMiddleware', () => {
+        test('calls next() if token has an id and email', () => {
+            expect.assertions(1);
+            const id = 'id';
+            const email = 'test@gmail.com';
+            const token = {
+                id,
+                email,
+            };
+            const request: any = {
+                body: { token },
+            };
+            const response: any = {};
+            const next = jest.fn();
+
+            validateStripeTokenMiddleware(request, response, next);
+
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with StripeTokenMissingId error when status is incomplete', () => {
+            expect.assertions(1);
+            const email = 'test@gmail.com';
+            const token = {
+                email,
+            };
+            const request: any = {
+                body: { token },
+            };
+            const response: any = {};
+            const next = jest.fn();
+
+            validateStripeTokenMiddleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.StripeTokenMissingId, expect.any(Error)));
+        });
+
+        test('calls next with StripeTokenMissingEmail error when status is incomplete', () => {
+            expect.assertions(1);
+            const id = 'id';
+            const token = {
+                id,
+            };
+            const request: any = {
+                body: { token },
+            };
+            const response: any = {};
+            const next = jest.fn();
+
+            validateStripeTokenMiddleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.StripeTokenMissingEmail, expect.any(Error)));
+        });
+
+        test('calls next with ValidateStripeTokenMiddlware on middleware failure', () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {
+                locals: {},
+            };
+            const next = jest.fn();
+
+            validateStripeTokenMiddleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.ValidateStripeTokenMiddlware, expect.any(Error)));
+        });
+    });
+
     describe('createStripeCustomerMiddleware', () => {
         test('creates stripe customer and sets response.locals.customer', async () => {
+            expect.assertions(3);
+            const tokenId = 'tokenId';
+            const email = 'test@gmail.com';
+            const token = {
+                id: tokenId,
+                email,
+            };
+            const customerId = '123';
+            stripe.customers.create = jest.fn().mockResolvedValue({ id: customerId });
+            const request: any = {
+                body: {
+                    token,
+                },
+            };
+            const response: any = {
+                locals: {},
+            };
+            const next = jest.fn();
+
+            await createStripeCustomerMiddleware(request, response, next);
+
+            expect(stripe.customers.create).toBeCalledWith({ source: token.id, email: token.email });
+            expect(response.locals.stripeCustomer).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('sends stripe error response on stripe.customers.create failure', async () => {
             expect.assertions(4);
             const tokenId = 'tokenId';
             const email = 'test@gmail.com';
@@ -241,32 +338,66 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                 id: tokenId,
                 email,
             };
-            const userId = 'userId';
-            const customerId = '123';
-            stripe.customers.create = jest.fn().mockResolvedValue({ id: customerId });
-            const findByIdAndUpdate = jest.fn().mockResolvedValue({});
-            const userModel = {
-                findByIdAndUpdate,
-            };
+            const errorResponse = { response: { error: 'error' } };
+            stripe.customers.create = jest.fn().mockRejectedValue(errorResponse);
             const request: any = {
                 body: {
                     token,
-                    userId,
                 },
             };
+            const send = jest.fn();
+            const status = jest.fn(() => ({ send }));
             const response: any = {
                 locals: {},
+                status,
             };
             const next = jest.fn();
-            const createStripeCustomerMiddleware = getCreateStripeCustomerMiddleware(userModel as any);
 
             await createStripeCustomerMiddleware(request, response, next);
 
             expect(stripe.customers.create).toBeCalledWith({ source: token.id, email: token.email });
+            expect(status).toBeCalledWith(ResponseCodes.badRequest);
+            expect(send).toBeCalledWith(errorResponse);
+            expect(next).not.toBeCalled();
+        });
+
+        test('calls next with CreateStripeCustomerMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+
+            await createStripeCustomerMiddleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.CreateStripeCustomerMiddleware, expect.any(Error)));
+        });
+    });
+
+    describe('updateUserStripeCustomerIdMiddleware', () => {
+        test('updates user stripe customer with stripe id. ', async () => {
+            expect.assertions(2);
+            const userId = 'userId';
+            const stripeCustomer = {
+                id: 'abc',
+            };
+            const request: any = { body: { userId } };
+            const response: any = {
+                locals: {
+                    stripeCustomer,
+                },
+            };
+            const next = jest.fn();
+            const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+            const userModel = {
+                findByIdAndUpdate,
+            };
+            const updateUserStripeCustomerIdMiddleware = getUpdateUserStripeCustomerIdMiddleware(userModel as any);
+
+            await updateUserStripeCustomerIdMiddleware(request, response, next);
+
             expect(findByIdAndUpdate).toBeCalledWith(userId, {
-                $set: { 'stripe.customer': customerId },
+                $set: { 'stripe.customer': stripeCustomer.id },
             });
-            expect(response.locals.stripeCustomer).toBeDefined();
             expect(next).toBeCalledWith();
         });
 
@@ -275,9 +406,10 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const request: any = {};
             const response: any = {};
             const next = jest.fn();
-            const createStripeCustomerMiddleware = getCreateStripeCustomerMiddleware({} as any);
+            const userModel: any = {};
+            const updateUserStripeCustomerIdMiddleware = getUpdateUserStripeCustomerIdMiddleware(userModel as any);
 
-            await createStripeCustomerMiddleware(request, response, next);
+            await updateUserStripeCustomerIdMiddleware(request, response, next);
 
             expect(next).toBeCalledWith(new CustomError(ErrorType.CreateStripeCustomerMiddleware, expect.any(Error)));
         });
@@ -309,6 +441,38 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             });
             expect(response.locals.stripeSubscription).toBeDefined();
             expect(next).toBeCalledWith();
+        });
+
+        test('sends stripe error response on create stripe subscription failure', async () => {
+            expect.assertions(4);
+            const stripeCustomer = {
+                id: '123',
+            };
+            const errorResponse = { response: { error: 'error' } };
+            stripe.subscriptions.create = jest.fn().mockRejectedValue(errorResponse);
+            const stripePlan = 'stripePlan';
+            const request: any = {};
+            const send = jest.fn();
+            const status = jest.fn(() => ({ send }));
+            const response: any = {
+                locals: {
+                    stripeCustomer,
+                },
+                status,
+            };
+            const next = jest.fn();
+            const createStripeSubscriptionMiddleware = getCreateStripeSubscriptionMiddleware(stripePlan);
+
+            await createStripeSubscriptionMiddleware(request, response, next);
+
+            expect(stripe.subscriptions.create).toBeCalledWith({
+                customer: stripeCustomer.id,
+                items: [{ plan: stripePlan }],
+                expand: ['latest_invoice.payment_intent'],
+            });
+            expect(status).toBeCalledWith(ResponseCodes.badRequest);
+            expect(send).toBeCalledWith(errorResponse);
+            expect(next).not.toBeCalled();
         });
 
         test('calls next with CreateStripeSubscriptionMiddleware error on middleware failure', async () => {
@@ -538,18 +702,20 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(9);
+        expect.assertions(11);
 
-        expect(createStripeCustomerSubscriptionMiddlewares.length).toEqual(8);
+        expect(createStripeCustomerSubscriptionMiddlewares.length).toEqual(10);
         expect(createStripeCustomerSubscriptionMiddlewares[0]).toBe(
             createStripeCustomerSubscriptionBodyValidationMiddleware,
         );
         expect(createStripeCustomerSubscriptionMiddlewares[1]).toBe(isUserAnExistingStripeCustomerMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[2]).toBe(createStripeCustomerMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[3]).toBe(createStripeSubscriptionMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[4]).toBe(handleInitialPaymentOutcomeMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[5]).toBe(addStripeSubscriptionToUserMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[6]).toBe(setUserTypeToPremiumMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[7]).toBe(sendSuccessfulSubscriptionMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[2]).toBe(validateStripeTokenMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[3]).toBe(createStripeCustomerMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[4]).toBe(updateUserStripeCustomerIdMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[5]).toBe(createStripeSubscriptionMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[6]).toBe(handleInitialPaymentOutcomeMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[7]).toBe(addStripeSubscriptionToUserMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[8]).toBe(setUserTypeToPremiumMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[9]).toBe(sendSuccessfulSubscriptionMiddleware);
     });
 });

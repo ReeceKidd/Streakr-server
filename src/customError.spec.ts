@@ -695,6 +695,28 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to StripeTokenMissingId`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.StripeTokenMissingId);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-66`);
+        expect(message).toBe('Stripe token missing id.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to StripeTokenMissingEmail`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.StripeTokenMissingEmail);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-67`);
+        expect(message).toBe('Stripe token missing email.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -3413,6 +3435,17 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-237`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to ValidateStripeTokenMiddlware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ValidateStripeTokenMiddlware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-238`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
