@@ -19,6 +19,7 @@ import { completeTeamStreaksRouter } from './completeTeamStreaksRouter';
 import { RouterCategories } from '@streakoid/streakoid-sdk/lib';
 import { registerUserMiddlewares } from '../../../RouteMiddlewares/User/registerUserMiddlewares';
 import { emailRouter } from './emailRouter';
+import { profilePictureRouter } from './profilePicturesRouter';
 
 const v1Router = Router();
 
@@ -27,6 +28,7 @@ v1Router.use(...timezoneMiddlewares);
 // Unauthenticated routes
 v1Router.post(`/${RouterCategories.users}`, ...registerUserMiddlewares);
 v1Router.use(`/${RouterCategories.emails}`, emailRouter);
+v1Router.use(`/${RouterCategories.profilePictures}`, profilePictureRouter);
 
 // Temporarily unauthenticated so agenda jobs still work.
 v1Router.use(`/${RouterCategories.soloStreaks}`, soloStreaksRouter);

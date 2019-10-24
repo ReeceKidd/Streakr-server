@@ -319,6 +319,16 @@ export enum ErrorType {
     StripeTokenMissingId,
     StripeTokenMissingEmail,
     ValidateStripeTokenMiddlware,
+    ImageTypeValidationMiddleware,
+    InvalidImageFormat,
+    ManipulateProfilePictureMiddleware,
+    NoImageInRequest,
+    GetSingleImageUploadMiddleware,
+    S3UploadAvatarImage,
+    S3UploadOriginalImage,
+    DefineProfilePictures,
+    SetUserProfilePictures,
+    SendProfilePictures,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -853,6 +863,22 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-67`,
                     message: 'Stripe token missing email.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.InvalidImageFormat: {
+                return {
+                    code: `${ResponseCodes.badRequest}-68`,
+                    message: 'Invalid image format.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.NoImageInRequest: {
+                return {
+                    code: `${ResponseCodes.badRequest}-69`,
+                    message: 'No image in request.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2610,6 +2636,62 @@ export class CustomError extends Error {
             case ErrorType.ValidateStripeTokenMiddlware:
                 return {
                     code: `${ResponseCodes.warning}-238`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ImageTypeValidationMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-239`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ManipulateProfilePictureMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-240`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetSingleImageUploadMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-241`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.S3UploadAvatarImage:
+                return {
+                    code: `${ResponseCodes.warning}-242`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.S3UploadOriginalImage:
+                return {
+                    code: `${ResponseCodes.warning}-243`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DefineProfilePictures:
+                return {
+                    code: `${ResponseCodes.warning}-244`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SetUserProfilePictures:
+                return {
+                    code: `${ResponseCodes.warning}-245`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendProfilePictures:
+                return {
+                    code: `${ResponseCodes.warning}-246`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

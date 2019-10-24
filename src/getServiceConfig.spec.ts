@@ -22,6 +22,7 @@ describe('getServiceConfig', () => {
         COGNITO_USERNAME: 'COGNITO_USERNAME',
         COGNITO_EMAIL: 'COGNITO_EMAIL',
         COGNITO_PASSWORD: 'COGNITO_PASSWORD',
+        PROFILE_PICTURES_BUCKET: 'PROFILE_PICTURES_BUCKET',
     };
 
     test('that correct error is thrown when NODE_ENV is not provided', () => {
@@ -301,6 +302,20 @@ describe('getServiceConfig', () => {
             getServiceConfig(environment);
         } catch (err) {
             expect(err.message).toEqual('COGNITO_PASSWORD is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when PROFILE_PICTURES_BUCKET is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            PROFILE_PICTURES_BUCKET: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('PROFILE_PICTURES_BUCKET is not provided.');
         }
     });
 });

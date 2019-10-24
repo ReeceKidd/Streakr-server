@@ -22,6 +22,7 @@ export interface AppConfigHttp {
     COGNITO_USERNAME: string;
     COGNITO_EMAIL: string;
     COGNITO_PASSWORD: string;
+    PROFILE_PICTURES_BUCKET: string;
 }
 
 export type AppConfig = AppConfigHttp;
@@ -48,6 +49,7 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         COGNITO_USERNAME,
         COGNITO_EMAIL,
         COGNITO_PASSWORD,
+        PROFILE_PICTURES_BUCKET,
     } = environment;
 
     if (!NODE_ENV) throw new Error('NODE_ENV is not provided.');
@@ -122,6 +124,10 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         throw new Error('COGNITO_PASSWORD is not provided.');
     }
 
+    if (!PROFILE_PICTURES_BUCKET) {
+        throw new Error('PROFILE_PICTURES_BUCKET is not provided.');
+    }
+
     return {
         NODE_ENV,
         PORT,
@@ -143,5 +149,6 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         COGNITO_USERNAME,
         COGNITO_EMAIL,
         COGNITO_PASSWORD,
+        PROFILE_PICTURES_BUCKET,
     } as AppConfigHttp;
 };

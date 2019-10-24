@@ -1,18 +1,19 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": "dist",
-    "pretty": true,
-    "strict": true,
-    "removeComments": true,
-    "baseUrl": ".",
-    "paths": {
-      "*": ["node_modules/*", "src/types/*"]
-    }
-  },
-  "include": ["src/**/*", "config/*", "tests/**/*"]
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "es6",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "outDir": "dist",
+        "pretty": true,
+        "strict": true,
+        "removeComments": true,
+        "baseUrl": ".",
+        "paths": {
+            "*": ["node_modules/*", "src/types/*"]
+        }
+    },
+    "include": ["src/**/*", "config/*", "tests/**/*"]
 }

@@ -717,6 +717,28 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to InvalidImageFormat`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.InvalidImageFormat);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-68`);
+        expect(message).toBe('Invalid image format.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to NoImageInRequest`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.NoImageInRequest);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-69`);
+        expect(message).toBe('No image in request.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -3446,6 +3468,94 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-238`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to FileValidationMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ImageTypeValidationMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-239`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to ManipulateProfilePictureMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ManipulateProfilePictureMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-240`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to GetSingleImageUploadMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.GetSingleImageUploadMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-241`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to S3UploadAvatarImage`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.S3UploadAvatarImage);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-242`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to S3UploadOriginalImage`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.S3UploadOriginalImage);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-243`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to DefineProfilePictures`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.DefineProfilePictures);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-244`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SetUserProfilePictures`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SetUserProfilePictures);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-245`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendProfilePictures`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendProfilePictures);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-246`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
