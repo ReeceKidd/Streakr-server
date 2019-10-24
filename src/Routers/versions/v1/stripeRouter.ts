@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { createStripeCustomerSubscriptionMiddlewares } from '../../../RouteMiddlewares/Stripe/createStripeCustomerSubscriptionMiddlewares';
-import { cancelStripeCustomerSubscriptionMiddlewares } from '../../../RouteMiddlewares/Stripe/cancelStripeCustomerSubscriptionMiddlewares';
 
 const stripeRouter = Router();
 
@@ -10,7 +9,5 @@ export enum stripeRouterPaths {
 }
 
 stripeRouter.post(`/${stripeRouterPaths.subscriptions}`, ...createStripeCustomerSubscriptionMiddlewares);
-
-stripeRouter.post(`/${stripeRouterPaths.deleteSubscriptions}`, ...cancelStripeCustomerSubscriptionMiddlewares);
 
 export { stripeRouter };
