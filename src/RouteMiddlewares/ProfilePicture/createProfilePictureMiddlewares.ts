@@ -109,6 +109,7 @@ export const getSetUserProfilePicturesMiddlewares = (userModel: Model<UserModel>
         const { originalImageUrl, user } = response.locals;
         const profilePictures = {
             originalImageUrl,
+            updatedAt: new Date().toString(),
         };
         await userModel.updateOne({ _id: user._id }, { $set: { profilePictures } });
         response.locals.profilePictures = profilePictures;

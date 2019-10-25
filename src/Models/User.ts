@@ -33,6 +33,7 @@ export const userSchema = new mongoose.Schema(
             type: Object,
             default: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+                updatedAt: new Date().toString(),
             },
         },
         friends: {

@@ -236,7 +236,10 @@ describe(`setUserProfilePicturesMiddlewares`, () => {
         const middleware = getSetUserProfilePicturesMiddlewares(userModel as any);
         await middleware(request, response, next);
 
-        expect(updateOne).toBeCalledWith({ _id: user._id }, { $set: { profilePictures: { originalImageUrl } } });
+        expect(updateOne).toBeCalledWith(
+            { _id: user._id },
+            { $set: { profilePictures: { originalImageUrl, updatedAt: expect.any(String) } } },
+        );
         expect(next).toBeCalledWith();
     });
 
