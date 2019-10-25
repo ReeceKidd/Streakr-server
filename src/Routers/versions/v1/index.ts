@@ -11,7 +11,7 @@ import { feedbackRouter } from './feedbackRouter';
 import { teamMemberStreaksRouter } from './teamMemberStreaksRouter';
 import { friendRequestsRouter } from './friendRequestRouter';
 import { timezoneMiddlewares } from '../../../SharedMiddleware/timezoneMiddlewares';
-import { authenticationMiddlewares } from '../../../SharedMiddleware/authenticationMiddlewares';
+// import { authenticationMiddlewares } from '../../../SharedMiddleware/authenticationMiddlewares';
 import { incompleteSoloStreakTasksRouter } from './incompleteSoloStreakTaskRouter';
 import { incompleteTeamMemberStreakTasksRouter } from './incompleteTeamMemberStreakTaskRouter';
 import { dailyJobsRouter } from './dailyJobsRouter';
@@ -43,7 +43,7 @@ v1Router.use(`/${RouterCategories.completeTeamMemberStreakTasks}`, completeTeamM
 v1Router.use(`/${RouterCategories.dailyJobs}`, dailyJobsRouter);
 
 // Authenticated User Routes
-v1Router.use(...authenticationMiddlewares);
+// v1Router.use(...authenticationMiddlewares);
 v1Router.use(`/${RouterCategories.users}`, usersRouter);
 v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
 v1Router.use(`/${RouterCategories.incompleteSoloStreakTasks}`, incompleteSoloStreakTasksRouter);

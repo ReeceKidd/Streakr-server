@@ -10,3 +10,4 @@
 10) Need to ask Maxime what I should be doing for monitoring off the application. 
 11) Ask Maxime what should be testing what should the SDK have intergration tests or should these be running against the local host? Or should the server just have the tests. 
 12) Ask maxime what I need to consider for profile pictures, in regards to security and sizing them. Should this be done with a lambda on S3?
+13) How should I handle the resizing of images, because it takes a long time on the server. I'm guessing send the response early and process afterwards? 

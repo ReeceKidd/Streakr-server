@@ -143,9 +143,10 @@ describe(`imageTypeValidationMiddleware`, () => {
 });
 
 describe(`manipulateAvatarImageMiddleware`, () => {
-    test('resizes image and sets response.locals.logoImage', async () => {
-        expect.assertions(4);
-        const resize = jest.fn().mockResolvedValue(true);
+    test('resizes image and sets response.locals.avatarImage', async () => {
+        expect.assertions(5);
+        const getBufferAsync = jest.fn().mockResolvedValue(true);
+        const resize = jest.fn(() => ({ getBufferAsync }));
         const read = jest.fn().mockResolvedValue({ resize });
         const Jimp = {
             read,
@@ -162,6 +163,7 @@ describe(`manipulateAvatarImageMiddleware`, () => {
 
         expect(read).toBeCalledWith(image.buffer);
         expect(resize).toBeCalled();
+        expect(getBufferAsync).toBeCalled();
         expect(response.locals.avatarImage).toBeDefined();
         expect(next).toBeCalled();
     });
@@ -187,7 +189,7 @@ describe(`s3UploadAvatarImageMiddleware`, () => {
         const s3Client = {
             putObject,
         };
-        const avatarImage = { buffer: 'string' };
+        const avatarImage = true;
         const username = 'username';
         const user = {
             username,
@@ -203,7 +205,7 @@ describe(`s3UploadAvatarImageMiddleware`, () => {
 
         expect(putObject).toBeCalledWith({
             Bucket: PROFILE_PICTURES_BUCKET,
-            Body: new Buffer(avatarImage.buffer),
+            Body: avatarImage,
             Key: `${username}-avatar`,
         });
         expect(promise).toBeCalledWith();

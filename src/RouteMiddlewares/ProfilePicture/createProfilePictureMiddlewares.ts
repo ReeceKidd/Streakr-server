@@ -72,7 +72,7 @@ export const getManipulateAvatarImageMiddleware = (jimp: typeof Jimp) => async (
     try {
         const { image } = response.locals;
         const jimpImage = await jimp.read(image.buffer);
-        const avatarImage = jimpImage.resize(300, 300);
+        const avatarImage = await jimpImage.resize(300, 300).getBufferAsync('image/jpeg');
         response.locals.avatarImage = avatarImage;
         next();
     } catch (err) {
@@ -93,7 +93,7 @@ export const getS3UploadAvatarImageMiddleware = (s3Client: typeof s3) => async (
         await s3Client
             .putObject({
                 Bucket: PROFILE_PICTURES_BUCKET,
-                Body: new Buffer(avatarImage.buffer),
+                Body: avatarImage,
                 Key: `${user.username}-${avatar}`,
             })
             .promise();
@@ -151,7 +151,7 @@ export const getSetUserProfilePicturesMiddlewares = (userModel: Model<UserModel>
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { user, avatarImageUrl, originalImageUrl } = response.locals;
+        const { avatarImageUrl, originalImageUrl, user } = response.locals;
         const profilePictures = {
             avatarImageUrl,
             originalImageUrl,
