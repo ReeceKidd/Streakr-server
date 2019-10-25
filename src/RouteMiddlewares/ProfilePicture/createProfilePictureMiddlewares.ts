@@ -1,6 +1,5 @@
 import aws from 'aws-sdk';
 import { Request, Response } from 'express';
-import Jimp from 'jimp';
 import multer from 'multer';
 import util from 'util';
 
@@ -26,7 +25,6 @@ const upload = multer();
 const singleImageUpload = upload.single('image');
 const promiseSingleImageUpload = util.promisify(singleImageUpload);
 
-const avatar = 'avatar';
 const original = 'original';
 
 export const getSingleImageUploadMiddleware = (singleImageUpload: Function) => async (
@@ -64,47 +62,6 @@ export const imageTypeValidationMiddleware = (request: Request, response: Respon
     }
 };
 
-export const getManipulateAvatarImageMiddleware = (jimp: typeof Jimp) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const { image } = response.locals;
-        const jimpImage = await jimp.read(image.buffer);
-        const avatarImage = await jimpImage.resize(300, 300).getBufferAsync('image/jpeg');
-        response.locals.avatarImage = avatarImage;
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.ManipulateProfilePictureMiddleware, err));
-    }
-};
-
-export const manipulateAvatarImageMiddleware = getManipulateAvatarImageMiddleware(Jimp);
-
-export const getS3UploadAvatarImageMiddleware = (s3Client: typeof s3) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const { avatarImage, user } = response.locals;
-        await s3Client
-            .putObject({
-                Bucket: PROFILE_PICTURES_BUCKET,
-                Body: avatarImage,
-                Key: `${user.username}-${avatar}`,
-            })
-            .promise();
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.S3UploadAvatarImage, err));
-    }
-};
-
-export const s3UploadAvatarImageMiddleware = getS3UploadAvatarImageMiddleware(s3);
-
 export const getS3UploadOriginalImageMiddleware = (s3Client: typeof s3) => async (
     request: Request,
     response: Response,
@@ -131,11 +88,9 @@ export const s3UploadOriginalImageMiddleware = getS3UploadOriginalImageMiddlewar
 export const defineProfilePictureUrlsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { user } = response.locals;
-        const avatarImageUrl = `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${user.username}-${avatar}`;
         const originalImageUrl = `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${user.username}-${original}`;
         response.locals = {
             ...response.locals,
-            avatarImageUrl,
             originalImageUrl,
         };
         next();
@@ -151,9 +106,8 @@ export const getSetUserProfilePicturesMiddlewares = (userModel: Model<UserModel>
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { avatarImageUrl, originalImageUrl, user } = response.locals;
+        const { originalImageUrl, user } = response.locals;
         const profilePictures = {
-            avatarImageUrl,
             originalImageUrl,
         };
         await userModel.updateOne({ _id: user._id }, { $set: { profilePictures } });
@@ -180,8 +134,6 @@ export const sendProfilePicturesMiddleware = (request: Request, response: Respon
 const createProfilePictureMiddlewares = [
     singleImageUploadMiddleware,
     imageTypeValidationMiddleware,
-    manipulateAvatarImageMiddleware,
-    s3UploadAvatarImageMiddleware,
     s3UploadOriginalImageMiddleware,
     defineProfilePictureUrlsMiddleware,
     setUserProfilePicturesMiddleware,

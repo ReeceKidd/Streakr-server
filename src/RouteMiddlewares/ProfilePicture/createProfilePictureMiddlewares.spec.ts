@@ -2,17 +2,13 @@
 import {
     getSingleImageUploadMiddleware,
     imageTypeValidationMiddleware,
-    getManipulateAvatarImageMiddleware,
-    getS3UploadAvatarImageMiddleware,
     getS3UploadOriginalImageMiddleware,
     defineProfilePictureUrlsMiddleware,
     getSetUserProfilePicturesMiddlewares,
     sendProfilePicturesMiddleware,
     createProfilePictureMiddlewares,
     singleImageUploadMiddleware,
-    manipulateAvatarImageMiddleware,
     setUserProfilePicturesMiddleware,
-    s3UploadAvatarImageMiddleware,
     s3UploadOriginalImageMiddleware,
 } from './createProfilePictureMiddlewares';
 import { CustomError } from '../../../src/customError';
@@ -142,90 +138,6 @@ describe(`imageTypeValidationMiddleware`, () => {
     });
 });
 
-describe(`manipulateAvatarImageMiddleware`, () => {
-    test('resizes image and sets response.locals.avatarImage', async () => {
-        expect.assertions(5);
-        const getBufferAsync = jest.fn().mockResolvedValue(true);
-        const resize = jest.fn(() => ({ getBufferAsync }));
-        const read = jest.fn().mockResolvedValue({ resize });
-        const Jimp = {
-            read,
-        };
-        const image = { buffer: 'string' };
-        const request: any = {};
-        const response: any = {
-            locals: { image },
-        };
-        const next = jest.fn();
-
-        const middleware = getManipulateAvatarImageMiddleware(Jimp as any);
-        await middleware(request, response, next);
-
-        expect(read).toBeCalledWith(image.buffer);
-        expect(resize).toBeCalled();
-        expect(getBufferAsync).toBeCalled();
-        expect(response.locals.avatarImage).toBeDefined();
-        expect(next).toBeCalled();
-    });
-
-    test('calls next with ManipulateProfilePictureMiddleware error on middleware failure', async () => {
-        expect.assertions(1);
-
-        const request: any = {};
-        const response: any = {};
-        const next = jest.fn();
-
-        imageTypeValidationMiddleware(request, response, next);
-
-        expect(next).toBeCalledWith(new CustomError(ErrorType.ManipulateProfilePictureMiddleware, expect.any(Error)));
-    });
-});
-
-describe(`s3UploadAvatarImageMiddleware`, () => {
-    test('uploads avatar image to s3 bucket named username-avatar', async () => {
-        expect.assertions(3);
-        const promise = jest.fn().mockResolvedValue(true);
-        const putObject = jest.fn(() => ({ promise }));
-        const s3Client = {
-            putObject,
-        };
-        const avatarImage = true;
-        const username = 'username';
-        const user = {
-            username,
-        };
-        const request: any = {};
-        const response: any = {
-            locals: { avatarImage, user },
-        };
-        const next = jest.fn();
-
-        const middleware = getS3UploadAvatarImageMiddleware(s3Client as any);
-        await middleware(request, response, next);
-
-        expect(putObject).toBeCalledWith({
-            Bucket: PROFILE_PICTURES_BUCKET,
-            Body: avatarImage,
-            Key: `${username}-avatar`,
-        });
-        expect(promise).toBeCalledWith();
-        expect(next).toBeCalledWith();
-    });
-
-    test('calls next with S3UploadAvatarImage error on middleware failure', async () => {
-        expect.assertions(1);
-
-        const request: any = {};
-        const response: any = {};
-        const next = jest.fn();
-
-        const middleware = getS3UploadAvatarImageMiddleware({} as any);
-        middleware(request, response, next);
-
-        expect(next).toBeCalledWith(new CustomError(ErrorType.S3UploadAvatarImage, expect.any(Error)));
-    });
-});
-
 describe(`s3UploadOriginalImageMiddleware`, () => {
     test('uploads original image to s3 bucket named username-original', async () => {
         expect.assertions(3);
@@ -272,8 +184,8 @@ describe(`s3UploadOriginalImageMiddleware`, () => {
 });
 
 describe(`defineProfilePictureUrls`, () => {
-    test('defines avatarImageUrl and originalImageUrl', async () => {
-        expect.assertions(3);
+    test('defines originalImageUrl', async () => {
+        expect.assertions(2);
         const username = 'username';
         const user = { username };
         const request: any = {};
@@ -283,9 +195,6 @@ describe(`defineProfilePictureUrls`, () => {
         const next = jest.fn();
         defineProfilePictureUrlsMiddleware(request, response, next);
 
-        expect(response.locals.avatarImageUrl).toEqual(
-            `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${user.username}-avatar`,
-        );
         expect(response.locals.originalImageUrl).toEqual(
             `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${user.username}-original`,
         );
@@ -306,13 +215,12 @@ describe(`defineProfilePictureUrls`, () => {
 });
 
 describe(`setUserProfilePicturesMiddlewares`, () => {
-    test('updates the users profilePictures property to contain the avatarImageUrl and the originalImageUrl', async () => {
+    test('updates the users profilePictures property to contain the originalImageUrl', async () => {
         expect.assertions(2);
         const updateOne = jest.fn().mockResolvedValue(true);
         const userModel = {
             updateOne,
         };
-        const avatarImageUrl = 'avatarImageUrl';
         const originalImageUrl = 'originalImageUrl';
         const userId = 'userId';
         const user = {
@@ -321,17 +229,14 @@ describe(`setUserProfilePicturesMiddlewares`, () => {
 
         const request: any = {};
         const response: any = {
-            locals: { userModel, avatarImageUrl, originalImageUrl, user },
+            locals: { userModel, originalImageUrl, user },
         };
         const next = jest.fn();
 
         const middleware = getSetUserProfilePicturesMiddlewares(userModel as any);
         await middleware(request, response, next);
 
-        expect(updateOne).toBeCalledWith(
-            { _id: user._id },
-            { $set: { profilePictures: { avatarImageUrl, originalImageUrl } } },
-        );
+        expect(updateOne).toBeCalledWith({ _id: user._id }, { $set: { profilePictures: { originalImageUrl } } });
         expect(next).toBeCalledWith();
     });
 
@@ -380,16 +285,14 @@ describe('sendProfilePicturesMiddlewares', () => {
 
 describe('createProfilePictureMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(9);
+        expect.assertions(7);
 
-        expect(createProfilePictureMiddlewares.length).toEqual(8);
+        expect(createProfilePictureMiddlewares.length).toEqual(6);
         expect(createProfilePictureMiddlewares[0]).toEqual(singleImageUploadMiddleware);
         expect(createProfilePictureMiddlewares[1]).toEqual(imageTypeValidationMiddleware);
-        expect(createProfilePictureMiddlewares[2]).toEqual(manipulateAvatarImageMiddleware);
-        expect(createProfilePictureMiddlewares[3]).toEqual(s3UploadAvatarImageMiddleware);
-        expect(createProfilePictureMiddlewares[4]).toEqual(s3UploadOriginalImageMiddleware);
-        expect(createProfilePictureMiddlewares[5]).toEqual(defineProfilePictureUrlsMiddleware);
-        expect(createProfilePictureMiddlewares[6]).toEqual(setUserProfilePicturesMiddleware);
-        expect(createProfilePictureMiddlewares[7]).toEqual(sendProfilePicturesMiddleware);
+        expect(createProfilePictureMiddlewares[2]).toEqual(s3UploadOriginalImageMiddleware);
+        expect(createProfilePictureMiddlewares[3]).toEqual(defineProfilePictureUrlsMiddleware);
+        expect(createProfilePictureMiddlewares[4]).toEqual(setUserProfilePicturesMiddleware);
+        expect(createProfilePictureMiddlewares[5]).toEqual(sendProfilePicturesMiddleware);
     });
 });

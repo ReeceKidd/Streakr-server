@@ -32,7 +32,6 @@ export const userSchema = new mongoose.Schema(
         profileImages: {
             type: Object,
             default: {
-                avatarImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
         },
