@@ -28,7 +28,7 @@ v1Router.use(...timezoneMiddlewares);
 // Unauthenticated routes
 v1Router.post(`/${RouterCategories.users}`, ...registerUserMiddlewares);
 v1Router.use(`/${RouterCategories.emails}`, emailRouter);
-v1Router.use(`/${RouterCategories.profilePictures}`, profilePictureRouter);
+v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);
 
 // Temporarily unauthenticated so agenda jobs still work.
 v1Router.use(`/${RouterCategories.soloStreaks}`, soloStreaksRouter);

@@ -38,6 +38,7 @@ export const getSingleImageUploadMiddleware = (singleImageUpload: Function) => a
         console.log('Entered');
         await singleImageUpload(request, response);
         const image = request.file;
+        console.log(request);
         console.log(image);
         if (!image) {
             throw new CustomError(ErrorType.NoImageInRequest);
