@@ -35,16 +35,12 @@ export const getSingleImageUploadMiddleware = (singleImageUpload: Function) => a
     next: NextFunction,
 ): Promise<void> => {
     try {
-        console.log('Entered');
         await singleImageUpload(request, response);
         const image = request.file;
-        console.log(request);
-        console.log(image);
         if (!image) {
             throw new CustomError(ErrorType.NoImageInRequest);
         }
         response.locals.image = image;
-        console.log(1);
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -56,7 +52,6 @@ export const singleImageUploadMiddleware = getSingleImageUploadMiddleware(promis
 
 export const imageTypeValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        console.log(2);
         const { image } = response.locals;
         const { mimetype } = image;
         if (mimetype !== 'image/jpeg' && mimetype !== 'image/png' && mimetype !== 'image/jpg') {
@@ -75,7 +70,6 @@ export const getManipulateAvatarImageMiddleware = (jimp: typeof Jimp) => async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        console.log(3);
         const { image } = response.locals;
         const jimpImage = await jimp.read(image.buffer);
         const avatarImage = jimpImage.resize(300, 300);
