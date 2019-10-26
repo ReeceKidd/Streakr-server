@@ -148,7 +148,7 @@ describe(`s3UploadOriginalImageMiddleware`, () => {
         const s3Client = {
             putObject,
         };
-        const image = { buffer: 'string' };
+        const image = { buffer: 'string', mimetype: 'image/jpg' };
         const username = 'username';
         const user = {
             username,
@@ -164,8 +164,9 @@ describe(`s3UploadOriginalImageMiddleware`, () => {
 
         expect(putObject).toBeCalledWith({
             Bucket: PROFILE_PICTURES_BUCKET,
-            Body: new Buffer(image.buffer),
-            Key: `${username}-original`,
+            Body: image.buffer,
+            ContentType: image.mimetype,
+            Key: `${username}-original.jpg`,
         });
         expect(promise).toBeCalledWith();
         expect(next).toBeCalledWith();
@@ -198,13 +199,10 @@ describe(`retreiveVersionedObjectMiddleware`, () => {
         const s3Client = {
             listObjectVersions,
         };
-        const username = 'username';
-        const user = {
-            username,
-        };
+        const imageKey = 'image-original.jpeg';
         const request: any = {};
         const response: any = {
-            locals: { user },
+            locals: { imageKey },
         };
         const next = jest.fn();
 
@@ -213,7 +211,7 @@ describe(`retreiveVersionedObjectMiddleware`, () => {
 
         expect(listObjectVersions).toBeCalledWith({
             Bucket: PROFILE_PICTURES_BUCKET,
-            Prefix: user.username,
+            Prefix: imageKey,
         });
         expect(response.locals.mostRecentImageVersionId).toBeDefined();
         expect(promise).toBeCalledWith();
@@ -237,18 +235,17 @@ describe(`retreiveVersionedObjectMiddleware`, () => {
 describe(`defineProfilePictureUrls`, () => {
     test('defines originalImageUrl', async () => {
         expect.assertions(2);
-        const username = 'username';
-        const user = { username };
+        const imageKey = 'image-orginal.jpg';
         const mostRecentImageVersionId = 'v1';
         const request: any = {};
         const response: any = {
-            locals: { user, mostRecentImageVersionId },
+            locals: { imageKey, mostRecentImageVersionId },
         };
         const next = jest.fn();
         defineProfilePictureUrlsMiddleware(request, response, next);
 
         expect(response.locals.originalImageUrl).toEqual(
-            `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${user.username}-original?versionId=${mostRecentImageVersionId}`,
+            `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${imageKey}?versionId=${mostRecentImageVersionId}`,
         );
         expect(next).toBeCalled();
     });

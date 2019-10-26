@@ -69,13 +69,17 @@ export const getS3UploadOriginalImageMiddleware = (s3Client: typeof s3) => async
 ): Promise<void> => {
     try {
         const { image, user } = response.locals;
+        const imageExtension = image.mimetype.split('/')[1];
+        const imageKey = `${user.username}-${original}.${imageExtension}`;
         await s3Client
             .putObject({
                 Bucket: PROFILE_PICTURES_BUCKET,
-                Body: new Buffer(image.buffer),
-                Key: `${user.username}-${original}`,
+                Body: image.buffer,
+                ContentType: image.mimetype,
+                Key: imageKey,
             })
             .promise();
+        response.locals.imageKey = imageKey;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -91,9 +95,9 @@ export const getRetreiveVersionedObjectMiddleware = (s3Client: typeof s3) => asy
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { user } = response.locals;
+        const { imageKey } = response.locals;
         const imageVersions = await s3Client
-            .listObjectVersions({ Bucket: PROFILE_PICTURES_BUCKET, Prefix: user.username })
+            .listObjectVersions({ Bucket: PROFILE_PICTURES_BUCKET, Prefix: imageKey })
             .promise();
         const mostRecentImageVersionId =
             imageVersions && imageVersions.Versions && imageVersions.Versions[0] && imageVersions.Versions[0].VersionId;
@@ -109,8 +113,8 @@ export const retreiveVersionedObjectMiddleware = getRetreiveVersionedObjectMiddl
 
 export const defineProfilePictureUrlsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { user, mostRecentImageVersionId } = response.locals;
-        const originalImageUrl = `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${user.username}-${original}?versionId=${mostRecentImageVersionId}`;
+        const { imageKey, mostRecentImageVersionId } = response.locals;
+        const originalImageUrl = `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${imageKey}?versionId=${mostRecentImageVersionId}`;
         response.locals.originalImageUrl = originalImageUrl;
         next();
     } catch (err) {
