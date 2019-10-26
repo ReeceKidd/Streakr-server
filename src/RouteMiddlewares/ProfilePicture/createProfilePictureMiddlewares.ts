@@ -73,8 +73,7 @@ export const getS3UploadOriginalImageMiddleware = (s3Client: typeof s3) => async
         await s3Client
             .putObject({
                 Bucket: PROFILE_PICTURES_BUCKET,
-                Body: image.buffer,
-                ContentType: image.mimetype,
+                Body: new Buffer(image.buffer),
                 Key: imageKey,
             })
             .promise();
