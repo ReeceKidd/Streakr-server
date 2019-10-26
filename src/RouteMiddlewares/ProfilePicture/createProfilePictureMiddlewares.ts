@@ -69,8 +69,7 @@ export const getS3UploadOriginalImageMiddleware = (s3Client: typeof s3) => async
 ): Promise<void> => {
     try {
         const { image, user } = response.locals;
-        const imageExtension = image.mimetype.split('/')[1];
-        const imageKey = `${user.username}-${original}.${imageExtension}`;
+        const imageKey = `${user.username}-${original}`;
         await s3Client
             .putObject({
                 Bucket: PROFILE_PICTURES_BUCKET,
@@ -95,9 +94,9 @@ export const getRetreiveVersionedObjectMiddleware = (s3Client: typeof s3) => asy
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { user } = response.locals;
+        const { imageKey } = response.locals;
         const imageVersions = await s3Client
-            .listObjectVersions({ Bucket: PROFILE_PICTURES_BUCKET, Prefix: `${user.username}-${original}` })
+            .listObjectVersions({ Bucket: PROFILE_PICTURES_BUCKET, Prefix: imageKey })
             .promise();
         const latestImageVersion =
             imageVersions && imageVersions.Versions && imageVersions.Versions.filter(version => version.IsLatest)[0];

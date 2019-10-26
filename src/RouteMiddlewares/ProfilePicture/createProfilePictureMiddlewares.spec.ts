@@ -166,7 +166,7 @@ describe(`s3UploadOriginalImageMiddleware`, () => {
             Bucket: PROFILE_PICTURES_BUCKET,
             Body: image.buffer,
             ContentType: image.mimetype,
-            Key: `${username}-original.jpg`,
+            Key: `${username}-original`,
         });
         expect(promise).toBeCalledWith();
         expect(next).toBeCalledWith();
@@ -200,13 +200,10 @@ describe(`retreiveVersionedObjectMiddleware`, () => {
         const s3Client = {
             listObjectVersions,
         };
-        const username = 'username';
-        const user = {
-            username,
-        };
+        const imageKey = 'imageKey';
         const request: any = {};
         const response: any = {
-            locals: { user },
+            locals: { imageKey },
         };
         const next = jest.fn();
 
@@ -215,7 +212,7 @@ describe(`retreiveVersionedObjectMiddleware`, () => {
 
         expect(listObjectVersions).toBeCalledWith({
             Bucket: PROFILE_PICTURES_BUCKET,
-            Prefix: `${username}-original`,
+            Prefix: imageKey,
         });
         expect(response.locals.latestImageVersionId).toBeDefined();
         expect(promise).toBeCalledWith();
