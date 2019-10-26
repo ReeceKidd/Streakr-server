@@ -85,14 +85,33 @@ export const getS3UploadOriginalImageMiddleware = (s3Client: typeof s3) => async
 
 export const s3UploadOriginalImageMiddleware = getS3UploadOriginalImageMiddleware(s3);
 
-export const defineProfilePictureUrlsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const getRetreiveVersionedObjectMiddleware = (s3Client: typeof s3) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
     try {
         const { user } = response.locals;
-        const originalImageUrl = `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${user.username}-${original}`;
-        response.locals = {
-            ...response.locals,
-            originalImageUrl,
-        };
+        const imageVersions = await s3Client
+            .listObjectVersions({ Bucket: PROFILE_PICTURES_BUCKET, Prefix: `${user.username}` })
+            .promise();
+        const mostRecentImageVersionId =
+            imageVersions && imageVersions.Versions && imageVersions.Versions[0] && imageVersions.Versions[0].VersionId;
+        response.locals.mostRecentImageVersionId = mostRecentImageVersionId;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.S3UploadOriginalImage, err));
+    }
+};
+
+export const retreiveVersionedObjectMiddleware = getRetreiveVersionedObjectMiddleware(s3);
+
+export const defineProfilePictureUrlsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const { user, mostRecentImageVersionId } = response.locals;
+        const originalImageUrl = `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${user.username}-${original}?versionId=${mostRecentImageVersionId}`;
+        response.locals.originalImageUrl = originalImageUrl;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -136,6 +155,7 @@ const createProfilePictureMiddlewares = [
     singleImageUploadMiddleware,
     imageTypeValidationMiddleware,
     s3UploadOriginalImageMiddleware,
+    retreiveVersionedObjectMiddleware,
     defineProfilePictureUrlsMiddleware,
     setUserProfilePicturesMiddleware,
     sendProfilePicturesMiddleware,
