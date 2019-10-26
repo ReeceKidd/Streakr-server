@@ -18,7 +18,7 @@ const { DATABASE_URI } = getServiceConfig();
 const app = express();
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParser.urlencoded({ parameterLimit: 100000, limit: '50mb', extended: true }));
 
 app.get(`/health`, (request, response) => {
     return response.status(200).send({ message: 'success' });
