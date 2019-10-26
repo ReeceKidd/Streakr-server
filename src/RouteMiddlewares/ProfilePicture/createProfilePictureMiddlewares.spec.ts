@@ -166,6 +166,7 @@ describe(`s3UploadOriginalImageMiddleware`, () => {
             Bucket: PROFILE_PICTURES_BUCKET,
             Body: new Buffer(image.buffer),
             Key: `${username}-original`,
+            ContentType: image.mimetype,
         });
         expect(promise).toBeCalledWith();
         expect(next).toBeCalledWith();

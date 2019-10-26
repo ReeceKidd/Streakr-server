@@ -33,14 +33,17 @@ export const getSingleImageUploadMiddleware = (singleImageUpload: Function) => a
     next: NextFunction,
 ): Promise<void> => {
     try {
+        console.log(1);
         await singleImageUpload(request, response);
         const image = request.file;
+        console.log(image);
         if (!image) {
             throw new CustomError(ErrorType.NoImageInRequest);
         }
         response.locals.image = image;
         next();
     } catch (err) {
+        console.log(err);
         if (err instanceof CustomError) next(err);
         else next(new CustomError(ErrorType.GetSingleImageUploadMiddleware, err));
     }
@@ -50,8 +53,10 @@ export const singleImageUploadMiddleware = getSingleImageUploadMiddleware(promis
 
 export const imageTypeValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
+        console.log(2);
         const { image } = response.locals;
         const { mimetype } = image;
+        console.log(mimetype);
         if (mimetype !== 'image/jpeg' && mimetype !== 'image/png' && mimetype !== 'image/jpg') {
             throw new CustomError(ErrorType.InvalidImageFormat);
         }
@@ -68,13 +73,18 @@ export const getS3UploadOriginalImageMiddleware = (s3Client: typeof s3) => async
     next: NextFunction,
 ): Promise<void> => {
     try {
+        console.log(3);
         const { image, user } = response.locals;
         const imageKey = `${user.username}-${original}`;
+        console.log(image);
+        const bufferImage = new Buffer(image.buffer);
+        console.log(bufferImage);
         await s3Client
             .putObject({
                 Bucket: PROFILE_PICTURES_BUCKET,
                 Body: new Buffer(image.buffer),
                 Key: imageKey,
+                ContentType: image.mimetype,
             })
             .promise();
         response.locals.imageKey = imageKey;
@@ -93,10 +103,12 @@ export const getRetreiveVersionedObjectMiddleware = (s3Client: typeof s3) => asy
     next: NextFunction,
 ): Promise<void> => {
     try {
+        console.log(4);
         const { imageKey } = response.locals;
         const imageVersions = await s3Client
             .listObjectVersions({ Bucket: PROFILE_PICTURES_BUCKET, Prefix: imageKey })
             .promise();
+        console.log(imageVersions);
         const latestImageVersion =
             imageVersions && imageVersions.Versions && imageVersions.Versions.filter(version => version.IsLatest)[0];
         const latestImageVersionId = latestImageVersion && latestImageVersion.VersionId;
@@ -112,6 +124,7 @@ export const retreiveVersionedObjectMiddleware = getRetreiveVersionedObjectMiddl
 
 export const defineProfilePictureUrlsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
+        console.log(5);
         const { imageKey, latestImageVersionId } = response.locals;
         const originalImageUrl = `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${imageKey}?versionId=${latestImageVersionId}`;
         response.locals.originalImageUrl = originalImageUrl;
@@ -128,6 +141,7 @@ export const getSetUserProfilePicturesMiddlewares = (userModel: Model<UserModel>
     next: NextFunction,
 ): Promise<void> => {
     try {
+        console.log(6);
         const { originalImageUrl, user } = response.locals;
         const profileImages = {
             originalImageUrl,
@@ -145,6 +159,7 @@ export const setUserProfilePicturesMiddleware = getSetUserProfilePicturesMiddlew
 
 export const sendProfilePicturesMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
+        console.log(7);
         const { profileImages } = response.locals;
         response.status(ResponseCodes.created).send(profileImages);
     } catch (err) {
