@@ -10,6 +10,8 @@ import {
     singleImageUploadMiddleware,
     setUserProfilePicturesMiddleware,
     s3UploadOriginalImageMiddleware,
+    retreiveVersionedObjectMiddleware,
+    getRetreiveVersionedObjectMiddleware,
 } from './createProfilePictureMiddlewares';
 import { CustomError } from '../../../src/customError';
 import { ErrorType } from '../../../src/customError';
@@ -183,20 +185,70 @@ describe(`s3UploadOriginalImageMiddleware`, () => {
     });
 });
 
-describe(`defineProfilePictureUrls`, () => {
-    test('defines originalImageUrl', async () => {
-        expect.assertions(2);
+describe(`retreiveVersionedObjectMiddleware`, () => {
+    test('retreives versions of objects and sets mostRecentImageVersionId', async () => {
+        expect.assertions(4);
+        const VersionId = 'v1';
+        const Version = {
+            VersionId,
+        };
+        const Versions = [Version];
+        const promise = jest.fn().mockResolvedValue({ Versions });
+        const listObjectVersions = jest.fn(() => ({ promise }));
+        const s3Client = {
+            listObjectVersions,
+        };
         const username = 'username';
-        const user = { username };
+        const user = {
+            username,
+        };
         const request: any = {};
         const response: any = {
             locals: { user },
         };
         const next = jest.fn();
+
+        const middleware = getRetreiveVersionedObjectMiddleware(s3Client as any);
+        await middleware(request, response, next);
+
+        expect(listObjectVersions).toBeCalledWith({
+            Bucket: PROFILE_PICTURES_BUCKET,
+            Prefix: user.username,
+        });
+        expect(response.locals.mostRecentImageVersionId).toBeDefined();
+        expect(promise).toBeCalledWith();
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with S3UploadOriginalImage error on middleware failure', async () => {
+        expect.assertions(1);
+
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+
+        const middleware = getS3UploadOriginalImageMiddleware({} as any);
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.S3UploadOriginalImage, expect.any(Error)));
+    });
+});
+
+describe(`defineProfilePictureUrls`, () => {
+    test('defines originalImageUrl', async () => {
+        expect.assertions(2);
+        const username = 'username';
+        const user = { username };
+        const mostRecentImageVersionId = 'v1';
+        const request: any = {};
+        const response: any = {
+            locals: { user, mostRecentImageVersionId },
+        };
+        const next = jest.fn();
         defineProfilePictureUrlsMiddleware(request, response, next);
 
         expect(response.locals.originalImageUrl).toEqual(
-            `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${user.username}-original`,
+            `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${user.username}-original?versionId=${mostRecentImageVersionId}`,
         );
         expect(next).toBeCalled();
     });
@@ -215,7 +267,7 @@ describe(`defineProfilePictureUrls`, () => {
 });
 
 describe(`setUserProfilePicturesMiddlewares`, () => {
-    test('updates the users profilePictures property to contain the originalImageUrl', async () => {
+    test('updates the users profileImages property to contain the originalImageUrl', async () => {
         expect.assertions(2);
         const updateOne = jest.fn().mockResolvedValue(true);
         const userModel = {
@@ -236,10 +288,7 @@ describe(`setUserProfilePicturesMiddlewares`, () => {
         const middleware = getSetUserProfilePicturesMiddlewares(userModel as any);
         await middleware(request, response, next);
 
-        expect(updateOne).toBeCalledWith(
-            { _id: user._id },
-            { $set: { profilePictures: { originalImageUrl, updatedAt: expect.any(String) } } },
-        );
+        expect(updateOne).toBeCalledWith({ _id: user._id }, { $set: { profileImages: { originalImageUrl } } });
         expect(next).toBeCalledWith();
     });
 
@@ -258,20 +307,20 @@ describe(`setUserProfilePicturesMiddlewares`, () => {
 });
 
 describe('sendProfilePicturesMiddlewares', () => {
-    test('responds with profile pictures', () => {
+    test('responds resource created status code and sends profile images', () => {
         expect.assertions(3);
 
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {};
-        const profilePictures = true;
-        const response: any = { status, locals: { profilePictures } };
+        const profileImages = true;
+        const response: any = { status, locals: { profileImages } };
         const next = jest.fn();
 
         sendProfilePicturesMiddleware(request, response, next);
 
         expect(status).toBeCalledWith(201);
-        expect(send).toBeCalledWith(profilePictures);
+        expect(send).toBeCalledWith(profileImages);
         expect(next).not.toBeCalled();
     });
 
@@ -288,14 +337,15 @@ describe('sendProfilePicturesMiddlewares', () => {
 
 describe('createProfilePictureMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(7);
+        expect.assertions(8);
 
-        expect(createProfilePictureMiddlewares.length).toEqual(6);
+        expect(createProfilePictureMiddlewares.length).toEqual(7);
         expect(createProfilePictureMiddlewares[0]).toEqual(singleImageUploadMiddleware);
         expect(createProfilePictureMiddlewares[1]).toEqual(imageTypeValidationMiddleware);
         expect(createProfilePictureMiddlewares[2]).toEqual(s3UploadOriginalImageMiddleware);
-        expect(createProfilePictureMiddlewares[3]).toEqual(defineProfilePictureUrlsMiddleware);
-        expect(createProfilePictureMiddlewares[4]).toEqual(setUserProfilePicturesMiddleware);
-        expect(createProfilePictureMiddlewares[5]).toEqual(sendProfilePicturesMiddleware);
+        expect(createProfilePictureMiddlewares[3]).toEqual(retreiveVersionedObjectMiddleware);
+        expect(createProfilePictureMiddlewares[4]).toEqual(defineProfilePictureUrlsMiddleware);
+        expect(createProfilePictureMiddlewares[5]).toEqual(setUserProfilePicturesMiddleware);
+        expect(createProfilePictureMiddlewares[6]).toEqual(sendProfilePicturesMiddleware);
     });
 });

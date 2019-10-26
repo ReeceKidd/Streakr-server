@@ -93,7 +93,7 @@ export const getRetreiveVersionedObjectMiddleware = (s3Client: typeof s3) => asy
     try {
         const { user } = response.locals;
         const imageVersions = await s3Client
-            .listObjectVersions({ Bucket: PROFILE_PICTURES_BUCKET, Prefix: `${user.username}` })
+            .listObjectVersions({ Bucket: PROFILE_PICTURES_BUCKET, Prefix: user.username })
             .promise();
         const mostRecentImageVersionId =
             imageVersions && imageVersions.Versions && imageVersions.Versions[0] && imageVersions.Versions[0].VersionId;
@@ -126,12 +126,11 @@ export const getSetUserProfilePicturesMiddlewares = (userModel: Model<UserModel>
 ): Promise<void> => {
     try {
         const { originalImageUrl, user } = response.locals;
-        const profilePictures = {
+        const profileImages = {
             originalImageUrl,
-            updatedAt: new Date().toString(),
         };
-        await userModel.updateOne({ _id: user._id }, { $set: { profilePictures } });
-        response.locals.profilePictures = profilePictures;
+        await userModel.updateOne({ _id: user._id }, { $set: { profileImages } });
+        response.locals.profileImages = profileImages;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -143,8 +142,8 @@ export const setUserProfilePicturesMiddleware = getSetUserProfilePicturesMiddlew
 
 export const sendProfilePicturesMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { profilePictures } = response.locals;
-        response.status(ResponseCodes.created).send(profilePictures);
+        const { profileImages } = response.locals;
+        response.status(ResponseCodes.created).send(profileImages);
     } catch (err) {
         if (err instanceof CustomError) next(err);
         else next(new CustomError(ErrorType.SendProfilePictures, err));
