@@ -192,6 +192,7 @@ describe(`retreiveVersionedObjectMiddleware`, () => {
         const VersionId = 'v1';
         const Version = {
             VersionId,
+            IsLatest: true,
         };
         const Versions = [Version];
         const promise = jest.fn().mockResolvedValue({ Versions });
@@ -199,10 +200,13 @@ describe(`retreiveVersionedObjectMiddleware`, () => {
         const s3Client = {
             listObjectVersions,
         };
-        const imageKey = 'image-original.jpeg';
+        const username = 'username';
+        const user = {
+            username,
+        };
         const request: any = {};
         const response: any = {
-            locals: { imageKey },
+            locals: { user },
         };
         const next = jest.fn();
 
@@ -211,9 +215,9 @@ describe(`retreiveVersionedObjectMiddleware`, () => {
 
         expect(listObjectVersions).toBeCalledWith({
             Bucket: PROFILE_PICTURES_BUCKET,
-            Prefix: imageKey,
+            Prefix: `${username}-original`,
         });
-        expect(response.locals.mostRecentImageVersionId).toBeDefined();
+        expect(response.locals.latestImageVersionId).toBeDefined();
         expect(promise).toBeCalledWith();
         expect(next).toBeCalledWith();
     });
@@ -236,16 +240,16 @@ describe(`defineProfilePictureUrls`, () => {
     test('defines originalImageUrl', async () => {
         expect.assertions(2);
         const imageKey = 'image-orginal.jpg';
-        const mostRecentImageVersionId = 'v1';
+        const latestImageVersionId = 'v1';
         const request: any = {};
         const response: any = {
-            locals: { imageKey, mostRecentImageVersionId },
+            locals: { imageKey, latestImageVersionId },
         };
         const next = jest.fn();
         defineProfilePictureUrlsMiddleware(request, response, next);
 
         expect(response.locals.originalImageUrl).toEqual(
-            `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${imageKey}?versionId=${mostRecentImageVersionId}`,
+            `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${imageKey}?versionId=${latestImageVersionId}`,
         );
         expect(next).toBeCalled();
     });

@@ -95,13 +95,14 @@ export const getRetreiveVersionedObjectMiddleware = (s3Client: typeof s3) => asy
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { imageKey } = response.locals;
+        const { user } = response.locals;
         const imageVersions = await s3Client
-            .listObjectVersions({ Bucket: PROFILE_PICTURES_BUCKET, Prefix: imageKey })
+            .listObjectVersions({ Bucket: PROFILE_PICTURES_BUCKET, Prefix: `${user.username}-${original}` })
             .promise();
-        const mostRecentImageVersionId =
-            imageVersions && imageVersions.Versions && imageVersions.Versions[0] && imageVersions.Versions[0].VersionId;
-        response.locals.mostRecentImageVersionId = mostRecentImageVersionId;
+        const latestImageVersion =
+            imageVersions && imageVersions.Versions && imageVersions.Versions.filter(version => version.IsLatest)[0];
+        const latestImageVersionId = latestImageVersion && latestImageVersion.VersionId;
+        response.locals.latestImageVersionId = latestImageVersionId;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -113,8 +114,8 @@ export const retreiveVersionedObjectMiddleware = getRetreiveVersionedObjectMiddl
 
 export const defineProfilePictureUrlsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { imageKey, mostRecentImageVersionId } = response.locals;
-        const originalImageUrl = `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${imageKey}?versionId=${mostRecentImageVersionId}`;
+        const { imageKey, latestImageVersionId } = response.locals;
+        const originalImageUrl = `https://${PROFILE_PICTURES_BUCKET}.s3-eu-west-1.amazonaws.com/${imageKey}?versionId=${latestImageVersionId}`;
         response.locals.originalImageUrl = originalImageUrl;
         next();
     } catch (err) {
