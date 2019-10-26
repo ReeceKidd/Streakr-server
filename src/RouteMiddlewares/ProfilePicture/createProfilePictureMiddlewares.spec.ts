@@ -165,7 +165,6 @@ describe(`s3UploadOriginalImageMiddleware`, () => {
         expect(putObject).toBeCalledWith({
             Bucket: PROFILE_PICTURES_BUCKET,
             Body: image.buffer,
-            ContentType: image.mimetype,
             Key: `${username}-original`,
         });
         expect(promise).toBeCalledWith();
@@ -297,7 +296,7 @@ describe(`setUserProfilePicturesMiddlewares`, () => {
         const response: any = {};
         const next = jest.fn();
 
-        const middleware = getS3UploadOriginalImageMiddleware({} as any);
+        const middleware = getSetUserProfilePicturesMiddlewares({} as any);
         middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SetUserProfilePictures, expect.any(Error)));
