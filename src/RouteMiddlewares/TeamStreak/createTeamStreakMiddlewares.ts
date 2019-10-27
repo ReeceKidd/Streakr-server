@@ -77,8 +77,8 @@ export const getCreateTeamMemberStreaksMiddleware = (
 
         const membersWithTeamMemberStreakIds = await Promise.all(
             members.map(async (member: { memberId: string }) => {
-                const memberExists = await userModel.findOne({ _id: member.memberId });
-                if (!memberExists) {
+                const memberInfo = await userModel.findOne({ _id: member.memberId });
+                if (!memberInfo) {
                     throw new CustomError(ErrorType.TeamMemberDoesNotExist);
                 }
 

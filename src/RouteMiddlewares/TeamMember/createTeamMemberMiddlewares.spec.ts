@@ -280,8 +280,11 @@ describe(`addFriendToTeamStreakMiddleware`, () => {
             members,
         };
         const friendId = 'abc';
+        const friend = {
+            friendId,
+        };
         const request: any = { body: { friendId }, params: { teamStreakId } };
-        const response: any = { locals: { teamStreak, teamMemberStreak } };
+        const response: any = { locals: { teamStreak, teamMemberStreak, friend } };
         const next: any = jest.fn();
         const middleware = await getAddFriendToTeamStreakMiddleware(TeamStreakModel);
 

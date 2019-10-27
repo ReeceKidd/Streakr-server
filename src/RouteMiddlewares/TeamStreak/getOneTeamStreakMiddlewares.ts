@@ -62,6 +62,7 @@ export const getRetreiveTeamStreakMembersInformationMiddleware = (
                 return {
                     _id: memberInfo._id,
                     username: memberInfo.username,
+                    profileImage: memberInfo.profileImages.originalImageUrl,
                     teamMemberStreak,
                 };
             }),

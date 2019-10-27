@@ -127,8 +127,13 @@ export const getAddFriendToTeamStreakMiddleware = (teamStreakModel: mongoose.Mod
         const { friendId } = request.body;
         const { teamMemberStreak } = response.locals;
         const teamStreak: TeamStreak = response.locals.teamStreak;
-        let members: TeamMember[] = teamStreak.members;
-        members = [...members, { memberId: friendId, teamMemberStreakId: teamMemberStreak._id }];
+        const members: TeamMember[] = [
+            ...teamStreak.members,
+            {
+                memberId: friendId,
+                teamMemberStreakId: teamMemberStreak._id,
+            },
+        ];
         const updatedTeamStreak = await teamStreakModel
             .findByIdAndUpdate(
                 teamStreakId,

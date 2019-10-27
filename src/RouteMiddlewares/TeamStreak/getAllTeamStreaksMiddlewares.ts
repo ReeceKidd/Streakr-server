@@ -9,7 +9,7 @@ import { CustomError, ErrorType } from '../../customError';
 import { userModel, UserModel } from '../../Models/User';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
-import { TeamStreak, TeamMemberStreak } from '@streakoid/streakoid-sdk/lib';
+import { TeamStreak, PopulatedTeamMember } from '@streakoid/streakoid-sdk/lib';
 import { teamMemberStreakModel } from '../../Models/TeamMemberStreak';
 
 const getTeamStreaksQueryValidationSchema = {
@@ -91,9 +91,7 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
                         async (member: {
                             memberId: string;
                             teamMemberStreakId: string;
-                        }): Promise<
-                            { _id: string; username: string; teamMemberStreak: TeamMemberStreak } | undefined
-                        > => {
+                        }): Promise<PopulatedTeamMember | undefined> => {
                             const memberInfo = await userModel.findOne({ _id: member.memberId }).lean();
                             const teamMemberStreak = await teamMemberStreakModel
                                 .findOne({ _id: member.teamMemberStreakId })
@@ -104,6 +102,7 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
                             return {
                                 _id: memberInfo && memberInfo._id,
                                 username: memberInfo.username,
+                                profileImage: memberInfo.profileImages.originalImageUrl,
                                 teamMemberStreak,
                             };
                         },

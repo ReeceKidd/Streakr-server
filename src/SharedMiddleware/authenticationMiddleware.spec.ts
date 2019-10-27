@@ -49,7 +49,7 @@ describe(`decodeJWTMiddleware`, () => {
         expect(next).toBeCalledWith(new CustomError(ErrorType.TokenDoesNotExist));
     });
 
-    test('calls next with TeamMemberStreakExistsMiddleware error on middleware failure', async () => {
+    test('calls next with DecodeJWTMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = { locals: {} };

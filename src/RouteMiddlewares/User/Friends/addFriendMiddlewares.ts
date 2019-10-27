@@ -133,6 +133,7 @@ export const getAddFriendToUsersFriendListMiddleware = (userModel: Model<UserMod
         const formattedFriend: Friend = {
             friendId: friend._id,
             username: friend.username,
+            profileImage: friend.profileImages.originalImageUrl,
         };
         const userWithNewFriend = await userModel.findByIdAndUpdate(
             userId,
@@ -165,6 +166,7 @@ export const getAddUserToFriendsFriendListMiddleware = (userModel: Model<UserMod
         const formattedUser: Friend = {
             friendId: user._id,
             username: user.username,
+            profileImage: user.profileImages.originalImageUrl,
         };
         await userModel.findByIdAndUpdate(
             friend._id,

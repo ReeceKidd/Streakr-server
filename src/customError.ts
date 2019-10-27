@@ -329,6 +329,7 @@ export enum ErrorType {
     DefineProfilePictures,
     SetUserProfilePictures,
     SendProfilePictures,
+    GetFriendsInfoMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -2692,6 +2693,13 @@ export class CustomError extends Error {
             case ErrorType.SendProfilePictures:
                 return {
                     code: `${ResponseCodes.warning}-246`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetFriendsInfoMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-247`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

@@ -357,11 +357,11 @@ describe('addFriendMiddlewares', () => {
             const request: any = { params: { userId }, body: { friendId } };
             const response: any = { locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveFriendMiddleware(friendRequestModel as any);
+            const middleware = getRetreiveFriendRequestMiddleware(friendRequestModel as any);
 
             await middleware(request, response, next);
 
-            expect(next).toBeCalledWith(new CustomError(ErrorType.FriendDoesNotExist));
+            expect(next).toBeCalledWith(new CustomError(ErrorType.FriendRequestDoesNotExist));
         });
 
         test('throws RetreiveFriendRequestMiddleware error on middleware failure', async () => {
@@ -385,9 +385,11 @@ describe('addFriendMiddlewares', () => {
             const userId = 'userId';
             const friendId = 'friendId';
             const username = 'username';
+            const imageUrl = 'imageUrl';
             const friend = {
                 _id: friendId,
                 username,
+                profileImages: { originalImageUrl: imageUrl },
                 otherKey: 'otherKey',
             };
             const findByIdAndUpdate = jest.fn().mockResolvedValue({ friends: [friend] });
@@ -402,12 +404,37 @@ describe('addFriendMiddlewares', () => {
             expect(findByIdAndUpdate).toBeCalledWith(
                 userId,
                 {
-                    $addToSet: { friends: { friendId, username } },
+                    $addToSet: { friends: { friendId, username, profileImage: imageUrl } },
                 },
                 { new: true },
             );
             expect(response.locals.updatedFriends).toBeDefined();
             expect(next).toBeCalledWith();
+        });
+
+        test('thows AddFriendToUsersFriendListNotFound error when friend does not exist', async () => {
+            expect.assertions(1);
+
+            const userId = 'userId';
+            const friendId = 'friendId';
+            const username = 'username';
+            const imageUrl = 'imageUrl';
+            const friend = {
+                _id: friendId,
+                username,
+                profileImages: { originalImageUrl: imageUrl },
+                otherKey: 'otherKey',
+            };
+            const findByIdAndUpdate = jest.fn().mockResolvedValue(false);
+            const userModel: any = { findByIdAndUpdate };
+            const request: any = { params: { userId } };
+            const response: any = { locals: { friend } };
+            const next = jest.fn();
+
+            const middleware = getAddFriendToUsersFriendListMiddleware(userModel);
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.AddFriendToUsersFriendListNotFound));
         });
 
         test('throws AddFriendToUsersFriendListMiddleware error on middleware failure', async () => {
@@ -432,9 +459,13 @@ describe('addFriendMiddlewares', () => {
 
             const userId = 'userId';
             const username = 'username';
+            const imageUrl = 'imageUrl';
             const user = {
                 _id: userId,
                 username,
+                profileImages: {
+                    originalImageUrl: imageUrl,
+                },
             };
             const friendId = 'friendId';
             const friend = {
@@ -452,7 +483,7 @@ describe('addFriendMiddlewares', () => {
             expect(findByIdAndUpdate).toBeCalledWith(
                 friend._id,
                 {
-                    $addToSet: { friends: { friendId: user._id, username } },
+                    $addToSet: { friends: { friendId: user._id, username, profileImage: imageUrl } },
                 },
                 { new: true },
             );
@@ -466,7 +497,7 @@ describe('addFriendMiddlewares', () => {
             const response: any = {};
             const next = jest.fn();
 
-            const middleware = getAddFriendToUsersFriendListMiddleware({} as any);
+            const middleware = getAddUserToFriendsFriendListMiddleware({} as any);
             await middleware(request, response, next);
 
             expect(next).toBeCalledWith(

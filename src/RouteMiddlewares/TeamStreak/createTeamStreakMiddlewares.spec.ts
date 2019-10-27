@@ -331,7 +331,7 @@ describe(`createTeamMemberStreaksMiddleware`, () => {
 
         await middleware(request, response, next);
 
-        expect(response.locals.newTeamStreak).toBeDefined();
+        expect(response.locals.membersWithTeamMemberStreakIds).toBeDefined();
         expect(save).toBeCalledWith();
         expect(next).toBeCalledWith();
     });

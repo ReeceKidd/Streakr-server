@@ -140,7 +140,11 @@ describe('retreiveTeamStreakMembersInformation', () => {
     test('retreives team streak members information and sets response.locals.TeamStreaksWithUsers', async () => {
         expect.assertions(5);
 
-        const user = { _id: '12345678', username: 'usernames' };
+        const user = {
+            _id: '12345678',
+            username: 'usernames',
+            profileImages: { originalImageUrl: 'originalImageUrl' },
+        };
         const lean = jest.fn().mockResolvedValue(user);
         const findOne = jest.fn(() => ({ lean }));
         const userModel: any = {
@@ -163,7 +167,7 @@ describe('retreiveTeamStreakMembersInformation', () => {
 
         expect(response.locals.teamStreak).toBeDefined();
         const member = response.locals.teamStreak.members[0];
-        expect(Object.keys(member)).toEqual(['_id', 'username', 'teamMemberStreak']);
+        expect(Object.keys(member)).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak']);
 
         expect(next).toBeCalledWith();
     });
