@@ -12,6 +12,7 @@ import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEven
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 import { completeTeamMemberStreakTaskModel } from '../../../src/Models/CompleteTeamMemberStreakTask';
 import { dailyJobModel } from '../../../src/Models/DailyJob';
+import { originalImageUrl } from '.../../../src/Models/User';
 
 const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
 
@@ -83,7 +84,7 @@ describe('teamStreakDailyTracker', () => {
     });
 
     test('maintains team streaks correctly when a lone user has completed their task', async () => {
-        expect.assertions(60);
+        expect.assertions(61);
 
         const timezone = 'Europe/London';
 
@@ -142,7 +143,8 @@ describe('teamStreakDailyTracker', () => {
         expect(member._id).toEqual(userId);
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
         expect(member.username).toEqual(username);
-        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'username'].sort());
+        expect(member.profileImage).toEqual(originalImageUrl);
+        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak).sort()).toEqual(
@@ -256,7 +258,7 @@ describe('teamStreakDailyTracker', () => {
     });
 
     test('maintains team streaks correctly when all team members have completed their task', async () => {
-        expect.assertions(81);
+        expect.assertions(82);
 
         const timezone = 'Europe/London';
 
@@ -322,7 +324,8 @@ describe('teamStreakDailyTracker', () => {
         expect(member._id).toEqual(userId);
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
         expect(member.username).toEqual(username);
-        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'username'].sort());
+        expect(member.profileImage).toEqual(originalImageUrl);
+        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak).sort()).toEqual(
@@ -484,7 +487,7 @@ describe('teamStreakDailyTracker', () => {
     });
 
     test('resets lost team streaks correctly when a lone user does not complete their task for the day', async () => {
-        expect.assertions(76);
+        expect.assertions(77);
 
         const timezone = 'Europe/London';
 
@@ -549,7 +552,8 @@ describe('teamStreakDailyTracker', () => {
         expect(member._id).toEqual(userId);
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
         expect(member.username).toEqual(username);
-        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'username'].sort());
+        expect(member.profileImage).toEqual(originalImageUrl);
+        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak).sort()).toEqual(
@@ -688,7 +692,7 @@ describe('teamStreakDailyTracker', () => {
     });
 
     test('resets lost team streaks correctly when not everyone in the team has completed their task', async () => {
-        expect.assertions(101);
+        expect.assertions(102);
 
         const timezone = 'Europe/London';
 
@@ -767,7 +771,8 @@ describe('teamStreakDailyTracker', () => {
         expect(member._id).toEqual(userId);
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
         expect(member.username).toEqual(username);
-        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'username'].sort());
+        expect(member.profileImage).toEqual(originalImageUrl);
+        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak).sort()).toEqual(
@@ -959,7 +964,7 @@ describe('teamStreakDailyTracker', () => {
     });
 
     test('manages inactive team streaks correctly when all members have been inactive', async () => {
-        expect.assertions(81);
+        expect.assertions(82);
 
         const timezone = 'Europe/London';
 
@@ -1013,7 +1018,8 @@ describe('teamStreakDailyTracker', () => {
         expect(member._id).toEqual(userId);
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
         expect(member.username).toEqual(username);
-        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'username'].sort());
+        expect(member.profileImage).toEqual(originalImageUrl);
+        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak).sort()).toEqual(

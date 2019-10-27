@@ -6,6 +6,8 @@ import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 export type UserModel = User & mongoose.Document;
 
+export const originalImageUrl = 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg';
+
 export const userSchema = new mongoose.Schema(
     {
         username: {
@@ -32,7 +34,7 @@ export const userSchema = new mongoose.Schema(
         profileImages: {
             type: Object,
             default: {
-                originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+                originalImageUrl,
             },
         },
         friends: {

@@ -7,6 +7,7 @@ import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/
 import { resetIncompleteTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/resetIncompleteTeamMemberStreaks';
 import { resetIncompleteTeamStreaks } from '../../../src/Agenda/TeamStreaks/resetIncompleteTeamStreaks';
 import { getServiceConfig } from '../../../src/getServiceConfig';
+import { originalImageUrl } from '../../../src/Models/User';
 
 const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
 
@@ -36,7 +37,7 @@ describe('resetIncompleteTeamMemberStreaks', () => {
     });
 
     test('adds current team member streak to past streak, resets the current streak and creats a lost streak tracking event. Sets teamStreak completedToday to false', async () => {
-        expect.assertions(33);
+        expect.assertions(34);
 
         const creatorId = userId;
         const members = [{ memberId: userId }];
@@ -104,7 +105,8 @@ describe('resetIncompleteTeamMemberStreaks', () => {
         expect(member._id).toEqual(userId);
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
         expect(member.username).toEqual(username);
-        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'username'].sort());
+        expect(member.profileImage).toEqual(originalImageUrl);
+        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak).sort()).toEqual(

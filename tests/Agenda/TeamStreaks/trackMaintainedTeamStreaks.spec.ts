@@ -6,6 +6,7 @@ import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 import { trackMaintainedTeamStreaks } from '../../../src/Agenda/TeamStreaks/trackMaintainedTeamStreaks';
 import { getServiceConfig } from '../../../src/getServiceConfig';
+import { originalImageUrl } from '../../../src/Models/User';
 
 const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
 
@@ -35,7 +36,7 @@ describe('trackMaintainedTeamStreak', () => {
     });
 
     test('updates team streak activity and creates a streak maintained tracking event', async () => {
-        expect.assertions(36);
+        expect.assertions(37);
 
         const creatorId = userId;
         const members = [{ memberId: userId }];
@@ -99,7 +100,8 @@ describe('trackMaintainedTeamStreak', () => {
         expect(member._id).toEqual(userId);
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
         expect(member.username).toEqual(username);
-        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'username'].sort());
+        expect(member.profileImage).toEqual(originalImageUrl);
+        expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak).sort()).toEqual(
