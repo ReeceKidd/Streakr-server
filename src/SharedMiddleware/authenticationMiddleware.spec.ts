@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-jest.mock('jwt-decode');
 import {
     authenticationMiddlewares,
     ensureAudienceMatchesCognitoUserPool,
     getRetreiveUserMiddleware,
     retreiveUserMiddleware,
     decodeJWTMiddleware,
+    getDecodeJWTMiddleware,
 } from './authenticationMiddlewares';
-import jwtDecode from 'jwt-decode';
+
 import { CustomError } from '../../src/customError';
 import { ErrorType } from '../../src/customError';
 import { getServiceConfig } from '../../src/getServiceConfig';
@@ -15,23 +15,23 @@ import { getServiceConfig } from '../../src/getServiceConfig';
 const { COGNITO_APP_CLIENT_ID } = getServiceConfig();
 
 describe(`decodeJWTMiddleware`, () => {
-    afterAll(() => {
-        jest.resetAllMocks();
-    });
     test('if authorization header token is present it gets decoded and next is called.', () => {
-        expect.assertions(2);
+        expect.assertions(3);
         const token =
             'eyJraWQiOiJkc3lrWWlWd25lakFtKzVac1wvY0JWQ3F0b3BzRng5WEpta1hkcUp4TXhyTT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJjYzdiZDAzOS01NjMxLTRhZmUtODJkOC00ODAzMzUzOTE3YmQiLCJhdWQiOiI2OGFncDhiY205YmlkaGg0cDk3cmoxa2UxZyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJldmVudF9pZCI6IjAwYTk4NjRjLTAyYTMtNDUwZS04ZDBkLTcwNGVmNzEzYTJmYyIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNTcwOTcxMzkwLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb21cL2V1LXdlc3QtMV9qek5HMnNrZTkiLCJjb2duaXRvOnVzZXJuYW1lIjoicmVlY2UiLCJleHAiOjE1NzEwNDY3NDAsImlhdCI6MTU3MTA0MzE0MCwiZW1haWwiOiJyZWVjZWtpZGQ5NUBnbWFpbC5jb20ifQ.Qq5FO7d7BFlODp6uWBpHJ96ovgrtsV5fg_jYYucB2s7DTV8ncrPujINJLCfrqzil67NVv9PatWoPUQZzRlSJBBWcYzqjN3C0z0aS4S5wa5AE_nbNf5nrywo9OnbjSFJxHB3B8XapHBbQ_nutuU9d4Tff0523e8aF27u5Qjk9yHaBoIK4YedmJU_qVTDgKipueZiZhPFP-hppBtd84ddcrTYF71goDhagBQQMTLTrOn46hkRrQBrWOmoKhQmjVlpJ3xafVo44O9t1HllaMH2jHIKcG6-QBwyVLh_v23rPRmqk8Q2fEBB-oX6fQh8v19Obvn3DbmgFYAD1zds8vX1z0w';
         const header = jest.fn(() => token);
+        const jwtDecode = jest.fn(() => true);
         const request: any = {
             header,
         };
-        const response: any = {};
+        const response: any = { locals: {} };
         const next = jest.fn();
 
-        decodeJWTMiddleware(request, response, next);
+        const middleware = getDecodeJWTMiddleware(jwtDecode as any);
+        middleware(request, response, next);
 
         expect(jwtDecode).toBeCalledWith(token);
+        expect(response.locals.decodedJwt).toBeDefined();
         expect(next).toBeCalled();
     });
 

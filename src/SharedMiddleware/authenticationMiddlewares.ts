@@ -8,13 +8,17 @@ import { SupportedRequestHeaders } from '@streakoid/streakoid-sdk/lib';
 
 const { COGNITO_APP_CLIENT_ID } = getServiceConfig();
 
-export const decodeJWTMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const getDecodeJWTMiddleware = (decode: typeof jwtDecode) => (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
         const token = request.header(SupportedRequestHeaders.Authorization);
         if (!token) {
             throw new CustomError(ErrorType.TokenDoesNotExist);
         }
-        const decodedJwt = jwtDecode(token);
+        const decodedJwt = decode(token);
         response.locals.decodedJwt = decodedJwt;
         next();
     } catch (err) {
@@ -22,6 +26,8 @@ export const decodeJWTMiddleware = (request: Request, response: Response, next: 
         else next(new CustomError(ErrorType.DecodeJWTMiddleware, err));
     }
 };
+
+export const decodeJWTMiddleware = getDecodeJWTMiddleware(jwtDecode);
 
 export const ensureAudienceMatchesCognitoUserPool = (
     request: Request,
