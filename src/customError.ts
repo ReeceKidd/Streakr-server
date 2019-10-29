@@ -269,11 +269,11 @@ export enum ErrorType {
     UpdatedTeamMemberStreakNotFound,
     PatchTeamMemberStreakMiddleware,
     SendUpdatedTeamMemberStreakMiddleware,
-    GroupStreakTypeShouldNotBeDefined,
+    TeamStreakTypeShouldNotBeDefined,
     ValidateStreakTrackingEventBody,
-    GroupStreakTypeMustBeDefined,
-    ValidateDailyJobBodyGroupStreakTypeShouldNotBeDefined,
-    ValidateDailyJobBodyGroupStreakTypeMustBeDefined,
+    TeamStreakTypeMustBeDefined,
+    ValidateDailyJobBodyTeamStreakTypeShouldNotBeDefined,
+    ValidateDailyJobBodyTeamStreakTypeMustBeDefined,
     ValidateDailyJobBody,
     CreateDailyJobFromRequestMiddleware,
     SendFormattedDailyJobMiddleware,
@@ -604,7 +604,7 @@ export class CustomError extends Error {
             case ErrorType.NoTeamMemberStreakToDeleteFound: {
                 return {
                     code: `${ResponseCodes.badRequest}-32`,
-                    message: 'Group member streak does not exist.',
+                    message: 'Team member streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -612,7 +612,7 @@ export class CustomError extends Error {
             case ErrorType.TeamMemberStreakDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-33`,
-                    message: 'Group member streak does not exist.',
+                    message: 'Team member streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -620,7 +620,7 @@ export class CustomError extends Error {
             case ErrorType.GetTeamMemberStreakNoTeamMemberStreakFound: {
                 return {
                     code: `${ResponseCodes.badRequest}-34`,
-                    message: 'Group member streak does not exist.',
+                    message: 'Team member streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -636,7 +636,7 @@ export class CustomError extends Error {
             case ErrorType.NoCompleteTeamMemberStreakTaskToDeleteFound: {
                 return {
                     code: `${ResponseCodes.badRequest}-36`,
-                    message: 'Group member streak task does not exist.',
+                    message: 'Team member streak task does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -644,7 +644,7 @@ export class CustomError extends Error {
             case ErrorType.TeamMemberDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-37`,
-                    message: 'Group member does not exist.',
+                    message: 'Team member does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -796,7 +796,7 @@ export class CustomError extends Error {
             case ErrorType.CreateIncompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-56`,
-                    message: 'Group member streak task does not exist.',
+                    message: 'Team member streak task does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -812,7 +812,7 @@ export class CustomError extends Error {
             case ErrorType.NoIncompleteTeamMemberStreakTaskToDeleteFound: {
                 return {
                     code: `${ResponseCodes.badRequest}-59`,
-                    message: 'Group member streak task does not exist.',
+                    message: 'Team member streak task does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -820,7 +820,7 @@ export class CustomError extends Error {
             case ErrorType.UpdatedTeamMemberStreakNotFound: {
                 return {
                     code: `${ResponseCodes.badRequest}-60`,
-                    message: 'Group member streak does not exist.',
+                    message: 'Team member streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -972,7 +972,7 @@ export class CustomError extends Error {
             case ErrorType.TeamMemberStreakTaskHasBeenCompletedToday: {
                 return {
                     code: `${ResponseCodes.unprocessableEntity}-03`,
-                    message: 'Group member streak task already completed today.',
+                    message: 'Team member streak task already completed today.',
                     httpStatusCode: ResponseCodes.unprocessableEntity,
                 };
             }
@@ -980,7 +980,7 @@ export class CustomError extends Error {
             case ErrorType.TeamMemberStreakHasNotBeenCompletedToday: {
                 return {
                     code: `${ResponseCodes.unprocessableEntity}-04`,
-                    message: 'Group member streak task has not been completed today.',
+                    message: 'Team member streak task has not been completed today.',
                     httpStatusCode: ResponseCodes.unprocessableEntity,
                 };
             }
