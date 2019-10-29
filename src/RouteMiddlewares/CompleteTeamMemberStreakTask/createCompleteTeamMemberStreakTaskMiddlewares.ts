@@ -265,7 +265,7 @@ export const getHaveAllTeamMembersCompletedTasksMiddleware = (
         await Promise.all(
             teamStreak.members.map(async member => {
                 const teamMemberStreak: TeamMemberStreak | null = await teamMemberStreakModel.findOne({
-                    userId: member.memberId,
+                    _id: member.teamMemberStreakId,
                 });
                 if (!teamMemberStreak) {
                     throw new CustomError(ErrorType.CompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist);

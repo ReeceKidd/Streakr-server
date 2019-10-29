@@ -8,6 +8,10 @@ import {
     deleteFriendMiddleware,
     sendFriendDeletedResponseMiddleware,
     getDeleteFriendMiddleware,
+    retreiveFriendMiddleware,
+    deleteUserFromFriendsFriendListMiddleware,
+    getDeleteUserFromFriendsFriendListMiddleware,
+    getRetreiveFriendMiddleware,
 } from './deleteFriendsMiddlewares';
 import { CustomError, ErrorType } from '../../../customError';
 
@@ -260,6 +264,57 @@ describe('deleteFriendMiddlewares', () => {
         });
     });
 
+    describe('retreiveFriendMiddleware', () => {
+        test('sets response.locals.friend and calls next()', async () => {
+            expect.assertions(4);
+            const lean = jest.fn(() => true);
+            const findOne = jest.fn(() => ({ lean }));
+            const userModel = { findOne };
+            const friendId = 'abcdefg';
+            const request: any = { params: { friendId } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getRetreiveFriendMiddleware(userModel as any);
+
+            await middleware(request, response, next);
+
+            expect(response.locals.friend).toBeDefined();
+            expect(findOne).toBeCalledWith({ _id: friendId });
+            expect(lean).toBeCalledWith();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws DeleteFriendNoFriendFound when friend does not exist', async () => {
+            expect.assertions(1);
+            const friendId = 'abcd';
+            const lean = jest.fn(() => false);
+            const findOne = jest.fn(() => ({ lean }));
+            const userModel = { findOne };
+            const request: any = { params: { friendId } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getRetreiveFriendMiddleware(userModel as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.DeleteFriendNoFriendFound));
+        });
+
+        test('throws DeleteFriendRetreiveFriendMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getRetreiveFriendMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.DeleteFriendRetreiveFriendMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
     describe('deleteFriendMiddleware', () => {
         test('removes friend and sets response.locals.updatedUser', async () => {
             expect.assertions(3);
@@ -302,6 +357,48 @@ describe('deleteFriendMiddlewares', () => {
         });
     });
 
+    describe('deleteUserFromFriendsFriendListMiddleware', () => {
+        test('removes user from friends friendlist and calls next', async () => {
+            expect.assertions(2);
+
+            const userId = 'userId';
+            const friend = {
+                _id: 'friendId',
+                friends: [{ friendId: userId }],
+            };
+            const lean = jest.fn().mockResolvedValue([]);
+            const findByIdAndUpdate = jest.fn(() => ({ lean }));
+            const userModel: any = { findByIdAndUpdate };
+
+            const request: any = { params: { userId } };
+            const response: any = { locals: { friend } };
+            const next = jest.fn();
+
+            const middleware = getDeleteUserFromFriendsFriendListMiddleware(userModel);
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).toBeCalledWith(friend._id, {
+                $set: { friends: [] },
+            });
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with .DeleteUserFromFriendsFriendListMiddleware on middleware failure', async () => {
+            expect.assertions(1);
+
+            const request: any = { params: {} };
+            const response: any = {};
+            const next = jest.fn();
+
+            const middleware = getDeleteUserFromFriendsFriendListMiddleware({} as any);
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.DeleteUserFromFriendsFriendListMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
     describe('sendUserDeletedResponseMiddleware', () => {
         test('sends updated friends array', () => {
             expect.assertions(3);
@@ -334,14 +431,16 @@ describe('deleteFriendMiddlewares', () => {
     });
 
     test('middlewares are defined in the correct order', () => {
-        expect.assertions(6);
+        expect.assertions(8);
 
-        expect(deleteFriendMiddlewares.length).toEqual(5);
+        expect(deleteFriendMiddlewares.length).toEqual(7);
 
         expect(deleteFriendMiddlewares[0]).toEqual(deleteFriendParamsValidationMiddleware);
         expect(deleteFriendMiddlewares[1]).toEqual(retreiveUserMiddleware);
         expect(deleteFriendMiddlewares[2]).toEqual(doesFriendExistMiddleware);
-        expect(deleteFriendMiddlewares[3]).toEqual(deleteFriendMiddleware);
-        expect(deleteFriendMiddlewares[4]).toEqual(sendFriendDeletedResponseMiddleware);
+        expect(deleteFriendMiddlewares[3]).toEqual(retreiveFriendMiddleware);
+        expect(deleteFriendMiddlewares[4]).toEqual(deleteFriendMiddleware);
+        expect(deleteFriendMiddlewares[5]).toEqual(deleteUserFromFriendsFriendListMiddleware);
+        expect(deleteFriendMiddlewares[6]).toEqual(sendFriendDeletedResponseMiddleware);
     });
 });

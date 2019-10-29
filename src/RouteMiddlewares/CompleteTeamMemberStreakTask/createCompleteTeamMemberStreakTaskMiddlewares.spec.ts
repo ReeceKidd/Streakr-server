@@ -618,8 +618,8 @@ describe('setTeamStreakToActiveMiddleware', () => {
 describe('haveAllTeamMembersCompletedTasksMiddleware', () => {
     test('if one of the team members have not completed their streak today teamStreakCompletedToday should equal false', async () => {
         expect.assertions(3);
-        const memberId = 'memberId';
-        const members = [{ memberId }];
+        const teamMemberStreakId = 'teamMemberStreakId';
+        const members = [{ teamMemberStreakId }];
         const teamStreak = {
             members,
         };
@@ -634,15 +634,15 @@ describe('haveAllTeamMembersCompletedTasksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(findOne).toBeCalledWith({ userId: memberId });
+        expect(findOne).toBeCalledWith({ _id: teamMemberStreakId });
         expect(response.locals.teamStreakCompletedToday).toEqual(false);
         expect(next).toBeCalledWith();
     });
 
     test('if all of the team members streaks have been completedToday set teamStreakCompletedToday to true as everyone has completed their tasks', async () => {
         expect.assertions(3);
-        const memberId = 'memberId';
-        const members = [{ memberId }];
+        const teamMemberStreakId = 'teamMemberStreakId';
+        const members = [{ teamMemberStreakId }];
         const teamStreakId = 'teamStreakId';
         const teamStreak = {
             _id: teamStreakId,
@@ -659,7 +659,7 @@ describe('haveAllTeamMembersCompletedTasksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(findOne).toBeCalledWith({ userId: memberId });
+        expect(findOne).toBeCalledWith({ _id: teamMemberStreakId });
         expect(response.locals.teamStreakCompletedToday).toEqual(true);
         expect(next).toBeCalledWith();
     });

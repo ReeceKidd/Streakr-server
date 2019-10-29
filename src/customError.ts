@@ -330,6 +330,9 @@ export enum ErrorType {
     SetUserProfilePictures,
     SendProfilePictures,
     GetFriendsInfoMiddleware,
+    DeleteFriendRetreiveFriendMiddleware,
+    DeleteUserFromFriendsFriendListMiddleware,
+    DeleteFriendNoFriendFound,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -880,6 +883,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-69`,
                     message: 'No image in request.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.DeleteFriendNoFriendFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-70`,
+                    message: 'Friend does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2700,6 +2711,20 @@ export class CustomError extends Error {
             case ErrorType.GetFriendsInfoMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-247`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DeleteFriendRetreiveFriendMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-248`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DeleteUserFromFriendsFriendListMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-249`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

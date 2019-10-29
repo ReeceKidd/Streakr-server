@@ -739,6 +739,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to DeleteFriendNoFriendFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.DeleteFriendNoFriendFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-70`);
+        expect(message).toBe('Friend does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -3567,6 +3578,28 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-247`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to DeleteFriendRetreiveFriendMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.DeleteFriendRetreiveFriendMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-248`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to DeleteUserFromFriendsFriendListMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.DeleteUserFromFriendsFriendListMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-249`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

@@ -65,6 +65,27 @@ export const doesFriendExistMiddleware = (request: Request, response: Response, 
     }
 };
 
+export const getRetreiveFriendMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { friendId } = request.params;
+        const friend = await userModel.findOne({ _id: friendId }).lean();
+        if (!friend) {
+            throw new CustomError(ErrorType.DeleteFriendNoFriendFound);
+        }
+        response.locals.friend = friend;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.DeleteFriendRetreiveFriendMiddleware, err));
+    }
+};
+
+export const retreiveFriendMiddleware = getRetreiveFriendMiddleware(userModel);
+
 export const getDeleteFriendMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
@@ -91,6 +112,30 @@ export const getDeleteFriendMiddleware = (userModel: mongoose.Model<UserModel>) 
 
 export const deleteFriendMiddleware = getDeleteFriendMiddleware(userModel);
 
+export const getDeleteUserFromFriendsFriendListMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const friend: User = response.locals.friend;
+        const { userId } = request.params;
+        const updatedFriends = friend.friends.filter(friend => friend.friendId != userId);
+        await userModel
+            .findByIdAndUpdate(friend._id, {
+                $set: {
+                    friends: updatedFriends,
+                },
+            })
+            .lean();
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.DeleteUserFromFriendsFriendListMiddleware, err));
+    }
+};
+
+export const deleteUserFromFriendsFriendListMiddleware = getDeleteUserFromFriendsFriendListMiddleware(userModel);
+
 export const sendFriendDeletedResponseMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { updatedFriends } = response.locals;
@@ -104,6 +149,8 @@ export const deleteFriendMiddlewares = [
     deleteFriendParamsValidationMiddleware,
     retreiveUserMiddleware,
     doesFriendExistMiddleware,
+    retreiveFriendMiddleware,
     deleteFriendMiddleware,
+    deleteUserFromFriendsFriendListMiddleware,
     sendFriendDeletedResponseMiddleware,
 ];
