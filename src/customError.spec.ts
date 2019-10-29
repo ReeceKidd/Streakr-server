@@ -339,7 +339,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-32`);
-        expect(message).toBe('Group member streak does not exist.');
+        expect(message).toBe('Team member streak does not exist.');
         expect(httpStatusCode).toBe(400);
     });
 
@@ -350,7 +350,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-33`);
-        expect(message).toBe('Group member streak does not exist.');
+        expect(message).toBe('Team member streak does not exist.');
         expect(httpStatusCode).toBe(400);
     });
 
@@ -361,7 +361,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-34`);
-        expect(message).toBe('Group member streak does not exist.');
+        expect(message).toBe('Team member streak does not exist.');
         expect(httpStatusCode).toBe(400);
     });
 
@@ -383,7 +383,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-36`);
-        expect(message).toBe('Group member streak task does not exist.');
+        expect(message).toBe('Team member streak task does not exist.');
         expect(httpStatusCode).toBe(400);
     });
 
@@ -394,7 +394,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-37`);
-        expect(message).toBe('Group member does not exist.');
+        expect(message).toBe('Team member does not exist.');
         expect(httpStatusCode).toBe(400);
     });
 
@@ -603,7 +603,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-56`);
-        expect(message).toBe('Group member streak task does not exist.');
+        expect(message).toBe('Team member streak task does not exist.');
         expect(httpStatusCode).toBe(400);
     });
 
@@ -625,7 +625,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-59`);
-        expect(message).toBe('Group member streak task does not exist.');
+        expect(message).toBe('Team member streak task does not exist.');
         expect(httpStatusCode).toBe(400);
     });
 
@@ -636,7 +636,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-60`);
-        expect(message).toBe('Group member streak does not exist.');
+        expect(message).toBe('Team member streak does not exist.');
         expect(httpStatusCode).toBe(400);
     });
 
@@ -845,7 +845,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`422-03`);
-        expect(message).toBe('Group member streak task already completed today.');
+        expect(message).toBe('Team member streak task already completed today.');
         expect(httpStatusCode).toBe(422);
     });
 
@@ -856,7 +856,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`422-04`);
-        expect(message).toBe('Group member streak task has not been completed today.');
+        expect(message).toBe('Team member streak task has not been completed today.');
         expect(httpStatusCode).toBe(422);
     });
 
