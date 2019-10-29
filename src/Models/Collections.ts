@@ -10,6 +10,7 @@ export enum Collections {
     CompleteTeamMemberStreakTasks = 'CompleteTeamMemberStreakTasks',
     IncompleteTeamMemberStreakTasks = 'IncompleteTeamMemberStreakTasks',
     CompleteTeamStreaks = 'CompleteTeamStreaks',
+    IncompleteTeamStreaks = 'IncompleteTeamStreaks',
     System = 'System',
     StreakTrackingEvents = 'StreakTrackingEvents',
     TeamMemberStreaks = 'TeamMemberStreaks',

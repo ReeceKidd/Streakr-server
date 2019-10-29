@@ -333,6 +333,8 @@ export enum ErrorType {
     DeleteFriendRetreiveFriendMiddleware,
     DeleteUserFromFriendsFriendListMiddleware,
     DeleteFriendNoFriendFound,
+    GetIncompleteTeamStreaksMiddleware,
+    SendIncompleteTeamStreaksResponseMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -2725,6 +2727,20 @@ export class CustomError extends Error {
             case ErrorType.DeleteUserFromFriendsFriendListMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-249`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetIncompleteTeamStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-250`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendIncompleteTeamStreaksResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-251`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
