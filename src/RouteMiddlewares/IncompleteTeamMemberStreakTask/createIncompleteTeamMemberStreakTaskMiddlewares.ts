@@ -13,7 +13,11 @@ import {
 } from '../../Models/IncompleteTeamMemberStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import { TeamMemberStreak } from '@streakoid/streakoid-sdk/lib';
+import { TeamMemberStreak, TeamStreak } from '@streakoid/streakoid-sdk/lib';
+import { incompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
+import { IncompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
+import { teamStreakModel } from '../../../src/Models/TeamStreak';
+import { TeamStreakModel } from '../../../src/Models/TeamStreak';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -51,6 +55,27 @@ export const getTeamMemberStreakExistsMiddleware = (
 };
 
 export const teamMemberStreakExistsMiddleware = getTeamMemberStreakExistsMiddleware(teamMemberStreakModel);
+
+export const getTeamStreakExistsMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { teamStreakId } = request.body;
+        const teamStreak = await teamStreakModel.findOne({ _id: teamStreakId });
+        if (!teamStreak) {
+            throw new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskTeamStreakDoesNotExist);
+        }
+        response.locals.teamStreak = teamStreak;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskTeamStreakExistsMiddleware, err));
+    }
+};
+
+export const teamStreakExistsMiddleware = getTeamStreakExistsMiddleware(teamStreakModel);
 
 export const ensureTeamMemberStreakTaskHasBeenCompletedTodayMiddleware = (
     request: Request,
@@ -225,6 +250,90 @@ export const getIncompleteTeamMemberStreakMiddleware = (
 
 export const incompleteTeamMemberStreakMiddleware = getIncompleteTeamMemberStreakMiddleware(teamMemberStreakModel);
 
+export const getResetTeamStreakStartDateMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        if (teamStreak.currentStreak.numberOfDaysInARow === 1) {
+            response.locals.teamStreak = await teamStreakModel
+                .findByIdAndUpdate(
+                    teamStreak._id,
+                    {
+                        currentStreak: {
+                            startDate: null,
+                            numberOfDaysInARow: 0,
+                        },
+                    },
+                    { new: true },
+                )
+                .lean();
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.ResetTeamStreakStartDateMiddleware, err));
+    }
+};
+
+export const resetTeamStreakStartDateMiddleware = getResetTeamStreakStartDateMiddleware(teamStreakModel);
+
+export const getIncompleteTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        if (teamStreak.currentStreak.numberOfDaysInARow !== 0) {
+            await teamStreakModel.updateOne(
+                { _id: teamStreak._id },
+                {
+                    completedToday: false,
+                    $inc: { 'currentStreak.numberOfDaysInARow': -1 },
+                    active: false,
+                },
+            );
+        } else {
+            await teamStreakModel.updateOne(
+                { _id: teamStreak._id },
+                {
+                    completedToday: false,
+                    'currentStreak.numberOfDaysInARow': 0,
+                    active: false,
+                },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.IncompleteTeamStreakMiddleware, err));
+    }
+};
+
+export const incompleteTeamStreakMiddleware = getIncompleteTeamStreakMiddleware(teamStreakModel);
+
+export const getCreateTeamStreakIncompleteMiddleware = (
+    incompleteTeamStreakModel: mongoose.Model<IncompleteTeamStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { userId, teamStreakId } = request.body;
+        const { taskIncompleteDay, taskIncompleteTime } = response.locals;
+        const incompleteTeamStreak = new incompleteTeamStreakModel({
+            userId,
+            teamStreakId,
+            taskIncompleteTime,
+            taskIncompleteDay,
+        });
+        await incompleteTeamStreak.save();
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateTeamStreakIncomplete, err));
+    }
+};
+
+export const createTeamStreakIncompleteMiddleware = getCreateTeamStreakIncompleteMiddleware(incompleteTeamStreakModel);
+
 export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
     response: Response,
@@ -243,6 +352,7 @@ export const sendTaskIncompleteResponseMiddleware = getSendTaskIncompleteRespons
 export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     incompleteTeamMemberStreakTaskBodyValidationMiddleware,
     teamMemberStreakExistsMiddleware,
+    teamStreakExistsMiddleware,
     ensureTeamMemberStreakTaskHasBeenCompletedTodayMiddleware,
     resetStreakStartDateMiddleware,
     retreiveUserMiddleware,
@@ -251,5 +361,8 @@ export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     createIncompleteTeamMemberStreakTaskDefinitionMiddleware,
     saveTaskIncompleteMiddleware,
     incompleteTeamMemberStreakMiddleware,
+    resetTeamStreakStartDateMiddleware,
+    incompleteTeamStreakMiddleware,
+    createTeamStreakIncompleteMiddleware,
     sendTaskIncompleteResponseMiddleware,
 ];

@@ -21,6 +21,14 @@ import {
     ensureTeamMemberStreakTaskHasBeenCompletedTodayMiddleware,
     resetStreakStartDateMiddleware,
     getResetStreakStartDateMiddleware,
+    resetTeamStreakStartDateMiddleware,
+    incompleteTeamStreakMiddleware,
+    createTeamStreakIncompleteMiddleware,
+    teamStreakExistsMiddleware,
+    getTeamStreakExistsMiddleware,
+    getResetTeamStreakStartDateMiddleware,
+    getIncompleteTeamStreakMiddleware,
+    getCreateTeamStreakIncompleteMiddleware,
 } from './createIncompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -185,6 +193,63 @@ describe('teamMemberStreakExistsMiddleware', () => {
         const findOne = jest.fn(() => Promise.resolve(true));
         const teamMemberStreakModel = { findOne };
         const middleware = getTeamMemberStreakExistsMiddleware(teamMemberStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(
+                ErrorType.CreateIncompleteTeamMemberStreakTaskTeamMemberStreakExistsMiddleware,
+                expect.any(Error),
+            ),
+        );
+    });
+});
+
+describe('teamStreakExistsMiddleware', () => {
+    test('sets response.locals.teamStreak and calls next()', async () => {
+        expect.assertions(3);
+        const teamStreakId = 'abc';
+        const request: any = {
+            body: { teamStreakId },
+        };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const findOne = jest.fn(() => Promise.resolve(true));
+        const teamStreakModel = { findOne };
+        const middleware = getTeamStreakExistsMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findOne).toBeCalledWith({ _id: teamStreakId });
+        expect(response.locals.teamStreak).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws CreateIncompleteTeamMemberStreakTaskTeamStreakDoesNotExist error when solo streak does not exist', async () => {
+        expect.assertions(1);
+        const teamStreakId = 'abc';
+        const request: any = {
+            body: { teamStreakId },
+        };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const findOne = jest.fn(() => Promise.resolve(false));
+        const teamStreakModel = { findOne };
+        const middleware = getTeamStreakExistsMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskTeamStreakDoesNotExist),
+        );
+    });
+
+    test('throws CreateIncompleteTeamMemberStreakTaskTeamStreakExistsMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getTeamStreakExistsMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -626,6 +691,191 @@ describe('incompleteTeamMemberStreakMiddleware', () => {
     });
 });
 
+describe('resetTeamStreakStartDateMiddleware', () => {
+    test('if currentStreak number of days is 1 and this is the first streak it resets the current streak', async () => {
+        expect.assertions(3);
+        const lean = jest.fn(() => true);
+        const findByIdAndUpdate = jest.fn(() => ({ lean }));
+        const teamStreakModel: any = {
+            findByIdAndUpdate,
+        };
+        const teamStreakId = 1;
+        const teamStreak = {
+            _id: teamStreakId,
+            currentStreak: {
+                startDate: undefined,
+                numberOfDaysInARow: 1,
+            },
+            pastStreaks: [],
+        };
+        const request: any = {};
+        const response: any = { locals: { teamStreak } };
+        const next: any = jest.fn();
+        const middleware = await getResetTeamStreakStartDateMiddleware(teamStreakModel);
+
+        await middleware(request, response, next);
+
+        expect(findByIdAndUpdate).toBeCalledWith(
+            teamStreakId,
+            {
+                currentStreak: { startDate: null, numberOfDaysInARow: 0 },
+            },
+            { new: true },
+        );
+        expect(lean).toBeCalledWith();
+        expect(next).toBeCalledWith();
+    });
+
+    test("doesn't update teamStreak in number of days in a row > 1", async () => {
+        expect.assertions(2);
+        const findByIdAndUpdate = jest.fn();
+        const teamStreakModel: any = {
+            findByIdAndUpdate,
+        };
+        const teamStreakId = 2;
+        const teamStreak = {
+            currentStreak: {
+                startDate: new Date(),
+                numberOfDaysInARow: 2,
+            },
+        };
+        const request: any = { params: { teamStreakId } };
+        const response: any = { locals: { teamStreak } };
+        const next: any = jest.fn();
+        const middleware = await getResetTeamStreakStartDateMiddleware(teamStreakModel);
+
+        await middleware(request, response, next);
+
+        expect(findByIdAndUpdate).not.toBeCalled();
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws ResetTeamStreakStartDateMiddleware on middleware failure', () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getResetTeamStreakStartDateMiddleware(undefined as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.ResetTeamStreakStartDateMiddleware, expect.any(Error)));
+    });
+});
+
+describe('incompleteTeamMStreakMiddleware', () => {
+    test('if number of days in a row of current streak is not equal to 0 it updates streak completedToday, descrements number of days by one, sets active to false and calls next', async () => {
+        expect.assertions(2);
+        const teamStreakId = '123abc';
+        const teamStreak = {
+            _id: teamStreakId,
+            currentStreak: {
+                numberOfDaysInARow: 1,
+            },
+        };
+        const updateOne = jest.fn(() => Promise.resolve(true));
+        const teamStreakModel = {
+            updateOne,
+        };
+        const request: any = {};
+        const response: any = { locals: { teamStreak } };
+        const next = jest.fn();
+        const middleware = getIncompleteTeamStreakMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(updateOne).toBeCalledWith(
+            { _id: teamStreakId },
+            {
+                completedToday: false,
+                $inc: { 'currentStreak.numberOfDaysInARow': -1 },
+                active: false,
+            },
+        );
+        expect(next).toBeCalledWith();
+    });
+
+    test('if number of days in a row of current streak is equal to 0 it updates streak completedToday, set currentStreak.numberOfDays in a row to 0, sets active to false and calls next', async () => {
+        expect.assertions(2);
+        const teamStreakId = '123abc';
+        const teamStreak = {
+            _id: teamStreakId,
+            currentStreak: {
+                numberOfDaysInARow: 1,
+            },
+        };
+        const updateOne = jest.fn(() => Promise.resolve(true));
+        const teamStreakModel = {
+            updateOne,
+        };
+        const request: any = {};
+        const response: any = { locals: { teamStreak } };
+        const next = jest.fn();
+        const middleware = getIncompleteTeamStreakMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(updateOne).toBeCalledWith(
+            { _id: teamStreakId },
+            {
+                completedToday: false,
+                $inc: { 'currentStreak.numberOfDaysInARow': -1 },
+                active: false,
+            },
+        );
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws IncompleteTeamMemberStreakMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const teamStreakModel = {};
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getIncompleteTeamStreakMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.IncompleteTeamMemberStreakMiddleware, expect.any(Error)));
+    });
+});
+
+describe('createTeamStreakIncompleteMiddleware', () => {
+    test('saves an incomplete team streak model to the database', async () => {
+        expect.assertions(2);
+
+        const userId = 'userId';
+        const teamStreakId = 'teamStreakId';
+        const taskIncompleteDay = new Date().toString();
+        const taskIncompleteTime = new Date().toString();
+        const save = jest.fn().mockResolvedValue(true);
+        const incompleteTeamStreakModel = jest.fn(() => ({ save }));
+
+        const request: any = { body: { userId, teamStreakId } };
+        const response: any = { locals: { taskIncompleteDay, taskIncompleteTime } };
+        const next = jest.fn();
+
+        const middleware = getCreateTeamStreakIncompleteMiddleware(incompleteTeamStreakModel as any);
+        await middleware(request, response, next);
+
+        expect(save).toBeCalledWith();
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws CreateTeamStreakIncomplete error on middleware failure', async () => {
+        expect.assertions(1);
+        const teamStreakModel = {};
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getCreateTeamStreakIncompleteMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.CreateTeamStreakIncomplete, expect.any(Error)));
+    });
+});
+
 describe('sendTaskIncompleteResponseMiddleware', () => {
     test('sends incompleteTeamMemberStreakTask response', () => {
         expect.assertions(3);
@@ -672,25 +922,29 @@ describe('sendTaskIncompleteResponseMiddleware', () => {
 
 describe(`createIncompleteTeamMemberStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(12);
+        expect.assertions(16);
 
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares.length).toEqual(11);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares.length).toEqual(15);
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[0]).toBe(
             incompleteTeamMemberStreakTaskBodyValidationMiddleware,
         );
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[1]).toBe(teamMemberStreakExistsMiddleware);
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[2]).toBe(
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[2]).toBe(teamStreakExistsMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[3]).toBe(
             ensureTeamMemberStreakTaskHasBeenCompletedTodayMiddleware,
         );
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[3]).toBe(resetStreakStartDateMiddleware);
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[4]).toBe(retreiveUserMiddleware);
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[5]).toBe(setTaskIncompleteTimeMiddleware);
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[6]).toBe(setDayTaskWasIncompletedMiddleware);
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[7]).toBe(
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[4]).toBe(resetStreakStartDateMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[5]).toBe(retreiveUserMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[6]).toBe(setTaskIncompleteTimeMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[7]).toBe(setDayTaskWasIncompletedMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[8]).toBe(
             createIncompleteTeamMemberStreakTaskDefinitionMiddleware,
         );
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[8]).toBe(saveTaskIncompleteMiddleware);
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[9]).toBe(incompleteTeamMemberStreakMiddleware);
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[10]).toBe(sendTaskIncompleteResponseMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[9]).toBe(saveTaskIncompleteMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[10]).toBe(incompleteTeamMemberStreakMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[11]).toBe(resetTeamStreakStartDateMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[12]).toBe(incompleteTeamStreakMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[13]).toBe(createTeamStreakIncompleteMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[14]).toBe(sendTaskIncompleteResponseMiddleware);
     });
 });

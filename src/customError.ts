@@ -335,6 +335,11 @@ export enum ErrorType {
     DeleteFriendNoFriendFound,
     GetIncompleteTeamStreaksMiddleware,
     SendIncompleteTeamStreaksResponseMiddleware,
+    CreateIncompleteTeamMemberStreakTaskTeamStreakExistsMiddleware,
+    ResetTeamStreakStartDateMiddleware,
+    IncompleteTeamStreakMiddleware,
+    CreateTeamStreakIncomplete,
+    CreateIncompleteTeamMemberStreakTaskTeamStreakDoesNotExist,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -893,6 +898,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-70`,
                     message: 'Friend does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateIncompleteTeamMemberStreakTaskTeamStreakDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-71`,
+                    message: 'Team streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2741,6 +2754,34 @@ export class CustomError extends Error {
             case ErrorType.SendIncompleteTeamStreaksResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-251`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteTeamMemberStreakTaskTeamStreakExistsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-252`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ResetTeamStreakStartDateMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-253`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncompleteTeamStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-254`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateTeamStreakIncomplete:
+                return {
+                    code: `${ResponseCodes.warning}-255`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
