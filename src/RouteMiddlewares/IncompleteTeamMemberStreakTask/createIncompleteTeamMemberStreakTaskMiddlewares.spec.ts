@@ -767,19 +767,20 @@ describe('resetTeamStreakStartDateMiddleware', () => {
 });
 
 describe('incompleteTeamStreakMiddleware', () => {
-    test('if number of days in a row of current streak is equal to 0 it sets completedToday to false, set currentStreak.numberOfDays in a row to 0 calls next', async () => {
+    test('if number of days in a row of current streak is equal to 0 sand completedToday is true it sets completedToday to false, set currentStreak.numberOfDays in a row to 0 calls next', async () => {
         expect.assertions(3);
         const teamStreakId = '123abc';
         const teamStreak = {
             _id: teamStreakId,
+            completedToday: true,
             currentStreak: {
                 numberOfDaysInARow: 0,
             },
         };
         const lean = jest.fn().mockResolvedValue(true);
-        const updateOne = jest.fn(() => ({ lean }));
+        const findByIdAndUpdate = jest.fn(() => ({ lean }));
         const teamStreakModel = {
-            updateOne,
+            findByIdAndUpdate,
         };
         const request: any = {};
         const response: any = { locals: { teamStreak } };
@@ -788,8 +789,8 @@ describe('incompleteTeamStreakMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(updateOne).toBeCalledWith(
-            { _id: teamStreakId },
+        expect(findByIdAndUpdate).toBeCalledWith(
+            teamStreakId,
             {
                 completedToday: false,
                 'currentStreak.numberOfDaysInARow': 0,
@@ -800,11 +801,46 @@ describe('incompleteTeamStreakMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('if number of days in a row of current streak is not equal to 0 it sets completedToday to false, decrements number of days by one, and calls next', async () => {
+    test('if number of days in a row of current streak is not equal to 0 and completedToday is true it sets completedToday to false, decrements number of days by one, and calls next', async () => {
         expect.assertions(3);
         const teamStreakId = '123abc';
         const teamStreak = {
             _id: teamStreakId,
+            completedToday: true,
+            currentStreak: {
+                numberOfDaysInARow: 1,
+            },
+        };
+        const lean = jest.fn().mockResolvedValue(true);
+        const findByIdAndUpdate = jest.fn(() => ({ lean }));
+        const teamStreakModel = {
+            findByIdAndUpdate,
+        };
+        const request: any = {};
+        const response: any = { locals: { teamStreak } };
+        const next = jest.fn();
+        const middleware = getIncompleteTeamStreakMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findByIdAndUpdate).toBeCalledWith(
+            teamStreakId,
+            {
+                completedToday: false,
+                $inc: { 'currentStreak.numberOfDaysInARow': -1 },
+            },
+            { new: true },
+        );
+        expect(lean).toBeCalled();
+        expect(next).toBeCalledWith();
+    });
+
+    test('if completedToday is false it calls next', async () => {
+        expect.assertions(3);
+        const teamStreakId = '123abc';
+        const teamStreak = {
+            _id: teamStreakId,
+            completedToday: false,
             currentStreak: {
                 numberOfDaysInARow: 1,
             },
@@ -821,15 +857,8 @@ describe('incompleteTeamStreakMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(updateOne).toBeCalledWith(
-            { _id: teamStreakId },
-            {
-                completedToday: false,
-                $inc: { 'currentStreak.numberOfDaysInARow': -1 },
-            },
-            { new: true },
-        );
-        expect(lean).toBeCalled();
+        expect(updateOne).not.toBeCalled();
+        expect(lean).not.toBeCalled();
         expect(next).toBeCalledWith();
     });
 

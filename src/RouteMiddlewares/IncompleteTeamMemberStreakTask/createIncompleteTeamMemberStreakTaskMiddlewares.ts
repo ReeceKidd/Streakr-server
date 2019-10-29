@@ -286,10 +286,10 @@ export const getIncompleteTeamStreakMiddleware = (teamStreakModel: mongoose.Mode
 ): Promise<void> => {
     try {
         const teamStreak: TeamStreak = response.locals.teamStreak;
-        if (teamStreak.currentStreak.numberOfDaysInARow === 0) {
+        if (teamStreak.currentStreak.numberOfDaysInARow === 0 && teamStreak.completedToday) {
             response.locals.teamStreak = await teamStreakModel
-                .updateOne(
-                    { _id: teamStreak._id },
+                .findByIdAndUpdate(
+                    teamStreak._id,
                     {
                         completedToday: false,
                         'currentStreak.numberOfDaysInARow': 0,
@@ -297,10 +297,10 @@ export const getIncompleteTeamStreakMiddleware = (teamStreakModel: mongoose.Mode
                     { new: true },
                 )
                 .lean();
-        } else {
+        } else if (teamStreak.currentStreak.numberOfDaysInARow !== 0 && teamStreak.completedToday) {
             response.locals.teamStreak = await teamStreakModel
-                .updateOne(
-                    { _id: teamStreak._id },
+                .findByIdAndUpdate(
+                    teamStreak._id,
                     {
                         completedToday: false,
                         $inc: { 'currentStreak.numberOfDaysInARow': -1 },
