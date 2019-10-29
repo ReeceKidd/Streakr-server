@@ -340,6 +340,9 @@ export enum ErrorType {
     IncompleteTeamStreakMiddleware,
     CreateTeamStreakIncomplete,
     CreateIncompleteTeamMemberStreakTaskTeamStreakDoesNotExist,
+    HasOneTeamMemberCompletedTaskMiddleware,
+    MakeTeamStreakInactiveMiddleware,
+    IncompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -906,6 +909,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-71`,
                     message: 'Team streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.IncompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-72`,
+                    message: 'Team member streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2782,6 +2793,20 @@ export class CustomError extends Error {
             case ErrorType.CreateTeamStreakIncomplete:
                 return {
                     code: `${ResponseCodes.warning}-255`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.HasOneTeamMemberCompletedTaskMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-256`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.MakeTeamStreakInactiveMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-257`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

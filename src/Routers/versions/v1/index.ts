@@ -14,6 +14,7 @@ import { timezoneMiddlewares } from '../../../SharedMiddleware/timezoneMiddlewar
 import { authenticationMiddlewares } from '../../../SharedMiddleware/authenticationMiddlewares';
 import { incompleteSoloStreakTasksRouter } from './incompleteSoloStreakTaskRouter';
 import { incompleteTeamMemberStreakTasksRouter } from './incompleteTeamMemberStreakTaskRouter';
+import { incompleteTeamStreaksRouter } from './incompleteTeamStreaksRouter';
 import { dailyJobsRouter } from './dailyJobsRouter';
 import { completeTeamStreaksRouter } from './completeTeamStreaksRouter';
 import { RouterCategories } from '@streakoid/streakoid-sdk/lib';
@@ -47,6 +48,7 @@ v1Router.use(`/${RouterCategories.users}`, usersRouter);
 v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
 v1Router.use(`/${RouterCategories.incompleteSoloStreakTasks}`, incompleteSoloStreakTasksRouter);
 v1Router.use(`/${RouterCategories.incompleteTeamMemberStreakTasks}`, incompleteTeamMemberStreakTasksRouter);
+v1Router.use(`/${RouterCategories.incompleteTeamStreaks}`, incompleteTeamStreaksRouter);
 v1Router.use(`/${RouterCategories.feedbacks}`, feedbackRouter);
 v1Router.use(`/${RouterCategories.friendRequests}`, friendRequestsRouter);
 v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);

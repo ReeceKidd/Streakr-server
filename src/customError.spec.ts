@@ -761,6 +761,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to IncompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.IncompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-72`);
+        expect(message).toBe('Team member streak does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -3677,6 +3688,28 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-255`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to HasOneTeamMemberCompletedTaskMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.HasOneTeamMemberCompletedTaskMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-256`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to MakeTeamStreakInactiveMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.MakeTeamStreakInactiveMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-257`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
