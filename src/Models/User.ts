@@ -16,6 +16,23 @@ export const userSchema = new mongoose.Schema(
             unique: true,
             trim: true,
         },
+        membershipInformation: {
+            isPayingMember: {
+                type: Boolean,
+                default: false,
+            },
+            becameAMember: {
+                type: String,
+                default: null,
+            },
+            currentMembership: {
+                startDate: String,
+            },
+            pastMemberships: {
+                type: Object,
+                default: [],
+            },
+        },
         email: {
             required: true,
             type: String,
