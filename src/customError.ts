@@ -343,6 +343,8 @@ export enum ErrorType {
     HasOneTeamMemberCompletedTaskMiddleware,
     MakeTeamStreakInactiveMiddleware,
     IncompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist,
+    HasUserPaidMembershipMiddleware,
+    UserHasNotPaidMembership,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -948,6 +950,14 @@ export class CustomError extends Error {
             case ErrorType.AudienceDoesNotMatchCognitoAppClientId: {
                 return {
                     code: `${ResponseCodes.unautohorized}-04`,
+                    message: notAuthorizedErrorMessage,
+                    httpStatusCode: ResponseCodes.unautohorized,
+                };
+            }
+
+            case ErrorType.UserHasNotPaidMembership: {
+                return {
+                    code: `${ResponseCodes.unautohorized}-05`,
                     message: notAuthorizedErrorMessage,
                     httpStatusCode: ResponseCodes.unautohorized,
                 };
@@ -2807,6 +2817,13 @@ export class CustomError extends Error {
             case ErrorType.MakeTeamStreakInactiveMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-257`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.HasUserPaidMembershipMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-258`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

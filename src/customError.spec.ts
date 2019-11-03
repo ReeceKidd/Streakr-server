@@ -816,6 +816,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(401);
     });
 
+    test(`creates correct error when type is set to UserHasNotPaidMembership`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.UserHasNotPaidMembership);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`401-05`);
+        expect(message).toBe('Not authorized.');
+        expect(httpStatusCode).toBe(401);
+    });
+
     test(`creates correct error when type is set to SoloStreakHasBeenCompletedToday`, () => {
         expect.assertions(3);
 
@@ -3710,6 +3721,17 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-257`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to HasUserPaidMembershipMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.HasUserPaidMembershipMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-258`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
