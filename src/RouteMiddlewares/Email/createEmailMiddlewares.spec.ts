@@ -196,9 +196,7 @@ describe(`saveEmailToDatabaseMiddleware`, () => {
 
     test('sets response.locals.email', async () => {
         expect.assertions(3);
-        const save = jest.fn(() => {
-            return Promise.resolve(true);
-        });
+        const save = jest.fn().mockResolvedValue(true);
         const mockEmail = {
             userId: 'abcdefg',
             email: 'user@gmail.com',

@@ -13,15 +13,14 @@ import {
     getIsUserAnExistingStripeCustomerMiddleware,
     addStripeSubscriptionToUserMiddleware,
     getAddStripeSubscriptionToUserMiddleware,
-    setUserTypeToPremiumMiddleware,
-    getSetUserTypeToPremiumMiddleware,
+    getUpdateUserMembershipInformationMiddleware,
     validateStripeTokenMiddleware,
     updateUserStripeCustomerIdMiddleware,
     getUpdateUserStripeCustomerIdMiddleware,
+    updateUserMembershipInformationMiddleware,
 } from './createStripeCustomerSubscriptionMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe('createStripeCustomerSubscriptionMiddlewares', () => {
     afterEach(() => {
@@ -142,7 +141,11 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         test('calls next if user exists and is not premium already', async () => {
             expect.assertions(2);
             const userId = 'id';
-            const findById = jest.fn().mockResolvedValue({ userType: 'basic' });
+            const findById = jest.fn().mockResolvedValue({
+                membershipInformation: {
+                    isPayingMember: false,
+                },
+            });
             const userModel: any = {
                 findById,
             };
@@ -189,7 +192,9 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         test('calls next with CustomerIsAlreadySubscribed error if user userType is set to premium', async () => {
             expect.assertions(1);
             const findById = jest.fn().mockResolvedValue({
-                userType: UserTypes.premium,
+                membershipInformation: {
+                    isPayingMember: true,
+                },
             });
             const userModel: any = {
                 findById,
@@ -615,8 +620,8 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         });
     });
 
-    describe('setUserTypeToPremiumMiddleware', () => {
-        test('updates user model userType to be premium', async () => {
+    describe('updateUserMembershipInformation', () => {
+        test('sets membershipInformation.isPaying member to true and sets the currentMembership.startDate to the current time.', async () => {
             expect.assertions(3);
             const user = {
                 _id: '123',
@@ -633,32 +638,39 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const userModel = {
                 findByIdAndUpdate,
             };
-            const setUserTypeToPremiumMiddleware = getSetUserTypeToPremiumMiddleware(userModel as any);
+            const middleware = getUpdateUserMembershipInformationMiddleware(userModel as any);
 
-            await setUserTypeToPremiumMiddleware(request, response, next);
+            await middleware(request, response, next);
 
             expect(lean).toBeCalledWith();
             expect(findByIdAndUpdate).toBeCalledWith(
                 user._id,
                 {
-                    $set: { userType: 'premium' },
+                    $set: {
+                        membershipInformation: {
+                            isPayingMember: true,
+                            currentMembershipStartDate: expect.any(Date),
+                        },
+                    },
                 },
                 { new: true },
             );
             expect(next).toBeCalledWith();
         });
 
-        test('calls next with SetUserTypeToPremiumMiddleware error on middleware failure', async () => {
+        test('calls next with UpdateUserMembershipInformationMiddleware error on middleware failure', async () => {
             expect.assertions(1);
             const request: any = {};
             const response: any = {};
             const next = jest.fn();
             const userModel: any = {};
-            const setUserTypeToPremiumMiddleware = getSetUserTypeToPremiumMiddleware(userModel);
+            const updateUserMembershipInformationMiddleware = getUpdateUserMembershipInformationMiddleware(userModel);
 
-            await setUserTypeToPremiumMiddleware(request, response, next);
+            await updateUserMembershipInformationMiddleware(request, response, next);
 
-            expect(next).toBeCalledWith(new CustomError(ErrorType.SetUserTypeToPremiumMiddleware, expect.any(Error)));
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.UpdateUserMembershipInformationMiddleware, expect.any(Error)),
+            );
         });
     });
 
@@ -715,7 +727,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         expect(createStripeCustomerSubscriptionMiddlewares[5]).toBe(createStripeSubscriptionMiddleware);
         expect(createStripeCustomerSubscriptionMiddlewares[6]).toBe(handleInitialPaymentOutcomeMiddleware);
         expect(createStripeCustomerSubscriptionMiddlewares[7]).toBe(addStripeSubscriptionToUserMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[8]).toBe(setUserTypeToPremiumMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[8]).toBe(updateUserMembershipInformationMiddleware);
         expect(createStripeCustomerSubscriptionMiddlewares[9]).toBe(sendSuccessfulSubscriptionMiddleware);
     });
 });

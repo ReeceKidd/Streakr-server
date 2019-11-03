@@ -7,7 +7,6 @@ import { getServiceConfig } from '../../getServiceConfig';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { userModel, UserModel } from '../../Models/User';
-import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 const { STRIPE_SECRET_KEY, STRIPE_PLAN } = getServiceConfig();
 
@@ -42,7 +41,7 @@ export const getIsUserAnExistingStripeCustomerMiddleware = (userModel: Model<Use
         if (!user) {
             throw new CustomError(ErrorType.CreateStripeSubscriptionUserDoesNotExist);
         }
-        if (user.userType === UserTypes.premium) {
+        if (user.membershipInformation.isPayingMember) {
             throw new CustomError(ErrorType.CustomerIsAlreadySubscribed);
         }
         response.locals.user = user;
@@ -185,7 +184,7 @@ export const getAddStripeSubscriptionToUserMiddleware = (userModel: Model<UserMo
 
 export const addStripeSubscriptionToUserMiddleware = getAddStripeSubscriptionToUserMiddleware(userModel);
 
-export const getSetUserTypeToPremiumMiddleware = (userModel: Model<UserModel>) => async (
+export const getUpdateUserMembershipInformationMiddleware = (userModel: Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -196,18 +195,23 @@ export const getSetUserTypeToPremiumMiddleware = (userModel: Model<UserModel>) =
             .findByIdAndUpdate(
                 user._id,
                 {
-                    $set: { userType: UserTypes.premium },
+                    $set: {
+                        membershipInformation: {
+                            isPayingMember: true,
+                            currentMembershipStartDate: new Date(),
+                        },
+                    },
                 },
                 { new: true },
             )
             .lean();
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.SetUserTypeToPremiumMiddleware, err));
+        next(new CustomError(ErrorType.UpdateUserMembershipInformationMiddleware, err));
     }
 };
 
-export const setUserTypeToPremiumMiddleware = getSetUserTypeToPremiumMiddleware(userModel);
+export const updateUserMembershipInformationMiddleware = getUpdateUserMembershipInformationMiddleware(userModel);
 
 export const sendSuccessfulSubscriptionMiddleware = (
     request: Request,
@@ -231,6 +235,6 @@ export const createStripeCustomerSubscriptionMiddlewares = [
     createStripeSubscriptionMiddleware,
     handleInitialPaymentOutcomeMiddleware,
     addStripeSubscriptionToUserMiddleware,
-    setUserTypeToPremiumMiddleware,
+    updateUserMembershipInformationMiddleware,
     sendSuccessfulSubscriptionMiddleware,
 ];

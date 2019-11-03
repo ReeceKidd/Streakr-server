@@ -72,7 +72,7 @@ export enum ErrorType {
     CancelStripeSubscriptionMiddleware,
     RemoveSubscriptionFromUserMiddleware,
     SendSuccessfullyRemovedSubscriptionMiddleware,
-    SetUserTypeToPremiumMiddleware,
+    UpdateUserMembershipInformationMiddleware,
     SetUserTypeToBasicMiddleware,
     NoUserToDeleteFound,
     DeleteUserMiddleware,
@@ -1397,7 +1397,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.SetUserTypeToPremiumMiddleware:
+            case ErrorType.UpdateUserMembershipInformationMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-56`,
                     message: internalServerMessage,

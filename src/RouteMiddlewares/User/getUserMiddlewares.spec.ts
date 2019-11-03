@@ -9,6 +9,7 @@ import {
 } from './getUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
+import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe(`userParamsValidationMiddleware`, () => {
     const userId = '5d43f0c2f4499975cb312b72';
@@ -180,16 +181,29 @@ describe('sendRetreiveUserResponseMiddleware', () => {
 });
 
 describe('formatUserMiddleware', () => {
-    test('sends users in response', () => {
-        expect.assertions(2);
+    test('populates response.locals.user with a formattedUser', () => {
+        expect.assertions(3);
         const request: any = {};
-        const _id = '_id';
-        const username = 'username';
-        const email = 'email';
         const user = {
-            _id,
-            username,
-            email,
+            _id: '_id',
+            username: 'username',
+            membershipInformation: {
+                isPayingMember: true,
+                pastMemberships: [],
+            },
+            email: 'test@test.com',
+            createdAt: 'Jan 1st',
+            updatedAt: 'Jan 1st',
+            timezone: 'Europe/London',
+            userType: UserTypes.basic,
+            friends: [],
+            profileImages: {
+                originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+            },
+            stripe: {
+                customer: 'abc',
+                subscription: 'sub_1',
+            },
         };
         const response: any = { locals: { user } };
         const next = jest.fn();
@@ -197,7 +211,20 @@ describe('formatUserMiddleware', () => {
         formatUserMiddleware(request, response, next);
 
         expect(next).toBeCalled();
-        expect(response.locals.user.email).toBeUndefined();
+        expect(response.locals.user.isPayingMember).toEqual(true);
+        expect(Object.keys(response.locals.user).sort()).toEqual(
+            [
+                '_id',
+                'username',
+                'isPayingMember',
+                'userType',
+                'timezone',
+                'friends',
+                'createdAt',
+                'updatedAt',
+                'profileImages',
+            ].sort(),
+        );
     });
 
     test('calls next with FormatUserMiddleware error on middleware failure', () => {

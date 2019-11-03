@@ -25,8 +25,9 @@ export const userSchema = new mongoose.Schema(
                 type: String,
                 default: null,
             },
-            currentMembership: {
-                startDate: String,
+            currentMembershipStartDate: {
+                type: Date,
+                default: null,
             },
             pastMemberships: {
                 type: Object,
@@ -41,7 +42,7 @@ export const userSchema = new mongoose.Schema(
         },
         userType: {
             type: String,
-            enum: [UserTypes.basic, UserTypes.premium, UserTypes.admin],
+            enum: [UserTypes.basic, UserTypes.admin],
             default: UserTypes.basic,
         },
         timezone: {

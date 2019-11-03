@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User } from '@streakoid/streakoid-sdk/lib';
+import { User, FormattedUser } from '@streakoid/streakoid-sdk/lib';
 
 export const minimumSeachQueryLength = 1;
 export const maximumSearchQueryLength = 64;
@@ -58,7 +58,20 @@ export const retreiveUsersMiddleware = getRetreiveUsersMiddleware(userModel);
 export const formatUsersMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const users: User[] = response.locals.users;
-        response.locals.users = users.map(user => ({ ...user, email: undefined }));
+        response.locals.users = users.map(user => {
+            const formattedUser: FormattedUser = {
+                _id: user._id,
+                username: user.username,
+                isPayingMember: user.membershipInformation.isPayingMember,
+                userType: user.userType,
+                timezone: user.timezone,
+                friends: user.friends,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+                profileImages: user.profileImages,
+            };
+            return formattedUser;
+        });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FormatUsersMiddleware, err));
