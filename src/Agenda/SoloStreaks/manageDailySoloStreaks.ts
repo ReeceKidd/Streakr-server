@@ -1,10 +1,15 @@
 import moment from 'moment-timezone';
+import mongoose from 'mongoose';
+import { AgendaJobNames, StreakTypes, DailyJob, SoloStreak } from '@streakoid/streakoid-sdk/lib';
 
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import streakoid from '../../streakoid';
-import { AgendaJobNames, StreakTypes, DailyJob } from '@streakoid/streakoid-sdk/lib';
+import { soloStreakModel } from '../../../src/Models/SoloStreak';
+import { getServiceConfig } from '../../../src/getServiceConfig';
+
+const { DATABASE_URI } = getServiceConfig();
 
 export const manageDailySoloStreaks = async ({
     agendaJobId,
@@ -18,23 +23,25 @@ export const manageDailySoloStreaks = async ({
         .toDate()
         .toString();
 
-    const [maintainedSoloStreaks, inactiveSoloStreaks, incompleteSoloStreaks] = await Promise.all([
-        streakoid.soloStreaks.getAll({
-            completedToday: true,
-            active: true,
-            timezone,
-        }),
-        streakoid.soloStreaks.getAll({
-            completedToday: false,
-            active: false,
-            timezone,
-        }),
-        streakoid.soloStreaks.getAll({
-            completedToday: false,
-            active: true,
-            timezone: timezone,
-        }),
-    ]);
+    await mongoose.connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+
+    const maintainedSoloStreaks: SoloStreak[] = await soloStreakModel.find({
+        completedToday: true,
+        active: true,
+        timezone,
+    });
+
+    const inactiveSoloStreaks: SoloStreak[] = await soloStreakModel.find({
+        completedToday: false,
+        active: false,
+        timezone,
+    });
+
+    const incompleteSoloStreaks: SoloStreak[] = await soloStreakModel.find({
+        completedToday: false,
+        active: true,
+        timezone: timezone,
+    });
 
     await Promise.all([
         trackMaintainedSoloStreaks(maintainedSoloStreaks),
@@ -46,6 +53,8 @@ export const manageDailySoloStreaks = async ({
         .tz(timezone)
         .toDate()
         .toString();
+
+    mongoose.connection.close();
 
     return streakoid.dailyJobs.create({
         agendaJobId: String(agendaJobId),

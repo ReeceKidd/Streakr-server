@@ -43,13 +43,11 @@ describe('hasUserPaidMembershipMiddleware', () => {
     test('throws HasUserPaidMembershipMiddleware when middleware fails', () => {
         expect.assertions(1);
         const request: any = {};
-        const response: any = {
-            locals: {},
-        };
+        const response: any = {};
         const next = jest.fn();
 
         hasUserPaidMembershipMiddleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveTimezoneHeaderMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.HasUserPaidMembershipMiddleware, expect.any(Error)));
     });
 });

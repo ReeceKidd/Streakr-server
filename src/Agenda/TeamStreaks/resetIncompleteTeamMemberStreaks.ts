@@ -1,4 +1,3 @@
-import streakoid from '../../streakoid';
 import {
     TeamMemberStreak,
     CurrentStreak,
@@ -7,6 +6,9 @@ import {
     StreakTrackingEventTypes,
     StreakTypes,
 } from '@streakoid/streakoid-sdk/lib';
+import streakoid from '../../streakoid';
+import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
+import { teamStreakModel } from '../../../src/Models/TeamStreak';
 
 export const resetIncompleteTeamMemberStreaks = async (
     incompleteTeamMemberStreaks: TeamMemberStreak[],
@@ -27,18 +29,16 @@ export const resetIncompleteTeamMemberStreaks = async (
                 numberOfDaysInARow: 0,
             };
 
-            await streakoid.teamMemberStreaks.update({
-                teamMemberStreakId: teamMemberStreak._id,
-                updateData: {
+            await teamMemberStreakModel.findByIdAndUpdate(teamMemberStreak._id, {
+                $set: {
                     currentStreak,
                     pastStreaks,
                     active: false,
                 },
             });
 
-            await streakoid.teamStreaks.update({
-                teamStreakId: teamMemberStreak.teamStreakId,
-                updateData: {
+            await teamStreakModel.findByIdAndUpdate(teamMemberStreak.teamStreakId, {
+                $set: {
                     completedToday: false,
                 },
             });

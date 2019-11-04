@@ -1,53 +1,47 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import mongoose from 'mongoose';
-
-import streakoid from '../../../src/streakoid';
 import { createTeamStreakDailyTrackerJob } from '../../../src/scripts/initaliseTeamStreakTimezoneCheckers';
 import { StreakTypes, StreakStatus, StreakTrackingEventTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
-import { londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { londonTimezone, StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
-import { getServiceConfig } from '../../../src/getServiceConfig';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEvent';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 import { completeTeamMemberStreakTaskModel } from '../../../src/Models/CompleteTeamMemberStreakTask';
 import { dailyJobModel } from '../../../src/Models/DailyJob';
 import { originalImageUrl } from '.../../../src/Models/User';
-
-const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
-
-const username = 'solo-streak-daily-tracker-name';
-const email = 'solostreaktracker@gmail.com';
-
-const friendUsername = 'friend';
-const friendEmail = 'friend@gmail.com';
+import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
+import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
+import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { streakoidTest } from '../../../tests/setup/streakoidTest';
+import { getPayingUser } from '../../setup/getPayingUser';
+import { getFriend } from '../../../tests/setup/getFriend';
 
 jest.setTimeout(120000);
 
 describe('teamStreakDailyTracker', () => {
+    let streakoid: StreakoidFactory;
     let userId: string;
     let friendId: string;
 
     beforeAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
-            await mongoose.connection.dropDatabase();
-            const user = await streakoid.users.create({ username, email });
+        if (isTestEnvironment()) {
+            await connectToDatabase();
+            const user = await getPayingUser();
             userId = user._id;
-            const friend = await streakoid.users.create({ username: friendUsername, email: friendEmail });
+            streakoid = await streakoidTest();
+            const friend = await getFriend();
             friendId = friend._id;
         }
     });
 
     afterAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connection.dropDatabase();
-            await mongoose.disconnect();
+        if (isTestEnvironment()) {
+            await tearDownDatabase();
         }
     });
 
     afterEach(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+        if (isTestEnvironment()) {
             await teamStreakModel.deleteMany({});
             await streakTrackingEventModel.deleteMany({});
             await teamMemberStreakModel.deleteMany({});
@@ -134,15 +128,15 @@ describe('teamStreakDailyTracker', () => {
 
         expect(updatedTeamStreak._id).toEqual(expect.any(String));
         expect(updatedTeamStreak.creatorId).toEqual(expect.any(String));
-        expect(updatedTeamStreak.creator._id).toEqual(userId);
-        expect(updatedTeamStreak.creator.username).toEqual(username);
+        expect(updatedTeamStreak.creator._id).toBeDefined();
+        expect(updatedTeamStreak.creator.username).toBeDefined();
         expect(Object.keys(updatedTeamStreak.creator).sort()).toEqual(['_id', 'username'].sort());
         expect(updatedTeamStreak.members.length).toEqual(1);
 
         const member = updatedTeamStreak.members[0];
-        expect(member._id).toEqual(userId);
+        expect(member._id).toBeDefined();
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
-        expect(member.username).toEqual(username);
+        expect(member.username).toBeDefined();
         expect(member.profileImage).toEqual(originalImageUrl);
         expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
@@ -222,7 +216,7 @@ describe('teamStreakDailyTracker', () => {
         expect(teamMemberStreakTrackingEvent.type).toEqual(StreakTrackingEventTypes.maintainedStreak);
         expect(teamMemberStreakTrackingEvent.streakId).toEqual(teamMemberStreak._id);
         expect(teamMemberStreakTrackingEvent.streakType).toEqual(StreakTypes.teamMember);
-        expect(teamMemberStreakTrackingEvent.userId).toEqual(userId);
+        expect(teamMemberStreakTrackingEvent.userId).toBeDefined();
         expect(teamMemberStreakTrackingEvent._id).toEqual(expect.any(String));
         expect(teamMemberStreakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(teamMemberStreakTrackingEvent.updatedAt).toEqual(expect.any(String));
@@ -315,15 +309,15 @@ describe('teamStreakDailyTracker', () => {
 
         expect(updatedTeamStreak._id).toEqual(expect.any(String));
         expect(updatedTeamStreak.creatorId).toEqual(expect.any(String));
-        expect(updatedTeamStreak.creator._id).toEqual(userId);
-        expect(updatedTeamStreak.creator.username).toEqual(username);
+        expect(updatedTeamStreak.creator._id).toBeDefined();
+        expect(updatedTeamStreak.creator.username).toBeDefined();
         expect(Object.keys(updatedTeamStreak.creator).sort()).toEqual(['_id', 'username'].sort());
         expect(updatedTeamStreak.members.length).toEqual(2);
 
         const member = updatedTeamStreak.members[0];
-        expect(member._id).toEqual(userId);
+        expect(member._id).toBeDefined();
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
-        expect(member.username).toEqual(username);
+        expect(member.username).toBeDefined();
         expect(member.profileImage).toEqual(originalImageUrl);
         expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
@@ -543,15 +537,15 @@ describe('teamStreakDailyTracker', () => {
 
         expect(updatedTeamStreak._id).toEqual(expect.any(String));
         expect(updatedTeamStreak.creatorId).toEqual(expect.any(String));
-        expect(updatedTeamStreak.creator._id).toEqual(userId);
-        expect(updatedTeamStreak.creator.username).toEqual(username);
+        expect(updatedTeamStreak.creator._id).toBeDefined();
+        expect(updatedTeamStreak.creator.username).toBeDefined();
         expect(Object.keys(updatedTeamStreak.creator).sort()).toEqual(['_id', 'username'].sort());
         expect(updatedTeamStreak.members.length).toEqual(1);
 
         const member = updatedTeamStreak.members[0];
-        expect(member._id).toEqual(userId);
+        expect(member._id).toBeDefined();
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
-        expect(member.username).toEqual(username);
+        expect(member.username).toBeDefined();
         expect(member.profileImage).toEqual(originalImageUrl);
         expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
@@ -635,7 +629,7 @@ describe('teamStreakDailyTracker', () => {
         expect(teamMemberStreakTrackingEvent.type).toEqual(StreakTrackingEventTypes.lostStreak);
         expect(teamMemberStreakTrackingEvent.streakId).toEqual(teamMemberStreak._id);
         expect(teamMemberStreakTrackingEvent.streakType).toEqual(StreakTypes.teamMember);
-        expect(teamMemberStreakTrackingEvent.userId).toEqual(userId);
+        expect(teamMemberStreakTrackingEvent.userId).toBeDefined();
         expect(teamMemberStreakTrackingEvent._id).toEqual(expect.any(String));
         expect(teamMemberStreakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(teamMemberStreakTrackingEvent.updatedAt).toEqual(expect.any(String));
@@ -762,15 +756,15 @@ describe('teamStreakDailyTracker', () => {
 
         expect(updatedTeamStreak._id).toEqual(expect.any(String));
         expect(updatedTeamStreak.creatorId).toEqual(expect.any(String));
-        expect(updatedTeamStreak.creator._id).toEqual(userId);
-        expect(updatedTeamStreak.creator.username).toEqual(username);
+        expect(updatedTeamStreak.creator._id).toBeDefined();
+        expect(updatedTeamStreak.creator.username).toBeDefined();
         expect(Object.keys(updatedTeamStreak.creator).sort()).toEqual(['_id', 'username'].sort());
         expect(updatedTeamStreak.members.length).toEqual(2);
 
         const member = updatedTeamStreak.members[0];
-        expect(member._id).toEqual(userId);
+        expect(member._id).toBeDefined();
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
-        expect(member.username).toEqual(username);
+        expect(member.username).toBeDefined();
         expect(member.profileImage).toEqual(originalImageUrl);
         expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
@@ -1009,15 +1003,15 @@ describe('teamStreakDailyTracker', () => {
 
         expect(updatedTeamStreak._id).toEqual(expect.any(String));
         expect(updatedTeamStreak.creatorId).toEqual(expect.any(String));
-        expect(updatedTeamStreak.creator._id).toEqual(userId);
-        expect(updatedTeamStreak.creator.username).toEqual(username);
+        expect(updatedTeamStreak.creator._id).toBeDefined();
+        expect(updatedTeamStreak.creator.username).toBeDefined();
         expect(Object.keys(updatedTeamStreak.creator).sort()).toEqual(['_id', 'username'].sort());
         expect(updatedTeamStreak.members.length).toEqual(2);
 
         const member = updatedTeamStreak.members[0];
-        expect(member._id).toEqual(userId);
+        expect(member._id).toBeDefined();
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
-        expect(member.username).toEqual(username);
+        expect(member.username).toBeDefined();
         expect(member.profileImage).toEqual(originalImageUrl);
         expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));

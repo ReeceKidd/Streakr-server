@@ -31,14 +31,18 @@ v1Router.post(`/${RouterCategories.users}`, ...registerUserMiddlewares);
 v1Router.use(`/${RouterCategories.emails}`, emailRouter);
 v1Router.use(`/${RouterCategories.dailyJobs}`, dailyJobsRouter);
 v1Router.use(`/${RouterCategories.streakTrackingEvents}`, streakTrackingEventRouter);
+v1Router.use(`/${RouterCategories.users}`, usersRouter);
+
+// Partially authenticated routes.
+v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
 
 // Authenticated User Routes
 v1Router.use(...authenticationMiddlewares);
-v1Router.use(hasUserPaidMembershipMiddleware);
-v1Router.use(`/${RouterCategories.users}`, usersRouter);
 v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
+
+// Paid Membership routes
+v1Router.use(hasUserPaidMembershipMiddleware);
 v1Router.use(`/${RouterCategories.soloStreaks}`, soloStreaksRouter);
-v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
 v1Router.use(`/${RouterCategories.teamMemberStreaks}`, teamMemberStreaksRouter);
 v1Router.use(`/${RouterCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);
 v1Router.use(`/${RouterCategories.completeTeamStreaks}`, completeTeamStreaksRouter);

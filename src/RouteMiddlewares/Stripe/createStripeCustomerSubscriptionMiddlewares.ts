@@ -197,6 +197,7 @@ export const getUpdateUserMembershipInformationMiddleware = (userModel: Model<Us
                 {
                     $set: {
                         membershipInformation: {
+                            ...user.membershipInformation,
                             isPayingMember: true,
                             currentMembershipStartDate: new Date(),
                         },

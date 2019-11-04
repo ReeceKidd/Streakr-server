@@ -3,6 +3,14 @@ jest.mock('moment-timezone', () => ({
         toDate: jest.fn(() => new Date()),
     })),
 }));
+jest.mock('mongoose', () => ({
+    connect: jest.fn().mockResolvedValue({}),
+    Schema: jest.fn(),
+    model: jest.fn(() => ({})),
+    connection: {
+        close: jest.fn(),
+    },
+}));
 jest.mock('./trackMaintainedSoloStreaks', () => ({
     __esModule: true,
     trackMaintainedSoloStreaks: jest.fn().mockResolvedValue(true),
@@ -21,6 +29,7 @@ import { manageDailySoloStreaks } from './manageDailySoloStreaks';
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
 import streakoid from '../../streakoid';
+import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
 describe('manageDailySoloStreaks', () => {
     afterEach(() => {
@@ -30,28 +39,26 @@ describe('manageDailySoloStreaks', () => {
     test('calls trackMaintainedSoloStreaks, trackInactiveSoloStreaks, resetIncompleteSoloStreaks and creates DailyJob', async () => {
         expect.assertions(7);
         streakoid.dailyJobs.create = jest.fn(() => ({}));
-        streakoid.soloStreaks.getAll = jest.fn(() => {
-            return [];
-        });
+        soloStreakModel.find = jest.fn().mockResolvedValue([]);
         const agendaJobId = 'agendaJobId';
         const timezone = 'Europe/London';
         await manageDailySoloStreaks({ agendaJobId, timezone });
 
-        expect(streakoid.soloStreaks.getAll).toBeCalledWith({
+        expect(soloStreakModel.find).toBeCalledWith({
             completedToday: true,
             active: true,
             timezone,
         });
         expect(trackMaintainedSoloStreaks).toBeCalledWith(expect.any(Array));
 
-        expect(streakoid.soloStreaks.getAll).toBeCalledWith({
+        expect(soloStreakModel.find).toBeCalledWith({
             completedToday: false,
             active: false,
             timezone,
         });
         expect(trackInactiveSoloStreaks).toBeCalledWith(expect.any(Array));
 
-        expect(streakoid.soloStreaks.getAll).toBeCalledWith({
+        expect(soloStreakModel.find).toBeCalledWith({
             completedToday: false,
             active: true,
             timezone,

@@ -2,6 +2,8 @@
 import { resetIncompleteTeamMemberStreaks } from './resetIncompleteTeamMemberStreaks';
 import streakoid from '../../streakoid';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
+import { teamStreakModel } from '../../../src/Models/TeamStreak';
 
 describe('resetIncompleteSoloStreaks', () => {
     afterEach(() => {
@@ -10,8 +12,8 @@ describe('resetIncompleteSoloStreaks', () => {
 
     test('that incomplete teamMemberStreaks default current streak is reset, past streak is pushed to past streaks, and the teamStreak the teamMemberStreak belongs to completed today gets set to false and lost streak activity is recorded', async () => {
         expect.assertions(3);
-        streakoid.teamMemberStreaks.update = jest.fn().mockResolvedValue({ data: {} });
-        streakoid.teamStreaks.update = jest.fn().mockResolvedValue({ data: {} });
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
+        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = '1234';
         const endDate = new Date().toString();
@@ -40,18 +42,16 @@ describe('resetIncompleteSoloStreaks', () => {
         const pastStreaks = [{ numberOfDaysInARow: 0, endDate, startDate: endDate }];
         await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks as any, endDate);
 
-        expect(streakoid.teamMemberStreaks.update).toBeCalledWith({
-            teamMemberStreakId: _id,
-            updateData: {
+        expect(teamMemberStreakModel.findByIdAndUpdate).toBeCalledWith(_id, {
+            $set: {
                 currentStreak: { startDate: '', numberOfDaysInARow: 0 },
                 pastStreaks,
                 active: false,
             },
         });
 
-        expect(streakoid.teamStreaks.update).toBeCalledWith({
-            teamStreakId,
-            updateData: {
+        expect(teamStreakModel.findByIdAndUpdate).toBeCalledWith(teamStreakId, {
+            $set: {
                 completedToday: false,
             },
         });

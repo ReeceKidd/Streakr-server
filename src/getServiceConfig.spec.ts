@@ -5,7 +5,6 @@ describe('getServiceConfig', () => {
         NODE_ENV: 'NODE_ENV',
         PORT: 'PORT',
         DATABASE_URI: 'DATABASE_URI',
-        TEST_DATABASE_URI: 'TEST_DATABASE_URI',
         AWS_ACCESS_KEY_ID: 'AWS_ACCESS_KEY_ID',
         AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY',
         AWS_REGION: 'AWS_REGION',
@@ -64,20 +63,6 @@ describe('getServiceConfig', () => {
             getServiceConfig(environment);
         } catch (err) {
             expect(err.message).toEqual('DATABASE_URI is not provided.');
-        }
-    });
-
-    test('that correct error is thrown when TEST_DATABASE_URI is not provided', () => {
-        expect.assertions(1);
-        const environment = {
-            ...environmentMock,
-            TEST_DATABASE_URI: undefined,
-        };
-
-        try {
-            getServiceConfig(environment);
-        } catch (err) {
-            expect(err.message).toEqual('TEST_DATABASE_URI is not provided.');
         }
     });
 

@@ -1,42 +1,43 @@
-import mongoose from 'mongoose';
-
-import streakoid from '../../../src/streakoid';
 import { resetIncompleteSoloStreaks } from '../../../src/Agenda/SoloStreaks/resetIncompleteSoloStreaks';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
-import { getServiceConfig } from '../../../src/getServiceConfig';
+import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
-const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
-
-const username = 'resetIncompleteSoloStreaksUsername';
-const email = 'resetIncompleteSoloStreaks@gmail.com';
+import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
+import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { getPayingUser } from '../../setup/getPayingUser';
+import { streakoidTest } from '../../../tests/setup/streakoidTest';
+import { tearDownDatabase } from '../../setup/tearDownDatabase';
 
 jest.setTimeout(120000);
 
 describe('resetIncompleteSoloStreaks', () => {
+    let streakoid: StreakoidFactory;
     let userId: string;
     const streakName = 'Daily Spanish';
 
     beforeAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
-            await mongoose.connection.dropDatabase();
-            const user = await streakoid.users.create({ username, email });
+        if (isTestEnvironment()) {
+            await connectToDatabase();
+            const user = await getPayingUser();
             userId = user._id;
+            streakoid = await streakoidTest();
         }
     });
 
     afterAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connection.dropDatabase();
-            await mongoose.disconnect();
+        if (isTestEnvironment()) {
+            await tearDownDatabase();
         }
     });
 
     test('adds current streak to past streak,  resets the current streak and creats a lost streak tracking event.', async () => {
         expect.assertions(26);
 
+        console.log(`UserId: ${userId}`);
+
         const soloStreak = await streakoid.soloStreaks.create({ userId, streakName });
+
         const soloStreakId = soloStreak._id;
 
         const incompleteSoloStreaks = await streakoid.soloStreaks.getAll({
@@ -44,18 +45,13 @@ describe('resetIncompleteSoloStreaks', () => {
         });
 
         const endDate = new Date();
-        const resetIncompleteSoloStreaksPromise = await resetIncompleteSoloStreaks(
-            incompleteSoloStreaks,
-            endDate.toString(),
-        );
-
-        await Promise.all(resetIncompleteSoloStreaksPromise);
+        await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate.toString());
 
         const updatedSoloStreak = await streakoid.soloStreaks.getOne(soloStreakId);
 
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
-        expect(updatedSoloStreak.userId).toEqual(userId);
+        expect(updatedSoloStreak.userId).toEqual(expect.any(String));
         expect(updatedSoloStreak.completedToday).toEqual(false);
         expect(updatedSoloStreak.active).toEqual(false);
         expect(updatedSoloStreak.pastStreaks.length).toEqual(1);

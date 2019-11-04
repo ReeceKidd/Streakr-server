@@ -1,8 +1,6 @@
 import moment from 'moment-timezone';
-
-// import { trackMaintainedSoloStreaks } from '../SoloStreaks/trackMaintainedSoloStreaks';
-// import { trackInactiveSoloStreaks } from '../SoloStreaks/trackInactiveSoloStreaks';
-// import { resetIncompleteSoloStreaks } from '../SoloStreaks/resetIncompleteSoloStreaks';
+import mongoose from 'mongoose';
+import { DailyJob, AgendaJobNames, StreakTypes, TeamMemberStreak } from '@streakoid/streakoid-sdk/lib';
 
 import streakoid from '../../streakoid';
 import { resetIncompleteTeamMemberStreaks } from './resetIncompleteTeamMemberStreaks';
@@ -11,7 +9,10 @@ import { trackMaintainedTeamMemberStreaks } from './trackMaintainedTeamMemberStr
 import { trackInactiveTeamStreaks } from './trackInactiveTeamStreaks';
 import { resetIncompleteTeamStreaks } from './resetIncompleteTeamStreaks';
 import { trackMaintainedTeamStreaks } from './trackMaintainedTeamStreaks';
-import { DailyJob, AgendaJobNames, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { getServiceConfig } from '../../../src/getServiceConfig';
+import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
+
+const { DATABASE_URI } = getServiceConfig();
 
 export const manageDailyTeamStreaks = async ({
     agendaJobId,
@@ -25,23 +26,27 @@ export const manageDailyTeamStreaks = async ({
         .toDate()
         .toString();
 
-    const [incompleteTeamMemberStreaks, maintainedTeamMemberStreaks, inactiveTeamMemberStreaks] = await Promise.all([
-        streakoid.teamMemberStreaks.getAll({
-            completedToday: false,
-            active: true,
-            timezone: timezone,
-        }),
-        streakoid.teamMemberStreaks.getAll({
-            completedToday: true,
-            active: true,
-            timezone,
-        }),
-        streakoid.teamMemberStreaks.getAll({
-            completedToday: false,
-            active: false,
-            timezone,
-        }),
-    ]);
+    mongoose
+        .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false })
+        .catch(err => console.log(err.message));
+
+    const incompleteTeamMemberStreaks: TeamMemberStreak[] = await teamMemberStreakModel.find({
+        completedToday: false,
+        active: true,
+        timezone: timezone,
+    });
+
+    const maintainedTeamMemberStreaks: TeamMemberStreak[] = await teamMemberStreakModel.find({
+        completedToday: true,
+        active: true,
+        timezone: timezone,
+    });
+
+    const inactiveTeamMemberStreaks: TeamMemberStreak[] = await teamMemberStreakModel.find({
+        completedToday: false,
+        active: false,
+        timezone,
+    });
 
     await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks, currentLocalTime);
     await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks);

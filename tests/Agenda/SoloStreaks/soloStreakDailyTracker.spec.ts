@@ -1,45 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import mongoose from 'mongoose';
-
 import { createSoloStreakDailyTrackerJob } from '../../../src/scripts/initaliseSoloStreakTimezoneCheckers';
-import streakoid from '../../../src/streakoid';
-
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
-import { getServiceConfig } from '../../../src/getServiceConfig';
+import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEvent';
 import { dailyJobModel } from '../../../src/Models/DailyJob';
 import { completeSoloStreakTaskModel } from '../../../src/Models/CompleteSoloStreakTask';
-
-const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
+import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
+import { streakoidTest } from '../../../tests/setup/streakoidTest';
+import { getPayingUser } from '../../setup/getPayingUser';
+import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 
 jest.setTimeout(120000);
 
-const username = 'solo-streak-daily-tracker-name';
-const email = 'solostreaktracker@gmail.com';
-
 describe('soloStreakDailyTracker', () => {
+    let streakoid: StreakoidFactory;
     let userId: string;
 
     beforeAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
-            await mongoose.connection.dropDatabase();
-            const user = await streakoid.users.create({ username, email });
+        if (isTestEnvironment()) {
+            await connectToDatabase();
+            const user = await getPayingUser();
             userId = user._id;
+            streakoid = await streakoidTest();
         }
     });
 
     afterAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connection.dropDatabase();
-            await mongoose.disconnect();
+        if (isTestEnvironment()) {
+            await tearDownDatabase();
         }
     });
 
     afterEach(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
+        if (isTestEnvironment()) {
             await soloStreakModel.deleteMany({});
             await streakTrackingEventModel.deleteMany({});
             await completeSoloStreakTaskModel.deleteMany({});
@@ -95,7 +92,7 @@ describe('soloStreakDailyTracker', () => {
         });
 
         expect(completeSoloStreakTask._id).toBeDefined();
-        expect(completeSoloStreakTask.userId).toEqual(userId);
+        expect(completeSoloStreakTask.userId).toEqual(expect.any(String));
         expect(completeSoloStreakTask.streakId).toEqual(maintainedSoloStreakId);
         expect(completeSoloStreakTask.taskCompleteTime).toEqual(expect.any(String));
         expect(completeSoloStreakTask.taskCompleteDay).toEqual(expect.any(String));
@@ -123,7 +120,7 @@ describe('soloStreakDailyTracker', () => {
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
         expect(updatedSoloStreak.streakDescription).toEqual(streakDescription);
-        expect(updatedSoloStreak.userId).toEqual(userId);
+        expect(updatedSoloStreak.userId).toEqual(expect.any(String));
         expect(updatedSoloStreak.completedToday).toEqual(false);
         expect(updatedSoloStreak.active).toEqual(true);
         expect(updatedSoloStreak.pastStreaks.length).toEqual(0);
@@ -162,7 +159,7 @@ describe('soloStreakDailyTracker', () => {
         expect(streakTrackingEvent.type).toEqual(StreakTrackingEventTypes.maintainedStreak);
         expect(streakTrackingEvent.streakId).toEqual(maintainedSoloStreakId);
         expect(streakTrackingEvent.streakType).toEqual(StreakTypes.solo);
-        expect(streakTrackingEvent.userId).toEqual(userId);
+        expect(streakTrackingEvent.userId).toEqual(expect.any(String));
         expect(streakTrackingEvent._id).toEqual(expect.any(String));
         expect(streakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
@@ -218,7 +215,7 @@ describe('soloStreakDailyTracker', () => {
         });
 
         expect(completeSoloStreakTask._id).toBeDefined();
-        expect(completeSoloStreakTask.userId).toEqual(userId);
+        expect(completeSoloStreakTask.userId).toEqual(expect.any(String));
         expect(completeSoloStreakTask.streakId).toEqual(lostSoloStreak._id);
         expect(completeSoloStreakTask.taskCompleteTime).toEqual(expect.any(String));
         expect(completeSoloStreakTask.taskCompleteDay).toEqual(expect.any(String));
@@ -248,7 +245,7 @@ describe('soloStreakDailyTracker', () => {
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
         expect(updatedSoloStreak.streakDescription).toEqual(streakDescription);
-        expect(updatedSoloStreak.userId).toEqual(userId);
+        expect(updatedSoloStreak.userId).toEqual(expect.any(String));
         expect(updatedSoloStreak.completedToday).toEqual(false);
         expect(updatedSoloStreak.active).toEqual(false);
         expect(updatedSoloStreak.pastStreaks.length).toEqual(1);
@@ -293,7 +290,7 @@ describe('soloStreakDailyTracker', () => {
         expect(lostStreakTrackingEvent.type).toEqual(StreakTrackingEventTypes.lostStreak);
         expect(lostStreakTrackingEvent.streakId).toEqual(lostSoloStreakId);
         expect(lostStreakTrackingEvent.streakType).toEqual(StreakTypes.solo);
-        expect(lostStreakTrackingEvent.userId).toEqual(userId);
+        expect(lostStreakTrackingEvent.userId).toEqual(expect.any(String));
         expect(lostStreakTrackingEvent._id).toEqual(expect.any(String));
         expect(lostStreakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(lostStreakTrackingEvent.updatedAt).toEqual(expect.any(String));
@@ -351,7 +348,7 @@ describe('soloStreakDailyTracker', () => {
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
         expect(updatedSoloStreak.streakDescription).toEqual(streakDescription);
-        expect(updatedSoloStreak.userId).toEqual(userId);
+        expect(updatedSoloStreak.userId).toEqual(expect.any(String));
         expect(updatedSoloStreak.completedToday).toEqual(false);
         expect(updatedSoloStreak.active).toEqual(false);
         expect(updatedSoloStreak.pastStreaks.length).toEqual(0);

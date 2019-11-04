@@ -1,37 +1,33 @@
-import mongoose from 'mongoose';
-
-import streakoid from '../../../src/streakoid';
-
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 import { trackInactiveTeamStreaks } from '../../../src/Agenda/TeamStreaks/trackInactiveTeamStreaks';
-import { getServiceConfig } from '../../../src/getServiceConfig';
 import { originalImageUrl } from '../../../src/Models/User';
-
-const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
-
-const username = 'trackinactiveieamstreakUsername';
-const email = 'trackinactiveteamstreak@gmail.com';
+import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
+import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { getPayingUser } from '../../setup/getPayingUser';
+import { streakoidTest } from '../../../tests/setup/streakoidTest';
+import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 
 jest.setTimeout(120000);
 
 describe('trackInactiveTeamStreak', () => {
+    let streakoid: StreakoidFactory;
     let userId: string;
     const streakName = 'Daily Spanish';
 
     beforeAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
-            await mongoose.connection.dropDatabase();
-            const user = await streakoid.users.create({ username, email });
+        if (isTestEnvironment()) {
+            await connectToDatabase();
+            const user = await getPayingUser();
             userId = user._id;
+            streakoid = await streakoidTest();
         }
     });
 
     afterAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connection.dropDatabase();
-            await mongoose.disconnect();
+        if (isTestEnvironment()) {
+            await tearDownDatabase();
         }
     });
 
@@ -66,13 +62,13 @@ describe('trackInactiveTeamStreak', () => {
 
         expect(updatedTeamStreak._id).toEqual(expect.any(String));
         expect(updatedTeamStreak.creatorId).toEqual(expect.any(String));
-        expect(updatedTeamStreak.creator._id).toEqual(userId);
+        expect(updatedTeamStreak.creator._id).toBeDefined();
         expect(updatedTeamStreak.creator.username).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak.creator).sort()).toEqual(['_id', 'username'].sort());
         expect(updatedTeamStreak.members.length).toEqual(1);
 
         const member = updatedTeamStreak.members[0];
-        expect(member._id).toEqual(userId);
+        expect(member._id).toBeDefined();
         expect(member.teamMemberStreak).toEqual(expect.any(Object));
         expect(member.username).toEqual(expect.any(String));
         expect(member.profileImage).toEqual(originalImageUrl);

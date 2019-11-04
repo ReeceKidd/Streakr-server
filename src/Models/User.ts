@@ -21,16 +21,12 @@ export const userSchema = new mongoose.Schema(
                 type: Boolean,
                 default: false,
             },
-            becameAMember: {
-                type: String,
-                default: null,
-            },
             currentMembershipStartDate: {
                 type: Date,
                 default: null,
             },
             pastMemberships: {
-                type: Object,
+                type: Array,
                 default: [],
             },
         },

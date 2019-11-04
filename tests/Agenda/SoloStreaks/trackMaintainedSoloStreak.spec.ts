@@ -1,37 +1,34 @@
-import mongoose from 'mongoose';
-
-import { trackMaintainedSoloStreaks } from '.../../../src/Agenda/SoloStreaks/trackMaintainedSoloStreaks';
-import streakoid from '.../../../src/streakoid';
-
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
-import { getServiceConfig } from '../../../src/getServiceConfig';
+import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
-const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
-
-const username = 'trackMaintainedSoloStreakUsername';
-const email = 'trackMaintainedSoloStreak@gmail.com';
+import { trackMaintainedSoloStreaks } from '.../../../src/Agenda/SoloStreaks/trackMaintainedSoloStreaks';
+import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
+import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { streakoidTest } from '../../../tests/setup/streakoidTest';
+import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
+import { getPayingUser } from '../../setup/getPayingUser';
 
 jest.setTimeout(120000);
 
 describe('trackMaintainedSoloStreak', () => {
+    let streakoid: StreakoidFactory;
     let userId: string;
     const streakName = 'Daily Spanish';
-    const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+    const streakDescription = 'Everyday I must study Spanish';
 
     beforeAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
-            await mongoose.connection.dropDatabase();
-            const user = await streakoid.users.create({ username, email });
+        if (isTestEnvironment()) {
+            await connectToDatabase();
+            const user = await getPayingUser();
             userId = user._id;
+            streakoid = await streakoidTest();
         }
     });
 
     afterAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connection.dropDatabase();
-            await mongoose.disconnect();
+        if (isTestEnvironment()) {
+            await tearDownDatabase();
         }
     });
 
@@ -57,7 +54,7 @@ describe('trackMaintainedSoloStreak', () => {
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
         expect(updatedSoloStreak.streakDescription).toEqual(streakDescription);
-        expect(updatedSoloStreak.userId).toEqual(userId);
+        expect(updatedSoloStreak.userId).toBeDefined();
         expect(updatedSoloStreak.completedToday).toEqual(false);
         expect(updatedSoloStreak.active).toEqual(true);
         expect(updatedSoloStreak.pastStreaks.length).toEqual(0);

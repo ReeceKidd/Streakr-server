@@ -2,6 +2,7 @@
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import streakoid from '../../streakoid';
 import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
 describe('trackMaintainedSoloStreaks', () => {
     afterEach(() => {
@@ -10,7 +11,7 @@ describe('trackMaintainedSoloStreaks', () => {
 
     test('creates a streak tracking event for each streak that is maintained', async () => {
         expect.assertions(2);
-        streakoid.soloStreaks.update = jest.fn().mockResolvedValue({ data: {} });
+        soloStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = 1;
         const currentStreak = {
@@ -35,11 +36,8 @@ describe('trackMaintainedSoloStreaks', () => {
             } as any,
         ];
         await trackMaintainedSoloStreaks(maintainedSoloStreaks as any);
-        expect(streakoid.soloStreaks.update).toBeCalledWith({
-            soloStreakId: _id,
-            updateData: {
-                completedToday: false,
-            },
+        expect(soloStreakModel.findByIdAndUpdate).toBeCalledWith(_id, {
+            $set: { completedToday: false },
         });
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
             type: StreakTrackingEventTypes.maintainedStreak,

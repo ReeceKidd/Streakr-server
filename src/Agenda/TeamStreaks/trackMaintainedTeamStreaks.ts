@@ -1,4 +1,3 @@
-import streakoid from '../../streakoid';
 import {
     StreakTrackingEvent,
     StreakTrackingEventTypes,
@@ -6,17 +5,15 @@ import {
     PopulatedTeamStreak,
 } from '@streakoid/streakoid-sdk/lib';
 
+import streakoid from '../../streakoid';
+import { teamStreakModel } from '../../../src/Models/TeamStreak';
+
 export const trackMaintainedTeamStreaks = async (
     maintainedTeamStreaks: PopulatedTeamStreak[],
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(
         maintainedTeamStreaks.map(async teamStreak => {
-            await streakoid.teamStreaks.update({
-                teamStreakId: teamStreak._id,
-                updateData: {
-                    completedToday: false,
-                },
-            });
+            await teamStreakModel.findByIdAndUpdate(teamStreak._id, { $set: { completedToday: false } });
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventTypes.maintainedStreak,
                 streakId: teamStreak._id,

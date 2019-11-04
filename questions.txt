@@ -12,3 +12,4 @@
 12) Ask maxime what I need to consider for profile pictures, in regards to security and sizing them. Should this be done with a lambda on S3?
 13) How should I handle the resizing of images, because it takes a long time on the server. I'm guessing send the response early and process afterwards? 
 14) Ask Maxime how he would store each object in a bucket for user profiles. 
+15) Need to ask Maxime how this agenda stuff should work and is it possible to connect to the database. 

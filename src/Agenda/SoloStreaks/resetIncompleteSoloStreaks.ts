@@ -7,6 +7,7 @@ import {
     StreakTrackingEventTypes,
     StreakTypes,
 } from '@streakoid/streakoid-sdk/lib';
+import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
 export const resetIncompleteSoloStreaks = async (
     incompleteSoloStreaks: SoloStreak[],
@@ -27,9 +28,8 @@ export const resetIncompleteSoloStreaks = async (
                 numberOfDaysInARow: 0,
             };
 
-            await streakoid.soloStreaks.update({
-                soloStreakId: soloStreak._id,
-                updateData: {
+            await soloStreakModel.findByIdAndUpdate(soloStreak._id, {
+                $set: {
                     currentStreak,
                     pastStreaks,
                     active: false,

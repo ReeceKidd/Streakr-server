@@ -1,36 +1,31 @@
-import mongoose from 'mongoose';
-
-import streakoid from '.../../../src/streakoid';
-
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 import { trackMaintainedTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/trackMaintainedTeamMemberStreaks';
-import { londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
-import { getServiceConfig } from '../../../src/getServiceConfig';
-
-const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
-
-const username = 'trackmaintainedteammemberstreakusername';
-const email = 'trackMaintainedteammemberStreak@gmail.com';
+import { londonTimezone, StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
+import { streakoidTest } from '../../../tests/setup/streakoidTest';
+import { getPayingUser } from '../../setup/getPayingUser';
+import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 
 jest.setTimeout(120000);
 
 describe('trackMaintainedTeamMemberStreak', () => {
+    let streakoid: StreakoidFactory;
     let userId: string;
     const streakName = 'Daily Spanish';
 
     beforeAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
-            await mongoose.connection.dropDatabase();
-            const user = await streakoid.users.create({ username, email });
+        if (isTestEnvironment()) {
+            await connectToDatabase();
+            const user = await getPayingUser();
             userId = user._id;
+            streakoid = await streakoidTest();
         }
     });
 
     afterAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connection.dropDatabase();
-            await mongoose.disconnect();
+        if (isTestEnvironment()) {
+            await tearDownDatabase();
         }
     });
 
@@ -57,7 +52,7 @@ describe('trackMaintainedTeamMemberStreak', () => {
         expect(completeTeamMemberStreakTask._id).toBeDefined();
         expect(completeTeamMemberStreakTask.teamMemberStreakId).toEqual(teamMemberStreakId);
         expect(completeTeamMemberStreakTask.teamStreakId).toEqual(teamStreakId);
-        expect(completeTeamMemberStreakTask.userId).toEqual(userId);
+        expect(completeTeamMemberStreakTask.userId).toBeDefined();
         expect(completeTeamMemberStreakTask.taskCompleteTime).toEqual(expect.any(String));
         expect(completeTeamMemberStreakTask.taskCompleteDay).toEqual(expect.any(String));
         expect(completeTeamMemberStreakTask.createdAt).toEqual(expect.any(String));
@@ -121,7 +116,7 @@ describe('trackMaintainedTeamMemberStreak', () => {
         expect(streakTrackingEvent.streakId).toBeDefined();
         expect(streakTrackingEvent.streakType).toEqual(StreakTypes.teamMember);
         expect(streakTrackingEvent._id).toEqual(expect.any(String));
-        expect(streakTrackingEvent.userId).toEqual(userId);
+        expect(streakTrackingEvent.userId).toBeDefined();
         expect(streakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(

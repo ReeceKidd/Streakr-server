@@ -3,6 +3,14 @@ jest.mock('moment-timezone', () => ({
         toDate: jest.fn(() => new Date()),
     })),
 }));
+jest.mock('mongoose', () => ({
+    connect: jest.fn().mockResolvedValue({}),
+    Schema: jest.fn(),
+    model: jest.fn(() => ({})),
+    connection: {
+        close: jest.fn(),
+    },
+}));
 jest.mock('./trackMaintainedTeamMemberStreaks', () => ({
     __esModule: true,
     trackMaintainedTeamMemberStreaks: jest.fn().mockResolvedValue(true),
@@ -36,6 +44,7 @@ import { resetIncompleteTeamStreaks } from './resetIncompleteTeamStreaks';
 import { trackMaintainedTeamStreaks } from './trackMaintainedTeamStreaks';
 import { trackInactiveTeamStreaks } from './trackInactiveTeamStreaks';
 import streakoid from '../../streakoid';
+import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 
 describe('manageDailyStreaks', () => {
     afterEach(() => {
@@ -45,7 +54,7 @@ describe('manageDailyStreaks', () => {
     test('calls trackMaintainedTeamMemberStreaks, trackInactiveTeamMemberStreaks, resetIncompleteTeamMemberStreaks, trackMaintainedTeamStreaks, trackInactiveTeamStreaks, resetIncompleteTeamStreaks and creates a team streak DailyJob', async () => {
         expect.assertions(13);
         streakoid.dailyJobs.create = jest.fn(() => ({}));
-        streakoid.teamMemberStreaks.getAll = jest.fn(() => {
+        teamMemberStreakModel.find = jest.fn(() => {
             return [];
         });
         streakoid.teamStreaks.getAll = jest.fn(() => {
@@ -55,7 +64,7 @@ describe('manageDailyStreaks', () => {
         const timezone = 'Europe/London';
         await manageDailyTeamStreaks({ agendaJobId, timezone });
 
-        expect(streakoid.teamMemberStreaks.getAll).toBeCalledWith({
+        expect(teamMemberStreakModel.find).toBeCalledWith({
             completedToday: true,
             active: true,
             timezone,
@@ -63,13 +72,13 @@ describe('manageDailyStreaks', () => {
 
         // Import new SDK and make changes.
 
-        expect(streakoid.teamMemberStreaks.getAll).toBeCalledWith({
+        expect(teamMemberStreakModel.find).toBeCalledWith({
             completedToday: false,
             active: false,
             timezone,
         });
 
-        expect(streakoid.teamMemberStreaks.getAll).toBeCalledWith({
+        expect(teamMemberStreakModel.find).toBeCalledWith({
             completedToday: false,
             active: true,
             timezone,

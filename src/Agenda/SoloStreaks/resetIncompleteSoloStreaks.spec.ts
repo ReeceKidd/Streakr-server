@@ -2,6 +2,7 @@
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import streakoid from '../../streakoid';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
 describe('resetIncompleteSoloStreaks', () => {
     afterEach(() => {
@@ -10,7 +11,7 @@ describe('resetIncompleteSoloStreaks', () => {
 
     test('that incomplete solo streaks default current streak is reset and old streak is pushed to past streaks and lost streak activity is recorded', async () => {
         expect.assertions(2);
-        streakoid.soloStreaks.update = jest.fn().mockResolvedValue({ data: {} });
+        soloStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = '1234';
         const endDate = new Date().toString();
@@ -37,9 +38,8 @@ describe('resetIncompleteSoloStreaks', () => {
         const pastStreaks = [{ numberOfDaysInARow: 0, endDate, startDate: endDate }];
         await resetIncompleteSoloStreaks(incompleteSoloStreaks as any, endDate);
 
-        expect(streakoid.soloStreaks.update).toBeCalledWith({
-            soloStreakId: _id,
-            updateData: {
+        expect(soloStreakModel.findByIdAndUpdate).toBeCalledWith(_id, {
+            $set: {
                 currentStreak: { startDate: '', numberOfDaysInARow: 0 },
                 pastStreaks,
                 active: false,

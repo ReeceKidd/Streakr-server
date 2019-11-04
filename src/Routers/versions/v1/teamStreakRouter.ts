@@ -5,6 +5,8 @@ import { deleteTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMembe
 import { createTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/createTeamStreakMiddlewares';
 import { patchTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/patchTeamStreakMiddlewares';
 import { createTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMember/createTeamMemberMiddlewares';
+import { authenticationMiddlewares } from '../../../../src/SharedMiddleware/authenticationMiddlewares';
+import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 
 export const teamStreakId = 'teamStreakId';
 
@@ -19,6 +21,9 @@ export enum TeamStreakRouteCategories {
 teamStreaksRouter.get(`/`, ...getAllTeamStreaksMiddlewares);
 
 teamStreaksRouter.get(`/:${teamStreakId}`, ...getOneTeamStreakMiddlewares);
+
+teamStreaksRouter.use(...authenticationMiddlewares);
+teamStreaksRouter.use(hasUserPaidMembershipMiddleware);
 
 teamStreaksRouter.delete(
     `/:${teamStreakId}/${TeamStreakRouteCategories.members}/:${memberId}`,

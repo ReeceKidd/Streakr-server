@@ -1,36 +1,31 @@
-import mongoose from 'mongoose';
-
-import streakoid from '.../../../src/streakoid';
-
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
-import { londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { londonTimezone, StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 import { trackInactiveTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/trackInactiveTeamMemberStreaks';
-import { getServiceConfig } from '../../../src/getServiceConfig';
-
-const username = 'trackinactiveteammemberstreakusername';
-const email = 'track-inactive-team-member-streak@gmail.com';
-
-const { TEST_DATABASE_URI, NODE_ENV } = getServiceConfig();
+import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
+import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { getPayingUser } from '../../setup/getPayingUser';
+import { streakoidTest } from '../../../tests/setup/streakoidTest';
+import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 
 jest.setTimeout(120000);
 
 describe('trackInactiveTeamMemberStreak', () => {
+    let streakoid: StreakoidFactory;
     let userId: string;
     const streakName = 'Daily Spanish';
 
     beforeAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connect(TEST_DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
-            await mongoose.connection.dropDatabase();
-            const user = await streakoid.users.create({ username, email });
+        if (isTestEnvironment()) {
+            await connectToDatabase();
+            const user = await getPayingUser();
             userId = user._id;
+            streakoid = await streakoidTest();
         }
     });
 
     afterAll(async () => {
-        if (NODE_ENV === 'test' && TEST_DATABASE_URI.includes('TEST')) {
-            await mongoose.connection.dropDatabase();
-            await mongoose.disconnect();
+        if (isTestEnvironment()) {
+            await tearDownDatabase();
         }
     });
 
@@ -64,7 +59,7 @@ describe('trackInactiveTeamMemberStreak', () => {
         expect(teamMemberStreak.completedToday).toEqual(false);
         expect(teamMemberStreak.active).toEqual(false);
         expect(teamMemberStreak.pastStreaks).toEqual([]);
-        expect(teamMemberStreak.userId).toEqual(expect.any(String));
+        expect(teamMemberStreak.userId).toBeDefined();
         expect(teamMemberStreak.teamStreakId).toEqual(teamStreakId);
         expect(teamMemberStreak.timezone).toEqual(londonTimezone);
         expect(teamMemberStreak.createdAt).toEqual(expect.any(String));
@@ -95,7 +90,7 @@ describe('trackInactiveTeamMemberStreak', () => {
         expect(streakTrackingEvent.streakId).toBeDefined();
         expect(streakTrackingEvent.streakType).toEqual(StreakTypes.teamMember);
         expect(streakTrackingEvent._id).toEqual(expect.any(String));
-        expect(streakTrackingEvent.userId).toEqual(userId);
+        expect(streakTrackingEvent.userId).toBeDefined();
         expect(streakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(

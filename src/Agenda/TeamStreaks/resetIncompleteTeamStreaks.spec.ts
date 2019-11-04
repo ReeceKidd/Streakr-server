@@ -2,6 +2,8 @@
 import { resetIncompleteTeamStreaks } from './resetIncompleteTeamStreaks';
 import streakoid from '../../streakoid';
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { teamStreakModel } from '../../../src/Models/TeamStreak';
+import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 
 describe('resetIncompleteTeamStreaks', () => {
     afterEach(() => {
@@ -10,8 +12,8 @@ describe('resetIncompleteTeamStreaks', () => {
 
     test('incomplete team streaks current streak is reset and old streak is pushed to past streaks, lost streak activity is recorded and each teamMemberStreak is reset', async () => {
         expect.assertions(3);
-        streakoid.teamStreaks.update = jest.fn().mockResolvedValue({ data: {} });
-        streakoid.teamMemberStreaks.update = jest.fn().mockResolvedValue({ data: {} });
+        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = '1234';
         const endDate = new Date().toString();
@@ -54,18 +56,16 @@ describe('resetIncompleteTeamStreaks', () => {
         const pastStreaks = [{ numberOfDaysInARow: 0, endDate, startDate: endDate }];
         await resetIncompleteTeamStreaks(incompleteTeamStreaks as any, endDate);
 
-        expect(streakoid.teamStreaks.update).toBeCalledWith({
-            teamStreakId: _id,
-            updateData: {
+        expect(teamStreakModel.findByIdAndUpdate).toBeCalledWith(_id, {
+            $set: {
                 currentStreak: { startDate: '', numberOfDaysInARow: 0 },
                 pastStreaks,
                 active: false,
             },
         });
 
-        expect(streakoid.teamMemberStreaks.update).toBeCalledWith({
-            teamMemberStreakId: _id,
-            updateData: {
+        expect(teamMemberStreakModel.findByIdAndUpdate).toBeCalledWith(_id, {
+            $set: {
                 currentStreak: { startDate: '', numberOfDaysInARow: 0 },
                 pastStreaks,
                 active: false,
