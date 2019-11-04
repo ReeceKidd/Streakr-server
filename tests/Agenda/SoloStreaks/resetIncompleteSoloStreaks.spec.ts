@@ -34,8 +34,6 @@ describe('resetIncompleteSoloStreaks', () => {
     test('adds current streak to past streak,  resets the current streak and creats a lost streak tracking event.', async () => {
         expect.assertions(26);
 
-        console.log(`UserId: ${userId}`);
-
         const soloStreak = await streakoid.soloStreaks.create({ userId, streakName });
 
         const soloStreakId = soloStreak._id;

@@ -33,8 +33,6 @@ export const incompleteTeamMemberStreakTaskSchema = new mongoose.Schema(
     },
 );
 
-incompleteTeamMemberStreakTaskSchema.index({ userId: 1, streakId: 1 });
-
 export const incompleteTeamMemberStreakTaskModel: mongoose.Model<IncompleteTeamMemberStreakTaskModel> = mongoose.model<
     IncompleteTeamMemberStreakTaskModel
 >(Models.IncompleteTeamMemberStreakTask, incompleteTeamMemberStreakTaskSchema);

@@ -27,8 +27,6 @@ export const completeTeamStreakSchema = new mongoose.Schema(
     },
 );
 
-completeTeamStreakSchema.index({ userId: 1, streakId: 1 });
-
 export const completeTeamStreakModel: mongoose.Model<CompleteTeamStreakModel> = mongoose.model<CompleteTeamStreakModel>(
     Models.CompleteTeamStreak,
     completeTeamStreakSchema,

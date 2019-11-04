@@ -23,7 +23,9 @@ export const manageDailySoloStreaks = async ({
         .toDate()
         .toString();
 
-    await mongoose.connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false });
+    mongoose
+        .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false })
+        .catch(err => console.log(err.message));
 
     const maintainedSoloStreaks: SoloStreak[] = await soloStreakModel.find({
         completedToday: true,

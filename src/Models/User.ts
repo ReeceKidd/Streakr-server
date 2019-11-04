@@ -71,7 +71,5 @@ export const userSchema = new mongoose.Schema(
         collection: Collections.Users,
     },
 );
-userSchema.index({ username: 'text' });
-userSchema.index({ email: 'text' });
 
 export const userModel: mongoose.Model<UserModel> = mongoose.model<UserModel>(Models.User, userSchema);

@@ -14,7 +14,7 @@ import { getPayingUser } from '../../setup/getPayingUser';
 import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 
-jest.setTimeout(120000);
+jest.setTimeout(500000);
 
 describe('soloStreakDailyTracker', () => {
     let streakoid: StreakoidFactory;

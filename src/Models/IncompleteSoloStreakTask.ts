@@ -32,8 +32,6 @@ export const incompleteSoloStreakTaskSchema = new mongoose.Schema(
     },
 );
 
-incompleteSoloStreakTaskSchema.index({ userId: 1, streakId: 1 });
-
 export const incompleteSoloStreakTaskModel: mongoose.Model<IncompleteSoloStreakTaskModel> = mongoose.model<
     IncompleteSoloStreakTaskModel
 >(Models.IncompleteSoloStreakTask, incompleteSoloStreakTaskSchema);

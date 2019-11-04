@@ -37,10 +37,8 @@ describe('resetIncompleteTeamMemberStreaks', () => {
         expect.assertions(34);
 
         const creatorId = userId;
-        console.log(creatorId);
         const members = [{ memberId: userId }];
         const teamStreak = await streakoid.teamStreaks.create({ creatorId, streakName, members });
-        console.log(teamStreak);
         const teamStreakId = teamStreak._id;
 
         //Emulate team streak being active so the incomplete team member streak can reset it.
@@ -48,8 +46,6 @@ describe('resetIncompleteTeamMemberStreaks', () => {
             teamStreakId,
             updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
         });
-
-        console.log('Updated team streak');
 
         const teamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
             userId,
@@ -64,8 +60,6 @@ describe('resetIncompleteTeamMemberStreaks', () => {
             updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
         });
 
-        console.log('Updated team member streak');
-
         const incompleteTeamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
             completedToday: false,
             active: true,
@@ -74,8 +68,6 @@ describe('resetIncompleteTeamMemberStreaks', () => {
         const endDate = new Date();
 
         await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks, endDate.toString());
-
-        console.log('Reset incomplete team');
 
         const incompleteTeamStreaks = await streakoid.teamStreaks.getAll({
             completedToday: false,
