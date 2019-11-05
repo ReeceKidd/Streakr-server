@@ -9,7 +9,6 @@ export const hasUserPaidMembershipMiddleware = (request: Request, response: Resp
         if (!isPayingMember) {
             throw new CustomError(ErrorType.UserHasNotPaidMembership);
         }
-
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
