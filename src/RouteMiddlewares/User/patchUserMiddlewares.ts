@@ -58,8 +58,16 @@ export const formatUpdatedUserMiddleware = (request: Request, response: Response
     try {
         const user: User = response.locals.updatedUser;
         response.locals.updatedUser = {
-            ...user,
-            email: undefined,
+            _id: user._id,
+            username: user.username,
+            isPayingMember: user.membershipInformation.isPayingMember,
+            userType: user.userType,
+            timezone: user.timezone,
+            friends: user.friends,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            profileImages: user.profileImages,
+            endpointArn: user.endpointArn,
         };
         next();
     } catch (err) {

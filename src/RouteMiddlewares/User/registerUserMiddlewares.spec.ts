@@ -327,9 +327,9 @@ describe(`saveUserToDatabaseMiddleware`, () => {
 
 describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
-        expect.assertions(3);
+        expect.assertions(2);
         const request: any = {};
-        const user = {
+        const savedUser = {
             _id: '_id',
             username: 'username',
             membershipInformation: {
@@ -349,14 +349,14 @@ describe('formatUserMiddleware', () => {
                 customer: 'abc',
                 subscription: 'sub_1',
             },
+            endpointArn: 'endpointArn',
         };
-        const response: any = { locals: { user } };
+        const response: any = { locals: { savedUser } };
         const next = jest.fn();
 
         formatUserMiddleware(request, response, next);
 
         expect(next).toBeCalled();
-        expect(response.locals.user.isPayingMember).toEqual(true);
         expect(Object.keys(response.locals.user).sort()).toEqual(
             [
                 '_id',
@@ -368,6 +368,7 @@ describe('formatUserMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'profileImages',
+                'endpointArn',
             ].sort(),
         );
     });
@@ -385,19 +386,17 @@ describe('formatUserMiddleware', () => {
 });
 
 describe(`sendFormattedUserMiddleware`, () => {
-    const ERROR_MESSAGE = 'error';
-
     test('sends savedUser in request', () => {
         expect.assertions(3);
         const mockUsername = 'abc';
         const mockEmail = 'email@gmail.com';
-        const savedUser = {
+        const user = {
             username: mockUsername,
             email: mockEmail,
         };
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
-        const response: any = { locals: { savedUser }, status };
+        const response: any = { locals: { user }, status };
         const request: any = {};
         const next = jest.fn();
 
@@ -405,22 +404,13 @@ describe(`sendFormattedUserMiddleware`, () => {
 
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.created);
-        expect(send).toBeCalledWith(savedUser);
+        expect(send).toBeCalledWith(user);
     });
 
     test('calls next with SendFormattedUserMiddleware error on middleware failure', () => {
         expect.assertions(1);
-        const mockUsername = 'abc';
-        const mockEmail = 'email@gmail.com';
-        const savedUser = {
-            username: mockUsername,
-            email: mockEmail,
-        };
-        const send = jest.fn(() => {
-            throw new Error(ERROR_MESSAGE);
-        });
-        const status = jest.fn(() => ({ send }));
-        const response: any = { locals: { savedUser }, status };
+
+        const response: any = {};
         const request: any = {};
         const next = jest.fn();
 

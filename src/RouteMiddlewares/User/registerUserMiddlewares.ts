@@ -123,8 +123,8 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
 
 export const sendFormattedUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { formatUserMiddleware } = response.locals;
-        response.status(ResponseCodes.created).send(formatUserMiddleware);
+        const { user } = response.locals;
+        response.status(ResponseCodes.created).send(user);
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedUserMiddleware, err));
     }

@@ -10,6 +10,7 @@ import {
 } from './patchUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe('userParamsValidationMiddleware', () => {
     test('sends correct error response when userId is not defined', () => {
@@ -147,21 +148,47 @@ describe('formatUpdatedUserMiddleware', () => {
     test('removes email from updatedUser and removes updated user email', () => {
         expect.assertions(2);
         const request: any = {};
-        const _id = '_id';
-        const username = 'username';
-        const email = 'email';
         const updatedUser = {
-            _id,
-            username,
-            email,
+            _id: '_id',
+            username: 'username',
+            membershipInformation: {
+                isPayingMember: true,
+                pastMemberships: [],
+            },
+            email: 'test@test.com',
+            createdAt: 'Jan 1st',
+            updatedAt: 'Jan 1st',
+            timezone: 'Europe/London',
+            userType: UserTypes.basic,
+            friends: [],
+            profileImages: {
+                originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+            },
+            stripe: {
+                customer: 'abc',
+                subscription: 'sub_1',
+            },
         };
         const response: any = { locals: { updatedUser } };
         const next = jest.fn();
 
         formatUpdatedUserMiddleware(request, response, next);
 
+        expect(Object.keys(response.locals.updatedUser).sort()).toEqual(
+            [
+                '_id',
+                'username',
+                'isPayingMember',
+                'userType',
+                'timezone',
+                'friends',
+                'createdAt',
+                'updatedAt',
+                'profileImages',
+                'endpointArn',
+            ].sort(),
+        );
         expect(next).toBeCalled();
-        expect(response.locals.updatedUser.email).toBeUndefined();
     });
 
     test('calls next with FormatUpdatedUserMiddleware error on middleware failure', () => {

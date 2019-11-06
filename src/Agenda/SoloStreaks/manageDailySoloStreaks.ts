@@ -56,8 +56,6 @@ export const manageDailySoloStreaks = async ({
         .toDate()
         .toString();
 
-    mongoose.connection.close();
-
     return streakoid.dailyJobs.create({
         agendaJobId: String(agendaJobId),
         jobName: AgendaJobNames.soloStreakDailyTracker,

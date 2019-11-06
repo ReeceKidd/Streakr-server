@@ -69,6 +69,7 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,
                 profileImages: user.profileImages,
+                endpointArn: user.endpointArn,
             };
             return formattedUser;
         });
