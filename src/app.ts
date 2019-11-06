@@ -24,9 +24,11 @@ app.get(`/health`, (request, response) => {
     return response.status(200).send({ message: 'success' });
 });
 
-mongoose
-    .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true })
-    .catch(err => console.log(err.message));
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
+mongoose.connect(DATABASE_URI).catch(err => console.log(err.message));
 
 agenda
     .start()

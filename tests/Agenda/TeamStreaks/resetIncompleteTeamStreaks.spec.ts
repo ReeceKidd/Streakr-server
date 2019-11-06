@@ -5,7 +5,7 @@ import { resetIncompleteTeamStreaks } from '../../../src/Agenda/TeamStreaks/rese
 import { originalImageUrl } from '../../../src/Models/User';
 import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
-import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
@@ -19,7 +19,7 @@ describe('resetIncompleteTeamStreaks', () => {
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
-            await connectToDatabase();
+            await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
             streakoid = await streakoidTest();

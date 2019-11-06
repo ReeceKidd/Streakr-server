@@ -6,6 +6,7 @@ import { userModel, UserModel } from '../../Models/User';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { User, FormattedUser } from '@streakoid/streakoid-sdk/lib';
 
 const registerValidationSchema = {
     username: Joi.string().required(),
@@ -98,10 +99,32 @@ export const getSaveUserToDatabaseMiddleware = (user: Model<UserModel>) => async
 
 export const saveUserToDatabaseMiddleware = getSaveUserToDatabaseMiddleware(userModel);
 
+export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const user: User = response.locals.savedUser;
+        const formattedUser: FormattedUser = {
+            _id: user._id,
+            username: user.username,
+            isPayingMember: user.membershipInformation.isPayingMember,
+            userType: user.userType,
+            timezone: user.timezone,
+            friends: user.friends,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            profileImages: user.profileImages,
+            endpointArn: user.endpointArn,
+        };
+        response.locals.user = formattedUser;
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.RegisterUserFormatUserMiddleware, err));
+    }
+};
+
 export const sendFormattedUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { savedUser } = response.locals;
-        response.status(ResponseCodes.created).send(savedUser);
+        const { formatUserMiddleware } = response.locals;
+        response.status(ResponseCodes.created).send(formatUserMiddleware);
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedUserMiddleware, err));
     }
@@ -113,5 +136,6 @@ export const registerUserMiddlewares = [
     setUsernameToLowercaseMiddleware,
     doesUsernameExistMiddleware,
     saveUserToDatabaseMiddleware,
+    formatUserMiddleware,
     sendFormattedUserMiddleware,
 ];

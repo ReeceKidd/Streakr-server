@@ -11,7 +11,7 @@ import { dailyJobModel } from '../../../src/Models/DailyJob';
 import { originalImageUrl } from '.../../../src/Models/User';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
-import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { setupDatabase } from '../../setup/setupDatabase';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { getFriend } from '../../../tests/setup/getFriend';
@@ -25,7 +25,7 @@ describe('teamStreakDailyTracker', () => {
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
-            await connectToDatabase();
+            await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
             streakoid = await streakoidTest();

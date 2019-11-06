@@ -11,7 +11,7 @@ import { completeSoloStreakTaskModel } from '../../../src/Models/CompleteSoloStr
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { getPayingUser } from '../../setup/getPayingUser';
-import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { setupDatabase } from '../../setup/setupDatabase';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 
 jest.setTimeout(500000);
@@ -22,7 +22,7 @@ describe('soloStreakDailyTracker', () => {
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
-            await connectToDatabase();
+            await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
             streakoid = await streakoidTest();

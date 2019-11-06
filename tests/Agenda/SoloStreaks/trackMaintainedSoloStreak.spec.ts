@@ -4,7 +4,7 @@ import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
 import { trackMaintainedSoloStreaks } from '.../../../src/Agenda/SoloStreaks/trackMaintainedSoloStreaks';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
-import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { setupDatabase } from '../../setup/setupDatabase';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
@@ -19,7 +19,7 @@ describe('trackMaintainedSoloStreak', () => {
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
-            await connectToDatabase();
+            await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
             streakoid = await streakoidTest();

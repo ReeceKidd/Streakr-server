@@ -11,9 +11,11 @@ import {
     sendFormattedUserMiddleware,
     setUsernameToLowercaseMiddleware,
     getSaveUserToDatabaseMiddleware,
+    formatUserMiddleware,
 } from './registerUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe(`userRegistrationValidationMiddlware`, () => {
     const mockUsername = 'mockUsername';
@@ -323,6 +325,65 @@ describe(`saveUserToDatabaseMiddleware`, () => {
     });
 });
 
+describe('formatUserMiddleware', () => {
+    test('populates response.locals.user with a formattedUser', () => {
+        expect.assertions(3);
+        const request: any = {};
+        const user = {
+            _id: '_id',
+            username: 'username',
+            membershipInformation: {
+                isPayingMember: true,
+                pastMemberships: [],
+            },
+            email: 'test@test.com',
+            createdAt: 'Jan 1st',
+            updatedAt: 'Jan 1st',
+            timezone: 'Europe/London',
+            userType: UserTypes.basic,
+            friends: [],
+            profileImages: {
+                originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+            },
+            stripe: {
+                customer: 'abc',
+                subscription: 'sub_1',
+            },
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        formatUserMiddleware(request, response, next);
+
+        expect(next).toBeCalled();
+        expect(response.locals.user.isPayingMember).toEqual(true);
+        expect(Object.keys(response.locals.user).sort()).toEqual(
+            [
+                '_id',
+                'username',
+                'isPayingMember',
+                'userType',
+                'timezone',
+                'friends',
+                'createdAt',
+                'updatedAt',
+                'profileImages',
+            ].sort(),
+        );
+    });
+
+    test('calls next with RegisterUserFormatUserMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        formatUserMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.RegisterUserFormatUserMiddleware, expect.any(Error)));
+    });
+});
+
 describe(`sendFormattedUserMiddleware`, () => {
     const ERROR_MESSAGE = 'error';
 
@@ -371,14 +432,15 @@ describe(`sendFormattedUserMiddleware`, () => {
 
 describe(`registerUserMiddlewares`, () => {
     test('are defined in the correct order', () => {
-        expect.assertions(7);
+        expect.assertions(8);
 
-        expect(registerUserMiddlewares.length).toEqual(6);
+        expect(registerUserMiddlewares.length).toEqual(7);
         expect(registerUserMiddlewares[0]).toBe(userRegistrationValidationMiddleware);
         expect(registerUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware);
         expect(registerUserMiddlewares[2]).toBe(setUsernameToLowercaseMiddleware);
         expect(registerUserMiddlewares[3]).toBe(doesUsernameExistMiddleware);
         expect(registerUserMiddlewares[4]).toBe(saveUserToDatabaseMiddleware);
-        expect(registerUserMiddlewares[5]).toBe(sendFormattedUserMiddleware);
+        expect(registerUserMiddlewares[5]).toBe(formatUserMiddleware);
+        expect(registerUserMiddlewares[6]).toBe(sendFormattedUserMiddleware);
     });
 });

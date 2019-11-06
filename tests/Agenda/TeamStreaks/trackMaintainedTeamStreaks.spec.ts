@@ -3,7 +3,7 @@ import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { getPayingUser } from '../../setup/getPayingUser';
-import { connectToDatabase } from '../../../tests/setup/connectToDatabase';
+import { setupDatabase } from '../../setup/setupDatabase';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import { trackMaintainedTeamStreaks } from '../../../src/Agenda/TeamStreaks/trackMaintainedTeamStreaks';
 import { originalImageUrl } from '../../../src/Models/User';
@@ -17,7 +17,7 @@ describe('trackMaintainedTeamStreak', () => {
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
-            await connectToDatabase();
+            await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
             streakoid = await streakoidTest();
