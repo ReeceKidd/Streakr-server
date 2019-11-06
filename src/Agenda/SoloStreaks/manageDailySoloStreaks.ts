@@ -1,5 +1,4 @@
 import moment from 'moment-timezone';
-import mongoose from 'mongoose';
 import { AgendaJobNames, StreakTypes, DailyJob, SoloStreak } from '@streakoid/streakoid-sdk/lib';
 
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
@@ -7,9 +6,6 @@ import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import streakoid from '../../streakoid';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
-import { getServiceConfig } from '../../../src/getServiceConfig';
-
-const { DATABASE_URI } = getServiceConfig();
 
 export const manageDailySoloStreaks = async ({
     agendaJobId,
@@ -22,10 +18,6 @@ export const manageDailySoloStreaks = async ({
         .tz(timezone)
         .toDate()
         .toString();
-
-    mongoose
-        .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false })
-        .catch(err => console.log(err.message));
 
     const maintainedSoloStreaks: SoloStreak[] = await soloStreakModel.find({
         completedToday: true,

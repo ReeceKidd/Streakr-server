@@ -1,5 +1,4 @@
 import moment from 'moment-timezone';
-import mongoose from 'mongoose';
 import { DailyJob, AgendaJobNames, StreakTypes, TeamMemberStreak } from '@streakoid/streakoid-sdk/lib';
 
 import streakoid from '../../streakoid';
@@ -9,10 +8,7 @@ import { trackMaintainedTeamMemberStreaks } from './trackMaintainedTeamMemberStr
 import { trackInactiveTeamStreaks } from './trackInactiveTeamStreaks';
 import { resetIncompleteTeamStreaks } from './resetIncompleteTeamStreaks';
 import { trackMaintainedTeamStreaks } from './trackMaintainedTeamStreaks';
-import { getServiceConfig } from '../../../src/getServiceConfig';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
-
-const { DATABASE_URI } = getServiceConfig();
 
 export const manageDailyTeamStreaks = async ({
     agendaJobId,
@@ -25,10 +21,6 @@ export const manageDailyTeamStreaks = async ({
         .tz(timezone)
         .toDate()
         .toString();
-
-    mongoose
-        .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false })
-        .catch(err => console.log(err.message));
 
     const incompleteTeamMemberStreaks: TeamMemberStreak[] = await teamMemberStreakModel.find({
         completedToday: false,
