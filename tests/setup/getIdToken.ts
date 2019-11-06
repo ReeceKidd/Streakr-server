@@ -3,7 +3,6 @@
 // @ts-ignore
 import * as fetch from 'node-fetch';
 (global as any).fetch = fetch;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (global as any).navigator = {
     userAgent: 'NodeJS',
 };
