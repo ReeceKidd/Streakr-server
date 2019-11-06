@@ -6,6 +6,7 @@ const connectToDatabase = async (): Promise<void> => {
     await mongoose.connect(DATABASE_URI, {
         useNewUrlParser: true,
         useFindAndModify: false,
+        useCreateIndex: true,
     });
     return mongoose.connection.dropDatabase();
 };

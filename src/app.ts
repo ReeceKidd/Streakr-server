@@ -25,7 +25,7 @@ app.get(`/health`, (request, response) => {
 });
 
 mongoose
-    .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false })
+    .connect(DATABASE_URI, { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true })
     .catch(err => console.log(err.message));
 
 agenda
