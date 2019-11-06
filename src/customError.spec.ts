@@ -772,6 +772,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to RegisterDeviceForPushNotificationUserNotFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RegisterDeviceForPushNotificationUserNotFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-73`);
+        expect(message).toBe('User does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -3732,6 +3743,72 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-258`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RegisterDeviceForPushNotificationRetreiveUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RegisterDeviceForPushNotificationRetreiveUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-259`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreatePlatformEndpointMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreatePlatformEndpointMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-260`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendSuccessfullyRegisteredDevice`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendSuccessfullyRegisteredDevice);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-261`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateTopicSubscriptionMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateTopicSubscriptionMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-262`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to UpdateUserPushNotificationInformationMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.UpdateUserPushNotificationInformationMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-263`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendRequesteeAFriendRequestNotification`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendRequesteeAFriendRequestNotification);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-264`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

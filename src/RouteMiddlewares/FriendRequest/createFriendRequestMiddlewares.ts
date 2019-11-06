@@ -1,3 +1,4 @@
+import aws from 'aws-sdk';
 import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 import { Model } from 'mongoose';
@@ -8,6 +9,17 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { UserModel, userModel } from '../../Models/User';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
+import { getServiceConfig } from '../../../src/getServiceConfig';
+
+const { AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID } = getServiceConfig();
+
+aws.config.update({
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    region: 'eu-west-1',
+});
+
+const sns = new aws.SNS();
 
 const createFriendRequestBodyValidationSchema = {
     requesterId: Joi.string().required(),
@@ -68,7 +80,7 @@ export const getRetreiveRequesteeMiddleware = (userModel: Model<UserModel>) => a
 
 export const retreiveRequesteeMiddleware = getRetreiveRequesteeMiddleware(userModel);
 
-export const getHasRequesterHasAlreadySentInviteMiddleware = (friendRequestModel: Model<FriendRequestModel>) => async (
+export const getHasRequesterAlreadySentInviteMiddleware = (friendRequestModel: Model<FriendRequestModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -90,9 +102,7 @@ export const getHasRequesterHasAlreadySentInviteMiddleware = (friendRequestModel
     }
 };
 
-export const hasRequesterAlreadySentInviteMiddleware = getHasRequesterHasAlreadySentInviteMiddleware(
-    friendRequestModel,
-);
+export const hasRequesterAlreadySentInviteMiddleware = getHasRequesterAlreadySentInviteMiddleware(friendRequestModel);
 
 export const requesteeIsAlreadyAFriendMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -131,19 +141,18 @@ export const getSaveFriendRequestToDatabaseMiddleware = (friendRequest: Model<Fr
 
 export const saveFriendRequestToDatabaseMiddleware = getSaveFriendRequestToDatabaseMiddleware(friendRequestModel);
 
-export const getPopulateFriendRequestMiddleware = (userModel: Model<UserModel>) => async (
+export const definePopulatedFriendRequestMiddleware = (
     request: Request,
     response: Response,
     next: NextFunction,
-): Promise<void> => {
+): void => {
     try {
+        const { requestee, requester } = response.locals;
         const friendRequest: FriendRequest = response.locals.friendRequest.toObject();
-        const requestee = await userModel.findById(friendRequest.requesteeId).lean();
         const formattedRequestee = {
             _id: requestee._id,
             username: requestee.username,
         };
-        const requester = await userModel.findById(friendRequest.requesterId).lean();
         const formattedRequester = {
             _id: requester._id,
             username: requester.username,
@@ -162,7 +171,29 @@ export const getPopulateFriendRequestMiddleware = (userModel: Model<UserModel>) 
     }
 };
 
-export const populateFriendRequestMiddleware = getPopulateFriendRequestMiddleware(userModel);
+export const getSendRequesteeAFriendRequestNotificationMiddleware = (snsClient: typeof sns) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const requester: UserModel = response.locals.requester;
+        const requestee: UserModel = response.locals.requestee;
+        const { endpointArn } = requestee;
+        if (endpointArn) {
+            await snsClient
+                .publish({ TargetArn: endpointArn, Message: `${requester.username} sent your a friend request` })
+                .promise();
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.SendRequesteeAFriendRequestNotification, err));
+    }
+};
+
+export const sendRequesteeAFriendRequestNotificationMiddleware = getSendRequesteeAFriendRequestNotificationMiddleware(
+    sns,
+);
 
 export const sendPopulatedFriendRequestMiddleware = (
     request: Request,
@@ -184,6 +215,7 @@ export const createFriendRequestMiddlewares = [
     hasRequesterAlreadySentInviteMiddleware,
     requesteeIsAlreadyAFriendMiddleware,
     saveFriendRequestToDatabaseMiddleware,
-    populateFriendRequestMiddleware,
+    definePopulatedFriendRequestMiddleware,
+    sendRequesteeAFriendRequestNotificationMiddleware,
     sendPopulatedFriendRequestMiddleware,
 ];

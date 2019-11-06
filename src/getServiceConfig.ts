@@ -22,6 +22,8 @@ export interface AppConfigHttp {
     COGNITO_EMAIL: string;
     COGNITO_PASSWORD: string;
     PROFILE_PICTURES_BUCKET: string;
+    SNS_PLATFORM_APPLICATION_ARN: string;
+    SNS_TOPIC_ARN: string;
 }
 
 export type AppConfig = AppConfigHttp;
@@ -49,6 +51,8 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         COGNITO_EMAIL,
         COGNITO_PASSWORD,
         PROFILE_PICTURES_BUCKET,
+        SNS_PLATFORM_APPLICATION_ARN,
+        SNS_TOPIC_ARN,
     } = environment;
 
     if (!NODE_ENV) throw new Error('NODE_ENV is not provided.');
@@ -125,6 +129,14 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         throw new Error('PROFILE_PICTURES_BUCKET is not provided.');
     }
 
+    if (!SNS_PLATFORM_APPLICATION_ARN) {
+        throw new Error('SNS_PLATFORM_APPLICATION_ARN is not provided.');
+    }
+
+    if (!SNS_TOPIC_ARN) {
+        throw new Error('SNS_TOPIC_ARN is not provided.');
+    }
+
     return {
         NODE_ENV,
         PORT,
@@ -147,5 +159,7 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         COGNITO_EMAIL,
         COGNITO_PASSWORD,
         PROFILE_PICTURES_BUCKET,
+        SNS_PLATFORM_APPLICATION_ARN,
+        SNS_TOPIC_ARN,
     } as AppConfigHttp;
 };

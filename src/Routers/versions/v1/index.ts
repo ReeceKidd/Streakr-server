@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { RouterCategories } from '@streakoid/streakoid-sdk/lib';
 
 import { soloStreaksRouter } from './soloStreaksRouter';
 import { usersRouter } from './usersRouter';
@@ -16,11 +17,11 @@ import { incompleteTeamMemberStreakTasksRouter } from './incompleteTeamMemberStr
 import { incompleteTeamStreaksRouter } from './incompleteTeamStreaksRouter';
 import { dailyJobsRouter } from './dailyJobsRouter';
 import { completeTeamStreaksRouter } from './completeTeamStreaksRouter';
-import { RouterCategories } from '@streakoid/streakoid-sdk/lib';
 import { registerUserMiddlewares } from '../../../RouteMiddlewares/User/registerUserMiddlewares';
 import { emailRouter } from './emailRouter';
 import { profilePictureRouter } from './profilePicturesRouter';
 import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
+import { registerDeviceForNotificationsRouter } from './registerDeviceForNotificationsRouter';
 
 const v1Router = Router();
 
@@ -32,6 +33,7 @@ v1Router.use(`/${RouterCategories.emails}`, emailRouter);
 v1Router.use(`/${RouterCategories.dailyJobs}`, dailyJobsRouter);
 v1Router.use(`/${RouterCategories.streakTrackingEvents}`, streakTrackingEventRouter);
 v1Router.use(`/${RouterCategories.users}`, usersRouter);
+v1Router.use(`/${RouterCategories.registerDeviceForNotifications}`, registerDeviceForNotificationsRouter);
 
 // Partially authenticated routes.
 v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);

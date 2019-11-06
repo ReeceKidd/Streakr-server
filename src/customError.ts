@@ -345,6 +345,13 @@ export enum ErrorType {
     IncompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist,
     HasUserPaidMembershipMiddleware,
     UserHasNotPaidMembership,
+    RegisterDeviceForPushNotificationRetreiveUserMiddleware,
+    CreatePlatformEndpointMiddleware,
+    SendSuccessfullyRegisteredDevice,
+    RegisterDeviceForPushNotificationUserNotFound,
+    CreateTopicSubscriptionMiddleware,
+    UpdateUserPushNotificationInformationMiddleware,
+    SendRequesteeAFriendRequestNotification,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -919,6 +926,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-72`,
                     message: 'Team member streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RegisterDeviceForPushNotificationUserNotFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-73`,
+                    message: 'User does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -2824,6 +2839,48 @@ export class CustomError extends Error {
             case ErrorType.HasUserPaidMembershipMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-258`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RegisterDeviceForPushNotificationRetreiveUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-259`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreatePlatformEndpointMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-260`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendSuccessfullyRegisteredDevice:
+                return {
+                    code: `${ResponseCodes.warning}-261`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateTopicSubscriptionMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-262`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.UpdateUserPushNotificationInformationMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-263`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendRequesteeAFriendRequestNotification:
+                return {
+                    code: `${ResponseCodes.warning}-264`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
