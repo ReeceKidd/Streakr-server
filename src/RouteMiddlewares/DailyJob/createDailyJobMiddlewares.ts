@@ -11,7 +11,7 @@ import { AgendaJobNames, StreakTypes } from '@streakoid/streakoid-sdk/lib';
 const createDailyJobBodyValidationSchema = {
     agendaJobId: Joi.string().required(),
     jobName: Joi.string()
-        .valid(Object.keys(AgendaJobNames))
+        .valid([AgendaJobNames.soloStreakDailyTracker, AgendaJobNames.teamStreakDailyTracker])
         .required(),
     timezone: Joi.string().required(),
     localisedJobCompleteTime: Joi.string().required(),
