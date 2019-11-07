@@ -45,7 +45,7 @@ mongoose.set('useCreateIndex', true);
 // Scripts used to initialise the daily streak complete checks.
 //initialiseTeamStreakTimezoneCheckerJobs();
 //initialiseSoloStreakTimezoneCheckerJobs();
-initialiseAdjustForDaylightSavingsJobs();
+//initialiseAdjustForDaylightSavingsJobs();
 
 app.use(`/${ApiVersions.v1}`, v1Router);
 
