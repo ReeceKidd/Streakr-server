@@ -10,7 +10,6 @@ import v1Router from './Routers/versions/v1';
 import { getServiceConfig } from './getServiceConfig';
 import { errorHandler } from './errorHandler';
 import { agenda } from './Agenda/agenda';
-import { initialiseAdjustForDaylightSavingsJobs } from './scripts/initialiseAdjustForDaylightSavingsTimeJobs';
 
 dotenv.config();
 const { DATABASE_URI } = getServiceConfig();
