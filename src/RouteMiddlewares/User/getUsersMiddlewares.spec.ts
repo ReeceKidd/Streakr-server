@@ -281,7 +281,6 @@ describe('formatUsersMiddleware', () => {
                 customer: 'abc',
                 subscription: 'sub_1',
             },
-            endpointArn: 'endpointArn',
         };
         const users = [user];
         const response: any = { locals: { users } };
@@ -302,7 +301,6 @@ describe('formatUsersMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'profileImages',
-                'endpointArn',
             ].sort(),
         );
     });

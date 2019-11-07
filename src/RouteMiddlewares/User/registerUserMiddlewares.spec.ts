@@ -349,7 +349,6 @@ describe('formatUserMiddleware', () => {
                 customer: 'abc',
                 subscription: 'sub_1',
             },
-            endpointArn: 'endpointArn',
         };
         const response: any = { locals: { savedUser } };
         const next = jest.fn();
@@ -368,7 +367,6 @@ describe('formatUserMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'profileImages',
-                'endpointArn',
             ].sort(),
         );
     });

@@ -700,7 +700,6 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                     customer: 'abc',
                     subscription: 'sub_1',
                 },
-                endpointArn: 'endpointArn',
             };
             const response: any = { locals: { user } };
             const next = jest.fn();
@@ -720,7 +719,6 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                     'createdAt',
                     'updatedAt',
                     'profileImages',
-                    'endpointArn',
                 ].sort(),
             );
         });

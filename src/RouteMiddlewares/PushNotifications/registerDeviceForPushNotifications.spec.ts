@@ -2,27 +2,23 @@
 import {
     registerDeviceForPushNotificationsValidationMiddleware,
     retreiveUserMiddleware,
-    createTopicSubscriptionMiddleware,
     updateUserPushNotificationInformationMiddleware,
     sendSuccessfullyRegisteredDevice,
     getRetreiveUserMiddleware,
-    getCreatePlaformEndpointMiddleware,
-    getCreateTopicSubscriptionMiddleware,
     getUpdateUserPushNotificationInformationMiddleware,
     registerDeviceForPushNotificationsMiddlewares,
-    createPlaformEndpointMiddleware,
 } from './registerDeviceForPushNotifications';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError } from '../../../src/customError';
 import { ErrorType } from '../../../src/customError';
 
 describe(`registerDeviceForPushNotificationsValidationMiddleware`, () => {
-    const token = 'token';
+    const pushNotificationToken = 'pushNotificationToken';
     const userId = 'userId';
     const platform = 'android';
 
     const body = {
-        token,
+        pushNotificationToken,
         userId,
         platform,
     };
@@ -44,12 +40,12 @@ describe(`registerDeviceForPushNotificationsValidationMiddleware`, () => {
         expect(next).toBeCalled();
     });
 
-    test('sends token is missing error', () => {
+    test('sends pushNotificationToken is missing error', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { ...body, token: undefined },
+            body: { ...body, pushNotificationToken: undefined },
         };
         const response: any = {
             status,
@@ -60,7 +56,7 @@ describe(`registerDeviceForPushNotificationsValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "token" fails because ["token" is required]',
+            message: 'child "pushNotificationToken" fails because ["pushNotificationToken" is required]',
         });
         expect(next).not.toBeCalled();
     });
@@ -164,100 +160,21 @@ describe('retreiveUserMiddleware', () => {
     });
 });
 
-describe('createPlatformEndpointMiddleware', () => {
-    test('creates platform endpoint and sets response.locals.endpointArn', async () => {
-        expect.assertions(4);
-        const promise = jest.fn().mockResolvedValue({ EndpointArn: true });
-        const createPlatformEndpoint = jest.fn(() => ({ promise }));
-        const sns = {
-            createPlatformEndpoint,
-        };
-        const token = 'token';
-        const userId = 'userId';
-        const request: any = { body: { token, userId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getCreatePlaformEndpointMiddleware(sns as any);
-
-        await middleware(request, response, next);
-
-        expect(createPlatformEndpoint).toBeCalledWith({
-            Token: token,
-            PlatformApplicationArn: 'arn:aws:sns:eu-west-1:932661412733:app/GCM/Firebase',
-            CustomUserData: userId,
-        });
-        expect(promise).toBeCalledWith();
-        expect(response.locals.endpointArn).toBeDefined();
-        expect(next).toBeCalledWith();
-    });
-
-    test('throws CreatePlatformEndpointMiddleware error on middleware failure', async () => {
-        expect.assertions(1);
-        const request: any = {};
-        const response: any = {};
-        const next = jest.fn();
-        const middleware = getCreatePlaformEndpointMiddleware({} as any);
-
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith(new CustomError(ErrorType.CreatePlatformEndpointMiddleware, expect.any(Error)));
-    });
-});
-
-describe('createTopicSubscriptionMiddleware', () => {
-    test('subscribes endpoint to topic and calls next()', async () => {
-        expect.assertions(3);
-        const promise = jest.fn().mockResolvedValue(true);
-        const subscribe = jest.fn(() => ({ promise }));
-        const sns = {
-            subscribe,
-        };
-        const endpointArn = 'endpointArn';
-        const request: any = {};
-        const response: any = { locals: { endpointArn } };
-        const next = jest.fn();
-        const middleware = getCreateTopicSubscriptionMiddleware(sns as any);
-
-        await middleware(request, response, next);
-
-        expect(subscribe).toBeCalledWith({
-            TopicArn: 'arn:aws:sns:eu-west-1:932661412733:Streakoid',
-            Endpoint: endpointArn,
-            Protocol: 'application',
-        });
-        expect(promise).toBeCalledWith();
-        expect(next).toBeCalledWith();
-    });
-
-    test('throws CreateTopicSubscriptionMiddleware error on middleware failure', async () => {
-        expect.assertions(1);
-        const request: any = {};
-        const response: any = {};
-        const next = jest.fn();
-        const middleware = getCreatePlaformEndpointMiddleware({} as any);
-
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith(new CustomError(ErrorType.CreateTopicSubscriptionMiddleware, expect.any(Error)));
-    });
-});
-
 describe('updateUserPushNotificationInformationMiddleware', () => {
-    test('updtes users pushNotificationToken and endpointArn then calls next()', async () => {
+    test('updtes users pushNotificationToken then calls next()', async () => {
         expect.assertions(2);
         const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
         const userModel = { findByIdAndUpdate };
         const userId = 'abcdefg';
-        const token = 'token';
-        const endpointArn = 'endpointArn';
-        const request: any = { body: { userId, token } };
-        const response: any = { locals: { endpointArn } };
+        const pushNotificationToken = 'pushNotificationToken';
+        const request: any = { body: { userId, pushNotificationToken } };
+        const response: any = { locals: {} };
         const next = jest.fn();
         const middleware = getUpdateUserPushNotificationInformationMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
-        expect(findByIdAndUpdate).toBeCalledWith(userId, { pushNotificationToken: token, endpointArn });
+        expect(findByIdAndUpdate).toBeCalledWith(userId, { pushNotificationToken: pushNotificationToken });
         expect(next).toBeCalledWith();
     });
 
@@ -278,12 +195,10 @@ describe('updateUserPushNotificationInformationMiddleware', () => {
 });
 
 describe(`sendSuccessfullyRegisteredDevice`, () => {
-    test('responds with status 200 with the endpointArn', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const endpointArn = 'endpointArn';
-        const response: any = { locals: { endpointArn }, status };
+    test('responds with status 200', () => {
+        expect.assertions(2);
+        const status = jest.fn();
+        const response: any = { locals: {}, status };
         const request: any = {};
         const next = jest.fn();
 
@@ -291,7 +206,6 @@ describe(`sendSuccessfullyRegisteredDevice`, () => {
 
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.success);
-        expect(send).toBeCalledWith(endpointArn);
     });
 
     test('calls next with SendSuccessfullyRegisteredDevice error on middleware failure', () => {
@@ -310,16 +224,14 @@ describe(`sendSuccessfullyRegisteredDevice`, () => {
 
 describe(`registerDeviceForPushNotificationsMiddlewares`, () => {
     test('middlewares are defined in the correct order', async () => {
-        expect.assertions(7);
+        expect.assertions(5);
 
-        expect(registerDeviceForPushNotificationsMiddlewares.length).toEqual(6);
+        expect(registerDeviceForPushNotificationsMiddlewares.length).toEqual(4);
         expect(registerDeviceForPushNotificationsMiddlewares[0]).toBe(
             registerDeviceForPushNotificationsValidationMiddleware,
         );
         expect(registerDeviceForPushNotificationsMiddlewares[1]).toBe(retreiveUserMiddleware);
-        expect(registerDeviceForPushNotificationsMiddlewares[2]).toBe(createPlaformEndpointMiddleware);
-        expect(registerDeviceForPushNotificationsMiddlewares[3]).toBe(createTopicSubscriptionMiddleware);
-        expect(registerDeviceForPushNotificationsMiddlewares[4]).toBe(updateUserPushNotificationInformationMiddleware);
-        expect(registerDeviceForPushNotificationsMiddlewares[5]).toBe(sendSuccessfullyRegisteredDevice);
+        expect(registerDeviceForPushNotificationsMiddlewares[2]).toBe(updateUserPushNotificationInformationMiddleware);
+        expect(registerDeviceForPushNotificationsMiddlewares[3]).toBe(sendSuccessfullyRegisteredDevice);
     });
 });

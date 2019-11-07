@@ -416,18 +416,17 @@ describe('populateFriendRequestMiddleware', () => {
 });
 
 describe(`SendRequesteeAFriendRequestNotification`, () => {
-    test('sends friend request notification to requestee', async () => {
-        expect.assertions(3);
+    test('sends friend request notification to requestee if requestee has a pushNotificationToken', async () => {
+        expect.assertions(2);
 
         const requester = {
             username: 'requester',
         };
         const requestee = {
-            endpointArn: 'endpointArn',
+            pushNotificationToken: 'pushNotificationToken',
         };
-        const promise = jest.fn().mockResolvedValue(true);
-        const publish = jest.fn(() => ({ promise }));
-        const snsClient: any = { publish };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+        const expo: any = { sendPushNotificationsAsync };
         const request: any = {};
         const response: any = {
             locals: {
@@ -437,25 +436,27 @@ describe(`SendRequesteeAFriendRequestNotification`, () => {
         };
         const next = jest.fn();
 
-        const middleware = getSendRequesteeAFriendRequestNotificationMiddleware(snsClient);
+        const middleware = getSendRequesteeAFriendRequestNotificationMiddleware(expo);
         await middleware(request, response, next);
 
-        expect(publish).toBeCalledWith({
-            TargetArn: requestee.endpointArn,
-            Message: `${requester.username} sent your a friend request`,
-        });
-        expect(promise).toBeCalledWith();
+        expect(sendPushNotificationsAsync).toBeCalledWith([
+            {
+                to: requestee.pushNotificationToken,
+                sound: 'default',
+                body: `${requester.username} sent you a friend request`,
+            },
+        ]);
         expect(next).toBeCalledWith();
     });
 
-    test('does not send notification if endpointArn is not defined', async () => {
+    test('does not send notification if pushNotificationToken is not defined', async () => {
         expect.assertions(3);
 
         const requester = {
             username: 'requester',
         };
         const requestee = {
-            endpointArn: null,
+            pushNotificationToken: null,
         };
         const promise = jest.fn().mockResolvedValue(true);
         const publish = jest.fn(() => ({ promise }));

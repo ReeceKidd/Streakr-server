@@ -1,25 +1,14 @@
-import aws from 'aws-sdk';
 import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 import { Model } from 'mongoose';
 import { User, FriendRequestStatus, FriendRequest } from '@streakoid/streakoid-sdk/lib';
+import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 import { friendRequestModel, FriendRequestModel } from '../../Models/FriendRequest';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { UserModel, userModel } from '../../Models/User';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
-import { getServiceConfig } from '../../../src/getServiceConfig';
-
-const { AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID } = getServiceConfig();
-
-aws.config.update({
-    secretAccessKey: AWS_SECRET_ACCESS_KEY,
-    accessKeyId: AWS_ACCESS_KEY_ID,
-    region: 'eu-west-1',
-});
-
-const sns = new aws.SNS();
 
 const createFriendRequestBodyValidationSchema = {
     requesterId: Joi.string().required(),
@@ -171,7 +160,9 @@ export const definePopulatedFriendRequestMiddleware = (
     }
 };
 
-export const getSendRequesteeAFriendRequestNotificationMiddleware = (snsClient: typeof sns) => async (
+const expoClient = new Expo();
+
+export const getSendRequesteeAFriendRequestNotificationMiddleware = (expo: typeof expoClient) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -179,11 +170,15 @@ export const getSendRequesteeAFriendRequestNotificationMiddleware = (snsClient: 
     try {
         const requester: UserModel = response.locals.requester;
         const requestee: UserModel = response.locals.requestee;
-        const { endpointArn } = requestee;
-        if (endpointArn) {
-            await snsClient
-                .publish({ TargetArn: endpointArn, Message: `${requester.username} sent your a friend request` })
-                .promise();
+        const { pushNotificationToken } = requestee;
+        if (pushNotificationToken) {
+            const messages: ExpoPushMessage[] = [];
+            messages.push({
+                to: pushNotificationToken,
+                sound: 'default',
+                body: `${requester.username} sent you a friend request`,
+            });
+            await expo.sendPushNotificationsAsync(messages);
         }
         next();
     } catch (err) {
@@ -192,7 +187,7 @@ export const getSendRequesteeAFriendRequestNotificationMiddleware = (snsClient: 
 };
 
 export const sendRequesteeAFriendRequestNotificationMiddleware = getSendRequesteeAFriendRequestNotificationMiddleware(
-    sns,
+    expoClient,
 );
 
 export const sendPopulatedFriendRequestMiddleware = (

@@ -204,7 +204,6 @@ describe('formatUserMiddleware', () => {
                 customer: 'abc',
                 subscription: 'sub_1',
             },
-            endpointArn: 'endpointArn',
         };
         const response: any = { locals: { user } };
         const next = jest.fn();
@@ -224,7 +223,6 @@ describe('formatUserMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'profileImages',
-                'endpointArn',
             ].sort(),
         );
     });

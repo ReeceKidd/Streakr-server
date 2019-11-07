@@ -185,7 +185,6 @@ describe('formatUpdatedUserMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'profileImages',
-                'endpointArn',
             ].sort(),
         );
         expect(next).toBeCalled();

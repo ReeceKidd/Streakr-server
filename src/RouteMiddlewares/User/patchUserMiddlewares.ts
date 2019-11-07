@@ -67,7 +67,6 @@ export const formatUpdatedUserMiddleware = (request: Request, response: Response
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             profileImages: user.profileImages,
-            endpointArn: user.endpointArn,
         };
         next();
     } catch (err) {
