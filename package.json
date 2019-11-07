@@ -12,7 +12,10 @@
         "unit-tests": "jest --config=./jest.unit.config.js --coverage --runInBand",
         "intergration-tests": "jest --config=./jest.intergration.config.js --runInBand --forceExit",
         "test": "npm run unit-tests && npm run intergration-tests",
-        "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
+        "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
+        "preversion": "npm run lint",
+        "version": "git push",
+        "update": "npm version patch"
     },
     "keywords": [],
     "author": "Reece Kidd",
