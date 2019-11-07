@@ -180,6 +180,9 @@ export const getSendRequesteeAFriendRequestNotificationMiddleware = (snsClient: 
         const requester: UserModel = response.locals.requester;
         const requestee: UserModel = response.locals.requestee;
         const { endpointArn } = requestee;
+        console.log(requestee);
+        console.log('ENDPOINT');
+        console.log(endpointArn);
         if (endpointArn) {
             await snsClient
                 .publish({ TargetArn: endpointArn, Message: `${requester.username} sent your a friend request` })
@@ -187,6 +190,7 @@ export const getSendRequesteeAFriendRequestNotificationMiddleware = (snsClient: 
         }
         next();
     } catch (err) {
+        console.log(err);
         next(new CustomError(ErrorType.SendRequesteeAFriendRequestNotification, err));
     }
 };

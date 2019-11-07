@@ -7,6 +7,7 @@ import { getServiceConfig } from '../../getServiceConfig';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { userModel, UserModel } from '../../Models/User';
+import { FormattedUser, User } from '@streakoid/streakoid-sdk/lib';
 
 const { STRIPE_SECRET_KEY, STRIPE_PLAN } = getServiceConfig();
 
@@ -214,6 +215,28 @@ export const getUpdateUserMembershipInformationMiddleware = (userModel: Model<Us
 
 export const updateUserMembershipInformationMiddleware = getUpdateUserMembershipInformationMiddleware(userModel);
 
+export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const user: User = response.locals.user;
+        const formattedUser: FormattedUser = {
+            _id: user._id,
+            username: user.username,
+            isPayingMember: user.membershipInformation.isPayingMember,
+            userType: user.userType,
+            timezone: user.timezone,
+            friends: user.friends,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            profileImages: user.profileImages,
+            endpointArn: user.endpointArn,
+        };
+        response.locals.user = formattedUser;
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateStripeSubscriptionFormatUserMiddleware, err));
+    }
+};
+
 export const sendSuccessfulSubscriptionMiddleware = (
     request: Request,
     response: Response,
@@ -237,5 +260,6 @@ export const createStripeCustomerSubscriptionMiddlewares = [
     handleInitialPaymentOutcomeMiddleware,
     addStripeSubscriptionToUserMiddleware,
     updateUserMembershipInformationMiddleware,
+    formatUserMiddleware,
     sendSuccessfulSubscriptionMiddleware,
 ];

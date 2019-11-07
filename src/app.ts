@@ -10,6 +10,7 @@ import v1Router from './Routers/versions/v1';
 import { getServiceConfig } from './getServiceConfig';
 import { errorHandler } from './errorHandler';
 import { agenda } from './Agenda/agenda';
+import { initialiseAdjustForDaylightSavingsJobs } from './scripts/initialiseAdjustForDaylightSavingsTimeJobs';
 
 dotenv.config();
 const { DATABASE_URI } = getServiceConfig();
@@ -42,8 +43,9 @@ agenda
 mongoose.set('useCreateIndex', true);
 
 // Scripts used to initialise the daily streak complete checks.
-// initialiseTeamStreakTimezoneCheckerJobs();
-//initialiseSoloStreakTimezoneCheckerJobs()
+//initialiseTeamStreakTimezoneCheckerJobs();
+//initialiseSoloStreakTimezoneCheckerJobs();
+initialiseAdjustForDaylightSavingsJobs();
 
 app.use(`/${ApiVersions.v1}`, v1Router);
 

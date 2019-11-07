@@ -5,6 +5,7 @@ import { manageDailySoloStreaks } from './SoloStreaks/manageDailySoloStreaks';
 import { sendEmail } from '../email';
 import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
 import { manageDailyTeamStreaks } from './TeamStreaks/manageDailyTeamStreaks';
+import { adjustForDaylightSavingsTime } from './AdjustForDaylightSavingsTime/adjustForDaylightSavingsTime';
 
 const { DATABASE_URI, NODE_ENV } = getServiceConfig();
 
@@ -74,6 +75,16 @@ agenda.define(AgendaJobNames.teamStreakDailyTracker, { priority: 'high' }, async
         const { timezone } = job.attrs.data;
 
         await manageDailyTeamStreaks({ agendaJobId: String(job.attrs._id), timezone });
+        done();
+    } catch (err) {
+        done(err);
+    }
+});
+
+agenda.define(AgendaJobNames.adjustForDaylightSavingsTime, async (job, done) => {
+    try {
+        const { timezone } = job.attrs.data;
+        await adjustForDaylightSavingsTime(timezone);
         done();
     } catch (err) {
         done(err);

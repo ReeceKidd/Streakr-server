@@ -33,14 +33,18 @@ export const initialiseSoloStreakTimezoneCheckerJobs = async () => {
         return;
     }
 
-    return timezones.map(async (timezone: string) => {
-        const existingTimezone = await agendaJobModel.findOne({
-            name: AgendaJobNames.soloStreakDailyTracker,
-            'data.timezone': timezone,
-        });
+    await Promise.all(
+        timezones.map(async (timezone: string) => {
+            const existingTimezone = await agendaJobModel.findOne({
+                name: AgendaJobNames.soloStreakDailyTracker,
+                'data.timezone': timezone,
+            });
 
-        if (!existingTimezone) {
-            await createSoloStreakDailyTrackerJob(timezone);
-        }
-    });
+            if (!existingTimezone) {
+                await createSoloStreakDailyTrackerJob(timezone);
+            }
+        }),
+    );
+
+    console.log('Initalised solo streak timezone checker jobs');
 };
