@@ -5,7 +5,7 @@ import { userModel } from '../../src/Models/User';
 const { COGNITO_USERNAME, COGNITO_EMAIL } = getServiceConfig();
 
 const getPayingUser = async (): Promise<User> => {
-    const user: User = await streakoid.users.create({
+    const user = await streakoid.users.create({
         username: COGNITO_USERNAME,
         email: COGNITO_EMAIL,
     });
