@@ -443,6 +443,7 @@ describe(`SendRequesteeAFriendRequestNotification`, () => {
             {
                 to: requestee.pushNotificationToken,
                 sound: 'default',
+                title: 'Friend request',
                 body: `${requester.username} sent you a friend request`,
             },
         ]);
@@ -450,7 +451,7 @@ describe(`SendRequesteeAFriendRequestNotification`, () => {
     });
 
     test('does not send notification if pushNotificationToken is not defined', async () => {
-        expect.assertions(3);
+        expect.assertions(2);
 
         const requester = {
             username: 'requester',
@@ -458,9 +459,8 @@ describe(`SendRequesteeAFriendRequestNotification`, () => {
         const requestee = {
             pushNotificationToken: null,
         };
-        const promise = jest.fn().mockResolvedValue(true);
-        const publish = jest.fn(() => ({ promise }));
-        const snsClient: any = { publish };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+        const expo: any = { sendPushNotificationsAsync };
         const request: any = {};
         const response: any = {
             locals: {
@@ -470,11 +470,10 @@ describe(`SendRequesteeAFriendRequestNotification`, () => {
         };
         const next = jest.fn();
 
-        const middleware = getSendRequesteeAFriendRequestNotificationMiddleware(snsClient);
+        const middleware = getSendRequesteeAFriendRequestNotificationMiddleware(expo);
         await middleware(request, response, next);
 
-        expect(publish).not.toBeCalled();
-        expect(promise).not.toBeCalled();
+        expect(sendPushNotificationsAsync).not.toBeCalled();
         expect(next).toBeCalledWith();
     });
 

@@ -8,8 +8,8 @@ import { CustomError, ErrorType } from '../../customError';
 import { UserModel, userModel } from '../../../src/Models/User';
 
 const registerDeviceForPushNotificationsValidationSchema = {
-    pushNotificationToken: Joi.string().required(),
     userId: Joi.string().required(),
+    pushNotificationToken: Joi.string().required(),
     platform: Joi.string()
         .valid(['ios', 'android'])
         .required(),

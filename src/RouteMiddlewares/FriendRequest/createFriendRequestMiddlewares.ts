@@ -176,8 +176,10 @@ export const getSendRequesteeAFriendRequestNotificationMiddleware = (expo: typeo
             messages.push({
                 to: pushNotificationToken,
                 sound: 'default',
+                title: 'Friend request',
                 body: `${requester.username} sent you a friend request`,
             });
+
             await expo.sendPushNotificationsAsync(messages);
         }
         next();
