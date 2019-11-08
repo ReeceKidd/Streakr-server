@@ -24,11 +24,6 @@ app.get(`/health`, (request, response) => {
     return response.status(200).send({ message: 'success' });
 });
 
-app.all('*', (request, response, next) => {
-    console.log(request.body);
-    next();
-});
-
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
