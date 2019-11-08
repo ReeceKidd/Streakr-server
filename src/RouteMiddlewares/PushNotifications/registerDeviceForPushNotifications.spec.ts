@@ -196,18 +196,18 @@ describe('updateUserPushNotificationInformationMiddleware', () => {
 
 describe(`sendSuccessfullyRegisteredDevice`, () => {
     test('responds with status 200', () => {
-        expect.assertions(2);
+        expect.assertions(3);
         const send = jest.fn();
-        const status = jest.fn(() => send);
+        const status = jest.fn(() => ({ send }));
         const response: any = { locals: {}, status };
         const request: any = {};
         const next = jest.fn();
 
         sendSuccessfullyRegisteredDevice(request, response, next);
 
-        expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.success);
         expect(send).toBeCalledWith('Successfully registered device');
+        expect(next).not.toBeCalled();
     });
 
     test('calls next with SendSuccessfullyRegisteredDevice error on middleware failure', () => {

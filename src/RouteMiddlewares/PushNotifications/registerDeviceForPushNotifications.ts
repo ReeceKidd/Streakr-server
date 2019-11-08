@@ -20,7 +20,6 @@ export const registerDeviceForPushNotificationsValidationMiddleware = (
     response: Response,
     next: NextFunction,
 ): void => {
-    console.log(request.body);
     Joi.validate(
         request.body,
         registerDeviceForPushNotificationsValidationSchema,
