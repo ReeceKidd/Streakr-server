@@ -700,6 +700,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                     customer: 'abc',
                     subscription: 'sub_1',
                 },
+                pushNotificationToken: 'pushNotificationToken',
             };
             const response: any = { locals: { user } };
             const next = jest.fn();
@@ -719,6 +720,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                     'createdAt',
                     'updatedAt',
                     'profileImages',
+                    'pushNotificationToken',
                 ].sort(),
             );
         });

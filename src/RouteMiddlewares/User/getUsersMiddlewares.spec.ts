@@ -281,6 +281,7 @@ describe('formatUsersMiddleware', () => {
                 customer: 'abc',
                 subscription: 'sub_1',
             },
+            pushNotificationToken: 'pushNotificationToken',
         };
         const users = [user];
         const response: any = { locals: { users } };
@@ -301,6 +302,7 @@ describe('formatUsersMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'profileImages',
+                'pushNotificationToken',
             ].sort(),
         );
     });

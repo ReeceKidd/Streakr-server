@@ -20,6 +20,7 @@ export const registerDeviceForPushNotificationsValidationMiddleware = (
     response: Response,
     next: NextFunction,
 ): void => {
+    console.log(request.body);
     Joi.validate(
         request.body,
         registerDeviceForPushNotificationsValidationSchema,
@@ -69,7 +70,7 @@ export const updateUserPushNotificationInformationMiddleware = getUpdateUserPush
 
 export const sendSuccessfullyRegisteredDevice = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        response.status(ResponseCodes.success);
+        response.status(ResponseCodes.success).send('Successfully registered device');
     } catch (err) {
         next(new CustomError(ErrorType.SendSuccessfullyRegisteredDevice, err));
     }

@@ -111,6 +111,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             friends: user.friends,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
+            pushNotificationToken: user.pushNotificationToken,
             profileImages: user.profileImages,
         };
         response.locals.user = formattedUser;

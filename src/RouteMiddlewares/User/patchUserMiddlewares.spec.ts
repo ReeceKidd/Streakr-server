@@ -145,7 +145,7 @@ describe('patchUserMiddleware', () => {
 });
 
 describe('formatUpdatedUserMiddleware', () => {
-    test('removes email from updatedUser and removes updated user email', () => {
+    test('formats user', () => {
         expect.assertions(2);
         const request: any = {};
         const updatedUser = {
@@ -168,13 +168,14 @@ describe('formatUpdatedUserMiddleware', () => {
                 customer: 'abc',
                 subscription: 'sub_1',
             },
+            pushNotificationToken: 'pushNotificationToken',
         };
         const response: any = { locals: { updatedUser } };
         const next = jest.fn();
 
         formatUpdatedUserMiddleware(request, response, next);
 
-        expect(Object.keys(response.locals.updatedUser).sort()).toEqual(
+        expect(Object.keys(response.locals.formattedUser).sort()).toEqual(
             [
                 '_id',
                 'username',
@@ -185,6 +186,7 @@ describe('formatUpdatedUserMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'profileImages',
+                'pushNotificationToken',
             ].sort(),
         );
         expect(next).toBeCalled();
@@ -206,13 +208,13 @@ describe('sendUpdatedPatchMiddleware', () => {
     test('sends updatedUser', () => {
         expect.assertions(3);
         const updatedTimezone = 'Europe/Paris';
-        const updatedUser = {
+        const formattedUser = {
             userId: 'abc',
             timezone: updatedTimezone,
         };
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
-        const userResponseLocals = { updatedUser };
+        const userResponseLocals = { formattedUser };
         const response: any = { locals: userResponseLocals, status };
         const request: any = {};
         const next = jest.fn();
@@ -221,7 +223,7 @@ describe('sendUpdatedPatchMiddleware', () => {
 
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.success);
-        expect(send).toBeCalledWith(updatedUser);
+        expect(send).toBeCalledWith(formattedUser);
     });
 
     test('calls next with SendUpdatedUserMiddleware error on middleware failure', () => {

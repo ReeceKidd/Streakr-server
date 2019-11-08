@@ -16,6 +16,7 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
+import { User } from '@streakoid/streakoid-sdk/lib';
 
 describe(`userRegistrationValidationMiddlware`, () => {
     const mockUsername = 'mockUsername';
@@ -329,11 +330,12 @@ describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
         expect.assertions(2);
         const request: any = {};
-        const savedUser = {
+        const savedUser: User = {
             _id: '_id',
             username: 'username',
             membershipInformation: {
                 isPayingMember: true,
+                currentMembershipStartDate: new Date(),
                 pastMemberships: [],
             },
             email: 'test@test.com',
@@ -345,6 +347,7 @@ describe('formatUserMiddleware', () => {
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
+            pushNotificationToken: 'pushNotifcationToken',
             stripe: {
                 customer: 'abc',
                 subscription: 'sub_1',
@@ -366,6 +369,7 @@ describe('formatUserMiddleware', () => {
                 'friends',
                 'createdAt',
                 'updatedAt',
+                'pushNotificationToken',
                 'profileImages',
             ].sort(),
         );

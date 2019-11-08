@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User } from '@streakoid/streakoid-sdk/lib';
+import { User, FormattedUser } from '@streakoid/streakoid-sdk/lib';
 
 const userParamsValidationSchema = {
     userId: Joi.string().required(),
@@ -57,7 +57,7 @@ export const patchUserMiddleware = getPatchUserMiddleware(userModel);
 export const formatUpdatedUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const user: User = response.locals.updatedUser;
-        response.locals.updatedUser = {
+        const formattedUser: FormattedUser = {
             _id: user._id,
             username: user.username,
             isPayingMember: user.membershipInformation.isPayingMember,
@@ -67,7 +67,9 @@ export const formatUpdatedUserMiddleware = (request: Request, response: Response
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             profileImages: user.profileImages,
+            pushNotificationToken: user.pushNotificationToken,
         };
+        response.locals.formattedUser = formattedUser;
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FormatUpdatedUserMiddleware, err));
@@ -76,8 +78,8 @@ export const formatUpdatedUserMiddleware = (request: Request, response: Response
 
 export const sendUpdatedUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { updatedUser } = response.locals;
-        response.status(ResponseCodes.success).send(updatedUser);
+        const { formattedUser } = response.locals;
+        response.status(ResponseCodes.success).send(formattedUser);
     } catch (err) {
         next(new CustomError(ErrorType.SendUpdatedUserMiddleware, err));
     }

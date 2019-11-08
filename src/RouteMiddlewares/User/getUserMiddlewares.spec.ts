@@ -204,6 +204,7 @@ describe('formatUserMiddleware', () => {
                 customer: 'abc',
                 subscription: 'sub_1',
             },
+            pushNotificationToken: 'pushNotificationToken',
         };
         const response: any = { locals: { user } };
         const next = jest.fn();
@@ -223,6 +224,7 @@ describe('formatUserMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'profileImages',
+                'pushNotificationToken',
             ].sort(),
         );
     });
