@@ -55,6 +55,22 @@ export const userSchema = new mongoose.Schema(
             type: Array,
             default: [],
         },
+        notifications: {
+            completeSoloStreaksReminder: {
+                email: {
+                    type: Boolean,
+                    default: false,
+                },
+                phone: {
+                    type: Boolean,
+                    default: false,
+                },
+                reminderTime: {
+                    type: String,
+                    default: null,
+                },
+            },
+        },
         stripe: {
             customer: {
                 type: String,

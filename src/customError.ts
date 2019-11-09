@@ -354,6 +354,7 @@ export enum ErrorType {
     SendRequesteeAFriendRequestNotification,
     RegisterUserFormatUserMiddleware,
     CreateStripeSubscriptionFormatUserMiddleware,
+    SendCurrentUserMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -2897,6 +2898,13 @@ export class CustomError extends Error {
             case ErrorType.CreateStripeSubscriptionFormatUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-266`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendCurrentUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-267`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
