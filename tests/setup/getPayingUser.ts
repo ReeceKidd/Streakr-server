@@ -1,11 +1,11 @@
-import { User } from '@streakoid/streakoid-sdk/lib';
+import { CurrentUser } from '@streakoid/streakoid-sdk/lib';
 import streakoid from '../../src/streakoid';
 import { getServiceConfig } from '../../src/getServiceConfig';
 import { userModel } from '../../src/Models/User';
 const { COGNITO_USERNAME, COGNITO_EMAIL } = getServiceConfig();
 
-const getPayingUser = async (): Promise<User> => {
-    const user = await streakoid.users.create({
+const getPayingUser = async (): Promise<CurrentUser> => {
+    const user = await streakoid.user.create({
         username: COGNITO_USERNAME,
         email: COGNITO_EMAIL,
     });
