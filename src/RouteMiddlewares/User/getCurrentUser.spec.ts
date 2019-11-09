@@ -9,7 +9,7 @@ describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
         expect.assertions(2);
         const request: any = {};
-        const savedUser: User = {
+        const user: User = {
             _id: '_id',
             username: 'username',
             membershipInformation: {
@@ -39,7 +39,7 @@ describe('formatUserMiddleware', () => {
                 subscription: 'sub_1',
             },
         };
-        const response: any = { locals: { savedUser } };
+        const response: any = { locals: { user } };
         const next = jest.fn();
 
         formatUserMiddleware(request, response, next);
