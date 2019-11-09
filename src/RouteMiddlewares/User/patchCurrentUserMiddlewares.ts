@@ -9,13 +9,13 @@ import { CustomError, ErrorType } from '../../customError';
 
 const userBodyValidationSchema = {
     email: Joi.string().email(),
-    notifications: {
-        completeSoloStreaksReminder: {
-            email: Joi.boolean(),
-            phone: Joi.boolean(),
-            reminderTime: Joi.string(),
-        },
-    },
+    notifications: Joi.object({
+        completeSoloStreaksReminder: Joi.object({
+            emailNotification: Joi.boolean().required(),
+            pushNotification: Joi.boolean().required(),
+            reminderTime: Joi.string().required(),
+        }),
+    }),
     timezone: Joi.string(),
     pushNotificationToken: Joi.string(),
 };
@@ -52,8 +52,8 @@ export const patchCurrentUserMiddleware = getPatchCurrentUserMiddleware(userMode
 
 export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { formattedUser } = response.locals;
-        response.status(ResponseCodes.success).send(formattedUser);
+        const { updatedUser } = response.locals;
+        response.status(ResponseCodes.success).send(updatedUser);
     } catch (err) {
         next(new CustomError(ErrorType.SendUpdatedCurrentUserMiddleware, err));
     }

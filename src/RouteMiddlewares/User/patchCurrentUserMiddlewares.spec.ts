@@ -124,13 +124,13 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
     test('sends updatedUser', () => {
         expect.assertions(3);
         const updatedTimezone = 'Europe/Paris';
-        const formattedUser = {
+        const updatedUser = {
             userId: 'abc',
             timezone: updatedTimezone,
         };
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
-        const userResponseLocals = { formattedUser };
+        const userResponseLocals = { updatedUser };
         const response: any = { locals: userResponseLocals, status };
         const request: any = {};
         const next = jest.fn();
@@ -139,7 +139,7 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
 
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.success);
-        expect(send).toBeCalledWith(formattedUser);
+        expect(send).toBeCalledWith(updatedUser);
     });
 
     test('calls next with SendUpdatedCurrentUserMiddleware error on middleware failure', () => {

@@ -57,11 +57,11 @@ export const userSchema = new mongoose.Schema(
         },
         notifications: {
             completeSoloStreaksReminder: {
-                email: {
+                emailNotification: {
                     type: Boolean,
                     default: false,
                 },
-                phone: {
+                pushNotification: {
                     type: Boolean,
                     default: false,
                 },
