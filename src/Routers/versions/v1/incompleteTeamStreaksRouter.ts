@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getIncompleteTeamStreaksMiddlewares } from '../../../RouteMiddlewares/IncompleteTeamStreak/getIncompleteTeamStreaksMiddlewares';
+import { getIncompleteTeamStreaksMiddlewares } from '../../../RouteMiddlewares/IncompleteTeamStreaks/getIncompleteTeamStreaksMiddlewares';
 
 export const completeTeamStreakId = 'completeTeamStreakId';
 

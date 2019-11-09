@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createEmailMiddlewares } from '../../../../src/RouteMiddlewares/Email/createEmailMiddlewares';
+import { createEmailMiddlewares } from '../../../../src/RouteMiddlewares/Emails/createEmailMiddlewares';
 
 const emailRouter = Router();
 

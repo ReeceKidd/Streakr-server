@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import { createTeamMemberStreakMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreak/createTeamMemberStreakMiddlewares';
-import { getOneTeamMemberStreakMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreak/getOneTeamMemberStreakMiddlewares';
-import { getAllTeamMemberStreaksMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreak/getAllTeamMemberStreaksMiddlewares';
-import { patchTeamMemberStreakMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreak/patchTeamMemberStreakMiddlewares';
+import { createTeamMemberStreakMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreaks/createTeamMemberStreakMiddlewares';
+import { getOneTeamMemberStreakMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreaks/getOneTeamMemberStreakMiddlewares';
+import { getAllTeamMemberStreaksMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreaks/getAllTeamMemberStreaksMiddlewares';
+import { patchTeamMemberStreakMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreaks/patchTeamMemberStreakMiddlewares';
 
 export const teamMemberStreakId = 'teamMemberStreakId';
 

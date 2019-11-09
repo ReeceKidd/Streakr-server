@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { getAllTeamStreaksMiddlewares } from '../../../RouteMiddlewares/TeamStreak/getAllTeamStreaksMiddlewares';
-import { getOneTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/getOneTeamStreakMiddlewares';
-import { deleteTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMember/deleteTeamMemberMiddlewares';
-import { createTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/createTeamStreakMiddlewares';
-import { patchTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreak/patchTeamStreakMiddlewares';
-import { createTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMember/createTeamMemberMiddlewares';
+import { getAllTeamStreaksMiddlewares } from '../../../RouteMiddlewares/TeamStreaks/getAllTeamStreaksMiddlewares';
+import { getOneTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreaks/getOneTeamStreakMiddlewares';
+import { deleteTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMembers/deleteTeamMemberMiddlewares';
+import { createTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreaks/createTeamStreakMiddlewares';
+import { patchTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreaks/patchTeamStreakMiddlewares';
+import { createTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMembers/createTeamMemberMiddlewares';
 import { authenticationMiddlewares } from '../../../../src/SharedMiddleware/authenticationMiddlewares';
 import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 

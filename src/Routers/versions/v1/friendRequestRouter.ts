@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import { getAllFriendRequestsMiddlewares } from '../../../RouteMiddlewares/FriendRequest/getAllFriendRequestsMiddlewares';
-import { createFriendRequestMiddlewares } from '../../../RouteMiddlewares/FriendRequest/createFriendRequestMiddlewares';
-import { deleteFriendRequestMiddlewares } from '../../../RouteMiddlewares/FriendRequest/deleteFriendRequestMiddlewares';
-import { patchFriendRequestMiddlewares } from '../../../RouteMiddlewares/FriendRequest/patchFriendRequestMiddlewares';
+import { getAllFriendRequestsMiddlewares } from '../../../RouteMiddlewares/FriendRequests/getAllFriendRequestsMiddlewares';
+import { createFriendRequestMiddlewares } from '../../../RouteMiddlewares/FriendRequests/createFriendRequestMiddlewares';
+import { deleteFriendRequestMiddlewares } from '../../../RouteMiddlewares/FriendRequests/deleteFriendRequestMiddlewares';
+import { patchFriendRequestMiddlewares } from '../../../RouteMiddlewares/FriendRequests/patchFriendRequestMiddlewares';
 
 export const friendRequestId = 'friendRequestId';
 

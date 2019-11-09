@@ -8,7 +8,7 @@ import {
     patchCurrentUserMiddlewares,
     patchCurrentUserMiddleware,
 } from './patchCurrentUserMiddlewares';
-import { sendUpdatedUserMiddleware } from './patchUserMiddlewares';
+import { sendUpdatedUserMiddleware } from '../Users/patchUserMiddlewares';
 
 describe('userRequestBodyValidationMiddleware', () => {
     test('sends correct error response when unsupported key is sent', () => {

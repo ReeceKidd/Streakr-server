@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { sendCurrentUserMiddleware, getCurrentUserMiddlewares } from './getCurrentUser';
-import { CustomError } from '../../../src/customError';
-import { ErrorType } from '../../../src/customError';
+import { CustomError } from '../../customError';
+import { ErrorType } from '../../customError';
 
 describe('sendRetreiveUserResponseMiddleware', () => {
     test('sends user', () => {

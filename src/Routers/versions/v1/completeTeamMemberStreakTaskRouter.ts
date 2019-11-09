@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { createCompleteTeamMemberStreakTaskMiddlewares } from '../../../RouteMiddlewares/CompleteTeamMemberStreakTask/createCompleteTeamMemberStreakTaskMiddlewares';
-import { getCompleteTeamMemberStreakTasksMiddlewares } from '../../../RouteMiddlewares/CompleteTeamMemberStreakTask/getCompleteTeamMemberStreakTasksMiddlewares';
+import { createCompleteTeamMemberStreakTaskMiddlewares } from '../../../RouteMiddlewares/CompleteTeamMemberStreakTasks/createCompleteTeamMemberStreakTaskMiddlewares';
+import { getCompleteTeamMemberStreakTasksMiddlewares } from '../../../RouteMiddlewares/CompleteTeamMemberStreakTasks/getCompleteTeamMemberStreakTasksMiddlewares';
 
 export const completeTeamMemberStreakTaskId = 'completeTeamMemberStreakTaskId';
 

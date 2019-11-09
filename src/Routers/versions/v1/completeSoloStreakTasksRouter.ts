@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getCompleteSoloStreakTasksMiddlewares } from '../../../RouteMiddlewares/CompleteSoloStreakTask/getCompleteSoloStreakTasksMiddlewares';
-import { createCompleteSoloStreakTaskMiddlewares } from '../../../RouteMiddlewares/CompleteSoloStreakTask/createCompleteSoloStreakTaskMiddlewares';
+import { getCompleteSoloStreakTasksMiddlewares } from '../../../RouteMiddlewares/CompleteSoloStreakTasks/getCompleteSoloStreakTasksMiddlewares';
+import { createCompleteSoloStreakTaskMiddlewares } from '../../../RouteMiddlewares/CompleteSoloStreakTasks/createCompleteSoloStreakTaskMiddlewares';
 
 export const completeSoloStreakTaskId = 'completeSoloStreakTaskId';
 

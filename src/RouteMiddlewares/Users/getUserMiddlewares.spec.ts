@@ -6,7 +6,7 @@ import {
     getUserMiddlewares,
     retreiveUserMiddleware,
     formatUserMiddleware,
-} from './getUserMiddlewares';
+} from '../Users/getUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';

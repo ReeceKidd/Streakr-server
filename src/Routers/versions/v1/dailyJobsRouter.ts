@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { createDailyJobMiddlewares } from '../../../RouteMiddlewares/DailyJob/createDailyJobMiddlewares';
-import { getAllDailyJobsMiddlewares } from '../../../RouteMiddlewares/DailyJob/getAllDailyJobsMiddlewares';
+import { createDailyJobMiddlewares } from '../../../RouteMiddlewares/DailyJobs/createDailyJobMiddlewares';
+import { getAllDailyJobsMiddlewares } from '../../../RouteMiddlewares/DailyJobs/getAllDailyJobsMiddlewares';
 
 export const dailyJobId = 'dailyJobId';
 

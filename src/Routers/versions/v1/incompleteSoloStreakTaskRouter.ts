@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getIncompleteSoloStreakTasksMiddlewares } from '../../../RouteMiddlewares/IncompleteSoloStreakTask/getIncompleteSoloStreakTaskMiddlewares';
-import { createIncompleteSoloStreakTaskMiddlewares } from '../../../RouteMiddlewares/IncompleteSoloStreakTask/createIncompleteSoloStreakTaskMiddlewares';
+import { getIncompleteSoloStreakTasksMiddlewares } from '../../../RouteMiddlewares/IncompleteSoloStreakTasks/getIncompleteSoloStreakTaskMiddlewares';
+import { createIncompleteSoloStreakTaskMiddlewares } from '../../../RouteMiddlewares/IncompleteSoloStreakTasks/createIncompleteSoloStreakTaskMiddlewares';
 
 export const incompleteSoloStreakTaskId = 'incompleteSoloStreakTaskId';
 

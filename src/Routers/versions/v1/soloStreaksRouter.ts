@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import { getAllSoloStreaksMiddlewares } from '../../../RouteMiddlewares/SoloStreak/getAllSoloStreaksMiddlewares';
-import { createSoloStreakMiddlewares } from '../../../RouteMiddlewares/SoloStreak/createSoloStreakMiddlewares';
-import { getOneSoloStreakMiddlewares } from '../../../RouteMiddlewares/SoloStreak/getOneSoloStreakMiddlewares';
-import { patchSoloStreakMiddlewares } from '../../../RouteMiddlewares/SoloStreak/patchSoloStreakMiddlewares';
+import { getAllSoloStreaksMiddlewares } from '../../../RouteMiddlewares/SoloStreaks/getAllSoloStreaksMiddlewares';
+import { createSoloStreakMiddlewares } from '../../../RouteMiddlewares/SoloStreaks/createSoloStreakMiddlewares';
+import { getOneSoloStreakMiddlewares } from '../../../RouteMiddlewares/SoloStreaks/getOneSoloStreakMiddlewares';
+import { patchSoloStreakMiddlewares } from '../../../RouteMiddlewares/SoloStreaks/patchSoloStreakMiddlewares';
 
 export const soloStreakId = 'soloStreakId';
 
