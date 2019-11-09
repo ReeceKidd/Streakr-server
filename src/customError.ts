@@ -355,6 +355,9 @@ export enum ErrorType {
     RegisterUserFormatUserMiddleware,
     CreateStripeSubscriptionFormatUserMiddleware,
     SendCurrentUserMiddleware,
+    UpdateCurrentUserNotFound,
+    PatchCurrentUserMiddleware,
+    SendUpdatedCurrentUserMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -936,6 +939,14 @@ export class CustomError extends Error {
             case ErrorType.RegisterDeviceForPushNotificationUserNotFound: {
                 return {
                     code: `${ResponseCodes.badRequest}-73`,
+                    message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.UpdateCurrentUserNotFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-74`,
                     message: 'User does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
@@ -2905,6 +2916,20 @@ export class CustomError extends Error {
             case ErrorType.SendCurrentUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-267`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PatchCurrentUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-268`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendUpdatedCurrentUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-269`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

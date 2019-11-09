@@ -22,6 +22,7 @@ import { emailRouter } from './emailRouter';
 import { profilePictureRouter } from './profilePicturesRouter';
 import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 import { registerDeviceForNotificationsRouter } from './registerDeviceForNotificationsRouter';
+import { userRouter } from './userRouter';
 
 const v1Router = Router();
 
@@ -40,6 +41,7 @@ v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
 
 // Authenticated User Routes
 v1Router.use(...authenticationMiddlewares);
+v1Router.use(`/${RouterCategories.user}`, userRouter);
 v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
 
 // Paid Membership routes

@@ -348,6 +348,13 @@ describe('formatUserMiddleware', () => {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
             pushNotificationToken: 'pushNotifcationToken',
+            notifications: {
+                completeSoloStreaksReminder: {
+                    email: false,
+                    phone: false,
+                    reminderTime: 'Today',
+                },
+            },
             stripe: {
                 customer: 'abc',
                 subscription: 'sub_1',
