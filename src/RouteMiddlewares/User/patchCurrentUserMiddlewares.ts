@@ -12,9 +12,9 @@ const userBodyValidationSchema = {
     email: Joi.string().email(),
     notifications: Joi.object({
         completeSoloStreaksReminder: Joi.object({
-            emailNotification: Joi.boolean().required(),
-            pushNotification: Joi.boolean().required(),
-            reminderTime: Joi.string().required(),
+            emailNotification: Joi.boolean(),
+            pushNotification: Joi.boolean(),
+            reminderTime: Joi.string(),
         }),
     }),
     timezone: Joi.string(),
