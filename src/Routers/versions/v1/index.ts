@@ -28,7 +28,7 @@ const v1Router = Router();
 v1Router.use(...timezoneMiddlewares);
 
 // Unauthenticated routes
-v1Router.post(`/${RouterCategories.users}`, ...registerUserMiddlewares);
+v1Router.post(`/${RouterCategories.user}`, ...registerUserMiddlewares);
 v1Router.use(`/${RouterCategories.emails}`, emailRouter);
 v1Router.use(`/${RouterCategories.dailyJobs}`, dailyJobsRouter);
 v1Router.use(`/${RouterCategories.streakTrackingEvents}`, streakTrackingEventRouter);

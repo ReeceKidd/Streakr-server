@@ -5,7 +5,7 @@ import { User, CurrentUser } from '@streakoid/streakoid-sdk/lib';
 
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const user: User = response.locals.savedUser;
+        const user: User = response.locals.user;
         const formattedUser: CurrentUser = {
             _id: user._id,
             email: user.email,
