@@ -350,8 +350,8 @@ describe('formatUserMiddleware', () => {
             pushNotificationToken: 'pushNotifcationToken',
             notifications: {
                 completeSoloStreaksReminder: {
-                    email: false,
-                    phone: false,
+                    emailNotification: false,
+                    pushNotification: false,
                     reminderTime: 'Today',
                 },
             },
@@ -369,14 +369,15 @@ describe('formatUserMiddleware', () => {
         expect(Object.keys(response.locals.user).sort()).toEqual(
             [
                 '_id',
+                'email',
                 'username',
-                'isPayingMember',
+                'membershipInformation',
                 'userType',
                 'timezone',
-                'friends',
                 'createdAt',
                 'updatedAt',
                 'pushNotificationToken',
+                'notifications',
                 'profileImages',
             ].sort(),
         );

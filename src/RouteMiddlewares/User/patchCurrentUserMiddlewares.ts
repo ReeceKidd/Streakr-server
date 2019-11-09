@@ -6,6 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { User, CurrentUser } from '@streakoid/streakoid-sdk/lib';
 
 const userBodyValidationSchema = {
     email: Joi.string().email(),
@@ -50,10 +51,33 @@ export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserMode
 
 export const patchCurrentUserMiddleware = getPatchCurrentUserMiddleware(userModel);
 
+export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const user: User = response.locals.updatedUser;
+        const formattedUser: CurrentUser = {
+            _id: user._id,
+            email: user.email,
+            username: user.username,
+            membershipInformation: user.membershipInformation,
+            userType: user.userType,
+            timezone: user.timezone,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            pushNotificationToken: user.pushNotificationToken,
+            notifications: user.notifications,
+            profileImages: user.profileImages,
+        };
+        response.locals.formattedUser = formattedUser;
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.PatchCurrentUserFormatUserMiddleware, err));
+    }
+};
+
 export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { updatedUser } = response.locals;
-        response.status(ResponseCodes.success).send(updatedUser);
+        const { formattedUser } = response.locals;
+        response.status(ResponseCodes.success).send(formattedUser);
     } catch (err) {
         next(new CustomError(ErrorType.SendUpdatedCurrentUserMiddleware, err));
     }
@@ -62,5 +86,6 @@ export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Res
 export const patchCurrentUserMiddlewares = [
     userRequestBodyValidationMiddleware,
     patchCurrentUserMiddleware,
+    formatUserMiddleware,
     sendUpdatedCurrentUserMiddleware,
 ];

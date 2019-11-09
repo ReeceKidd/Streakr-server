@@ -358,6 +358,8 @@ export enum ErrorType {
     UpdateCurrentUserNotFound,
     PatchCurrentUserMiddleware,
     SendUpdatedCurrentUserMiddleware,
+    GetCurrentUserFormatUserMiddleware,
+    PatchCurrentUserFormatUserMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -2930,6 +2932,20 @@ export class CustomError extends Error {
             case ErrorType.SendUpdatedCurrentUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-269`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetCurrentUserFormatUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-270`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PatchCurrentUserFormatUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-271`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

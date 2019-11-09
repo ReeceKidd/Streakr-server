@@ -21,7 +21,6 @@ import { registerUserMiddlewares } from '../../../RouteMiddlewares/User/register
 import { emailRouter } from './emailRouter';
 import { profilePictureRouter } from './profilePicturesRouter';
 import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
-import { registerDeviceForNotificationsRouter } from './registerDeviceForNotificationsRouter';
 import { userRouter } from './userRouter';
 
 const v1Router = Router();
@@ -34,7 +33,6 @@ v1Router.use(`/${RouterCategories.emails}`, emailRouter);
 v1Router.use(`/${RouterCategories.dailyJobs}`, dailyJobsRouter);
 v1Router.use(`/${RouterCategories.streakTrackingEvents}`, streakTrackingEventRouter);
 v1Router.use(`/${RouterCategories.users}`, usersRouter);
-v1Router.use(`/${RouterCategories.registerDeviceForNotifications}`, registerDeviceForNotificationsRouter);
 
 // Partially authenticated routes.
 v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);

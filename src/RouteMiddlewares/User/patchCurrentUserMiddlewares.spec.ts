@@ -7,8 +7,11 @@ import {
     sendUpdatedCurrentUserMiddleware,
     patchCurrentUserMiddlewares,
     patchCurrentUserMiddleware,
+    formatUserMiddleware,
 } from './patchCurrentUserMiddlewares';
 import { sendUpdatedUserMiddleware } from '../Users/patchUserMiddlewares';
+import { User } from '@streakoid/streakoid-sdk/lib';
+import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe('userRequestBodyValidationMiddleware', () => {
     test('sends correct error response when unsupported key is sent', () => {
@@ -120,17 +123,86 @@ describe('patchCurrentUserMiddleware', () => {
     });
 });
 
+describe('formatUserMiddleware', () => {
+    test('populates response.locals.user with a formattedUser', () => {
+        expect.assertions(2);
+        const request: any = {};
+        const updatedUser: User = {
+            _id: '_id',
+            username: 'username',
+            membershipInformation: {
+                isPayingMember: true,
+                currentMembershipStartDate: new Date(),
+                pastMemberships: [],
+            },
+            email: 'test@test.com',
+            createdAt: 'Jan 1st',
+            updatedAt: 'Jan 1st',
+            timezone: 'Europe/London',
+            userType: UserTypes.basic,
+            friends: [],
+            profileImages: {
+                originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+            },
+            pushNotificationToken: 'pushNotifcationToken',
+            notifications: {
+                completeSoloStreaksReminder: {
+                    emailNotification: false,
+                    pushNotification: false,
+                    reminderTime: 'Today',
+                },
+            },
+            stripe: {
+                customer: 'abc',
+                subscription: 'sub_1',
+            },
+        };
+        const response: any = { locals: { updatedUser } };
+        const next = jest.fn();
+
+        formatUserMiddleware(request, response, next);
+
+        expect(next).toBeCalled();
+        expect(Object.keys(response.locals.formattedUser).sort()).toEqual(
+            [
+                '_id',
+                'email',
+                'username',
+                'membershipInformation',
+                'userType',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                'pushNotificationToken',
+                'notifications',
+                'profileImages',
+            ].sort(),
+        );
+    });
+
+    test('calls next with GetCurrentUserFormatUserMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        formatUserMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.GetCurrentUserFormatUserMiddleware, expect.any(Error)));
+    });
+});
+
 describe('sendUpdatedCurrentUserMiddleware', () => {
-    test('sends updatedUser', () => {
+    test('sends formattedUser', () => {
         expect.assertions(3);
         const updatedTimezone = 'Europe/Paris';
-        const updatedUser = {
+        const formattedUser = {
             userId: 'abc',
             timezone: updatedTimezone,
         };
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
-        const userResponseLocals = { updatedUser };
+        const userResponseLocals = { formattedUser };
         const response: any = { locals: userResponseLocals, status };
         const request: any = {};
         const next = jest.fn();
@@ -139,7 +211,7 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
 
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.success);
-        expect(send).toBeCalledWith(updatedUser);
+        expect(send).toBeCalledWith(formattedUser);
     });
 
     test('calls next with SendUpdatedCurrentUserMiddleware error on middleware failure', () => {
@@ -157,11 +229,12 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
 
 describe('patchUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(4);
+        expect.assertions(5);
 
-        expect(patchCurrentUserMiddlewares.length).toBe(3);
+        expect(patchCurrentUserMiddlewares.length).toBe(4);
         expect(patchCurrentUserMiddlewares[0]).toBe(userRequestBodyValidationMiddleware);
         expect(patchCurrentUserMiddlewares[1]).toBe(patchCurrentUserMiddleware);
-        expect(patchCurrentUserMiddlewares[2]).toBe(sendUpdatedCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[2]).toBe(formatUserMiddleware);
+        expect(patchCurrentUserMiddlewares[3]).toBe(sendUpdatedCurrentUserMiddleware);
     });
 });
