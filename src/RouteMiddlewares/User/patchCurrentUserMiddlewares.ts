@@ -11,7 +11,7 @@ import { User, CurrentUser } from '@streakoid/streakoid-sdk/lib';
 const userBodyValidationSchema = {
     email: Joi.string().email(),
     notifications: Joi.object({
-        completeSoloStreaksReminder: Joi.object({
+        completeStreaksReminder: Joi.object({
             emailNotification: Joi.boolean(),
             pushNotification: Joi.boolean(),
             reminderTime: Joi.number()

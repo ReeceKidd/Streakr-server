@@ -56,7 +56,7 @@ export const userSchema = new mongoose.Schema(
             default: [],
         },
         notifications: {
-            completeSoloStreaksReminder: {
+            completeStreaksReminder: {
                 emailNotification: {
                     type: Boolean,
                     default: false,

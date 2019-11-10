@@ -146,7 +146,7 @@ describe('formatUserMiddleware', () => {
             },
             pushNotificationToken: 'pushNotifcationToken',
             notifications: {
-                completeSoloStreaksReminder: {
+                completeStreaksReminder: {
                     emailNotification: false,
                     pushNotification: false,
                     reminderTime: 'Today',
