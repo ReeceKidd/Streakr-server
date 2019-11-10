@@ -424,6 +424,11 @@ describe(`SendRequesteeAFriendRequestNotification`, () => {
         };
         const requestee = {
             pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                friendRequest: {
+                    pushNotification: true,
+                },
+            },
         };
         const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
         const expo: any = { sendPushNotificationsAsync };

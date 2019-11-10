@@ -66,8 +66,18 @@ export const userSchema = new mongoose.Schema(
                     default: false,
                 },
                 reminderTime: {
-                    type: String,
-                    default: null,
+                    type: Number,
+                    default: 21,
+                },
+            },
+            friendRequest: {
+                emailNotification: {
+                    type: Boolean,
+                    default: false,
+                },
+                pushNotification: {
+                    type: Boolean,
+                    default: false,
                 },
             },
         },

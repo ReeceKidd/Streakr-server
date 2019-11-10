@@ -171,7 +171,7 @@ export const getSendRequesteeAFriendRequestNotificationMiddleware = (expo: typeo
         const requester: UserModel = response.locals.requester;
         const requestee: UserModel = response.locals.requestee;
         const { pushNotificationToken } = requestee;
-        if (pushNotificationToken) {
+        if (pushNotificationToken && requestee.notifications.friendRequest.pushNotification) {
             const messages: ExpoPushMessage[] = [];
             messages.push({
                 to: pushNotificationToken,

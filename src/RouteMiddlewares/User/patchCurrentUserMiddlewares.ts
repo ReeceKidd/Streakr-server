@@ -14,7 +14,14 @@ const userBodyValidationSchema = {
         completeSoloStreaksReminder: Joi.object({
             emailNotification: Joi.boolean(),
             pushNotification: Joi.boolean(),
-            reminderTime: Joi.string(),
+            reminderTime: Joi.number()
+                .precision(0)
+                .less(24)
+                .greater(-1),
+        }),
+        friendRequest: Joi.object({
+            emailNotification: Joi.boolean(),
+            pushNotification: Joi.boolean(),
         }),
     }),
     timezone: Joi.string(),
@@ -35,6 +42,7 @@ export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserMode
     next: NextFunction,
 ): Promise<void> => {
     try {
+        console.log('Entered update current user');
         const { user } = response.locals;
         const keysToUpdate = request.body;
         const updatedUser = await userModel.findByIdAndUpdate(user._id, { ...keysToUpdate }, { new: true }).lean();
