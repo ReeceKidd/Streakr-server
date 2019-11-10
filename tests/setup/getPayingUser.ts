@@ -15,6 +15,14 @@ const getPayingUser = async (): Promise<CurrentUser> => {
                 isPayingMember: true,
                 currentMembershipStartDate: new Date(),
             },
+            timezone: 'Europe/London',
+            notifications: {
+                completeStreaksReminder: {
+                    pushNotification: true,
+                    reminderTime: 21,
+                },
+            },
+            pushNotificationToken: 'ExponentPushToken[hC0rRYEqr3N-IhTsr4h-Xo]',
         },
     });
     if (!updatedUser) {

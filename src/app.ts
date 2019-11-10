@@ -45,6 +45,7 @@ mongoose.set('useCreateIndex', true);
 //initialiseTeamStreakTimezoneCheckerJobs();
 //initialiseSoloStreakTimezoneCheckerJobs();
 //initialiseAdjustForDaylightSavingsJobs();
+//initialiseCompleteStreakReminderJobs();
 
 app.use(`/${ApiVersions.v1}`, v1Router);
 

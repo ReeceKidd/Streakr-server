@@ -14,10 +14,7 @@ const userBodyValidationSchema = {
         completeStreaksReminder: Joi.object({
             emailNotification: Joi.boolean(),
             pushNotification: Joi.boolean(),
-            reminderTime: Joi.number()
-                .precision(0)
-                .less(24)
-                .greater(-1),
+            reminderTime: Joi.number().valid([18, 19, 20, 21, 22, 23]),
         }),
         friendRequest: Joi.object({
             emailNotification: Joi.boolean(),
