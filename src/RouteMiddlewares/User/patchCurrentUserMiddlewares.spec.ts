@@ -4,12 +4,12 @@ import { CustomError, ErrorType } from '../../customError';
 import {
     userRequestBodyValidationMiddleware,
     getPatchCurrentUserMiddleware,
-    sendUpdatedCurrentUserMiddleware,
     patchCurrentUserMiddlewares,
     patchCurrentUserMiddleware,
     formatUserMiddleware,
+    sendUpdatedCurrentUserMiddleware,
 } from './patchCurrentUserMiddlewares';
-import { sendUpdatedUserMiddleware } from '../Users/patchUserMiddlewares';
+
 import { User } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
@@ -149,7 +149,11 @@ describe('formatUserMiddleware', () => {
                 completeStreaksReminder: {
                     emailNotification: false,
                     pushNotification: false,
-                    reminderTime: 'Today',
+                    reminderTime: 21,
+                },
+                friendRequest: {
+                    emailNotification: false,
+                    pushNotification: false,
                 },
             },
             stripe: {
@@ -221,7 +225,7 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
         const request: any = {};
         const next = jest.fn();
 
-        sendUpdatedUserMiddleware(request, response, next);
+        sendUpdatedCurrentUserMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SendUpdatedCurrentUserMiddleware, expect.any(Error)));
     });

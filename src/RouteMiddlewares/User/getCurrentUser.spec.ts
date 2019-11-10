@@ -28,10 +28,14 @@ describe('formatUserMiddleware', () => {
             },
             pushNotificationToken: 'pushNotifcationToken',
             notifications: {
-                completeSoloStreaksReminder: {
+                completeStreaksReminder: {
                     emailNotification: false,
                     pushNotification: false,
-                    reminderTime: 'Today',
+                    reminderTime: 21,
+                },
+                friendRequest: {
+                    emailNotification: false,
+                    pushNotification: false,
                 },
             },
             stripe: {
