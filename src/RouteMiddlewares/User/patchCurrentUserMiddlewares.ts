@@ -42,7 +42,6 @@ export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserMode
     next: NextFunction,
 ): Promise<void> => {
     try {
-        console.log('Entered update current user');
         const { user } = response.locals;
         const keysToUpdate = request.body;
         const updatedUser = await userModel.findByIdAndUpdate(user._id, { ...keysToUpdate }, { new: true }).lean();
