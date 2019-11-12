@@ -13,6 +13,7 @@ const createEmailBodyValidationSchema = {
     email: Joi.string()
         .email()
         .required(),
+    subject: Joi.string().required(),
     message: Joi.string().required(),
     userId: Joi.string(),
     username: Joi.string(),
@@ -32,10 +33,11 @@ export const getCreateEmailFromRequestMiddleware = (emailModel: mongoose.Model<E
     next: NextFunction,
 ): void => {
     try {
-        const { name, email, message, userId, username } = request.body;
+        const { name, email, subject, message, userId, username } = request.body;
         response.locals.newEmail = new emailModel({
             name,
             email,
+            subject,
             message,
             userId,
             username,
@@ -68,12 +70,12 @@ export const getSendEmailMiddleware = (sendEmail: (subject: string, text: string
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const { name, email, message, userId, username } = response.locals.email;
+    const { name, email, subject, message, userId, username } = response.locals.email;
     try {
-        const subject = 'Support';
         const text = `
         Name: ${name}
         Email: ${email}
+        Subject: ${subject}
         Message: ${message}
         UserId: ${userId}
         Username: ${username}`;

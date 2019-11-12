@@ -15,6 +15,7 @@ import { CustomError, ErrorType } from '../../customError';
 describe(`createEmailBodyValidationMiddleware`, () => {
     const name = 'John';
     const email = 'john@test.com';
+    const subject = 'Subject';
     const message = 'Support request';
     const userId = 'userId';
     const username = 'username';
@@ -22,6 +23,7 @@ describe(`createEmailBodyValidationMiddleware`, () => {
     const body = {
         name,
         email,
+        subject,
         message,
         userId,
         username,
@@ -52,6 +54,7 @@ describe(`createEmailBodyValidationMiddleware`, () => {
             body: {
                 name,
                 email,
+                subject,
                 message,
             },
         };
@@ -107,6 +110,27 @@ describe(`createEmailBodyValidationMiddleware`, () => {
         expect(next).not.toBeCalled();
     });
 
+    test('sends subject is missing error', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: { ...body, subject: undefined },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        createEmailBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "subject" fails because ["subject" is required]',
+        });
+        expect(next).not.toBeCalled();
+    });
+
     test('sends message is missing error', () => {
         expect.assertions(3);
         const send = jest.fn();
@@ -135,6 +159,7 @@ describe(`createEmailFromRequestMiddleware`, () => {
 
         const name = 'John';
         const email = 'john@test.com';
+        const subject = 'Subject';
         const message = 'Support request';
         const userId = 'userId';
         const username = 'username';
@@ -142,6 +167,7 @@ describe(`createEmailFromRequestMiddleware`, () => {
         class Email {
             name: string;
             email: string;
+            subject: string;
             message: string;
             userId: string;
             username: string;
@@ -149,6 +175,7 @@ describe(`createEmailFromRequestMiddleware`, () => {
             constructor({ name, email, message, userId, username }: any) {
                 this.name = name;
                 this.email = email;
+                this.subject = subject;
                 this.message = message;
                 this.userId = userId;
                 this.username = username;
@@ -176,12 +203,8 @@ describe(`createEmailFromRequestMiddleware`, () => {
 
     test('calls next with CreateEmailFromRequestMiddleware error on middleware failure', () => {
         expect.assertions(1);
-        const timezone = 'Europe/London';
-        const userId = 'abcdefg';
-        const name = 'streak name';
-        const description = 'mock streak description';
-        const response: any = { locals: { timezone } };
-        const request: any = { body: { userId, name, description } };
+        const response: any = {};
+        const request: any = {};
         const next = jest.fn();
         const middleware = getCreateEmailFromRequestMiddleware({} as any);
 
@@ -192,8 +215,6 @@ describe(`createEmailFromRequestMiddleware`, () => {
 });
 
 describe(`saveEmailToDatabaseMiddleware`, () => {
-    const ERROR_MESSAGE = 'error';
-
     test('sets response.locals.email', async () => {
         expect.assertions(3);
         const save = jest.fn().mockResolvedValue(true);
@@ -215,11 +236,9 @@ describe(`saveEmailToDatabaseMiddleware`, () => {
 
     test('calls next with SaveEmailToDatabaseMiddleware error on middleware failure', async () => {
         expect.assertions(1);
-        const save = jest.fn(() => {
-            return Promise.reject(ERROR_MESSAGE);
-        });
+
         const request: any = {};
-        const response: any = { locals: { newEmail: { save } } };
+        const response: any = {};
         const next = jest.fn();
 
         await saveEmailToDatabaseMiddleware(request, response, next);
@@ -234,17 +253,18 @@ describe(`sendEmailMiddleware`, () => {
         const sendEmail = jest.fn().mockResolvedValue(true);
         const name = 'John';
         const email = 'john@test.com';
+        const subject = 'Subject';
         const message = 'Support request';
         const userId = 'userId';
         const username = 'username';
-        const response: any = { locals: { email: { name, email, message, userId, username } } };
+        const response: any = { locals: { email: { name, email, subject, message, userId, username } } };
         const request: any = {};
         const next = jest.fn();
 
         const middleware = getSendEmailMiddleware(sendEmail);
         await middleware(request, response, next);
 
-        expect(sendEmail).toBeCalledWith('Support', expect.any(String));
+        expect(sendEmail).toBeCalledWith(subject, expect.any(String));
         expect(next).toBeCalled();
     });
 
