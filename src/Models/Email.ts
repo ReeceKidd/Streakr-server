@@ -15,6 +15,10 @@ export const emailSchema = new mongoose.Schema(
             required: true,
             type: String,
         },
+        subject: {
+            required: true,
+            type: String,
+        },
         message: {
             required: true,
             type: String,
