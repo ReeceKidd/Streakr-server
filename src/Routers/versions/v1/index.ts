@@ -21,10 +21,14 @@ import { emailRouter } from './emailRouter';
 import { profilePictureRouter } from './profilePicturesRouter';
 import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 import { userRouter } from './userRouter';
+import { registerUserMiddlewares } from '../../../../src/RouteMiddlewares/User/registerUserMiddlewares';
 
 const v1Router = Router();
 
 v1Router.use(...timezoneMiddlewares);
+
+//Registration API gateway
+v1Router.post(`${RouterCategories.users}`, ...registerUserMiddlewares);
 
 // Unauthenticated routes
 v1Router.use(`/${RouterCategories.emails}`, emailRouter);
