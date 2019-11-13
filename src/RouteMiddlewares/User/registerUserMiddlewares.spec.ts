@@ -358,6 +358,10 @@ describe('formatUserMiddleware', () => {
                     emailNotification: false,
                     pushNotification: false,
                 },
+                teamStreakUpdates: {
+                    emailNotification: false,
+                    pushNotification: false,
+                },
             },
             stripe: {
                 customer: 'abc',
