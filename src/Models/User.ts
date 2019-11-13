@@ -80,6 +80,16 @@ export const userSchema = new mongoose.Schema(
                     default: false,
                 },
             },
+            teamStreakUpdates: {
+                emailNotification: {
+                    type: Boolean,
+                    default: false,
+                },
+                pushNotification: {
+                    type: Boolean,
+                    default: false,
+                },
+            },
         },
         stripe: {
             customer: {

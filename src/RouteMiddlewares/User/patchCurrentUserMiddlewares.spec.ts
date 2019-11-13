@@ -14,6 +14,43 @@ import { User } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe('userRequestBodyValidationMiddleware', () => {
+    test('allows request with all possible params to pass', () => {
+        expect.assertions(1);
+
+        const body = {
+            email: 'email@gmail.com',
+            notifications: {
+                completeStreaksReminder: {
+                    emailNotification: true,
+                    pushNotification: true,
+                    reminderTime: 18,
+                },
+                friendRequest: {
+                    emailNotification: true,
+                    pushNotification: true,
+                },
+                teamStreakUpdates: {
+                    emailNotification: true,
+                    pushNotification: true,
+                },
+            },
+            timezone: 'Europe/London',
+            pushNotificationToken: 'push-token',
+        };
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body,
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        userRequestBodyValidationMiddleware(request, response, next);
+
+        expect(next).toBeCalled();
+    });
     test('sends correct error response when unsupported key is sent', () => {
         expect.assertions(3);
         const send = jest.fn();

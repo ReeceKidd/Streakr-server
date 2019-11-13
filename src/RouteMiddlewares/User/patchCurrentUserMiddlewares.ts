@@ -20,6 +20,10 @@ const userBodyValidationSchema = {
             emailNotification: Joi.boolean(),
             pushNotification: Joi.boolean(),
         }),
+        teamStreakUpdates: Joi.object({
+            emailNotification: Joi.boolean(),
+            pushNotification: Joi.boolean(),
+        }),
     }),
     timezone: Joi.string(),
     pushNotificationToken: Joi.string(),
