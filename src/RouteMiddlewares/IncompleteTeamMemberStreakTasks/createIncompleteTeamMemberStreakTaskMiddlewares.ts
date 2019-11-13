@@ -482,7 +482,7 @@ export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     hasAtLeastOneTeamMemberCompletedTheirTaskMiddleware,
     makeTeamStreakInactiveMiddleware,
     createTeamStreakIncompleteMiddleware,
-    retreiveTeamMembersMiddleware,
-    notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
+    //retreiveTeamMembersMiddleware,
+    //notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
     sendTaskIncompleteResponseMiddleware,
 ];
