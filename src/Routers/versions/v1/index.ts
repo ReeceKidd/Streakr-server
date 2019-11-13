@@ -42,10 +42,10 @@ v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
 // Authenticated User Routes
 v1Router.use(...authenticationMiddlewares);
 v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
+v1Router.use(`/${RouterCategories.user}`, userRouter);
 
 // Paid Membership routes
 v1Router.use(hasUserPaidMembershipMiddleware);
-v1Router.use(`/${RouterCategories.user}`, userRouter);
 v1Router.use(`/${RouterCategories.soloStreaks}`, soloStreaksRouter);
 v1Router.use(`/${RouterCategories.teamMemberStreaks}`, teamMemberStreaksRouter);
 v1Router.use(`/${RouterCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);
