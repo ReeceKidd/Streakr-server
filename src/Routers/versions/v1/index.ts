@@ -28,14 +28,13 @@ const v1Router = Router();
 v1Router.use(...timezoneMiddlewares);
 
 //Registration API gateway
-v1Router.post(`${RouterCategories.users}`, ...registerUserMiddlewares);
+v1Router.post(`/${RouterCategories.users}`, ...registerUserMiddlewares);
 
 // Unauthenticated routes
 v1Router.use(`/${RouterCategories.emails}`, emailRouter);
 v1Router.use(`/${RouterCategories.dailyJobs}`, dailyJobsRouter);
 v1Router.use(`/${RouterCategories.streakTrackingEvents}`, streakTrackingEventRouter);
 v1Router.use(`/${RouterCategories.users}`, usersRouter);
-v1Router.use(`/${RouterCategories.user}`, userRouter);
 
 // Partially authenticated routes.
 v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
@@ -46,6 +45,7 @@ v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
 
 // Paid Membership routes
 v1Router.use(hasUserPaidMembershipMiddleware);
+v1Router.use(`/${RouterCategories.user}`, userRouter);
 v1Router.use(`/${RouterCategories.soloStreaks}`, soloStreaksRouter);
 v1Router.use(`/${RouterCategories.teamMemberStreaks}`, teamMemberStreaksRouter);
 v1Router.use(`/${RouterCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);
