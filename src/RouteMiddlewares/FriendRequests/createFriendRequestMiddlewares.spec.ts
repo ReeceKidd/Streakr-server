@@ -415,7 +415,7 @@ describe('populateFriendRequestMiddleware', () => {
     });
 });
 
-describe(`SendRequesteeAFriendRequestNotification`, () => {
+describe(`sendRequesteeAFriendRequestNotification`, () => {
     test('sends friend request notification to requestee if requestee has a pushNotificationToken', async () => {
         expect.assertions(2);
 

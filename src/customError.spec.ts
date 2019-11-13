@@ -3900,4 +3900,26 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to NotifyteamMembersThatUserHasCompletedTask`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.NotifyTeamMembersThatUserHasCompletedTaskMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-272`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-273`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });
