@@ -15,4 +15,5 @@ export enum Models {
     FriendRequest = 'FriendRequest',
     DailyJob = 'DailyJob',
     Email = 'Email',
+    StreakRecommendation = 'StreakRecommendation',
 }
