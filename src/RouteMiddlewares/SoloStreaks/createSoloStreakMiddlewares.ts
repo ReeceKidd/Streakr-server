@@ -27,21 +27,22 @@ export const createSoloStreakBodyValidationMiddleware = (
     );
 };
 
-export const getCreateSoloStreakFromRequestMiddleware = (soloStreak: mongoose.Model<SoloStreakModel>) => (
+export const getCreateSoloStreakFromRequestMiddleware = (soloStreak: mongoose.Model<SoloStreakModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
-): void => {
+): Promise<void> => {
     try {
         const { timezone } = response.locals;
         const { streakName, streakDescription, userId, numberOfMinutes } = request.body;
-        response.locals.newSoloStreak = new soloStreak({
+        const newSoloStreak = new soloStreak({
             streakName,
             streakDescription,
             userId,
             timezone,
             numberOfMinutes,
         });
+        response.locals.savedSoloStreak = await newSoloStreak.save();
         next();
     } catch (err) {
         next(new CustomError(ErrorType.CreateSoloStreakFromRequestMiddleware, err));
@@ -49,20 +50,6 @@ export const getCreateSoloStreakFromRequestMiddleware = (soloStreak: mongoose.Mo
 };
 
 export const createSoloStreakFromRequestMiddleware = getCreateSoloStreakFromRequestMiddleware(soloStreakModel);
-
-export const saveSoloStreakToDatabaseMiddleware = async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const newSoloStreak: SoloStreakModel = response.locals.newSoloStreak;
-        response.locals.savedSoloStreak = await newSoloStreak.save();
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.SaveSoloStreakToDatabaseMiddleware, err));
-    }
-};
 
 export const sendFormattedSoloStreakMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -76,6 +63,5 @@ export const sendFormattedSoloStreakMiddleware = (request: Request, response: Re
 export const createSoloStreakMiddlewares = [
     createSoloStreakBodyValidationMiddleware,
     createSoloStreakFromRequestMiddleware,
-    saveSoloStreakToDatabaseMiddleware,
     sendFormattedSoloStreakMiddleware,
 ];

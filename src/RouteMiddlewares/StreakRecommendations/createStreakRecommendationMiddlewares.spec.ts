@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-    createSoloStreakMiddlewares,
-    createSoloStreakBodyValidationMiddleware,
-    createSoloStreakFromRequestMiddleware,
-    getCreateSoloStreakFromRequestMiddleware,
-    sendFormattedSoloStreakMiddleware,
-} from './createSoloStreakMiddlewares';
+    createStreakRecommendationMiddlewares,
+    createStreakRecommendationBodyValidationMiddleware,
+    createStreakRecommendationFromRequestMiddleware,
+    getCreateStreakRecommendationFromRequestMiddleware,
+    sendFormattedStreakRecommendationMiddleware,
+} from './createStreakRecommendationMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 
-describe(`createSoloStreakBodyValidationMiddleware`, () => {
-    const userId = '12345678';
+describe(`createStreakRecommendationBodyValidationMiddleware`, () => {
     const streakName = 'Spanish Streak';
     const streakDescription = ' Do the insane amount of XP for Duolingo each day';
+    const numberOfMinutes = 20;
 
     const body = {
-        userId,
         streakName,
         streakDescription,
+        numberOfMinutes,
     };
 
     test('valid request passes validation', () => {
@@ -32,51 +32,9 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        createSoloStreakBodyValidationMiddleware(request, response, next);
+        createStreakRecommendationBodyValidationMiddleware(request, response, next);
 
         expect(next).toBeCalled();
-    });
-
-    test('sends userId is missing error', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: { ...body, userId: undefined },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        createSoloStreakBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message: 'child "userId" fails because ["userId" is required]',
-        });
-        expect(next).not.toBeCalled();
-    });
-
-    test('sends userId is not a string error', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: { ...body, userId: 123 },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        createSoloStreakBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message: 'child "userId" fails because ["userId" must be a string]',
-        });
-        expect(next).not.toBeCalled();
     });
 
     test('sends streakName is missing error', () => {
@@ -91,7 +49,7 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        createSoloStreakBodyValidationMiddleware(request, response, next);
+        createStreakRecommendationBodyValidationMiddleware(request, response, next);
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
@@ -112,7 +70,7 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        createSoloStreakBodyValidationMiddleware(request, response, next);
+        createStreakRecommendationBodyValidationMiddleware(request, response, next);
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
@@ -133,7 +91,7 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        createSoloStreakBodyValidationMiddleware(request, response, next);
+        createStreakRecommendationBodyValidationMiddleware(request, response, next);
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
@@ -154,7 +112,7 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
         };
         const next = jest.fn();
 
-        createSoloStreakBodyValidationMiddleware(request, response, next);
+        createStreakRecommendationBodyValidationMiddleware(request, response, next);
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
@@ -164,97 +122,101 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
     });
 });
 
-describe(`createSoloStreakFromRequestMiddleware`, () => {
-    test('sets response.locals.savedSoloStreak', async () => {
+describe(`createStreakRecommendationFromRequestMiddleware`, () => {
+    test('sets response.locals.savedStreakRecommendation', async () => {
         expect.assertions(2);
         const userId = 'abcdefg';
         const streakName = 'streak streakName';
         const streakDescription = 'mock streak streakDescription';
         const timezone = 'Europe/London';
         const save = jest.fn().mockResolvedValue(true);
-
-        const soloStreak = jest.fn(() => ({ save }));
+        const StreakRecommendation = jest.fn(() => ({ save }));
 
         const response: any = { locals: { timezone } };
         const request: any = { body: { userId, streakName, streakDescription } };
         const next = jest.fn();
 
-        const middleware = getCreateSoloStreakFromRequestMiddleware(soloStreak as any);
+        const middleware = getCreateStreakRecommendationFromRequestMiddleware(StreakRecommendation as any);
 
         await middleware(request, response, next);
 
-        expect(response.locals.savedSoloStreak).toBeDefined();
+        expect(response.locals.savedStreakRecommendation).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
-    test('calls next with CreateSoloStreakFromRequestMiddleware error on middleware failure', () => {
+    test('calls next with CreateStreakRecommendationFromRequestMiddleware error on middleware failure', () => {
         expect.assertions(1);
-
-        const response: any = {};
-        const request: any = {};
+        const timezone = 'Europe/London';
+        const userId = 'abcdefg';
+        const streakName = 'streak streakName';
+        const streakDescription = 'mock streak streakDescription';
+        const response: any = { locals: { timezone } };
+        const request: any = { body: { userId, streakName, streakDescription } };
         const next = jest.fn();
-        const middleware = getCreateSoloStreakFromRequestMiddleware({} as any);
+        const middleware = getCreateStreakRecommendationFromRequestMiddleware({} as any);
 
         middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreateSoloStreakFromRequestMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.CreateStreakRecommendationFromRequestMiddleware, expect.any(Error)),
         );
     });
 });
 
-describe(`sendFormattedSoloStreakMiddleware`, () => {
+describe(`sendFormattedStreakRecommendationMiddleware`, () => {
     const ERROR_MESSAGE = 'error';
-    const savedSoloStreak = {
+    const savedStreakRecommendation = {
         userId: 'abc',
         streakName: 'Daily Spanish',
         streakDescription: 'Practice spanish every day',
         startDate: new Date(),
     };
 
-    test('responds with status 201 with soloStreak', () => {
+    test('responds with status 201 with streakRecommendation', () => {
         expect.assertions(4);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
-        const soloStreakResponseLocals = {
-            savedSoloStreak,
+        const streakRecommendationResponseLocals = {
+            savedStreakRecommendation,
         };
-        const response: any = { locals: soloStreakResponseLocals, status };
+        const response: any = { locals: streakRecommendationResponseLocals, status };
         const request: any = {};
         const next = jest.fn();
 
-        sendFormattedSoloStreakMiddleware(request, response, next);
+        sendFormattedStreakRecommendationMiddleware(request, response, next);
 
         expect(response.locals.user).toBeUndefined();
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.created);
-        expect(send).toBeCalledWith(savedSoloStreak);
+        expect(send).toBeCalledWith(savedStreakRecommendation);
     });
 
-    test('calls next with SendFormattedSoloStreakMiddleware error on middleware failure', () => {
+    test('calls next with SendFormattedStreakRecommendationMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const send = jest.fn(() => {
             throw new Error(ERROR_MESSAGE);
         });
         const status = jest.fn(() => ({ send }));
-        const response: any = { locals: { savedSoloStreak }, status };
+        const response: any = { locals: { savedStreakRecommendation }, status };
 
         const request: any = {};
         const next = jest.fn();
 
-        sendFormattedSoloStreakMiddleware(request, response, next);
+        sendFormattedStreakRecommendationMiddleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.SendFormattedSoloStreakMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.SendFormattedStreakRecommendationMiddleware, expect.any(Error)),
+        );
     });
 });
 
-describe(`createSoloStreakMiddlewares`, () => {
-    test('that createSoloStreak middlewares are defined in the correct order', async () => {
+describe(`createStreakRecommendationMiddlewares`, () => {
+    test('that createStreakRecommendation middlewares are defined in the correct order', async () => {
         expect.assertions(4);
 
-        expect(createSoloStreakMiddlewares.length).toEqual(3);
-        expect(createSoloStreakMiddlewares[0]).toBe(createSoloStreakBodyValidationMiddleware);
-        expect(createSoloStreakMiddlewares[1]).toBe(createSoloStreakFromRequestMiddleware);
-        expect(createSoloStreakMiddlewares[2]).toBe(sendFormattedSoloStreakMiddleware);
+        expect(createStreakRecommendationMiddlewares.length).toEqual(3);
+        expect(createStreakRecommendationMiddlewares[0]).toBe(createStreakRecommendationBodyValidationMiddleware);
+        expect(createStreakRecommendationMiddlewares[1]).toBe(createStreakRecommendationFromRequestMiddleware);
+        expect(createStreakRecommendationMiddlewares[2]).toBe(sendFormattedStreakRecommendationMiddleware);
     });
 });

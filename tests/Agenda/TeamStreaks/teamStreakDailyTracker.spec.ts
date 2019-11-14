@@ -77,7 +77,7 @@ describe('teamStreakDailyTracker', () => {
         ]);
     });
 
-    test('maintains team streaks correctly when a lone user has completed their task', async () => {
+    test.only('maintains team streaks correctly when a lone user has completed their task', async () => {
         expect.assertions(61);
 
         const timezone = 'Europe/London';

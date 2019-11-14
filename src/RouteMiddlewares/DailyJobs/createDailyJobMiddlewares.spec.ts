@@ -161,30 +161,14 @@ describe(`saveDailyJobToDatabaseMiddleware`, () => {
 
         const save = jest.fn().mockResolvedValue(true);
 
-        class DailyJob {
-            jobName: string;
-            timezone: string;
-            localisedJobCompleteTime: string;
+        const dailyJob = jest.fn(() => ({ save }));
 
-            streakType: string;
-
-            constructor({ jobName, timezone, localisedJobCompleteTime, streakType }: any) {
-                this.jobName = jobName;
-                this.timezone = timezone;
-                this.localisedJobCompleteTime = localisedJobCompleteTime;
-                this.streakType = streakType;
-            }
-
-            save() {
-                return save();
-            }
-        }
         const request: any = {
             body: { jobName, timezone, localisedJobCompleteTime, streakType },
         };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getSaveDailyJobToDatabaseMiddleware(DailyJob as any);
+        const middleware = getSaveDailyJobToDatabaseMiddleware(dailyJob as any);
 
         await middleware(request, response, next);
 

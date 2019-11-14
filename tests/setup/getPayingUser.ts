@@ -21,6 +21,9 @@ const getPayingUser = async (): Promise<CurrentUser> => {
                     pushNotification: true,
                     reminderTime: 21,
                 },
+                teamStreakUpdates: {
+                    pushNotification: true,
+                },
             },
             pushNotificationToken: 'ExponentPushToken[hC0rRYEqr3N-IhTsr4h-Xo]',
         },
