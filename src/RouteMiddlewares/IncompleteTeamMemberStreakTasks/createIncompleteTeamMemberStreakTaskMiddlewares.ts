@@ -408,7 +408,7 @@ export const getRetreiveTeamMembersMiddleware = (userModel: mongoose.Model<UserM
         response.locals.teamMembers = teamMembersWithoutCurrentUser;
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.CreateCompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware, err));
+        next(new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware, err));
     }
 };
 
@@ -416,7 +416,7 @@ export const retreiveTeamMembersMiddleware = getRetreiveTeamMembersMiddleware(us
 
 const expoClient = new Expo();
 
-export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typeof expoClient) => async (
+export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (expo: typeof expoClient) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -426,27 +426,29 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamMembers: UserModel[] = response.locals.teamMembers;
         const messages: ExpoPushMessage[] = [];
-        teamMembers.map(teamMember => {
-            if (teamMember.pushNotificationToken && teamMember.notifications.teamStreakUpdates.pushNotification) {
-                messages.push({
-                    to: teamMember.pushNotificationToken,
-                    sound: 'default',
-                    title: `${teamStreak.streakName} update`,
-                    body: `${user.username} has completed ${teamStreak.streakName}`,
-                });
-            }
-        });
-        const chunks = await expo.chunkPushNotifications(messages);
-        for (const chunk of chunks) {
-            await expo.sendPushNotificationsAsync(chunk);
-        }
+        await Promise.all(
+            teamMembers.map(async teamMember => {
+                if (teamMember.pushNotificationToken && teamMember.notifications.teamStreakUpdates.pushNotification) {
+                    messages.push({
+                        to: teamMember.pushNotificationToken,
+                        sound: 'default',
+                        title: `${teamStreak.streakName} update`,
+                        body: `${user.username} has completed ${teamStreak.streakName}`,
+                    });
+                    const chunks = await expo.chunkPushNotifications(messages);
+                    for (const chunk of chunks) {
+                        await expo.sendPushNotificationsAsync(chunk);
+                    }
+                }
+            }),
+        );
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.NotifyTeamMembersThatUserHasCompletedTaskMiddleware, err));
+        next(new CustomError(ErrorType.NotifyTeamMembersThatUserHasIncompletedTaskMiddleware, err));
     }
 };
 
-export const notifiyTeamMembersThatUserHasCompletedTaskMiddleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(
+export const notifiyTeamMembersThatUserHasIncompletedTaskMiddleware = getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware(
     expoClient,
 );
 
@@ -482,7 +484,7 @@ export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     hasAtLeastOneTeamMemberCompletedTheirTaskMiddleware,
     makeTeamStreakInactiveMiddleware,
     createTeamStreakIncompleteMiddleware,
-    //retreiveTeamMembersMiddleware,
-    //notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
+    retreiveTeamMembersMiddleware,
+    notifiyTeamMembersThatUserHasIncompletedTaskMiddleware,
     sendTaskIncompleteResponseMiddleware,
 ];

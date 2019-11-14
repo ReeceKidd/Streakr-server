@@ -432,20 +432,22 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamMembers: UserModel[] = response.locals.teamMembers;
         const messages: ExpoPushMessage[] = [];
-        teamMembers.map(teamMember => {
-            if (teamMember.pushNotificationToken && teamMember.notifications.teamStreakUpdates.pushNotification) {
-                messages.push({
-                    to: teamMember.pushNotificationToken,
-                    sound: 'default',
-                    title: `${teamStreak.streakName} update`,
-                    body: `${user.username} has completed ${teamStreak.streakName}`,
-                });
-            }
-        });
-        const chunks = await expo.chunkPushNotifications(messages);
-        for (const chunk of chunks) {
-            await expo.sendPushNotificationsAsync(chunk);
-        }
+        await Promise.all(
+            teamMembers.map(async teamMember => {
+                if (teamMember.pushNotificationToken && teamMember.notifications.teamStreakUpdates.pushNotification) {
+                    messages.push({
+                        to: teamMember.pushNotificationToken,
+                        sound: 'default',
+                        title: `${teamStreak.streakName} update`,
+                        body: `${user.username} has completed ${teamStreak.streakName}`,
+                    });
+                    const chunks = await expo.chunkPushNotifications(messages);
+                    for (const chunk of chunks) {
+                        await expo.sendPushNotificationsAsync(chunk);
+                    }
+                }
+            }),
+        );
         next();
     } catch (err) {
         next(new CustomError(ErrorType.NotifyTeamMembersThatUserHasCompletedTaskMiddleware, err));
