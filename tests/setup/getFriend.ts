@@ -6,7 +6,7 @@ export const friendUsername = 'friend';
 export const friendEmail = 'friend@gmail.com';
 
 const getFriend = async (): Promise<CurrentUser> => {
-    return streakoid.user.create({ username: friendUsername, email: friendEmail });
+    return streakoid.users.create({ username: friendUsername, email: friendEmail });
 };
 
 export { getFriend };
