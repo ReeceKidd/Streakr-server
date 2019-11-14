@@ -33,6 +33,10 @@ import {
     getHasAtLeastOneTeamMemberCompletedTheirTaskMiddleware,
     getMakeTeamStreakInactiveMiddleware,
     makeTeamStreakInactiveMiddleware,
+    retreiveTeamMembersMiddleware,
+    notifiyTeamMembersThatUserHasIncompletedTaskMiddleware,
+    getRetreiveTeamMembersMiddleware,
+    getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware,
 } from './createIncompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -1072,6 +1076,146 @@ describe('createTeamStreakIncompleteMiddleware', () => {
     });
 });
 
+describe('retreiveTeamMembersMiddleware', () => {
+    test('retreives team members without current user and calls next.', async () => {
+        expect.assertions(3);
+        const user = {
+            _id: '_id',
+        };
+        const memberId = 'memberId';
+        const member = { memberId };
+        const teamStreak = {
+            members: [member],
+        };
+        const lean = jest.fn().mockResolvedValue([{ _id: 'userId' }]);
+        const find = jest.fn(() => ({ lean }));
+        const userModel = {
+            find,
+        };
+        const request: any = {};
+        const response: any = { locals: { user, teamStreak } };
+        const next = jest.fn();
+        const middleware = getRetreiveTeamMembersMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({ _id: [memberId] });
+        expect(response.locals.teamMembers).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws RetreiveTeamMembers error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getRetreiveTeamMembersMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(
+                ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware,
+                expect.any(Error),
+            ),
+        );
+    });
+});
+
+describe(`notifyTeamMembersThatUserHasIncompletedTaskMiddleware`, () => {
+    test('sends user has incompleted task notification to team members if they have teamStreakUpdates notifications on', async () => {
+        expect.assertions(3);
+        const user = {
+            _id: '_id',
+            username: 'username',
+        };
+        const teamStreak = {
+            streakName: 'Daily Spanish',
+        };
+        const teamMember = {
+            pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                teamStreakUpdates: {
+                    pushNotification: true,
+                },
+            },
+        };
+        const teamMembers = [teamMember];
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(['message']);
+        const chunkPushNotifications = jest.fn().mockResolvedValue(['message']);
+        const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                user,
+                teamStreak,
+                teamMembers,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(sendPushNotificationsAsync).toBeCalled();
+        expect(chunkPushNotifications).toBeCalled();
+        expect(next).toBeCalledWith();
+    });
+
+    test('does not send notification if team member does not have push notifications on', async () => {
+        expect.assertions(2);
+
+        const user = {
+            _id: '_id',
+            username: 'username',
+        };
+        const teamStreak = {
+            streakName: 'Daily Spanish',
+        };
+        const teamMember = {
+            pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                teamStreakUpdates: {
+                    pushNotification: false,
+                },
+            },
+        };
+        const teamMembers = [teamMember];
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(['message']);
+        const chunkPushNotifications = jest.fn().mockResolvedValue(['message']);
+        const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                user,
+                teamStreak,
+                teamMembers,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(sendPushNotificationsAsync).not.toBeCalled();
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with SendRequesteeAFriendRequestNotification error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+
+        const middleware = getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.SendRequesteeAFriendRequestNotification, expect.any(Error)),
+        );
+    });
+});
+
 describe('sendTaskIncompleteResponseMiddleware', () => {
     test('sends incompleteTeamMemberStreakTask response', () => {
         expect.assertions(3);
@@ -1118,9 +1262,9 @@ describe('sendTaskIncompleteResponseMiddleware', () => {
 
 describe(`createIncompleteTeamMemberStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(18);
+        expect.assertions(20);
 
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares.length).toEqual(17);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares.length).toEqual(19);
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[0]).toBe(
             incompleteTeamMemberStreakTaskBodyValidationMiddleware,
         );
@@ -1145,6 +1289,10 @@ describe(`createIncompleteTeamMemberStreakTaskMiddlewares`, () => {
         );
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[14]).toBe(makeTeamStreakInactiveMiddleware);
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[15]).toBe(createTeamStreakIncompleteMiddleware);
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[16]).toBe(sendTaskIncompleteResponseMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[16]).toBe(retreiveTeamMembersMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[17]).toBe(
+            notifiyTeamMembersThatUserHasIncompletedTaskMiddleware,
+        );
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[18]).toBe(sendTaskIncompleteResponseMiddleware);
     });
 });

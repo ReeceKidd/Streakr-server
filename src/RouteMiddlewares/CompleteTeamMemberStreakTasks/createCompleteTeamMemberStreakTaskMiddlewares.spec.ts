@@ -1165,24 +1165,36 @@ describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
     test('does not send notification if team member does not have push notifications on', async () => {
         expect.assertions(2);
 
-        const requester = {
-            username: 'requester',
+        const user = {
+            _id: '_id',
+            username: 'username',
         };
-        const requestee = {
-            pushNotificationToken: null,
+        const teamStreak = {
+            streakName: 'Daily Spanish',
         };
-        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
-        const expo: any = { sendPushNotificationsAsync };
+        const teamMember = {
+            pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                teamStreakUpdates: {
+                    pushNotification: false,
+                },
+            },
+        };
+        const teamMembers = [teamMember];
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(['message']);
+        const chunkPushNotifications = jest.fn().mockResolvedValue(['message']);
+        const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
         const request: any = {};
         const response: any = {
             locals: {
-                requester,
-                requestee,
+                user,
+                teamStreak,
+                teamMembers,
             },
         };
         const next = jest.fn();
 
-        const middleware = getSendRequesteeAFriendRequestNotificationMiddleware(expo);
+        const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(expo);
         await middleware(request, response, next);
 
         expect(sendPushNotificationsAsync).not.toBeCalled();
