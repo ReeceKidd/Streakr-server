@@ -3,7 +3,8 @@ Node JS Backend for streakr application
 
 # Environment variables
 
-```NODE_ENV=test
+```
+NODE_ENV=test
 
 PORT=3001
 
