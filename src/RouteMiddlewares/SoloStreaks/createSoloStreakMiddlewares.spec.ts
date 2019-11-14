@@ -4,7 +4,6 @@ import {
     createSoloStreakBodyValidationMiddleware,
     createSoloStreakFromRequestMiddleware,
     getCreateSoloStreakFromRequestMiddleware,
-    saveSoloStreakToDatabaseMiddleware,
     sendFormattedSoloStreakMiddleware,
 } from './createSoloStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -166,50 +165,33 @@ describe(`createSoloStreakBodyValidationMiddleware`, () => {
 });
 
 describe(`createSoloStreakFromRequestMiddleware`, () => {
-    test('sets response.locals.newSoloStreak', async () => {
+    test('sets response.locals.savedSoloStreak', async () => {
         expect.assertions(2);
         const userId = 'abcdefg';
         const streakName = 'streak streakName';
         const streakDescription = 'mock streak streakDescription';
         const timezone = 'Europe/London';
-        class SoloStreak {
-            userId: string;
-            streakName: string;
-            streakDescription: string;
-            timezone: string;
+        const save = jest.fn().mockResolvedValue(true);
 
-            constructor({ userId, streakName, streakDescription, timezone }: any) {
-                this.userId = userId;
-                this.streakName = streakName;
-                this.streakDescription = streakDescription;
-                this.timezone = timezone;
-            }
-        }
+        const soloStreak = jest.fn(() => ({ save }));
+
         const response: any = { locals: { timezone } };
         const request: any = { body: { userId, streakName, streakDescription } };
         const next = jest.fn();
-        const newSoloStreak = new SoloStreak({
-            userId,
-            streakName,
-            streakDescription,
-            timezone,
-        });
-        const middleware = getCreateSoloStreakFromRequestMiddleware(SoloStreak as any);
 
-        middleware(request, response, next);
+        const middleware = getCreateSoloStreakFromRequestMiddleware(soloStreak as any);
 
-        expect(response.locals.newSoloStreak).toEqual(newSoloStreak);
+        await middleware(request, response, next);
+
+        expect(response.locals.savedSoloStreak).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
     test('calls next with CreateSoloStreakFromRequestMiddleware error on middleware failure', () => {
         expect.assertions(1);
-        const timezone = 'Europe/London';
-        const userId = 'abcdefg';
-        const streakName = 'streak streakName';
-        const streakDescription = 'mock streak streakDescription';
-        const response: any = { locals: { timezone } };
-        const request: any = { body: { userId, streakName, streakDescription } };
+
+        const response: any = {};
+        const request: any = {};
         const next = jest.fn();
         const middleware = getCreateSoloStreakFromRequestMiddleware({} as any);
 
@@ -218,46 +200,6 @@ describe(`createSoloStreakFromRequestMiddleware`, () => {
         expect(next).toBeCalledWith(
             new CustomError(ErrorType.CreateSoloStreakFromRequestMiddleware, expect.any(Error)),
         );
-    });
-});
-
-describe(`saveSoloStreakToDatabaseMiddleware`, () => {
-    const ERROR_MESSAGE = 'error';
-
-    test('sets response.locals.savedSoloStreak', async () => {
-        expect.assertions(3);
-        const save = jest.fn(() => {
-            return Promise.resolve(true);
-        });
-        const mockSoloStreak = {
-            userId: 'abcdefg',
-            email: 'user@gmail.com',
-            password: 'password',
-            save,
-        } as any;
-        const response: any = { locals: { newSoloStreak: mockSoloStreak } };
-        const request: any = {};
-        const next = jest.fn();
-
-        await saveSoloStreakToDatabaseMiddleware(request, response, next);
-
-        expect(save).toBeCalled();
-        expect(response.locals.savedSoloStreak).toBeDefined();
-        expect(next).toBeCalled();
-    });
-
-    test('calls next with SaveSoloStreakToDatabaseMiddleware error on middleware failure', async () => {
-        expect.assertions(1);
-        const save = jest.fn(() => {
-            return Promise.reject(ERROR_MESSAGE);
-        });
-        const request: any = {};
-        const response: any = { locals: { newSoloStreak: { save } } };
-        const next = jest.fn();
-
-        await saveSoloStreakToDatabaseMiddleware(request, response, next);
-
-        expect(next).toBeCalledWith(new CustomError(ErrorType.SaveSoloStreakToDatabaseMiddleware, expect.any(Error)));
     });
 });
 
@@ -308,12 +250,11 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
 
 describe(`createSoloStreakMiddlewares`, () => {
     test('that createSoloStreak middlewares are defined in the correct order', async () => {
-        expect.assertions(5);
+        expect.assertions(4);
 
-        expect(createSoloStreakMiddlewares.length).toEqual(4);
+        expect(createSoloStreakMiddlewares.length).toEqual(3);
         expect(createSoloStreakMiddlewares[0]).toBe(createSoloStreakBodyValidationMiddleware);
         expect(createSoloStreakMiddlewares[1]).toBe(createSoloStreakFromRequestMiddleware);
-        expect(createSoloStreakMiddlewares[2]).toBe(saveSoloStreakToDatabaseMiddleware);
-        expect(createSoloStreakMiddlewares[3]).toBe(sendFormattedSoloStreakMiddleware);
+        expect(createSoloStreakMiddlewares[2]).toBe(sendFormattedSoloStreakMiddleware);
     });
 });

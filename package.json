@@ -7,7 +7,7 @@
         "build": "tsc",
         "start": "node dist/src/server.js",
         "dist": "sh ./scripts/dist.sh",
-        "dev": "nodemon --exec ts-node -- ./src/server.ts",
+https://github.com/ReeceKidd/Streakr-server/pull/16/conflict?name=src%252FcustomError.spec.ts&ancestor_oid=5ff4f1c659454a4d9b4f22233df9016789ab33e6&base_oid=ea0d570eb32dc36396e8aad2c127b30ff7088439&head_oid=39a234faf7fdcc549174d0a3262c1daa9054125d        "dev": "nodemon --exec ts-node -- ./src/server.ts",
         "lint": "eslint **/*.ts --ignore-pattern node_modules/",
         "unit-tests": "jest --config=./jest.unit.config.js --coverage --runInBand",
         "intergration-tests": "jest --config=./jest.intergration.config.js --runInBand --forceExit",
