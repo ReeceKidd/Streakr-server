@@ -1,9 +1,10 @@
 # Streakr-server
+
 Node JS Backend for streakr application
 
 # Environment variables
 
-```
+````
 NODE_ENV=test
 
 PORT=3001
@@ -49,3 +50,4 @@ PROFILE_PICTURES_BUCKET=streakoid-profile-pictures
 SNS_PLATFORM_APPLICATION_ARN=arn:aws:sns:eu-west-1:932661412733:app/GCM/Firebase
 
 SNS_TOPIC_ARN=arn:aws:sns:eu-west-1:932661412733:Streakoid ```
+````

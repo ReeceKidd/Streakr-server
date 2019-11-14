@@ -2972,35 +2972,29 @@ export class CustomError extends Error {
                 };
 
             case ErrorType.CreateStreakRecommendationFromRequestMiddleware:
-              return {
-                    code: `${ResponseCodes.warning}-274`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-            case ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware:
                 return {
-                    code: `${ResponseCodes.warning}-275`,
+                    code: `${ResponseCodes.warning}-274`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
             case ErrorType.SaveStreakRecommendationToDatabaseMiddleware:
-                 return {
-                    code: `${ResponseCodes.warning}-275`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.NotifyTeamMembersThatUserHasIncompletedTaskMiddleware:
-
                 return {
                     code: `${ResponseCodes.warning}-275`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
+
             case ErrorType.SendFormattedStreakRecommendationMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-276`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-277`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

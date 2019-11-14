@@ -45,7 +45,6 @@ export const getCreateSoloStreakFromRequestMiddleware = (soloStreak: mongoose.Mo
         response.locals.savedSoloStreak = await newSoloStreak.save();
         next();
     } catch (err) {
-        console.log(err);
         next(new CustomError(ErrorType.CreateSoloStreakFromRequestMiddleware, err));
     }
 };
