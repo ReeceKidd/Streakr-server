@@ -17,4 +17,5 @@ export enum Collections {
     FriendRequests = 'FriendRequests',
     DailyJobs = 'DailyJobs',
     Emails = 'Emails',
+    StreakRecommendations = 'StreakRecommendations',
 }

@@ -3923,6 +3923,20 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
+
+    test(`creates correct error when type is set to CreateStreakRecommendationFromRequestMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateStreakRecommendationFromRequestMiddleware);
+      
+       const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-274`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+      
+    }
+
     test(`creates correct error when type is set to CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware`, () => {
         expect.assertions(3);
 
@@ -3931,7 +3945,18 @@ describe('customError', () => {
         );
         const { code, message, httpStatusCode } = customError;
 
-        expect(code).toBe(`500-274`);
+        expect(code).toBe(`500-275`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+
+    test(`creates correct error when type is set to SaveStreakRecommendationToDatabaseMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SaveStreakRecommendationToDatabaseMiddleware);
+      
+           expect(code).toBe(`500-276`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
@@ -3940,10 +3965,23 @@ describe('customError', () => {
         expect.assertions(3);
 
         const customError = new CustomError(ErrorType.NotifyTeamMembersThatUserHasIncompletedTaskMiddleware);
+
         const { code, message, httpStatusCode } = customError;
 
-        expect(code).toBe(`500-275`);
+        expect(code).toBe(`500-277`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to SendFormattedStreakRecommendationMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendFormattedStreakRecommendationMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-278`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
 });

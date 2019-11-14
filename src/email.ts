@@ -1,11 +1,13 @@
 import nodemailer from 'nodemailer';
 import { getServiceConfig } from './getServiceConfig';
 
+const { EMAIL_FROM, EMAIL_PASSWORD } = getServiceConfig();
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'reecekidd95@gmail.com',
-        pass: 'Milkshake123@',
+        user: EMAIL_FROM,
+        pass: EMAIL_PASSWORD,
     },
 });
 
@@ -15,8 +17,8 @@ const { NODE_ENV } = getServiceConfig();
 export const sendEmail = async (subject: string, text: string): Promise<any> => {
     if (NODE_ENV !== 'test') {
         const mailOptions = {
-            from: 'reecekidd95@gmail.com',
-            to: 'reecekidd95@gmail.com',
+            from: EMAIL_FROM,
+            to: EMAIL_FROM,
             subject,
             text,
         };
