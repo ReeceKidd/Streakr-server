@@ -450,6 +450,7 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
         );
         next();
     } catch (err) {
+        console.log(err);
         next(new CustomError(ErrorType.NotifyTeamMembersThatUserHasCompletedTaskMiddleware, err));
     }
 };
