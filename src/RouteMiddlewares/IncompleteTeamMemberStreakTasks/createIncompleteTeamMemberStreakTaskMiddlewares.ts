@@ -433,7 +433,7 @@ export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (expo: t
                         to: teamMember.pushNotificationToken,
                         sound: 'default',
                         title: `${teamStreak.streakName} update`,
-                        body: `${user.username} has completed ${teamStreak.streakName}`,
+                        body: `${user.username} made a mistake they have not completed ${teamStreak.streakName}`,
                     });
                 }
             }),

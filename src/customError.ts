@@ -367,6 +367,8 @@ export enum ErrorType {
     SendFormattedStreakRecommendationMiddleware,
     CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware,
     NotifyTeamMembersThatUserHasIncompletedTaskMiddleware,
+    SendStreakRecommendationsMiddleware,
+    FindStreakRecommendationsMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -2995,6 +2997,20 @@ export class CustomError extends Error {
             case ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-277`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendStreakRecommendationsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-278`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindStreakRecommendationsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-279`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

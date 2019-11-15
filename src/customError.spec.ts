@@ -3968,4 +3968,26 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to SendStreakRecommendationsMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendStreakRecommendationsMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-278`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to FindStreakRecommendationsMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FindStreakRecommendationsMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-279`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });
