@@ -441,13 +441,13 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
                         title: `${teamStreak.streakName} update`,
                         body: `${user.username} has completed ${teamStreak.streakName}`,
                     });
-                    const chunks = await expo.chunkPushNotifications(messages);
-                    for (const chunk of chunks) {
-                        await expo.sendPushNotificationsAsync(chunk);
-                    }
                 }
             }),
         );
+        const chunks = await expo.chunkPushNotifications(messages);
+        for (const chunk of chunks) {
+            await expo.sendPushNotificationsAsync(chunk);
+        }
         next();
     } catch (err) {
         next(new CustomError(ErrorType.NotifyTeamMembersThatUserHasCompletedTaskMiddleware, err));
