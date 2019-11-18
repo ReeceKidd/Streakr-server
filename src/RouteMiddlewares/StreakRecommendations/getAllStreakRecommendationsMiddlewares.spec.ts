@@ -26,14 +26,44 @@ describe('getStreakRecommendationsValidationMiddleware', () => {
     });
 });
 
-describe('findSoloStreaksMiddleware', () => {
-    test('queries database and sets streakRecommendations', async () => {
+describe('findStreakRecommendationsMiddleware', () => {
+    test('if random is true it returns the number of random streak recommendations based on the limit ', async () => {
         expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        const aggregate = jest.fn(() => Promise.resolve(true));
+        const streakRecommendationModel = {
+            aggregate,
+        };
+        const limit = 5;
+        const request: any = {
+            query: {
+                random: true,
+                limit: 5,
+            },
+        };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindStreakRecommendationsMiddleware(streakRecommendationModel as any);
+
+        await middleware(request, response, next);
+
+        expect(aggregate).toBeCalledWith([{ $sample: { size: Number(limit) } }]);
+        expect(response.locals.streakRecommendations).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('if random is false it returns the number of streak recommendations based on the limit', async () => {
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const streakRecommendationModel = {
             find,
         };
-        const request: any = { query: {} };
+        const request: any = {
+            query: {
+                random: false,
+                limit: 5,
+            },
+        };
         const response: any = { locals: {} };
         const next = jest.fn();
         const middleware = getFindStreakRecommendationsMiddleware(streakRecommendationModel as any);
@@ -41,21 +71,19 @@ describe('findSoloStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({});
+        expect(limit).toBeCalledWith(Number('5'));
         expect(response.locals.streakRecommendations).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('calls next with FindStreakRecommendationsMiddleware error on middleware failure', async () => {
         expect.assertions(1);
-        const ERROR_MESSAGE = 'error';
-        const find = jest.fn(() => Promise.reject(ERROR_MESSAGE));
-        const streakRecommendationModel = {
-            find,
-        };
-        const request: any = { query: { userId: '1234' } };
-        const response: any = { locals: {} };
+
+        const request: any = {};
+        const response: any = {};
         const next = jest.fn();
-        const middleware = getFindStreakRecommendationsMiddleware(streakRecommendationModel as any);
+
+        const middleware = getFindStreakRecommendationsMiddleware({} as any);
 
         await middleware(request, response, next);
 
