@@ -36,6 +36,7 @@ v1Router.use(`/${RouterCategories.emails}`, emailRouter);
 v1Router.use(`/${RouterCategories.dailyJobs}`, dailyJobsRouter);
 v1Router.use(`/${RouterCategories.streakTrackingEvents}`, streakTrackingEventRouter);
 v1Router.use(`/${RouterCategories.users}`, usersRouter);
+v1Router.use(`/${RouterCategories.streakRecommendations}`, streakRecommendationsRouter);
 
 // Partially authenticated routes.
 v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
@@ -57,6 +58,5 @@ v1Router.use(`/${RouterCategories.incompleteTeamMemberStreakTasks}`, incompleteT
 v1Router.use(`/${RouterCategories.incompleteTeamStreaks}`, incompleteTeamStreaksRouter);
 v1Router.use(`/${RouterCategories.friendRequests}`, friendRequestsRouter);
 v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);
-v1Router.use(`/${RouterCategories.streakRecommendations}`, streakRecommendationsRouter);
 
 export default v1Router;
