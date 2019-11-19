@@ -369,6 +369,10 @@ export enum ErrorType {
     NotifyTeamMembersThatUserHasIncompletedTaskMiddleware,
     SendStreakRecommendationsMiddleware,
     FindStreakRecommendationsMiddleware,
+    FindBadgesMiddleware,
+    SendBadgesMiddleware,
+    CreateBadgeFromRequestMiddleware,
+    SendFormattedBadgeMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3011,6 +3015,34 @@ export class CustomError extends Error {
             case ErrorType.FindStreakRecommendationsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-279`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindBadgesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-280`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendBadgesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-281`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateBadgeFromRequestMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-282`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendFormattedBadgeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-283`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

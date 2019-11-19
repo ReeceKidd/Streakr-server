@@ -20,6 +20,8 @@ import { dailyJobsRouter } from './dailyJobsRouter';
 import { completeTeamStreaksRouter } from './completeTeamStreaksRouter';
 import { emailRouter } from './emailRouter';
 import { profilePictureRouter } from './profilePicturesRouter';
+import { badgesRouter } from './badgesRouter';
+
 import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 import { userRouter } from './userRouter';
 import { registerUserMiddlewares } from '../../../../src/RouteMiddlewares/User/registerUserMiddlewares';
@@ -58,5 +60,6 @@ v1Router.use(`/${RouterCategories.incompleteTeamMemberStreakTasks}`, incompleteT
 v1Router.use(`/${RouterCategories.incompleteTeamStreaks}`, incompleteTeamStreaksRouter);
 v1Router.use(`/${RouterCategories.friendRequests}`, friendRequestsRouter);
 v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);
+v1Router.use(`/${RouterCategories.badges}`, badgesRouter);
 
 export default v1Router;
