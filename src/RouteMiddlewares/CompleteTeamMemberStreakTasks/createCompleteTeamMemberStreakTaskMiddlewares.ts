@@ -434,7 +434,11 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
         const messages: ExpoPushMessage[] = [];
         await Promise.all(
             teamMembers.map(async teamMember => {
-                if (teamMember.pushNotificationToken && teamMember.notifications.teamStreakUpdates.pushNotification) {
+                if (
+                    teamMember.pushNotificationToken &&
+                    teamMember.notifications.teamStreakUpdates.pushNotification &&
+                    teamMember._id !== user._id
+                ) {
                     messages.push({
                         to: teamMember.pushNotificationToken,
                         sound: 'default',

@@ -1134,6 +1134,7 @@ describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
             streakName: 'Daily Spanish',
         };
         const teamMember = {
+            _id: 'teamMemberId',
             pushNotificationToken: 'pushNotificationToken',
             notifications: {
                 teamStreakUpdates: {
@@ -1173,10 +1174,52 @@ describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
             streakName: 'Daily Spanish',
         };
         const teamMember = {
+            _id: 'teamMemberId',
             pushNotificationToken: 'pushNotificationToken',
             notifications: {
                 teamStreakUpdates: {
                     pushNotification: false,
+                },
+            },
+        };
+        const teamMembers = [teamMember];
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue([]);
+        const chunkPushNotifications = jest.fn().mockResolvedValue([]);
+        const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                user,
+                teamStreak,
+                teamMembers,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(chunkPushNotifications).toBeCalled();
+        expect(sendPushNotificationsAsync).not.toBeCalled();
+        expect(next).toBeCalledWith();
+    });
+
+    test('does not send notification to user that completed the task', async () => {
+        expect.assertions(3);
+
+        const user = {
+            _id: '_id',
+            username: 'username',
+        };
+        const teamStreak = {
+            streakName: 'Daily Spanish',
+        };
+        const teamMember = {
+            _id: '_id',
+            pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                teamStreakUpdates: {
+                    pushNotification: true,
                 },
             },
         };
