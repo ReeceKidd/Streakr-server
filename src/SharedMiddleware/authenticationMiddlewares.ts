@@ -15,7 +15,7 @@ export const getDecodeJWTMiddleware = (decode: typeof jwtDecode) => (
 ): void => {
     try {
         const token = request.header(SupportedRequestHeaders.Authorization);
-        if (!token) {
+        if (!token || token === 'null') {
             throw new CustomError(ErrorType.TokenDoesNotExist);
         }
         const decodedJwt = decode(token);

@@ -437,7 +437,7 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
                 if (
                     teamMember.pushNotificationToken &&
                     teamMember.notifications.teamStreakUpdates.pushNotification &&
-                    teamMember._id !== user._id
+                    String(teamMember._id) !== String(user._id)
                 ) {
                     messages.push({
                         to: teamMember.pushNotificationToken,
