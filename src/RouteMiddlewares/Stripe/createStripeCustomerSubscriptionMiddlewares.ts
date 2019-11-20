@@ -129,7 +129,10 @@ export const getCreateStripeSubscriptionMiddleware = (stripePlan: string) => asy
                 customer: stripeCustomer.id,
                 items: [{ plan: stripePlan }],
                 expand: ['latest_invoice.payment_intent'],
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                trial_period_days: 14,
             });
+
             response.locals.stripeSubscription = stripeSubscription;
             next();
         } catch (err) {
@@ -150,10 +153,10 @@ export const handleInitialPaymentOutcomeMiddleware = (
 ): void => {
     try {
         const { stripeSubscription } = response.locals;
-        const paymentIntentStatus = stripeSubscription.latest_invoice.payment_intent.status;
-        if (stripeSubscription.status === 'active' && paymentIntentStatus === 'succeeded') {
-            next();
-        } else if (stripeSubscription.status === 'incomplete') {
+        if (stripeSubscription.status === 'trialing') {
+            return next();
+        }
+        if (stripeSubscription.status === 'incomplete') {
             throw new CustomError(ErrorType.IncompletePayment);
         } else {
             throw new CustomError(ErrorType.UnknownPaymentStatus);

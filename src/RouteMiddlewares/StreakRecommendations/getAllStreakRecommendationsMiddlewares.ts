@@ -29,7 +29,6 @@ export const getFindStreakRecommendationsMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { random, limit } = request.query;
-        console.log(limit);
         if (random) {
             response.locals.streakRecommendations = await streakRecommendationModel.aggregate([
                 { $sample: { size: Number(limit) } },

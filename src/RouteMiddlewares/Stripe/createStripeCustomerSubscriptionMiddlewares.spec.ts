@@ -445,6 +445,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                 customer: stripeCustomer.id,
                 items: [{ plan: stripePlan }],
                 expand: ['latest_invoice.payment_intent'],
+                trial_period_days: 14,
             });
             expect(response.locals.stripeSubscription).toBeDefined();
             expect(next).toBeCalledWith();
@@ -476,6 +477,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                 customer: stripeCustomer.id,
                 items: [{ plan: stripePlan }],
                 expand: ['latest_invoice.payment_intent'],
+                trial_period_days: 14,
             });
             expect(status).toBeCalledWith(ResponseCodes.badRequest);
             expect(send).toBeCalledWith(errorResponse);
