@@ -9,7 +9,6 @@ export const createCompleteStreakReminder = async (
     timezone: string,
     hour: number,
 ): Promise<Agenda.Job<{ timezone: string; hour: number }>> => {
-    console.log(timezone, hour);
     return (async (): Promise<Agenda.Job<{ timezone: string; hour: number }>> => {
         const jobTime = moment
             .tz(timezone)
