@@ -498,15 +498,10 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
     });
 
     describe('handleInitialPaymentOutcomeMiddleware', () => {
-        test(' calls next() if subscriptionStatus is active and paymentIntentStatus succeeded', () => {
+        test(' calls next() if subscriptionStatus is trialing', () => {
             expect.assertions(1);
             const stripeSubscription = {
-                status: 'active',
-                latest_invoice: {
-                    payment_intent: {
-                        status: 'succeeded',
-                    },
-                },
+                status: 'trialing',
             };
             const request: any = {};
             const response: any = {
