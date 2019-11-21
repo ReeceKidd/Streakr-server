@@ -8,7 +8,7 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 
 const getSoloStreaksQueryValidationSchema = {
-    userId: Joi.string(),
+    userId: Joi.string().required(),
     timezone: Joi.string(),
     status: Joi.string(),
     completedToday: Joi.boolean(),
