@@ -3,7 +3,7 @@ import {
     challengeParamsValidationMiddleware,
     getRetreiveChallengeMiddleware,
     sendChallengeMiddleware,
-    getChallengeMiddlewares,
+    getOneChallengeMiddlewares,
     retreiveChallengeMiddleware,
 } from '../Challenges/getOneChallengeMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -178,13 +178,13 @@ describe('sendRetreiveChallengeResponseMiddleware', () => {
     });
 });
 
-describe('getChallengeMiddlewares', () => {
+describe('getOneChallengeMiddlewares', () => {
     test('are defined in the correct order', () => {
         expect.assertions(4);
 
-        expect(getChallengeMiddlewares.length).toEqual(3);
-        expect(getChallengeMiddlewares[0]).toEqual(challengeParamsValidationMiddleware);
-        expect(getChallengeMiddlewares[1]).toEqual(retreiveChallengeMiddleware);
-        expect(getChallengeMiddlewares[2]).toEqual(sendChallengeMiddleware);
+        expect(getOneChallengeMiddlewares.length).toEqual(3);
+        expect(getOneChallengeMiddlewares[0]).toEqual(challengeParamsValidationMiddleware);
+        expect(getOneChallengeMiddlewares[1]).toEqual(retreiveChallengeMiddleware);
+        expect(getOneChallengeMiddlewares[2]).toEqual(sendChallengeMiddleware);
     });
 });

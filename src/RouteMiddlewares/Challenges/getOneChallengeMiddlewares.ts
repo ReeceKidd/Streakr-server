@@ -51,7 +51,7 @@ export const sendChallengeMiddleware = (request: Request, response: Response, ne
     }
 };
 
-export const getChallengeMiddlewares = [
+export const getOneChallengeMiddlewares = [
     challengeParamsValidationMiddleware,
     retreiveChallengeMiddleware,
     sendChallengeMiddleware,
