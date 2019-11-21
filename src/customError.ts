@@ -377,6 +377,9 @@ export enum ErrorType {
     SendFormattedChallengeMiddleware,
     FindChallengesMiddleware,
     SendChallengesMiddleware,
+    GetRetreiveChallengeMiddleware,
+    SendChallengeMiddleware,
+    NoChallengeFound,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -967,6 +970,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-74`,
                     message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.NoChallengeFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-75`,
+                    message: 'Challenge does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -3075,6 +3086,20 @@ export class CustomError extends Error {
             case ErrorType.SendChallengesMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-287`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetRetreiveChallengeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-288`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendChallengeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-289`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
