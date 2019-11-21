@@ -4034,4 +4034,48 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to CreateChallengeFromRequestMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateChallengeFromRequestMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-284`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendFormattedChallengeMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendFormattedChallengeMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-285`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to FindChallengesMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FindChallengesMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-286`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendChallengesMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendChallengesMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-287`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

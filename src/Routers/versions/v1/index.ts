@@ -21,6 +21,7 @@ import { completeTeamStreaksRouter } from './completeTeamStreaksRouter';
 import { emailRouter } from './emailRouter';
 import { profilePictureRouter } from './profilePicturesRouter';
 import { badgesRouter } from './badgesRouter';
+import { challengesRouter } from './challengesRouter';
 
 import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 import { userRouter } from './userRouter';
@@ -61,5 +62,6 @@ v1Router.use(`/${RouterCategories.incompleteTeamStreaks}`, incompleteTeamStreaks
 v1Router.use(`/${RouterCategories.friendRequests}`, friendRequestsRouter);
 v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);
 v1Router.use(`/${RouterCategories.badges}`, badgesRouter);
+v1Router.use(`/${RouterCategories.challenges}`, challengesRouter);
 
 export default v1Router;

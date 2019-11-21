@@ -17,4 +17,5 @@ export enum Models {
     Email = 'Email',
     StreakRecommendation = 'StreakRecommendation',
     Badge = 'Badge',
+    Challenge = 'Challenge',
 }

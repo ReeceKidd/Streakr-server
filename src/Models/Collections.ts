@@ -19,4 +19,5 @@ export enum Collections {
     Emails = 'Emails',
     StreakRecommendations = 'StreakRecommendations',
     Badges = 'Badges',
+    Challenges = 'Challenges',
 }
