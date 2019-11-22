@@ -26,6 +26,7 @@ import { challengesRouter } from './challengesRouter';
 import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 import { userRouter } from './userRouter';
 import { registerUserMiddlewares } from '../../../../src/RouteMiddlewares/User/registerUserMiddlewares';
+import { challengeStreaksRouter } from './challengeStreakRouter';
 
 const v1Router = Router();
 
@@ -63,5 +64,6 @@ v1Router.use(`/${RouterCategories.friendRequests}`, friendRequestsRouter);
 v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);
 v1Router.use(`/${RouterCategories.badges}`, badgesRouter);
 v1Router.use(`/${RouterCategories.challenges}`, challengesRouter);
+v1Router.use(`/${RouterCategories.challengeStreaks}`, challengeStreaksRouter);
 
 export default v1Router;

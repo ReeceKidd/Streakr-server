@@ -380,6 +380,13 @@ export enum ErrorType {
     GetRetreiveChallengeMiddleware,
     SendChallengeMiddleware,
     NoChallengeFound,
+    CreateChallengeStreakFromRequestMiddleware,
+    SendFormattedChallengeStreakMiddleware,
+    FindChallengeStreaksMiddleware,
+    SendChallengeStreaksMiddleware,
+    RetreiveChallengeStreakMiddleware,
+    SendChallengeStreakMiddleware,
+    GetChallengeStreakNoChallengeStreakFound,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -978,6 +985,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-75`,
                     message: 'Challenge does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.GetChallengeStreakNoChallengeStreakFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-76`,
+                    message: 'Challenge streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -3100,6 +3115,48 @@ export class CustomError extends Error {
             case ErrorType.SendChallengeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-289`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateChallengeStreakFromRequestMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-290`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendFormattedChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-291`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindChallengeStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-292`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendChallengeStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-293`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RetreiveChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-294`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-295`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

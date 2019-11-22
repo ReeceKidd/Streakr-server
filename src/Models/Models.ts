@@ -18,4 +18,6 @@ export enum Models {
     StreakRecommendation = 'StreakRecommendation',
     Badge = 'Badge',
     Challenge = 'Challenge',
+    ChallengeStreak = 'ChallengeStreak',
+    CompleteChallengeStreakTask = 'CompleteChallengeStreakTask',
 }

@@ -20,4 +20,6 @@ export enum Collections {
     StreakRecommendations = 'StreakRecommendations',
     Badges = 'Badges',
     Challenges = 'Challenges',
+    ChallengeStreaks = 'ChallengeStreaks',
+    CompleteChallengeStreakTasks = 'CompleteChallengeStreakTasks',
 }

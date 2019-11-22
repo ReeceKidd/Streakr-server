@@ -9,22 +9,44 @@ import {
     createChallengeMiddlewares,
     saveChallengeToDatabaseMiddleware,
 } from './createChallengeMiddlewares';
-import { StreakTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
 
 describe(`createChallengeBodyValidationMiddleware`, () => {
     const name = 'Paint';
     const description = 'Must sit down and paint for 30 minutes';
     const icon = 'paint-brush';
     const color = 'red';
+    const levels = [{ level: 0, badgeId: 'badgeId', criteria: 'criteria' }];
+    const numberOfMinutes = 30;
 
     const body = {
         name,
         description,
         icon,
         color,
+        levels,
     };
 
-    test('check that valid request passes', () => {
+    test('check that valid request with all paramaters passes', () => {
+        expect.assertions(1);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: {
+                ...body,
+                numberOfMinutes,
+            },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        createChallengeBodyValidationMiddleware(request, response, next);
+
+        expect(next).toBeCalled();
+    });
+
+    test.only('check that valid request with minimum paramaters passes', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -130,17 +152,12 @@ describe(`saveChallengeToDatabaseMiddleware`, () => {
     test('sets response.locals.savedChallenge', async () => {
         expect.assertions(2);
 
-        const jobName = AgendaJobNames.soloStreakDailyTracker;
-        const timezone = 'Europe/London';
-        const localisedJobCompleteTime = new Date().toString();
-        const streakType = StreakTypes.team;
-
         const save = jest.fn().mockResolvedValue(true);
 
         const challenge = jest.fn(() => ({ save }));
 
         const request: any = {
-            body: { jobName, timezone, localisedJobCompleteTime, streakType },
+            body: {},
         };
         const response: any = { locals: {} };
         const next = jest.fn();

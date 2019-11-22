@@ -7,11 +7,21 @@ import { challengeModel, ChallengeModel } from '../../Models/Challenge';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 
+const level = Joi.object().keys({
+    level: Joi.number().required(),
+    badgeId: Joi.string().required(),
+    criteria: Joi.string().required(),
+});
+
 const createChallengeBodyValidationSchema = {
     name: Joi.string().required(),
     description: Joi.string().required(),
     icon: Joi.string().required(),
     color: Joi.string().required(),
+    levels: Joi.array()
+        .items(level)
+        .required(),
+    numberOfMinutes: Joi.number(),
 };
 
 export const createChallengeBodyValidationMiddleware = (
@@ -32,12 +42,14 @@ export const getSaveChallengeToDatabaseMiddleware = (challenge: mongoose.Model<C
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { name, description, icon, color } = request.body;
+        const { name, description, icon, color, numberOfMinutes, levels } = request.body;
         const newChallenge = new challenge({
             name,
             description,
             icon,
             color,
+            levels,
+            numberOfMinutes,
         });
         response.locals.savedChallenge = await newChallenge.save();
         next();
