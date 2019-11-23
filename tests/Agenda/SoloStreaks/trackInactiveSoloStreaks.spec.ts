@@ -40,6 +40,7 @@ describe('trackInactiveSoloStreak', () => {
         const inactiveSoloStreaks = await streakoid.soloStreaks.getAll({
             completedToday: false,
             active: false,
+            userId,
         });
 
         await trackInactiveSoloStreaks(inactiveSoloStreaks);

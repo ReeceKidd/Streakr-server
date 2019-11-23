@@ -45,6 +45,7 @@ describe('trackMaintainedSoloStreak', () => {
 
         const maintainedSoloStreaks = await streakoid.soloStreaks.getAll({
             completedToday: true,
+            userId,
         });
 
         await trackMaintainedSoloStreaks(maintainedSoloStreaks);

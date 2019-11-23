@@ -39,6 +39,7 @@ describe('resetIncompleteSoloStreaks', () => {
         const soloStreakId = soloStreak._id;
 
         const incompleteSoloStreaks = await streakoid.soloStreaks.getAll({
+            userId,
             completedToday: false,
         });
 
