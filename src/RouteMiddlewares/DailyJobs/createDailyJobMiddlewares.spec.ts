@@ -64,12 +64,12 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
         expect(next).not.toBeCalled();
     });
 
-    test('sends correct correct response when jobName is incorrect', () => {
+    test('sends correct error response when jobName is missing', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { ...body, jobName: 'incorrect' },
+            body: { ...body, jobName: undefined },
         };
         const response: any = {
             status,
@@ -80,8 +80,7 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message:
-                'child "jobName" fails because ["jobName" must be one of [soloStreakDailyTracker, teamStreakDailyTracker]]',
+            message: 'child "jobName" fails because ["jobName" is required]',
         });
         expect(next).not.toBeCalled();
     });
@@ -144,7 +143,8 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "streakType" fails because ["streakType" must be one of [solo, team, teamMember]]',
+            message:
+                'child "streakType" fails because ["streakType" must be one of [solo, team, teamMember, challenge]]',
         });
         expect(next).not.toBeCalled();
     });

@@ -22,4 +22,5 @@ export enum Collections {
     Challenges = 'Challenges',
     ChallengeStreaks = 'ChallengeStreaks',
     CompleteChallengeStreakTasks = 'CompleteChallengeStreakTasks',
+    IncompleteChallengeStreakTasks = 'IncompleteChallengeStreakTasks',
 }

@@ -6,13 +6,11 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { dailyJobModel, DailyJobModel } from '../../Models/DailyJob';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { AgendaJobNames, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 const createDailyJobBodyValidationSchema = {
     agendaJobId: Joi.string().required(),
-    jobName: Joi.string()
-        .valid([AgendaJobNames.soloStreakDailyTracker, AgendaJobNames.teamStreakDailyTracker])
-        .required(),
+    jobName: Joi.string().required(),
     timezone: Joi.string().required(),
     localisedJobCompleteTime: Joi.string().required(),
     streakType: Joi.string()

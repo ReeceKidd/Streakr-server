@@ -121,7 +121,8 @@ describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "streakType" fails because ["streakType" must be one of [solo, team, teamMember]]',
+            message:
+                'child "streakType" fails because ["streakType" must be one of [solo, team, teamMember, challenge]]',
         });
         expect(next).not.toBeCalled();
     });

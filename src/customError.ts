@@ -387,6 +387,35 @@ export enum ErrorType {
     RetreiveChallengeStreakMiddleware,
     SendChallengeStreakMiddleware,
     GetChallengeStreakNoChallengeStreakFound,
+    ChallengeStreakExistsMiddleware,
+    EnsureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware,
+    CreateCompleteChallengeStreakTaskRetreiveUserMiddleware,
+    CreateCompleteChallengeStreakTaskSetTaskCompleteTimeMiddleware,
+    CreateCompleteChallengeStreakTaskSetStreakStartDateMiddleware,
+    CreateCompleteChallengeStreakTaskSetDayTaskWasCompletedMiddleware,
+    CreateCompleteChallengeStreakTaskDefinitionMiddleware,
+    CreateCompleteChallengeStreakTaskStreakMaintainedMiddleware,
+    CreateCompleteChallengeStreakTaskSendTaskCompleteResponseMiddleware,
+    CreateCompleteChallengeStreakTaskSaveTaskCompleteMiddleware,
+    CreateCompleteChallengeStreakTaskUserDoesNotExist,
+    ChallengeStreakDoesNotExist,
+    ChallengeStreakHasBeenCompletedToday,
+    CreateIncompleteChallengeStreakTaskChallengeStreakExistsMiddleware,
+    EnsureChallengeStreakTaskHasBeenCompletedTodayMiddleware,
+    CreateIncompleteChallengeStreakTaskRetreiveUserMiddleware,
+    CreateIncompleteChallengeStreakTaskDefinitionMiddleware,
+    IncompleteChallengeStreakMiddleware,
+    SendChallengeTaskIncompleteResponseMiddleware,
+    SaveChallengeTaskIncompleteMiddleware,
+    SetDayChallengeTaskWasIncompletedMiddleware,
+    SetChallengeTaskIncompleteTimeMiddleware,
+    ResetChallengeStreakStartDateMiddleware,
+    CreateIncompleteChallengeStreakTaskChallengeStreakDoesNotExist,
+    CreateIncompleteChallengeStreakTaskUserDoesNotExist,
+    ChallengeStreakHasNotBeenCompletedToday,
+    PatchChallengeStreakMiddleware,
+    SendUpdatedChallengeStreakMiddleware,
+    UpdatedChallengeStreakNotFound,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -997,6 +1026,46 @@ export class CustomError extends Error {
                 };
             }
 
+            case ErrorType.ChallengeStreakDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-77`,
+                    message: 'Challenge streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateCompleteChallengeStreakTaskUserDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-78`,
+                    message: 'Challenge streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateIncompleteChallengeStreakTaskChallengeStreakDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-79`,
+                    message: 'Challenge streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateIncompleteChallengeStreakTaskUserDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-80`,
+                    message: 'Challenge streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.UpdatedChallengeStreakNotFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-81`,
+                    message: 'Challenge streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
             case ErrorType.TokenDoesNotExist: {
                 return {
                     code: `${ResponseCodes.unautohorized}-01`,
@@ -1073,6 +1142,22 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.unprocessableEntity}-05`,
                     message: 'Team streak task already completed today.',
+                    httpStatusCode: ResponseCodes.unprocessableEntity,
+                };
+            }
+
+            case ErrorType.ChallengeStreakHasBeenCompletedToday: {
+                return {
+                    code: `${ResponseCodes.unprocessableEntity}-06`,
+                    message: 'Challenge streak task already completed today.',
+                    httpStatusCode: ResponseCodes.unprocessableEntity,
+                };
+            }
+
+            case ErrorType.ChallengeStreakHasNotBeenCompletedToday: {
+                return {
+                    code: `${ResponseCodes.unprocessableEntity}-07`,
+                    message: 'Challenge streak has not been completed today.',
                     httpStatusCode: ResponseCodes.unprocessableEntity,
                 };
             }
@@ -3157,6 +3242,160 @@ export class CustomError extends Error {
             case ErrorType.SendChallengeStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-295`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChallengeStreakExistsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-296`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.EnsureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-297`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteChallengeStreakTaskRetreiveUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-298`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteChallengeStreakTaskSetTaskCompleteTimeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-299`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteChallengeStreakTaskSetStreakStartDateMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-300`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteChallengeStreakTaskSetDayTaskWasCompletedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-301`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteChallengeStreakTaskDefinitionMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-302`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteChallengeStreakTaskStreakMaintainedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-303`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteChallengeStreakTaskSendTaskCompleteResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-304`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteChallengeStreakTaskSaveTaskCompleteMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-305`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteChallengeStreakTaskChallengeStreakExistsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-306`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.EnsureChallengeStreakTaskHasBeenCompletedTodayMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-307`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteChallengeStreakTaskRetreiveUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-308`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteChallengeStreakTaskDefinitionMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-309`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncompleteChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-310`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendChallengeTaskIncompleteResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-311`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SaveChallengeTaskIncompleteMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-312`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SetDayChallengeTaskWasIncompletedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-313`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SetChallengeTaskIncompleteTimeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-314`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ResetChallengeStreakStartDateMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-315`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PatchChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-316`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendUpdatedChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-317`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

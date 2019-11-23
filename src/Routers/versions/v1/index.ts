@@ -27,6 +27,8 @@ import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddlewar
 import { userRouter } from './userRouter';
 import { registerUserMiddlewares } from '../../../../src/RouteMiddlewares/User/registerUserMiddlewares';
 import { challengeStreaksRouter } from './challengeStreakRouter';
+import { completeChallengeStreakTasksRouter } from './completeChallengeStreakTaskRouter';
+import { incompleteChallengeStreakTasksRouter } from './incompleteChallengeStreakTaskRouter';
 
 const v1Router = Router();
 
@@ -55,11 +57,14 @@ v1Router.use(hasUserPaidMembershipMiddleware);
 v1Router.use(`/${RouterCategories.soloStreaks}`, soloStreaksRouter);
 v1Router.use(`/${RouterCategories.teamMemberStreaks}`, teamMemberStreaksRouter);
 v1Router.use(`/${RouterCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);
-v1Router.use(`/${RouterCategories.completeTeamStreaks}`, completeTeamStreaksRouter);
-v1Router.use(`/${RouterCategories.completeTeamMemberStreakTasks}`, completeTeamMemberStreakTasksRouter);
 v1Router.use(`/${RouterCategories.incompleteSoloStreakTasks}`, incompleteSoloStreakTasksRouter);
-v1Router.use(`/${RouterCategories.incompleteTeamMemberStreakTasks}`, incompleteTeamMemberStreakTasksRouter);
+v1Router.use(`/${RouterCategories.completeTeamStreaks}`, completeTeamStreaksRouter);
 v1Router.use(`/${RouterCategories.incompleteTeamStreaks}`, incompleteTeamStreaksRouter);
+v1Router.use(`/${RouterCategories.completeTeamMemberStreakTasks}`, completeTeamMemberStreakTasksRouter);
+v1Router.use(`/${RouterCategories.incompleteTeamMemberStreakTasks}`, incompleteTeamMemberStreakTasksRouter);
+v1Router.use(`/${RouterCategories.completeChallengeStreakTasks}`, completeChallengeStreakTasksRouter);
+v1Router.use(`/${RouterCategories.incompleteChallengeStreakTasks}`, incompleteChallengeStreakTasksRouter);
+v1Router.use(`/${RouterCategories.incompleteTeamMemberStreakTasks}`, incompleteTeamMemberStreakTasksRouter);
 v1Router.use(`/${RouterCategories.friendRequests}`, friendRequestsRouter);
 v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);
 v1Router.use(`/${RouterCategories.badges}`, badgesRouter);

@@ -46,7 +46,7 @@ describe(`createChallengeBodyValidationMiddleware`, () => {
         expect(next).toBeCalled();
     });
 
-    test.only('check that valid request with minimum paramaters passes', () => {
+    test('check that valid request with minimum paramaters passes', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
