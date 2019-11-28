@@ -871,6 +871,39 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to UserIsAlreadyInChallenge`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.UserIsAlreadyInChallenge);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-82`);
+        expect(message).toBe('User is already in challenge.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to CreateChallengeStreakChallengeDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateChallengeStreakChallengeDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-83`);
+        expect(message).toBe('Challenge does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to CreateChallengeStreakUserDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateChallengeStreakUserDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-84`);
+        expect(message).toBe('User does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -4510,6 +4543,105 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-317`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateBadgeForChallengeMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateBadgeForChallengeMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-318`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to IsUserAlreadyInChallengeMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.IsUserAlreadyInChallengeMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-319`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to AddUserToChallengeMiddlewares`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.AddUserToChallengeMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-320`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to DoesChallengeExistMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.DoesChallengeExistMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-321`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateChallengeStreakDoesUserExistMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateChallengeStreakDoesUserExistMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-322`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to GetChallengeMemberInformationMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.GetChallengeMemberInformationMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-323`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to AddChallengeBadgeToUserBadgesMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.AddChallengeBadgeToUserBadgesMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-324`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PopulateUserBadgesMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PopulateUserBadgesMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-325`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PatchCurrentUserPopulateUserBadgesMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PatchCurrentUserPopulateUserBadgesMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-326`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

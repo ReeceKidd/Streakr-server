@@ -15,15 +15,9 @@ export const badgeSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        levels: {
-            type: [
-                {
-                    level: Number,
-                    color: String,
-                    criteria: String,
-                },
-            ],
-            default: [],
+        badgeType: {
+            type: String,
+            required: true,
         },
         icon: {
             type: String,

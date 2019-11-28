@@ -1,9 +1,53 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { sendCurrentUserMiddleware, getCurrentUserMiddlewares, formatUserMiddleware } from './getCurrentUser';
+import {
+    sendCurrentUserMiddleware,
+    getCurrentUserMiddlewares,
+    formatUserMiddleware,
+    populateUserBadgesMiddleware,
+    getPopulateUserBadgesMiddleware,
+} from './getCurrentUser';
 import { CustomError } from '../../customError';
 import { ErrorType } from '../../customError';
 import { User } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
+
+describe('populateUserBadgesMiddleware', () => {
+    test('populates user badges', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const user = {
+            badges: ['badgeId'],
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue(user.badges);
+        const find = jest.fn(() => ({ lean }));
+
+        const badgeModel = {
+            find,
+        };
+
+        const middleware = getPopulateUserBadgesMiddleware(badgeModel as any);
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({ _id: user.badges });
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulateUserBadgesMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulateUserBadgesMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateUserBadgesMiddleware, expect.any(Error)));
+    });
+});
 
 describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
@@ -17,6 +61,7 @@ describe('formatUserMiddleware', () => {
                 currentMembershipStartDate: new Date(),
                 pastMemberships: [],
             },
+            badges: [],
             email: 'test@test.com',
             createdAt: 'Jan 1st',
             updatedAt: 'Jan 1st',
@@ -60,6 +105,7 @@ describe('formatUserMiddleware', () => {
                 'username',
                 'membershipInformation',
                 'userType',
+                'badges',
                 'timezone',
                 'createdAt',
                 'updatedAt',
@@ -116,10 +162,11 @@ describe('sendCurrentUserMiddleware', () => {
 
 describe('getCurrentUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(3);
+        expect.assertions(4);
 
-        expect(getCurrentUserMiddlewares.length).toEqual(2);
-        expect(getCurrentUserMiddlewares[0]).toEqual(formatUserMiddleware);
-        expect(getCurrentUserMiddlewares[1]).toEqual(sendCurrentUserMiddleware);
+        expect(getCurrentUserMiddlewares.length).toEqual(3);
+        expect(getCurrentUserMiddlewares[0]).toEqual(populateUserBadgesMiddleware);
+        expect(getCurrentUserMiddlewares[1]).toEqual(formatUserMiddleware);
+        expect(getCurrentUserMiddlewares[2]).toEqual(sendCurrentUserMiddleware);
     });
 });

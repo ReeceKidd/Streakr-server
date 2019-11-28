@@ -416,6 +416,20 @@ export enum ErrorType {
     PatchChallengeStreakMiddleware,
     SendUpdatedChallengeStreakMiddleware,
     UpdatedChallengeStreakNotFound,
+    CreateBadgeForChallengeMiddleware,
+    IsUserAlreadyInChallengeMiddleware,
+    UserIsAlreadyInChallenge,
+    AddUserToChallengeMiddleware,
+    DoesChallengeExistMiddleware,
+    CreateChallengeStreakChallengeDoesNotExist,
+    CreateChallengeStreakDoesUserExistMiddleware,
+    CreateChallengeStreakUserDoesNotExist,
+    GetChallengeMemberInformationMiddleware,
+    AddChallengeBadgeToUserBadgesMiddleware,
+    PopulateUserBadgesMiddleware,
+    PatchCurrentUserPopulateUserBadgesMiddleware,
+    ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware,
+    ChallengeIdMustBeDefinedForChallengeBadge,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1062,6 +1076,30 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-81`,
                     message: 'Challenge streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.UserIsAlreadyInChallenge: {
+                return {
+                    code: `${ResponseCodes.badRequest}-82`,
+                    message: 'User is already in challenge.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateChallengeStreakChallengeDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-83`,
+                    message: 'Challenge does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateChallengeStreakUserDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-84`,
+                    message: 'User does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -3396,6 +3434,76 @@ export class CustomError extends Error {
             case ErrorType.SendUpdatedChallengeStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-317`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateBadgeForChallengeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-318`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IsUserAlreadyInChallengeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-319`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.AddUserToChallengeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-320`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DoesChallengeExistMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-321`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateChallengeStreakDoesUserExistMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-322`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetChallengeMemberInformationMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-323`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.AddChallengeBadgeToUserBadgesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-324`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PopulateUserBadgesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-325`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PatchCurrentUserPopulateUserBadgesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-326`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-327`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

@@ -16,7 +16,6 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
-import { User } from '@streakoid/streakoid-sdk/lib';
 
 describe(`userRegistrationValidationMiddlware`, () => {
     const mockUsername = 'mockUsername';
@@ -330,7 +329,7 @@ describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
         expect.assertions(2);
         const request: any = {};
-        const savedUser: User = {
+        const savedUser = {
             _id: '_id',
             username: 'username',
             membershipInformation: {
@@ -338,6 +337,7 @@ describe('formatUserMiddleware', () => {
                 currentMembershipStartDate: new Date(),
                 pastMemberships: [],
             },
+            badges: [],
             email: 'test@test.com',
             createdAt: 'Jan 1st',
             updatedAt: 'Jan 1st',
@@ -381,6 +381,7 @@ describe('formatUserMiddleware', () => {
                 'username',
                 'membershipInformation',
                 'userType',
+                'badges',
                 'timezone',
                 'createdAt',
                 'updatedAt',

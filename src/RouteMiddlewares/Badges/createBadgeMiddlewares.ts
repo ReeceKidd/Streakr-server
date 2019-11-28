@@ -6,18 +6,16 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { badgeModel, BadgeModel } from '../../Models/Badge';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-
-const level = Joi.object().keys({
-    level: Joi.number().required(),
-    color: Joi.string().required(),
-    criteria: Joi.string().required(),
-});
+import { BadgeTypes } from '@streakoid/streakoid-sdk/lib';
 
 const createBadgeBodyValidationSchema = {
     name: Joi.string().required(),
     description: Joi.string().required(),
+    badgeType: Joi.string()
+        .valid(Object.keys(BadgeTypes))
+        .required(),
     icon: Joi.string().required(),
-    levels: Joi.array().items(level),
+    challengeId: Joi.string(),
 };
 
 export const createBadgeBodyValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
@@ -34,12 +32,13 @@ export const getSaveBadgeToDatabaseMiddleware = (badge: mongoose.Model<BadgeMode
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { name, description, icon, levels } = request.body;
+        const { name, description, icon, badgeType, challengeId } = request.body;
         const newBadge = new badge({
             name,
             description,
             icon,
-            levels,
+            badgeType,
+            challengeId,
         });
         response.locals.savedBadge = await newBadge.save();
         next();

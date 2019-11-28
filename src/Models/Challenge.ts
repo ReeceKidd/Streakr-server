@@ -18,6 +18,10 @@ export const challengeSchema = new mongoose.Schema(
         numberOfMinutes: {
             type: Number,
         },
+        badgeId: {
+            type: String,
+            required: true,
+        },
         icon: {
             type: String,
             required: true,
@@ -27,11 +31,11 @@ export const challengeSchema = new mongoose.Schema(
             required: true,
         },
         levels: {
-            type: [{ level: Number, badgeId: String, criteria: String }],
+            type: [{ level: Number, criteria: String }],
             default: [],
         },
         members: {
-            type: [{ username: String, userId: String, profileImage: String }],
+            type: [String],
             default: [],
         },
     },

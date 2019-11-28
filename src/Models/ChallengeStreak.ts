@@ -17,6 +17,10 @@ export const challengeStreakSchema = new mongoose.Schema(
             required: true,
             type: String,
         },
+        badgeId: {
+            required: true,
+            type: String,
+        },
         status: {
             type: String,
             default: StreakStatus.live,

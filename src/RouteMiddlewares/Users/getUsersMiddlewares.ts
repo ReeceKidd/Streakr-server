@@ -66,6 +66,7 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
                 userType: user.userType,
                 timezone: user.timezone,
                 friends: user.friends,
+                badges: user.badges,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,
                 profileImages: user.profileImages,

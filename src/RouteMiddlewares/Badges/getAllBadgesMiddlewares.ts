@@ -6,9 +6,11 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { badgeModel, BadgeModel } from '../../Models/Badge';
+import { BadgeTypes } from '@streakoid/streakoid-sdk/lib';
 
 const getBadgesQueryValidationSchema = {
     name: Joi.string(),
+    badgeType: Joi.string().valid(Object.keys(BadgeTypes)),
 };
 
 export const getBadgesQueryValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
@@ -25,14 +27,19 @@ export const getFindBadgesMiddleware = (badgeModel: mongoose.Model<BadgeModel>) 
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { name } = request.query;
+        const { name, badgeType } = request.query;
 
         const query: {
             name?: string;
+            badgeType?: string;
         } = {};
 
         if (name) {
             query.name = name;
+        }
+
+        if (badgeType) {
+            query.badgeType = badgeType;
         }
 
         response.locals.badges = await badgeModel.find(query);

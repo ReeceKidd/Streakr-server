@@ -5,6 +5,8 @@ import {
     sendChallengeMiddleware,
     getOneChallengeMiddlewares,
     retreiveChallengeMiddleware,
+    getRetreiveChallengeMemberInformationMiddleware,
+    retreiveChallengeMemberInformationMiddleware,
 } from '../Challenges/getOneChallengeMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
@@ -146,7 +148,46 @@ describe('retreiveChallengeMiddleware', () => {
     });
 });
 
-describe('sendRetreiveChallengeResponseMiddleware', () => {
+describe('getChallengeMemberInformationMiddleware', () => {
+    test('sets response.locals.challenge with populated members', async () => {
+        expect.assertions(3);
+        const findById = jest.fn().mockResolvedValue({
+            username: 'username',
+            _id: '_id',
+            profileImages: { originalImageUrl: 'originalImageUrl' },
+        });
+        const userModel = {
+            findById,
+        };
+        const members = ['member'];
+        const challenge = { members };
+        const request: any = {};
+        const response: any = { locals: { challenge } };
+        const next = jest.fn();
+        const middleware = getRetreiveChallengeMemberInformationMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalledWith('member');
+        expect(response.locals.challenge).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with GetRetreiveChallengeMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getRetreiveChallengeMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.GetRetreiveChallengeMiddleware, expect.any(Error)));
+    });
+});
+
+describe('sendChallengeMiddleware', () => {
     test('sends challenge', () => {
         expect.assertions(3);
         const send = jest.fn();
@@ -180,11 +221,12 @@ describe('sendRetreiveChallengeResponseMiddleware', () => {
 
 describe('getOneChallengeMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(4);
+        expect.assertions(5);
 
-        expect(getOneChallengeMiddlewares.length).toEqual(3);
+        expect(getOneChallengeMiddlewares.length).toEqual(4);
         expect(getOneChallengeMiddlewares[0]).toEqual(challengeParamsValidationMiddleware);
         expect(getOneChallengeMiddlewares[1]).toEqual(retreiveChallengeMiddleware);
-        expect(getOneChallengeMiddlewares[2]).toEqual(sendChallengeMiddleware);
+        expect(getOneChallengeMiddlewares[2]).toEqual(retreiveChallengeMemberInformationMiddleware);
+        expect(getOneChallengeMiddlewares[3]).toEqual(sendChallengeMiddleware);
     });
 });

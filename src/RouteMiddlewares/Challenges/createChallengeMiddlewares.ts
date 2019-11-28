@@ -6,10 +6,11 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { challengeModel, ChallengeModel } from '../../Models/Challenge';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { BadgeModel, badgeModel } from '../../../src/Models/Badge';
+import { BadgeTypes, Badge } from '@streakoid/streakoid-sdk/lib';
 
 const level = Joi.object().keys({
     level: Joi.number().required(),
-    badgeId: Joi.string().required(),
     criteria: Joi.string().required(),
 });
 
@@ -36,22 +37,48 @@ export const createChallengeBodyValidationMiddleware = (
     );
 };
 
+export const getCreateBadgeForChallengeMiddleware = (badge: mongoose.Model<BadgeModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { name, description, icon } = request.body;
+        const badgeType = BadgeTypes.challenge;
+        const newBadge = new badge({
+            name,
+            description,
+            icon,
+            badgeType,
+        });
+        response.locals.badge = await newBadge.save();
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.CreateBadgeForChallengeMiddleware, err));
+    }
+};
+
+export const createBadgeForChallengeMiddleware = getCreateBadgeForChallengeMiddleware(badgeModel);
+
 export const getSaveChallengeToDatabaseMiddleware = (challenge: mongoose.Model<ChallengeModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
+        const badge: Badge = response.locals.badge;
         const { name, description, icon, color, numberOfMinutes, levels } = request.body;
         const newChallenge = new challenge({
             name,
             description,
             icon,
             color,
+            badgeId: badge._id,
             levels,
             numberOfMinutes,
         });
-        response.locals.savedChallenge = await newChallenge.save();
+        response.locals.challenge = await newChallenge.save();
         next();
     } catch (err) {
         next(new CustomError(ErrorType.CreateChallengeFromRequestMiddleware, err));
@@ -60,10 +87,14 @@ export const getSaveChallengeToDatabaseMiddleware = (challenge: mongoose.Model<C
 
 export const saveChallengeToDatabaseMiddleware = getSaveChallengeToDatabaseMiddleware(challengeModel);
 
-export const sendFormattedChallengeMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const sendFormattedChallengeAndBadgeMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
-        const { savedChallenge } = response.locals;
-        response.status(ResponseCodes.created).send(savedChallenge);
+        const { badge, challenge } = response.locals;
+        response.status(ResponseCodes.created).send({ badge, challenge });
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedChallengeMiddleware, err));
     }
@@ -71,6 +102,7 @@ export const sendFormattedChallengeMiddleware = (request: Request, response: Res
 
 export const createChallengeMiddlewares = [
     createChallengeBodyValidationMiddleware,
+    createBadgeForChallengeMiddleware,
     saveChallengeToDatabaseMiddleware,
-    sendFormattedChallengeMiddleware,
+    sendFormattedChallengeAndBadgeMiddleware,
 ];

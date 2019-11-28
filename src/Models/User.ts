@@ -91,6 +91,10 @@ export const userSchema = new mongoose.Schema(
                 },
             },
         },
+        badges: {
+            type: Array,
+            default: [],
+        },
         stripe: {
             customer: {
                 type: String,

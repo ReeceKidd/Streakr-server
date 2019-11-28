@@ -6,7 +6,9 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User, CurrentUser } from '@streakoid/streakoid-sdk/lib';
+import { User, PopulatedCurrentUser } from '@streakoid/streakoid-sdk/lib';
+import { BadgeModel } from '../../Models/Badge';
+import { badgeModel } from '../../Models/Badge';
 
 const userBodyValidationSchema = {
     email: Joi.string().email(),
@@ -25,6 +27,7 @@ const userBodyValidationSchema = {
             pushNotification: Joi.boolean(),
         }),
     }),
+    badges: Joi.array(),
     timezone: Joi.string(),
     pushNotificationToken: Joi.string(),
 };
@@ -59,16 +62,35 @@ export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserMode
 
 export const patchCurrentUserMiddleware = getPatchCurrentUserMiddleware(userModel);
 
+export const getPopulateUserBadgesMiddleware = (badgeModel: mongoose.Model<BadgeModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const updatedUser: User = response.locals.updatedUser;
+        const badges = await badgeModel.find({ _id: updatedUser.badges }).lean();
+        response.locals.updatedUser.badges = badges;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.PatchCurrentUserPopulateUserBadgesMiddleware, err));
+    }
+};
+
+export const populateUserBadgesMiddleware = getPopulateUserBadgesMiddleware(badgeModel);
+
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const user: User = response.locals.updatedUser;
-        const formattedUser: CurrentUser = {
+        const user = response.locals.updatedUser;
+        const formattedUser: PopulatedCurrentUser = {
             _id: user._id,
             email: user.email,
             username: user.username,
             membershipInformation: user.membershipInformation,
             userType: user.userType,
             timezone: user.timezone,
+            badges: user.badges,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,
@@ -94,6 +116,7 @@ export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Res
 export const patchCurrentUserMiddlewares = [
     userRequestBodyValidationMiddleware,
     patchCurrentUserMiddleware,
+    populateUserBadgesMiddleware,
     formatUserMiddleware,
     sendUpdatedCurrentUserMiddleware,
 ];

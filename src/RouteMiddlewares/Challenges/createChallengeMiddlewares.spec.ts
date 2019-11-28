@@ -5,17 +5,20 @@ import { CustomError, ErrorType } from '../../customError';
 import {
     createChallengeBodyValidationMiddleware,
     getSaveChallengeToDatabaseMiddleware,
-    sendFormattedChallengeMiddleware,
+    sendFormattedChallengeAndBadgeMiddleware,
     createChallengeMiddlewares,
     saveChallengeToDatabaseMiddleware,
+    createBadgeForChallengeMiddleware,
+    getCreateBadgeForChallengeMiddleware,
 } from './createChallengeMiddlewares';
+import { BadgeTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe(`createChallengeBodyValidationMiddleware`, () => {
     const name = 'Paint';
     const description = 'Must sit down and paint for 30 minutes';
     const icon = 'paint-brush';
     const color = 'red';
-    const levels = [{ level: 0, badgeId: 'badgeId', criteria: 'criteria' }];
+    const levels = [{ level: 0, criteria: 'criteria' }];
     const numberOfMinutes = 30;
 
     const body = {
@@ -148,6 +151,44 @@ describe(`createChallengeBodyValidationMiddleware`, () => {
     });
 });
 
+describe(`createBadgeForChallengeMiddleware`, () => {
+    test('sets response.locals.savedBadge', async () => {
+        expect.assertions(2);
+
+        const name = 'Duolingo';
+        const description = 'Daily Spanish';
+        const icon = 'bird';
+
+        const save = jest.fn().mockResolvedValue(true);
+
+        const badge = jest.fn(() => ({ save }));
+
+        const request: any = {
+            body: { name, description, icon, badgeType: BadgeTypes.challenge },
+        };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getCreateBadgeForChallengeMiddleware(badge as any);
+
+        await middleware(request, response, next);
+
+        expect(response.locals.badge).toBeDefined();
+        expect(save).toBeCalledWith();
+    });
+
+    test('calls next with CreateBadgeForChallengeMiddleware error on middleware failure', () => {
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateBadgeForChallengeMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect.assertions(1);
+        expect(next).toBeCalledWith(new CustomError(ErrorType.CreateBadgeFromRequestMiddleware, expect.any(Error)));
+    });
+});
+
 describe(`saveChallengeToDatabaseMiddleware`, () => {
     test('sets response.locals.savedChallenge', async () => {
         expect.assertions(2);
@@ -156,16 +197,20 @@ describe(`saveChallengeToDatabaseMiddleware`, () => {
 
         const challenge = jest.fn(() => ({ save }));
 
+        const badge = {
+            _id: 'badgeId',
+        };
+
         const request: any = {
             body: {},
         };
-        const response: any = { locals: {} };
+        const response: any = { locals: { badge } };
         const next = jest.fn();
         const middleware = getSaveChallengeToDatabaseMiddleware(challenge as any);
 
         await middleware(request, response, next);
 
-        expect(response.locals.savedChallenge).toBeDefined();
+        expect(response.locals.challenge).toBeDefined();
         expect(save).toBeCalledWith();
     });
 
@@ -182,41 +227,26 @@ describe(`saveChallengeToDatabaseMiddleware`, () => {
     });
 });
 
-describe(`sendFormattedChallengeMiddleware`, () => {
+describe(`sendFormattedChallengeAndBadgeMiddleware`, () => {
     test('sends savedChallenge in request', () => {
         expect.assertions(3);
-        const name = 'Paint';
-        const description = 'Must sit down and paint for 30 minutes';
-        const icon = 'paint-brush';
-        const level = {
-            level: 0,
-            color: 'red',
-            criteria: '30 days in a row',
-        };
-        const levels = [level];
 
-        const savedChallenge = {
-            name,
-            description,
-            icon,
-            levels,
-        };
+        const challenge = true;
+        const badge = true;
 
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
-        const response: any = { locals: { savedChallenge }, status };
+        const response: any = { locals: { badge, challenge }, status };
         const request: any = {};
         const next = jest.fn();
 
-        sendFormattedChallengeMiddleware(request, response, next);
+        sendFormattedChallengeAndBadgeMiddleware(request, response, next);
 
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.created);
         expect(send).toBeCalledWith({
-            name,
-            description,
-            icon,
-            levels,
+            badge,
+            challenge,
         });
     });
 
@@ -226,7 +256,7 @@ describe(`sendFormattedChallengeMiddleware`, () => {
         const response: any = {};
         const next = jest.fn();
 
-        sendFormattedChallengeMiddleware(request, response, next);
+        sendFormattedChallengeAndBadgeMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SendFormattedChallengeMiddleware));
     });
@@ -234,11 +264,12 @@ describe(`sendFormattedChallengeMiddleware`, () => {
 
 describe(`createChallengeMiddlewares`, () => {
     test('are defined in the correct order', () => {
-        expect.assertions(4);
+        expect.assertions(5);
 
-        expect(createChallengeMiddlewares.length).toEqual(3);
+        expect(createChallengeMiddlewares.length).toEqual(4);
         expect(createChallengeMiddlewares[0]).toBe(createChallengeBodyValidationMiddleware);
-        expect(createChallengeMiddlewares[1]).toBe(saveChallengeToDatabaseMiddleware);
-        expect(createChallengeMiddlewares[2]).toBe(sendFormattedChallengeMiddleware);
+        expect(createChallengeMiddlewares[1]).toBe(createBadgeForChallengeMiddleware);
+        expect(createChallengeMiddlewares[2]).toBe(saveChallengeToDatabaseMiddleware);
+        expect(createChallengeMiddlewares[3]).toBe(sendFormattedChallengeAndBadgeMiddleware);
     });
 });

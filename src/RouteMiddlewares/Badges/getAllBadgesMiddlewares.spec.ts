@@ -8,11 +8,14 @@ import {
 } from './getAllBadgesMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { BadgeTypes } from '@streakoid/streakoid-sdk/lib';
 
 const name = 'name';
+const badgeType = BadgeTypes.challenge;
 
 const query = {
     name,
+    badgeType,
 };
 
 describe('getBadgesValidationMiddleware', () => {
@@ -49,6 +52,24 @@ describe('findBadgesMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ name });
+        expect(response.locals.badges).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('queries database with just badgeType and sets response.locals.badges', async () => {
+        expect.assertions(3);
+        const find = jest.fn(() => Promise.resolve(true));
+        const soloStreakModel = {
+            find,
+        };
+        const request: any = { query: { badgeType } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindBadgesMiddleware(soloStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({ badgeType });
         expect(response.locals.badges).toEqual(true);
         expect(next).toBeCalledWith();
     });

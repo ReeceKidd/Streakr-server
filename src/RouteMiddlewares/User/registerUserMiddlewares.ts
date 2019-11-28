@@ -6,7 +6,7 @@ import { userModel, UserModel } from '../../Models/User';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User, CurrentUser } from '@streakoid/streakoid-sdk/lib';
+import { PopulatedCurrentUser } from '@streakoid/streakoid-sdk/lib';
 
 const registerValidationSchema = {
     username: Joi.string().required(),
@@ -101,14 +101,15 @@ export const saveUserToDatabaseMiddleware = getSaveUserToDatabaseMiddleware(user
 
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const user: User = response.locals.savedUser;
-        const formattedUser: CurrentUser = {
+        const user = response.locals.savedUser;
+        const formattedUser: PopulatedCurrentUser = {
             _id: user._id,
             email: user.email,
             username: user.username,
             membershipInformation: user.membershipInformation,
             userType: user.userType,
             timezone: user.timezone,
+            badges: user.badges,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,

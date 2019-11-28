@@ -9,24 +9,19 @@ import {
     createBadgeMiddlewares,
     saveBadgeToDatabaseMiddleware,
 } from './createBadgeMiddlewares';
-import { StreakTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
+import { StreakTypes, AgendaJobNames, BadgeTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe(`createBadgeBodyValidationMiddleware`, () => {
     const name = 'Paint';
     const description = 'Must sit down and paint for 30 minutes';
     const icon = 'paint-brush';
-    const level = {
-        level: 0,
-        color: 'red',
-        criteria: '30 days in a row',
-    };
-    const levels = [level];
+    const badgeType = BadgeTypes.challenge;
 
     const body = {
         name,
         description,
         icon,
-        levels,
+        badgeType,
     };
 
     test('check that valid request passes', () => {
@@ -84,6 +79,27 @@ describe(`createBadgeBodyValidationMiddleware`, () => {
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "description" fails because ["description" is required]',
+        });
+        expect(next).not.toBeCalled();
+    });
+
+    test('sends correct error response when badge type is missing', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: { ...body, badgeType: undefined },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        createBadgeBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "badgeType" fails because ["badgeType" is required]',
         });
         expect(next).not.toBeCalled();
     });
