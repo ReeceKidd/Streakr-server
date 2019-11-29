@@ -18,7 +18,7 @@ describe('trackInactiveChallengeStreak', () => {
     const description = 'Everyday I must complete a duolingo lesson';
     const icon = 'duolingo';
     const color = 'blue';
-    const levels = [{ level: 0, badgeId: 'badgeId', criteria: 'criteria' }];
+    const levels = [{ level: 0, criteria: 'criteria' }];
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
@@ -26,7 +26,7 @@ describe('trackInactiveChallengeStreak', () => {
             const user = await getPayingUser();
             userId = user._id;
             streakoid = await streakoidTest();
-            const challenge = await streakoid.challenges.create({
+            const { challenge } = await streakoid.challenges.create({
                 name,
                 description,
                 icon,
@@ -57,7 +57,7 @@ describe('trackInactiveChallengeStreak', () => {
 
         await trackInactiveChallengeStreaks(inactiveChallengeStreaks);
 
-        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne(challengeStreakId);
+        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne({ challengeStreakId });
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
         expect(updatedChallengeStreak.userId).toBeDefined();
@@ -82,6 +82,7 @@ describe('trackInactiveChallengeStreak', () => {
                 'pastStreaks',
                 'userId',
                 'challengeId',
+                'badgeId',
                 'timezone',
                 'createdAt',
                 'updatedAt',

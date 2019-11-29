@@ -24,7 +24,7 @@ describe('challengeStreakDailyTracker', () => {
     const description = 'Everyday I must complete a duolingo lesson';
     const icon = 'duolingo';
     const color = 'blue';
-    const levels = [{ level: 0, badgeId: 'badgeId', criteria: 'criteria' }];
+    const levels = [{ level: 0, criteria: 'criteria' }];
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
@@ -32,7 +32,7 @@ describe('challengeStreakDailyTracker', () => {
             const user = await getPayingUser();
             userId = user._id;
             streakoid = await streakoidTest();
-            const challenge = await streakoid.challenges.create({
+            const { challenge } = await streakoid.challenges.create({
                 name,
                 description,
                 icon,
@@ -60,6 +60,7 @@ describe('challengeStreakDailyTracker', () => {
 
     test('initialises challengeStreakDailyTracker job correctly', async () => {
         expect.assertions(10);
+
         const timezone = 'Europe/London';
         const job = await createChallengeStreakDailyTrackerJob(timezone);
         const { attrs } = job as any;
@@ -126,7 +127,9 @@ describe('challengeStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne(maintainedChallengeStreakId);
+        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne({
+            challengeStreakId: maintainedChallengeStreakId,
+        });
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
         expect(updatedChallengeStreak.userId).toEqual(expect.any(String));
@@ -244,7 +247,9 @@ describe('challengeStreakDailyTracker', () => {
         // Simulates an additional day passing
         await job.run();
 
-        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne(lostChallengeStreakId);
+        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne({
+            challengeStreakId: lostChallengeStreakId,
+        });
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
         expect(updatedChallengeStreak.userId).toEqual(expect.any(String));
@@ -341,7 +346,9 @@ describe('challengeStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne(inactiveChallengeStreakId);
+        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne({
+            challengeStreakId: inactiveChallengeStreakId,
+        });
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
         expect(updatedChallengeStreak.userId).toEqual(expect.any(String));

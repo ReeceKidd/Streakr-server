@@ -30,7 +30,6 @@ export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<Ch
 ): Promise<void> => {
     try {
         const { challengeId } = request.params;
-        console.log(challengeId);
         const challenge = await challengeModel.findOne({ _id: challengeId }).lean();
         if (!challenge) {
             throw new CustomError(ErrorType.NoChallengeFound);
