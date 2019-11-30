@@ -19,7 +19,6 @@ jest.setTimeout(500000);
 describe('challengeStreakDailyTracker', () => {
     let streakoid: StreakoidFactory;
     let userId: string;
-    let challengeId: string;
     const name = 'Duolingo';
     const description = 'Everyday I must complete a duolingo lesson';
     const icon = 'duolingo';
@@ -32,14 +31,6 @@ describe('challengeStreakDailyTracker', () => {
             const user = await getPayingUser();
             userId = user._id;
             streakoid = await streakoidTest();
-            const { challenge } = await streakoid.challenges.create({
-                name,
-                description,
-                icon,
-                color,
-                levels,
-            });
-            challengeId = challenge._id;
         }
     });
 
@@ -91,9 +82,17 @@ describe('challengeStreakDailyTracker', () => {
 
         const timezone = 'Europe/London';
 
+        const { challenge } = await streakoid.challenges.create({
+            name,
+            description,
+            icon,
+            color,
+            levels,
+        });
+
         const maintainedChallengeStreak = await streakoid.challengeStreaks.create({
             userId,
-            challengeId,
+            challengeId: challenge._id,
         });
 
         const maintainedChallengeStreakId = maintainedChallengeStreak._id;
@@ -153,6 +152,7 @@ describe('challengeStreakDailyTracker', () => {
                 'active',
                 'pastStreaks',
                 'userId',
+                'badgeId',
                 'challengeId',
                 'timezone',
                 'createdAt',
@@ -210,9 +210,17 @@ describe('challengeStreakDailyTracker', () => {
 
         const timezone = 'Europe/London';
 
+        const { challenge } = await streakoid.challenges.create({
+            name,
+            description,
+            icon,
+            color,
+            levels,
+        });
+
         const lostChallengeStreak = await streakoid.challengeStreaks.create({
             userId,
-            challengeId,
+            challengeId: challenge._id,
         });
         const lostChallengeStreakId = lostChallengeStreak._id;
 
@@ -278,6 +286,7 @@ describe('challengeStreakDailyTracker', () => {
                 'active',
                 'pastStreaks',
                 'userId',
+                'badgeId',
                 'challengeId',
                 'timezone',
                 'createdAt',
@@ -336,9 +345,17 @@ describe('challengeStreakDailyTracker', () => {
 
         const timezone = 'Europe/London';
 
+        const { challenge } = await streakoid.challenges.create({
+            name,
+            description,
+            icon,
+            color,
+            levels,
+        });
+
         const inactiveChallengeStreak = await streakoid.challengeStreaks.create({
             userId,
-            challengeId,
+            challengeId: challenge._id,
         });
         const inactiveChallengeStreakId = inactiveChallengeStreak._id;
 
@@ -371,6 +388,7 @@ describe('challengeStreakDailyTracker', () => {
                 'active',
                 'pastStreaks',
                 'userId',
+                'badgeId',
                 'challengeId',
                 'timezone',
                 'createdAt',

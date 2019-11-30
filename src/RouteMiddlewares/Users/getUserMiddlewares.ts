@@ -7,6 +7,7 @@ import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { User, FormattedUser } from '@streakoid/streakoid-sdk/lib';
+import { BadgeModel, badgeModel } from '../../Models/Badge';
 
 const userParamsValidationSchema = {
     userId: Joi.string()
@@ -43,6 +44,24 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
 
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
 
+export const getPopulateUserBadgesMiddleware = (badgeModel: mongoose.Model<BadgeModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const badges = await badgeModel.find({ _id: user.badges }).lean();
+        response.locals.user.badges = badges;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.GetUserPopulateUserBadgesMiddleware, err));
+    }
+};
+
+export const populateUserBadgesMiddleware = getPopulateUserBadgesMiddleware(badgeModel);
+
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const user: User = response.locals.user;
@@ -78,6 +97,7 @@ export const sendUserMiddleware = (request: Request, response: Response, next: N
 export const getUserMiddlewares = [
     userParamsValidationMiddleware,
     retreiveUserMiddleware,
+    populateUserBadgesMiddleware,
     formatUserMiddleware,
     sendUserMiddleware,
 ];

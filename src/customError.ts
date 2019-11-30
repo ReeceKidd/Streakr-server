@@ -430,6 +430,7 @@ export enum ErrorType {
     PatchCurrentUserPopulateUserBadgesMiddleware,
     ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware,
     ChallengeIdMustBeDefinedForChallengeBadge,
+    GetUserPopulateUserBadgesMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3504,6 +3505,13 @@ export class CustomError extends Error {
             case ErrorType.ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-327`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetUserPopulateUserBadgesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-328`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

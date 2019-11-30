@@ -4645,4 +4645,26 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-327`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to GetUserPopulateUserBadgesMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.GetUserPopulateUserBadgesMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-328`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

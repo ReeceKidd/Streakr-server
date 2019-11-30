@@ -6,6 +6,8 @@ import {
     getUserMiddlewares,
     retreiveUserMiddleware,
     formatUserMiddleware,
+    getPopulateUserBadgesMiddleware,
+    populateUserBadgesMiddleware,
 } from '../Users/getUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
@@ -148,6 +150,44 @@ describe('retreiveUserMiddleware', () => {
     });
 });
 
+describe('populateUserBadgesMiddleware', () => {
+    test('populates user badges', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const user = {
+            badges: ['badgeId'],
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue(user.badges);
+        const find = jest.fn(() => ({ lean }));
+
+        const badgeModel = {
+            find,
+        };
+
+        const middleware = getPopulateUserBadgesMiddleware(badgeModel as any);
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({ _id: user.badges });
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulateUserBadgesMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulateUserBadgesMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateUserBadgesMiddleware, expect.any(Error)));
+    });
+});
+
 describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
         expect.assertions(3);
@@ -245,12 +285,13 @@ describe('sendRetreiveUserResponseMiddleware', () => {
 
 describe('getUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(5);
+        expect.assertions(6);
 
-        expect(getUserMiddlewares.length).toEqual(4);
+        expect(getUserMiddlewares.length).toEqual(5);
         expect(getUserMiddlewares[0]).toEqual(userParamsValidationMiddleware);
         expect(getUserMiddlewares[1]).toEqual(retreiveUserMiddleware);
-        expect(getUserMiddlewares[2]).toEqual(formatUserMiddleware);
-        expect(getUserMiddlewares[3]).toEqual(sendUserMiddleware);
+        expect(getUserMiddlewares[2]).toEqual(populateUserBadgesMiddleware);
+        expect(getUserMiddlewares[3]).toEqual(formatUserMiddleware);
+        expect(getUserMiddlewares[4]).toEqual(sendUserMiddleware);
     });
 });
