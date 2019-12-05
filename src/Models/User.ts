@@ -59,11 +59,11 @@ export const userSchema = new mongoose.Schema(
             completeStreaksReminder: {
                 emailNotification: {
                     type: Boolean,
-                    default: false,
+                    default: true,
                 },
                 pushNotification: {
                     type: Boolean,
-                    default: false,
+                    default: true,
                 },
                 reminderTime: {
                     type: Number,
@@ -73,31 +73,31 @@ export const userSchema = new mongoose.Schema(
             friendRequest: {
                 emailNotification: {
                     type: Boolean,
-                    default: false,
+                    default: true,
                 },
                 pushNotification: {
                     type: Boolean,
-                    default: false,
+                    default: true,
                 },
             },
             teamStreakUpdates: {
                 emailNotification: {
                     type: Boolean,
-                    default: false,
+                    default: true,
                 },
                 pushNotification: {
                     type: Boolean,
-                    default: false,
+                    default: true,
                 },
             },
             badgeUpdates: {
                 emailNotification: {
                     type: Boolean,
-                    default: false,
+                    default: true,
                 },
                 pushNotification: {
                     type: Boolean,
-                    default: false,
+                    default: true,
                 },
             },
         },
