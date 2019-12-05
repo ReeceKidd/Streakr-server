@@ -26,6 +26,10 @@ const userBodyValidationSchema = {
             emailNotification: Joi.boolean(),
             pushNotification: Joi.boolean(),
         }),
+        badgeUpdates: Joi.object({
+            emailNotification: Joi.boolean(),
+            pushNotification: Joi.boolean(),
+        }),
     }),
     badges: Joi.array(),
     timezone: Joi.string(),

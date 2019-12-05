@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
-import { ChallengeStreak } from '@streakoid/streakoid-sdk/lib';
+import { ChallengeStreak, User } from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -14,6 +14,7 @@ import {
 } from '../../Models/CompleteChallengeStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
+import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 export const completeChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -181,14 +182,14 @@ export const getStreakMaintainedMiddleware = (challengeStreakModel: mongoose.Mod
 ): Promise<void> => {
     try {
         const { challengeStreakId } = request.body;
-        await challengeStreakModel.updateOne(
-            { _id: challengeStreakId },
-            {
+        const updatedChallengeStreak = await challengeStreakModel
+            .findByIdAndUpdate(challengeStreakId, {
                 completedToday: true,
                 $inc: { 'currentStreak.numberOfDaysInARow': 1 },
                 active: true,
-            },
-        );
+            })
+            .lean();
+        response.locals.challengeStreak = updatedChallengeStreak;
         next();
     } catch (err) {
         next(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskStreakMaintainedMiddleware, err));
@@ -196,6 +197,47 @@ export const getStreakMaintainedMiddleware = (challengeStreakModel: mongoose.Mod
 };
 
 export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(challengeStreakModel);
+
+const expoClient = new Expo();
+
+export const getSendNewChallengeBadgeNotificationMiddleware = (expo: typeof expoClient) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const user: User = response.locals.user;
+        const { currentStreak } = challengeStreak;
+        const { numberOfDaysInARow } = currentStreak;
+        if (
+            numberOfDaysInARow === 7 ||
+            numberOfDaysInARow === 14 ||
+            numberOfDaysInARow === 30 ||
+            numberOfDaysInARow === 90 ||
+            numberOfDaysInARow === 180 ||
+            numberOfDaysInARow === 365
+        ) {
+            const { pushNotificationToken } = user;
+            if (pushNotificationToken && user.notifications.badgeUpdates.pushNotification) {
+                const messages: ExpoPushMessage[] = [];
+                messages.push({
+                    to: pushNotificationToken,
+                    sound: 'default',
+                    title: 'New badge',
+                    body: `You have a new challenge badge on your profile`,
+                });
+
+                await expo.sendPushNotificationsAsync(messages);
+            }
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.SendNewChallengeBadgeNotificationMiddleware, err));
+    }
+};
+
+export const sendNewChallengeBadgeNotificationMiddleware = getSendNewChallengeBadgeNotificationMiddleware(expoClient);
 
 export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
@@ -222,5 +264,6 @@ export const createCompleteChallengeStreakTaskMiddlewares = [
     setDayTaskWasCompletedMiddleware,
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
+    sendNewChallengeBadgeNotificationMiddleware,
     sendTaskCompleteResponseMiddleware,
 ];

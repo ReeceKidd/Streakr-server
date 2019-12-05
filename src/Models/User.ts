@@ -90,6 +90,16 @@ export const userSchema = new mongoose.Schema(
                     default: false,
                 },
             },
+            badgeUpdates: {
+                emailNotification: {
+                    type: Boolean,
+                    default: false,
+                },
+                pushNotification: {
+                    type: Boolean,
+                    default: false,
+                },
+            },
         },
         badges: {
             type: Array,

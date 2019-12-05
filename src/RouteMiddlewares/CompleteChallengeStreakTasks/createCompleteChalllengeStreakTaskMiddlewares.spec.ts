@@ -20,6 +20,8 @@ import {
     getSetStreakStartDateMiddleware,
     completeChallengeStreakTaskBodyValidationMiddleware,
     ensureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware,
+    sendNewChallengeBadgeNotificationMiddleware,
+    getSendNewChallengeBadgeNotificationMiddleware,
 } from './createCompleteChallengeStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -461,27 +463,27 @@ describe(`saveTaskCompleteMiddleware`, () => {
 
 describe('streakMaintainedMiddleware', () => {
     test('updates streak completedToday, increments number of days, sets active and calls next', async () => {
-        expect.assertions(2);
+        expect.assertions(4);
         const challengeStreakId = '123abc';
-        const updateOne = jest.fn(() => Promise.resolve(true));
+        const lean = jest.fn().mockResolvedValue(true);
+        const findByIdAndUpdate = jest.fn(() => ({ lean }));
         const challengeStreakModel = {
-            updateOne,
+            findByIdAndUpdate,
         };
         const request: any = { body: { challengeStreakId } };
-        const response: any = {};
+        const response: any = { locals: {} };
         const next = jest.fn();
         const middleware = getStreakMaintainedMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(updateOne).toBeCalledWith(
-            { _id: challengeStreakId },
-            {
-                completedToday: true,
-                $inc: { 'currentStreak.numberOfDaysInARow': 1 },
-                active: true,
-            },
-        );
+        expect(findByIdAndUpdate).toBeCalledWith(challengeStreakId, {
+            completedToday: true,
+            $inc: { 'currentStreak.numberOfDaysInARow': 1 },
+            active: true,
+        });
+        expect(lean).toBeCalled();
+        expect(response.locals.challengeStreak).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
@@ -498,6 +500,336 @@ describe('streakMaintainedMiddleware', () => {
 
         expect(next).toBeCalledWith(
             new CustomError(ErrorType.CreateCompleteChallengeStreakTaskStreakMaintainedMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
+    test('sends new challenge badge notification if user has a pushNotificationToken, badgeUpdates enabled and number of days in a row equals 7', async () => {
+        expect.assertions(2);
+
+        const challengeStreak = {
+            currentStreak: {
+                numberOfDaysInARow: 7,
+            },
+        };
+        const user = {
+            pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                badgeUpdates: {
+                    pushNotification: true,
+                },
+            },
+        };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+        const expo: any = { sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                challengeStreak,
+                user,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getSendNewChallengeBadgeNotificationMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(sendPushNotificationsAsync).toBeCalledWith([
+            {
+                to: user.pushNotificationToken,
+                sound: 'default',
+                title: 'New badge',
+                body: `You have a new challenge badge on your profile`,
+            },
+        ]);
+        expect(next).toBeCalledWith();
+    });
+
+    test('sends new challenge badge notification if user has a pushNotificationToken, badgeUpdates enabled and number of days in a row equals 14', async () => {
+        expect.assertions(2);
+
+        const challengeStreak = {
+            currentStreak: {
+                numberOfDaysInARow: 14,
+            },
+        };
+        const user = {
+            pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                badgeUpdates: {
+                    pushNotification: true,
+                },
+            },
+        };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+        const expo: any = { sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                challengeStreak,
+                user,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getSendNewChallengeBadgeNotificationMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(sendPushNotificationsAsync).toBeCalledWith([
+            {
+                to: user.pushNotificationToken,
+                sound: 'default',
+                title: 'New badge',
+                body: `You have a new challenge badge on your profile`,
+            },
+        ]);
+        expect(next).toBeCalledWith();
+    });
+
+    test('sends new challenge badge notification if user has a pushNotificationToken, badgeUpdates enabled and number of days in a row equals 30', async () => {
+        expect.assertions(2);
+
+        const challengeStreak = {
+            currentStreak: {
+                numberOfDaysInARow: 30,
+            },
+        };
+        const user = {
+            pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                badgeUpdates: {
+                    pushNotification: true,
+                },
+            },
+        };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+        const expo: any = { sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                challengeStreak,
+                user,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getSendNewChallengeBadgeNotificationMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(sendPushNotificationsAsync).toBeCalledWith([
+            {
+                to: user.pushNotificationToken,
+                sound: 'default',
+                title: 'New badge',
+                body: `You have a new challenge badge on your profile`,
+            },
+        ]);
+        expect(next).toBeCalledWith();
+    });
+
+    test('sends new challenge badge notification if user has a pushNotificationToken, badgeUpdates enabled and number of days in a row equals 90', async () => {
+        expect.assertions(2);
+
+        const challengeStreak = {
+            currentStreak: {
+                numberOfDaysInARow: 90,
+            },
+        };
+        const user = {
+            pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                badgeUpdates: {
+                    pushNotification: true,
+                },
+            },
+        };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+        const expo: any = { sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                challengeStreak,
+                user,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getSendNewChallengeBadgeNotificationMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(sendPushNotificationsAsync).toBeCalledWith([
+            {
+                to: user.pushNotificationToken,
+                sound: 'default',
+                title: 'New badge',
+                body: `You have a new challenge badge on your profile`,
+            },
+        ]);
+        expect(next).toBeCalledWith();
+    });
+
+    test('sends new challenge badge notification if user has a pushNotificationToken, badgeUpdates enabled and number of days in a row equals 180', async () => {
+        expect.assertions(2);
+
+        const challengeStreak = {
+            currentStreak: {
+                numberOfDaysInARow: 90,
+            },
+        };
+        const user = {
+            pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                badgeUpdates: {
+                    pushNotification: true,
+                },
+            },
+        };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+        const expo: any = { sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                challengeStreak,
+                user,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getSendNewChallengeBadgeNotificationMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(sendPushNotificationsAsync).toBeCalledWith([
+            {
+                to: user.pushNotificationToken,
+                sound: 'default',
+                title: 'New badge',
+                body: `You have a new challenge badge on your profile`,
+            },
+        ]);
+        expect(next).toBeCalledWith();
+    });
+
+    test('sends new challenge badge notification if user has a pushNotificationToken, badgeUpdates enabled and number of days in a row equals 365', async () => {
+        expect.assertions(2);
+
+        const challengeStreak = {
+            currentStreak: {
+                numberOfDaysInARow: 90,
+            },
+        };
+        const user = {
+            pushNotificationToken: 'pushNotificationToken',
+            notifications: {
+                badgeUpdates: {
+                    pushNotification: true,
+                },
+            },
+        };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+        const expo: any = { sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                challengeStreak,
+                user,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getSendNewChallengeBadgeNotificationMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(sendPushNotificationsAsync).toBeCalledWith([
+            {
+                to: user.pushNotificationToken,
+                sound: 'default',
+                title: 'New badge',
+                body: `You have a new challenge badge on your profile`,
+            },
+        ]);
+        expect(next).toBeCalledWith();
+    });
+
+    test('does not send notification if pushNotificationToken is not defined', async () => {
+        expect.assertions(2);
+
+        const challengeStreak = {
+            currentStreak: {
+                numberOfDaysInARow: 7,
+            },
+        };
+        const user = {
+            pushNotificationToken: undefined,
+            notifications: {
+                badgeUpdates: {
+                    pushNotification: true,
+                },
+            },
+        };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+        const expo: any = { sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                challengeStreak,
+                user,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getSendNewChallengeBadgeNotificationMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(sendPushNotificationsAsync).not.toBeCalled();
+        expect(next).toBeCalledWith();
+    });
+
+    test('does not send notification if user does not have badgeUpdates enabled', async () => {
+        expect.assertions(2);
+
+        const challengeStreak = {
+            currentStreak: {
+                numberOfDaysInARow: 7,
+            },
+        };
+        const user = {
+            pushNotificationToken: undefined,
+            notifications: {
+                badgeUpdates: {
+                    pushNotification: false,
+                },
+            },
+        };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+        const expo: any = { sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                challengeStreak,
+                user,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getSendNewChallengeBadgeNotificationMiddleware(expo);
+        await middleware(request, response, next);
+
+        expect(sendPushNotificationsAsync).not.toBeCalled();
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with SendNewChallengeBadgeNotificationMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+
+        const middleware = getSendNewChallengeBadgeNotificationMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.SendNewChallengeBadgeNotificationMiddleware, expect.any(Error)),
         );
     });
 });
@@ -553,9 +885,9 @@ describe('sendTaskCompleteResponseMiddleware', () => {
 
 describe(`createCompleteChallengeStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(11);
+        expect.assertions(12);
 
-        expect(createCompleteChallengeStreakTaskMiddlewares.length).toEqual(10);
+        expect(createCompleteChallengeStreakTaskMiddlewares.length).toEqual(11);
         expect(createCompleteChallengeStreakTaskMiddlewares[0]).toBe(
             completeChallengeStreakTaskBodyValidationMiddleware,
         );
@@ -569,6 +901,7 @@ describe(`createCompleteChallengeStreakTaskMiddlewares`, () => {
         expect(createCompleteChallengeStreakTaskMiddlewares[6]).toBe(setDayTaskWasCompletedMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[7]).toBe(saveTaskCompleteMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[8]).toBe(streakMaintainedMiddleware);
-        expect(createCompleteChallengeStreakTaskMiddlewares[9]).toBe(sendTaskCompleteResponseMiddleware);
+        expect(createCompleteChallengeStreakTaskMiddlewares[9]).toBe(sendNewChallengeBadgeNotificationMiddleware);
+        expect(createCompleteChallengeStreakTaskMiddlewares[10]).toBe(sendTaskCompleteResponseMiddleware);
     });
 });
