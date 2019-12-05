@@ -86,6 +86,10 @@ describe('formatUserMiddleware', () => {
                     emailNotification: false,
                     pushNotification: false,
                 },
+                badgeUpdates: {
+                    emailNotification: false,
+                    pushNotification: false,
+                },
             },
             stripe: {
                 customer: 'abc',

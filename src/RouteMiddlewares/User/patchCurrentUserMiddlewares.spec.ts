@@ -35,6 +35,10 @@ describe('userRequestBodyValidationMiddleware', () => {
                     emailNotification: true,
                     pushNotification: true,
                 },
+                badgeUpdates: {
+                    emailNotification: true,
+                    pushNotification: true,
+                },
             },
             timezone: 'Europe/London',
             pushNotificationToken: 'push-token',
@@ -236,6 +240,10 @@ describe('formatUserMiddleware', () => {
                     pushNotification: false,
                 },
                 teamStreakUpdates: {
+                    emailNotification: false,
+                    pushNotification: false,
+                },
+                badgeUpdates: {
                     emailNotification: false,
                     pushNotification: false,
                 },

@@ -59,7 +59,6 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
             query.timezone = timezone;
         }
         if (status) {
-            console.log(status);
             query.status = status;
         }
         if (completedToday) {
@@ -68,8 +67,6 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
         if (active) {
             query.active = active === 'true';
         }
-
-        console.log(query);
 
         response.locals.teamStreaks = await teamStreakModel.find(query).lean();
         next();
