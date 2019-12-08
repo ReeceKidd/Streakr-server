@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { challengeModel, ChallengeModel } from '../../Models/Challenge';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { Challenge, ChallengeMember, User } from '@streakoid/streakoid-sdk/lib';
+import { Challenge, ChallengeMember } from '@streakoid/streakoid-sdk/lib';
 import { UserModel, userModel } from '../../Models/User';
 
 const challengeParamsValidationSchema = {
@@ -53,7 +53,7 @@ export const getRetreiveChallengeMemberInformationMiddleware = (userModel: mongo
         const challenge: Challenge = response.locals.challenge;
         const members = await Promise.all(
             challenge.members.map(async member => {
-                const memberInfo: User | null = await userModel.findById(member);
+                const memberInfo: UserModel | null = await userModel.findById(member);
                 if (!memberInfo) return null;
                 const challengeMember: ChallengeMember = {
                     username: memberInfo.username,
