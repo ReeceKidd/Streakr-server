@@ -1,10 +1,9 @@
-import { User } from '@streakoid/streakoid-sdk/lib';
 import streakoid from '../../src/streakoid';
 import { getServiceConfig } from '../../src/getServiceConfig';
-import { userModel } from '../../src/Models/User';
+import { userModel, UserModel } from '../../src/Models/User';
 const { COGNITO_USERNAME, COGNITO_EMAIL } = getServiceConfig();
 
-const getPayingUser = async (): Promise<User> => {
+const getPayingUser = async (): Promise<UserModel> => {
     const user = await streakoid.users.create({
         username: COGNITO_USERNAME,
         email: COGNITO_EMAIL,
@@ -18,10 +17,20 @@ const getPayingUser = async (): Promise<User> => {
             timezone: 'Europe/London',
             notifications: {
                 completeStreaksReminder: {
+                    emailNotification: true,
                     pushNotification: true,
                     reminderTime: 21,
                 },
+                friendRequest: {
+                    emailNotification: true,
+                    pushNotification: true,
+                },
                 teamStreakUpdates: {
+                    emailNotification: true,
+                    pushNotification: true,
+                },
+                badgeUpdates: {
+                    emailNotification: true,
                     pushNotification: true,
                 },
             },
