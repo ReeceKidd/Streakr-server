@@ -16,7 +16,7 @@ const userBodyValidationSchema = {
         completeStreaksReminder: Joi.object({
             emailNotification: Joi.boolean(),
             pushNotification: Joi.boolean(),
-            reminderTime: Joi.number().valid([18, 19, 20, 21, 22, 23]),
+            reminderTime: Joi.number().valid([18.0, 19.0, 20.0, 21.0, 22.0, 23.0]),
         }),
         friendRequest: Joi.object({
             emailNotification: Joi.boolean(),
@@ -111,6 +111,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
 export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { formattedUser } = response.locals;
+        console.log(formattedUser);
         response.status(ResponseCodes.success).send(formattedUser);
     } catch (err) {
         next(new CustomError(ErrorType.SendUpdatedCurrentUserMiddleware, err));
