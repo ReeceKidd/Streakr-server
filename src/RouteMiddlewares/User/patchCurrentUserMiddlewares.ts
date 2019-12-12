@@ -111,7 +111,6 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
 export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { formattedUser } = response.locals;
-        console.log(formattedUser);
         response.status(ResponseCodes.success).send(formattedUser);
     } catch (err) {
         next(new CustomError(ErrorType.SendUpdatedCurrentUserMiddleware, err));

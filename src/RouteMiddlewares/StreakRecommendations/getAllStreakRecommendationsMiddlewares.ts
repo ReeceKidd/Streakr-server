@@ -5,7 +5,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { Model } from 'mongoose';
-import { StreakRecommendationModel, streakRecommendationModel } from '../../../src/Models/StreakRecommendation';
+import { ChallengeModel, challengeModel } from '../../../src/Models/Challenge';
 
 const getStreakRecommendationsQueryValidationSchema = {
     random: Joi.boolean(),
@@ -24,17 +24,19 @@ export const getStreakRecommendationsQueryValidationMiddleware = (
     );
 };
 
-export const getFindStreakRecommendationsMiddleware = (
-    streakRecommendationModel: Model<StreakRecommendationModel>,
-) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+export const getFindStreakRecommendationsMiddleware = (challengeModel: Model<ChallengeModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
     try {
         const { random, limit } = request.query;
         if (random) {
-            response.locals.streakRecommendations = await streakRecommendationModel.aggregate([
+            response.locals.streakRecommendations = await challengeModel.aggregate([
                 { $sample: { size: Number(limit) } },
             ]);
         } else {
-            response.locals.streakRecommendations = await streakRecommendationModel.find({}).limit(Number(limit));
+            response.locals.streakRecommendations = await challengeModel.find({}).limit(Number(limit));
         }
         next();
     } catch (err) {
@@ -42,7 +44,7 @@ export const getFindStreakRecommendationsMiddleware = (
     }
 };
 
-export const findStreakRecommendationsMiddleware = getFindStreakRecommendationsMiddleware(streakRecommendationModel);
+export const findStreakRecommendationsMiddleware = getFindStreakRecommendationsMiddleware(challengeModel);
 
 export const sendStreakRecommendationsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
