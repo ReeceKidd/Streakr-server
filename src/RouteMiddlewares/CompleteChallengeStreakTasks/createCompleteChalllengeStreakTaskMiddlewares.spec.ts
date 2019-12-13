@@ -510,7 +510,7 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
 
         const challengeStreak = {
             currentStreak: {
-                numberOfDaysInARow: 7,
+                numberOfDaysInARow: 6,
             },
         };
         const user = {
@@ -551,7 +551,7 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
 
         const challengeStreak = {
             currentStreak: {
-                numberOfDaysInARow: 14,
+                numberOfDaysInARow: 13,
             },
         };
         const user = {
@@ -592,7 +592,7 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
 
         const challengeStreak = {
             currentStreak: {
-                numberOfDaysInARow: 30,
+                numberOfDaysInARow: 29,
             },
         };
         const user = {
@@ -633,7 +633,7 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
 
         const challengeStreak = {
             currentStreak: {
-                numberOfDaysInARow: 90,
+                numberOfDaysInARow: 89,
             },
         };
         const user = {
@@ -674,7 +674,7 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
 
         const challengeStreak = {
             currentStreak: {
-                numberOfDaysInARow: 90,
+                numberOfDaysInARow: 89,
             },
         };
         const user = {
@@ -715,7 +715,7 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
 
         const challengeStreak = {
             currentStreak: {
-                numberOfDaysInARow: 90,
+                numberOfDaysInARow: 89,
             },
         };
         const user = {
@@ -756,7 +756,7 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
 
         const challengeStreak = {
             currentStreak: {
-                numberOfDaysInARow: 7,
+                numberOfDaysInARow: 6,
             },
         };
         const user = {
