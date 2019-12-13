@@ -211,12 +211,12 @@ export const getSendNewChallengeBadgeNotificationMiddleware = (expo: typeof expo
         const { currentStreak } = challengeStreak;
         const { numberOfDaysInARow } = currentStreak;
         if (
-            numberOfDaysInARow === 7 ||
-            numberOfDaysInARow === 14 ||
-            numberOfDaysInARow === 30 ||
-            numberOfDaysInARow === 90 ||
-            numberOfDaysInARow === 180 ||
-            numberOfDaysInARow === 365
+            numberOfDaysInARow === 6 ||
+            numberOfDaysInARow === 13 ||
+            numberOfDaysInARow === 29 ||
+            numberOfDaysInARow === 89 ||
+            numberOfDaysInARow === 179 ||
+            numberOfDaysInARow === 364
         ) {
             const { pushNotificationToken } = user;
             if (pushNotificationToken && user.notifications.badgeUpdates.pushNotification) {
