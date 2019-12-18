@@ -434,6 +434,9 @@ export enum ErrorType {
     SendNewChallengeBadgeNotificationMiddleware,
     GetCompleteChallengeStreakTasksMiddleware,
     SendCompleteChallengeStreakTasksResponseMiddleware,
+    NoBadgeFound,
+    GetRetreiveBadgeMiddleware,
+    SendBadgeMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1104,6 +1107,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-84`,
                     message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.NoBadgeFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-85`,
+                    message: 'Badge does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -3536,6 +3547,20 @@ export class CustomError extends Error {
             case ErrorType.SendCompleteChallengeStreakTasksResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-331`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetRetreiveBadgeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-332`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendBadgeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-333`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
