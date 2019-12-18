@@ -30,22 +30,6 @@ export const agenda = new Agenda({
     processEvery: '30 Seconds',
 });
 
-agenda.on('success', async job => {
-    try {
-        if (job.attrs.data.timezone === 'Europe/London' && NODE_ENV !== 'test') {
-            const message = `
-        Environment: ${NODE_ENV}
-        Job name: ${job.attrs.name}
-        Timezone: ${job.attrs.data.timezone}
-        Local next run time: ${job.attrs.nextRunAt}
-        Run time: ${new Date()}`;
-            await sendEmail('Agenda Success', message);
-        }
-    } catch (err) {
-        console.log(err);
-    }
-});
-
 agenda.on('fail', async (err, job) => {
     try {
         const message = `
