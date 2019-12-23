@@ -223,6 +223,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
         const user: User = response.locals.user;
         const formattedUser: FormattedUser = {
             _id: user._id,
+            badges: user.badges,
             username: user.username,
             isPayingMember: user.membershipInformation.isPayingMember,
             userType: user.userType,
