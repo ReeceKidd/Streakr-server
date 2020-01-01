@@ -29,6 +29,7 @@ import { registerUserMiddlewares } from '../../../../src/RouteMiddlewares/User/r
 import { challengeStreaksRouter } from './challengeStreakRouter';
 import { completeChallengeStreakTasksRouter } from './completeChallengeStreakTaskRouter';
 import { incompleteChallengeStreakTasksRouter } from './incompleteChallengeStreakTaskRouter';
+import { notesRouter } from './notesRouter';
 
 const v1Router = Router();
 
@@ -70,5 +71,6 @@ v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);
 v1Router.use(`/${RouterCategories.badges}`, badgesRouter);
 v1Router.use(`/${RouterCategories.challenges}`, challengesRouter);
 v1Router.use(`/${RouterCategories.challengeStreaks}`, challengeStreaksRouter);
+v1Router.use(`/${RouterCategories.notes}`, notesRouter);
 
 export default v1Router;

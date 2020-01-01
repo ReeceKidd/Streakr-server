@@ -437,6 +437,16 @@ export enum ErrorType {
     NoBadgeFound,
     GetRetreiveBadgeMiddleware,
     SendBadgeMiddleware,
+    CreateNoteFromRequestMiddleware,
+    SendFormattedNoteMiddleware,
+    FindNotesMiddleware,
+    SendNotesMiddleware,
+    RetreiveNoteMiddleware,
+    SendNoteMiddleware,
+    GetNoNoteFound,
+    DeleteNoteMiddleware,
+    SendNoteDeletedResponseMiddleware,
+    NoNoteToDeleteFound,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1115,6 +1125,22 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-85`,
                     message: 'Badge does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.GetNoNoteFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-86`,
+                    message: 'Note does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.NoNoteToDeleteFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-87`,
+                    message: 'Note does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -3561,6 +3587,62 @@ export class CustomError extends Error {
             case ErrorType.SendBadgeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-333`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateNoteFromRequestMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-334`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendFormattedNoteMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-335`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindNotesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-336`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendNotesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-337`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RetreiveNoteMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-338`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendNoteMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-339`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DeleteNoteMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-340`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendNoteDeletedResponseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-341`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

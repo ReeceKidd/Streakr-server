@@ -21,4 +21,5 @@ export enum Models {
     ChallengeStreak = 'ChallengeStreak',
     CompleteChallengeStreakTask = 'CompleteChallengeStreakTask',
     IncompleteChallengeStreakTask = 'IncompleteChallengeStreakTask',
+    Note = 'Note',
 }
