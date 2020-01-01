@@ -23,7 +23,7 @@ import { profilePictureRouter } from './profilePicturesRouter';
 import { badgesRouter } from './badgesRouter';
 import { challengesRouter } from './challengesRouter';
 
-import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
+//import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 import { userRouter } from './userRouter';
 import { registerUserMiddlewares } from '../../../../src/RouteMiddlewares/User/registerUserMiddlewares';
 import { challengeStreaksRouter } from './challengeStreakRouter';
@@ -54,7 +54,7 @@ v1Router.use(`/${RouterCategories.user}`, userRouter);
 v1Router.use(`/${RouterCategories.streakRecommendations}`, streakRecommendationsRouter);
 
 // Paid Membership routes
-v1Router.use(hasUserPaidMembershipMiddleware);
+//v1Router.use(hasUserPaidMembershipMiddleware);
 v1Router.use(`/${RouterCategories.soloStreaks}`, soloStreaksRouter);
 v1Router.use(`/${RouterCategories.teamMemberStreaks}`, teamMemberStreaksRouter);
 v1Router.use(`/${RouterCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);
