@@ -200,7 +200,6 @@ export const getAddStripeSubscriptionToUserMiddleware = (userModel: Model<UserMo
     next: NextFunction,
 ): Promise<void> => {
     try {
-        console.log('4');
         const { user } = response.locals;
         const { stripeSubscription } = response.locals;
         await userModel.findByIdAndUpdate(user._id, {
@@ -220,7 +219,6 @@ export const getUpdateUserMembershipInformationMiddleware = (userModel: Model<Us
     next: NextFunction,
 ): Promise<void> => {
     try {
-        console.log('5');
         const { user } = response.locals;
         response.locals.user = await userModel
             .findByIdAndUpdate(
