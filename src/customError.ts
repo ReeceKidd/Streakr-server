@@ -447,6 +447,7 @@ export enum ErrorType {
     DeleteNoteMiddleware,
     SendNoteDeletedResponseMiddleware,
     NoNoteToDeleteFound,
+    DetermineStripePaymentPlanMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3643,6 +3644,13 @@ export class CustomError extends Error {
             case ErrorType.SendNoteDeletedResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-341`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DetermineStripePaymentPlanMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-342`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

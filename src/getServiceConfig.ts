@@ -9,7 +9,8 @@ export interface AppConfigHttp {
     AWS_SECRET_ACCESS_KEY: string;
     AWS_REGION: string;
     STRIPE_SECRET_KEY: string;
-    STRIPE_PLAN: string;
+    STRIPE_MONTHLY_PLAN: string;
+    STRIPE_ANNUAL_PLAN: string;
     APPLICATION_URL: string;
     EMAIL_USER: string;
     EMAIL_PASSWORD: string;
@@ -38,7 +39,8 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         AWS_SECRET_ACCESS_KEY,
         AWS_REGION,
         STRIPE_SECRET_KEY,
-        STRIPE_PLAN,
+        STRIPE_MONTHLY_PLAN,
+        STRIPE_ANNUAL_PLAN,
         APPLICATION_URL,
         EMAIL_USER,
         EMAIL_PASSWORD,
@@ -77,8 +79,12 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         throw new Error('STRIPE_SECRET_KEY is not provided.');
     }
 
-    if (!STRIPE_PLAN) {
-        throw new Error('STRIPE_PLAN is not provided.');
+    if (!STRIPE_MONTHLY_PLAN) {
+        throw new Error('STRIPE_MONTHLY_PLAN is not provided.');
+    }
+
+    if (!STRIPE_ANNUAL_PLAN) {
+        throw new Error('STRIPE_ANNUAL_PLAN is not provided.');
     }
 
     if (!APPLICATION_URL) {
@@ -146,7 +152,8 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         AWS_SECRET_ACCESS_KEY,
         AWS_REGION,
         STRIPE_SECRET_KEY,
-        STRIPE_PLAN,
+        STRIPE_MONTHLY_PLAN,
+        STRIPE_ANNUAL_PLAN,
         APPLICATION_URL,
         EMAIL_USER,
         EMAIL_PASSWORD,

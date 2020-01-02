@@ -8,7 +8,6 @@ import {
     handleInitialPaymentOutcomeMiddleware,
     sendSuccessfulSubscriptionMiddleware,
     stripe,
-    getCreateStripeSubscriptionMiddleware,
     isUserAnExistingStripeCustomerMiddleware,
     getIsUserAnExistingStripeCustomerMiddleware,
     addStripeSubscriptionToUserMiddleware,
@@ -19,10 +18,13 @@ import {
     getUpdateUserStripeCustomerIdMiddleware,
     updateUserMembershipInformationMiddleware,
     formatUserMiddleware,
+    getDetermineStripePaymentPlanMiddleware,
+    determineStripePaymentPlanMiddleware,
 } from './createStripeCustomerSubscriptionMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
+import { PaymentPlans } from '@streakoid/streakoid-sdk/lib';
 
 describe('createStripeCustomerSubscriptionMiddlewares', () => {
     afterEach(() => {
@@ -32,13 +34,19 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
     describe('createStripeCustomerSubscriptionBodyValidationMiddleware', () => {
         const userId = 'id';
         const token = { id: 'tok_1' };
+        const paymentPlan = PaymentPlans.Annually;
+        const body = {
+            userId,
+            token,
+            paymentPlan,
+        };
 
         test('sends correct error response when unsupported key is sent', () => {
             expect.assertions(3);
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
             const request: any = {
-                body: { unsupportedKey: 1234, token, userId },
+                body: { ...body, unsupportedKey: 1234 },
             };
             const response: any = {
                 status,
@@ -59,7 +67,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
             const request: any = {
-                body: { userId },
+                body: { ...body, token: undefined },
             };
             const response: any = {
                 status,
@@ -80,7 +88,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
             const request: any = {
-                body: { userId, token: 'token' },
+                body: { ...body, token: 'token' },
             };
             const response: any = {
                 status,
@@ -101,7 +109,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
             const request: any = {
-                body: { token },
+                body: { ...body, userId: undefined },
             };
             const response: any = {
                 status,
@@ -122,7 +130,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
             const request: any = {
-                body: { token, userId: 1234 },
+                body: { ...body, userId: 1234 },
             };
             const response: any = {
                 status,
@@ -134,6 +142,48 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
             expect(send).toBeCalledWith({
                 message: 'child "userId" fails because ["userId" must be a string]',
+            });
+            expect(next).not.toBeCalled();
+        });
+
+        test('sends correct error response when paymentPlan is not defined', () => {
+            expect.assertions(3);
+            const send = jest.fn();
+            const status = jest.fn(() => ({ send }));
+            const request: any = {
+                body: { ...body, paymentPlan: undefined },
+            };
+            const response: any = {
+                status,
+            };
+            const next = jest.fn();
+
+            createStripeCustomerSubscriptionBodyValidationMiddleware(request, response, next);
+
+            expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+            expect(send).toBeCalledWith({
+                message: 'child "paymentPlan" fails because ["paymentPlan" is required]',
+            });
+            expect(next).not.toBeCalled();
+        });
+
+        test('sends correct error response when paymentPlan is not equal to one of the allowed values', () => {
+            expect.assertions(3);
+            const send = jest.fn();
+            const status = jest.fn(() => ({ send }));
+            const request: any = {
+                body: { ...body, paymentPlan: 'Biannually' },
+            };
+            const response: any = {
+                status,
+            };
+            const next = jest.fn();
+
+            createStripeCustomerSubscriptionBodyValidationMiddleware(request, response, next);
+
+            expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+            expect(send).toBeCalledWith({
+                message: 'child "paymentPlan" fails because ["paymentPlan" must be one of [Monthly, Annually]]',
             });
             expect(next).not.toBeCalled();
         });
@@ -422,30 +472,86 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         });
     });
 
+    describe('determineStripePaymentPlanMiddleware', () => {
+        test('sets response.locals.stripePaymentPlan to the annual plan when request.body.paymentPlan equals annual', async () => {
+            expect.assertions(2);
+            const paymentPlan = PaymentPlans.Annually;
+            const stripeAnnualPlan = 'annual';
+            const stripeMonthlyPlan = 'monthly';
+            const determineStripePaymentPlanMiddleware = getDetermineStripePaymentPlanMiddleware(
+                stripeAnnualPlan,
+                stripeMonthlyPlan,
+            );
+            stripe.subscriptions.create = jest.fn().mockResolvedValue({});
+            const request: any = { body: { paymentPlan } };
+            const response: any = {
+                locals: {},
+            };
+            const next = jest.fn();
+
+            determineStripePaymentPlanMiddleware(request, response, next);
+
+            expect(response.locals.stripePaymentPlan).toEqual(stripeAnnualPlan);
+            expect(next).toBeCalledWith();
+        });
+
+        test('sets response.locals.stripePaymentPlan to the monthly plan when request.body.paymentPlan equals monthly', async () => {
+            expect.assertions(2);
+            const paymentPlan = PaymentPlans.Monthly;
+            const stripeAnnualPlan = 'annual';
+            const stripeMonthlyPlan = 'monthly';
+            const determineStripePaymentPlanMiddleware = getDetermineStripePaymentPlanMiddleware(
+                stripeAnnualPlan,
+                stripeMonthlyPlan,
+            );
+            stripe.subscriptions.create = jest.fn().mockResolvedValue({});
+            const request: any = { body: { paymentPlan } };
+            const response: any = {
+                locals: {},
+            };
+            const next = jest.fn();
+
+            determineStripePaymentPlanMiddleware(request, response, next);
+
+            expect(response.locals.stripePaymentPlan).toEqual(stripeMonthlyPlan);
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with DetermineStripePaymentPlanMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+
+            await createStripeSubscriptionMiddleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.CreateStripeSubscriptionMiddleware));
+        });
+    });
+
     describe('createStripeSubscriptionMiddleware', () => {
         test('creates stripe subscription for correct plan', async () => {
             expect.assertions(3);
             const stripeCustomer = {
                 id: '123',
             };
+            const stripePaymentPlan = 'abcd123';
             stripe.subscriptions.create = jest.fn().mockResolvedValue({});
-            const stripePlan = 'stripePlan';
             const request: any = {};
             const response: any = {
                 locals: {
                     stripeCustomer,
+                    stripePaymentPlan,
                 },
             };
             const next = jest.fn();
-            const createStripeSubscriptionMiddleware = getCreateStripeSubscriptionMiddleware(stripePlan);
 
             await createStripeSubscriptionMiddleware(request, response, next);
 
             expect(stripe.subscriptions.create).toBeCalledWith({
                 customer: stripeCustomer.id,
-                items: [{ plan: stripePlan }],
+                items: [{ plan: stripePaymentPlan }],
                 expand: ['latest_invoice.payment_intent'],
-                trial_period_days: 14,
             });
             expect(response.locals.stripeSubscription).toBeDefined();
             expect(next).toBeCalledWith();
@@ -456,28 +562,27 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const stripeCustomer = {
                 id: '123',
             };
+            const stripePaymentPlan = 'abcd123';
             const errorResponse = { response: { error: 'error' } };
             stripe.subscriptions.create = jest.fn().mockRejectedValue(errorResponse);
-            const stripePlan = 'stripePlan';
             const request: any = {};
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
             const response: any = {
                 locals: {
                     stripeCustomer,
+                    stripePaymentPlan,
                 },
                 status,
             };
             const next = jest.fn();
-            const createStripeSubscriptionMiddleware = getCreateStripeSubscriptionMiddleware(stripePlan);
 
             await createStripeSubscriptionMiddleware(request, response, next);
 
             expect(stripe.subscriptions.create).toBeCalledWith({
                 customer: stripeCustomer.id,
-                items: [{ plan: stripePlan }],
+                items: [{ plan: stripePaymentPlan }],
                 expand: ['latest_invoice.payment_intent'],
-                trial_period_days: 14,
             });
             expect(status).toBeCalledWith(ResponseCodes.badRequest);
             expect(send).toBeCalledWith(errorResponse);
@@ -489,7 +594,6 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const request: any = {};
             const response: any = {};
             const next = jest.fn();
-            const createStripeSubscriptionMiddleware = getCreateStripeSubscriptionMiddleware('test');
 
             await createStripeSubscriptionMiddleware(request, response, next);
 
@@ -498,10 +602,10 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
     });
 
     describe('handleInitialPaymentOutcomeMiddleware', () => {
-        test(' calls next() if subscriptionStatus is trialing', () => {
+        test(' calls next() if subscriptionStatus is active', () => {
             expect.assertions(1);
             const stripeSubscription = {
-                status: 'trialing',
+                status: 'active',
             };
             const request: any = {};
             const response: any = {
@@ -778,9 +882,9 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(12);
+        expect.assertions(13);
 
-        expect(createStripeCustomerSubscriptionMiddlewares.length).toEqual(11);
+        expect(createStripeCustomerSubscriptionMiddlewares.length).toEqual(12);
         expect(createStripeCustomerSubscriptionMiddlewares[0]).toBe(
             createStripeCustomerSubscriptionBodyValidationMiddleware,
         );
@@ -788,11 +892,12 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         expect(createStripeCustomerSubscriptionMiddlewares[2]).toBe(validateStripeTokenMiddleware);
         expect(createStripeCustomerSubscriptionMiddlewares[3]).toBe(createStripeCustomerMiddleware);
         expect(createStripeCustomerSubscriptionMiddlewares[4]).toBe(updateUserStripeCustomerIdMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[5]).toBe(createStripeSubscriptionMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[6]).toBe(handleInitialPaymentOutcomeMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[7]).toBe(addStripeSubscriptionToUserMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[8]).toBe(updateUserMembershipInformationMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[9]).toBe(formatUserMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[10]).toBe(sendSuccessfulSubscriptionMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[5]).toBe(determineStripePaymentPlanMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[6]).toBe(createStripeSubscriptionMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[7]).toBe(handleInitialPaymentOutcomeMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[8]).toBe(addStripeSubscriptionToUserMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[9]).toBe(updateUserMembershipInformationMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[10]).toBe(formatUserMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[11]).toBe(sendSuccessfulSubscriptionMiddleware);
     });
 });

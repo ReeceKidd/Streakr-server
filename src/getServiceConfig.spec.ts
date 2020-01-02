@@ -9,7 +9,8 @@ describe('getServiceConfig', () => {
         AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY',
         AWS_REGION: 'AWS_REGION',
         STRIPE_SECRET_KEY: 'STRIPE_SECRET_KEY',
-        STRIPE_PLAN: 'STRIPE_PLAN',
+        STRIPE_MONTHLY_PLAN: 'STRIPE_MONTHLY_PLAN',
+        STRIPE_ANNUAL_PLAN: 'STRIPE_ANNUAL_PLAN',
         APPLICATION_URL: 'APPLICATION_URL',
         EMAIL_USER: 'EMAIL_USER',
         EMAIL_PASSWORD: 'EMAIL_PASSWORD',
@@ -124,17 +125,31 @@ describe('getServiceConfig', () => {
         }
     });
 
-    test('that correct error is thrown when STRIPE_PLAN is not provided.', () => {
+    test('that correct error is thrown when STRIPE_MONTHLY_PLAN is not provided.', () => {
         expect.assertions(1);
         const environment = {
             ...environmentMock,
-            STRIPE_PLAN: undefined,
+            STRIPE_MONTHLY_PLAN: undefined,
         };
 
         try {
             getServiceConfig(environment);
         } catch (err) {
-            expect(err.message).toEqual('STRIPE_PLAN is not provided.');
+            expect(err.message).toEqual('STRIPE_MONTHLY_PLAN is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when STRIPE_ANNUAL_PLAN is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            STRIPE_ANNUAL_PLAN: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('STRIPE_ANNUAL_PLAN is not provided.');
         }
     });
 

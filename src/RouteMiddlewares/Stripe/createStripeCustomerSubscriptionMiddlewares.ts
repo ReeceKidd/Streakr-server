@@ -7,15 +7,18 @@ import { getServiceConfig } from '../../getServiceConfig';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { userModel, UserModel } from '../../Models/User';
-import { FormattedUser, User } from '@streakoid/streakoid-sdk/lib';
+import { FormattedUser, User, PaymentPlans } from '@streakoid/streakoid-sdk/lib';
 
-const { STRIPE_SECRET_KEY, STRIPE_PLAN } = getServiceConfig();
+const { STRIPE_SECRET_KEY, STRIPE_MONTHLY_PLAN, STRIPE_ANNUAL_PLAN } = getServiceConfig();
 
 export const stripe = new Stripe(STRIPE_SECRET_KEY);
 
 const createStripeCustomerBodySchema = {
     token: Joi.object().required(),
     userId: Joi.string().required(),
+    paymentPlan: Joi.string()
+        .valid(Object.keys(PaymentPlans))
+        .required(),
 };
 
 export const createStripeCustomerSubscriptionBodyValidationMiddleware = (
@@ -117,20 +120,44 @@ export const getUpdateUserStripeCustomerIdMiddleware = (userModel: Model<UserMod
 
 export const updateUserStripeCustomerIdMiddleware = getUpdateUserStripeCustomerIdMiddleware(userModel);
 
-export const getCreateStripeSubscriptionMiddleware = (stripePlan: string) => async (
+export const getDetermineStripePaymentPlanMiddleware = (stripeAnnualPlan: string, stripeMonthlyPlan: string) => (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const { paymentPlan } = request.body;
+        let stripePaymentPlan;
+        if (paymentPlan === PaymentPlans.Annually) {
+            stripePaymentPlan = stripeAnnualPlan;
+        } else {
+            stripePaymentPlan = stripeMonthlyPlan;
+        }
+        response.locals.stripePaymentPlan = stripePaymentPlan;
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.DetermineStripePaymentPlanMiddleware, err));
+    }
+};
+
+export const determineStripePaymentPlanMiddleware = getDetermineStripePaymentPlanMiddleware(
+    STRIPE_ANNUAL_PLAN,
+    STRIPE_MONTHLY_PLAN,
+);
+
+export const createStripeSubscriptionMiddleware = async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { stripeCustomer } = response.locals;
+        const { stripeCustomer, stripePaymentPlan } = response.locals;
         try {
             const stripeSubscription = await stripe.subscriptions.create({
                 customer: stripeCustomer.id,
-                items: [{ plan: stripePlan }],
+                items: [{ plan: stripePaymentPlan }],
                 expand: ['latest_invoice.payment_intent'],
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                trial_period_days: 14,
             });
 
             response.locals.stripeSubscription = stripeSubscription;
@@ -144,8 +171,6 @@ export const getCreateStripeSubscriptionMiddleware = (stripePlan: string) => asy
     }
 };
 
-export const createStripeSubscriptionMiddleware = getCreateStripeSubscriptionMiddleware(STRIPE_PLAN);
-
 export const handleInitialPaymentOutcomeMiddleware = (
     request: Request,
     response: Response,
@@ -153,7 +178,7 @@ export const handleInitialPaymentOutcomeMiddleware = (
 ): void => {
     try {
         const { stripeSubscription } = response.locals;
-        if (stripeSubscription.status === 'trialing') {
+        if (stripeSubscription.status === 'active') {
             return next();
         }
         if (stripeSubscription.status === 'incomplete') {
@@ -175,6 +200,7 @@ export const getAddStripeSubscriptionToUserMiddleware = (userModel: Model<UserMo
     next: NextFunction,
 ): Promise<void> => {
     try {
+        console.log('4');
         const { user } = response.locals;
         const { stripeSubscription } = response.locals;
         await userModel.findByIdAndUpdate(user._id, {
@@ -194,6 +220,7 @@ export const getUpdateUserMembershipInformationMiddleware = (userModel: Model<Us
     next: NextFunction,
 ): Promise<void> => {
     try {
+        console.log('5');
         const { user } = response.locals;
         response.locals.user = await userModel
             .findByIdAndUpdate(
@@ -260,6 +287,7 @@ export const createStripeCustomerSubscriptionMiddlewares = [
     validateStripeTokenMiddleware,
     createStripeCustomerMiddleware,
     updateUserStripeCustomerIdMiddleware,
+    determineStripePaymentPlanMiddleware,
     createStripeSubscriptionMiddleware,
     handleInitialPaymentOutcomeMiddleware,
     addStripeSubscriptionToUserMiddleware,
