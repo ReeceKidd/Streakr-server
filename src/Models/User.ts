@@ -119,6 +119,10 @@ export const userSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        hasCompletedIntroduction: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

@@ -34,6 +34,7 @@ const userBodyValidationSchema = {
     badges: Joi.array(),
     timezone: Joi.string(),
     pushNotificationToken: Joi.string(),
+    hasCompletedIntroduction: Joi.boolean(),
 };
 
 export const userRequestBodyValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
@@ -100,6 +101,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             pushNotificationToken: user.pushNotificationToken,
             notifications: user.notifications,
             profileImages: user.profileImages,
+            hasCompletedIntroduction: user.hasCompletedIntroduction,
         };
         response.locals.formattedUser = formattedUser;
         next();

@@ -115,6 +115,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             pushNotificationToken: user.pushNotificationToken,
             notifications: user.notifications,
             profileImages: user.profileImages,
+            hasCompletedIntroduction: user.hasCompletedIntroduction,
         };
         response.locals.user = formattedUser;
         next();
