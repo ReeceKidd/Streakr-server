@@ -386,6 +386,7 @@ describe('formatUserMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'pushNotificationToken',
+                'hasCompletedIntroduction',
                 'notifications',
                 'profileImages',
             ].sort(),

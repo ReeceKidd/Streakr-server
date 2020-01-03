@@ -283,6 +283,7 @@ describe('formatUsersMiddleware', () => {
                 subscription: 'sub_1',
             },
             pushNotificationToken: 'pushNotificationToken',
+            hasCompletedIntroduction: 'hasCompletedIntroduction',
         };
         const users = [user];
         const response: any = { locals: { users } };
@@ -305,6 +306,7 @@ describe('formatUsersMiddleware', () => {
                 'updatedAt',
                 'profileImages',
                 'pushNotificationToken',
+                'hasCompletedIntroduction',
             ].sort(),
         );
     });
