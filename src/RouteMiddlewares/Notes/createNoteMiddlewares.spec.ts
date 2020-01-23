@@ -11,13 +11,13 @@ import { CustomError, ErrorType } from '../../customError';
 
 const userId = '12345678';
 const streakId = 'abcdefghijk';
-const note = 'Completed Spanish lesson on Duolingo';
+const text = 'Completed Spanish lesson on Duolingo';
 
 describe(`createNoteBodyValidationMiddleware`, () => {
     const body = {
         userId,
         streakId,
-        note,
+        text,
     };
 
     test('valid request passes validation', () => {

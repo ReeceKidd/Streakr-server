@@ -17,7 +17,7 @@ export const noteSchema = new mongoose.Schema(
             type: String,
             index: true,
         },
-        note: {
+        text: {
             required: true,
             type: String,
             index: true,

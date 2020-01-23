@@ -11,7 +11,7 @@ import { CustomError, ErrorType } from '../../customError';
 const createNoteBodyValidationSchema = {
     userId: Joi.string().required(),
     streakId: Joi.string().required(),
-    note: Joi.string().required(),
+    text: Joi.string().required(),
 };
 
 export const createNoteBodyValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
@@ -28,11 +28,11 @@ export const getCreateNoteFromRequestMiddleware = (noteModel: mongoose.Model<Not
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { userId, streakId, note } = request.body;
+        const { userId, streakId, text } = request.body;
         const newNote = new noteModel({
             userId,
             streakId,
-            note,
+            text,
         });
         response.locals.savedNote = await newNote.save();
         next();
