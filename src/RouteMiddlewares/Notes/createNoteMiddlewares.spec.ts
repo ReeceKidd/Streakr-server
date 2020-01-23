@@ -121,12 +121,12 @@ describe(`createNoteBodyValidationMiddleware`, () => {
         expect(next).not.toBeCalled();
     });
 
-    test('sends note is not a string error', () => {
+    test('sends text is not a string error', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { ...body, note: 123 },
+            body: { ...body, text: 123 },
         };
         const response: any = {
             status,
@@ -137,7 +137,7 @@ describe(`createNoteBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "note" fails because ["note" must be a string]',
+            message: 'child "text" fails because ["text" must be a string]',
         });
         expect(next).not.toBeCalled();
     });
