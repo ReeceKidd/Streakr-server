@@ -17,6 +17,10 @@ export const noteSchema = new mongoose.Schema(
             type: String,
             index: true,
         },
+        streakType: {
+            type: String,
+            required: true,
+        },
         text: {
             required: true,
             type: String,

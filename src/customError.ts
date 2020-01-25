@@ -448,6 +448,8 @@ export enum ErrorType {
     SendNoteDeletedResponseMiddleware,
     NoNoteToDeleteFound,
     DetermineStripePaymentPlanMiddleware,
+    NotifyTeamMembersThatUserHasAddedANoteMiddleware,
+    CreateNoteTeamStreakDoesNotExist,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1142,6 +1144,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-87`,
                     message: 'Note does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateNoteTeamStreakDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-88`,
+                    message: 'Team streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -3651,6 +3661,13 @@ export class CustomError extends Error {
             case ErrorType.DetermineStripePaymentPlanMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-342`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.NotifyTeamMembersThatUserHasAddedANoteMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-343`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

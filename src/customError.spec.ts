@@ -937,6 +937,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to CreateNoteTeamStreakDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateNoteTeamStreakDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-88`);
+        expect(message).toBe('Team streak does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -4851,6 +4862,17 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-342`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to NotifyTeamMembersThatUserHasAddedANoteMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.NotifyTeamMembersThatUserHasAddedANoteMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-343`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
