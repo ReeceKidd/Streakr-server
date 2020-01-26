@@ -7,7 +7,7 @@ export type ActivityModel = Activity & mongoose.Document;
 
 export const activitySchema = new mongoose.Schema(
     {
-        type: {
+        activityType: {
             type: String,
             required: true,
         },

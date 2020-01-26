@@ -228,7 +228,7 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
         sendFormattedSoloStreakMiddleware(request, response, next);
 
         expect(response.locals.user).toBeUndefined();
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.created);
         expect(send).toBeCalledWith(savedSoloStreak);
     });

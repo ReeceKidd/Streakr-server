@@ -58,6 +58,7 @@ export const sendFormattedSoloStreakMiddleware = (request: Request, response: Re
     try {
         const { savedSoloStreak } = response.locals;
         response.status(ResponseCodes.created).send(savedSoloStreak);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedSoloStreakMiddleware, err));
     }
@@ -72,9 +73,9 @@ export const getCreateSoloStreakActivityMiddleware = (activityModel: mongoose.Mo
         const user: User = response.locals.user;
         const savedSoloStreak = response.locals.savedSoloStreak;
         const newActivity = new activityModel({
-            type: ActivityTypes.createdSoloStreak,
+            activityType: ActivityTypes.createdSoloStreak,
             userId: user._id,
-            streakId: savedSoloStreak,
+            streakId: savedSoloStreak._id,
         });
         await newActivity.save();
     } catch (err) {
