@@ -450,6 +450,9 @@ export enum ErrorType {
     DetermineStripePaymentPlanMiddleware,
     NotifyTeamMembersThatUserHasAddedANoteMiddleware,
     CreateNoteTeamStreakDoesNotExist,
+    FindActivitiesMiddleware,
+    SendActivitiesMiddleware,
+    CreateSoloStreakActivityMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3668,6 +3671,27 @@ export class CustomError extends Error {
             case ErrorType.NotifyTeamMembersThatUserHasAddedANoteMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-343`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindActivitiesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-344`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendActivitiesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-345`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateSoloStreakActivityMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-346`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

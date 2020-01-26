@@ -5,6 +5,8 @@ import {
     createSoloStreakFromRequestMiddleware,
     getCreateSoloStreakFromRequestMiddleware,
     sendFormattedSoloStreakMiddleware,
+    createSoloStreakActivityMiddleware,
+    getCreateSoloStreakActivityMiddleware,
 } from './createSoloStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -248,13 +250,48 @@ describe(`sendFormattedSoloStreakMiddleware`, () => {
     });
 });
 
+describe(`createSoloStreakActivityMiddleware`, () => {
+    test('creates a new createSoloStreakActivity', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const savedSoloStreak = { _id: '_id' };
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user, savedSoloStreak } };
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getCreateSoloStreakActivityMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).not.toBeCalled();
+    });
+
+    test('calls next with CreateSoloStreakActivityMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateSoloStreakActivityMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.CreateSoloStreakActivityMiddleware, expect.any(Error)));
+    });
+});
+
 describe(`createSoloStreakMiddlewares`, () => {
     test('that createSoloStreak middlewares are defined in the correct order', async () => {
-        expect.assertions(4);
+        expect.assertions(5);
 
-        expect(createSoloStreakMiddlewares.length).toEqual(3);
+        expect(createSoloStreakMiddlewares.length).toEqual(4);
         expect(createSoloStreakMiddlewares[0]).toBe(createSoloStreakBodyValidationMiddleware);
         expect(createSoloStreakMiddlewares[1]).toBe(createSoloStreakFromRequestMiddleware);
         expect(createSoloStreakMiddlewares[2]).toBe(sendFormattedSoloStreakMiddleware);
+        expect(createSoloStreakMiddlewares[3]).toBe(createSoloStreakActivityMiddleware);
     });
 });

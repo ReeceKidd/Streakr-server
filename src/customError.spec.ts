@@ -4876,4 +4876,37 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to FindActivitiesMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FindActivitiesMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-344`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendActivitiesMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendActivitiesMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-345`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateSoloStreakActivityMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateSoloStreakActivityMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-346`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

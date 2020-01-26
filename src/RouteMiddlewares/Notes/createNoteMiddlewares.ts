@@ -38,20 +38,15 @@ export const getCreateNoteFromRequestMiddleware = (noteModel: mongoose.Model<Not
 ): Promise<void> => {
     try {
         const { userId, streakId, streakType, text } = request.body;
-        console.log(request.body);
         const newNote = new noteModel({
             userId,
             streakId,
             streakType,
             text,
         });
-        console.log(newNote);
         response.locals.savedNote = await newNote.save();
         next();
     } catch (err) {
-        console.log('Entered error here');
-        console.log(Object.keys(err));
-        console.log(err.response);
         next(new CustomError(ErrorType.CreateNoteFromRequestMiddleware, err));
     }
 };
