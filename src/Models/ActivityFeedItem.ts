@@ -1,9 +1,9 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { Activity } from '@streakoid/streakoid-sdk/lib';
+import { ActivityFeedItem } from '@streakoid/streakoid-sdk/lib';
 
-export type ActivityModel = Activity & mongoose.Document;
+export type ActivityFeedItemModel = ActivityFeedItem & mongoose.Document;
 
 export const activitySchema = new mongoose.Schema(
     {
@@ -21,11 +21,11 @@ export const activitySchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-        collection: Collections.Activities,
+        collection: Collections.ActivityFeedItems,
     },
 );
 
-export const activityModel: mongoose.Model<ActivityModel> = mongoose.model<ActivityModel>(
-    Models.Activity,
+export const activityFeedItemModel: mongoose.Model<ActivityFeedItemModel> = mongoose.model<ActivityFeedItemModel>(
+    Models.ActivityFeedItem,
     activitySchema,
 );

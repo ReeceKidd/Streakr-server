@@ -9,7 +9,7 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { User } from '@streakoid/streakoid-sdk/lib';
 import ActivityTypes from '@streakoid/streakoid-sdk/lib/ActivityTypes';
-import { activityModel, ActivityModel } from '../../../src/Models/Activity';
+import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
 
 const createSoloStreakBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -64,15 +64,13 @@ export const sendFormattedSoloStreakMiddleware = (request: Request, response: Re
     }
 };
 
-export const getCreateSoloStreakActivityMiddleware = (activityModel: mongoose.Model<ActivityModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const getCreateSoloStreakActivityMiddleware = (
+    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const savedSoloStreak = response.locals.savedSoloStreak;
-        const newActivity = new activityModel({
+        const newActivity = new activityFeedItemModel({
             activityType: ActivityTypes.createdSoloStreak,
             userId: user._id,
             streakId: savedSoloStreak._id,
@@ -83,7 +81,7 @@ export const getCreateSoloStreakActivityMiddleware = (activityModel: mongoose.Mo
     }
 };
 
-export const createSoloStreakActivityMiddleware = getCreateSoloStreakActivityMiddleware(activityModel);
+export const createSoloStreakActivityMiddleware = getCreateSoloStreakActivityMiddleware(activityFeedItemModel);
 
 export const createSoloStreakMiddlewares = [
     createSoloStreakBodyValidationMiddleware,

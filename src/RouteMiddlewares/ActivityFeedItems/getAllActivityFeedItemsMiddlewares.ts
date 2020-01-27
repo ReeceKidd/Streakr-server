@@ -5,7 +5,7 @@ import * as mongoose from 'mongoose';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { activityModel, ActivityModel } from '../../Models/ActivityFeedItem';
+import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
 
 const getActivityFeedItemsQueryValidationSchema = {
     userId: Joi.string(),
@@ -24,7 +24,7 @@ export const getActivityFeedItemsQueryValidationMiddleware = (
     );
 };
 
-export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model<ActivityModel>) => async (
+export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model<ActivityFeedItemModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -52,7 +52,7 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
     }
 };
 
-export const findActivityFeedItemsMiddleware = getFindActivityFeedItemsMiddleware(activityModel);
+export const findActivityFeedItemsMiddleware = getFindActivityFeedItemsMiddleware(activityFeedItemModel);
 
 export const sendActivityFeedItemsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {

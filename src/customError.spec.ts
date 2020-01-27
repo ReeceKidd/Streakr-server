@@ -4877,10 +4877,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to FindActivitiesMiddleware`, () => {
+    test(`creates correct error when type is set to FindActivityFeedItemsMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.FindActivitiesMiddleware);
+        const customError = new CustomError(ErrorType.FindActivityFeedItemsMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-344`);
@@ -4888,10 +4888,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to SendActivitiesMiddleware`, () => {
+    test(`creates correct error when type is set to SendActivityFeedItemsMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.SendActivitiesMiddleware);
+        const customError = new CustomError(ErrorType.SendActivityFeedItemsMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-345`);

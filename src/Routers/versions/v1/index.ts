@@ -22,7 +22,7 @@ import { emailRouter } from './emailRouter';
 import { profilePictureRouter } from './profilePicturesRouter';
 import { badgesRouter } from './badgesRouter';
 import { challengesRouter } from './challengesRouter';
-import { activitiesRouter } from './activitiesRouter';
+import { activityFeedItemsRouter } from './activityFeedItemsRouter';
 
 //import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 import { userRouter } from './userRouter';
@@ -73,6 +73,6 @@ v1Router.use(`/${RouterCategories.badges}`, badgesRouter);
 v1Router.use(`/${RouterCategories.challenges}`, challengesRouter);
 v1Router.use(`/${RouterCategories.challengeStreaks}`, challengeStreaksRouter);
 v1Router.use(`/${RouterCategories.notes}`, notesRouter);
-v1Router.use(`/${RouterCategories.activities}`, activitiesRouter);
+v1Router.use(`/${RouterCategories.activityFeedItems}`, activityFeedItemsRouter);
 
 export default v1Router;

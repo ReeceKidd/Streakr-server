@@ -450,8 +450,8 @@ export enum ErrorType {
     DetermineStripePaymentPlanMiddleware,
     NotifyTeamMembersThatUserHasAddedANoteMiddleware,
     CreateNoteTeamStreakDoesNotExist,
-    FindActivitiesMiddleware,
-    SendActivitiesMiddleware,
+    FindActivityFeedItemsMiddleware,
+    SendActivityFeedItemsMiddleware,
     CreateSoloStreakActivityMiddleware,
 }
 
@@ -3675,14 +3675,14 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.FindActivitiesMiddleware:
+            case ErrorType.FindActivityFeedItemsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-344`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.SendActivitiesMiddleware:
+            case ErrorType.SendActivityFeedItemsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-345`,
                     message: internalServerMessage,
