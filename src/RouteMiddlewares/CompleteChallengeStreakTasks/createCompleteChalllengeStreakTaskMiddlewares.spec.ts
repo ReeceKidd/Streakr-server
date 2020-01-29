@@ -22,6 +22,8 @@ import {
     ensureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware,
     sendNewChallengeBadgeNotificationMiddleware,
     getSendNewChallengeBadgeNotificationMiddleware,
+    getCreateCompleteChallengeStreakActivityFeedItemMiddleware,
+    createCompleteChallengeStreakActivityFeedItemMiddleware,
 } from './createCompleteChallengeStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -855,7 +857,7 @@ describe('sendTaskCompleteResponseMiddleware', () => {
 
         expect(status).toBeCalledWith(successResponseCode);
         expect(send).toBeCalledWith(completeChallengeStreakTask);
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
     });
 
     test('throws SendTaskCompleteResponseMiddleware error on middleware failure', () => {
@@ -883,11 +885,47 @@ describe('sendTaskCompleteResponseMiddleware', () => {
     });
 });
 
+describe(`createCompleteChallengeStreakActivitFeedItemMiddleware`, () => {
+    test('creates a new completedChallengeStreakActivity', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const challengeStreak = { _id: '_id' };
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user, challengeStreak } };
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getCreateCompleteChallengeStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).not.toBeCalled();
+    });
+
+    test('calls next with CreateCompleteChallengeStreakActivityMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateCompleteChallengeStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateCompleteChallengeStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe(`createCompleteChallengeStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(12);
+        expect.assertions(13);
 
-        expect(createCompleteChallengeStreakTaskMiddlewares.length).toEqual(11);
+        expect(createCompleteChallengeStreakTaskMiddlewares.length).toEqual(12);
         expect(createCompleteChallengeStreakTaskMiddlewares[0]).toBe(
             completeChallengeStreakTaskBodyValidationMiddleware,
         );
@@ -903,5 +941,8 @@ describe(`createCompleteChallengeStreakTaskMiddlewares`, () => {
         expect(createCompleteChallengeStreakTaskMiddlewares[8]).toBe(streakMaintainedMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[9]).toBe(sendNewChallengeBadgeNotificationMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[10]).toBe(sendTaskCompleteResponseMiddleware);
+        expect(createCompleteChallengeStreakTaskMiddlewares[11]).toBe(
+            createCompleteChallengeStreakActivityFeedItemMiddleware,
+        );
     });
 });

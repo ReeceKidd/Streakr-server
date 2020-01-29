@@ -3,7 +3,7 @@ import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { TeamMemberStreak, TeamStreak, User } from '@streakoid/streakoid-sdk/lib';
+import { TeamMemberStreak, TeamStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -17,6 +17,7 @@ import {
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
 import { completeTeamStreakModel, CompleteTeamStreakModel } from '../../Models/CompleteTeamStreak';
+import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -470,10 +471,32 @@ export const sendCompleteTeamMemberStreakTaskResponseMiddleware = (
     try {
         const { completeTeamMemberStreakTask } = response.locals;
         response.status(ResponseCodes.created).send(completeTeamMemberStreakTask);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendCompleteTeamMemberStreakTaskResponseMiddleware, err));
     }
 };
+
+export const getCreateCompleteTeamMemberStreakActivityFeedItemMiddleware = (
+    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        const newActivity = new activityFeedItemModel({
+            activityFeedItemType: ActivityFeedItemTypes.completedTeamMemberStreak,
+            userId: user._id,
+            streakId: teamStreak._id,
+        });
+        await newActivity.save();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateCompleteTeamMemberStreakActivityFeedItemMiddleware, err));
+    }
+};
+
+export const createCompleteTeamMemberStreakActivityFeedItemMiddleware = getCreateCompleteTeamMemberStreakActivityFeedItemMiddleware(
+    activityFeedItemModel,
+);
 
 export const createCompleteTeamMemberStreakTaskMiddlewares = [
     completeTeamMemberStreakTaskBodyValidationMiddleware,
@@ -496,4 +519,5 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     retreiveTeamMembersMiddleware,
     notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
     sendCompleteTeamMemberStreakTaskResponseMiddleware,
+    createCompleteTeamMemberStreakActivityFeedItemMiddleware,
 ];

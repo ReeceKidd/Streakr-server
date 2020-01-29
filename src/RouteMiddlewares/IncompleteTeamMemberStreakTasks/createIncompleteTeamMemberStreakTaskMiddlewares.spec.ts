@@ -37,6 +37,8 @@ import {
     notifiyTeamMembersThatUserHasIncompletedTaskMiddleware,
     getRetreiveTeamMembersMiddleware,
     getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware,
+    getCreateIncompleteTeamMemberStreakActivityFeedItemMiddleware,
+    createIncompleteTeamMemberStreakActivityFeedItemMiddleware,
 } from './createIncompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -1281,7 +1283,7 @@ describe('sendTaskIncompleteResponseMiddleware', () => {
 
         expect(status).toBeCalledWith(successResponseCode);
         expect(send).toBeCalledWith(incompleteTeamMemberStreakTask);
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
     });
 
     test('throws SendTaskIncompleteResponseMiddleware error on middleware failure', () => {
@@ -1304,11 +1306,47 @@ describe('sendTaskIncompleteResponseMiddleware', () => {
     });
 });
 
+describe(`createIncompleteTeamMemberStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new incompletedTeamMemberStreakActivity', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreak = { _id: '_id' };
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user, teamStreak } };
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getCreateIncompleteTeamMemberStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).not.toBeCalled();
+    });
+
+    test('calls next with CreateIncompleteTeamMemberStreakActivityMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateIncompleteTeamMemberStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateIncompleteTeamMemberStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe(`createIncompleteTeamMemberStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(20);
+        expect.assertions(21);
 
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares.length).toEqual(19);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares.length).toEqual(20);
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[0]).toBe(
             incompleteTeamMemberStreakTaskBodyValidationMiddleware,
         );
@@ -1338,5 +1376,8 @@ describe(`createIncompleteTeamMemberStreakTaskMiddlewares`, () => {
             notifiyTeamMembersThatUserHasIncompletedTaskMiddleware,
         );
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[18]).toBe(sendTaskIncompleteResponseMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[19]).toBe(
+            createIncompleteTeamMemberStreakActivityFeedItemMiddleware,
+        );
     });
 });

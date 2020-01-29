@@ -8,7 +8,7 @@ import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { User } from '@streakoid/streakoid-sdk/lib';
-import ActivityTypes from '@streakoid/streakoid-sdk/lib/ActivityTypes';
+import ActivityFeedItemTypes from '@streakoid/streakoid-sdk/lib/ActivityFeedItemTypes';
 import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
 
 const createSoloStreakBodyValidationSchema = {
@@ -64,28 +64,30 @@ export const sendFormattedSoloStreakMiddleware = (request: Request, response: Re
     }
 };
 
-export const getCreateSoloStreakActivityMiddleware = (
+export const getCreateSoloStreakActivityFeedItemMiddleware = (
     activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const savedSoloStreak = response.locals.savedSoloStreak;
         const newActivity = new activityFeedItemModel({
-            activityType: ActivityTypes.createdSoloStreak,
+            activityFeedItemType: ActivityFeedItemTypes.createdSoloStreak,
             userId: user._id,
             streakId: savedSoloStreak._id,
         });
         await newActivity.save();
     } catch (err) {
-        next(new CustomError(ErrorType.CreateSoloStreakActivityMiddleware, err));
+        next(new CustomError(ErrorType.CreateSoloStreakActivityFeedItemMiddleware, err));
     }
 };
 
-export const createSoloStreakActivityMiddleware = getCreateSoloStreakActivityMiddleware(activityFeedItemModel);
+export const createSoloStreakActivityFeedItemMiddleware = getCreateSoloStreakActivityFeedItemMiddleware(
+    activityFeedItemModel,
+);
 
 export const createSoloStreakMiddlewares = [
     createSoloStreakBodyValidationMiddleware,
     createSoloStreakFromRequestMiddleware,
     sendFormattedSoloStreakMiddleware,
-    createSoloStreakActivityMiddleware,
+    createSoloStreakActivityFeedItemMiddleware,
 ];

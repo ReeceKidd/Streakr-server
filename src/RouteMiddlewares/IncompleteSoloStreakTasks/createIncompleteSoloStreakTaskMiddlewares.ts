@@ -10,7 +10,9 @@ import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { incompleteSoloStreakTaskModel, IncompleteSoloStreakTaskModel } from '../../Models/IncompleteSoloStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import { SoloStreak } from '@streakoid/streakoid-sdk/lib';
+import { SoloStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { ActivityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import { activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
 
 export const incompleteSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -234,12 +236,34 @@ export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseC
     try {
         const { incompleteSoloStreakTask } = response.locals;
         response.status(resourceCreatedResponseCode).send(incompleteSoloStreakTask);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendTaskIncompleteResponseMiddleware, err));
     }
 };
 
 export const sendTaskIncompleteResponseMiddleware = getSendTaskIncompleteResponseMiddleware(ResponseCodes.created);
+
+export const getCreateIncompleteSoloStreakActivityFeedItemMiddleware = (
+    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        const newActivity = new activityFeedItemModel({
+            activityFeedItemType: ActivityFeedItemTypes.incompletedSoloStreak,
+            userId: user._id,
+            streakId: soloStreak._id,
+        });
+        await newActivity.save();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateIncompleteSoloStreakActivityFeedItemMiddleware, err));
+    }
+};
+
+export const createIncompleteSoloStreakActivitFeedItemMiddleware = getCreateIncompleteSoloStreakActivityFeedItemMiddleware(
+    activityFeedItemModel,
+);
 
 export const createIncompleteSoloStreakTaskMiddlewares = [
     incompleteSoloStreakTaskBodyValidationMiddleware,
@@ -253,4 +277,5 @@ export const createIncompleteSoloStreakTaskMiddlewares = [
     saveTaskIncompleteMiddleware,
     incompleteSoloStreakMiddleware,
     sendTaskIncompleteResponseMiddleware,
+    createIncompleteSoloStreakActivitFeedItemMiddleware,
 ];

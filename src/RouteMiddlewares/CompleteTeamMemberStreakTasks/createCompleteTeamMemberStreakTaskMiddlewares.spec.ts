@@ -37,6 +37,8 @@ import {
     notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
     getRetreiveTeamMembersMiddleware,
     getNotifyTeamMembersThatUserHasCompletedTaskMiddleware,
+    getCreateCompleteTeamMemberStreakActivityFeedItemMiddleware,
+    createCompleteTeamMemberStreakActivityFeedItemMiddleware,
 } from './createCompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -1280,7 +1282,7 @@ describe('sendCompleteTeamMemberStreakTaskResponseMiddleware', () => {
 
         expect(status).toBeCalledWith(201);
         expect(send).toBeCalledWith(completeTeamMemberStreakTask);
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
     });
 
     test('throws SendTaskCompleteResponseMiddleware error on middleware failure', () => {
@@ -1302,11 +1304,47 @@ describe('sendCompleteTeamMemberStreakTaskResponseMiddleware', () => {
     });
 });
 
+describe(`createCompleteTeamMemberStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new completedTeamMemberStreakActivity', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreak = { _id: '_id' };
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user, teamStreak } };
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getCreateCompleteTeamMemberStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).not.toBeCalled();
+    });
+
+    test('calls next with CreateCompleteTeamMemberStreakActivityMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateCompleteTeamMemberStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateCompleteTeamMemberStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe(`createCompleteTeamMemberStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(21);
+        expect.assertions(22);
 
-        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(20);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(21);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[0]).toBe(
             completeTeamMemberStreakTaskBodyValidationMiddleware,
         );
@@ -1334,6 +1372,9 @@ describe(`createCompleteTeamMemberStreakTaskMiddlewares`, () => {
         );
         expect(createCompleteTeamMemberStreakTaskMiddlewares[19]).toBe(
             sendCompleteTeamMemberStreakTaskResponseMiddleware,
+        );
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[20]).toBe(
+            createCompleteTeamMemberStreakActivityFeedItemMiddleware,
         );
     });
 });

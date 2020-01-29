@@ -14,6 +14,8 @@ import {
     createTeamMemberStreakMiddleware,
     addFriendToTeamStreakMiddleware,
     createTeamMemberParamsValidationMiddleware,
+    getCreateJoinedTeamStreakActivityFeedItemMiddleware,
+    createJoinedTeamStreakActivityFeedItemMiddleware,
 } from './createTeamMemberMiddlewares';
 
 describe(`createTeamMemberParamsValidationMiddleware`, () => {
@@ -332,7 +334,7 @@ describe(`sendCreateTeamMemberResponseMiddleware`, () => {
 
         sendCreateTeamMemberResponseMiddleware(request, response, next);
 
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.created);
         expect(send).toBeCalledWith(teamStreak.members);
     });
@@ -352,11 +354,47 @@ describe(`sendCreateTeamMemberResponseMiddleware`, () => {
     });
 });
 
+describe(`createJoinedTeamStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new createJoinedTeamStreakActivity', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreak = { _id: '_id' };
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user, teamStreak } };
+        const request: any = { body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateJoinedTeamStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).not.toBeCalled();
+    });
+
+    test('calls next with CreateJoinedTeamStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateJoinedTeamStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateJoinedTeamStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe(`createTeamMemberMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(8);
+        expect.assertions(9);
 
-        expect(createTeamMemberMiddlewares.length).toEqual(7);
+        expect(createTeamMemberMiddlewares.length).toEqual(8);
         expect(createTeamMemberMiddlewares[0]).toBe(createTeamMemberParamsValidationMiddleware);
         expect(createTeamMemberMiddlewares[1]).toBe(createTeamMemberBodyValidationMiddleware);
         expect(createTeamMemberMiddlewares[2]).toBe(friendExistsMiddleware);
@@ -364,5 +402,6 @@ describe(`createTeamMemberMiddlewares`, () => {
         expect(createTeamMemberMiddlewares[4]).toBe(createTeamMemberStreakMiddleware);
         expect(createTeamMemberMiddlewares[5]).toBe(addFriendToTeamStreakMiddleware);
         expect(createTeamMemberMiddlewares[6]).toBe(sendCreateTeamMemberResponseMiddleware);
+        expect(createTeamMemberMiddlewares[7]).toBe(createJoinedTeamStreakActivityFeedItemMiddleware);
     });
 });

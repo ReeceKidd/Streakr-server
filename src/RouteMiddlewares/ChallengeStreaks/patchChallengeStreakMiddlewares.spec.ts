@@ -6,9 +6,16 @@ import {
     patchChallengeStreakMiddleware,
     sendUpdatedChallengeStreakMiddleware,
     challengeStreakParamsValidationMiddleware,
+    getCreateArchivedChallengeStreakActivityFeedItemMiddleware,
+    getCreateDeletedChallengeStreakActivityFeedItemMiddleware,
+    createArchivedChallengeStreakActivityFeedItemMiddleware,
+    createRestoredChallengeStreakActivityFeedItemMiddleware,
+    createDeletedChallengeStreakActivityFeedItemMiddleware,
+    getCreateRestoredChallengeStreakActivityFeedItemMiddleware,
 } from './patchChallengeStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { StreakStatus } from '@streakoid/streakoid-sdk/lib';
 
 describe('challengeStreakParamsValidationMiddleware', () => {
     test('sends correct error response when challengeStreakId is not defined', () => {
@@ -233,7 +240,7 @@ describe('sendUpdatedPatchMiddleware', () => {
         sendUpdatedChallengeStreakMiddleware(request, response, next);
 
         expect(response.locals.user).toBeUndefined();
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
         expect(status).toBeCalledWith(updatedResourceResponseCode);
         expect(send).toBeCalledWith(updatedChallengeStreak);
     });
@@ -254,14 +261,182 @@ describe('sendUpdatedPatchMiddleware', () => {
     });
 });
 
+describe(`createArchivedChallengeStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new archivedChallengeStreak activity if request.body.status equals archived', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const challengeStreakId = 'challengeStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { challengeStreakId }, body: { status: StreakStatus.archived } };
+        const next = jest.fn();
+
+        const middleware = getCreateArchivedChallengeStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal archived it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const challengeStreakId = 'challengeStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { challengeStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateArchivedChallengeStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateArchivedChallengeStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateArchivedChallengeStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateArchivedChallengeStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`createRestoredChallengeStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new restoredChallengeStreak activity if request.body.status equals live', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const challengeStreakId = 'challengeStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { challengeStreakId }, body: { status: StreakStatus.live } };
+        const next = jest.fn();
+
+        const middleware = getCreateRestoredChallengeStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal live it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const challengeStreakId = 'challengeStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { challengeStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateRestoredChallengeStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateRestoreChallengeStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateRestoredChallengeStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateRestoredChallengeStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`createDeletedChallengeStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new deletedChallengeStreak activity if request.body.status equals deleted', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const challengeStreakId = 'challengeStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { challengeStreakId }, body: { status: StreakStatus.deleted } };
+        const next = jest.fn();
+
+        const middleware = getCreateDeletedChallengeStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal deleted it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const challengeStreakId = 'challengeStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { challengeStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateDeletedChallengeStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateRestoreChallengeStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateDeletedChallengeStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateDeletedChallengeStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe('patchChallengeStreakMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(5);
+        expect.assertions(8);
 
-        expect(patchChallengeStreakMiddlewares.length).toBe(4);
+        expect(patchChallengeStreakMiddlewares.length).toBe(7);
         expect(patchChallengeStreakMiddlewares[0]).toBe(challengeStreakParamsValidationMiddleware);
         expect(patchChallengeStreakMiddlewares[1]).toBe(challengeStreakRequestBodyValidationMiddleware);
         expect(patchChallengeStreakMiddlewares[2]).toBe(patchChallengeStreakMiddleware);
         expect(patchChallengeStreakMiddlewares[3]).toBe(sendUpdatedChallengeStreakMiddleware);
+        expect(patchChallengeStreakMiddlewares[4]).toBe(createArchivedChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[5]).toBe(createRestoredChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[6]).toBe(createDeletedChallengeStreakActivityFeedItemMiddleware);
     });
 });

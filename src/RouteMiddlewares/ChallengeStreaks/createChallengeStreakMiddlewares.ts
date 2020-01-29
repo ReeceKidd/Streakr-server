@@ -9,7 +9,8 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { challengeModel, ChallengeModel } from '../../Models/Challenge';
 import { UserModel, userModel } from '../../../src/Models/User';
-import { User, Challenge } from '@streakoid/streakoid-sdk/lib';
+import { User, Challenge, ActivityFeedItemTypes, ChallengeStreak } from '@streakoid/streakoid-sdk/lib';
+import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
 
 const createChallengeStreakBodyValidationSchema = {
     challengeId: Joi.string().required(),
@@ -162,10 +163,34 @@ export const sendFormattedChallengeStreakMiddleware = (
     try {
         const { savedChallengeStreak } = response.locals;
         response.status(ResponseCodes.created).send(savedChallengeStreak);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedChallengeStreakMiddleware, err));
     }
 };
+
+export const getJoinChallengeActivityFeedItemMiddleware = (
+    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const challenge: Challenge = response.locals.challenge;
+        const challengeStreak: ChallengeStreak = response.locals.savedChallengeStreak;
+        const newActivity = new activityFeedItemModel({
+            activityFeedItemType: ActivityFeedItemTypes.joinedChallenge,
+            userId: user._id,
+            challengeId: challenge._id,
+            streakId: challengeStreak._id,
+        });
+        await newActivity.save();
+    } catch (err) {
+        next(new CustomError(ErrorType.JoinChallengeActivityFeedItemMiddleware, err));
+    }
+};
+
+export const joinChallengeActivityFeedItemMiddleware = getJoinChallengeActivityFeedItemMiddleware(
+    activityFeedItemModel,
+);
 
 export const createChallengeStreakMiddlewares = [
     createChallengeStreakBodyValidationMiddleware,
@@ -176,4 +201,5 @@ export const createChallengeStreakMiddlewares = [
     addChallengeBadgeToUserBadgesMiddleware,
     createChallengeStreakMiddleware,
     sendFormattedChallengeStreakMiddleware,
+    joinChallengeActivityFeedItemMiddleware,
 ];

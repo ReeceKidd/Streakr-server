@@ -6,9 +6,20 @@ import {
     patchSoloStreakMiddleware,
     sendUpdatedSoloStreakMiddleware,
     soloStreakParamsValidationMiddleware,
+    createArchivedSoloStreakActivityFeedItemMiddleware,
+    getCreateArchivedSoloStreakActivityFeedItemMiddleware,
+    getCreateRestoredSoloStreakActivityFeedItemMiddleware,
+    createRestoredSoloStreakActivityFeedItemMiddleware,
+    createDeletedSoloStreakActivityFeedItemMiddleware,
+    getCreateDeletedSoloStreakActivityFeedItemMiddleware,
+    getCreateEditedSoloStreakNameActivityFeedItemMiddleware,
+    getCreateEditedSoloStreakDescriptionActivityFeedItemMiddleware,
+    createEditedSoloStreakNameActivityFeedItemMiddleware,
+    createEditedSoloStreakDescriptionActivityFeedItemMiddleware,
 } from './patchSoloStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { StreakStatus } from '@streakoid/streakoid-sdk/lib';
 
 describe('soloStreakParamsValidationMiddleware', () => {
     test('sends correct error response when soloStreakId is not defined', () => {
@@ -233,7 +244,7 @@ describe('sendUpdatedPatchMiddleware', () => {
         sendUpdatedSoloStreakMiddleware(request, response, next);
 
         expect(response.locals.user).toBeUndefined();
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
         expect(status).toBeCalledWith(updatedResourceResponseCode);
         expect(send).toBeCalledWith(updatedSoloStreak);
     });
@@ -254,14 +265,294 @@ describe('sendUpdatedPatchMiddleware', () => {
     });
 });
 
+describe(`createArchivedSoloStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new archivedSoloStreak activity if request.body.status equals archived', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreakId = 'soloStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { soloStreakId }, body: { status: StreakStatus.archived } };
+        const next = jest.fn();
+
+        const middleware = getCreateArchivedSoloStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal archived it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreakId = 'soloStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { soloStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateArchivedSoloStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateArchivedSoloStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateArchivedSoloStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateArchivedSoloStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`createRestoredSoloStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new restoredSoloStreak activity if request.body.status equals live', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreakId = 'soloStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { soloStreakId }, body: { status: StreakStatus.live } };
+        const next = jest.fn();
+
+        const middleware = getCreateRestoredSoloStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal live it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreakId = 'soloStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { soloStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateRestoredSoloStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateRestoreSoloStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateRestoredSoloStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateRestoredSoloStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`createDeletedSoloStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new deletedSoloStreak activity if request.body.status equals deleted', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreakId = 'soloStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { soloStreakId }, body: { status: StreakStatus.deleted } };
+        const next = jest.fn();
+
+        const middleware = getCreateDeletedSoloStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal deleted it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreakId = 'soloStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { soloStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateDeletedSoloStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateRestoreSoloStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateDeletedSoloStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateDeletedSoloStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`createEditedSoloStreakNameActivityFeedItemMiddleware`, () => {
+    test('creates a new editedSoloStreakName activity if request.body.streakName is defined', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreakId = 'soloStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { soloStreakId }, body: { streakName: 'new name' } };
+        const next = jest.fn();
+
+        const middleware = getCreateEditedSoloStreakNameActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.streakName is not defined it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreakId = 'soloStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { soloStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateEditedSoloStreakNameActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateEditedSoloStreakNameActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateEditedSoloStreakNameActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateEditedSoloStreakNameActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`createEditedSoloStreakDescriptionActivityFeedItemMiddleware`, () => {
+    test('creates a new editedSoloStreakDescription activity if request.body.streakDescription is defined', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreakId = 'soloStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { soloStreakId }, body: { streakDescription: 'new description' } };
+        const next = jest.fn();
+
+        const middleware = getCreateEditedSoloStreakDescriptionActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.streakDescription is not defined it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreakId = 'soloStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { soloStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateEditedSoloStreakDescriptionActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateEditedSoloStreakDescriptionActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateEditedSoloStreakDescriptionActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateEditedSoloStreakDescriptionActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe('patchSoloStreakMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(5);
+        expect.assertions(10);
 
-        expect(patchSoloStreakMiddlewares.length).toBe(4);
+        expect(patchSoloStreakMiddlewares.length).toBe(9);
         expect(patchSoloStreakMiddlewares[0]).toBe(soloStreakParamsValidationMiddleware);
         expect(patchSoloStreakMiddlewares[1]).toBe(soloStreakRequestBodyValidationMiddleware);
         expect(patchSoloStreakMiddlewares[2]).toBe(patchSoloStreakMiddleware);
         expect(patchSoloStreakMiddlewares[3]).toBe(sendUpdatedSoloStreakMiddleware);
+        expect(patchSoloStreakMiddlewares[4]).toBe(createArchivedSoloStreakActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[5]).toBe(createRestoredSoloStreakActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[6]).toBe(createDeletedSoloStreakActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[7]).toBe(createEditedSoloStreakNameActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[8]).toBe(createEditedSoloStreakDescriptionActivityFeedItemMiddleware);
     });
 });

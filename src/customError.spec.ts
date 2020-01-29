@@ -4899,13 +4899,255 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateSoloStreakActivityMiddleware`, () => {
+    test(`creates correct error when type is set to CreateSoloStreakActivityFeedItemMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateSoloStreakActivityMiddleware);
+        const customError = new CustomError(ErrorType.CreateSoloStreakActivityFeedItemMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-346`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteSoloStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteSoloStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-347`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateIncompleteSoloStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIncompleteSoloStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-348`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateTeamStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateTeamStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-349`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateJoinedTeamStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateJoinedTeamStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-350`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteTeamMemberStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteTeamMemberStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-351`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateIncompleteTeamMemberStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIncompleteTeamMemberStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-352`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to JoinChallengeActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.JoinChallengeActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-353`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateArchivedSoloStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateArchivedSoloStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-354`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRestoredSoloStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRestoredSoloStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-355`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateDeletedSoloStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateDeletedSoloStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-356`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteChallengeStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteChallengeStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-357`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateIncompleteChallengeStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIncompleteChallengeStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-358`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateArchivedChallengeStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateArchivedChallengeStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-359`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRestoredChallengeStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRestoredChallengeStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-360`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateDeletedChallengeStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateDeletedChallengeStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-361`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateArchivedTeamStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateArchivedTeamStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-362`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRestoredTeamStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRestoredTeamStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-363`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateDeletedTeamStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateDeletedTeamStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-364`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateEditedSoloStreakNameActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateEditedSoloStreakNameActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-365`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateEditedSoloStreakDescriptionActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateEditedSoloStreakDescriptionActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-366`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateEditedTeamStreakNameActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateEditedTeamStreakNameActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-367`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateEditedTeamStreakDescriptionActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateEditedTeamStreakDescriptionActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-368`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

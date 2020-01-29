@@ -11,8 +11,8 @@ import { CustomError, ErrorType } from '../../customError';
 
 import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { TeamMember, TeamStreak } from '@streakoid/streakoid-sdk/lib';
-
+import { TeamMember, TeamStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
 export const createTeamMemberParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
 };
@@ -160,10 +160,32 @@ export const sendCreateTeamMemberResponseMiddleware = (
     try {
         const { teamStreak } = response.locals;
         response.status(ResponseCodes.created).send(teamStreak.members);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendCreateTeamMemberResponseMiddleware, err));
     }
 };
+
+export const getCreateJoinedTeamStreakActivityFeedItemMiddleware = (
+    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        const newActivity = new activityFeedItemModel({
+            activityFeedItemType: ActivityFeedItemTypes.joinedTeamStreak,
+            userId: user._id,
+            streakId: teamStreak._id,
+        });
+        await newActivity.save();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateJoinedTeamStreakActivityFeedItemMiddleware, err));
+    }
+};
+
+export const createJoinedTeamStreakActivityFeedItemMiddleware = getCreateJoinedTeamStreakActivityFeedItemMiddleware(
+    activityFeedItemModel,
+);
 
 export const createTeamMemberMiddlewares = [
     createTeamMemberParamsValidationMiddleware,
@@ -173,4 +195,5 @@ export const createTeamMemberMiddlewares = [
     createTeamMemberStreakMiddleware,
     addFriendToTeamStreakMiddleware,
     sendCreateTeamMemberResponseMiddleware,
+    createJoinedTeamStreakActivityFeedItemMiddleware,
 ];

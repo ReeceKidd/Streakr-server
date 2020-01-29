@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
-import { SoloStreak } from '@streakoid/streakoid-sdk/lib';
+import { SoloStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -11,6 +11,8 @@ import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { completeSoloStreakTaskModel, CompleteSoloStreakTaskModel } from '../../Models/CompleteSoloStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
+import { ActivityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import { activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -219,12 +221,34 @@ export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCod
     try {
         const { completeSoloStreakTask } = response.locals;
         response.status(resourceCreatedResponseCode).send(completeSoloStreakTask);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendTaskCompleteResponseMiddleware, err));
     }
 };
 
 export const sendTaskCompleteResponseMiddleware = getSendTaskCompleteResponseMiddleware(ResponseCodes.created);
+
+export const getCreateCompleteSoloStreakActivityFeedItemMiddleware = (
+    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        const newActivity = new activityFeedItemModel({
+            activityFeedItemType: ActivityFeedItemTypes.completedSoloStreak,
+            userId: user._id,
+            streakId: soloStreak._id,
+        });
+        await newActivity.save();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateCompleteSoloStreakActivityFeedItemMiddleware, err));
+    }
+};
+
+export const createCompleteSoloStreakActivitFeedItemMiddleware = getCreateCompleteSoloStreakActivityFeedItemMiddleware(
+    activityFeedItemModel,
+);
 
 export const createCompleteSoloStreakTaskMiddlewares = [
     completeSoloStreakTaskBodyValidationMiddleware,
@@ -238,4 +262,5 @@ export const createCompleteSoloStreakTaskMiddlewares = [
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
     sendTaskCompleteResponseMiddleware,
+    createCompleteSoloStreakActivitFeedItemMiddleware,
 ];

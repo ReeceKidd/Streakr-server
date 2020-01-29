@@ -6,10 +6,13 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
+import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 
 const getActivityFeedItemsQueryValidationSchema = {
     userId: Joi.string(),
     streakId: Joi.string(),
+    challengeId: Joi.string(),
+    activityFeedItemType: Joi.string().valid(Object.keys(ActivityFeedItemTypes)),
 };
 
 export const getActivityFeedItemsQueryValidationMiddleware = (
@@ -30,11 +33,13 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { userId, streakId } = request.query;
+        const { userId, streakId, challengeId, activityFeedItemType } = request.query;
 
         const query: {
             userId?: string;
             streakId?: string;
+            challengeId?: string;
+            activityFeedItemType?: string;
         } = {};
 
         if (userId) {
@@ -43,6 +48,14 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
 
         if (streakId) {
             query.streakId = streakId;
+        }
+
+        if (challengeId) {
+            query.challengeId = challengeId;
+        }
+
+        if (activityFeedItemType) {
+            query.activityFeedItemType = activityFeedItemType;
         }
 
         response.locals.activityFeedItems = await activityModel.find(query);

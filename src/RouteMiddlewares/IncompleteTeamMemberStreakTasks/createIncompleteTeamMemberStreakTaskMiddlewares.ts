@@ -13,12 +13,13 @@ import {
 } from '../../Models/IncompleteTeamMemberStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import { TeamMemberStreak, TeamStreak, User } from '@streakoid/streakoid-sdk/lib';
+import { TeamMemberStreak, TeamStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import { incompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
 import { IncompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { TeamStreakModel } from '../../../src/Models/TeamStreak';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
+import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -464,12 +465,34 @@ export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseC
     try {
         const { incompleteTeamMemberStreakTask } = response.locals;
         response.status(resourceCreatedResponseCode).send(incompleteTeamMemberStreakTask);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendTeamMemberStreakTaskIncompleteResponseMiddleware, err));
     }
 };
 
 export const sendTaskIncompleteResponseMiddleware = getSendTaskIncompleteResponseMiddleware(ResponseCodes.created);
+
+export const getCreateIncompleteTeamMemberStreakActivityFeedItemMiddleware = (
+    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        const newActivity = new activityFeedItemModel({
+            activityFeedItemType: ActivityFeedItemTypes.incompletedTeamMemberStreak,
+            userId: user._id,
+            streakId: teamStreak._id,
+        });
+        await newActivity.save();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateIncompleteTeamMemberStreakActivityFeedItemMiddleware, err));
+    }
+};
+
+export const createIncompleteTeamMemberStreakActivityFeedItemMiddleware = getCreateIncompleteTeamMemberStreakActivityFeedItemMiddleware(
+    activityFeedItemModel,
+);
 
 export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     incompleteTeamMemberStreakTaskBodyValidationMiddleware,
@@ -491,4 +514,5 @@ export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     retreiveTeamMembersMiddleware,
     notifiyTeamMembersThatUserHasIncompletedTaskMiddleware,
     sendTaskIncompleteResponseMiddleware,
+    createIncompleteTeamMemberStreakActivityFeedItemMiddleware,
 ];

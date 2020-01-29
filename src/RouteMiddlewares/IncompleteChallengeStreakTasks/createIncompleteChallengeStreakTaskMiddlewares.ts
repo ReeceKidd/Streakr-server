@@ -13,7 +13,8 @@ import {
 } from '../../Models/IncompleteChallengeStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import { ChallengeStreak } from '@streakoid/streakoid-sdk/lib';
+import { ChallengeStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
 
 export const incompleteChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -216,12 +217,34 @@ export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseC
     try {
         const { incompleteChallengeStreakTask } = response.locals;
         response.status(resourceCreatedResponseCode).send(incompleteChallengeStreakTask);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendChallengeTaskIncompleteResponseMiddleware, err));
     }
 };
 
 export const sendTaskIncompleteResponseMiddleware = getSendTaskIncompleteResponseMiddleware(ResponseCodes.created);
+
+export const getCreateIncompleteChallengeStreakActivityFeedItemMiddleware = (
+    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const newActivity = new activityFeedItemModel({
+            activityFeedItemType: ActivityFeedItemTypes.incompletedChallengeStreak,
+            userId: user._id,
+            streakId: challengeStreak._id,
+        });
+        await newActivity.save();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateIncompleteChallengeStreakActivityFeedItemMiddleware, err));
+    }
+};
+
+export const createIncompleteChallengeStreakActivityFeedItemMiddleware = getCreateIncompleteChallengeStreakActivityFeedItemMiddleware(
+    activityFeedItemModel,
+);
 
 export const createIncompleteChallengeStreakTaskMiddlewares = [
     incompleteChallengeStreakTaskBodyValidationMiddleware,
@@ -234,4 +257,5 @@ export const createIncompleteChallengeStreakTaskMiddlewares = [
     saveTaskIncompleteMiddleware,
     incompleteChallengeStreakMiddleware,
     sendTaskIncompleteResponseMiddleware,
+    createIncompleteChallengeStreakActivityFeedItemMiddleware,
 ];

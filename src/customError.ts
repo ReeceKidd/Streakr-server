@@ -452,7 +452,29 @@ export enum ErrorType {
     CreateNoteTeamStreakDoesNotExist,
     FindActivityFeedItemsMiddleware,
     SendActivityFeedItemsMiddleware,
-    CreateSoloStreakActivityMiddleware,
+    CreateSoloStreakActivityFeedItemMiddleware,
+    CreateCompleteSoloStreakActivityFeedItemMiddleware,
+    CreateIncompleteSoloStreakActivityFeedItemMiddleware,
+    CreateTeamStreakActivityFeedItemMiddleware,
+    CreateJoinedTeamStreakActivityFeedItemMiddleware,
+    CreateCompleteTeamMemberStreakActivityFeedItemMiddleware,
+    CreateIncompleteTeamMemberStreakActivityFeedItemMiddleware,
+    JoinChallengeActivityFeedItemMiddleware,
+    CreateArchivedSoloStreakActivityFeedItemMiddleware,
+    CreateRestoredSoloStreakActivityFeedItemMiddleware,
+    CreateDeletedSoloStreakActivityFeedItemMiddleware,
+    CreateCompleteChallengeStreakActivityFeedItemMiddleware,
+    CreateIncompleteChallengeStreakActivityFeedItemMiddleware,
+    CreateArchivedChallengeStreakActivityFeedItemMiddleware,
+    CreateRestoredChallengeStreakActivityFeedItemMiddleware,
+    CreateDeletedChallengeStreakActivityFeedItemMiddleware,
+    CreateArchivedTeamStreakActivityFeedItemMiddleware,
+    CreateRestoredTeamStreakActivityFeedItemMiddleware,
+    CreateDeletedTeamStreakActivityFeedItemMiddleware,
+    CreateEditedSoloStreakNameActivityFeedItemMiddleware,
+    CreateEditedSoloStreakDescriptionActivityFeedItemMiddleware,
+    CreateEditedTeamStreakNameActivityFeedItemMiddleware,
+    CreateEditedTeamStreakDescriptionActivityFeedItemMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3689,9 +3711,163 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateSoloStreakActivityMiddleware:
+            case ErrorType.CreateSoloStreakActivityFeedItemMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-346`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteSoloStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-347`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteSoloStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-348`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateTeamStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-349`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateJoinedTeamStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-350`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteTeamMemberStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-351`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteTeamMemberStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-352`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.JoinChallengeActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-353`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateArchivedSoloStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-354`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRestoredSoloStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-355`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateDeletedSoloStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-356`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteChallengeStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-357`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteChallengeStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-358`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateArchivedChallengeStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-359`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRestoredChallengeStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-360`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateDeletedChallengeStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-361`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateArchivedTeamStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-362`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRestoredTeamStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-363`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateDeletedTeamStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-364`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateEditedSoloStreakNameActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-365`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateEditedSoloStreakDescriptionActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-366`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateEditedTeamStreakNameActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-367`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateEditedTeamStreakDescriptionActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-368`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

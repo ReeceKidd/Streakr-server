@@ -15,6 +15,8 @@ import {
     doesUserExistMiddleware,
     addChallengeBadgeToUserBadgesMiddleware,
     getAddChallengeBadgeToUserBadgesMiddleware,
+    getJoinChallengeActivityFeedItemMiddleware,
+    joinChallengeActivityFeedItemMiddleware,
 } from './createChallengeStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -419,7 +421,7 @@ describe(`sendFormattedChallengeStreakMiddleware`, () => {
         sendFormattedChallengeStreakMiddleware(request, response, next);
 
         expect(response.locals.user).toBeUndefined();
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.created);
         expect(send).toBeCalledWith(savedChallengeStreak);
     });
@@ -439,11 +441,48 @@ describe(`sendFormattedChallengeStreakMiddleware`, () => {
     });
 });
 
+describe(`createJoinChallengeActivityFeedItemMiddleware`, () => {
+    test('creates a new createJoinChallengeActivityFeedItem', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const challenge = { _id: '_id' };
+        const savedChallengeStreak = { _id: '_id' };
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user, challenge, savedChallengeStreak } };
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getJoinChallengeActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).not.toBeCalled();
+    });
+
+    test('calls next with JoinChallengeActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getJoinChallengeActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.JoinChallengeActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe(`createChallengeStreakMiddlewares`, () => {
     test('that createChallengeStreak middlewares are defined in the correct order', async () => {
-        expect.assertions(9);
+        expect.assertions(10);
 
-        expect(createChallengeStreakMiddlewares.length).toEqual(8);
+        expect(createChallengeStreakMiddlewares.length).toEqual(9);
         expect(createChallengeStreakMiddlewares[0]).toBe(createChallengeStreakBodyValidationMiddleware);
         expect(createChallengeStreakMiddlewares[1]).toBe(doesChallengeExistMiddleware);
         expect(createChallengeStreakMiddlewares[2]).toBe(doesUserExistMiddleware);
@@ -452,5 +491,6 @@ describe(`createChallengeStreakMiddlewares`, () => {
         expect(createChallengeStreakMiddlewares[5]).toBe(addChallengeBadgeToUserBadgesMiddleware);
         expect(createChallengeStreakMiddlewares[6]).toBe(createChallengeStreakMiddleware);
         expect(createChallengeStreakMiddlewares[7]).toBe(sendFormattedChallengeStreakMiddleware);
+        expect(createChallengeStreakMiddlewares[8]).toBe(joinChallengeActivityFeedItemMiddleware);
     });
 });

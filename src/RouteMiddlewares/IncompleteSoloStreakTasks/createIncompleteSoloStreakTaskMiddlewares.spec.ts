@@ -21,6 +21,8 @@ import {
     ensureSoloStreakTaskHasBeenCompletedTodayMiddleware,
     resetStreakStartDateMiddleware,
     getResetStreakStartDateMiddleware,
+    getCreateIncompleteSoloStreakActivityFeedItemMiddleware,
+    createIncompleteSoloStreakActivitFeedItemMiddleware,
 } from './createIncompleteSoloStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -612,7 +614,7 @@ describe('sendTaskIncompleteResponseMiddleware', () => {
 
         expect(status).toBeCalledWith(successResponseCode);
         expect(send).toBeCalledWith(incompleteSoloStreakTask);
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
     });
 
     test('throws SendTaskIncompleteResponseMiddleware error on middleware failure', () => {
@@ -635,11 +637,47 @@ describe('sendTaskIncompleteResponseMiddleware', () => {
     });
 });
 
+describe(`createIncompleteSoloStreakActivitFeedItemMiddleware`, () => {
+    test('creates a new incompletedSoloStreakActivity', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const soloStreak = { _id: '_id' };
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user, soloStreak } };
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getCreateIncompleteSoloStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).not.toBeCalled();
+    });
+
+    test('calls next with CreateincompleteSoloStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateIncompleteSoloStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateIncompleteSoloStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe(`createIncompleteSoloStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(12);
+        expect.assertions(13);
 
-        expect(createIncompleteSoloStreakTaskMiddlewares.length).toEqual(11);
+        expect(createIncompleteSoloStreakTaskMiddlewares.length).toEqual(12);
         expect(createIncompleteSoloStreakTaskMiddlewares[0]).toBe(incompleteSoloStreakTaskBodyValidationMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[2]).toBe(ensureSoloStreakTaskHasBeenCompletedTodayMiddleware);
@@ -651,5 +689,6 @@ describe(`createIncompleteSoloStreakTaskMiddlewares`, () => {
         expect(createIncompleteSoloStreakTaskMiddlewares[8]).toBe(saveTaskIncompleteMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[9]).toBe(incompleteSoloStreakMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[10]).toBe(sendTaskIncompleteResponseMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[11]).toBe(createIncompleteSoloStreakActivitFeedItemMiddleware);
     });
 });

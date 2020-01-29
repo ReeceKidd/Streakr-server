@@ -8,6 +8,9 @@ import { CustomError, ErrorType } from '../../customError';
 import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { userModel, UserModel } from '../../Models/User';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
+import { ActivityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import { User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
 
 export interface TeamStreakRegistrationRequestBody {
     creatorId: string;
@@ -190,10 +193,32 @@ export const sendTeamStreakMiddleware = (request: Request, response: Response, n
     try {
         const { newTeamStreak } = response.locals;
         response.status(ResponseCodes.created).send(newTeamStreak);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedTeamStreakMiddleware, err));
     }
 };
+
+export const getCreateTeamStreakActivityFeedItemMiddleware = (
+    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const teamStreak = response.locals.newTeamStreak;
+        const newActivity = new activityFeedItemModel({
+            activityFeedItemType: ActivityFeedItemTypes.createdTeamStreak,
+            userId: user._id,
+            streakId: teamStreak._id,
+        });
+        await newActivity.save();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateTeamStreakActivityFeedItemMiddleware, err));
+    }
+};
+
+export const createdTeamStreakActivityFeedItemMiddleware = getCreateTeamStreakActivityFeedItemMiddleware(
+    activityFeedItemModel,
+);
 
 export const createTeamStreakMiddlewares = [
     createTeamStreakBodyValidationMiddleware,
@@ -203,4 +228,5 @@ export const createTeamStreakMiddlewares = [
     populateTeamStreakMembersInformationMiddleware,
     retreiveCreatedTeamStreakCreatorInformationMiddleware,
     sendTeamStreakMiddleware,
+    createdTeamStreakActivityFeedItemMiddleware,
 ];

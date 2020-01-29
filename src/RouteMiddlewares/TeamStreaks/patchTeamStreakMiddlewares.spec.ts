@@ -6,6 +6,16 @@ import {
     patchTeamStreakMiddleware,
     sendUpdatedTeamStreakMiddleware,
     teamStreakParamsValidationMiddleware,
+    getCreateArchivedTeamStreakActivityFeedItemMiddleware,
+    getCreateRestoredTeamStreakActivityFeedItemMiddleware,
+    getCreateDeletedTeamStreakActivityFeedItemMiddleware,
+    getCreateEditedTeamStreakNameActivityFeedItemMiddleware,
+    getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware,
+    createEditedTeamStreakNameActivityFeedItemMiddleware,
+    createEditedTeamStreakDescriptionActivityFeedItemMiddleware,
+    createArchivedTeamStreakActivityFeedItemMiddleware,
+    createRestoredTeamStreakActivityFeedItemMiddleware,
+    createDeletedTeamStreakActivityFeedItemMiddleware,
 } from './patchTeamStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -347,7 +357,7 @@ describe('patchTeamStreakMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws UpdatedTeamStreakNotFound error when solo streak is not found', async () => {
+    test('throws UpdatedTeamStreakNotFound error when team streak is not found', async () => {
         expect.assertions(1);
         const teamStreakId = 'abc123';
         const userId = '123cde';
@@ -425,7 +435,7 @@ describe('sendUpdatedPatchMiddleware', () => {
         sendUpdatedTeamStreakMiddleware(request, response, next);
 
         expect(response.locals.user).toBeUndefined();
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
         expect(status).toBeCalledWith(updatedResourceResponseCode);
         expect(send).toBeCalledWith(updatedTeamStreak);
     });
@@ -446,14 +456,294 @@ describe('sendUpdatedPatchMiddleware', () => {
     });
 });
 
+describe(`createArchivedTeamStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new archivedTeamStreak activity if request.body.status equals archived', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreakId = 'teamStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { teamStreakId }, body: { status: StreakStatus.archived } };
+        const next = jest.fn();
+
+        const middleware = getCreateArchivedTeamStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal archived it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreakId = 'teamStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { teamStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateArchivedTeamStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateArchivedTeamStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateArchivedTeamStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateArchivedTeamStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`createRestoredTeamStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new restoredTeamStreak activity if request.body.status equals live', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreakId = 'teamStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { teamStreakId }, body: { status: StreakStatus.live } };
+        const next = jest.fn();
+
+        const middleware = getCreateRestoredTeamStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal live it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreakId = 'teamStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { teamStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateRestoredTeamStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateRestoreTeamStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateRestoredTeamStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateRestoredTeamStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`createDeletedTeamStreakActivityFeedItemMiddleware`, () => {
+    test('creates a new deletedTeamStreak activity if request.body.status equals deleted', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreakId = 'teamStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { teamStreakId }, body: { status: StreakStatus.deleted } };
+        const next = jest.fn();
+
+        const middleware = getCreateDeletedTeamStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal deleted it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreakId = 'teamStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { teamStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateDeletedTeamStreakActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateDeletedTeamStreakActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateDeletedTeamStreakActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateDeletedTeamStreakActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`createEditedTeamStreakNameActivityFeedItemMiddleware`, () => {
+    test('creates a new editedTeamStreakName activity if request.body.streakName is defined', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreakId = 'teamStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { teamStreakId }, body: { streakName: 'new name' } };
+        const next = jest.fn();
+
+        const middleware = getCreateEditedTeamStreakNameActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.streakName is not defined it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreakId = 'teamStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { teamStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateEditedTeamStreakNameActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateEditedTeamStreakNameActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateEditedTeamStreakNameActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateEditedTeamStreakNameActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe(`createEditedTeamStreakDescriptionActivityFeedItemMiddleware`, () => {
+    test('creates a new editedTeamStreakDescription activity if request.body.streakDescription is defined', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreakId = 'teamStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { teamStreakId }, body: { streakDescription: 'new description' } };
+        const next = jest.fn();
+
+        const middleware = getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.streakDescription is not defined it just calls next', async () => {
+        expect.assertions(2);
+        const user = { _id: '_id' };
+        const teamStreakId = 'teamStreakId';
+        const save = jest.fn().mockResolvedValue(true);
+        const activityModel = jest.fn(() => ({ save }));
+
+        const response: any = { locals: { user } };
+        const request: any = { params: { teamStreakId }, body: {} };
+        const next = jest.fn();
+
+        const middleware = getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(save).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with CreateEditedTeamStreakDescriptionActivityFeedItemMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateEditedTeamStreakDescriptionActivityFeedItemMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe('patchTeamStreakMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(5);
+        expect.assertions(10);
 
-        expect(patchTeamStreakMiddlewares.length).toBe(4);
+        expect(patchTeamStreakMiddlewares.length).toBe(9);
         expect(patchTeamStreakMiddlewares[0]).toBe(teamStreakParamsValidationMiddleware);
         expect(patchTeamStreakMiddlewares[1]).toBe(teamStreakRequestBodyValidationMiddleware);
         expect(patchTeamStreakMiddlewares[2]).toBe(patchTeamStreakMiddleware);
         expect(patchTeamStreakMiddlewares[3]).toBe(sendUpdatedTeamStreakMiddleware);
+        expect(patchTeamStreakMiddlewares[4]).toBe(createArchivedTeamStreakActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[5]).toBe(createRestoredTeamStreakActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[6]).toBe(createDeletedTeamStreakActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[7]).toBe(createEditedTeamStreakNameActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[8]).toBe(createEditedTeamStreakDescriptionActivityFeedItemMiddleware);
     });
 });

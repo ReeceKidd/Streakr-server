@@ -7,15 +7,17 @@ export type ActivityFeedItemModel = ActivityFeedItem & mongoose.Document;
 
 export const activitySchema = new mongoose.Schema(
     {
-        activityType: {
+        activityFeedItemType: {
             type: String,
             required: true,
         },
         userId: {
             type: String,
-            required: true,
         },
         streakId: {
+            type: String,
+        },
+        challengeId: {
             type: String,
         },
     },
