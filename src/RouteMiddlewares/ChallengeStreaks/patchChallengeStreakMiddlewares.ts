@@ -100,7 +100,7 @@ export const getCreateArchivedChallengeStreakActivityFeedItemMiddleware = (
             const newActivity = new activityFeedItemModel({
                 activityFeedItemType: ActivityFeedItemTypes.archivedChallengeStreak,
                 userId: user._id,
-                streakId: challengeStreakId,
+                subjectId: challengeStreakId,
             });
             await newActivity.save();
         }
@@ -125,7 +125,7 @@ export const getCreateRestoredChallengeStreakActivityFeedItemMiddleware = (
             const newActivity = new activityFeedItemModel({
                 activityFeedItemType: ActivityFeedItemTypes.restoredChallengeStreak,
                 userId: user._id,
-                streakId: challengeStreakId,
+                subjectId: challengeStreakId,
             });
             await newActivity.save();
         }
@@ -150,7 +150,7 @@ export const getCreateDeletedChallengeStreakActivityFeedItemMiddleware = (
             const newActivity = new activityFeedItemModel({
                 activityFeedItemType: ActivityFeedItemTypes.deletedChallengeStreak,
                 userId: user._id,
-                streakId: challengeStreakId,
+                subjectId: challengeStreakId,
             });
             await newActivity.save();
         }

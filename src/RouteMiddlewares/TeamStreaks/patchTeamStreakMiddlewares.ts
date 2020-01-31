@@ -98,7 +98,7 @@ export const getCreateArchivedTeamStreakActivityFeedItemMiddleware = (
             const newActivity = new activityFeedItemModel({
                 activityFeedItemType: ActivityFeedItemTypes.archivedTeamStreak,
                 userId: user._id,
-                streakId: teamStreakId,
+                subjectId: teamStreakId,
             });
             await newActivity.save();
         }
@@ -123,7 +123,7 @@ export const getCreateRestoredTeamStreakActivityFeedItemMiddleware = (
             const newActivity = new activityFeedItemModel({
                 activityFeedItemType: ActivityFeedItemTypes.restoredTeamStreak,
                 userId: user._id,
-                streakId: teamStreakId,
+                subjectId: teamStreakId,
             });
             await newActivity.save();
         }
@@ -148,7 +148,7 @@ export const getCreateDeletedTeamStreakActivityFeedItemMiddleware = (
             const newActivity = new activityFeedItemModel({
                 activityFeedItemType: ActivityFeedItemTypes.deletedTeamStreak,
                 userId: user._id,
-                streakId: teamStreakId,
+                subjectId: teamStreakId,
             });
             await newActivity.save();
         }
@@ -173,7 +173,7 @@ export const getCreateEditedTeamStreakNameActivityFeedItemMiddleware = (
             const newActivity = new activityFeedItemModel({
                 activityFeedItemType: ActivityFeedItemTypes.editedTeamStreakName,
                 userId: user._id,
-                streakId: teamStreakId,
+                subjectId: teamStreakId,
             });
             await newActivity.save();
         }
@@ -198,7 +198,7 @@ export const getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware = (
             const newActivity = new activityFeedItemModel({
                 activityFeedItemType: ActivityFeedItemTypes.editedTeamStreakDescription,
                 userId: user._id,
-                streakId: teamStreakId,
+                subjectId: teamStreakId,
             });
             await newActivity.save();
         }

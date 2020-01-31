@@ -175,7 +175,7 @@ export const getCreateJoinedTeamStreakActivityFeedItemMiddleware = (
         const newActivity = new activityFeedItemModel({
             activityFeedItemType: ActivityFeedItemTypes.joinedTeamStreak,
             userId: user._id,
-            streakId: teamStreak._id,
+            subjectId: teamStreak._id,
         });
         await newActivity.save();
     } catch (err) {

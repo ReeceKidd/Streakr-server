@@ -234,7 +234,7 @@ export const getCreateIncompleteChallengeStreakActivityFeedItemMiddleware = (
         const newActivity = new activityFeedItemModel({
             activityFeedItemType: ActivityFeedItemTypes.incompletedChallengeStreak,
             userId: user._id,
-            streakId: challengeStreak._id,
+            subjectId: challengeStreak._id,
         });
         await newActivity.save();
     } catch (err) {

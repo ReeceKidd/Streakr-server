@@ -174,13 +174,11 @@ export const getJoinChallengeActivityFeedItemMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
-        const challenge: Challenge = response.locals.challenge;
         const challengeStreak: ChallengeStreak = response.locals.savedChallengeStreak;
         const newActivity = new activityFeedItemModel({
             activityFeedItemType: ActivityFeedItemTypes.joinedChallenge,
             userId: user._id,
-            challengeId: challenge._id,
-            streakId: challengeStreak._id,
+            subjectId: challengeStreak._id,
         });
         await newActivity.save();
     } catch (err) {

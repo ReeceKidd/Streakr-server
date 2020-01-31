@@ -482,7 +482,7 @@ export const getCreateIncompleteTeamMemberStreakActivityFeedItemMiddleware = (
         const newActivity = new activityFeedItemModel({
             activityFeedItemType: ActivityFeedItemTypes.incompletedTeamMemberStreak,
             userId: user._id,
-            streakId: teamStreak._id,
+            subjectId: teamStreak._id,
         });
         await newActivity.save();
     } catch (err) {

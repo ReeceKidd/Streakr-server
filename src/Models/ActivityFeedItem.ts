@@ -5,7 +5,7 @@ import { ActivityFeedItem } from '@streakoid/streakoid-sdk/lib';
 
 export type ActivityFeedItemModel = ActivityFeedItem & mongoose.Document;
 
-export const activitySchema = new mongoose.Schema(
+export const activityFeedItemSchema = new mongoose.Schema(
     {
         activityFeedItemType: {
             type: String,
@@ -14,10 +14,7 @@ export const activitySchema = new mongoose.Schema(
         userId: {
             type: String,
         },
-        streakId: {
-            type: String,
-        },
-        challengeId: {
+        subjectId: {
             type: String,
         },
     },
@@ -29,5 +26,5 @@ export const activitySchema = new mongoose.Schema(
 
 export const activityFeedItemModel: mongoose.Model<ActivityFeedItemModel> = mongoose.model<ActivityFeedItemModel>(
     Models.ActivityFeedItem,
-    activitySchema,
+    activityFeedItemSchema,
 );

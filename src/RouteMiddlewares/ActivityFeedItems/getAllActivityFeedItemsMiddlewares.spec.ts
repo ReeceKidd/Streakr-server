@@ -11,14 +11,12 @@ import { CustomError, ErrorType } from '../../customError';
 import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 
 const userId = 'userId';
-const streakId = 'streakId';
-const challengeId = 'challengeId';
+const subjectId = 'streakId';
 const activityFeedItemType = ActivityFeedItemTypes.completedSoloStreak;
 
 const query = {
     userId,
-    streakId,
-    challengeId,
+    subjectId,
     activityFeedItemType,
 };
 
@@ -60,38 +58,20 @@ describe('findActivityFeedItemsMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries database with just streakId and sets response.locals.activityFeedItems', async () => {
+    test('queries database with just subjectId and sets response.locals.activityFeedItems', async () => {
         expect.assertions(3);
         const find = jest.fn(() => Promise.resolve(true));
         const activityModel = {
             find,
         };
-        const request: any = { query: { streakId } };
+        const request: any = { query: { subjectId } };
         const response: any = { locals: {} };
         const next = jest.fn();
         const middleware = getFindActivityFeedItemsMiddleware(activityModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ streakId });
-        expect(response.locals.activityFeedItems).toEqual(true);
-        expect(next).toBeCalledWith();
-    });
-
-    test('queries database with just challengeId and sets response.locals.activityFeedItems', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
-        const activityModel = {
-            find,
-        };
-        const request: any = { query: { challengeId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getFindActivityFeedItemsMiddleware(activityModel as any);
-
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ challengeId });
+        expect(find).toBeCalledWith({ subjectId });
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });

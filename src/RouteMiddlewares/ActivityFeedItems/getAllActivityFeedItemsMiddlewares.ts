@@ -10,8 +10,7 @@ import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 
 const getActivityFeedItemsQueryValidationSchema = {
     userId: Joi.string(),
-    streakId: Joi.string(),
-    challengeId: Joi.string(),
+    subjectId: Joi.string(),
     activityFeedItemType: Joi.string().valid(Object.keys(ActivityFeedItemTypes)),
 };
 
@@ -33,12 +32,11 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { userId, streakId, challengeId, activityFeedItemType } = request.query;
+        const { userId, subjectId, activityFeedItemType } = request.query;
 
         const query: {
             userId?: string;
-            streakId?: string;
-            challengeId?: string;
+            subjectId?: string;
             activityFeedItemType?: string;
         } = {};
 
@@ -46,12 +44,8 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
             query.userId = userId;
         }
 
-        if (streakId) {
-            query.streakId = streakId;
-        }
-
-        if (challengeId) {
-            query.challengeId = challengeId;
+        if (subjectId) {
+            query.subjectId = subjectId;
         }
 
         if (activityFeedItemType) {

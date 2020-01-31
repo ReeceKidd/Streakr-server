@@ -253,7 +253,7 @@ export const getCreateIncompleteSoloStreakActivityFeedItemMiddleware = (
         const newActivity = new activityFeedItemModel({
             activityFeedItemType: ActivityFeedItemTypes.incompletedSoloStreak,
             userId: user._id,
-            streakId: soloStreak._id,
+            subjectId: soloStreak._id,
         });
         await newActivity.save();
     } catch (err) {

@@ -238,7 +238,7 @@ export const getCreateCompleteSoloStreakActivityFeedItemMiddleware = (
         const newActivity = new activityFeedItemModel({
             activityFeedItemType: ActivityFeedItemTypes.completedSoloStreak,
             userId: user._id,
-            streakId: soloStreak._id,
+            subjectId: soloStreak._id,
         });
         await newActivity.save();
     } catch (err) {
