@@ -10,12 +10,12 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 
-const userId = 'userId';
+const userIds = ['userId'];
 const subjectId = 'streakId';
 const activityFeedItemType = ActivityFeedItemTypes.completedSoloStreak;
 
 const query = {
-    userId,
+    userIds,
     subjectId,
     activityFeedItemType,
 };
@@ -40,20 +40,20 @@ describe('getActivityFeedItemsValidationMiddleware', () => {
 });
 
 describe('findActivityFeedItemsMiddleware', () => {
-    test('queries database with just userId and sets response.locals.activityFeedItems', async () => {
+    test('queries database with just userIds and sets response.locals.activityFeedItems', async () => {
         expect.assertions(3);
         const find = jest.fn(() => Promise.resolve(true));
         const activityModel = {
             find,
         };
-        const request: any = { query: { userId } };
+        const request: any = { query: { userIds: `["userId"]` } };
         const response: any = { locals: {} };
         const next = jest.fn();
         const middleware = getFindActivityFeedItemsMiddleware(activityModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ userId });
+        expect(find).toBeCalled();
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
