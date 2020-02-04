@@ -69,8 +69,8 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
 
         response.locals.activityFeedItems = await activityModel
             .find(query)
-            .limit(limit)
-            .skip(skip)
+            .limit(Number(limit))
+            .skip(Number(skip))
             .sort({ createdAt: -1 });
         next();
     } catch (err) {
