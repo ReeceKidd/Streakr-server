@@ -8,10 +8,15 @@ import { CustomError, ErrorType } from '../../customError';
 import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
 import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 
+export const DEFAULT_ACTIVITY_FEED_ITEMS_LIMIT = 20;
+export const DEFAULT_ACTIVITY_FEED_ITEMS_SKIP = 0;
+
 const getActivityFeedItemsQueryValidationSchema = {
     userIds: Joi.array().items(Joi.string()),
     subjectId: Joi.string(),
     activityFeedItemType: Joi.string().valid(Object.keys(ActivityFeedItemTypes)),
+    limit: Joi.number(),
+    skip: Joi.number(),
 };
 
 export const getActivityFeedItemsQueryValidationMiddleware = (
@@ -33,6 +38,7 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
 ): Promise<void> => {
     try {
         const { userIds, subjectId, activityFeedItemType } = request.query;
+        let { limit, skip } = request.query;
 
         const query: {
             userId?: { $in: string[] };
@@ -53,7 +59,18 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
             query.activityFeedItemType = activityFeedItemType;
         }
 
-        response.locals.activityFeedItems = await activityModel.find(query);
+        if (!limit) {
+            limit = DEFAULT_ACTIVITY_FEED_ITEMS_LIMIT;
+        }
+
+        if (!skip) {
+            skip = DEFAULT_ACTIVITY_FEED_ITEMS_SKIP;
+        }
+
+        response.locals.activityFeedItems = await activityModel
+            .find(query)
+            .limit(limit)
+            .skip(skip);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FindActivityFeedItemsMiddleware, err));

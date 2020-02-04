@@ -5,6 +5,8 @@ import {
     getFindActivityFeedItemsMiddleware,
     findActivityFeedItemsMiddleware,
     sendActivityFeedItemsMiddleware,
+    DEFAULT_ACTIVITY_FEED_ITEMS_LIMIT,
+    DEFAULT_ACTIVITY_FEED_ITEMS_SKIP,
 } from './getAllActivityFeedItemsMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -13,11 +15,15 @@ import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 const userIds = ['userId'];
 const subjectId = 'streakId';
 const activityFeedItemType = ActivityFeedItemTypes.completedSoloStreak;
+const limit = 10;
+const skip = 20;
 
 const query = {
     userIds,
     subjectId,
     activityFeedItemType,
+    limit,
+    skip,
 };
 
 describe('getActivityFeedItemsValidationMiddleware', () => {
@@ -41,8 +47,10 @@ describe('getActivityFeedItemsValidationMiddleware', () => {
 
 describe('findActivityFeedItemsMiddleware', () => {
     test('queries database with just userIds and sets response.locals.activityFeedItems', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(5);
+        const skip = jest.fn().mockResolvedValue(true);
+        const limit = jest.fn(() => ({ skip }));
+        const find = jest.fn(() => ({ limit }));
         const activityModel = {
             find,
         };
@@ -54,13 +62,17 @@ describe('findActivityFeedItemsMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalled();
+        expect(limit).toBeCalledWith(DEFAULT_ACTIVITY_FEED_ITEMS_LIMIT);
+        expect(skip).toBeCalledWith(DEFAULT_ACTIVITY_FEED_ITEMS_SKIP);
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just subjectId and sets response.locals.activityFeedItems', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(5);
+        const skip = jest.fn().mockResolvedValue(true);
+        const limit = jest.fn(() => ({ skip }));
+        const find = jest.fn(() => ({ limit }));
         const activityModel = {
             find,
         };
@@ -72,13 +84,17 @@ describe('findActivityFeedItemsMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ subjectId });
+        expect(limit).toBeCalledWith(DEFAULT_ACTIVITY_FEED_ITEMS_LIMIT);
+        expect(skip).toBeCalledWith(DEFAULT_ACTIVITY_FEED_ITEMS_SKIP);
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just activityFeedItemType and sets response.locals.activityFeedItems', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(5);
+        const skip = jest.fn().mockResolvedValue(true);
+        const limit = jest.fn(() => ({ skip }));
+        const find = jest.fn(() => ({ limit }));
         const activityModel = {
             find,
         };
@@ -90,6 +106,54 @@ describe('findActivityFeedItemsMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ activityFeedItemType });
+        expect(limit).toBeCalledWith(DEFAULT_ACTIVITY_FEED_ITEMS_LIMIT);
+        expect(skip).toBeCalledWith(DEFAULT_ACTIVITY_FEED_ITEMS_SKIP);
+        expect(response.locals.activityFeedItems).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('queries database using custom limit value and sets response.locals.activityFeedItems', async () => {
+        expect.assertions(5);
+        const skip = jest.fn().mockResolvedValue(true);
+        const limit = jest.fn(() => ({ skip }));
+        const find = jest.fn(() => ({ limit }));
+        const activityModel = {
+            find,
+        };
+        const customLimit = 30;
+        const request: any = { query: { limit: customLimit } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindActivityFeedItemsMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({});
+        expect(limit).toBeCalledWith(customLimit);
+        expect(skip).toBeCalledWith(DEFAULT_ACTIVITY_FEED_ITEMS_SKIP);
+        expect(response.locals.activityFeedItems).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('queries database using custom skip value and sets response.locals.activityFeedItems', async () => {
+        expect.assertions(5);
+        const skip = jest.fn().mockResolvedValue(true);
+        const limit = jest.fn(() => ({ skip }));
+        const find = jest.fn(() => ({ limit }));
+        const activityModel = {
+            find,
+        };
+        const customSkip = 20;
+        const request: any = { query: { skip: customSkip } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindActivityFeedItemsMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({});
+        expect(limit).toBeCalledWith(DEFAULT_ACTIVITY_FEED_ITEMS_LIMIT);
+        expect(skip).toBeCalledWith(customSkip);
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
