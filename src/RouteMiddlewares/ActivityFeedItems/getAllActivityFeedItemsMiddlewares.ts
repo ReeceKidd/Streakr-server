@@ -8,15 +8,12 @@ import { CustomError, ErrorType } from '../../customError';
 import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
 import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 
-export const DEFAULT_ACTIVITY_FEED_ITEMS_LIMIT = 10;
-export const DEFAULT_ACTIVITY_FEED_ITEMS_SKIP = 0;
-
 const getActivityFeedItemsQueryValidationSchema = {
+    limit: Joi.number().required(),
+    skip: Joi.number().required(),
     userIds: Joi.array().items(Joi.string()),
     subjectId: Joi.string(),
     activityFeedItemType: Joi.string().valid(Object.keys(ActivityFeedItemTypes)),
-    limit: Joi.number(),
-    skip: Joi.number(),
 };
 
 export const getActivityFeedItemsQueryValidationMiddleware = (
@@ -24,6 +21,7 @@ export const getActivityFeedItemsQueryValidationMiddleware = (
     response: Response,
     next: NextFunction,
 ): void => {
+    console.log(1);
     Joi.validate(
         request.query,
         getActivityFeedItemsQueryValidationSchema,
@@ -37,8 +35,8 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { userIds, subjectId, activityFeedItemType } = request.query;
-        let { limit, skip } = request.query;
+        console.log(2);
+        const { limit, skip, userIds, subjectId, activityFeedItemType } = request.query;
 
         const query: {
             userId?: { $in: string[] };
@@ -59,21 +57,16 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
             query.activityFeedItemType = activityFeedItemType;
         }
 
-        if (!limit) {
-            limit = DEFAULT_ACTIVITY_FEED_ITEMS_LIMIT;
-        }
-
-        if (!skip) {
-            skip = DEFAULT_ACTIVITY_FEED_ITEMS_SKIP;
-        }
-
-        response.locals.activityFeedItems = await activityModel
+        const activityFeedItems = await activityModel
             .find(query)
-            .limit(Number(limit))
             .skip(Number(skip))
-            .sort({ createdAt: -1 });
+            .limit(Number(limit));
+
+        response.locals.activityFeedItems = activityFeedItems;
+
         next();
     } catch (err) {
+        console.log(err);
         next(new CustomError(ErrorType.FindActivityFeedItemsMiddleware, err));
     }
 };
@@ -82,6 +75,7 @@ export const findActivityFeedItemsMiddleware = getFindActivityFeedItemsMiddlewar
 
 export const sendActivityFeedItemsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
+        console.log(3);
         const { activityFeedItems } = response.locals;
         response.status(ResponseCodes.success).send(activityFeedItems);
     } catch (err) {
