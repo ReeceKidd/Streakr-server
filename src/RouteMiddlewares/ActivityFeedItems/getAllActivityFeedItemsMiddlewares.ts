@@ -21,7 +21,6 @@ export const getActivityFeedItemsQueryValidationMiddleware = (
     response: Response,
     next: NextFunction,
 ): void => {
-    console.log(1);
     Joi.validate(
         request.query,
         getActivityFeedItemsQueryValidationSchema,
@@ -35,7 +34,6 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
     next: NextFunction,
 ): Promise<void> => {
     try {
-        console.log(2);
         const { limit, skip, userIds, subjectId, activityFeedItemType } = request.query;
 
         const query: {
@@ -66,7 +64,6 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
 
         next();
     } catch (err) {
-        console.log(err);
         next(new CustomError(ErrorType.FindActivityFeedItemsMiddleware, err));
     }
 };
@@ -75,7 +72,6 @@ export const findActivityFeedItemsMiddleware = getFindActivityFeedItemsMiddlewar
 
 export const sendActivityFeedItemsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        console.log(3);
         const { activityFeedItems } = response.locals;
         response.status(ResponseCodes.success).send(activityFeedItems);
     } catch (err) {

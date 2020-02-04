@@ -45,11 +45,10 @@ describe('getActivityFeedItemsValidationMiddleware', () => {
 
 describe('findActivityFeedItemsMiddleware', () => {
     test('queries database with just userIds and sets response.locals.activityFeedItems', async () => {
-        expect.assertions(6);
+        expect.assertions(5);
         const limit = jest.fn().mockResolvedValue(true);
         const skip = jest.fn(() => ({ limit }));
-        const sort = jest.fn(() => ({ skip }));
-        const find = jest.fn(() => ({ sort }));
+        const find = jest.fn(() => ({ skip }));
         const activityModel = {
             find,
         };
@@ -63,17 +62,15 @@ describe('findActivityFeedItemsMiddleware', () => {
         expect(find).toBeCalled();
         expect(limit).toBeCalledWith(10);
         expect(skip).toBeCalledWith(0);
-        expect(sort).toBeCalledWith({ createdAt: -1 });
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just subjectId and sets response.locals.activityFeedItems', async () => {
-        expect.assertions(6);
+        expect.assertions(5);
         const limit = jest.fn().mockResolvedValue(true);
         const skip = jest.fn(() => ({ limit }));
-        const sort = jest.fn(() => ({ skip }));
-        const find = jest.fn(() => ({ sort }));
+        const find = jest.fn(() => ({ skip }));
         const activityModel = {
             find,
         };
@@ -87,17 +84,15 @@ describe('findActivityFeedItemsMiddleware', () => {
         expect(find).toBeCalledWith({ subjectId });
         expect(limit).toBeCalledWith(10);
         expect(skip).toBeCalledWith(0);
-        expect(sort).toBeCalledWith({ createdAt: -1 });
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just activityFeedItemType and sets response.locals.activityFeedItems', async () => {
-        expect.assertions(6);
+        expect.assertions(5);
         const limit = jest.fn().mockResolvedValue(true);
         const skip = jest.fn(() => ({ limit }));
-        const sort = jest.fn(() => ({ skip }));
-        const find = jest.fn(() => ({ sort }));
+        const find = jest.fn(() => ({ skip }));
         const activityModel = {
             find,
         };
@@ -111,7 +106,6 @@ describe('findActivityFeedItemsMiddleware', () => {
         expect(find).toBeCalledWith({ activityFeedItemType });
         expect(limit).toBeCalledWith(10);
         expect(skip).toBeCalledWith(0);
-        expect(sort).toBeCalledWith({ createdAt: -1 });
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
