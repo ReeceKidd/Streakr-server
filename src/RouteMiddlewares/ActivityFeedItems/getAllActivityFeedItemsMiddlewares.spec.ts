@@ -116,10 +116,10 @@ describe('calculateTotalCountOfActivityFeedItemsMiddleware', () => {
 describe('findActivityFeedItemsMiddleware', () => {
     test('queries database with response.locals.query and limits and skips based on the query paramaters.', async () => {
         expect.assertions(6);
-        const limit = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn().mockResolvedValue(true);
+        const limit = jest.fn(() => ({ sort }));
         const skip = jest.fn(() => ({ limit }));
-        const sort = jest.fn(() => ({ skip }));
-        const find = jest.fn(() => ({ sort }));
+        const find = jest.fn(() => ({ skip }));
         const activityModel = {
             find,
         };
