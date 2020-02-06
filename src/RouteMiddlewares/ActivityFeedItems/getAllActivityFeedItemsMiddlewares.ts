@@ -11,7 +11,7 @@ import { GetAllActivityFeedItemsResponse } from '@streakoid/streakoid-sdk/lib/ac
 
 const getActivityFeedItemsQueryValidationSchema = {
     limit: Joi.number().required(),
-    skip: Joi.number().required(),
+    lastActivityFeedItemId: Joi.string(),
     userIds: Joi.array().items(Joi.string()),
     subjectId: Joi.string(),
     activityFeedItemType: Joi.string().valid(Object.keys(ActivityFeedItemTypes)),
@@ -90,18 +90,28 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { limit, skip } = request.query;
-        const { query } = response.locals;
+        const { limit, lastActivityFeedItemId } = request.query;
+        console.log(request.query);
+        let { query } = response.locals;
 
+        // Pagination is handled by retreiving the last document.
+        if (lastActivityFeedItemId) {
+            query = {
+                ...query,
+                _id: lastActivityFeedItemId,
+            };
+        }
         const activityFeedItems = await activityModel
             .find(query)
-            .skip(Number(skip))
+            .sort({ createdAt: -1 })
             .limit(Number(limit));
 
         response.locals.activityFeedItems = activityFeedItems;
 
         next();
     } catch (err) {
+        console.log('Entered error');
+        console.log(err);
         next(new CustomError(ErrorType.FindActivityFeedItemsMiddleware, err));
     }
 };

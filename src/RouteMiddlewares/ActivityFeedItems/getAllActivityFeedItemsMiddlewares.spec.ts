@@ -17,14 +17,14 @@ const userIds = ['userId'];
 const subjectId = 'streakId';
 const activityFeedItemType = ActivityFeedItemTypes.completedSoloStreak;
 const limit = 10;
-const skip = 20;
+const lastActivityFeedItemId = 'lastActivityFeedItemId';
 
 const query = {
     userIds,
     subjectId,
     activityFeedItemType,
     limit,
-    skip,
+    lastActivityFeedItemId,
 };
 
 describe('getActivityFeedItemsValidationMiddleware', () => {
@@ -114,11 +114,11 @@ describe('calculateTotalCountOfActivityFeedItemsMiddleware', () => {
 });
 
 describe('findActivityFeedItemsMiddleware', () => {
-    test('queries database with response.locals.query and limits and skips based on the query paramaters.', async () => {
+    test('if lastActivityFeedItemId isnt defined the query begins from the start of the collection.', async () => {
         expect.assertions(5);
         const limit = jest.fn().mockResolvedValue(true);
-        const skip = jest.fn(() => ({ limit }));
-        const find = jest.fn(() => ({ skip }));
+        const sort = jest.fn(() => ({ limit }));
+        const find = jest.fn(() => ({ sort }));
         const activityModel = {
             find,
         };
@@ -130,8 +130,32 @@ describe('findActivityFeedItemsMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalled();
-        expect(skip).toBeCalledWith(0);
         expect(limit).toBeCalledWith(10);
+        expect(sort).toBeCalledWith({ createdAt: -1 });
+        expect(response.locals.activityFeedItems).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('if lastActivityFeedItemId is defined the query begins from the lastActivityFeedItemId.', async () => {
+        expect.assertions(5);
+        const limit = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ limit }));
+        const find = jest.fn(() => ({ sort }));
+        const activityModel = {
+            find,
+        };
+        const request: any = { query: { limit: 10, skip: 0, lastActivityFeedItemId: 'lastActivityFeedItemId' } };
+        const response: any = {
+            locals: { query: { subjectId: 'subjectId' } },
+        };
+        const next = jest.fn();
+        const middleware = getFindActivityFeedItemsMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalled();
+        expect(limit).toBeCalledWith(10);
+        expect(sort).toBeCalledWith({ createdAt: -1 });
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
