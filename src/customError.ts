@@ -475,6 +475,8 @@ export enum ErrorType {
     CreateEditedSoloStreakDescriptionActivityFeedItemMiddleware,
     CreateEditedTeamStreakNameActivityFeedItemMiddleware,
     CreateEditedTeamStreakDescriptionActivityFeedItemMiddleware,
+    FormActivityFeedItemsQueryMiddleware,
+    CalculateTotalCountOfActivityFeedItemsMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3868,6 +3870,20 @@ export class CustomError extends Error {
             case ErrorType.CreateEditedTeamStreakDescriptionActivityFeedItemMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-368`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FormActivityFeedItemsQueryMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-369`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CalculateTotalCountOfActivityFeedItemsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-370`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

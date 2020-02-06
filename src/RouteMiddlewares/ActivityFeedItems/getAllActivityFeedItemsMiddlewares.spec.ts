@@ -5,6 +5,9 @@ import {
     getFindActivityFeedItemsMiddleware,
     findActivityFeedItemsMiddleware,
     sendActivityFeedItemsMiddleware,
+    formActivityFeedItemsQueryMiddleware,
+    calculateTotalCountOfActivityFeedItemsMiddleware,
+    getCalculateTotalCountOfActivityFeedItemsMiddleware,
 } from './getAllActivityFeedItemsMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -43,8 +46,75 @@ describe('getActivityFeedItemsValidationMiddleware', () => {
     });
 });
 
+describe('formActivityFeedItemsQueryMiddleware', () => {
+    test('populates response.locals.query with the activity feed items query', async () => {
+        expect.assertions(2);
+        const request: any = {
+            query: {
+                userIds: `["userId"]`,
+                subjectId: 'subjectId',
+                activityFeedItemType: ActivityFeedItemTypes.completedSoloStreak,
+            },
+        };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+
+        await formActivityFeedItemsQueryMiddleware(request, response, next);
+
+        expect(response.locals.query).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with FormActivityFeedItemsQueryMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+
+        formActivityFeedItemsQueryMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.FormActivityFeedItemsQueryMiddleware, expect.any(Error)));
+    });
+});
+
+describe('calculateTotalCountOfActivityFeedItemsMiddleware', () => {
+    test('sets response.locals.totalCountOfActivityFeedItems with the count value', async () => {
+        expect.assertions(4);
+        const count = jest.fn(() => 10);
+        const find = jest.fn(() => ({ count }));
+        const activityModel = {
+            find,
+        };
+        const request: any = { query: { userIds: `["userId"]`, limit: 10, skip: 0 } };
+        const response: any = { locals: { query: { subjectId: 'subjectId' } } };
+        const next = jest.fn();
+        const middleware = getCalculateTotalCountOfActivityFeedItemsMiddleware(activityModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith(response.locals.query);
+        expect(count).toBeCalledWith();
+        expect(response.locals.totalCountOfActivityFeedItems).toEqual(10);
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with CalculateTotalCountOfActivityFeedItemsMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getCalculateTotalCountOfActivityFeedItemsMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CalculateTotalCountOfActivityFeedItemsMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe('findActivityFeedItemsMiddleware', () => {
-    test('queries database with just userIds and sets response.locals.activityFeedItems', async () => {
+    test('queries database with response.locals.query and limits and skips based on the query paramaters.', async () => {
         expect.assertions(5);
         const limit = jest.fn().mockResolvedValue(true);
         const skip = jest.fn(() => ({ limit }));
@@ -52,60 +122,16 @@ describe('findActivityFeedItemsMiddleware', () => {
         const activityModel = {
             find,
         };
-        const request: any = { query: { userIds: `["userId"]`, limit: 10, skip: 0 } };
-        const response: any = { locals: {} };
+        const request: any = { query: { limit: 10, skip: 0 } };
+        const response: any = { locals: { query: { subjectId: 'subjectId' } } };
         const next = jest.fn();
         const middleware = getFindActivityFeedItemsMiddleware(activityModel as any);
 
         await middleware(request, response, next);
 
         expect(find).toBeCalled();
-        expect(limit).toBeCalledWith(10);
         expect(skip).toBeCalledWith(0);
-        expect(response.locals.activityFeedItems).toEqual(true);
-        expect(next).toBeCalledWith();
-    });
-
-    test('queries database with just subjectId and sets response.locals.activityFeedItems', async () => {
-        expect.assertions(5);
-        const limit = jest.fn().mockResolvedValue(true);
-        const skip = jest.fn(() => ({ limit }));
-        const find = jest.fn(() => ({ skip }));
-        const activityModel = {
-            find,
-        };
-        const request: any = { query: { subjectId, limit: 10, skip: 0 } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getFindActivityFeedItemsMiddleware(activityModel as any);
-
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ subjectId });
         expect(limit).toBeCalledWith(10);
-        expect(skip).toBeCalledWith(0);
-        expect(response.locals.activityFeedItems).toEqual(true);
-        expect(next).toBeCalledWith();
-    });
-
-    test('queries database with just activityFeedItemType and sets response.locals.activityFeedItems', async () => {
-        expect.assertions(5);
-        const limit = jest.fn().mockResolvedValue(true);
-        const skip = jest.fn(() => ({ limit }));
-        const find = jest.fn(() => ({ skip }));
-        const activityModel = {
-            find,
-        };
-        const request: any = { query: { activityFeedItemType, limit: 10, skip: 0 } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getFindActivityFeedItemsMiddleware(activityModel as any);
-
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ activityFeedItemType });
-        expect(limit).toBeCalledWith(10);
-        expect(skip).toBeCalledWith(0);
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
@@ -129,7 +155,8 @@ describe('sendActivityFeedItemsMiddleware', () => {
         const status = jest.fn(() => ({ send }));
         const request: any = {};
         const activityFeedItems = ['activity'];
-        const response: any = { locals: { activityFeedItems }, status };
+        const totalCountOfActivityFeedItems = 10;
+        const response: any = { locals: { activityFeedItems, totalCountOfActivityFeedItems }, status };
         const next = jest.fn();
 
         sendActivityFeedItemsMiddleware(request, response, next);
@@ -137,7 +164,7 @@ describe('sendActivityFeedItemsMiddleware', () => {
         expect.assertions(3);
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.success);
-        expect(send).toBeCalledWith(activityFeedItems);
+        expect(send).toBeCalledWith({ activityFeedItems, totalCountOfActivityFeedItems });
     });
 
     test('calls next with SendActivityFeedItemsMiddleware on middleware failure', () => {
@@ -155,11 +182,13 @@ describe('sendActivityFeedItemsMiddleware', () => {
 
 describe(`getAllActivityFeedItemsMiddlewares`, () => {
     test('are in the correct order', async () => {
-        expect.assertions(4);
+        expect.assertions(6);
 
-        expect(getAllActivityFeedItemsMiddlewares.length).toEqual(3);
+        expect(getAllActivityFeedItemsMiddlewares.length).toEqual(5);
         expect(getAllActivityFeedItemsMiddlewares[0]).toBe(getActivityFeedItemsQueryValidationMiddleware);
-        expect(getAllActivityFeedItemsMiddlewares[1]).toBe(findActivityFeedItemsMiddleware);
-        expect(getAllActivityFeedItemsMiddlewares[2]).toBe(sendActivityFeedItemsMiddleware);
+        expect(getAllActivityFeedItemsMiddlewares[1]).toBe(formActivityFeedItemsQueryMiddleware);
+        expect(getAllActivityFeedItemsMiddlewares[2]).toBe(calculateTotalCountOfActivityFeedItemsMiddleware);
+        expect(getAllActivityFeedItemsMiddlewares[3]).toBe(findActivityFeedItemsMiddleware);
+        expect(getAllActivityFeedItemsMiddlewares[4]).toBe(sendActivityFeedItemsMiddleware);
     });
 });

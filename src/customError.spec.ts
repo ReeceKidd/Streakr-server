@@ -5151,4 +5151,26 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to FormActivityFeedItemsQueryMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FormActivityFeedItemsQueryMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-369`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CalculateTotalCountOfActivityFeedItemsMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CalculateTotalCountOfActivityFeedItemsMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-370`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

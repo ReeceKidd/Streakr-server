@@ -7,6 +7,7 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
 import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { GetAllActivityFeedItemsResponse } from '@streakoid/streakoid-sdk/lib/activityFeedItems';
 
 const getActivityFeedItemsQueryValidationSchema = {
     limit: Joi.number().required(),
@@ -28,13 +29,13 @@ export const getActivityFeedItemsQueryValidationMiddleware = (
     );
 };
 
-export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model<ActivityFeedItemModel>) => async (
+export const formActivityFeedItemsQueryMiddleware = (
     request: Request,
     response: Response,
     next: NextFunction,
-): Promise<void> => {
+): void => {
     try {
-        const { limit, skip, userIds, subjectId, activityFeedItemType } = request.query;
+        const { userIds, subjectId, activityFeedItemType } = request.query;
 
         const query: {
             userId?: { $in: string[] };
@@ -55,6 +56,43 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
             query.activityFeedItemType = activityFeedItemType;
         }
 
+        response.locals.query = query;
+
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.FormActivityFeedItemsQueryMiddleware, err));
+    }
+};
+
+export const getCalculateTotalCountOfActivityFeedItemsMiddleware = (
+    activityModel: mongoose.Model<ActivityFeedItemModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { query } = response.locals;
+
+        const totalCountOfActivityFeedItems = await activityModel.find(query).count();
+
+        response.locals.totalCountOfActivityFeedItems = totalCountOfActivityFeedItems;
+
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CalculateTotalCountOfActivityFeedItemsMiddleware, err));
+    }
+};
+
+export const calculateTotalCountOfActivityFeedItemsMiddleware = getCalculateTotalCountOfActivityFeedItemsMiddleware(
+    activityFeedItemModel,
+);
+
+export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model<ActivityFeedItemModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { limit, skip } = request.query;
+        const { query } = response.locals;
+
         const activityFeedItems = await activityModel
             .find(query)
             .skip(Number(skip))
@@ -72,8 +110,12 @@ export const findActivityFeedItemsMiddleware = getFindActivityFeedItemsMiddlewar
 
 export const sendActivityFeedItemsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { activityFeedItems } = response.locals;
-        response.status(ResponseCodes.success).send(activityFeedItems);
+        const { activityFeedItems, totalCountOfActivityFeedItems } = response.locals;
+        const activityFeedItemsResponse: GetAllActivityFeedItemsResponse = {
+            activityFeedItems,
+            totalCountOfActivityFeedItems,
+        };
+        response.status(ResponseCodes.success).send(activityFeedItemsResponse);
     } catch (err) {
         next(new CustomError(ErrorType.SendActivityFeedItemsMiddleware, err));
     }
@@ -81,6 +123,8 @@ export const sendActivityFeedItemsMiddleware = (request: Request, response: Resp
 
 export const getAllActivityFeedItemsMiddlewares = [
     getActivityFeedItemsQueryValidationMiddleware,
+    formActivityFeedItemsQueryMiddleware,
+    calculateTotalCountOfActivityFeedItemsMiddleware,
     findActivityFeedItemsMiddleware,
     sendActivityFeedItemsMiddleware,
 ];
