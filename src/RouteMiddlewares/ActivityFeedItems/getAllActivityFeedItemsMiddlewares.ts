@@ -91,7 +91,6 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
 ): Promise<void> => {
     try {
         const { limit, lastActivityFeedItemId } = request.query;
-        console.log(request.query);
         let { query } = response.locals;
 
         // Pagination is handled by retreiving the last document.
@@ -110,8 +109,6 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
 
         next();
     } catch (err) {
-        console.log('Entered error');
-        console.log(err);
         next(new CustomError(ErrorType.FindActivityFeedItemsMiddleware, err));
     }
 };
