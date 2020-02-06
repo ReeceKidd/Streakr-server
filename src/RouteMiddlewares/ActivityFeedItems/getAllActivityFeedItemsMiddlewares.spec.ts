@@ -131,7 +131,7 @@ describe('findActivityFeedItemsMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalled();
-        expect(sort).toBeCalledWith({ createdAt: 1 });
+        expect(sort).toBeCalledWith({ createdAt: 'desc' });
         expect(skip).toBeCalledWith(0);
         expect(limit).toBeCalledWith(10);
         expect(response.locals.activityFeedItems).toEqual(true);
