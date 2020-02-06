@@ -24,6 +24,8 @@ export const activityFeedItemSchema = new mongoose.Schema(
     },
 );
 
+activityFeedItemSchema.index({ createdAt: 1 });
+
 export const activityFeedItemModel: mongoose.Model<ActivityFeedItemModel> = mongoose.model<ActivityFeedItemModel>(
     Models.ActivityFeedItem,
     activityFeedItemSchema,
