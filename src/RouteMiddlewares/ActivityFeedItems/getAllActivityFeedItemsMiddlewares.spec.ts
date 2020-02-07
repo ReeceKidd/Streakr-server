@@ -17,14 +17,14 @@ const userIds = ['userId'];
 const subjectId = 'streakId';
 const activityFeedItemType = ActivityFeedItemTypes.completedSoloStreak;
 const limit = 10;
-const createdOnBefore = new Date().toString();
+const createdAtBefore = new Date().toISOString();
 
 const query = {
     userIds,
     subjectId,
     activityFeedItemType,
     limit,
-    createdOnBefore,
+    createdAtBefore,
 };
 
 describe('getActivityFeedItemsValidationMiddleware', () => {
@@ -115,8 +115,9 @@ describe('calculateTotalCountOfActivityFeedItemsMiddleware', () => {
 
 describe('findActivityFeedItemsMiddleware', () => {
     test('if lastActivityFeedItemId isnt defined the query begins from the start of the collection.', async () => {
-        expect.assertions(4);
-        const sort = jest.fn().mockResolvedValue(true);
+        expect.assertions(5);
+        const limit = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ limit }));
         const find = jest.fn(() => ({ sort }));
         const activityModel = {
             find,
@@ -129,14 +130,16 @@ describe('findActivityFeedItemsMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalled();
-        expect(sort).toBeCalledWith('createdAt');
+        expect(sort).toBeCalledWith({ _id: -1 });
+        expect(limit).toBeCalledWith(request.query.limit);
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('if lastActivityFeedItemId is defined the query begins from the lastActivityFeedItemId.', async () => {
-        expect.assertions(4);
-        const sort = jest.fn().mockResolvedValue(true);
+        expect.assertions(5);
+        const limit = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ limit }));
         const find = jest.fn(() => ({ sort }));
         const activityModel = {
             find,
@@ -153,7 +156,8 @@ describe('findActivityFeedItemsMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalled();
-        expect(sort).toBeCalledWith('createdAt');
+        expect(sort).toBeCalledWith({ _id: -1 });
+        expect(limit).toBeCalledWith(request.query.limit);
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });

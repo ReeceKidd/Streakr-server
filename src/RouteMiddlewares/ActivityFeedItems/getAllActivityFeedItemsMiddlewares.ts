@@ -11,7 +11,7 @@ import { GetAllActivityFeedItemsResponse } from '@streakoid/streakoid-sdk/lib/ac
 
 const getActivityFeedItemsQueryValidationSchema = {
     limit: Joi.number().required(),
-    createdOnBefore: Joi.date(),
+    createdAtBefore: Joi.date().iso(),
     userIds: Joi.array().items(Joi.string()),
     subjectId: Joi.string(),
     activityFeedItemType: Joi.string().valid(Object.keys(ActivityFeedItemTypes)),
@@ -90,17 +90,20 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { createdOnBefore } = request.query;
+        const { createdAtBefore, limit } = request.query;
         let { query } = response.locals;
 
         // Pagination is handled by retreiving the last document.
-        if (createdOnBefore) {
+        if (createdAtBefore) {
             query = {
                 ...query,
-                createdAt: { $gte: createdOnBefore },
+                createdAt: { $lte: createdAtBefore },
             };
         }
-        const activityFeedItems = await activityModel.find(query).sort('_id');
+        const activityFeedItems = await activityModel
+            .find(query)
+            .sort({ _id: -1 })
+            .limit(Number(limit));
 
         response.locals.activityFeedItems = activityFeedItems;
 
