@@ -8,6 +8,7 @@ import { CustomError, ErrorType } from '../../customError';
 import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
 import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import { GetAllActivityFeedItemsResponse } from '@streakoid/streakoid-sdk/lib/activityFeedItems';
+import { ObjectId } from 'bson';
 
 const getActivityFeedItemsQueryValidationSchema = {
     limit: Joi.number().required(),
@@ -97,7 +98,7 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
         if (lastActivityFeedItemId) {
             query = {
                 ...query,
-                _id: { $gte: lastActivityFeedItemId },
+                _id: { $gt: new ObjectId(lastActivityFeedItemId) },
             };
         }
         const activityFeedItems = await activityModel.find(query).limit(Number(limit));
