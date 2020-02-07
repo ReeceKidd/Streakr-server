@@ -115,10 +115,9 @@ describe('calculateTotalCountOfActivityFeedItemsMiddleware', () => {
 
 describe('findActivityFeedItemsMiddleware', () => {
     test('if lastActivityFeedItemId isnt defined the query begins from the start of the collection.', async () => {
-        expect.assertions(5);
+        expect.assertions(4);
         const sort = jest.fn().mockResolvedValue(true);
-        const limit = jest.fn(() => ({ sort }));
-        const find = jest.fn(() => ({ limit }));
+        const find = jest.fn(() => ({ sort }));
         const activityModel = {
             find,
         };
@@ -130,17 +129,15 @@ describe('findActivityFeedItemsMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalled();
-        expect(limit).toBeCalledWith(10);
         expect(sort).toBeCalledWith('createdAt');
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('if lastActivityFeedItemId is defined the query begins from the lastActivityFeedItemId.', async () => {
-        expect.assertions(5);
+        expect.assertions(4);
         const sort = jest.fn().mockResolvedValue(true);
-        const limit = jest.fn(() => ({ sort }));
-        const find = jest.fn(() => ({ limit }));
+        const find = jest.fn(() => ({ sort }));
         const activityModel = {
             find,
         };
@@ -156,7 +153,6 @@ describe('findActivityFeedItemsMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalled();
-        expect(limit).toBeCalledWith(10);
         expect(sort).toBeCalledWith('createdAt');
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();

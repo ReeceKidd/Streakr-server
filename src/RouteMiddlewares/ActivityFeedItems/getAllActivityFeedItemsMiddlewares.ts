@@ -90,7 +90,7 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { limit, createdOnBefore } = request.query;
+        const { createdOnBefore } = request.query;
         let { query } = response.locals;
 
         // Pagination is handled by retreiving the last document.
@@ -100,10 +100,7 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
                 createdAt: { $gte: createdOnBefore },
             };
         }
-        const activityFeedItems = await activityModel
-            .find(query)
-            .limit(Number(limit))
-            .sort('createdAt');
+        const activityFeedItems = await activityModel.find(query).sort('createdAt');
 
         response.locals.activityFeedItems = activityFeedItems;
 
