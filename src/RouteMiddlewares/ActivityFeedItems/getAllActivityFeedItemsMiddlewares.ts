@@ -100,7 +100,7 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
                 createdAt: { $gte: createdOnBefore },
             };
         }
-        const activityFeedItems = await activityModel.find(query).sort('createdAt');
+        const activityFeedItems = await activityModel.find(query).sort('_id');
 
         response.locals.activityFeedItems = activityFeedItems;
 
