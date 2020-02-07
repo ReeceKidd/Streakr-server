@@ -70,7 +70,7 @@ export const getCalculateTotalCountOfActivityFeedItemsMiddleware = (
     try {
         const { query } = response.locals;
 
-        const totalCountOfActivityFeedItems = await activityModel.find(query).count();
+        const totalCountOfActivityFeedItems = await activityModel.find(query).countDocuments();
 
         response.locals.totalCountOfActivityFeedItems = totalCountOfActivityFeedItems;
 
