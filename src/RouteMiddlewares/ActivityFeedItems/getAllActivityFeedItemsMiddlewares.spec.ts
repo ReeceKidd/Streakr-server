@@ -131,7 +131,7 @@ describe('findActivityFeedItemsMiddleware', () => {
 
         expect(find).toBeCalled();
         expect(limit).toBeCalledWith(10);
-        expect(sort).toBeCalledWith('createdOn');
+        expect(sort).toBeCalledWith('-createdAt');
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
@@ -157,7 +157,7 @@ describe('findActivityFeedItemsMiddleware', () => {
 
         expect(find).toBeCalled();
         expect(limit).toBeCalledWith(10);
-        expect(sort).toBeCalledWith('createdOn');
+        expect(sort).toBeCalledWith('-createdAt');
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });

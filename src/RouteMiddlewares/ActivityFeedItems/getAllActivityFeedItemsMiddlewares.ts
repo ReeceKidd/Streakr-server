@@ -97,13 +97,13 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
         if (createdOnBefore) {
             query = {
                 ...query,
-                createdOn: { $lte: new Date(createdOnBefore) },
+                createdAt: { $lte: createdOnBefore },
             };
         }
         const activityFeedItems = await activityModel
             .find(query)
             .limit(Number(limit))
-            .sort('createdOn');
+            .sort('-createdAt');
 
         response.locals.activityFeedItems = activityFeedItems;
 
