@@ -97,7 +97,7 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
         if (createdOnBefore) {
             query = {
                 ...query,
-                createdAt: { $lte: createdOnBefore },
+                createdAt: { $gte: createdOnBefore },
             };
         }
         const activityFeedItems = await activityModel
