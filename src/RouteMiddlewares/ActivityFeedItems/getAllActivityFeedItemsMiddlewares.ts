@@ -8,11 +8,10 @@ import { CustomError, ErrorType } from '../../customError';
 import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
 import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import { GetAllActivityFeedItemsResponse } from '@streakoid/streakoid-sdk/lib/activityFeedItems';
-import { ObjectId } from 'bson';
 
 const getActivityFeedItemsQueryValidationSchema = {
     limit: Joi.number().required(),
-    lastActivityFeedItemId: Joi.string(),
+    createdOnBefore: Joi.date(),
     userIds: Joi.array().items(Joi.string()),
     subjectId: Joi.string(),
     activityFeedItemType: Joi.string().valid(Object.keys(ActivityFeedItemTypes)),
@@ -91,17 +90,20 @@ export const getFindActivityFeedItemsMiddleware = (activityModel: mongoose.Model
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { limit, lastActivityFeedItemId } = request.query;
+        const { limit, createdOnBefore } = request.query;
         let { query } = response.locals;
 
         // Pagination is handled by retreiving the last document.
-        if (lastActivityFeedItemId) {
+        if (createdOnBefore) {
             query = {
                 ...query,
-                _id: { $lt: new ObjectId(lastActivityFeedItemId) },
+                createdOn: { $lte: createdOnBefore },
             };
         }
-        const activityFeedItems = await activityModel.find(query).limit(Number(limit));
+        const activityFeedItems = await activityModel
+            .find(query)
+            .limit(Number(limit))
+            .sort('-createdOn');
 
         response.locals.activityFeedItems = activityFeedItems;
 

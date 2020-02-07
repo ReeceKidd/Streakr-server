@@ -17,14 +17,14 @@ const userIds = ['userId'];
 const subjectId = 'streakId';
 const activityFeedItemType = ActivityFeedItemTypes.completedSoloStreak;
 const limit = 10;
-const lastActivityFeedItemId = 'lastActivityFeedItemId';
+const createdOnBefore = new Date().toString();
 
 const query = {
     userIds,
     subjectId,
     activityFeedItemType,
     limit,
-    lastActivityFeedItemId,
+    createdOnBefore,
 };
 
 describe('getActivityFeedItemsValidationMiddleware', () => {
@@ -115,8 +115,9 @@ describe('calculateTotalCountOfActivityFeedItemsMiddleware', () => {
 
 describe('findActivityFeedItemsMiddleware', () => {
     test('if lastActivityFeedItemId isnt defined the query begins from the start of the collection.', async () => {
-        expect.assertions(4);
-        const limit = jest.fn().mockResolvedValue(true);
+        expect.assertions(5);
+        const sort = jest.fn().mockResolvedValue(true);
+        const limit = jest.fn(() => ({ sort }));
         const find = jest.fn(() => ({ limit }));
         const activityModel = {
             find,
@@ -130,13 +131,15 @@ describe('findActivityFeedItemsMiddleware', () => {
 
         expect(find).toBeCalled();
         expect(limit).toBeCalledWith(10);
+        expect(sort).toBeCalledWith('-createdOn');
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('if lastActivityFeedItemId is defined the query begins from the lastActivityFeedItemId.', async () => {
-        expect.assertions(4);
-        const limit = jest.fn().mockResolvedValue(true);
+        expect.assertions(5);
+        const sort = jest.fn().mockResolvedValue(true);
+        const limit = jest.fn(() => ({ sort }));
         const find = jest.fn(() => ({ limit }));
         const activityModel = {
             find,
@@ -154,6 +157,7 @@ describe('findActivityFeedItemsMiddleware', () => {
 
         expect(find).toBeCalled();
         expect(limit).toBeCalledWith(10);
+        expect(sort).toBeCalledWith('-createdOn');
         expect(response.locals.activityFeedItems).toEqual(true);
         expect(next).toBeCalledWith();
     });
