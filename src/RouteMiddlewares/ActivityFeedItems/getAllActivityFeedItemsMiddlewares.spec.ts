@@ -141,7 +141,9 @@ describe('findActivityFeedItemsMiddleware', () => {
         const activityModel = {
             find,
         };
-        const request: any = { query: { limit: 10, skip: 0, lastActivityFeedItemId: 'lastActivityFeedItemId' } };
+        const request: any = {
+            query: { limit: 10, skip: 0, lastActivityFeedItemId: '5d0fc0de86821005b0e9de5b' },
+        };
         const response: any = {
             locals: { query: { subjectId: 'subjectId' } },
         };
