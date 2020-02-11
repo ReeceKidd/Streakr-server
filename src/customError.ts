@@ -449,7 +449,7 @@ export enum ErrorType {
     NoNoteToDeleteFound,
     DetermineStripePaymentPlanMiddleware,
     NotifyTeamMembersThatUserHasAddedANoteMiddleware,
-    CreateNoteTeamStreakDoesNotExist,
+    CreateNoteUserDoesNotExist,
     FindActivityFeedItemsMiddleware,
     SendActivityFeedItemsMiddleware,
     CreateSoloStreakActivityFeedItemMiddleware,
@@ -1175,7 +1175,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.CreateNoteTeamStreakDoesNotExist: {
+            case ErrorType.CreateNoteUserDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-88`,
                     message: 'Team streak does not exist.',

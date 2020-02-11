@@ -12,14 +12,10 @@ export const noteSchema = new mongoose.Schema(
             type: String,
             index: true,
         },
-        streakId: {
+        subjectId: {
             required: true,
             type: String,
             index: true,
-        },
-        streakType: {
-            type: String,
-            required: true,
         },
         text: {
             required: true,

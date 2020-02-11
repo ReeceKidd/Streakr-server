@@ -7,7 +7,6 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { noteModel, NoteModel } from '../../Models/Note';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakTypes, User, TeamStreak } from '@streakoid/streakoid-sdk/lib';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 import { UserModel } from '../../../src/Models/User';
 import { TeamStreakModel } from '../../../src/Models/TeamStreak';
@@ -16,10 +15,7 @@ import { userModel } from '../../../src/Models/User';
 
 const createNoteBodyValidationSchema = {
     userId: Joi.string().required(),
-    streakId: Joi.string().required(),
-    streakType: Joi.string()
-        .valid(Object.keys(StreakTypes))
-        .required(),
+    subjectId: Joi.string().required(),
     text: Joi.string().required(),
 };
 
@@ -37,11 +33,10 @@ export const getCreateNoteFromRequestMiddleware = (noteModel: mongoose.Model<Not
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { userId, streakId, streakType, text } = request.body;
+        const { userId, subjectId, text } = request.body;
         const newNote = new noteModel({
             userId,
-            streakId,
-            streakType,
+            subjectId,
             text,
         });
         response.locals.savedNote = await newNote.save();
@@ -61,27 +56,27 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { streakType, streakId, text } = request.body;
-        if (streakType === StreakTypes.team) {
-            const user: User = response.locals.user;
-            const teamStreak: TeamStreak | null = await teamStreakModel.findById(streakId);
-            if (!teamStreak) {
-                throw new CustomError(ErrorType.CreateNoteTeamStreakDoesNotExist);
+        const { subjectId, userId, text } = request.body;
+        const teamStreak = await teamStreakModel.findById(subjectId);
+        if (teamStreak) {
+            const userWhoCreatedNote = await userModel.findOne({ _id: userId }).lean();
+            if (!userWhoCreatedNote) {
+                throw new CustomError(ErrorType.CreateNoteUserDoesNotExist);
             }
             const messages: ExpoPushMessage[] = [];
             await Promise.all(
                 teamStreak.members.map(async teamMember => {
-                    const populatedMember: User | null = await userModel.findById(teamMember.memberId);
+                    const populatedMember: UserModel | null = await userModel.findById(teamMember.memberId);
                     if (
                         populatedMember &&
                         populatedMember.pushNotificationToken &&
                         populatedMember.notifications.teamStreakUpdates.pushNotification &&
-                        String(populatedMember._id) !== String(user._id)
+                        String(populatedMember._id) !== String(userWhoCreatedNote._id)
                     ) {
                         messages.push({
                             to: populatedMember.pushNotificationToken,
                             sound: 'default',
-                            title: `${populatedMember.username} added a note to ${teamStreak.streakName}`,
+                            title: `${userWhoCreatedNote.username} added a note to ${teamStreak.streakName}`,
                             body: `${text}`,
                         });
                     }

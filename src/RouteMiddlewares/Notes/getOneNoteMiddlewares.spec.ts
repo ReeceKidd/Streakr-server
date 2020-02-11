@@ -5,7 +5,6 @@ import {
     getRetreiveNoteMiddleware,
     sendNoteMiddleware,
     getNoteParamsValidationMiddleware,
-    getSendNoteMiddleware,
 } from './getOneNoteMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
@@ -134,35 +133,26 @@ describe('retreiveNoteMiddleware', () => {
 
 describe('sendNoteMiddleware', () => {
     test('sends note', () => {
-        expect.assertions(3);
+        expect.assertions(2);
         const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
         const note = { _id: 'abc' };
         const request: any = {};
-        const response: any = { locals: { note }, status };
+        const response: any = { locals: { note }, send };
         const next = jest.fn();
-        const resourceCreatedCode = 401;
-        const middleware = getSendNoteMiddleware(resourceCreatedCode);
 
-        middleware(request, response, next);
+        sendNoteMiddleware(request, response, next);
 
         expect(next).not.toBeCalled();
-        expect(status).toBeCalledWith(resourceCreatedCode);
         expect(send).toBeCalledWith(note);
     });
 
     test('calls next with SendNoteMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
-        const error = 'error';
-        const send = jest.fn(() => Promise.reject(error));
-        const status = jest.fn(() => ({ send }));
-        const response: any = { status };
+        const response: any = {};
         const next = jest.fn();
-        const resourceCreatedResponseCode = 401;
-        const middleware = getSendNoteMiddleware(resourceCreatedResponseCode);
 
-        await middleware(request, response, next);
+        await sendNoteMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SendNoteMiddleware, expect.any(Error)));
     });

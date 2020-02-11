@@ -15,7 +15,7 @@ describe('getNotesValidationMiddleware', () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            query: { userId: '1234', streakId: 'abcd' },
+            query: { userId: '1234', subjectId: 'abcd' },
         };
         const response: any = {
             status,
@@ -48,21 +48,21 @@ describe('findNotesMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries database with just streakId and sets response.locals.notes', async () => {
+    test('queries database with just subjectId and sets response.locals.notes', async () => {
         expect.assertions(3);
         const find = jest.fn(() => Promise.resolve(true));
         const noteModel = {
             find,
         };
-        const streakId = 'abcde';
-        const request: any = { query: { streakId } };
+        const subjectId = 'abcde';
+        const request: any = { query: { subjectId } };
         const response: any = { locals: {} };
         const next = jest.fn();
         const middleware = getFindNotesMiddleware(noteModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ streakId });
+        expect(find).toBeCalledWith({ subjectId });
         expect(response.locals.notes).toEqual(true);
         expect(next).toBeCalledWith();
     });
@@ -93,7 +93,7 @@ describe('sendNotesMiddleware', () => {
         const notes = [
             {
                 userId: 'userId',
-                streakId: 'streakId',
+                subjectId: 'subjectId',
                 note: 'Send note in response',
             },
         ];

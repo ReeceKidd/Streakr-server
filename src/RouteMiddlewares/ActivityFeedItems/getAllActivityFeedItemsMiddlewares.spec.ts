@@ -78,10 +78,10 @@ describe('formActivityFeedItemsQueryMiddleware', () => {
 });
 
 describe('calculateTotalCountOfActivityFeedItemsMiddleware', () => {
-    test('sets response.locals.totalCountOfActivityFeedItems with the count value', async () => {
+    test('sets response.locals.totalCountOfActivityFeedItems with the countDocuments value', async () => {
         expect.assertions(4);
-        const count = jest.fn(() => 10);
-        const find = jest.fn(() => ({ count }));
+        const countDocuments = jest.fn(() => 10);
+        const find = jest.fn(() => ({ countDocuments }));
         const activityModel = {
             find,
         };
@@ -93,7 +93,7 @@ describe('calculateTotalCountOfActivityFeedItemsMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith(response.locals.query);
-        expect(count).toBeCalledWith();
+        expect(countDocuments).toBeCalledWith();
         expect(response.locals.totalCountOfActivityFeedItems).toEqual(10);
         expect(next).toBeCalledWith();
     });

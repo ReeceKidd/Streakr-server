@@ -4,7 +4,6 @@ import * as mongoose from 'mongoose';
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { noteModel, NoteModel } from '../../Models/Note';
-import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 
 const getNoteParamsValidationSchema = {
@@ -40,19 +39,13 @@ export const getRetreiveNoteMiddleware = (noteModel: mongoose.Model<NoteModel>) 
 
 export const retreiveNoteMiddleware = getRetreiveNoteMiddleware(noteModel);
 
-export const getSendNoteMiddleware = (resourceCreatedResponseCode: number) => (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): void => {
+export const sendNoteMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { note } = response.locals;
-        response.status(resourceCreatedResponseCode).send(note);
+        response.send(note);
     } catch (err) {
         next(new CustomError(ErrorType.SendNoteMiddleware, err));
     }
 };
-
-export const sendNoteMiddleware = getSendNoteMiddleware(ResponseCodes.success);
 
 export const getOneNoteMiddlewares = [getNoteParamsValidationMiddleware, retreiveNoteMiddleware, sendNoteMiddleware];

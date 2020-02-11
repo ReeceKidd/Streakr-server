@@ -13,16 +13,14 @@ import { CustomError, ErrorType } from '../../customError';
 import { StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 const userId = '12345678';
-const streakId = 'abcdefghijk';
+const subjectId = 'abcdefghijk';
 const text = 'Completed Spanish lesson on Duolingo';
-const streakType = StreakTypes.challenge;
 
 describe(`createNoteBodyValidationMiddleware`, () => {
     const body = {
         userId,
-        streakId,
+        subjectId,
         text,
-        streakType,
     };
 
     test('valid request passes validation', () => {
@@ -84,12 +82,12 @@ describe(`createNoteBodyValidationMiddleware`, () => {
         expect(next).not.toBeCalled();
     });
 
-    test('sends streakId is missing error', () => {
+    test('sends subjectId is missing error', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { ...body, streakId: undefined },
+            body: { ...body, subjectId: undefined },
         };
         const response: any = {
             status,
@@ -100,17 +98,17 @@ describe(`createNoteBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "streakId" fails because ["streakId" is required]',
+            message: 'child "subjectId" fails because ["subjectId" is required]',
         });
         expect(next).not.toBeCalled();
     });
 
-    test('sends streakId is not a string error', () => {
+    test('sends subjectId is not a string error', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { ...body, streakId: 123 },
+            body: { ...body, subjectId: 123 },
         };
         const response: any = {
             status,
@@ -121,7 +119,7 @@ describe(`createNoteBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "streakId" fails because ["streakId" must be a string]',
+            message: 'child "subjectId" fails because ["subjectId" must be a string]',
         });
         expect(next).not.toBeCalled();
     });
@@ -146,49 +144,6 @@ describe(`createNoteBodyValidationMiddleware`, () => {
         });
         expect(next).not.toBeCalled();
     });
-
-    test('sends streakType is missing error', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: { ...body, streakType: undefined },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        createNoteBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message: 'child "streakType" fails because ["streakType" is required]',
-        });
-        expect(next).not.toBeCalled();
-    });
-
-    test('sends streakType is not a valid streak type', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: { ...body, streakType: 'individual' },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        createNoteBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message:
-                'child "streakType" fails because ["streakType" must be one of [solo, team, teamMember, challenge]]',
-        });
-        expect(next).not.toBeCalled();
-    });
 });
 
 describe(`createNoteFromRequestMiddleware`, () => {
@@ -200,7 +155,7 @@ describe(`createNoteFromRequestMiddleware`, () => {
         const note = jest.fn(() => ({ save }));
 
         const response: any = { locals: {} };
-        const request: any = { body: { userId, streakId, streakType, note } };
+        const request: any = { body: { userId, subjectId, note } };
         const next = jest.fn();
 
         const middleware = getCreateNoteFromRequestMiddleware(note as any);
@@ -226,75 +181,32 @@ describe(`createNoteFromRequestMiddleware`, () => {
 });
 
 describe(`notifyTeamMembersThatUserHasAddedANoteMiddleware`, () => {
-    test('just calls next if streakType does not equal team', async () => {
+    test('if subjectId is not a teamStreak just call next', async () => {
         expect.assertions(1);
 
         const response: any = { locals: {} };
-        const request: any = { body: { streakType: StreakTypes.solo } };
+        const userId = 'userId';
+        const subjectId = 'subjectId';
+        const text = 'text';
+        const request: any = { body: { userId, subjectId, text } };
+        const findById = jest.fn().mockResolvedValue(false);
+        const teamStreakModel = { findById };
+        const userModel = { findById };
+
         const next = jest.fn();
-
-        const middleware = getNotifyTeamMembersThatUserHasAddedANoteMiddleware({} as any, {} as any, {} as any);
-
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith();
-    });
-
-    test('if streakType equals team but user does not have teamStreakUpdates enabled it does nothing', async () => {
-        expect.assertions(3);
-        const user = {
-            _id: 'userId',
-            username: 'username',
-        };
-        const populatedMember = {
-            _id: 'populatedMemberId',
-            memberId: 'teamMemberId',
-            username: 'username',
-            pushNotificationToken: 'pushNotificationToken',
-            notifications: {
-                teamStreakUpdates: {
-                    pushNotification: false,
-                },
-            },
-        };
-        const teamStreak = {
-            streakName: 'Daily Spanish',
-            members: [populatedMember],
-        };
-        const teamMembers = [populatedMember];
-        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(['message']);
-        const chunkPushNotifications = jest.fn().mockResolvedValue(['message']);
-        const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
-        const request: any = {
-            body: {
-                streakType: StreakTypes.team,
-                text: 'Started reading a book',
-                streakId: 'streakId',
-            },
-        };
-        const response: any = {
-            locals: {
-                user,
-                teamStreak,
-                teamMembers,
-            },
-        };
-        const next = jest.fn();
-        const teamStreakModel = { findById: jest.fn().mockResolvedValue(teamStreak) };
-        const userModel = { findById: jest.fn().mockResolvedValue(populatedMember) };
 
         const middleware = getNotifyTeamMembersThatUserHasAddedANoteMiddleware(
-            expo as any,
+            {} as any,
             teamStreakModel as any,
             userModel as any,
         );
+
         await middleware(request, response, next);
-        expect(sendPushNotificationsAsync).not.toBeCalled();
-        expect(chunkPushNotifications).not.toBeCalled();
+
         expect(next).toBeCalledWith();
     });
 
-    test('if streakType equals team and user has teamStreakUpdates enabled it sends a push notification', async () => {
+    test('if subjectId is a teamStreak notify other team members that a note was created', async () => {
         expect.assertions(3);
         const user = {
             _id: 'userId',
@@ -323,7 +235,7 @@ describe(`notifyTeamMembersThatUserHasAddedANoteMiddleware`, () => {
             body: {
                 streakType: StreakTypes.team,
                 text: 'Started reading a book',
-                streakId: 'streakId',
+                subjectId: 'subjectId',
             },
         };
         const response: any = {
@@ -335,7 +247,11 @@ describe(`notifyTeamMembersThatUserHasAddedANoteMiddleware`, () => {
         };
         const next = jest.fn();
         const teamStreakModel = { findById: jest.fn().mockResolvedValue(teamStreak) };
-        const userModel = { findById: jest.fn().mockResolvedValue(populatedMember) };
+        const lean = jest.fn().mockResolvedValue(user);
+        const userModel = {
+            findOne: jest.fn(() => ({ lean })),
+            findById: jest.fn().mockResolvedValue(populatedMember),
+        };
 
         const middleware = getNotifyTeamMembersThatUserHasAddedANoteMiddleware(
             expo as any,

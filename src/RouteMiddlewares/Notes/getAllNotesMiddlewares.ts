@@ -9,7 +9,7 @@ import { CustomError, ErrorType } from '../../customError';
 
 const getNotesQueryValidationSchema = {
     userId: Joi.string(),
-    streakId: Joi.string(),
+    subjectId: Joi.string(),
 };
 
 export const getNotesQueryValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
@@ -26,18 +26,18 @@ export const getFindNotesMiddleware = (noteModel: mongoose.Model<NoteModel>) => 
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { userId, streakId } = request.query;
+        const { userId, subjectId } = request.query;
 
         const query: {
             userId?: string;
-            streakId?: string;
+            subjectId?: string;
         } = {};
 
         if (userId) {
             query.userId = userId;
         }
-        if (streakId) {
-            query.streakId = streakId;
+        if (subjectId) {
+            query.subjectId = subjectId;
         }
 
         response.locals.notes = await noteModel.find(query);
