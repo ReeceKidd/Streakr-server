@@ -4,7 +4,6 @@ import * as mongoose from 'mongoose';
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
-import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 
 const getSoloStreakParamsValidationSchema = {
@@ -44,20 +43,14 @@ export const getRetreiveSoloStreakMiddleware = (soloStreakModel: mongoose.Model<
 
 export const retreiveSoloStreakMiddleware = getRetreiveSoloStreakMiddleware(soloStreakModel);
 
-export const getSendSoloStreakMiddleware = (resourceCreatedResponseCode: number) => (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): void => {
+export const sendSoloStreakMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { soloStreak } = response.locals;
-        response.status(resourceCreatedResponseCode).send(soloStreak);
+        response.send(soloStreak);
     } catch (err) {
         next(new CustomError(ErrorType.SendSoloStreakMiddleware, err));
     }
 };
-
-export const sendSoloStreakMiddleware = getSendSoloStreakMiddleware(ResponseCodes.success);
 
 export const getOneSoloStreakMiddlewares = [
     getSoloStreakParamsValidationMiddleware,

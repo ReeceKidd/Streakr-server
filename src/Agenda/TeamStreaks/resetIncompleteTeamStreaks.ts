@@ -8,7 +8,6 @@ import {
     PopulatedTeamStreak,
 } from '@streakoid/streakoid-sdk/lib';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
-import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 
 export const resetIncompleteTeamStreaks = async (
     incompleteTeamStreaks: PopulatedTeamStreak[],
@@ -36,25 +35,6 @@ export const resetIncompleteTeamStreaks = async (
                     active: false,
                 },
             });
-
-            await Promise.all(
-                teamStreak.members.map(async member => {
-                    const pastStreaks: PastStreak[] = [...teamStreak.pastStreaks, pastStreak];
-                    await teamMemberStreakModel.findByIdAndUpdate(member.teamMemberStreak._id, {
-                        $set: {
-                            currentStreak,
-                            pastStreaks,
-                            active: false,
-                        },
-                    });
-                    return streakoid.streakTrackingEvents.create({
-                        type: StreakTrackingEventTypes.forcedToLoseStreakBecauseTeamMemberDidNotCompleteTask,
-                        streakId: member.teamMemberStreak._id,
-                        streakType: StreakTypes.teamMember,
-                        userId: member._id,
-                    });
-                }),
-            );
 
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventTypes.lostStreak,

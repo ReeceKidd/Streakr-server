@@ -5,7 +5,6 @@ import {
     getRetreiveSoloStreakMiddleware,
     sendSoloStreakMiddleware,
     getSoloStreakParamsValidationMiddleware,
-    getSendSoloStreakMiddleware,
 } from './getOneSoloStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
@@ -134,35 +133,26 @@ describe('retreiveSoloStreakMiddleware', () => {
 
 describe('sendSoloStreakMiddleware', () => {
     test('sends soloStreak', () => {
-        expect.assertions(3);
+        expect.assertions(2);
         const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
         const soloStreak = { _id: 'abc' };
         const request: any = {};
-        const response: any = { locals: { soloStreak }, status };
+        const response: any = { locals: { soloStreak }, send };
         const next = jest.fn();
-        const resourceCreatedCode = 401;
-        const middleware = getSendSoloStreakMiddleware(resourceCreatedCode);
 
-        middleware(request, response, next);
+        sendSoloStreakMiddleware(request, response, next);
 
         expect(next).not.toBeCalled();
-        expect(status).toBeCalledWith(resourceCreatedCode);
         expect(send).toBeCalledWith(soloStreak);
     });
 
     test('calls next with SendSoloStreakMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
-        const error = 'error';
-        const send = jest.fn(() => Promise.reject(error));
-        const status = jest.fn(() => ({ send }));
-        const response: any = { status };
+        const response: any = {};
         const next = jest.fn();
-        const resourceCreatedResponseCode = 401;
-        const middleware = getSendSoloStreakMiddleware(resourceCreatedResponseCode);
 
-        await middleware(request, response, next);
+        await sendSoloStreakMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SendSoloStreakMiddleware, expect.any(Error)));
     });

@@ -11,7 +11,7 @@ describe('resetIncompleteTeamStreaks', () => {
     });
 
     test('incomplete team streaks current streak is reset and old streak is pushed to past streaks, lost streak activity is recorded and each teamMemberStreak is reset', async () => {
-        expect.assertions(3);
+        expect.assertions(2);
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
@@ -57,14 +57,6 @@ describe('resetIncompleteTeamStreaks', () => {
         await resetIncompleteTeamStreaks(incompleteTeamStreaks as any, endDate);
 
         expect(teamStreakModel.findByIdAndUpdate).toBeCalledWith(_id, {
-            $set: {
-                currentStreak: { startDate: '', numberOfDaysInARow: 0 },
-                pastStreaks,
-                active: false,
-            },
-        });
-
-        expect(teamMemberStreakModel.findByIdAndUpdate).toBeCalledWith(_id, {
             $set: {
                 currentStreak: { startDate: '', numberOfDaysInARow: 0 },
                 pastStreaks,
