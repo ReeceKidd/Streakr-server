@@ -13,6 +13,7 @@ const getSoloStreaksQueryValidationSchema = {
     status: Joi.string(),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
+    sortField: Joi.string(),
 };
 
 export const getSoloStreaksQueryValidationMiddleware = (
@@ -33,7 +34,7 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { userId, timezone, completedToday, active, status } = request.query;
+        const { userId, timezone, completedToday, active, status, sortField } = request.query;
 
         const query: {
             userId?: string;
@@ -41,6 +42,7 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
             status?: string;
             completedToday?: boolean;
             active?: boolean;
+            sortField?: string;
         } = {};
 
         if (userId) {
@@ -59,7 +61,14 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
             query.active = active === 'true';
         }
 
-        response.locals.soloStreaks = await soloStreakModel.find(query);
+        if (sortField) {
+            response.locals.soloStreaks = await soloStreakModel
+                .find(query)
+                .sort({ 'currentStreak.numberOfDaysInARow': -1 });
+        } else {
+            response.locals.soloStreaks = await soloStreakModel.find(query);
+        }
+
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FindSoloStreaksMiddleware, err));
