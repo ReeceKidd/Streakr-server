@@ -11,6 +11,7 @@ import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { TeamStreak, PopulatedTeamMember } from '@streakoid/streakoid-sdk/lib';
 import { teamMemberStreakModel } from '../../Models/TeamMemberStreak';
+import { GetAllTeamStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamStreaks';
 
 const getTeamStreaksQueryValidationSchema = {
     creatorId: Joi.string(),
@@ -19,6 +20,7 @@ const getTeamStreaksQueryValidationSchema = {
     status: Joi.string().valid(Object.keys(StreakStatus)),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
+    sortField: Joi.string().valid(Object.keys(GetAllTeamStreaksSortFields)),
 };
 
 export const getTeamStreaksQueryValidationMiddleware = (
@@ -39,7 +41,7 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { creatorId, memberId, timezone, status, completedToday, active } = request.query;
+        const { creatorId, memberId, timezone, status, completedToday, active, sortField } = request.query;
         const query: {
             creatorId?: string;
             ['members.memberId']?: string;
@@ -47,6 +49,7 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
             status?: string;
             completedToday?: boolean;
             active?: boolean;
+            sortField?: string;
         } = {};
 
         if (creatorId) {
@@ -67,8 +70,15 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
         if (active) {
             query.active = active === 'true';
         }
+        if (sortField) {
+            response.locals.teamStreaks = await teamStreakModel
+                .find(query)
+                .sort({ 'currentStreak.numberOfDaysInARow': -1 })
+                .lean();
+        } else {
+            response.locals.teamStreaks = await teamStreakModel.find(query).lean();
+        }
 
-        response.locals.teamStreaks = await teamStreakModel.find(query).lean();
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FindTeamStreaksMiddleware, err));

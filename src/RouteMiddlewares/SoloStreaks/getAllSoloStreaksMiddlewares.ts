@@ -6,6 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
 
 const getSoloStreaksQueryValidationSchema = {
     userId: Joi.string(),
@@ -13,7 +14,7 @@ const getSoloStreaksQueryValidationSchema = {
     status: Joi.string(),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
-    sortField: Joi.string(),
+    sortField: Joi.string().valid(Object.keys(GetAllSoloStreaksSortFields)),
 };
 
 export const getSoloStreaksQueryValidationMiddleware = (

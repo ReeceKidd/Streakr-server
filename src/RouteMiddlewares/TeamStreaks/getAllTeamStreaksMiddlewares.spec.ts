@@ -11,6 +11,7 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
+import { GetAllTeamStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamStreaks';
 
 describe('getTeamStreaksValidationMiddleware', () => {
     const creatorId = 'creatorId';
@@ -19,6 +20,7 @@ describe('getTeamStreaksValidationMiddleware', () => {
     const status = StreakStatus.live;
     const completedToday = true;
     const active = true;
+    const sortField = GetAllTeamStreaksSortFields.currentStreak;
     const query = {
         creatorId,
         memberId,
@@ -26,6 +28,7 @@ describe('getTeamStreaksValidationMiddleware', () => {
         status,
         completedToday,
         active,
+        sortField,
     };
     test('passes valid request', () => {
         expect.assertions(1);
@@ -129,6 +132,30 @@ describe('findTeamStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ status });
+        expect(lean).toBeCalledWith();
+        expect(response.locals.teamStreaks).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('queries database with a sortField and sets response.locals.TeamStreaks with a sorted list of team streaks', async () => {
+        expect.assertions(5);
+
+        const lean = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ lean }));
+        const find = jest.fn(() => ({ sort }));
+        const teamStreakModel = {
+            find,
+        };
+        const sortField = GetAllTeamStreaksSortFields.currentStreak;
+        const request: any = { query: { sortField } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindTeamStreaksMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({});
+        expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(lean).toBeCalledWith();
         expect(response.locals.teamStreaks).toEqual(true);
         expect(next).toBeCalledWith();
