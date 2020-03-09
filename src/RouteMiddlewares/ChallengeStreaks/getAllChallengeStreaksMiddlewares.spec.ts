@@ -8,6 +8,7 @@ import {
 } from './getAllChallengeStreaksMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreak';
 
 describe('getChallengeStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
@@ -120,6 +121,27 @@ describe('findChallengeStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ status });
+        expect(response.locals.challengeStreaks).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('queries database with just sortField and sets response.locals.challengeStreaks', async () => {
+        expect.assertions(4);
+        const sort = jest.fn(() => Promise.resolve(true));
+        const find = jest.fn(() => ({ sort }));
+        const challengeStreakModel = {
+            find,
+        };
+        const sortField = GetAllChallengeStreaksSortFields.currentStreak;
+        const request: any = { query: { sortField } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindChallengeStreaksMiddleware(challengeStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({});
+        expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });

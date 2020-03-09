@@ -6,6 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { challengeStreakModel, ChallengeStreakModel } from '../../Models/ChallengeStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreak';
 
 const getChallengeStreaksQueryValidationSchema = {
     userId: Joi.string(),
@@ -14,6 +15,7 @@ const getChallengeStreaksQueryValidationSchema = {
     status: Joi.string(),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
+    sortField: Joi.string().valid(Object.keys(GetAllChallengeStreaksSortFields)),
 };
 
 export const getChallengeStreaksQueryValidationMiddleware = (
@@ -34,7 +36,7 @@ export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { userId, challengeId, timezone, completedToday, active, status } = request.query;
+        const { userId, challengeId, timezone, completedToday, active, status, sortField } = request.query;
 
         const query: {
             userId?: string;
@@ -43,6 +45,7 @@ export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose
             status?: string;
             completedToday?: boolean;
             active?: boolean;
+            sortField?: string;
         } = {};
 
         if (userId) {
@@ -63,8 +66,14 @@ export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose
         if (active) {
             query.active = active === 'true';
         }
+        if (sortField) {
+            response.locals.challengeStreaks = await challengeStreakModel
+                .find(query)
+                .sort({ 'currentStreak.numberOfDaysInARow': -1 });
+        } else {
+            response.locals.challengeStreaks = await challengeStreakModel.find(query);
+        }
 
-        response.locals.challengeStreaks = await challengeStreakModel.find(query);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FindChallengeStreaksMiddleware, err));
