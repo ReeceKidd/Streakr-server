@@ -8,6 +8,7 @@ import {
 } from './getAllSoloStreaksMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
 
 describe('getSoloStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
@@ -141,6 +142,27 @@ describe('findSoloStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ status });
+        expect(response.locals.soloStreaks).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('queries database with just sortField which sets response.locals.soloStreaks with a sorted list of solo streaks.', async () => {
+        expect.assertions(4);
+        const sort = jest.fn(() => Promise.resolve(true));
+        const find = jest.fn(() => ({ sort }));
+        const soloStreakModel = {
+            find,
+        };
+        const sortField = GetAllSoloStreaksSortFields.currentStreak;
+        const request: any = { query: { sortField } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({});
+        expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
