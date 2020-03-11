@@ -28,7 +28,10 @@ mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 //mongoose.set('useUnifiedTopology', true);
-mongoose.connect(DATABASE_URI);
+
+mongoose.connect(DATABASE_URI).catch(err => {
+    console.log('mongo err', err);
+});
 
 agenda
     .start()
@@ -38,8 +41,6 @@ agenda
     .catch(err => {
         console.log(err);
     });
-
-mongoose.set('useCreateIndex', true);
 
 // Scripts used to initialise the daily streak complete checks.
 //initialiseTeamStreakTimezoneCheckerJobs();
