@@ -477,6 +477,7 @@ export enum ErrorType {
     CreateEditedTeamStreakDescriptionActivityFeedItemMiddleware,
     FormActivityFeedItemsQueryMiddleware,
     CalculateTotalCountOfActivityFeedItemsMiddleware,
+    NotifyTeamMembersThatUserHasAddedANoteTeamStreakDoesNotExist,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1176,6 +1177,14 @@ export class CustomError extends Error {
             }
 
             case ErrorType.CreateNoteUserDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-88`,
+                    message: 'Team streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.NotifyTeamMembersThatUserHasAddedANoteTeamStreakDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-88`,
                     message: 'Team streak does not exist.',

@@ -12,11 +12,15 @@ import { UserModel } from '../../../src/Models/User';
 import { TeamStreakModel } from '../../../src/Models/TeamStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { userModel } from '../../../src/Models/User';
+import { StreakTypes } from '@streakoid/streakoid-sdk/lib';
 
 const createNoteBodyValidationSchema = {
     userId: Joi.string().required(),
     subjectId: Joi.string().required(),
     text: Joi.string().required(),
+    streakType: Joi.string()
+        .valid(Object.keys(StreakTypes))
+        .required(),
 };
 
 export const createNoteBodyValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
@@ -56,9 +60,12 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { subjectId, userId, text } = request.body;
-        const teamStreak = await teamStreakModel.findById(subjectId);
-        if (teamStreak) {
+        const { subjectId, userId, text, streakType } = request.body;
+        if (streakType === StreakTypes.team) {
+            const teamStreak = await teamStreakModel.findById(subjectId);
+            if (!teamStreak) {
+                throw new CustomError(ErrorType.NotifyTeamMembersThatUserHasAddedANoteTeamStreakDoesNotExist);
+            }
             const userWhoCreatedNote = await userModel.findOne({ _id: userId }).lean();
             if (!userWhoCreatedNote) {
                 throw new CustomError(ErrorType.CreateNoteUserDoesNotExist);
