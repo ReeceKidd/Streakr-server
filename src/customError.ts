@@ -1186,7 +1186,7 @@ export class CustomError extends Error {
 
             case ErrorType.NotifyTeamMembersThatUserHasAddedANoteTeamStreakDoesNotExist: {
                 return {
-                    code: `${ResponseCodes.badRequest}-88`,
+                    code: `${ResponseCodes.badRequest}-89`,
                     message: 'Team streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };

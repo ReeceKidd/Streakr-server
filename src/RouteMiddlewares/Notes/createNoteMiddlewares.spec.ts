@@ -15,12 +15,14 @@ import { StreakTypes } from '@streakoid/streakoid-sdk/lib';
 const userId = '12345678';
 const subjectId = 'abcdefghijk';
 const text = 'Completed Spanish lesson on Duolingo';
+const streakType = StreakTypes.solo;
 
 describe(`createNoteBodyValidationMiddleware`, () => {
     const body = {
         userId,
         subjectId,
         text,
+        streakType,
     };
 
     test('valid request passes validation', () => {
@@ -141,6 +143,27 @@ describe(`createNoteBodyValidationMiddleware`, () => {
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message: 'child "text" fails because ["text" must be a string]',
+        });
+        expect(next).not.toBeCalled();
+    });
+
+    test('sends streakType is missing error', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: { ...body, streakType: undefined },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        createNoteBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "streakType" fails because ["streakType" is required]',
         });
         expect(next).not.toBeCalled();
     });
