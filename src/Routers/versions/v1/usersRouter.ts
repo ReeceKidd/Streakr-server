@@ -6,6 +6,7 @@ import { getUserMiddlewares } from '../../../RouteMiddlewares/Users/getUserMiddl
 import { getFriendsMiddlewares } from '../../../RouteMiddlewares/Users/Friends/getFriendsMiddlewares';
 import { addFriendMiddlewares } from '../../../RouteMiddlewares/Users/Friends/addFriendMiddlewares';
 import { deleteFriendMiddlewares } from '../../../RouteMiddlewares/Users/Friends/deleteFriendsMiddlewares';
+import { authenticationMiddlewares } from '../../../../src/SharedMiddleware/authenticationMiddlewares';
 
 export const userId = 'userId';
 export const friendId = 'friendId';
@@ -19,6 +20,8 @@ usersRouter.get(`/:${userId}`, ...getUserMiddlewares);
 // Friends routes
 
 usersRouter.get(`/:${userId}/friends`, ...getFriendsMiddlewares);
+
+usersRouter.use(...authenticationMiddlewares);
 
 usersRouter.post(`/:${userId}/friends`, ...addFriendMiddlewares);
 

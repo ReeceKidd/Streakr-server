@@ -12,7 +12,6 @@ import { teamMemberStreaksRouter } from './teamMemberStreaksRouter';
 import { friendRequestsRouter } from './friendRequestRouter';
 import { streakRecommendationsRouter } from './streakRecommendationsRouter';
 import { timezoneMiddlewares } from '../../../SharedMiddleware/timezoneMiddlewares';
-import { authenticationMiddlewares } from '../../../SharedMiddleware/authenticationMiddlewares';
 import { incompleteSoloStreakTasksRouter } from './incompleteSoloStreakTaskRouter';
 import { incompleteTeamMemberStreakTasksRouter } from './incompleteTeamMemberStreakTaskRouter';
 import { incompleteTeamStreaksRouter } from './incompleteTeamStreaksRouter';
