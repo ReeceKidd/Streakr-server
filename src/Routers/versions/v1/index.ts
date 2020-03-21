@@ -46,7 +46,7 @@ v1Router.use(`/${RouterCategories.users}`, usersRouter);
 v1Router.use(`/${RouterCategories.activityFeedItems}`, activityFeedItemsRouter);
 v1Router.use(`/${RouterCategories.streakRecommendations}`, streakRecommendationsRouter);
 
-// Partially authenticated routes
+// Routes containing authentication
 v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
 v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
 v1Router.use(`/${RouterCategories.user}`, userRouter);
