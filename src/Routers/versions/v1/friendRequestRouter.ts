@@ -10,9 +10,9 @@ export const friendRequestId = 'friendRequestId';
 
 const friendRequestsRouter = Router();
 
-friendRequestsRouter.use(...authenticationMiddlewares);
-
 friendRequestsRouter.get(`/`, ...getAllFriendRequestsMiddlewares);
+
+friendRequestsRouter.use(...authenticationMiddlewares);
 
 friendRequestsRouter.delete(`/:${friendRequestId}`, ...deleteFriendRequestMiddlewares);
 
