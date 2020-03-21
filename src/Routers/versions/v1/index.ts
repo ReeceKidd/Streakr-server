@@ -45,18 +45,12 @@ v1Router.use(`/${RouterCategories.dailyJobs}`, dailyJobsRouter);
 v1Router.use(`/${RouterCategories.streakTrackingEvents}`, streakTrackingEventRouter);
 v1Router.use(`/${RouterCategories.users}`, usersRouter);
 v1Router.use(`/${RouterCategories.activityFeedItems}`, activityFeedItemsRouter);
-
-// Partially authenticated routes.
-v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
-
-// Authenticated User Routes
-v1Router.use(...authenticationMiddlewares);
-v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
-v1Router.use(`/${RouterCategories.user}`, userRouter);
 v1Router.use(`/${RouterCategories.streakRecommendations}`, streakRecommendationsRouter);
 
-// Paid Membership routes
-//v1Router.use(hasUserPaidMembershipMiddleware);
+// Partially authenticated routes
+v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
+v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
+v1Router.use(`/${RouterCategories.user}`, userRouter);
 v1Router.use(`/${RouterCategories.soloStreaks}`, soloStreaksRouter);
 v1Router.use(`/${RouterCategories.teamMemberStreaks}`, teamMemberStreaksRouter);
 v1Router.use(`/${RouterCategories.completeSoloStreakTasks}`, completeSoloStreakTasksRouter);

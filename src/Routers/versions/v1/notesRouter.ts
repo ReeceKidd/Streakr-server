@@ -4,10 +4,13 @@ import { getAllNotesMiddlewares } from '../../../RouteMiddlewares/Notes/getAllNo
 import { createNoteMiddlewares } from '../../../RouteMiddlewares/Notes/createNoteMiddlewares';
 import { getOneNoteMiddlewares } from '../../../RouteMiddlewares/Notes/getOneNoteMiddlewares';
 import { deleteNoteMiddlewares } from '../../../RouteMiddlewares/Notes/deleteNoteMiddlewares';
+import { authenticationMiddlewares } from '../../../../src/SharedMiddleware/authenticationMiddlewares';
 
 export const noteId = 'noteId';
 
 const notesRouter = Router();
+
+notesRouter.use(...authenticationMiddlewares);
 
 notesRouter.get(`/`, ...getAllNotesMiddlewares);
 

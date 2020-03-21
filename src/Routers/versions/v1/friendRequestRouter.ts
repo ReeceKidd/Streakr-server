@@ -4,10 +4,13 @@ import { getAllFriendRequestsMiddlewares } from '../../../RouteMiddlewares/Frien
 import { createFriendRequestMiddlewares } from '../../../RouteMiddlewares/FriendRequests/createFriendRequestMiddlewares';
 import { deleteFriendRequestMiddlewares } from '../../../RouteMiddlewares/FriendRequests/deleteFriendRequestMiddlewares';
 import { patchFriendRequestMiddlewares } from '../../../RouteMiddlewares/FriendRequests/patchFriendRequestMiddlewares';
+import { authenticationMiddlewares } from '../../../../src/SharedMiddleware/authenticationMiddlewares';
 
 export const friendRequestId = 'friendRequestId';
 
 const friendRequestsRouter = Router();
+
+friendRequestsRouter.use(...authenticationMiddlewares);
 
 friendRequestsRouter.get(`/`, ...getAllFriendRequestsMiddlewares);
 
