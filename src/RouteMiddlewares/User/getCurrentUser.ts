@@ -33,6 +33,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             membershipInformation: user.membershipInformation,
             userType: user.userType,
             badges: user.badges,
+            friends: user.friends,
             timezone: user.timezone,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
