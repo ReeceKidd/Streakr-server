@@ -268,6 +268,7 @@ describe('formatUserMiddleware', () => {
                 'badges',
                 'membershipInformation',
                 'userType',
+                'friends',
                 'timezone',
                 'createdAt',
                 'updatedAt',
