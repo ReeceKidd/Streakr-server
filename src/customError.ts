@@ -478,6 +478,7 @@ export enum ErrorType {
     FormActivityFeedItemsQueryMiddleware,
     CalculateTotalCountOfActivityFeedItemsMiddleware,
     NotifyTeamMembersThatUserHasAddedANoteTeamStreakDoesNotExist,
+    RemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3893,6 +3894,13 @@ export class CustomError extends Error {
             case ErrorType.CalculateTotalCountOfActivityFeedItemsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-370`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-371`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

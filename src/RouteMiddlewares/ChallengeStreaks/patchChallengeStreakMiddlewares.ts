@@ -1,13 +1,14 @@
 import * as Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import * as mongoose from 'mongoose';
+import { ActivityFeedItemTypes, User, StreakStatus, ChallengeStreak } from '@streakoid/streakoid-sdk/lib';
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { challengeStreakModel, ChallengeStreakModel } from '../../Models/ChallengeStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
-import { ActivityFeedItemTypes, User, StreakStatus } from '@streakoid/streakoid-sdk/lib';
+import { challengeModel, ChallengeModel } from '../../../src/Models/Challenge';
 
 const challengeStreakParamsValidationSchema = {
     challengeStreakId: Joi.string().required(),
@@ -74,6 +75,33 @@ export const getPatchChallengeStreakMiddleware = (challengeStreakModel: mongoose
 };
 
 export const patchChallengeStreakMiddleware = getPatchChallengeStreakMiddleware(challengeStreakModel);
+
+export const getRemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware = (
+    challengeModel: mongoose.Model<ChallengeModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const updatedChallengeStreak: ChallengeStreak = response.locals.updatedChallengeStreak;
+        const { status } = request.body;
+        if (status && status === StreakStatus.deleted) {
+            const challenge = await challengeModel.findById(updatedChallengeStreak.challengeId);
+            const membersWithoutCurrentUser =
+                challenge && challenge.members.filter(member => member !== updatedChallengeStreak.userId);
+            await challengeModel.findByIdAndUpdate(
+                updatedChallengeStreak.challengeId,
+                { members: membersWithoutCurrentUser },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        next(new CustomError(ErrorType.RemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware, err));
+    }
+};
+
+export const removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware = getRemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware(
+    challengeModel,
+);
 
 export const sendUpdatedChallengeStreakMiddleware = (
     request: Request,
@@ -168,6 +196,7 @@ export const patchChallengeStreakMiddlewares = [
     challengeStreakParamsValidationMiddleware,
     challengeStreakRequestBodyValidationMiddleware,
     patchChallengeStreakMiddleware,
+    removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
     sendUpdatedChallengeStreakMiddleware,
     createArchivedChallengeStreakActivityFeedItemMiddleware,
     createRestoredChallengeStreakActivityFeedItemMiddleware,
