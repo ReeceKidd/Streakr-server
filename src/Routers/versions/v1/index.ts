@@ -30,6 +30,7 @@ import { challengeStreaksRouter } from './challengeStreakRouter';
 import { completeChallengeStreakTasksRouter } from './completeChallengeStreakTaskRouter';
 import { incompleteChallengeStreakTasksRouter } from './incompleteChallengeStreakTaskRouter';
 import { notesRouter } from './notesRouter';
+import { databaseStatsRouter } from './databaseStatsRouter';
 
 const v1Router = Router();
 
@@ -67,5 +68,6 @@ v1Router.use(`/${RouterCategories.badges}`, badgesRouter);
 v1Router.use(`/${RouterCategories.challenges}`, challengesRouter);
 v1Router.use(`/${RouterCategories.challengeStreaks}`, challengeStreaksRouter);
 v1Router.use(`/${RouterCategories.notes}`, notesRouter);
+v1Router.use(`/${RouterCategories.databaseStats}`, databaseStatsRouter);
 
 export default v1Router;

@@ -479,6 +479,12 @@ export enum ErrorType {
     CalculateTotalCountOfActivityFeedItemsMiddleware,
     NotifyTeamMembersThatUserHasAddedANoteTeamStreakDoesNotExist,
     RemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
+    CountTotalUsersMiddleware,
+    CountTotalLiveSoloStreaksMiddleware,
+    CountTotalLiveChallengeStreaksMiddleware,
+    CountTotalLiveTeamStreaksMiddleware,
+    CountTotalStreaksCreatedMiddleware,
+    SendDatabaseStatsMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3901,6 +3907,48 @@ export class CustomError extends Error {
             case ErrorType.RemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-371`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CountTotalUsersMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-372`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CountTotalLiveSoloStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-373`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CountTotalLiveChallengeStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-374`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CountTotalLiveTeamStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-375`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CountTotalStreaksCreatedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-376`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendDatabaseStatsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-377`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

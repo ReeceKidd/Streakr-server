@@ -5195,4 +5195,70 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to CountTotalUsersMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CountTotalUsersMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-372`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CountTotalUsersMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CountTotalLiveSoloStreaksMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-373`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CountTotalLiveChallengeStreaksMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CountTotalLiveChallengeStreaksMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-374`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to GetTotalLiveTeamStreaksMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CountTotalLiveTeamStreaksMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-375`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CountTotalStreaksCreatedMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CountTotalStreaksCreatedMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-376`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendDatabaseStatsMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendDatabaseStatsMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-377`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });
