@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import { getServiceConfig } from './getServiceConfig';
 
-const { EMAIL_FROM, EMAIL_PASSWORD } = getServiceConfig();
+const { EMAIL_FROM, EMAIL_PASSWORD, EMAIL_TO } = getServiceConfig();
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -13,12 +13,20 @@ const transporter = nodemailer.createTransport({
 
 const { NODE_ENV } = getServiceConfig();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const sendEmail = async (subject: string, text: string): Promise<any> => {
+export const sendEmail = async ({
+    subject,
+    text,
+    emailFrom,
+}: {
+    subject: string;
+    text: string;
+    emailFrom?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+}): Promise<any> => {
     if (NODE_ENV !== 'test') {
         const mailOptions = {
-            from: EMAIL_FROM,
-            to: EMAIL_FROM,
+            from: emailFrom,
+            to: EMAIL_TO,
             subject,
             text,
         };

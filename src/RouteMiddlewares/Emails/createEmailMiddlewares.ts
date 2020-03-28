@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { emailModel, EmailModel } from '../../Models/Email';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { sendEmail } from '../../email';
+import { sendEmail as sendEmailFunction } from '../../email';
 
 const createEmailBodyValidationSchema = {
     name: Joi.string().required(),
@@ -65,7 +65,7 @@ export const saveEmailToDatabaseMiddleware = async (
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getSendEmailMiddleware = (sendEmail: (subject: string, text: string) => Promise<any>) => async (
+export const getSendEmailMiddleware = (sendEmail: typeof sendEmailFunction) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -79,14 +79,14 @@ export const getSendEmailMiddleware = (sendEmail: (subject: string, text: string
         Message: ${message}
         UserId: ${userId}
         Username: ${username}`;
-        await sendEmail(subject, text);
+        await sendEmail({ subject, text, emailFrom: email });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.SendEmailMiddleware, err));
     }
 };
 
-export const sendEmailMiddleware = getSendEmailMiddleware(sendEmail);
+export const sendEmailMiddleware = getSendEmailMiddleware(sendEmailFunction);
 
 export const emailSentResponseMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {

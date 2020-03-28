@@ -39,7 +39,7 @@ agenda.on('fail', async (err, job) => {
       Failure reason: ${err.message}
       Failure count ${job.attrs.failCount}
       err: ${err.toString()}`;
-        await sendEmail('Agenda Failure', message);
+        await sendEmail({ subject: 'Agenda Failure', text: message, emailFrom: 'notify@streakoid.com' });
     } catch (err) {
         console.log(err);
     }

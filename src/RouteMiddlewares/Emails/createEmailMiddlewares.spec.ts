@@ -264,7 +264,7 @@ describe(`sendEmailMiddleware`, () => {
         const middleware = getSendEmailMiddleware(sendEmail);
         await middleware(request, response, next);
 
-        expect(sendEmail).toBeCalledWith(subject, expect.any(String));
+        expect(sendEmail).toBeCalledWith({ subject, text: expect.any(String), emailFrom: email });
         expect(next).toBeCalled();
     });
 
