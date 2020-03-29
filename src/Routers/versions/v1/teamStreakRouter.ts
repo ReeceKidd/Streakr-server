@@ -23,7 +23,6 @@ teamStreaksRouter.get(`/`, ...getAllTeamStreaksMiddlewares);
 teamStreaksRouter.get(`/:${teamStreakId}`, ...getOneTeamStreakMiddlewares);
 
 teamStreaksRouter.use(...authenticationMiddlewares);
-teamStreaksRouter.use(hasUserPaidMembershipMiddleware);
 
 teamStreaksRouter.delete(
     `/:${teamStreakId}/${TeamStreakRouteCategories.members}/:${memberId}`,

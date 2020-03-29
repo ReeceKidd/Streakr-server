@@ -15,9 +15,6 @@ export const challengeSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        numberOfMinutes: {
-            type: Number,
-        },
         badgeId: {
             type: String,
             required: true,
@@ -41,6 +38,12 @@ export const challengeSchema = new mongoose.Schema(
         numberOfMembers: {
             type: Number,
             default: 0,
+        },
+        numberOfMinutes: {
+            type: Number,
+        },
+        communicationGroupLink: {
+            type: String,
         },
     },
     {
