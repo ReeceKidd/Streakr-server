@@ -39,7 +39,7 @@ export const getFindChallengesMiddleware = (challengeModel: mongoose.Model<Chall
             query.name = name;
         }
 
-        response.locals.challenges = await challengeModel.find(query);
+        response.locals.challenges = await challengeModel.find(query).sort({ numberOfMembers: 1 });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FindChallengesMiddleware, err));

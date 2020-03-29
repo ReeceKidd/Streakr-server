@@ -35,20 +35,22 @@ describe('getChallengesValidationMiddleware', () => {
 });
 
 describe('findChallengesMiddleware', () => {
-    test('queries database with just name and sets response.locals.challenges', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
-        const soloStreakModel = {
+    test('queries database with just name and sets response.locals.challenges with a sorted array of challenges', async () => {
+        expect.assertions(4);
+        const sort = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ sort }));
+        const challengeModel = {
             find,
         };
         const request: any = { query: { name } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getFindChallengesMiddleware(soloStreakModel as any);
+        const middleware = getFindChallengesMiddleware(challengeModel as any);
 
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ name });
+        expect(sort).toBeCalledWith({ numberOfMembers: 1 });
         expect(response.locals.challenges).toEqual(true);
         expect(next).toBeCalledWith();
     });

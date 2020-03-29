@@ -5261,4 +5261,28 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to IncreaseNumberOfMembersInChallengeMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.IncreaseNumberOfMembersInChallengeMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-378`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to DescreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(
+            ErrorType.DescreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
+        );
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-379`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

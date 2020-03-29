@@ -86,7 +86,7 @@ export const getRemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware = (
             const challenge = await challengeModel.findById(updatedChallengeStreak.challengeId);
             const membersWithoutCurrentUser =
                 challenge && challenge.members.filter(member => member !== updatedChallengeStreak.userId);
-            await challengeModel.findByIdAndUpdate(
+            response.locals.challenge = await challengeModel.findByIdAndUpdate(
                 updatedChallengeStreak.challengeId,
                 { members: membersWithoutCurrentUser },
                 { new: true },
@@ -100,6 +100,31 @@ export const getRemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware = (
 };
 
 export const removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware = getRemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware(
+    challengeModel,
+);
+
+export const getDecreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware = (
+    challengeModel: mongoose.Model<ChallengeModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const updatedChallengeStreak: ChallengeStreak = response.locals.updatedChallengeStreak;
+        const { status } = request.body;
+        const { challenge } = response.locals;
+        if (status && status === StreakStatus.deleted) {
+            await challengeModel.findByIdAndUpdate(
+                updatedChallengeStreak.challengeId,
+                { $set: { numberOfMembers: challenge.members.length } },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        next(new CustomError(ErrorType.DescreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware, err));
+    }
+};
+
+export const decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware = getDecreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware(
     challengeModel,
 );
 
@@ -197,6 +222,7 @@ export const patchChallengeStreakMiddlewares = [
     challengeStreakRequestBodyValidationMiddleware,
     patchChallengeStreakMiddleware,
     removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
+    decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
     sendUpdatedChallengeStreakMiddleware,
     createArchivedChallengeStreakActivityFeedItemMiddleware,
     createRestoredChallengeStreakActivityFeedItemMiddleware,

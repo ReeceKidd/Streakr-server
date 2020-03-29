@@ -38,6 +38,10 @@ export const challengeSchema = new mongoose.Schema(
             type: [String],
             default: [],
         },
+        numberOfMembers: {
+            type: Number,
+            default: 0,
+        },
     },
     {
         timestamps: true,

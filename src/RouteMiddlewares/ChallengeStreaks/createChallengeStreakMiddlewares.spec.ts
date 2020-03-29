@@ -17,6 +17,8 @@ import {
     getAddChallengeBadgeToUserBadgesMiddleware,
     getJoinChallengeActivityFeedItemMiddleware,
     joinChallengeActivityFeedItemMiddleware,
+    increaseNumberOfMembersInChallengeMiddleware,
+    getIncreaseNumberOfMembersInChallengeMiddleware,
 } from './createChallengeStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -261,7 +263,7 @@ describe('addUserToChallengeMembersMiddleware', () => {
         const middleware = getAddUserToChallengeMembersMiddleware(challenge as any);
         await middleware(request, response, next);
 
-        expect(findOneAndUpdate).toBeCalledWith({ _id: challengeId }, { $push: { members: userId } });
+        expect(findOneAndUpdate).toBeCalledWith({ _id: challengeId }, { $push: { members: userId } }, { new: true });
         expect(lean).toBeCalled();
         expect(response.locals.challenge).toBeDefined();
         expect(next).toBeCalledWith();
@@ -278,6 +280,49 @@ describe('addUserToChallengeMembersMiddleware', () => {
         middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.AddUserToChallengeMiddleware, expect.any(Error)));
+    });
+});
+
+describe('increaseNumberOfMembersInChallengeMiddleware', () => {
+    test('increases the challenges numberOfMembers by 1', async () => {
+        expect.assertions(4);
+        const challengeId = 'challengeId';
+        const challenge = { members: ['member'] };
+        const lean = jest.fn().mockResolvedValue(true);
+        const findOneAndUpdate = jest.fn(() => ({ lean }));
+        const challengeModel = {
+            findOneAndUpdate,
+        };
+        const response: any = { locals: { challenge } };
+        const request: any = { body: { challengeId } };
+        const next = jest.fn();
+
+        const middleware = getIncreaseNumberOfMembersInChallengeMiddleware(challengeModel as any);
+        await middleware(request, response, next);
+
+        expect(findOneAndUpdate).toBeCalledWith(
+            { _id: challengeId },
+            { $set: { numberOfMembers: challenge.members.length } },
+            { new: true },
+        );
+        expect(lean).toBeCalled();
+        expect(response.locals.challenge).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with IncreaseNumberOfMembersInChallengeMiddleware, error on middleware failure', async () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getIncreaseNumberOfMembersInChallengeMiddleware({} as any);
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.IncreaseNumberOfMembersInChallengeMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -322,7 +367,7 @@ describe(`createChallengeStreakFromRequestMiddleware`, () => {
     });
 });
 
-describe('addUserToChallengeMiddleware', () => {
+describe('addUserToChallengeMembersMiddleware', () => {
     test('adds user to members on challenge', async () => {
         expect.assertions(4);
         const userId = 'userId';
@@ -340,7 +385,7 @@ describe('addUserToChallengeMiddleware', () => {
         const middleware = getAddUserToChallengeMembersMiddleware(challenge as any);
         await middleware(request, response, next);
 
-        expect(findOneAndUpdate).toBeCalledWith({ _id: challengeId }, { $push: { members: userId } });
+        expect(findOneAndUpdate).toBeCalledWith({ _id: challengeId }, { $push: { members: userId } }, { new: true });
         expect(lean).toBeCalled();
         expect(response.locals.challenge).toBeDefined();
         expect(next).toBeCalledWith();
@@ -480,17 +525,18 @@ describe(`createJoinChallengeActivityFeedItemMiddleware`, () => {
 
 describe(`createChallengeStreakMiddlewares`, () => {
     test('that createChallengeStreak middlewares are defined in the correct order', async () => {
-        expect.assertions(10);
+        expect.assertions(11);
 
-        expect(createChallengeStreakMiddlewares.length).toEqual(9);
+        expect(createChallengeStreakMiddlewares.length).toEqual(10);
         expect(createChallengeStreakMiddlewares[0]).toBe(createChallengeStreakBodyValidationMiddleware);
         expect(createChallengeStreakMiddlewares[1]).toBe(doesChallengeExistMiddleware);
         expect(createChallengeStreakMiddlewares[2]).toBe(doesUserExistMiddleware);
         expect(createChallengeStreakMiddlewares[3]).toBe(isUserAlreadyInChallengeMiddleware);
         expect(createChallengeStreakMiddlewares[4]).toBe(addUserToChallengeMembersMiddleware);
-        expect(createChallengeStreakMiddlewares[5]).toBe(addChallengeBadgeToUserBadgesMiddleware);
-        expect(createChallengeStreakMiddlewares[6]).toBe(createChallengeStreakMiddleware);
-        expect(createChallengeStreakMiddlewares[7]).toBe(sendFormattedChallengeStreakMiddleware);
-        expect(createChallengeStreakMiddlewares[8]).toBe(joinChallengeActivityFeedItemMiddleware);
+        expect(createChallengeStreakMiddlewares[5]).toBe(increaseNumberOfMembersInChallengeMiddleware);
+        expect(createChallengeStreakMiddlewares[6]).toBe(addChallengeBadgeToUserBadgesMiddleware);
+        expect(createChallengeStreakMiddlewares[7]).toBe(createChallengeStreakMiddleware);
+        expect(createChallengeStreakMiddlewares[8]).toBe(sendFormattedChallengeStreakMiddleware);
+        expect(createChallengeStreakMiddlewares[9]).toBe(joinChallengeActivityFeedItemMiddleware);
     });
 });

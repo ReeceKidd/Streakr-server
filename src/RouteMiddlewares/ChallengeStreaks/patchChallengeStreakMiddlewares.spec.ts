@@ -14,6 +14,8 @@ import {
     getCreateRestoredChallengeStreakActivityFeedItemMiddleware,
     removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
     getRemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
+    decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
+    getDecreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
 } from './patchChallengeStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -279,11 +281,96 @@ describe('removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware', () => {
         const request: any = {};
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getPatchChallengeStreakMiddleware({} as any);
+        const middleware = getRemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware({} as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.PatchChallengeStreakMiddleware));
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.RemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware),
+        );
+    });
+});
+
+describe('decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware', () => {
+    test('when status does not equal delete it just calls next.', async () => {
+        expect.assertions(2);
+        const updatedChallengeStreak = {
+            _id: '_id',
+            challengeId: 'challengeId',
+            userId: 'userId',
+        };
+        const status = StreakStatus.archived;
+        const request: any = {
+            body: {
+                status,
+            },
+        };
+        const response: any = { locals: { updatedChallengeStreak } };
+        const next = jest.fn();
+        const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+        const challengeModel = {
+            findByIdAndUpdate,
+        };
+        const middleware = getDecreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware(
+            challengeModel as any,
+        );
+
+        await middleware(request, response, next);
+
+        expect(findByIdAndUpdate).not.toBeCalled();
+        expect(next).toBeCalledWith();
+    });
+
+    test('when status equals deleted it sets numberOfMembers to equal the new value of challenge.members.length.', async () => {
+        expect.assertions(3);
+        const updatedChallengeStreak = {
+            _id: '_id',
+            challengeId: 'challengeId',
+            userId: 'userId',
+        };
+        const challenge = {
+            members: [],
+        };
+        const status = StreakStatus.deleted;
+        const request: any = {
+            body: {
+                status,
+            },
+        };
+        const response: any = { locals: { updatedChallengeStreak, challenge } };
+        const next = jest.fn();
+        const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+        const challengeModel = {
+            findByIdAndUpdate,
+        };
+        const middleware = getDecreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware(
+            challengeModel as any,
+        );
+
+        await middleware(request, response, next);
+
+        expect(findByIdAndUpdate).toBeCalledWith(
+            updatedChallengeStreak.challengeId,
+            { $set: { numberOfMembers: challenge.members.length } },
+            { new: true },
+        );
+        expect(response.locals.updatedChallengeStreak).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with DescreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware on middleware failure', async () => {
+        expect.assertions(1);
+
+        const request: any = {};
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getDecreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.DescreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware),
+        );
     });
 });
 
@@ -497,16 +584,19 @@ describe(`createDeletedChallengeStreakActivityFeedItemMiddleware`, () => {
 
 describe('patchChallengeStreakMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(9);
+        expect.assertions(10);
 
-        expect(patchChallengeStreakMiddlewares.length).toBe(8);
+        expect(patchChallengeStreakMiddlewares.length).toBe(9);
         expect(patchChallengeStreakMiddlewares[0]).toBe(challengeStreakParamsValidationMiddleware);
         expect(patchChallengeStreakMiddlewares[1]).toBe(challengeStreakRequestBodyValidationMiddleware);
         expect(patchChallengeStreakMiddlewares[2]).toBe(patchChallengeStreakMiddleware);
         expect(patchChallengeStreakMiddlewares[3]).toBe(removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware);
-        expect(patchChallengeStreakMiddlewares[4]).toBe(sendUpdatedChallengeStreakMiddleware);
-        expect(patchChallengeStreakMiddlewares[5]).toBe(createArchivedChallengeStreakActivityFeedItemMiddleware);
-        expect(patchChallengeStreakMiddlewares[6]).toBe(createRestoredChallengeStreakActivityFeedItemMiddleware);
-        expect(patchChallengeStreakMiddlewares[7]).toBe(createDeletedChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[4]).toBe(
+            decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
+        );
+        expect(patchChallengeStreakMiddlewares[5]).toBe(sendUpdatedChallengeStreakMiddleware);
+        expect(patchChallengeStreakMiddlewares[6]).toBe(createArchivedChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[7]).toBe(createRestoredChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[8]).toBe(createDeletedChallengeStreakActivityFeedItemMiddleware);
     });
 });

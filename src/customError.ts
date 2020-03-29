@@ -485,6 +485,8 @@ export enum ErrorType {
     CountTotalLiveTeamStreaksMiddleware,
     CountTotalStreaksCreatedMiddleware,
     SendDatabaseStatsMiddleware,
+    IncreaseNumberOfMembersInChallengeMiddleware,
+    DescreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3949,6 +3951,20 @@ export class CustomError extends Error {
             case ErrorType.SendDatabaseStatsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-377`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseNumberOfMembersInChallengeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-378`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DescreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-379`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

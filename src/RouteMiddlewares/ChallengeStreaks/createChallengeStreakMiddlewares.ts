@@ -101,7 +101,7 @@ export const getAddUserToChallengeMembersMiddleware = (challengeModel: mongoose.
     try {
         const { userId, challengeId } = request.body;
         const challenge = await challengeModel
-            .findOneAndUpdate({ _id: challengeId }, { $push: { members: userId } })
+            .findOneAndUpdate({ _id: challengeId }, { $push: { members: userId } }, { new: true })
             .lean();
         response.locals.challenge = challenge;
         next();
@@ -112,6 +112,30 @@ export const getAddUserToChallengeMembersMiddleware = (challengeModel: mongoose.
 };
 
 export const addUserToChallengeMembersMiddleware = getAddUserToChallengeMembersMiddleware(challengeModel);
+
+export const getIncreaseNumberOfMembersInChallengeMiddleware = (
+    challengeModel: mongoose.Model<ChallengeModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { challengeId } = request.body;
+        const { challenge } = response.locals;
+        response.locals.challenge = await challengeModel
+            .findOneAndUpdate(
+                { _id: challengeId },
+                { $set: { numberOfMembers: challenge.members.length } },
+                { new: true },
+            )
+            .lean();
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.IncreaseNumberOfMembersInChallengeMiddleware, err));
+    }
+};
+
+export const increaseNumberOfMembersInChallengeMiddleware = getIncreaseNumberOfMembersInChallengeMiddleware(
+    challengeModel,
+);
 
 export const getAddChallengeBadgeToUserBadgesMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
@@ -196,6 +220,7 @@ export const createChallengeStreakMiddlewares = [
     doesUserExistMiddleware,
     isUserAlreadyInChallengeMiddleware,
     addUserToChallengeMembersMiddleware,
+    increaseNumberOfMembersInChallengeMiddleware,
     addChallengeBadgeToUserBadgesMiddleware,
     createChallengeStreakMiddleware,
     sendFormattedChallengeStreakMiddleware,
