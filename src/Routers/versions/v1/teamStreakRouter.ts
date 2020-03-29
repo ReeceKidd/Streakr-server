@@ -6,7 +6,6 @@ import { createTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStrea
 import { patchTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreaks/patchTeamStreakMiddlewares';
 import { createTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMembers/createTeamMemberMiddlewares';
 import { authenticationMiddlewares } from '../../../../src/SharedMiddleware/authenticationMiddlewares';
-import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 
 export const teamStreakId = 'teamStreakId';
 
