@@ -50,7 +50,7 @@ describe('findChallengesMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ name });
-        expect(sort).toBeCalledWith({ numberOfMembers: 1 });
+        expect(sort).toBeCalledWith({ numberOfMembers: -1 });
         expect(response.locals.challenges).toEqual(true);
         expect(next).toBeCalledWith();
     });
