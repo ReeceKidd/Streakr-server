@@ -1,23 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-    getUsersMiddlewares,
+    getAllUsersMiddlewares,
     getUsersValidationMiddleware,
     maximumSearchQueryLength,
-    getRetreiveUsersMiddleware,
-    sendFormattedUsersMiddleware,
-    retreiveUsersMiddleware,
+    sendUsersMiddleware,
     formatUsersMiddleware,
-} from './getUsersMiddlewares';
+    formUsersQueryMiddleware,
+    calculateTotalUsersCountMiddleware,
+    findUsersMiddleware,
+    getCalculateTotalUsersCountMiddleware,
+    getFindUsersMiddleware,
+} from './getAllUsersMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe(`getUsersValidationMiddleware`, () => {
+    const limit = 10;
+    const skip = 10;
     const searchQuery = 'searchQuery';
     const username = 'username';
     const email = 'email@gmail.com';
 
     const query = {
+        limit,
+        skip,
         searchQuery,
         username,
         email,
@@ -38,6 +45,48 @@ describe(`getUsersValidationMiddleware`, () => {
         getUsersValidationMiddleware(request, response, next);
 
         expect(next).toBeCalledWith();
+    });
+
+    test('sends correct response when limit is not a number', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            query: { limit: 'abc' },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        getUsersValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "limit" fails because ["limit" must be a number]',
+        });
+        expect(next).not.toBeCalled();
+    });
+
+    test('sends correct response when skip is not a number', () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            query: { skip: 'abc' },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        getUsersValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "skip" fails because ["skip" must be a number]',
+        });
+        expect(next).not.toBeCalled();
     });
 
     test('sends correct response when searchQuery length is too short', () => {
@@ -151,109 +200,150 @@ describe(`getUsersValidationMiddleware`, () => {
     });
 });
 
-describe('getRetreiveUsersMiddleware', () => {
-    test('retrieves users with searchQuery and sets response.locals.users', async () => {
-        expect.assertions(3);
+describe('formUsersQueryMiddleware', () => {
+    test('sets response.locals.query using the searchQuery', () => {
+        expect.assertions(2);
         const searchQuery = 'searchQuery';
-        const lean = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ lean }));
-        const userModel = { find };
         const request: any = { query: { searchQuery } };
         const response: any = {
             locals: {},
         };
         const next = jest.fn();
-        const middleware = getRetreiveUsersMiddleware(userModel as any);
 
-        await middleware(request, response, next);
+        formUsersQueryMiddleware(request, response, next);
 
-        expect(find).toBeCalledWith({
-            username: { $regex: searchQuery.toLowerCase() },
-        });
-        expect(response.locals.users).toBeDefined();
+        expect(response.locals.query).toEqual({ username: { $regex: searchQuery.toLowerCase() } });
         expect(next).toBeCalledWith();
     });
 
-    test('retrieves users with username and sets response.locals.users', async () => {
-        expect.assertions(3);
+    test('sets response.locals.query using the username', () => {
+        expect.assertions(2);
         const username = 'username';
-        const lean = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ lean }));
-        const userModel = { find };
         const request: any = { query: { username } };
         const response: any = {
             locals: {},
         };
         const next = jest.fn();
-        const middleware = getRetreiveUsersMiddleware(userModel as any);
 
-        await middleware(request, response, next);
+        formUsersQueryMiddleware(request, response, next);
 
-        expect(find).toBeCalledWith({
-            username,
-        });
-        expect(response.locals.users).toBeDefined();
+        expect(response.locals.query).toEqual({ username });
         expect(next).toBeCalledWith();
     });
 
-    test('retrieves users with email and sets response.locals.users', async () => {
-        expect.assertions(3);
-        const email = 'email';
-        const lean = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ lean }));
-        const userModel = { find };
+    test('sets response.locals.query using the email', () => {
+        expect.assertions(2);
+        const email = 'email@gmail.com';
         const request: any = { query: { email } };
         const response: any = {
             locals: {},
         };
         const next = jest.fn();
-        const middleware = getRetreiveUsersMiddleware(userModel as any);
 
-        await middleware(request, response, next);
+        formUsersQueryMiddleware(request, response, next);
 
-        expect(find).toBeCalledWith({
-            email,
-        });
-        expect(response.locals.users).toBeDefined();
+        expect(response.locals.query).toEqual({ email });
         expect(next).toBeCalledWith();
     });
 
-    test('retrieves users without searchQuery or username and sets response.locals.users', async () => {
-        expect.assertions(3);
-        const lean = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ lean }));
-        const userModel = { find };
+    test('sets response.locals.query with an empty query', () => {
+        expect.assertions(2);
         const request: any = { query: {} };
         const response: any = {
             locals: {},
         };
         const next = jest.fn();
-        const middleware = getRetreiveUsersMiddleware(userModel as any);
+
+        formUsersQueryMiddleware(request, response, next);
+
+        expect(response.locals.query).toEqual({});
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with FormUsersQueryMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+
+        formUsersQueryMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.FormUsersQueryMiddleware, expect.any(Error)));
+    });
+});
+
+describe('calculateTotalUsersCountMiddleware', () => {
+    test('sets response.header.x-total-count with the total users count', async () => {
+        expect.assertions(2);
+        const query = {};
+        const countDocuments = jest.fn().mockResolvedValue(10);
+        const find = jest.fn(() => ({ countDocuments }));
+        const userModel = { find };
+        const setHeader = jest.fn();
+        const request: any = {};
+        const response: any = {
+            setHeader,
+            locals: { query },
+        };
+        const next = jest.fn();
+
+        const middleware = getCalculateTotalUsersCountMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(setHeader).toBeCalledWith('x-total-count', 10);
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with CalculateTotalUsersCountMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getCalculateTotalUsersCountMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.CalculateTotalUsersCountMiddleware, expect.any(Error)));
+    });
+});
+
+describe('findUsersMiddleware', () => {
+    test('sets response.locals.users with the limited number of users', async () => {
+        expect.assertions(6);
+        const lean = jest.fn().mockResolvedValue([{ username: 'username' }]);
+        const limit = jest.fn(() => ({ lean }));
+        const skip = jest.fn(() => ({ limit }));
+        const find = jest.fn(() => ({ skip }));
+        const userModel = { find };
+        const request: any = { query: { skip: 10, limit: 10 } };
+        const response: any = {
+            locals: { query: {} },
+        };
+        const next = jest.fn();
+
+        const middleware = getFindUsersMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({});
-        expect(response.locals.users).toBeDefined();
+        expect(skip).toBeCalledWith(10);
+        expect(limit).toBeCalledWith(10);
+        expect(lean).toBeCalledWith();
+        expect(response.locals.users).toEqual([{ username: 'username' }]);
         expect(next).toBeCalledWith();
     });
 
-    test('calls next with RetreiveUsersMiddleware error on middleware failure', async () => {
-        expect.assertions(2);
-        const errorMessage = 'error';
-        const lean = jest.fn().mockRejectedValue(errorMessage);
-        const find = jest.fn(() => ({ lean }));
-        const userModel = { find };
+    test('calls next with FindUsersMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
         const request: any = {};
-        const response: any = {
-            locals: {},
-        };
+        const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveUsersMiddleware(userModel as any);
+        const middleware = getFindUsersMiddleware({} as any);
 
         await middleware(request, response, next);
 
-        expect(response.locals.users).not.toBeDefined();
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveUsersMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.FindUsersMiddleware, expect.any(Error)));
     });
 });
 
@@ -328,12 +418,12 @@ describe('sendUsersMiddleware', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
-        const request: any = {};
         const users = ['user'];
+        const request: any = {};
         const response: any = { locals: { users }, status };
         const next = jest.fn();
 
-        sendFormattedUsersMiddleware(request, response, next);
+        sendUsersMiddleware(request, response, next);
 
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.success);
@@ -342,7 +432,7 @@ describe('sendUsersMiddleware', () => {
 
     test('calls next with SendUsersMiddleware error on middleware failure', () => {
         expect.assertions(1);
-        const ERROR_MESSAGE = 'sendFormattedUsersMiddleware error';
+        const ERROR_MESSAGE = 'sendUsersMiddleware error';
         const send = jest.fn(() => {
             throw new Error(ERROR_MESSAGE);
         });
@@ -351,20 +441,22 @@ describe('sendUsersMiddleware', () => {
         const request: any = {};
         const next = jest.fn();
 
-        sendFormattedUsersMiddleware(request, response, next);
+        sendUsersMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SendUsersMiddleware, expect.any(Error)));
     });
 });
 
-describe(`getUsersMiddlewares`, () => {
-    test('that getUsersMiddlewares are defined in the correct order', () => {
-        expect.assertions(5);
+describe(`getAllUsersMiddlewares`, () => {
+    test('that getAllUsersMiddlewares are defined in the correct order', () => {
+        expect.assertions(7);
 
-        expect(getUsersMiddlewares.length).toEqual(4);
-        expect(getUsersMiddlewares[0]).toBe(getUsersValidationMiddleware);
-        expect(getUsersMiddlewares[1]).toBe(retreiveUsersMiddleware);
-        expect(getUsersMiddlewares[2]).toBe(formatUsersMiddleware);
-        expect(getUsersMiddlewares[3]).toBe(sendFormattedUsersMiddleware);
+        expect(getAllUsersMiddlewares.length).toEqual(6);
+        expect(getAllUsersMiddlewares[0]).toBe(getUsersValidationMiddleware);
+        expect(getAllUsersMiddlewares[1]).toBe(formUsersQueryMiddleware);
+        expect(getAllUsersMiddlewares[2]).toBe(calculateTotalUsersCountMiddleware);
+        expect(getAllUsersMiddlewares[3]).toBe(findUsersMiddleware);
+        expect(getAllUsersMiddlewares[4]).toBe(formatUsersMiddleware);
+        expect(getAllUsersMiddlewares[5]).toBe(sendUsersMiddleware);
     });
 });

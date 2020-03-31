@@ -46,7 +46,6 @@ export enum ErrorType {
     PatchSoloStreakMiddleware,
     SendUpdatedSoloStreakMiddleware,
     SetSearchQueryToLowercaseMiddleware,
-    RetreiveUsersMiddleware,
     FormatUsersMiddleware,
     SendUsersMiddleware,
     UserEmailAlreadyExists,
@@ -487,6 +486,9 @@ export enum ErrorType {
     SendDatabaseStatsMiddleware,
     IncreaseNumberOfMembersInChallengeMiddleware,
     DescreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
+    FindUsersMiddleware,
+    FormUsersQueryMiddleware,
+    CalculateTotalUsersCountMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1554,7 +1556,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveUsersMiddleware:
+            case ErrorType.FindUsersMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-35`,
                     message: internalServerMessage,
@@ -3965,6 +3967,20 @@ export class CustomError extends Error {
             case ErrorType.DescreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-379`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FormUsersQueryMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-380`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CalculateTotalUsersCountMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-381`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

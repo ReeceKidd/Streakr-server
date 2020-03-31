@@ -3,7 +3,7 @@ import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
-import { userModel, UserModel } from '../../Models/User';
+import { UserModel, userModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { User, FormattedUser } from '@streakoid/streakoid-sdk/lib';
@@ -12,6 +12,8 @@ export const minimumSeachQueryLength = 1;
 export const maximumSearchQueryLength = 64;
 
 const getUsersValidationSchema = {
+    limit: Joi.number(),
+    skip: Joi.number(),
     searchQuery: Joi.string()
         .min(minimumSeachQueryLength)
         .max(maximumSearchQueryLength),
@@ -27,11 +29,7 @@ export const getUsersValidationMiddleware = (request: Request, response: Respons
     );
 };
 
-export const getRetreiveUsersMiddleware = (userModel: mongoose.Model<UserModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const formUsersQueryMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { searchQuery, username, email } = request.query;
 
@@ -46,14 +44,57 @@ export const getRetreiveUsersMiddleware = (userModel: mongoose.Model<UserModel>)
         } else if (email) {
             query.email = email;
         }
-        response.locals.users = await userModel.find(query).lean();
+        response.locals.query = query;
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.RetreiveUsersMiddleware, err));
+        next(new CustomError(ErrorType.FormUsersQueryMiddleware, err));
     }
 };
 
-export const retreiveUsersMiddleware = getRetreiveUsersMiddleware(userModel);
+export const getCalculateTotalUsersCountMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { query } = response.locals;
+
+        const totalUserCount = await userModel.find(query).countDocuments();
+
+        response.setHeader('x-total-count', totalUserCount);
+
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CalculateTotalUsersCountMiddleware, err));
+    }
+};
+
+export const calculateTotalUsersCountMiddleware = getCalculateTotalUsersCountMiddleware(userModel);
+
+export const getFindUsersMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { skip, limit } = request.query;
+        const { query } = response.locals;
+
+        const users = await userModel
+            .find(query)
+            .skip(Number(skip))
+            .limit(Number(limit))
+            .lean();
+
+        response.locals.users = users;
+
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.FindUsersMiddleware, err));
+    }
+};
+
+export const findUsersMiddleware = getFindUsersMiddleware(userModel);
 
 export const formatUsersMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -81,7 +122,7 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
     }
 };
 
-export const sendFormattedUsersMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const sendUsersMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { users } = response.locals;
         response.status(ResponseCodes.success).send(users);
@@ -90,9 +131,11 @@ export const sendFormattedUsersMiddleware = (request: Request, response: Respons
     }
 };
 
-export const getUsersMiddlewares = [
+export const getAllUsersMiddlewares = [
     getUsersValidationMiddleware,
-    retreiveUsersMiddleware,
+    formUsersQueryMiddleware,
+    calculateTotalUsersCountMiddleware,
+    findUsersMiddleware,
     formatUsersMiddleware,
-    sendFormattedUsersMiddleware,
+    sendUsersMiddleware,
 ];

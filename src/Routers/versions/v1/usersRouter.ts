@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { getUsersMiddlewares } from '../../../RouteMiddlewares/Users/getUsersMiddlewares';
+import { getAllUsersMiddlewares } from '../../../RouteMiddlewares/Users/getAllUsersMiddlewares';
 import { getUserMiddlewares } from '../../../RouteMiddlewares/Users/getUserMiddlewares';
 
 import { getFriendsMiddlewares } from '../../../RouteMiddlewares/Users/Friends/getFriendsMiddlewares';
@@ -13,7 +13,7 @@ export const friendId = 'friendId';
 
 const usersRouter = Router();
 
-usersRouter.get('/', ...getUsersMiddlewares);
+usersRouter.get('/', ...getAllUsersMiddlewares);
 
 usersRouter.get(`/:${userId}`, ...getUserMiddlewares);
 
