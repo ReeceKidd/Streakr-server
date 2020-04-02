@@ -2,14 +2,14 @@ import { Router } from 'express';
 
 import { getAllUsersMiddlewares } from '../../../RouteMiddlewares/Users/getAllUsersMiddlewares';
 import { getUserMiddlewares } from '../../../RouteMiddlewares/Users/getUserMiddlewares';
-
-import { getFriendsMiddlewares } from '../../../RouteMiddlewares/Users/Friends/getFriendsMiddlewares';
-import { addFriendMiddlewares } from '../../../RouteMiddlewares/Users/Friends/addFriendMiddlewares';
-import { deleteFriendMiddlewares } from '../../../RouteMiddlewares/Users/Friends/deleteFriendsMiddlewares';
 import { authenticationMiddlewares } from '../../../../src/SharedMiddleware/authenticationMiddlewares';
+import { getFollowersMiddlewares } from '../../../../src/RouteMiddlewares/Users/Followers/getFollowersMiddlewares';
+import { followUserMiddlewares } from '../../../../src/RouteMiddlewares/Users/Following/followUserMiddlewares';
+import { unfollowUserMiddlewares } from '../../../../src/RouteMiddlewares/Users/Following/unfollowUserMiddlewares';
+import { getFollowingMiddlewares } from '../../../../src/RouteMiddlewares/Users/Following/getFollowingMiddlewares';
 
 export const userId = 'userId';
-export const friendId = 'friendId';
+export const userToUnfollowId = 'userToUnfollowId';
 
 const usersRouter = Router();
 
@@ -17,14 +17,18 @@ usersRouter.get('/', ...getAllUsersMiddlewares);
 
 usersRouter.get(`/:${userId}`, ...getUserMiddlewares);
 
-// Friends routes
+// Following routes
 
-usersRouter.get(`/:${userId}/friends`, ...getFriendsMiddlewares);
+usersRouter.get(`/:${userId}/following`, ...getFollowingMiddlewares);
 
 usersRouter.use(...authenticationMiddlewares);
 
-usersRouter.post(`/:${userId}/friends`, ...addFriendMiddlewares);
+usersRouter.post(`/:${userId}/following`, ...followUserMiddlewares);
 
-usersRouter.patch(`/:${userId}/friends/:${friendId}`, ...deleteFriendMiddlewares);
+usersRouter.patch(`/:${userId}/following/:${userToUnfollowId}`, ...unfollowUserMiddlewares);
+
+// Followers routes
+
+usersRouter.get(`/:${userId}/followers`, ...getFollowersMiddlewares);
 
 export { usersRouter };

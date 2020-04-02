@@ -67,6 +67,8 @@ describe('formatUserMiddleware', () => {
             updatedAt: 'Jan 1st',
             timezone: 'Europe/London',
             userType: UserTypes.basic,
+            followers: [],
+            following: [],
             friends: [],
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
@@ -111,6 +113,8 @@ describe('formatUserMiddleware', () => {
                 'membershipInformation',
                 'userType',
                 'badges',
+                'followers',
+                'following',
                 'friends',
                 'timezone',
                 'createdAt',

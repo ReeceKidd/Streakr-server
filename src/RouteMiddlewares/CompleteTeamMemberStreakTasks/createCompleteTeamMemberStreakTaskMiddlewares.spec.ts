@@ -42,7 +42,6 @@ import {
 } from './createCompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { getSendRequesteeAFriendRequestNotificationMiddleware } from '../FriendRequests/createFriendRequestMiddlewares';
 
 describe(`completeTeamMemberStreakTaskBodyValidationMiddleware`, () => {
     const userId = 'abcdefgh';
@@ -1247,17 +1246,17 @@ describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
         expect(next).toBeCalledWith();
     });
 
-    test('calls next with SendRequesteeAFriendRequestNotification error on middleware failure', async () => {
+    test('calls next with NotifyTeamMembersThatUserHasCompletedTaskMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
 
-        const middleware = getSendRequesteeAFriendRequestNotificationMiddleware({} as any);
+        const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware({} as any);
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.SendRequesteeAFriendRequestNotification, expect.any(Error)),
+            new CustomError(ErrorType.NotifyTeamMembersThatUserHasCompletedTaskMiddleware, expect.any(Error)),
         );
     });
 });

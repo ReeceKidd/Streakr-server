@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-    getFriendsMiddlewares,
+    getFollowersMiddlewares,
     getRetreiveUserMiddleware,
     retreiveUserMiddleware,
-    getFriendsParamsValidationMiddleware,
-    sendFriendsMiddleware,
-    retreiveFriendsInfoMiddleware,
-    getRetreiveFriendsInfoMiddleware,
-} from './getFriendsMiddlewares';
+    getFollowersParamsValidationMiddleware,
+    sendFollowersMiddleware,
+    retreiveFollowersInfoMiddleware,
+    getRetreiveFollowersInfoMiddleware,
+} from './getFollowersMiddlewares';
 import { CustomError, ErrorType } from '../../../customError';
 
-describe(`getFriendsMiddlewares`, () => {
-    describe('getFriendsParamsValidationMiddleware', () => {
+describe(`getFollowersMiddlewares`, () => {
+    describe('getFollowersParamsValidationMiddleware', () => {
         test('sends userId is not defined error', () => {
             expect.assertions(3);
             const send = jest.fn();
@@ -24,7 +24,7 @@ describe(`getFriendsMiddlewares`, () => {
             };
             const next = jest.fn();
 
-            getFriendsParamsValidationMiddleware(request, response, next);
+            getFollowersParamsValidationMiddleware(request, response, next);
 
             expect(status).toHaveBeenCalledWith(422);
             expect(send).toBeCalledWith({
@@ -45,7 +45,7 @@ describe(`getFriendsMiddlewares`, () => {
             };
             const next = jest.fn();
 
-            getFriendsParamsValidationMiddleware(request, response, next);
+            getFollowersParamsValidationMiddleware(request, response, next);
 
             expect(status).toHaveBeenCalledWith(422);
             expect(send).toBeCalledWith({
@@ -75,7 +75,7 @@ describe(`getFriendsMiddlewares`, () => {
             expect(next).toBeCalledWith();
         });
 
-        test('throws GetFriendsUserDoesNotExistError when user does not exist', async () => {
+        test('throws GetFollowersUserDoesNotExistError when user does not exist', async () => {
             expect.assertions(1);
             const userId = '5d616c43e1dc592ce8bd487b';
             const lean = jest.fn(() => false);
@@ -88,7 +88,7 @@ describe(`getFriendsMiddlewares`, () => {
 
             await middleware(request, response, next);
 
-            expect(next).toBeCalledWith(new CustomError(ErrorType.GetFriendsUserDoesNotExist));
+            expect(next).toBeCalledWith(new CustomError(ErrorType.GetFollowersUserDoesNotExist));
         });
 
         test('throws RetreiveUserMiddleware error on middleware failure', async () => {
@@ -109,62 +109,54 @@ describe(`getFriendsMiddlewares`, () => {
         });
     });
 
-    describe('retreiveFriendsInfoMiddleware', () => {
-        test('maps over friends and retreives profile images.', async () => {
+    describe('retreiveFollowersInfoMiddleware', () => {
+        test('maps over followers and retreives profile images and username.', async () => {
             expect.assertions(4);
             const lean = jest.fn(() => ({ profileImages: { originalImageUrl: 'google.com/image' } }));
             const findById = jest.fn(() => ({ lean }));
             const userModel = { findById };
             const userId = 'abcdefg';
-            const friend = {
-                friendId: 'friendId',
-                username: 'username',
-            };
-            const friends = [friend];
+            const followers = [userId];
             const user = {
-                friends,
+                followers,
             };
             const request: any = { params: { userId } };
             const response: any = { locals: { user } };
             const next = jest.fn();
-            const middleware = getRetreiveFriendsInfoMiddleware(userModel as any);
+            const middleware = getRetreiveFollowersInfoMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
-            expect(response.locals.friends).toBeDefined();
-            expect(findById).toBeCalledWith(friend.friendId);
+            expect(response.locals.followers).toBeDefined();
+            expect(findById).toBeCalledWith(userId);
             expect(lean).toBeCalledWith();
             expect(next).toBeCalledWith();
         });
 
-        test('sets response.locals.friends to an empty array if friend no longer esits', async () => {
+        test('sets response.locals.followers to an empty array if the person who the user was followers no longer esits', async () => {
             expect.assertions(4);
             const lean = jest.fn(() => false);
             const findById = jest.fn(() => ({ lean }));
             const userModel = { findById };
             const userId = 'abcdefg';
-            const friend = {
-                friendId: 'friendId',
-                username: 'username',
-            };
-            const friends = [friend];
+            const followers = [userId];
             const user = {
-                friends,
+                followers,
             };
             const request: any = { params: { userId } };
             const response: any = { locals: { user } };
             const next = jest.fn();
-            const middleware = getRetreiveFriendsInfoMiddleware(userModel as any);
+            const middleware = getRetreiveFollowersInfoMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
-            expect(response.locals.friends).toEqual([]);
-            expect(findById).toBeCalledWith(friend.friendId);
+            expect(response.locals.followers).toEqual([]);
+            expect(findById).toBeCalledWith(userId);
             expect(lean).toBeCalledWith();
             expect(next).toBeCalledWith();
         });
 
-        test('throws GetFriendsInfoMiddleware error on middleware failure', async () => {
+        test('throws GetFollowersInfoMiddleware error on middleware failure', async () => {
             expect.assertions(1);
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
@@ -174,55 +166,55 @@ describe(`getFriendsMiddlewares`, () => {
             const request: any = { body: { userId } };
             const response: any = { status, locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveFriendsInfoMiddleware(userModel as any);
+            const middleware = getRetreiveFollowersInfoMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
-            expect(next).toBeCalledWith(new CustomError(ErrorType.GetFriendsInfoMiddleware, expect.any(Error)));
+            expect(next).toBeCalledWith(new CustomError(ErrorType.GetFollowersInfoMiddleware, expect.any(Error)));
         });
     });
 
-    describe('sendFriendsMiddleware', () => {
-        test('sends friends in response', () => {
+    describe('sendFollowersMiddleware', () => {
+        test('sends followers in response', () => {
             expect.assertions(3);
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
             const request: any = {};
-            const friends = [{ friendId: '123', username: 'username' }];
+            const followers = [{ username: 'username' }];
             const user = {
-                friends,
+                followers,
             };
             const response: any = { locals: { user }, status };
             const next = jest.fn();
 
-            sendFriendsMiddleware(request, response, next);
+            sendFollowersMiddleware(request, response, next);
 
             expect(next).not.toBeCalled();
             expect(status).toBeCalledWith(200);
-            expect(send).toBeCalledWith(friends);
+            expect(send).toBeCalledWith(followers);
         });
 
-        test('calls next with SendFormattedFriendsMiddleware on middleware failure', () => {
+        test('calls next with SendFormattedFollowersMiddleware on middleware failure', () => {
             expect.assertions(1);
 
             const response: any = {};
             const request: any = {};
             const next = jest.fn();
 
-            sendFriendsMiddleware(request, response, next);
+            sendFollowersMiddleware(request, response, next);
 
-            expect(next).toBeCalledWith(new CustomError(ErrorType.SendFormattedFriendsMiddleware, expect.any(Error)));
+            expect(next).toBeCalledWith(new CustomError(ErrorType.SendFormattedFollowersMiddleware, expect.any(Error)));
         });
     });
 
     test('middlewares are defined in the correct order', () => {
         expect.assertions(5);
 
-        expect(getFriendsMiddlewares.length).toBe(4);
+        expect(getFollowersMiddlewares.length).toBe(4);
 
-        expect(getFriendsMiddlewares[0]).toEqual(getFriendsParamsValidationMiddleware);
-        expect(getFriendsMiddlewares[1]).toEqual(retreiveUserMiddleware);
-        expect(getFriendsMiddlewares[2]).toEqual(retreiveFriendsInfoMiddleware);
-        expect(getFriendsMiddlewares[3]).toEqual(sendFriendsMiddleware);
+        expect(getFollowersMiddlewares[0]).toEqual(getFollowersParamsValidationMiddleware);
+        expect(getFollowersMiddlewares[1]).toEqual(retreiveUserMiddleware);
+        expect(getFollowersMiddlewares[2]).toEqual(retreiveFollowersInfoMiddleware);
+        expect(getFollowersMiddlewares[3]).toEqual(sendFollowersMiddleware);
     });
 });

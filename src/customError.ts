@@ -75,7 +75,7 @@ export enum ErrorType {
     SetUserTypeToBasicMiddleware,
     NoUserToDeleteFound,
     DeleteUserMiddleware,
-    SendUserDeletedResponseMiddleware,
+    SendUserUnfollowedResponseMiddleware,
     GetCompleteSoloStreakTasksMiddleware,
     SendCompleteSoloStreakTasksResponseMiddleware,
     NoCompleteSoloStreakTaskToDeleteFound,
@@ -86,22 +86,19 @@ export enum ErrorType {
     SendUserMiddleware,
     RetreiveIncompleteSoloStreaksMiddleware,
     RetreiveFriendsMiddleware,
-    SendFormattedFriendsMiddleware,
-    AddFriendUserDoesNotExist,
-    AddFriendRetreiveUserMiddleware,
+    SendFormattedFollowingMiddleware,
     FriendDoesNotExist,
     DoesFriendExistMiddleware,
-    AddFriendToUsersFriendListMiddleware,
     SendUserWithNewFriendMiddleware,
     IsAlreadyAFriend,
-    IsAlreadyAFriendMiddleware,
-    DeleteUserNoUserFound,
-    DeleteUserRetreiveUserMiddleware,
-    DeleteFriendDoesFriendExistMiddleware,
-    DeleteFriendMiddleware,
-    DeleteUserFriendDoesNotExist,
-    GetFriendsUserDoesNotExist,
-    GetFriendsRetreiveUserMiddleware,
+    UserIsAlreadyFollowing,
+    UnfollowUserNoSelectedUserFound,
+    UnfollowUserRetreiveSelectedUserMiddleware,
+    DoesUserToUnfollowExistInSelectedUsersFollowingMiddleware,
+    UnfollowUserMiddleware,
+    UserToUnfollowDoesNotExistInSelectedUsersFollowing,
+    GetFollowingUserDoesNotExist,
+    GetFollowingRetreiveUserMiddleware,
     FormatFriendsMiddleware,
     TeamStreakDefineCurrentTimeMiddleware,
     TeamStreakDefineStartDayMiddleware,
@@ -179,13 +176,13 @@ export enum ErrorType {
     PatchTeamStreakMiddleware,
     SendUpdatedTeamStreakMiddleware,
     UpdatedTeamStreakNotFound,
-    CreateTeamMemberFriendExistsMiddleware,
+    CreateTeamMemberFollowerExistsMiddleware,
     CreateTeamMemberTeamStreakExistsMiddleware,
     SendCreateTeamMemberResponseMiddleware,
-    CreateTeamMemberFriendDoesNotExist,
+    CreateTeamMemberFollowerDoesNotExist,
     CreateTeamMemberTeamStreakDoesNotExist,
     CreateTeamMemberCreateTeamMemberStreakMiddleware,
-    AddFriendToTeamStreakMiddleware,
+    AddFollowerToTeamStreakMiddleware,
     DeleteTeamMemberRetreiveTeamStreakMiddleware,
     RetreiveTeamMemberMiddleware,
     DeleteTeamMemberMiddleware,
@@ -199,26 +196,10 @@ export enum ErrorType {
     UpdatedUserNotFound,
     RetreiveRequesterMiddleware,
     RetreiveRequesteeMiddleware,
-    RequesteeIsAlreadyAFriendMiddleware,
-    SaveFriendRequestToDatabaseMiddleware,
-    SendFriendRequestMiddleware,
+    RequesteeUserIsAlreadyFollowing,
     RequesterDoesNotExist,
     RequesteeDoesNotExist,
     RequesteeIsAlreadyAFriend,
-    FindFriendRequestsMiddleware,
-    SendFriendRequestsMiddleware,
-    SendFriendRequestDeletedResponseMiddleware,
-    DeleteFriendRequestMiddleware,
-    NoFriendRequestToDeleteFound,
-    FriendRequestDoesNotExist,
-    RetreiveFriendRequestMiddleware,
-    UpdateFriendRequestStatusMiddleware,
-    SendUpdatedFriendRequestMiddleware,
-    PatchFriendRequestMiddleware,
-    UpdatedFriendRequestNotFound,
-    PopulateFriendRequestsMiddleware,
-    PopulateFriendRequestMiddleware,
-    DefineUpdatedPopulatedFriendRequest,
     PopulateTeamStreakMembersInformation,
     RetreiveCreatedTeamStreakCreatorInformationMiddleware,
     AddUserToFriendsFriendListMiddleware,
@@ -313,7 +294,6 @@ export enum ErrorType {
     SaveEmailToDatabaseMiddleware,
     CreateEmailFromRequestMiddleware,
     SendEmailMiddleware,
-    FriendRequestAlreadySent,
     HasRequesterAlreadySentInvite,
     StripeTokenMissingId,
     StripeTokenMissingEmail,
@@ -328,9 +308,9 @@ export enum ErrorType {
     DefineProfilePictures,
     SetUserProfilePictures,
     SendProfilePictures,
-    GetFriendsInfoMiddleware,
+    GetFollowingInfoMiddleware,
     DeleteFriendRetreiveFriendMiddleware,
-    DeleteUserFromFriendsFriendListMiddleware,
+    DeleteSelectedUserFromUserToUnfollowFollowersMiddleware,
     DeleteFriendNoFriendFound,
     GetIncompleteTeamStreaksMiddleware,
     SendIncompleteTeamStreaksResponseMiddleware,
@@ -350,7 +330,6 @@ export enum ErrorType {
     RegisterDeviceForPushNotificationUserNotFound,
     CreateTopicSubscriptionMiddleware,
     UpdateUserPushNotificationInformationMiddleware,
-    SendRequesteeAFriendRequestNotification,
     RegisterUserFormatUserMiddleware,
     CreateStripeSubscriptionFormatUserMiddleware,
     SendCurrentUserMiddleware,
@@ -489,6 +468,22 @@ export enum ErrorType {
     FindUsersMiddleware,
     FormUsersQueryMiddleware,
     CalculateTotalUsersCountMiddleware,
+    GetFollowersUserDoesNotExist,
+    SendFormattedFollowersMiddleware,
+    GetFollowersInfoMiddleware,
+    GetFollowersRetreiveUserMiddleware,
+    UserToFollowDoesNotExist,
+    SelectedUserIsAlreadyFollowingUser,
+    SelectedUserDoesNotExist,
+    SendUserWithNewFollowingMiddleware,
+    AddSelectedUserToUserToFollowFollowersMiddleware,
+    AddUserToFollowToSelectedUsersFollowing,
+    RetreiveUserToFollowMiddleware,
+    IsSelectedUserIsAlreadFollowingUserMiddleware,
+    RetreiveSelectedUserMiddleware,
+    NoUserToFollowFound,
+    PopulateUserFollowersMiddleware,
+    PopulateUserFollowingMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -635,14 +630,6 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.AddFriendUserDoesNotExist: {
-                return {
-                    code: `${ResponseCodes.badRequest}-18`,
-                    message: 'User does not exist.',
-                    httpStatusCode: ResponseCodes.badRequest,
-                };
-            }
-
             case ErrorType.FriendDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-19`,
@@ -659,7 +646,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.DeleteUserNoUserFound: {
+            case ErrorType.UnfollowUserNoSelectedUserFound: {
                 return {
                     code: `${ResponseCodes.badRequest}-21`,
                     message: 'User does not exist.',
@@ -667,7 +654,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.DeleteUserFriendDoesNotExist: {
+            case ErrorType.UserToUnfollowDoesNotExistInSelectedUsersFollowing: {
                 return {
                     code: `${ResponseCodes.badRequest}-22`,
                     message: 'Friend does not exist.',
@@ -675,7 +662,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.GetFriendsUserDoesNotExist: {
+            case ErrorType.GetFollowingUserDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-23`,
                     message: 'User does not exist.',
@@ -803,7 +790,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.CreateTeamMemberFriendDoesNotExist: {
+            case ErrorType.CreateTeamMemberFollowerDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-39`,
                     message: 'Friend does not exist.',
@@ -863,30 +850,6 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-46`,
                     message: 'Requestee is already a friend.',
-                    httpStatusCode: ResponseCodes.badRequest,
-                };
-            }
-
-            case ErrorType.NoFriendRequestToDeleteFound: {
-                return {
-                    code: `${ResponseCodes.badRequest}-47`,
-                    message: 'No friend request to delete found.',
-                    httpStatusCode: ResponseCodes.badRequest,
-                };
-            }
-
-            case ErrorType.FriendRequestDoesNotExist: {
-                return {
-                    code: `${ResponseCodes.badRequest}-48`,
-                    message: 'Friend request must exist to add friend.',
-                    httpStatusCode: ResponseCodes.badRequest,
-                };
-            }
-
-            case ErrorType.UpdatedFriendRequestNotFound: {
-                return {
-                    code: `${ResponseCodes.badRequest}-49`,
-                    message: 'Friend request does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -999,14 +962,6 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-64`,
                     message: 'Team member streak does not exist.',
-                    httpStatusCode: ResponseCodes.badRequest,
-                };
-            }
-
-            case ErrorType.FriendRequestAlreadySent: {
-                return {
-                    code: `${ResponseCodes.badRequest}-65`,
-                    message: 'Friend request already sent.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -1199,6 +1154,46 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-89`,
                     message: 'Team streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.GetFollowersUserDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-90`,
+                    message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.SelectedUserDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-91`,
+                    message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.SelectedUserIsAlreadyFollowingUser: {
+                return {
+                    code: `${ResponseCodes.badRequest}-92`,
+                    message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.UserToFollowDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-93`,
+                    message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.NoUserToFollowFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-94`,
+                    message: 'User does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -1724,7 +1719,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.SendUserDeletedResponseMiddleware:
+            case ErrorType.SendUserUnfollowedResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-59`,
                     message: internalServerMessage,
@@ -1787,16 +1782,9 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.SendFormattedFriendsMiddleware:
+            case ErrorType.SendFormattedFollowingMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-68`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.AddFriendRetreiveUserMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-69`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
@@ -1808,13 +1796,6 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.AddFriendToUsersFriendListMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-71`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
             case ErrorType.SendUserWithNewFriendMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-72`,
@@ -1822,35 +1803,35 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.IsAlreadyAFriendMiddleware:
+            case ErrorType.UserIsAlreadyFollowing:
                 return {
                     code: `${ResponseCodes.warning}-73`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.DeleteUserRetreiveUserMiddleware:
+            case ErrorType.UnfollowUserRetreiveSelectedUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-74`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.DeleteFriendDoesFriendExistMiddleware:
+            case ErrorType.DoesUserToUnfollowExistInSelectedUsersFollowingMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-75`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.DeleteFriendMiddleware:
+            case ErrorType.UnfollowUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-76`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.GetFriendsRetreiveUserMiddleware:
+            case ErrorType.GetFollowingRetreiveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-77`,
                     message: internalServerMessage,
@@ -2284,7 +2265,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateTeamMemberFriendExistsMiddleware:
+            case ErrorType.CreateTeamMemberFollowerExistsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-139`,
                     message: internalServerMessage,
@@ -2312,7 +2293,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.AddFriendToTeamStreakMiddleware:
+            case ErrorType.AddFollowerToTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-143`,
                     message: internalServerMessage,
@@ -2389,100 +2370,9 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RequesteeIsAlreadyAFriendMiddleware:
+            case ErrorType.RequesteeUserIsAlreadyFollowing:
                 return {
                     code: `${ResponseCodes.warning}-154`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.SaveFriendRequestToDatabaseMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-155`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.SendFriendRequestMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-156`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.FindFriendRequestsMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-157`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.SendFriendRequestsMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-158`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.DeleteFriendRequestMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-159`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.SendFriendRequestDeletedResponseMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-160`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.RetreiveFriendRequestMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-161`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.UpdateFriendRequestStatusMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-162`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.PatchFriendRequestMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-163`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.SendUpdatedFriendRequestMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-164`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.PopulateFriendRequestsMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-165`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.PopulateFriendRequestMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-166`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.DefineUpdatedPopulatedFriendRequest:
-                return {
-                    code: `${ResponseCodes.warning}-167`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
@@ -3040,7 +2930,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.GetFriendsInfoMiddleware:
+            case ErrorType.GetFollowingInfoMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-247`,
                     message: internalServerMessage,
@@ -3054,7 +2944,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.DeleteUserFromFriendsFriendListMiddleware:
+            case ErrorType.DeleteSelectedUserFromUserToUnfollowFollowersMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-249`,
                     message: internalServerMessage,
@@ -3155,13 +3045,6 @@ export class CustomError extends Error {
             case ErrorType.UpdateUserPushNotificationInformationMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-263`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.SendRequesteeAFriendRequestNotification:
-                return {
-                    code: `${ResponseCodes.warning}-264`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
@@ -3981,6 +3864,83 @@ export class CustomError extends Error {
             case ErrorType.CalculateTotalUsersCountMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-381`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetFollowersRetreiveUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-382`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetFollowersInfoMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-383`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendFormattedFollowersMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-384`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RetreiveSelectedUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-385`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IsSelectedUserIsAlreadFollowingUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-386`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RetreiveUserToFollowMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-387`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.AddUserToFollowToSelectedUsersFollowing:
+                return {
+                    code: `${ResponseCodes.warning}-388`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.AddSelectedUserToUserToFollowFollowersMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-389`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendUserWithNewFollowingMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-390`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PopulateUserFollowersMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-391`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PopulateUserFollowingMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-392`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

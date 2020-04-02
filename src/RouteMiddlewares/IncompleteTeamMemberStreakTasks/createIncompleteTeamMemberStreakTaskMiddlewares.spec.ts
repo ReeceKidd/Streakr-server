@@ -1257,7 +1257,7 @@ describe(`notifyTeamMembersThatUserHasIncompletedTaskMiddleware`, () => {
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.SendRequesteeAFriendRequestNotification, expect.any(Error)),
+            new CustomError(ErrorType.NotifyTeamMembersThatUserHasIncompletedTaskMiddleware, expect.any(Error)),
         );
     });
 });

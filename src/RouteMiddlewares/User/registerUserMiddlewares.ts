@@ -109,6 +109,8 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             membershipInformation: user.membershipInformation,
             userType: user.userType,
             timezone: user.timezone,
+            followers: user.followers,
+            following: user.following,
             friends: user.friends,
             badges: user.badges,
             createdAt: user.createdAt,

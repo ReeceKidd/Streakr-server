@@ -8,6 +8,10 @@ import {
     formatUserMiddleware,
     getPopulateUserBadgesMiddleware,
     populateUserBadgesMiddleware,
+    getPopulateUserFollowersMiddleware,
+    getPopulateUserFollowingMiddleware,
+    populateUserFollowersMiddleware,
+    populateUserFollowingMiddleware,
 } from '../Users/getUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
@@ -188,6 +192,84 @@ describe('populateUserBadgesMiddleware', () => {
     });
 });
 
+describe('populateUserFollowersMiddleware', () => {
+    test('populates user followers', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const followerId = 'followerId';
+        const user = {
+            followers: [followerId],
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue({ username: 'username' });
+        const findById = jest.fn(() => ({ lean }));
+
+        const userModel = {
+            findById,
+        };
+
+        const middleware = getPopulateUserFollowersMiddleware(userModel as any);
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalledWith(followerId);
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulateUserFollowersMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulateUserFollowersMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateUserFollowersMiddleware, expect.any(Error)));
+    });
+});
+
+describe('populateUserFollowingMiddleware', () => {
+    test('populates user following', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const followingId = 'followerId';
+        const user = {
+            following: [followingId],
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue({ username: 'username' });
+        const findById = jest.fn(() => ({ lean }));
+
+        const userModel = {
+            findById,
+        };
+
+        const middleware = getPopulateUserFollowingMiddleware(userModel as any);
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalledWith(followingId);
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulateUserFollowingMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulateUserFollowingMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateUserFollowingMiddleware, expect.any(Error)));
+    });
+});
+
 describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
         expect.assertions(3);
@@ -232,11 +314,12 @@ describe('formatUserMiddleware', () => {
                 'badges',
                 'timezone',
                 'friends',
+                'followers',
+                'following',
                 'createdAt',
                 'updatedAt',
                 'profileImages',
                 'pushNotificationToken',
-                'hasCompletedIntroduction',
             ].sort(),
         );
     });
@@ -287,13 +370,15 @@ describe('sendRetreiveUserResponseMiddleware', () => {
 
 describe('getUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(6);
+        expect.assertions(8);
 
-        expect(getUserMiddlewares.length).toEqual(5);
+        expect(getUserMiddlewares.length).toEqual(7);
         expect(getUserMiddlewares[0]).toEqual(userParamsValidationMiddleware);
         expect(getUserMiddlewares[1]).toEqual(retreiveUserMiddleware);
         expect(getUserMiddlewares[2]).toEqual(populateUserBadgesMiddleware);
-        expect(getUserMiddlewares[3]).toEqual(formatUserMiddleware);
-        expect(getUserMiddlewares[4]).toEqual(sendUserMiddleware);
+        expect(getUserMiddlewares[3]).toEqual(populateUserFollowersMiddleware);
+        expect(getUserMiddlewares[4]).toEqual(populateUserFollowingMiddleware);
+        expect(getUserMiddlewares[5]).toEqual(formatUserMiddleware);
+        expect(getUserMiddlewares[6]).toEqual(sendUserMiddleware);
     });
 });

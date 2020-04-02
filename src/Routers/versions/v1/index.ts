@@ -9,7 +9,6 @@ import { completeTeamMemberStreakTasksRouter } from './completeTeamMemberStreakT
 import { teamStreaksRouter } from './teamStreakRouter';
 import { streakTrackingEventRouter } from './streakTrackingEventRouter';
 import { teamMemberStreaksRouter } from './teamMemberStreaksRouter';
-import { friendRequestsRouter } from './friendRequestRouter';
 import { streakRecommendationsRouter } from './streakRecommendationsRouter';
 import { timezoneMiddlewares } from '../../../SharedMiddleware/timezoneMiddlewares';
 import { incompleteSoloStreakTasksRouter } from './incompleteSoloStreakTaskRouter';
@@ -62,7 +61,6 @@ v1Router.use(`/${RouterCategories.incompleteTeamMemberStreakTasks}`, incompleteT
 v1Router.use(`/${RouterCategories.completeChallengeStreakTasks}`, completeChallengeStreakTasksRouter);
 v1Router.use(`/${RouterCategories.incompleteChallengeStreakTasks}`, incompleteChallengeStreakTasksRouter);
 v1Router.use(`/${RouterCategories.incompleteTeamMemberStreakTasks}`, incompleteTeamMemberStreakTasksRouter);
-v1Router.use(`/${RouterCategories.friendRequests}`, friendRequestsRouter);
 v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);
 v1Router.use(`/${RouterCategories.badges}`, badgesRouter);
 v1Router.use(`/${RouterCategories.challenges}`, challengesRouter);

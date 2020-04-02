@@ -30,7 +30,7 @@ export const createTeamMemberParamsValidationMiddleware = (
 };
 
 export const createTeamMemberBodyValidationSchema = {
-    friendId: Joi.string().required(),
+    followerId: Joi.string().required(),
 };
 
 export const createTeamMemberBodyValidationMiddleware = (
@@ -45,30 +45,30 @@ export const createTeamMemberBodyValidationMiddleware = (
     );
 };
 
-export const getFriendExistsMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getFollowerExistsMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { friendId } = request.body;
-        const friend = await userModel
+        const { followerId } = request.body;
+        const follower = await userModel
             .findOne({
-                _id: friendId,
+                _id: followerId,
             })
             .lean();
-        if (!friend) {
-            throw new CustomError(ErrorType.CreateTeamMemberFriendDoesNotExist);
+        if (!follower) {
+            throw new CustomError(ErrorType.CreateTeamMemberFollowerDoesNotExist);
         }
-        response.locals.friend = friend;
+        response.locals.follower = follower;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateTeamMemberFriendExistsMiddleware, err));
+        else next(new CustomError(ErrorType.CreateTeamMemberFollowerExistsMiddleware, err));
     }
 };
 
-export const friendExistsMiddleware = getFriendExistsMiddleware(userModel);
+export const followerExistsMiddleware = getFollowerExistsMiddleware(userModel);
 
 export const getTeamStreakExistsMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
@@ -103,9 +103,9 @@ export const getCreateTeamMemberStreakMiddleware = (teamMemberStreak: mongoose.M
     try {
         const { timezone } = response.locals;
         const { teamStreakId } = request.params;
-        const { friendId } = request.body;
+        const { followerId } = request.body;
         response.locals.teamMemberStreak = await new teamMemberStreak({
-            userId: friendId,
+            userId: followerId,
             teamStreakId,
             timezone,
         }).save();
@@ -117,20 +117,20 @@ export const getCreateTeamMemberStreakMiddleware = (teamMemberStreak: mongoose.M
 
 export const createTeamMemberStreakMiddleware = getCreateTeamMemberStreakMiddleware(teamMemberStreakModel);
 
-export const getAddFriendToTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+export const getAddFollowerToTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
         const { teamStreakId } = request.params;
-        const { friendId } = request.body;
+        const { followerId } = request.body;
         const { teamMemberStreak } = response.locals;
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const members: TeamMember[] = [
             ...teamStreak.members,
             {
-                memberId: friendId,
+                memberId: followerId,
                 teamMemberStreakId: teamMemberStreak._id,
             },
         ];
@@ -146,11 +146,11 @@ export const getAddFriendToTeamStreakMiddleware = (teamStreakModel: mongoose.Mod
         response.locals.teamStreak = updatedTeamStreak;
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.AddFriendToTeamStreakMiddleware, err));
+        next(new CustomError(ErrorType.AddFollowerToTeamStreakMiddleware, err));
     }
 };
 
-export const addFriendToTeamStreakMiddleware = getAddFriendToTeamStreakMiddleware(teamStreakModel);
+export const addFollowerToTeamStreakMiddleware = getAddFollowerToTeamStreakMiddleware(teamStreakModel);
 
 export const sendCreateTeamMemberResponseMiddleware = (
     request: Request,
@@ -190,10 +190,10 @@ export const createJoinedTeamStreakActivityFeedItemMiddleware = getCreateJoinedT
 export const createTeamMemberMiddlewares = [
     createTeamMemberParamsValidationMiddleware,
     createTeamMemberBodyValidationMiddleware,
-    friendExistsMiddleware,
+    followerExistsMiddleware,
     teamStreakExistsMiddleware,
     createTeamMemberStreakMiddleware,
-    addFriendToTeamStreakMiddleware,
+    addFollowerToTeamStreakMiddleware,
     sendCreateTeamMemberResponseMiddleware,
     createJoinedTeamStreakActivityFeedItemMiddleware,
 ];

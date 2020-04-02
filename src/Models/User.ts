@@ -55,6 +55,14 @@ export const userSchema = new mongoose.Schema(
             type: Array,
             default: [],
         },
+        followers: {
+            type: Array,
+            default: [],
+        },
+        following: {
+            type: Array,
+            default: [],
+        },
         notifications: {
             completeStreaksReminder: {
                 emailNotification: {

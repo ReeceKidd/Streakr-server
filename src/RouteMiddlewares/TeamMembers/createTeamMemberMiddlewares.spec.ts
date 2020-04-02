@@ -5,17 +5,17 @@ import {
     createTeamMemberMiddlewares,
     teamStreakExistsMiddleware,
     createTeamMemberBodyValidationMiddleware,
-    friendExistsMiddleware,
-    getAddFriendToTeamStreakMiddleware,
+    getAddFollowerToTeamStreakMiddleware,
     sendCreateTeamMemberResponseMiddleware,
-    getFriendExistsMiddleware,
     getTeamStreakExistsMiddleware,
     getCreateTeamMemberStreakMiddleware,
     createTeamMemberStreakMiddleware,
-    addFriendToTeamStreakMiddleware,
     createTeamMemberParamsValidationMiddleware,
     getCreateJoinedTeamStreakActivityFeedItemMiddleware,
     createJoinedTeamStreakActivityFeedItemMiddleware,
+    getFollowerExistsMiddleware,
+    followerExistsMiddleware,
+    addFollowerToTeamStreakMiddleware,
 } from './createTeamMemberMiddlewares';
 
 describe(`createTeamMemberParamsValidationMiddleware`, () => {
@@ -65,10 +65,10 @@ describe(`createTeamMemberParamsValidationMiddleware`, () => {
 });
 
 describe(`createTeamMemberBodyValidationMiddleware`, () => {
-    const friendId = '12345678';
+    const followerId = '12345678';
 
     const body = {
-        friendId,
+        followerId,
     };
 
     test('valid request passes validation', () => {
@@ -88,12 +88,12 @@ describe(`createTeamMemberBodyValidationMiddleware`, () => {
         expect(next).toBeCalled();
     });
 
-    test('sends friendId is missing error', () => {
+    test('sends followerId is missing error', () => {
         expect.assertions(3);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body: { ...body, friendId: undefined },
+            body: { ...body, followerId: undefined },
         };
         const response: any = {
             status,
@@ -104,46 +104,46 @@ describe(`createTeamMemberBodyValidationMiddleware`, () => {
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
-            message: 'child "friendId" fails because ["friendId" is required]',
+            message: 'child "followerId" fails because ["followerId" is required]',
         });
         expect(next).not.toBeCalled();
     });
 });
 
-describe('friendExistsMiddleware', () => {
-    test('sets response.locals.friend and calls next()', async () => {
+describe('followerExistsMiddleware', () => {
+    test('sets response.locals.follower and calls next()', async () => {
         expect.assertions(4);
         const lean = jest.fn(() => true);
         const findOne = jest.fn(() => ({ lean }));
         const userModel = { findOne };
-        const friendId = 'abcdefg';
-        const request: any = { body: { friendId } };
+        const followerId = 'abcdefg';
+        const request: any = { body: { followerId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getFriendExistsMiddleware(userModel as any);
+        const middleware = getFollowerExistsMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
-        expect(response.locals.friend).toBeDefined();
-        expect(findOne).toBeCalledWith({ _id: friendId });
+        expect(response.locals.follower).toBeDefined();
+        expect(findOne).toBeCalledWith({ _id: followerId });
         expect(lean).toBeCalledWith();
         expect(next).toBeCalledWith();
     });
 
-    test('throws CreateTeamMemberFriendDoesNotExist when friend does not exist', async () => {
+    test('throws CreateTeamMemberFollowerDoesNotExist when follower does not exist', async () => {
         expect.assertions(1);
-        const friendId = 'abcd';
+        const followerId = 'abcd';
         const lean = jest.fn(() => false);
         const findOne = jest.fn(() => ({ lean }));
         const userModel = { findOne };
-        const request: any = { body: { friendId } };
+        const request: any = { body: { followerId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getFriendExistsMiddleware(userModel as any);
+        const middleware = getFollowerExistsMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.CreateTeamMemberFriendDoesNotExist));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.CreateTeamMemberFollowerDoesNotExist));
     });
 
     test('throws CreateTeamMemberTeamStreakExistsMiddleware error on middleware failure', async () => {
@@ -152,12 +152,12 @@ describe('friendExistsMiddleware', () => {
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getFriendExistsMiddleware({} as any);
+        const middleware = getFollowerExistsMiddleware({} as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreateTeamMemberFriendExistsMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.CreateTeamMemberFollowerExistsMiddleware, expect.any(Error)),
         );
     });
 });
@@ -220,7 +220,7 @@ describe(`createTeamMemberStreakMiddleware`, () => {
     test('sets response.locals.teamMemberStreak', async () => {
         expect.assertions(2);
 
-        const friendId = 'abcdefg';
+        const followerId = 'abcdefg';
         const teamStreakId = '1a2b3c';
         const timezone = 'Europe/London';
         const save = jest.fn().mockResolvedValue(true);
@@ -229,8 +229,8 @@ describe(`createTeamMemberStreakMiddleware`, () => {
             teamStreakId: string;
             timezone: string;
 
-            constructor({ friendId, teamStreakId, timezone }: any) {
-                this.userId = friendId;
+            constructor({ followerId, teamStreakId, timezone }: any) {
+                this.userId = followerId;
                 this.teamStreakId = teamStreakId;
                 this.timezone = timezone;
             }
@@ -238,7 +238,7 @@ describe(`createTeamMemberStreakMiddleware`, () => {
             save = save;
         }
         const response: any = { locals: { timezone } };
-        const request: any = { body: { friendId }, params: { teamStreakId } };
+        const request: any = { body: { followerId }, params: { teamStreakId } };
         const next = jest.fn();
         const middleware = getCreateTeamMemberStreakMiddleware(TeamMember as any);
 
@@ -263,7 +263,7 @@ describe(`createTeamMemberStreakMiddleware`, () => {
     });
 });
 
-describe(`addFriendToTeamStreakMiddleware`, () => {
+describe(`addFollowerToTeamStreakMiddleware`, () => {
     test('sets response.locals.teamStreak to the updatedTeamStreak', async () => {
         expect.assertions(3);
         const lean = jest.fn().mockResolvedValue(true);
@@ -281,21 +281,21 @@ describe(`addFriendToTeamStreakMiddleware`, () => {
             _id: teamStreakId,
             members,
         };
-        const friendId = 'abc';
-        const friend = {
-            friendId,
+        const followerId = 'abc';
+        const follower = {
+            followerId,
         };
-        const request: any = { body: { friendId }, params: { teamStreakId } };
-        const response: any = { locals: { teamStreak, teamMemberStreak, friend } };
+        const request: any = { body: { followerId }, params: { teamStreakId } };
+        const response: any = { locals: { teamStreak, teamMemberStreak, follower } };
         const next: any = jest.fn();
-        const middleware = await getAddFriendToTeamStreakMiddleware(TeamStreakModel);
+        const middleware = await getAddFollowerToTeamStreakMiddleware(TeamStreakModel);
 
         await middleware(request, response, next);
 
         expect(findByIdAndUpdate).toBeCalledWith(
             teamStreakId,
             {
-                members: [{ memberId: friendId, teamMemberStreakId }],
+                members: [{ memberId: followerId, teamMemberStreakId }],
             },
             { new: true },
         );
@@ -303,17 +303,17 @@ describe(`addFriendToTeamStreakMiddleware`, () => {
         expect(next).toBeCalledWith();
     });
 
-    test('calls next with AddFriendToTeamStreakMiddleware error on middleware failure', () => {
+    test('calls next with AddFollowerToTeamStreakMiddleware error on middleware failure', () => {
         expect.assertions(1);
 
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getAddFriendToTeamStreakMiddleware({} as any);
+        const middleware = getAddFollowerToTeamStreakMiddleware({} as any);
 
         middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.AddFriendToTeamStreakMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.AddFollowerToTeamStreakMiddleware, expect.any(Error)));
     });
 });
 
@@ -397,10 +397,10 @@ describe(`createTeamMemberMiddlewares`, () => {
         expect(createTeamMemberMiddlewares.length).toEqual(8);
         expect(createTeamMemberMiddlewares[0]).toBe(createTeamMemberParamsValidationMiddleware);
         expect(createTeamMemberMiddlewares[1]).toBe(createTeamMemberBodyValidationMiddleware);
-        expect(createTeamMemberMiddlewares[2]).toBe(friendExistsMiddleware);
+        expect(createTeamMemberMiddlewares[2]).toBe(followerExistsMiddleware);
         expect(createTeamMemberMiddlewares[3]).toBe(teamStreakExistsMiddleware);
         expect(createTeamMemberMiddlewares[4]).toBe(createTeamMemberStreakMiddleware);
-        expect(createTeamMemberMiddlewares[5]).toBe(addFriendToTeamStreakMiddleware);
+        expect(createTeamMemberMiddlewares[5]).toBe(addFollowerToTeamStreakMiddleware);
         expect(createTeamMemberMiddlewares[6]).toBe(sendCreateTeamMemberResponseMiddleware);
         expect(createTeamMemberMiddlewares[7]).toBe(createJoinedTeamStreakActivityFeedItemMiddleware);
     });

@@ -1,0 +1,177 @@
+import { Request, Response, NextFunction } from 'express';
+import * as Joi from 'joi';
+import { Model } from 'mongoose';
+import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddleware/validationErrorMessageSenderMiddleware';
+import { userModel, UserModel } from '../../../Models/User';
+import { CustomError, ErrorType } from '../../../customError';
+import { ResponseCodes } from '../../../Server/responseCodes';
+import { User } from '@streakoid/streakoid-sdk/lib';
+
+const followUserParamsValidationSchema = {
+    userId: Joi.string()
+        .required()
+        .length(24),
+};
+
+export const followUserParamsValidationMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    Joi.validate(
+        request.params,
+        followUserParamsValidationSchema,
+        getValidationErrorMessageSenderMiddleware(request, response, next),
+    );
+};
+
+const followUserBodyValidationSchema = {
+    userToFollowId: Joi.string()
+        .required()
+        .length(24),
+};
+
+export const followUserBodyValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    Joi.validate(
+        request.body,
+        followUserBodyValidationSchema,
+        getValidationErrorMessageSenderMiddleware(request, response, next),
+    );
+};
+
+export const getRetreiveSelectedUserMiddleware = (userModel: Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.params;
+        const user = await userModel.findOne({ _id: userId }).lean();
+        if (!user) {
+            throw new CustomError(ErrorType.SelectedUserDoesNotExist);
+        }
+        response.locals.user = user;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.RetreiveSelectedUserMiddleware, err));
+    }
+};
+
+export const retreiveSelectedUserMiddleware = getRetreiveSelectedUserMiddleware(userModel);
+
+export const isSelectedUserAlreadyFollowingUserMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const user: UserModel = response.locals.user;
+        const userToFollowId: string = request.body.userToFollowId;
+
+        const selectedUserIsAlreadyFollowing = user.following.find(userId => userId == userToFollowId);
+        if (selectedUserIsAlreadyFollowing) {
+            throw new CustomError(ErrorType.SelectedUserIsAlreadyFollowingUser);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.IsSelectedUserIsAlreadFollowingUserMiddleware, err));
+    }
+};
+
+export const getRetreiveUserToFollowMiddleware = (userModel: Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userToFollowId } = request.body;
+        const userToFollow: User = await userModel.findOne({ _id: userToFollowId }).lean();
+        if (!userToFollow) {
+            throw new CustomError(ErrorType.UserToFollowDoesNotExist);
+        }
+        response.locals.userToFollow = userToFollow;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.RetreiveUserToFollowMiddleware, err));
+    }
+};
+
+export const retreiveUserToFollowMiddleware = getRetreiveUserToFollowMiddleware(userModel);
+
+export const getAddUserToFollowToSelectedUsersFollowingMiddleware = (userModel: Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.params;
+        const { userToFollowId } = request.body;
+        const userWithUserToFollowInFollowing = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $addToSet: { following: userToFollowId },
+            },
+            { new: true },
+        );
+        if (!userWithUserToFollowInFollowing) {
+            throw new CustomError(ErrorType.NoUserToFollowFound);
+        }
+        response.locals.following = userWithUserToFollowInFollowing.following;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        next(new CustomError(ErrorType.AddUserToFollowToSelectedUsersFollowing, err));
+    }
+};
+
+export const addUserToFollowToSelectedUsersFollowingMiddleware = getAddUserToFollowToSelectedUsersFollowingMiddleware(
+    userModel,
+);
+
+export const getAddSelectedUserToUserToFollowFollowersMiddleware = (userModel: Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.params;
+        const { userToFollowId } = request.body;
+        await userModel.findByIdAndUpdate(
+            userToFollowId,
+            {
+                $addToSet: { followers: userId },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.AddSelectedUserToUserToFollowFollowersMiddleware, err));
+    }
+};
+
+export const addSelectedUserToUserToFollowsFollowersMiddleware = getAddSelectedUserToUserToFollowFollowersMiddleware(
+    userModel,
+);
+
+export const sendUserWithNewFollowingMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const { following } = response.locals;
+        response.status(ResponseCodes.created).send(following);
+    } catch (err) {
+        next(new CustomError(ErrorType.SendUserWithNewFollowingMiddleware, err));
+    }
+};
+
+export const followUserMiddlewares = [
+    followUserParamsValidationMiddleware,
+    followUserBodyValidationMiddleware,
+    retreiveSelectedUserMiddleware,
+    isSelectedUserAlreadyFollowingUserMiddleware,
+    retreiveUserToFollowMiddleware,
+    addUserToFollowToSelectedUsersFollowingMiddleware,
+    addSelectedUserToUserToFollowsFollowersMiddleware,
+    sendUserWithNewFollowingMiddleware,
+];
