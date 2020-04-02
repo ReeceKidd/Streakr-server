@@ -19,6 +19,8 @@ usersRouter.get(`/:${userId}`, ...getUserMiddlewares);
 
 // Following routes
 
+usersRouter.get(`/${userId}/friends`, ...getFollowingMiddlewares);
+
 usersRouter.get(`/:${userId}/following`, ...getFollowingMiddlewares);
 
 usersRouter.use(...authenticationMiddlewares);
