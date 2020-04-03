@@ -404,7 +404,7 @@ export enum ErrorType {
     CreateChallengeStreakUserDoesNotExist,
     GetChallengeMemberInformationMiddleware,
     AddChallengeBadgeToUserBadgesMiddleware,
-    PopulateUserBadgesMiddleware,
+    PopulateCurrentUserBadgesMiddleware,
     PatchCurrentUserPopulateUserBadgesMiddleware,
     ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware,
     ChallengeIdMustBeDefinedForChallengeBadge,
@@ -484,6 +484,10 @@ export enum ErrorType {
     NoUserToFollowFound,
     PopulateUserFollowersMiddleware,
     PopulateUserFollowingMiddleware,
+    PopulateCurrentUserFollowingMiddleware,
+    PopulateCurrentUserFollowersMiddleware,
+    PopulatePatchCurrentUserFollowingMiddleware,
+    PopulatePatchCurrentUserFollowersMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3469,7 +3473,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.PopulateUserBadgesMiddleware:
+            case ErrorType.PopulateCurrentUserBadgesMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-325`,
                     message: internalServerMessage,
@@ -3941,6 +3945,34 @@ export class CustomError extends Error {
             case ErrorType.PopulateUserFollowingMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-392`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PopulateCurrentUserFollowingMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-393`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PopulateCurrentUserFollowersMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-394`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PopulatePatchCurrentUserFollowingMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-395`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PopulatePatchCurrentUserFollowersMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-396`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

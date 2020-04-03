@@ -4437,10 +4437,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to PopulateUserBadgesMiddleware`, () => {
+    test(`creates correct error when type is set to PopulateCurrentUserBadgesMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.PopulateUserBadgesMiddleware);
+        const customError = new CustomError(ErrorType.PopulateCurrentUserBadgesMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-325`);
@@ -5183,6 +5183,50 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-392`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PopulateCurrentUserFollowingMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PopulateCurrentUserFollowingMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-393`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PopulateCurrentUserFollowersMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PopulateCurrentUserFollowersMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-394`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PopulatePatchCurrentUserFollowingMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PopulatePatchCurrentUserFollowingMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-395`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PopulatePatchCurrentUserFollowersMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PopulatePatchCurrentUserFollowersMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-396`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

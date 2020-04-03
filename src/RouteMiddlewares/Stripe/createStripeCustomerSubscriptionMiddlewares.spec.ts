@@ -825,7 +825,6 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                     'updatedAt',
                     'profileImages',
                     'pushNotificationToken',
-                    'hasCompletedIntroduction',
                 ].sort(),
             );
         });

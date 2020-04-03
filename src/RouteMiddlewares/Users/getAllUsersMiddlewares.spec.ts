@@ -396,7 +396,6 @@ describe('formatUsersMiddleware', () => {
                 'updatedAt',
                 'profileImages',
                 'pushNotificationToken',
-                'hasCompletedIntroduction',
             ].sort(),
         );
     });

@@ -9,6 +9,7 @@ import { CustomError, ErrorType } from '../../customError';
 import { User, PopulatedCurrentUser } from '@streakoid/streakoid-sdk/lib';
 import { BadgeModel } from '../../Models/Badge';
 import { badgeModel } from '../../Models/Badge';
+import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
 
 const userBodyValidationSchema = {
     email: Joi.string().email(),
@@ -67,7 +68,7 @@ export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserMode
 
 export const patchCurrentUserMiddleware = getPatchCurrentUserMiddleware(userModel);
 
-export const getPopulateUserBadgesMiddleware = (badgeModel: mongoose.Model<BadgeModel>) => async (
+export const getPopulateCurrentUserBadgesMiddleware = (badgeModel: mongoose.Model<BadgeModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -83,7 +84,63 @@ export const getPopulateUserBadgesMiddleware = (badgeModel: mongoose.Model<Badge
     }
 };
 
-export const populateUserBadgesMiddleware = getPopulateUserBadgesMiddleware(badgeModel);
+export const populateCurrentUserBadgesMiddleware = getPopulateCurrentUserBadgesMiddleware(badgeModel);
+
+export const getPopulateCurrentUserFollowingMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const updatedUser: User = response.locals.updatedUser;
+        const following = await Promise.all(
+            updatedUser.following.map(async followingId => {
+                const populatedFollowing: UserModel = await userModel.findById(followingId).lean();
+                const basicUser: BasicUser = {
+                    userId: followingId,
+                    username: populatedFollowing.username,
+                    profileImage: populatedFollowing.profileImages.originalImageUrl,
+                };
+                return basicUser;
+            }),
+        );
+        response.locals.updatedUser.following = following;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.PopulatePatchCurrentUserFollowingMiddleware, err));
+    }
+};
+
+export const populateCurrentUserFollowingMiddleware = getPopulateCurrentUserFollowingMiddleware(userModel);
+
+export const getPopulateCurrentUserFollowersMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const updatedUser: User = response.locals.updatedUser;
+        const followers = await Promise.all(
+            updatedUser.followers.map(async followerId => {
+                const populatedFollower: UserModel = await userModel.findById(followerId).lean();
+                const basicUser: BasicUser = {
+                    userId: followerId,
+                    username: populatedFollower.username,
+                    profileImage: populatedFollower.profileImages.originalImageUrl,
+                };
+                return basicUser;
+            }),
+        );
+        response.locals.updatedUser.followers = followers;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.PopulatePatchCurrentUserFollowersMiddleware, err));
+    }
+};
+
+export const populateCurrentUserFollowersMiddleware = getPopulateCurrentUserFollowersMiddleware(userModel);
 
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -125,7 +182,9 @@ export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Res
 export const patchCurrentUserMiddlewares = [
     userRequestBodyValidationMiddleware,
     patchCurrentUserMiddleware,
-    populateUserBadgesMiddleware,
+    populateCurrentUserBadgesMiddleware,
+    populateCurrentUserFollowingMiddleware,
+    populateCurrentUserFollowersMiddleware,
     formatUserMiddleware,
     sendUpdatedCurrentUserMiddleware,
 ];

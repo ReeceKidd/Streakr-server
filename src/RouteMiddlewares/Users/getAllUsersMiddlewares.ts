@@ -112,7 +112,6 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
                 updatedAt: user.updatedAt,
                 profileImages: user.profileImages,
                 pushNotificationToken: user.pushNotificationToken,
-                hasCompletedIntroduction: user.hasCompletedIntroduction,
             };
             return formattedUser;
         });

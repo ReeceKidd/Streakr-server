@@ -179,7 +179,7 @@ describe('populateUserBadgesMiddleware', () => {
         expect(next).toBeCalled();
     });
 
-    test('calls next with PopulateUserBadgesMiddleware error on middleware failure', async () => {
+    test('calls next with PopulateCurrentUserBadgesMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const response: any = {};
         const request: any = {};
@@ -188,7 +188,7 @@ describe('populateUserBadgesMiddleware', () => {
         const middleware = getPopulateUserBadgesMiddleware({} as any);
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateUserBadgesMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateCurrentUserBadgesMiddleware, expect.any(Error)));
     });
 });
 

@@ -8,8 +8,12 @@ import {
     patchCurrentUserMiddleware,
     formatUserMiddleware,
     sendUpdatedCurrentUserMiddleware,
-    populateUserBadgesMiddleware,
-    getPopulateUserBadgesMiddleware,
+    populateCurrentUserBadgesMiddleware,
+    getPopulateCurrentUserBadgesMiddleware,
+    populateCurrentUserFollowersMiddleware,
+    populateCurrentUserFollowingMiddleware,
+    getPopulateCurrentUserFollowingMiddleware,
+    getPopulateCurrentUserFollowersMiddleware,
 } from './patchCurrentUserMiddlewares';
 
 import { User } from '@streakoid/streakoid-sdk/lib';
@@ -183,7 +187,7 @@ describe('populateUserBadgesMiddleware', () => {
             find,
         };
 
-        const middleware = getPopulateUserBadgesMiddleware(badgeModel as any);
+        const middleware = getPopulateCurrentUserBadgesMiddleware(badgeModel as any);
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ _id: updatedUser.badges });
@@ -197,11 +201,91 @@ describe('populateUserBadgesMiddleware', () => {
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getPopulateUserBadgesMiddleware({} as any);
+        const middleware = getPopulateCurrentUserBadgesMiddleware({} as any);
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
             new CustomError(ErrorType.PatchCurrentUserPopulateUserBadgesMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe('populateCurrentUserFollowingMiddleware', () => {
+    test('populates updatedUser following', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const updatedUser = {
+            following: ['userId'],
+        };
+        const response: any = { locals: { updatedUser } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue([{ username: 'username' }]);
+        const findById = jest.fn(() => ({ lean }));
+
+        const userModel = {
+            findById,
+        };
+
+        const middleware = getPopulateCurrentUserFollowingMiddleware(userModel as any);
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalledWith(updatedUser.following[0]);
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulateCurrentUserFollowingMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulateCurrentUserFollowingMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.PopulatePatchCurrentUserFollowingMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe('populateCurrentUserFollowersMiddleware', () => {
+    test('populates updatedUser following', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const updatedUser = {
+            followers: ['userId'],
+        };
+        const response: any = { locals: { updatedUser } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue([{ username: 'username' }]);
+        const findById = jest.fn(() => ({ lean }));
+
+        const userModel = {
+            findById,
+        };
+
+        const middleware = getPopulateCurrentUserFollowersMiddleware(userModel as any);
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalledWith(updatedUser.followers[0]);
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulateCurrentUserFollowersMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulateCurrentUserFollowingMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.PopulatePatchCurrentUserFollowersMiddleware, expect.any(Error)),
         );
     });
 });
@@ -333,13 +417,15 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
 
 describe('patchUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(6);
+        expect.assertions(8);
 
-        expect(patchCurrentUserMiddlewares.length).toBe(5);
+        expect(patchCurrentUserMiddlewares.length).toBe(7);
         expect(patchCurrentUserMiddlewares[0]).toBe(userRequestBodyValidationMiddleware);
         expect(patchCurrentUserMiddlewares[1]).toBe(patchCurrentUserMiddleware);
-        expect(patchCurrentUserMiddlewares[2]).toBe(populateUserBadgesMiddleware);
-        expect(patchCurrentUserMiddlewares[3]).toBe(formatUserMiddleware);
-        expect(patchCurrentUserMiddlewares[4]).toBe(sendUpdatedCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[2]).toBe(populateCurrentUserBadgesMiddleware);
+        expect(patchCurrentUserMiddlewares[3]).toBe(populateCurrentUserFollowingMiddleware);
+        expect(patchCurrentUserMiddlewares[4]).toBe(populateCurrentUserFollowersMiddleware);
+        expect(patchCurrentUserMiddlewares[5]).toBe(formatUserMiddleware);
+        expect(patchCurrentUserMiddlewares[6]).toBe(sendUpdatedCurrentUserMiddleware);
     });
 });

@@ -3,15 +3,19 @@ import {
     sendCurrentUserMiddleware,
     getCurrentUserMiddlewares,
     formatUserMiddleware,
-    populateUserBadgesMiddleware,
-    getPopulateUserBadgesMiddleware,
+    populateCurrentUserBadgesMiddleware,
+    getPopulateCurrentUserBadgesMiddleware,
+    populateCurrentUserFollowingMiddleware,
+    populateCurrentUserFollowersMiddleware,
+    getPopulateCurrentUserFollowingMiddleware,
+    getPopulateCurrentUserFollowersMiddleware,
 } from './getCurrentUser';
 import { CustomError } from '../../customError';
 import { ErrorType } from '../../customError';
 import { User } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
-describe('populateUserBadgesMiddleware', () => {
+describe('populateCurrentUserBadgesMiddleware', () => {
     test('populates user badges', async () => {
         expect.assertions(3);
         const request: any = {};
@@ -28,7 +32,7 @@ describe('populateUserBadgesMiddleware', () => {
             find,
         };
 
-        const middleware = getPopulateUserBadgesMiddleware(badgeModel as any);
+        const middleware = getPopulateCurrentUserBadgesMiddleware(badgeModel as any);
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ _id: user.badges });
@@ -36,16 +40,96 @@ describe('populateUserBadgesMiddleware', () => {
         expect(next).toBeCalled();
     });
 
-    test('calls next with PopulateUserBadgesMiddleware error on middleware failure', async () => {
+    test('calls next with PopulateCurrentUserBadgesMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const response: any = {};
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getPopulateUserBadgesMiddleware({} as any);
+        const middleware = getPopulateCurrentUserBadgesMiddleware({} as any);
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateUserBadgesMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateCurrentUserBadgesMiddleware, expect.any(Error)));
+    });
+});
+
+describe('populateCurrentUserFollowingMiddleware', () => {
+    test('populates user following', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const user = {
+            following: ['userId'],
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue([{ username: 'username' }]);
+        const findById = jest.fn(() => ({ lean }));
+
+        const userModel = {
+            findById,
+        };
+
+        const middleware = getPopulateCurrentUserFollowingMiddleware(userModel as any);
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalledWith(user.following[0]);
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulateCurrentUserFollowingMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulateCurrentUserFollowingMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.PopulateCurrentUserFollowingMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe('populateCurrentUserFollowersMiddleware', () => {
+    test('populates user following', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const user = {
+            followers: ['userId'],
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue([{ username: 'username' }]);
+        const findById = jest.fn(() => ({ lean }));
+
+        const userModel = {
+            findById,
+        };
+
+        const middleware = getPopulateCurrentUserFollowersMiddleware(userModel as any);
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalledWith(user.followers[0]);
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulateCurrentUserFollowersMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulateCurrentUserFollowingMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.PopulateCurrentUserFollowersMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -173,11 +257,13 @@ describe('sendCurrentUserMiddleware', () => {
 
 describe('getCurrentUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(4);
+        expect.assertions(6);
 
-        expect(getCurrentUserMiddlewares.length).toEqual(3);
-        expect(getCurrentUserMiddlewares[0]).toEqual(populateUserBadgesMiddleware);
-        expect(getCurrentUserMiddlewares[1]).toEqual(formatUserMiddleware);
-        expect(getCurrentUserMiddlewares[2]).toEqual(sendCurrentUserMiddleware);
+        expect(getCurrentUserMiddlewares.length).toEqual(5);
+        expect(getCurrentUserMiddlewares[0]).toEqual(populateCurrentUserBadgesMiddleware);
+        expect(getCurrentUserMiddlewares[1]).toEqual(populateCurrentUserFollowingMiddleware);
+        expect(getCurrentUserMiddlewares[2]).toEqual(populateCurrentUserFollowersMiddleware);
+        expect(getCurrentUserMiddlewares[3]).toEqual(formatUserMiddleware);
+        expect(getCurrentUserMiddlewares[4]).toEqual(sendCurrentUserMiddleware);
     });
 });
