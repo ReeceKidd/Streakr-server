@@ -266,41 +266,32 @@ describe(`createTeamMemberStreakMiddleware`, () => {
 describe(`addFollowerToTeamStreakMiddleware`, () => {
     test('sets response.locals.teamStreak to the updatedTeamStreak', async () => {
         expect.assertions(3);
-        const lean = jest.fn().mockResolvedValue(true);
-        const findByIdAndUpdate = jest.fn(() => ({ lean }));
-        const TeamStreakModel: any = {
+        const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+        const teamStreakModel: any = {
             findByIdAndUpdate,
         };
         const teamMemberStreakId = 2;
         const teamMemberStreak = {
             _id: teamMemberStreakId,
         };
-        const members: any[] = [];
         const teamStreakId = 1;
-        const teamStreak = {
-            _id: teamStreakId,
-            members,
-        };
         const followerId = 'abc';
         const follower = {
             followerId,
         };
         const request: any = { body: { followerId }, params: { teamStreakId } };
-        const response: any = { locals: { teamStreak, teamMemberStreak, follower } };
+        const response: any = { locals: { teamMemberStreak, follower } };
         const next: any = jest.fn();
-        const middleware = await getAddFollowerToTeamStreakMiddleware(TeamStreakModel);
+        const middleware = await getAddFollowerToTeamStreakMiddleware(teamStreakModel);
 
         await middleware(request, response, next);
 
-        expect(findByIdAndUpdate).toBeCalledWith(
-            teamStreakId,
-            {
-                members: [{ memberId: followerId, teamMemberStreakId }],
-            },
-            { new: true },
-        );
-        expect(lean).toBeCalled();
+        expect(findByIdAndUpdate).toBeCalledWith(teamStreakId, {
+            $addToSet: { members: { memberId: followerId, teamMemberStreakId: teamMemberStreak._id } },
+        });
+
         expect(next).toBeCalledWith();
+        expect(response.locals.teamMember).toBeDefined();
     });
 
     test('calls next with AddFollowerToTeamStreakMiddleware error on middleware failure', () => {
@@ -323,12 +314,10 @@ describe(`sendCreateTeamMemberResponseMiddleware`, () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const memberId = 'memberId';
-        const teamStreakId = 'teamStreakId';
-        const members = [{ memberId, teamStreakId }];
-        const teamStreak = {
-            members,
+        const teamMember = {
+            memberId,
         };
-        const response: any = { locals: { teamStreak }, status };
+        const response: any = { locals: { teamMember }, status };
         const request: any = {};
         const next = jest.fn();
 
@@ -336,7 +325,7 @@ describe(`sendCreateTeamMemberResponseMiddleware`, () => {
 
         expect(next).toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.created);
-        expect(send).toBeCalledWith(teamStreak.members);
+        expect(send).toBeCalledWith(teamMember);
     });
 
     test('calls next with SendFormattedTeamMemberMiddleware error on middleware failure', () => {

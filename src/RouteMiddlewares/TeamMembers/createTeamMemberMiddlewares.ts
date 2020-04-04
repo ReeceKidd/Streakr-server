@@ -13,6 +13,7 @@ import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamM
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { TeamMember, TeamStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+
 export const createTeamMemberParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
 };
@@ -126,24 +127,15 @@ export const getAddFollowerToTeamStreakMiddleware = (teamStreakModel: mongoose.M
         const { teamStreakId } = request.params;
         const { followerId } = request.body;
         const { teamMemberStreak } = response.locals;
-        const teamStreak: TeamStreak = response.locals.teamStreak;
-        const members: TeamMember[] = [
-            ...teamStreak.members,
-            {
-                memberId: followerId,
-                teamMemberStreakId: teamMemberStreak._id,
-            },
-        ];
-        const updatedTeamStreak = await teamStreakModel
-            .findByIdAndUpdate(
-                teamStreakId,
-                {
-                    members,
-                },
-                { new: true },
-            )
-            .lean();
-        response.locals.teamStreak = updatedTeamStreak;
+        const teamMember: TeamMember = {
+            memberId: followerId,
+            teamMemberStreakId: teamMemberStreak._id,
+        };
+
+        await teamStreakModel.findByIdAndUpdate(teamStreakId, {
+            $addToSet: { members: teamMember },
+        });
+        response.locals.teamMember = teamMember;
         next();
     } catch (err) {
         next(new CustomError(ErrorType.AddFollowerToTeamStreakMiddleware, err));
@@ -158,8 +150,8 @@ export const sendCreateTeamMemberResponseMiddleware = (
     next: NextFunction,
 ): void => {
     try {
-        const { teamStreak } = response.locals;
-        response.status(ResponseCodes.created).send(teamStreak.members);
+        const { teamMember } = response.locals;
+        response.status(ResponseCodes.created).send(teamMember);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.SendCreateTeamMemberResponseMiddleware, err));
