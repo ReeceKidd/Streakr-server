@@ -20,6 +20,8 @@ describe(`createChallengeBodyValidationMiddleware`, () => {
     const color = 'red';
     const levels = [{ level: 0, criteria: 'criteria' }];
     const numberOfMinutes = 30;
+    const whatsappGroupLink = `https://whatsapp.com`;
+    const discordGroupLink = `https://discord.com`;
 
     const body = {
         name,
@@ -27,6 +29,8 @@ describe(`createChallengeBodyValidationMiddleware`, () => {
         icon,
         color,
         levels,
+        whatsappGroupLink,
+        discordGroupLink,
     };
 
     test('check that valid request with all paramaters passes', () => {

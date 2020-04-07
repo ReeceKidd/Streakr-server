@@ -23,6 +23,8 @@ const createChallengeBodyValidationSchema = {
         .items(level)
         .required(),
     numberOfMinutes: Joi.number(),
+    whatsappGroupLink: Joi.string(),
+    discordGroupLink: Joi.string(),
 };
 
 export const createChallengeBodyValidationMiddleware = (
@@ -68,7 +70,16 @@ export const getSaveChallengeToDatabaseMiddleware = (challenge: mongoose.Model<C
 ): Promise<void> => {
     try {
         const badge: Badge = response.locals.badge;
-        const { name, description, icon, color, numberOfMinutes, levels } = request.body;
+        const {
+            name,
+            description,
+            icon,
+            color,
+            numberOfMinutes,
+            levels,
+            whatsappGroupLink,
+            discordGroupLink,
+        } = request.body;
         const newChallenge = new challenge({
             name,
             description,
@@ -77,6 +88,8 @@ export const getSaveChallengeToDatabaseMiddleware = (challenge: mongoose.Model<C
             badgeId: badge._id,
             levels,
             numberOfMinutes,
+            whatsappGroupLink,
+            discordGroupLink,
         });
         response.locals.challenge = await newChallenge.save();
         next();

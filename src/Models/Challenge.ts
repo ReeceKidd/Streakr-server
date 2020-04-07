@@ -42,7 +42,10 @@ export const challengeSchema = new mongoose.Schema(
         numberOfMinutes: {
             type: Number,
         },
-        communicationGroupLink: {
+        whatsappGroupLink: {
+            type: String,
+        },
+        discordGroupLink: {
             type: String,
         },
     },
