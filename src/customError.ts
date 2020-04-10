@@ -116,7 +116,7 @@ export enum ErrorType {
     RetreiveTeamStreakMiddleware,
     SendTeamStreakMiddleware,
     RetreiveTeamStreakMembersInformation,
-    CreateStreakTrackingEventFromRequestMiddleware,
+    SaveStreakTrackingEventToDatabase,
     SaveStreakTrackingEventToDatabaseMiddleware,
     SendFormattedStreakTrackingEventMiddleware,
     GetStreakTrackingEventsMiddleware,
@@ -437,7 +437,7 @@ export enum ErrorType {
     CreateJoinedTeamStreakActivityFeedItemMiddleware,
     CreateCompleteTeamMemberStreakActivityFeedItemMiddleware,
     CreateIncompleteTeamMemberStreakActivityFeedItemMiddleware,
-    JoinChallengeActivityFeedItemMiddleware,
+    CreateJoinChallengeActivityFeedItemMiddleware,
     CreateArchivedSoloStreakActivityFeedItemMiddleware,
     CreateRestoredSoloStreakActivityFeedItemMiddleware,
     CreateDeletedSoloStreakActivityFeedItemMiddleware,
@@ -488,6 +488,16 @@ export enum ErrorType {
     PopulateCurrentUserFollowersMiddleware,
     PopulatePatchCurrentUserFollowingMiddleware,
     PopulatePatchCurrentUserFollowersMiddleware,
+    CreatedAccountActivityFeedItemMiddleware,
+    CreateFollowUserActivityFeedItemMiddleware,
+    SaveActivityFeedItemToDatabaseMiddleware,
+    SendActivityFeedItemMiddleware,
+    CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware,
+    CreateCompleteChallengeStreakTaskChallengeDoesNotExist,
+    CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware,
+    CreateIncompleteChallengeStreakTaskChallengeDoesNotExist,
+    PatchChallengeStreakNoChallengeFound,
+    PatchChallengeStreakRetreiveChallengeMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1198,6 +1208,30 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-94`,
                     message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateCompleteChallengeStreakTaskChallengeDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-95`,
+                    message: 'Challenge does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateIncompleteChallengeStreakTaskChallengeDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-96`,
+                    message: 'Challenge does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.PatchChallengeStreakNoChallengeFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-97`,
+                    message: 'Challenge does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -1947,7 +1981,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateStreakTrackingEventFromRequestMiddleware:
+            case ErrorType.SaveStreakTrackingEventToDatabase:
                 return {
                     code: `${ResponseCodes.warning}-93`,
                     message: internalServerMessage,
@@ -3669,7 +3703,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.JoinChallengeActivityFeedItemMiddleware:
+            case ErrorType.CreateJoinChallengeActivityFeedItemMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-353`,
                     message: internalServerMessage,
@@ -3973,6 +4007,55 @@ export class CustomError extends Error {
             case ErrorType.PopulatePatchCurrentUserFollowersMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-396`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreatedAccountActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-397`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateFollowUserActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-398`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SaveActivityFeedItemToDatabaseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-399`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-400`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-401`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-402`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PatchChallengeStreakRetreiveChallengeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-403`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

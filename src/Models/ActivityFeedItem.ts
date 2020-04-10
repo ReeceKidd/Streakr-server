@@ -1,20 +1,47 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { ActivityFeedItem } from '@streakoid/streakoid-sdk/lib';
+import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 
-export type ActivityFeedItemModel = ActivityFeedItem & mongoose.Document;
+export type ActivityFeedItemModel = mongoose.Document;
 
 export const activityFeedItemSchema = new mongoose.Schema(
     {
         activityFeedItemType: {
-            type: String,
+            type: ActivityFeedItemTypes,
             required: true,
         },
         userId: {
             type: String,
         },
-        subjectId: {
+        username: {
+            type: String,
+        },
+        soloStreakId: {
+            type: String,
+        },
+        soloStreakName: {
+            type: String,
+        },
+        challengeStreakId: {
+            type: String,
+        },
+        challengeId: {
+            type: String,
+        },
+        challengeName: {
+            type: String,
+        },
+        teamStreakId: {
+            type: String,
+        },
+        teamStreakName: {
+            type: String,
+        },
+        userFollowedId: {
+            type: String,
+        },
+        userFollowedUsername: {
             type: String,
         },
     },

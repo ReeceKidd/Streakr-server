@@ -459,39 +459,37 @@ describe('sendUpdatedPatchMiddleware', () => {
 describe(`createArchivedTeamStreakActivityFeedItemMiddleware`, () => {
     test('creates a new archivedTeamStreak activity if request.body.status equals archived', async () => {
         expect.assertions(2);
-        const user = { _id: '_id' };
-        const teamStreakId = 'teamStreakId';
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const user = { _id: '_id', username: 'username' };
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user } };
-        const request: any = { params: { teamStreakId }, body: { status: StreakStatus.archived } };
+        const response: any = { locals: { user, updatedTeamStreak } };
+        const request: any = { body: { status: StreakStatus.archived } };
         const next = jest.fn();
 
-        const middleware = getCreateArchivedTeamStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateArchivedTeamStreakActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItem).toBeCalled();
         expect(next).toBeCalled();
     });
 
     test('if request.body.status does not equal archived it just calls next', async () => {
         expect.assertions(2);
-        const user = { _id: '_id' };
-        const teamStreakId = 'teamStreakId';
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const user = { _id: '_id', username: 'username' };
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user } };
-        const request: any = { params: { teamStreakId }, body: {} };
+        const response: any = { locals: { user, updatedTeamStreak } };
+        const request: any = { body: {} };
         const next = jest.fn();
 
-        const middleware = getCreateArchivedTeamStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateArchivedTeamStreakActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).not.toBeCalled();
+        expect(createActivityFeedItem).not.toBeCalled();
         expect(next).toBeCalled();
     });
 
@@ -514,39 +512,37 @@ describe(`createArchivedTeamStreakActivityFeedItemMiddleware`, () => {
 describe(`createRestoredTeamStreakActivityFeedItemMiddleware`, () => {
     test('creates a new restoredTeamStreak activity if request.body.status equals live', async () => {
         expect.assertions(2);
-        const user = { _id: '_id' };
-        const teamStreakId = 'teamStreakId';
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const user = { _id: '_id', username: 'username' };
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user } };
-        const request: any = { params: { teamStreakId }, body: { status: StreakStatus.live } };
+        const response: any = { locals: { user, updatedTeamStreak } };
+        const request: any = { body: { status: StreakStatus.live } };
         const next = jest.fn();
 
-        const middleware = getCreateRestoredTeamStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateRestoredTeamStreakActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItem).toBeCalled();
         expect(next).toBeCalled();
     });
 
     test('if request.body.status does not equal live it just calls next', async () => {
         expect.assertions(2);
-        const user = { _id: '_id' };
-        const teamStreakId = 'teamStreakId';
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const user = { _id: '_id', username: 'username' };
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user } };
-        const request: any = { params: { teamStreakId }, body: {} };
+        const response: any = { locals: { user, updatedTeamStreak } };
+        const request: any = { body: {} };
         const next = jest.fn();
 
-        const middleware = getCreateRestoredTeamStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateRestoredTeamStreakActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).not.toBeCalled();
+        expect(createActivityFeedItem).not.toBeCalled();
         expect(next).toBeCalled();
     });
 
@@ -569,39 +565,37 @@ describe(`createRestoredTeamStreakActivityFeedItemMiddleware`, () => {
 describe(`createDeletedTeamStreakActivityFeedItemMiddleware`, () => {
     test('creates a new deletedTeamStreak activity if request.body.status equals deleted', async () => {
         expect.assertions(2);
-        const user = { _id: '_id' };
-        const teamStreakId = 'teamStreakId';
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const user = { _id: '_id', username: 'username' };
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user } };
-        const request: any = { params: { teamStreakId }, body: { status: StreakStatus.deleted } };
+        const response: any = { locals: { user, updatedTeamStreak } };
+        const request: any = { body: { status: StreakStatus.deleted } };
         const next = jest.fn();
 
-        const middleware = getCreateDeletedTeamStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateDeletedTeamStreakActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItem).toBeCalled();
         expect(next).toBeCalled();
     });
 
     test('if request.body.status does not equal deleted it just calls next', async () => {
         expect.assertions(2);
-        const user = { _id: '_id' };
-        const teamStreakId = 'teamStreakId';
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const user = { _id: '_id', username: 'username' };
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user } };
-        const request: any = { params: { teamStreakId }, body: {} };
+        const response: any = { locals: { user, updatedTeamStreak } };
+        const request: any = { body: {} };
         const next = jest.fn();
 
-        const middleware = getCreateDeletedTeamStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateDeletedTeamStreakActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).not.toBeCalled();
+        expect(createActivityFeedItem).not.toBeCalled();
         expect(next).toBeCalled();
     });
 
@@ -625,38 +619,36 @@ describe(`createEditedTeamStreakNameActivityFeedItemMiddleware`, () => {
     test('creates a new editedTeamStreakName activity if request.body.streakName is defined', async () => {
         expect.assertions(2);
         const user = { _id: '_id' };
-        const teamStreakId = 'teamStreakId';
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user } };
-        const request: any = { params: { teamStreakId }, body: { streakName: 'new name' } };
+        const response: any = { locals: { user, updatedTeamStreak } };
+        const request: any = { body: { streakName: 'new name' } };
         const next = jest.fn();
 
-        const middleware = getCreateEditedTeamStreakNameActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateEditedTeamStreakNameActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItem).toBeCalled();
         expect(next).toBeCalled();
     });
 
     test('if request.body.streakName is not defined it just calls next', async () => {
         expect.assertions(2);
         const user = { _id: '_id' };
-        const teamStreakId = 'teamStreakId';
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user } };
-        const request: any = { params: { teamStreakId }, body: {} };
+        const response: any = { locals: { user, updatedTeamStreak } };
+        const request: any = { body: {} };
         const next = jest.fn();
 
-        const middleware = getCreateEditedTeamStreakNameActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateEditedTeamStreakNameActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).not.toBeCalled();
+        expect(createActivityFeedItem).not.toBeCalled();
         expect(next).toBeCalled();
     });
 
@@ -680,38 +672,40 @@ describe(`createEditedTeamStreakDescriptionActivityFeedItemMiddleware`, () => {
     test('creates a new editedTeamStreakDescription activity if request.body.streakDescription is defined', async () => {
         expect.assertions(2);
         const user = { _id: '_id' };
-        const teamStreakId = 'teamStreakId';
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user } };
-        const request: any = { params: { teamStreakId }, body: { streakDescription: 'new description' } };
+        const response: any = { locals: { user, updatedTeamStreak } };
+        const request: any = { body: { streakDescription: 'new description' } };
         const next = jest.fn();
 
-        const middleware = getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware(
+            createActivityFeedItem as any,
+        );
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItem).toBeCalled();
         expect(next).toBeCalled();
     });
 
     test('if request.body.streakDescription is not defined it just calls next', async () => {
         expect.assertions(2);
         const user = { _id: '_id' };
-        const teamStreakId = 'teamStreakId';
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user } };
-        const request: any = { params: { teamStreakId }, body: {} };
+        const response: any = { locals: { user, updatedTeamStreak } };
+        const request: any = { body: {} };
         const next = jest.fn();
 
-        const middleware = getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware(
+            createActivityFeedItem as any,
+        );
 
         await middleware(request, response, next);
 
-        expect(save).not.toBeCalled();
+        expect(createActivityFeedItem).not.toBeCalled();
         expect(next).toBeCalled();
     });
 

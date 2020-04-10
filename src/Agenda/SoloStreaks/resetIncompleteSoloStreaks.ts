@@ -6,6 +6,8 @@ import {
     StreakTrackingEvent,
     StreakTrackingEventTypes,
     StreakTypes,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
 } from '@streakoid/streakoid-sdk/lib';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
@@ -35,6 +37,18 @@ export const resetIncompleteSoloStreaks = async (
                     active: false,
                 },
             });
+
+            const user = await streakoid.users.getOne(soloStreak.userId);
+
+            const lostStreakActivityFeedItem: ActivityFeedItemType = {
+                activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
+                userId: soloStreak.userId,
+                username: user && user.username,
+                soloStreakId: soloStreak._id,
+                soloStreakName: soloStreak.streakName,
+            };
+
+            await streakoid.activityFeedItems.create(lostStreakActivityFeedItem);
 
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventTypes.lostStreak,

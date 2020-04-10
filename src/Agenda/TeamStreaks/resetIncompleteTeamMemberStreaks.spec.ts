@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resetIncompleteTeamMemberStreaks } from './resetIncompleteTeamMemberStreaks';
 import streakoid from '../../streakoid';
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 
@@ -14,7 +14,12 @@ describe('resetIncompleteSoloStreaks', () => {
         expect.assertions(3);
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
+        const username = 'username';
+        const teamStreakName = 'Reading';
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
+        streakoid.users.getOne = jest.fn().mockResolvedValue({ username });
+        streakoid.teamStreaks.getOne = jest.fn().mockResolvedValue({ _id: '_id', streakName: teamStreakName });
+        streakoid.activityFeedItems.create = jest.fn().mockResolvedValue(true);
         const _id = '1234';
         const endDate = new Date().toString();
         const currentStreak = {
@@ -54,6 +59,17 @@ describe('resetIncompleteSoloStreaks', () => {
             $set: {
                 completedToday: false,
             },
+        });
+
+        expect(streakoid.users.getOne).toBeCalled();
+        expect(streakoid.teamStreaks.getOne).toBeCalled();
+
+        expect(streakoid.activityFeedItems.create).toBeCalledWith({
+            activityFeedItemType: ActivityFeedItemTypes.lostTeamStreak,
+            userId,
+            username,
+            teamStreakId: '_id',
+            teamStreakName,
         });
 
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({

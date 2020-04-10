@@ -255,18 +255,17 @@ describe(`createSoloStreakActivityFeedItemMiddleware`, () => {
         expect.assertions(2);
         const user = { _id: '_id' };
         const savedSoloStreak = { _id: '_id' };
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const createActivityFeedItemFunction = jest.fn().mockResolvedValue(true);
 
         const response: any = { locals: { user, savedSoloStreak } };
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getCreateSoloStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateSoloStreakActivityFeedItemMiddleware(createActivityFeedItemFunction as any);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItemFunction).toBeCalled();
         expect(next).not.toBeCalled();
     });
 

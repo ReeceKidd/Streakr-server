@@ -2,7 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
-import { ChallengeStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import {
+    ChallengeStreak,
+    User,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
+    Challenge,
+} from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -15,7 +21,8 @@ import {
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
-import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { ChallengeModel, challengeModel } from '../../../src/Models/Challenge';
 
 export const completeChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -256,25 +263,52 @@ export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCod
 
 export const sendTaskCompleteResponseMiddleware = getSendTaskCompleteResponseMiddleware(ResponseCodes.created);
 
+export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const challenge = await challengeModel.findOne({ _id: challengeStreak.challengeId }).lean();
+        if (!challenge) {
+            throw new CustomError(ErrorType.CreateCompleteChallengeStreakTaskChallengeDoesNotExist);
+        }
+        response.locals.challenge = challenge;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware, err));
+    }
+};
+
+export const retreiveChallengeMiddleware = getRetreiveChallengeMiddleware(challengeModel);
+
 export const getCreateCompleteChallengeStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
-        const newActivity = new activityFeedItemModel({
+        const challenge: Challenge = response.locals.challenge;
+
+        const completedChallengeStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.completedChallengeStreak,
             userId: user._id,
-            subjectId: challengeStreak._id,
-        });
-        await newActivity.save();
+            username: user.username,
+            challengeStreakId: challengeStreak._id,
+            challengeId: challengeStreak.challengeId,
+            challengeName: challenge && challenge.name,
+        };
+        console.log(completedChallengeStreakActivityFeedItem);
+        createActivityFeedItemFunction(completedChallengeStreakActivityFeedItem);
     } catch (err) {
         next(new CustomError(ErrorType.CreateCompleteChallengeStreakActivityFeedItemMiddleware, err));
     }
 };
 
 export const createCompleteChallengeStreakActivityFeedItemMiddleware = getCreateCompleteChallengeStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const createCompleteChallengeStreakTaskMiddlewares = [
@@ -289,5 +323,6 @@ export const createCompleteChallengeStreakTaskMiddlewares = [
     streakMaintainedMiddleware,
     sendNewChallengeBadgeNotificationMiddleware,
     sendTaskCompleteResponseMiddleware,
+    retreiveChallengeMiddleware,
     createCompleteChallengeStreakActivityFeedItemMiddleware,
 ];

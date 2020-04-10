@@ -22,6 +22,8 @@ import {
     getResetStreakStartDateMiddleware,
     getCreateIncompleteChallengeStreakActivityFeedItemMiddleware,
     createIncompleteChallengeStreakActivityFeedItemMiddleware,
+    retreiveChallengeMiddleware,
+    getRetreiveChallengeMiddleware,
 } from './createIncompleteChallengeStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -577,23 +579,76 @@ describe('sendTaskIncompleteResponseMiddleware', () => {
     });
 });
 
+describe('retreiveChallengeMiddleware', () => {
+    test('sets response.locals.challenge and calls next()', async () => {
+        expect.assertions(4);
+        const lean = jest.fn(() => true);
+        const findOne = jest.fn(() => ({ lean }));
+        const challengeModel = { findOne };
+        const request: any = {};
+        const response: any = { locals: { challengeStreak: { _id: '_id' } } };
+        const next = jest.fn();
+        const middleware = getRetreiveChallengeMiddleware(challengeModel as any);
+
+        await middleware(request, response, next);
+
+        expect(response.locals.challenge).toBeDefined();
+        expect(findOne).toBeCalledWith({ _id: response.locals.challengeStreak._id });
+        expect(lean).toBeCalledWith();
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws CreateIncompleteChallengeStreakTaskUserDoesNotExist when user does not exist', async () => {
+        expect.assertions(1);
+        const lean = jest.fn(() => false);
+        const findOne = jest.fn(() => ({ lean }));
+        const challengeModel = { findOne };
+        const request: any = {};
+        const response: any = { locals: { challengeStreak: { _id: '_id' } } };
+        const next = jest.fn();
+        const middleware = getRetreiveChallengeMiddleware(challengeModel as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskChallengeDoesNotExist),
+        );
+    });
+
+    test('throws RetreiveChallengeMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getRetreiveChallengeMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(
+                ErrorType.CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware,
+                expect.any(Error),
+            ),
+        );
+    });
+});
+
 describe(`createIncompleteChallengeStreakActivitFeedItemMiddleware`, () => {
     test('creates a new incompletedChallengeStreakActivity', async () => {
         expect.assertions(2);
         const user = { _id: '_id' };
         const challengeStreak = { _id: '_id' };
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
         const response: any = { locals: { user, challengeStreak } };
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getCreateIncompleteChallengeStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateIncompleteChallengeStreakActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItem).toBeCalled();
         expect(next).not.toBeCalled();
     });
 
@@ -615,9 +670,9 @@ describe(`createIncompleteChallengeStreakActivitFeedItemMiddleware`, () => {
 
 describe(`createIncompleteChallengeStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(12);
+        expect.assertions(13);
 
-        expect(createIncompleteChallengeStreakTaskMiddlewares.length).toEqual(11);
+        expect(createIncompleteChallengeStreakTaskMiddlewares.length).toEqual(12);
         expect(createIncompleteChallengeStreakTaskMiddlewares[0]).toBe(
             incompleteChallengeStreakTaskBodyValidationMiddleware,
         );
@@ -632,7 +687,8 @@ describe(`createIncompleteChallengeStreakTaskMiddlewares`, () => {
         expect(createIncompleteChallengeStreakTaskMiddlewares[7]).toBe(saveTaskIncompleteMiddleware);
         expect(createIncompleteChallengeStreakTaskMiddlewares[8]).toBe(incompleteChallengeStreakMiddleware);
         expect(createIncompleteChallengeStreakTaskMiddlewares[9]).toBe(sendTaskIncompleteResponseMiddleware);
-        expect(createIncompleteChallengeStreakTaskMiddlewares[10]).toBe(
+        expect(createIncompleteChallengeStreakTaskMiddlewares[10]).toBe(retreiveChallengeMiddleware);
+        expect(createIncompleteChallengeStreakTaskMiddlewares[11]).toBe(
             createIncompleteChallengeStreakActivityFeedItemMiddleware,
         );
     });

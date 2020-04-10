@@ -6,8 +6,14 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
-import { User, StreakStatus, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import {
+    User,
+    StreakStatus,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
+    SoloStreak,
+} from '@streakoid/streakoid-sdk/lib';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 const soloStreakParamsValidationSchema = {
     soloStreakId: Joi.string().required(),
@@ -86,19 +92,21 @@ export const sendUpdatedSoloStreakMiddleware = (request: Request, response: Resp
 };
 
 export const getCreateArchivedSoloStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { status } = request.body;
         if (status === StreakStatus.archived) {
             const user: User = response.locals.user;
-            const { soloStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const updatedSoloStreak: SoloStreak = response.locals.updatedSoloStreak;
+            const archivedSoloStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.archivedSoloStreak,
                 userId: user._id,
-                subjectId: soloStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                soloStreakId: updatedSoloStreak._id,
+                soloStreakName: updatedSoloStreak.streakName,
+            };
+            await createActivityFeedItemFunction(archivedSoloStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -107,23 +115,25 @@ export const getCreateArchivedSoloStreakActivityFeedItemMiddleware = (
 };
 
 export const createArchivedSoloStreakActivityFeedItemMiddleware = getCreateArchivedSoloStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const getCreateRestoredSoloStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { status } = request.body;
         if (status === StreakStatus.live) {
             const user: User = response.locals.user;
-            const { soloStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const updatedSoloStreak: SoloStreak = response.locals.updatedSoloStreak;
+            const archivedSoloStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.restoredSoloStreak,
                 userId: user._id,
-                subjectId: soloStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                soloStreakId: updatedSoloStreak._id,
+                soloStreakName: updatedSoloStreak.streakName,
+            };
+            await createActivityFeedItemFunction(archivedSoloStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -132,23 +142,25 @@ export const getCreateRestoredSoloStreakActivityFeedItemMiddleware = (
 };
 
 export const createRestoredSoloStreakActivityFeedItemMiddleware = getCreateRestoredSoloStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const getCreateDeletedSoloStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { status } = request.body;
         if (status === StreakStatus.deleted) {
             const user: User = response.locals.user;
-            const { soloStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const updatedSoloStreak: SoloStreak = response.locals.updatedSoloStreak;
+            const archivedSoloStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.deletedSoloStreak,
                 userId: user._id,
-                subjectId: soloStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                soloStreakId: updatedSoloStreak._id,
+                soloStreakName: updatedSoloStreak.streakName,
+            };
+            await createActivityFeedItemFunction(archivedSoloStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -157,23 +169,25 @@ export const getCreateDeletedSoloStreakActivityFeedItemMiddleware = (
 };
 
 export const createDeletedSoloStreakActivityFeedItemMiddleware = getCreateDeletedSoloStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const getCreateEditedSoloStreakNameActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { streakName } = request.body;
         if (streakName) {
             const user: User = response.locals.user;
-            const { soloStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const updatedSoloStreak: SoloStreak = response.locals.updatedSoloStreak;
+            const archivedSoloStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.editedSoloStreakName,
                 userId: user._id,
-                subjectId: soloStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                soloStreakId: updatedSoloStreak._id,
+                soloStreakName: updatedSoloStreak.streakName,
+            };
+            await createActivityFeedItemFunction(archivedSoloStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -182,23 +196,25 @@ export const getCreateEditedSoloStreakNameActivityFeedItemMiddleware = (
 };
 
 export const createEditedSoloStreakNameActivityFeedItemMiddleware = getCreateEditedSoloStreakNameActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const getCreateEditedSoloStreakDescriptionActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { streakDescription } = request.body;
         if (streakDescription) {
             const user: User = response.locals.user;
-            const { soloStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const updatedSoloStreak: SoloStreak = response.locals.updatedSoloStreak;
+            const archivedSoloStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.editedSoloStreakDescription,
                 userId: user._id,
-                subjectId: soloStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                soloStreakId: updatedSoloStreak._id,
+                soloStreakName: updatedSoloStreak.streakName,
+            };
+            await createActivityFeedItemFunction(archivedSoloStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -207,7 +223,7 @@ export const getCreateEditedSoloStreakDescriptionActivityFeedItemMiddleware = (
 };
 
 export const createEditedSoloStreakDescriptionActivityFeedItemMiddleware = getCreateEditedSoloStreakDescriptionActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const patchSoloStreakMiddlewares = [

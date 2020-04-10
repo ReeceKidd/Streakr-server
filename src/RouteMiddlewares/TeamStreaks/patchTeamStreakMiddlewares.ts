@@ -7,8 +7,8 @@ import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
-import { User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 const teamStreakParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -88,19 +88,21 @@ export const sendUpdatedTeamStreakMiddleware = (request: Request, response: Resp
 };
 
 export const getCreateArchivedTeamStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { status } = request.body;
         if (status === StreakStatus.archived) {
             const user: User = response.locals.user;
-            const { teamStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const teamStreak: TeamStreakModel = response.locals.updatedTeamStreak;
+            const archivedTeamStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.archivedTeamStreak,
                 userId: user._id,
-                subjectId: teamStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+            };
+            await createActivityFeedItemFunction(archivedTeamStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -109,23 +111,25 @@ export const getCreateArchivedTeamStreakActivityFeedItemMiddleware = (
 };
 
 export const createArchivedTeamStreakActivityFeedItemMiddleware = getCreateArchivedTeamStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const getCreateRestoredTeamStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { status } = request.body;
         if (status === StreakStatus.live) {
             const user: User = response.locals.user;
-            const { teamStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const teamStreak: TeamStreakModel = response.locals.updatedTeamStreak;
+            const restoredTeamStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.restoredTeamStreak,
                 userId: user._id,
-                subjectId: teamStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+            };
+            await createActivityFeedItemFunction(restoredTeamStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -134,23 +138,25 @@ export const getCreateRestoredTeamStreakActivityFeedItemMiddleware = (
 };
 
 export const createRestoredTeamStreakActivityFeedItemMiddleware = getCreateRestoredTeamStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const getCreateDeletedTeamStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { status } = request.body;
         if (status === StreakStatus.deleted) {
             const user: User = response.locals.user;
-            const { teamStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const teamStreak: TeamStreakModel = response.locals.updatedTeamStreak;
+            const restoredTeamStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.deletedTeamStreak,
                 userId: user._id,
-                subjectId: teamStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+            };
+            await createActivityFeedItemFunction(restoredTeamStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -159,23 +165,25 @@ export const getCreateDeletedTeamStreakActivityFeedItemMiddleware = (
 };
 
 export const createDeletedTeamStreakActivityFeedItemMiddleware = getCreateDeletedTeamStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const getCreateEditedTeamStreakNameActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { streakName } = request.body;
         if (streakName) {
             const user: User = response.locals.user;
-            const { teamStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const teamStreak: TeamStreakModel = response.locals.updatedTeamStreak;
+            const restoredTeamStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.editedTeamStreakName,
                 userId: user._id,
-                subjectId: teamStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+            };
+            await createActivityFeedItemFunction(restoredTeamStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -184,23 +192,25 @@ export const getCreateEditedTeamStreakNameActivityFeedItemMiddleware = (
 };
 
 export const createEditedTeamStreakNameActivityFeedItemMiddleware = getCreateEditedTeamStreakNameActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { streakDescription } = request.body;
         if (streakDescription) {
             const user: User = response.locals.user;
-            const { teamStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const teamStreak: TeamStreakModel = response.locals.updatedTeamStreak;
+            const restoredTeamStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.editedTeamStreakDescription,
                 userId: user._id,
-                subjectId: teamStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+            };
+            await createActivityFeedItemFunction(restoredTeamStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -209,7 +219,7 @@ export const getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware = (
 };
 
 export const createEditedTeamStreakDescriptionActivityFeedItemMiddleware = getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const patchTeamStreakMiddlewares = [

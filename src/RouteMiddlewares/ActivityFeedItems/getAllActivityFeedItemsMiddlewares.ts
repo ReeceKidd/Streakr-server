@@ -6,14 +6,16 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
-import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
-import { GetAllActivityFeedItemsResponse } from '@streakoid/streakoid-sdk/lib/activityFeedItems';
+import { ActivityFeedItemTypes, SupportedResponseHeaders } from '@streakoid/streakoid-sdk/lib';
 
 const getActivityFeedItemsQueryValidationSchema = {
     limit: Joi.number().required(),
     createdAtBefore: Joi.date().iso(),
     userIds: Joi.array().items(Joi.string()),
-    subjectId: Joi.string(),
+    soloStreakId: Joi.string(),
+    challengeStreakId: Joi.string(),
+    challengeId: Joi.string(),
+    teamStreakId: Joi.string(),
     activityFeedItemType: Joi.string().valid(Object.keys(ActivityFeedItemTypes)),
 };
 
@@ -35,11 +37,21 @@ export const formActivityFeedItemsQueryMiddleware = (
     next: NextFunction,
 ): void => {
     try {
-        const { userIds, subjectId, activityFeedItemType } = request.query;
+        const {
+            userIds,
+            soloStreakId,
+            challengeStreakId,
+            challengeId,
+            teamStreakId,
+            activityFeedItemType,
+        } = request.query;
 
         const query: {
             userId?: { $in: string[] };
-            subjectId?: string;
+            soloStreakId?: string;
+            challengeStreakId?: string;
+            challengeId?: string;
+            teamStreakId?: string;
             activityFeedItemType?: string;
         } = {};
 
@@ -48,8 +60,20 @@ export const formActivityFeedItemsQueryMiddleware = (
             query.userId = { $in: parsedUserIds };
         }
 
-        if (subjectId) {
-            query.subjectId = subjectId;
+        if (soloStreakId) {
+            query.soloStreakId = soloStreakId;
+        }
+
+        if (challengeStreakId) {
+            query.challengeStreakId = challengeStreakId;
+        }
+
+        if (challengeId) {
+            query.challengeId = challengeId;
+        }
+
+        if (teamStreakId) {
+            query.teamStreakId = teamStreakId;
         }
 
         if (activityFeedItemType) {
@@ -72,7 +96,7 @@ export const getCalculateTotalCountOfActivityFeedItemsMiddleware = (
 
         const totalCountOfActivityFeedItems = await activityModel.find(query).countDocuments();
 
-        response.locals.totalCountOfActivityFeedItems = totalCountOfActivityFeedItems;
+        response.set(SupportedResponseHeaders.TotalCount, String(totalCountOfActivityFeedItems));
 
         next();
     } catch (err) {
@@ -117,12 +141,8 @@ export const findActivityFeedItemsMiddleware = getFindActivityFeedItemsMiddlewar
 
 export const sendActivityFeedItemsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { activityFeedItems, totalCountOfActivityFeedItems } = response.locals;
-        const activityFeedItemsResponse: GetAllActivityFeedItemsResponse = {
-            activityFeedItems,
-            totalCountOfActivityFeedItems,
-        };
-        response.status(ResponseCodes.success).send(activityFeedItemsResponse);
+        const { activityFeedItems } = response.locals;
+        response.status(ResponseCodes.success).send(activityFeedItems);
     } catch (err) {
         next(new CustomError(ErrorType.SendActivityFeedItemsMiddleware, err));
     }

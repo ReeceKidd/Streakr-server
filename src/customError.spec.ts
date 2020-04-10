@@ -948,6 +948,39 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to CreateCompleteChallengeStreakTaskChallengeDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteChallengeStreakTaskChallengeDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-95`);
+        expect(message).toBe('Challenge does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to CreateIncompleteChallengeStreakTaskChallengeDoesNotExist`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskChallengeDoesNotExist);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-96`);
+        expect(message).toBe('Challenge does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to PatchChallengeStreakNoChallengeFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PatchChallengeStreakNoChallengeFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-97`);
+        expect(message).toBe('Challenge does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -2049,10 +2082,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateStreakTrackingEventFromRequestMiddleware`, () => {
+    test(`creates correct error when type is set to SaveStreakTrackingEventToDatabase`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateStreakTrackingEventFromRequestMiddleware);
+        const customError = new CustomError(ErrorType.SaveStreakTrackingEventToDatabase);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-93`);
@@ -4745,10 +4778,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to JoinChallengeActivityFeedItemMiddleware`, () => {
+    test(`creates correct error when type is set to CreateJoinChallengeActivityFeedItemMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.JoinChallengeActivityFeedItemMiddleware);
+        const customError = new CustomError(ErrorType.CreateJoinChallengeActivityFeedItemMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-353`);
@@ -5227,6 +5260,83 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-396`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreatedAccountActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreatedAccountActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-397`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateFollowUserActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateFollowUserActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-398`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SaveActivityFeedItemToDatabaseMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SaveActivityFeedItemToDatabaseMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-399`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-400`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-401`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-402`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PatchChallengeStreakRetreiveChallengeMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PatchChallengeStreakRetreiveChallengeMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-403`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

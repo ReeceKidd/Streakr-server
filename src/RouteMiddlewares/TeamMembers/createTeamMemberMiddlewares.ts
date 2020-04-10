@@ -11,8 +11,14 @@ import { CustomError, ErrorType } from '../../customError';
 
 import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { TeamMember, TeamStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
-import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import {
+    TeamMember,
+    TeamStreak,
+    User,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
+} from '@streakoid/streakoid-sdk/lib';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 export const createTeamMemberParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -159,24 +165,26 @@ export const sendCreateTeamMemberResponseMiddleware = (
 };
 
 export const getCreateJoinedTeamStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const teamStreak: TeamStreak = response.locals.teamStreak;
-        const newActivity = new activityFeedItemModel({
+        const joinedTeamStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.joinedTeamStreak,
             userId: user._id,
-            subjectId: teamStreak._id,
-        });
-        await newActivity.save();
+            username: user.username,
+            teamStreakId: teamStreak._id,
+            teamStreakName: teamStreak.streakName,
+        };
+        await createActivityFeedItemFunction(joinedTeamStreakActivityFeedItem);
     } catch (err) {
         next(new CustomError(ErrorType.CreateJoinedTeamStreakActivityFeedItemMiddleware, err));
     }
 };
 
 export const createJoinedTeamStreakActivityFeedItemMiddleware = getCreateJoinedTeamStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const createTeamMemberMiddlewares = [

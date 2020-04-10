@@ -6,6 +6,8 @@ import {
     StreakTrackingEvent,
     StreakTrackingEventTypes,
     StreakTypes,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
 } from '@streakoid/streakoid-sdk/lib';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
 
@@ -35,6 +37,22 @@ export const resetIncompleteChallengeStreaks = async (
                     active: false,
                 },
             });
+
+            const user = await streakoid.users.getOne(challengeStreak.userId);
+            const challenge = await streakoid.challenges.getOne({
+                challengeId: challengeStreak.challengeId,
+            });
+
+            const lostChallengeStreakActivityFeedItem: ActivityFeedItemType = {
+                activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
+                userId: challengeStreak.userId,
+                username: user && user.username,
+                challengeStreakId: challengeStreak._id,
+                challengeId: challenge._id,
+                challengeName: challenge.name,
+            };
+
+            await streakoid.activityFeedItems.create(lostChallengeStreakActivityFeedItem);
 
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventTypes.lostStreak,

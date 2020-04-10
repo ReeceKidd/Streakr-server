@@ -5,6 +5,8 @@ import {
     StreakTrackingEvent,
     StreakTrackingEventTypes,
     StreakTypes,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
 } from '@streakoid/streakoid-sdk/lib';
 import streakoid from '../../streakoid';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
@@ -42,6 +44,19 @@ export const resetIncompleteTeamMemberStreaks = async (
                     completedToday: false,
                 },
             });
+
+            const user = await streakoid.users.getOne(teamMemberStreak.userId);
+            const teamStreak = await streakoid.teamStreaks.getOne(teamMemberStreak.teamStreakId);
+
+            const lostTeamStreakActivityFeedItem: ActivityFeedItemType = {
+                activityFeedItemType: ActivityFeedItemTypes.lostTeamStreak,
+                userId: teamMemberStreak.userId,
+                username: user && user.username,
+                teamStreakId: teamMemberStreak._id,
+                teamStreakName: teamStreak && teamStreak.streakName,
+            };
+
+            await streakoid.activityFeedItems.create(lostTeamStreakActivityFeedItem);
 
             return streakoid.streakTrackingEvents.create({
                 type: StreakTrackingEventTypes.lostStreak,

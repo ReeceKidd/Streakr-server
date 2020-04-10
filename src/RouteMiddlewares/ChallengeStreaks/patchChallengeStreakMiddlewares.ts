@@ -1,14 +1,21 @@
 import * as Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import * as mongoose from 'mongoose';
-import { ActivityFeedItemTypes, User, StreakStatus, ChallengeStreak } from '@streakoid/streakoid-sdk/lib';
+import {
+    ActivityFeedItemTypes,
+    User,
+    StreakStatus,
+    ChallengeStreak,
+    Challenge,
+    ActivityFeedItemType,
+} from '@streakoid/streakoid-sdk/lib';
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { challengeStreakModel, ChallengeStreakModel } from '../../Models/ChallengeStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
 import { challengeModel, ChallengeModel } from '../../../src/Models/Challenge';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 const challengeStreakParamsValidationSchema = {
     challengeStreakId: Joi.string().required(),
@@ -76,14 +83,36 @@ export const getPatchChallengeStreakMiddleware = (challengeStreakModel: mongoose
 
 export const patchChallengeStreakMiddleware = getPatchChallengeStreakMiddleware(challengeStreakModel);
 
+export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const challengeStreak: ChallengeStreak = response.locals.updatedChallengeStreak;
+        const challenge = await challengeModel.findOne({ _id: challengeStreak.challengeId }).lean();
+        if (!challenge) {
+            throw new CustomError(ErrorType.PatchChallengeStreakNoChallengeFound);
+        }
+        console.log(challenge);
+        response.locals.challenge = challenge;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.PatchChallengeStreakRetreiveChallengeMiddleware, err));
+    }
+};
+
+export const retreiveChallengeMiddleware = getRetreiveChallengeMiddleware(challengeModel);
+
 export const getRemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware = (
     challengeModel: mongoose.Model<ChallengeModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const updatedChallengeStreak: ChallengeStreak = response.locals.updatedChallengeStreak;
+        const challenge: Challenge = response.locals.challenge;
         const { status } = request.body;
         if (status && status === StreakStatus.deleted) {
-            const challenge = await challengeModel.findById(updatedChallengeStreak.challengeId);
             const membersWithoutCurrentUser =
                 challenge && challenge.members.filter(member => member !== updatedChallengeStreak.userId);
             response.locals.challenge = await challengeModel.findByIdAndUpdate(
@@ -143,19 +172,23 @@ export const sendUpdatedChallengeStreakMiddleware = (
 };
 
 export const getCreateArchivedChallengeStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { status } = request.body;
-        if (status === StreakStatus.archived) {
+        if (status && status === StreakStatus.archived) {
             const user: User = response.locals.user;
-            const { challengeStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const challenge: Challenge = response.locals.challenge;
+            const updatedChallengeStreak: ChallengeStreak = response.locals.updatedChallengeStreak;
+            const archivedChallengeStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.archivedChallengeStreak,
                 userId: user._id,
-                subjectId: challengeStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                challengeStreakId: updatedChallengeStreak._id,
+                challengeId: challenge._id,
+                challengeName: challenge.name,
+            };
+            await createActivityFeedItemFunction(archivedChallengeStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -164,23 +197,27 @@ export const getCreateArchivedChallengeStreakActivityFeedItemMiddleware = (
 };
 
 export const createArchivedChallengeStreakActivityFeedItemMiddleware = getCreateArchivedChallengeStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const getCreateRestoredChallengeStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { status } = request.body;
-        if (status === StreakStatus.live) {
+        if (status && status === StreakStatus.live) {
             const user: User = response.locals.user;
-            const { challengeStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const challenge: Challenge = response.locals.challenge;
+            const updatedChallengeStreak: ChallengeStreak = response.locals.updatedChallengeStreak;
+            const archivedChallengeStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.restoredChallengeStreak,
                 userId: user._id,
-                subjectId: challengeStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                challengeStreakId: updatedChallengeStreak._id,
+                challengeId: challenge._id,
+                challengeName: challenge.name,
+            };
+            await createActivityFeedItemFunction(archivedChallengeStreakActivityFeedItem);
         }
         next();
     } catch (err) {
@@ -189,38 +226,42 @@ export const getCreateRestoredChallengeStreakActivityFeedItemMiddleware = (
 };
 
 export const createRestoredChallengeStreakActivityFeedItemMiddleware = getCreateRestoredChallengeStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const getCreateDeletedChallengeStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { status } = request.body;
-        if (status === StreakStatus.deleted) {
+        if (status && status === StreakStatus.deleted) {
             const user: User = response.locals.user;
-            const { challengeStreakId } = request.params;
-            const newActivity = new activityFeedItemModel({
+            const challenge: Challenge = response.locals.challenge;
+            const updatedChallengeStreak: ChallengeStreak = response.locals.updatedChallengeStreak;
+            const archivedChallengeStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.deletedChallengeStreak,
                 userId: user._id,
-                subjectId: challengeStreakId,
-            });
-            await newActivity.save();
+                username: user.username,
+                challengeStreakId: updatedChallengeStreak._id,
+                challengeId: challenge._id,
+                challengeName: challenge.name,
+            };
+            await createActivityFeedItemFunction(archivedChallengeStreakActivityFeedItem);
         }
-        next();
     } catch (err) {
         next(new CustomError(ErrorType.CreateDeletedChallengeStreakActivityFeedItemMiddleware, err));
     }
 };
 
 export const createDeletedChallengeStreakActivityFeedItemMiddleware = getCreateDeletedChallengeStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const patchChallengeStreakMiddlewares = [
     challengeStreakParamsValidationMiddleware,
     challengeStreakRequestBodyValidationMiddleware,
     patchChallengeStreakMiddleware,
+    retreiveChallengeMiddleware,
     removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
     decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
     sendUpdatedChallengeStreakMiddleware,

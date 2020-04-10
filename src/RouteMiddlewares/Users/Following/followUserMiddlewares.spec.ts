@@ -15,6 +15,8 @@ import {
     getRetreiveUserToFollowMiddleware,
     getRetreiveSelectedUserMiddleware,
     addSelectedUserToUserToFollowsFollowersMiddleware,
+    createFollowUserActivityFeedItemMiddleware,
+    getCreateFollowUserActivityFeedItemMiddleware,
 } from './followUserMiddlewares';
 
 describe('followUserMiddlewares', () => {
@@ -395,7 +397,7 @@ describe('followUserMiddlewares', () => {
 
             sendUserWithNewFollowingMiddleware(request, response, next);
 
-            expect(next).not.toBeCalled();
+            expect(next).toBeCalled();
             expect(status).toBeCalledWith(201);
             expect(send).toBeCalledWith(following);
         });
@@ -414,10 +416,46 @@ describe('followUserMiddlewares', () => {
         });
     });
 
-    test('are in the correct order', () => {
-        expect.assertions(9);
+    describe(`createFollowUserActivityFeedItemMiddleware`, () => {
+        test('creates a new completedSoloStreakActivity', async () => {
+            expect.assertions(2);
+            const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        expect(followUserMiddlewares.length).toEqual(8);
+            const user = { _id: '_id', username: 'user' };
+            const userToFollow = { _id: '_id', username: 'userToFollow' };
+
+            const response: any = { locals: { user, userToFollow } };
+            const request: any = {};
+            const next = jest.fn();
+
+            const middleware = getCreateFollowUserActivityFeedItemMiddleware(createActivityFeedItem as any);
+
+            await middleware(request, response, next);
+
+            expect(createActivityFeedItem).toBeCalled();
+            expect(next).not.toBeCalled();
+        });
+
+        test('calls next with CreateFollowUserActivityFeedItemMiddleware error on middleware failure', () => {
+            expect.assertions(1);
+
+            const response: any = {};
+            const request: any = {};
+            const next = jest.fn();
+            const middleware = getCreateFollowUserActivityFeedItemMiddleware({} as any);
+
+            middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.CreateFollowUserActivityFeedItemMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    test('are in the correct order', () => {
+        expect.assertions(10);
+
+        expect(followUserMiddlewares.length).toEqual(9);
         expect(followUserMiddlewares[0]).toEqual(followUserParamsValidationMiddleware);
         expect(followUserMiddlewares[1]).toEqual(followUserBodyValidationMiddleware);
         expect(followUserMiddlewares[2]).toEqual(retreiveSelectedUserMiddleware);
@@ -426,5 +464,6 @@ describe('followUserMiddlewares', () => {
         expect(followUserMiddlewares[5]).toEqual(addUserToFollowToSelectedUsersFollowingMiddleware);
         expect(followUserMiddlewares[6]).toEqual(addSelectedUserToUserToFollowsFollowersMiddleware);
         expect(followUserMiddlewares[7]).toEqual(sendUserWithNewFollowingMiddleware);
+        expect(followUserMiddlewares[8]).toEqual(createFollowUserActivityFeedItemMiddleware);
     });
 });

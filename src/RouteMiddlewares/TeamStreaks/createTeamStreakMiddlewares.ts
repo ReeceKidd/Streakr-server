@@ -8,9 +8,8 @@ import { CustomError, ErrorType } from '../../customError';
 import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { userModel, UserModel } from '../../Models/User';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { ActivityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
-import { User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
-import { activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import { User, ActivityFeedItemTypes, ActivityFeedItemType, TeamStreak } from '@streakoid/streakoid-sdk/lib';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 export interface TeamStreakRegistrationRequestBody {
     creatorId: string;
@@ -200,24 +199,26 @@ export const sendTeamStreakMiddleware = (request: Request, response: Response, n
 };
 
 export const getCreateTeamStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
-        const teamStreak = response.locals.newTeamStreak;
-        const newActivity = new activityFeedItemModel({
+        const teamStreak: TeamStreak = response.locals.newTeamStreak;
+        const createdTeamStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.createdTeamStreak,
             userId: user._id,
-            subjectId: teamStreak._id,
-        });
-        await newActivity.save();
+            username: user.username,
+            teamStreakId: teamStreak._id,
+            teamStreakName: teamStreak.streakName,
+        };
+        await createActivityFeedItemFunction(createdTeamStreakActivityFeedItem);
     } catch (err) {
         next(new CustomError(ErrorType.CreateTeamStreakActivityFeedItemMiddleware, err));
     }
 };
 
 export const createdTeamStreakActivityFeedItemMiddleware = getCreateTeamStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const createTeamStreakMiddlewares = [

@@ -3,7 +3,13 @@ import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { TeamMemberStreak, TeamStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import {
+    TeamMemberStreak,
+    TeamStreak,
+    User,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
+} from '@streakoid/streakoid-sdk/lib';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -17,7 +23,7 @@ import {
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
 import { completeTeamStreakModel, CompleteTeamStreakModel } from '../../Models/CompleteTeamStreak';
-import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -478,24 +484,26 @@ export const sendCompleteTeamMemberStreakTaskResponseMiddleware = (
 };
 
 export const getCreateCompleteTeamMemberStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const teamStreak: TeamStreak = response.locals.teamStreak;
-        const newActivity = new activityFeedItemModel({
+        const completedTeamMemberStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.completedTeamMemberStreak,
             userId: user._id,
-            subjectId: teamStreak._id,
-        });
-        await newActivity.save();
+            username: user.username,
+            teamStreakId: teamStreak._id,
+            teamStreakName: teamStreak.streakName,
+        };
+        await createActivityFeedItemFunction(completedTeamMemberStreakActivityFeedItem);
     } catch (err) {
         next(new CustomError(ErrorType.CreateCompleteTeamMemberStreakActivityFeedItemMiddleware, err));
     }
 };
 
 export const createCompleteTeamMemberStreakActivityFeedItemMiddleware = getCreateCompleteTeamMemberStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const createCompleteTeamMemberStreakTaskMiddlewares = [

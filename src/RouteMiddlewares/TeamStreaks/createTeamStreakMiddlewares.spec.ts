@@ -645,18 +645,17 @@ describe(`createTeamStreakActivityFeedItemMiddleware`, () => {
         expect.assertions(2);
         const user = { _id: '_id' };
         const newTeamStreak = { _id: '_id' };
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
         const response: any = { locals: { user, newTeamStreak } };
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getCreateTeamStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateTeamStreakActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItem).toBeCalled();
         expect(next).not.toBeCalled();
     });
 

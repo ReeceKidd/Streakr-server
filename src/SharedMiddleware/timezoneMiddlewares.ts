@@ -5,7 +5,7 @@ import { SupportedRequestHeaders } from '@streakoid/streakoid-sdk/lib';
 
 export const retreiveTimezoneHeaderMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const timezone = request.header(SupportedRequestHeaders.xTimezone);
+        const timezone = request.header(SupportedRequestHeaders.Timezone);
         if (!timezone) {
             throw new CustomError(ErrorType.MissingTimezoneHeader);
         }

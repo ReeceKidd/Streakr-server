@@ -15,10 +15,10 @@ import {
     doesUserExistMiddleware,
     addChallengeBadgeToUserBadgesMiddleware,
     getAddChallengeBadgeToUserBadgesMiddleware,
-    getJoinChallengeActivityFeedItemMiddleware,
-    joinChallengeActivityFeedItemMiddleware,
+    createJoinChallengeActivityFeedItemMiddleware,
     increaseNumberOfMembersInChallengeMiddleware,
     getIncreaseNumberOfMembersInChallengeMiddleware,
+    getCreateJoinChallengeActivityFeedItemMiddleware,
 } from './createChallengeStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -492,33 +492,31 @@ describe(`createJoinChallengeActivityFeedItemMiddleware`, () => {
         const user = { _id: '_id' };
         const challenge = { _id: '_id' };
         const savedChallengeStreak = { _id: '_id' };
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
         const response: any = { locals: { user, challenge, savedChallengeStreak } };
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getJoinChallengeActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateJoinChallengeActivityFeedItemMiddleware(createActivityFeedItem);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItem).toBeCalled();
         expect(next).not.toBeCalled();
     });
 
-    test('calls next with JoinChallengeActivityFeedItemMiddleware error on middleware failure', () => {
+    test('calls next with CreateJoinChallengeActivityFeedItemMiddleware error on middleware failure', () => {
         expect.assertions(1);
 
         const response: any = {};
         const request: any = {};
         const next = jest.fn();
-        const middleware = getJoinChallengeActivityFeedItemMiddleware({} as any);
 
-        middleware(request, response, next);
+        createJoinChallengeActivityFeedItemMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.JoinChallengeActivityFeedItemMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.CreateJoinChallengeActivityFeedItemMiddleware, expect.any(Error)),
         );
     });
 });
@@ -537,6 +535,6 @@ describe(`createChallengeStreakMiddlewares`, () => {
         expect(createChallengeStreakMiddlewares[6]).toBe(addChallengeBadgeToUserBadgesMiddleware);
         expect(createChallengeStreakMiddlewares[7]).toBe(createChallengeStreakMiddleware);
         expect(createChallengeStreakMiddlewares[8]).toBe(sendFormattedChallengeStreakMiddleware);
-        expect(createChallengeStreakMiddlewares[9]).toBe(joinChallengeActivityFeedItemMiddleware);
+        expect(createChallengeStreakMiddlewares[9]).toBe(createJoinChallengeActivityFeedItemMiddleware);
     });
 });

@@ -164,7 +164,7 @@ describe(`saveStreakTrackingEventToDatabaseMiddleware`, () => {
         expect(save).toBeCalledWith();
     });
 
-    test('calls next with CreateStreakTrackingEventFromRequestMiddleware error on middleware failure', () => {
+    test('calls next with SaveStreakTrackingEventToDatabase error on middleware failure', () => {
         const response: any = {};
         const request: any = {};
         const next = jest.fn();
@@ -173,9 +173,7 @@ describe(`saveStreakTrackingEventToDatabaseMiddleware`, () => {
         middleware(request, response, next);
 
         expect.assertions(1);
-        expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreateStreakTrackingEventFromRequestMiddleware, expect.any(Error)),
-        );
+        expect(next).toBeCalledWith(new CustomError(ErrorType.SaveStreakTrackingEventToDatabase, expect.any(Error)));
     });
 });
 

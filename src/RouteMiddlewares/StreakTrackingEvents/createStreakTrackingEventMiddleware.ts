@@ -52,7 +52,7 @@ export const getSaveStreakTrackingEventToDatabaseMiddleware = (
         response.locals.savedStreakTrackingEvent = await newStreakTrackingEvent.save();
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.CreateStreakTrackingEventFromRequestMiddleware, err));
+        next(new CustomError(ErrorType.SaveStreakTrackingEventToDatabase, err));
     }
 };
 

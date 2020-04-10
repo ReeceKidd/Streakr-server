@@ -10,9 +10,8 @@ import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { incompleteSoloStreakTaskModel, IncompleteSoloStreakTaskModel } from '../../Models/IncompleteSoloStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import { SoloStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
-import { ActivityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
-import { activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import { SoloStreak, User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 export const incompleteSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -245,24 +244,26 @@ export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseC
 export const sendTaskIncompleteResponseMiddleware = getSendTaskIncompleteResponseMiddleware(ResponseCodes.created);
 
 export const getCreateIncompleteSoloStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const soloStreak: SoloStreak = response.locals.soloStreak;
-        const newActivity = new activityFeedItemModel({
+        const incompletedSoloStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.incompletedSoloStreak,
             userId: user._id,
-            subjectId: soloStreak._id,
-        });
-        await newActivity.save();
+            username: user.username,
+            soloStreakId: soloStreak._id,
+            soloStreakName: soloStreak.streakName,
+        };
+        await createActivityFeedItemFunction(incompletedSoloStreakActivityFeedItem);
     } catch (err) {
         next(new CustomError(ErrorType.CreateIncompleteSoloStreakActivityFeedItemMiddleware, err));
     }
 };
 
 export const createIncompleteSoloStreakActivitFeedItemMiddleware = getCreateIncompleteSoloStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const createIncompleteSoloStreakTaskMiddlewares = [

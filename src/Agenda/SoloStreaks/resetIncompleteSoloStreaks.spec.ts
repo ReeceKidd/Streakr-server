@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import streakoid from '../../streakoid';
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
 describe('resetIncompleteSoloStreaks', () => {
@@ -10,9 +10,12 @@ describe('resetIncompleteSoloStreaks', () => {
     });
 
     test('that incomplete solo streaks default current streak is reset and old streak is pushed to past streaks and lost streak activity is recorded', async () => {
-        expect.assertions(2);
+        expect.assertions(3);
         soloStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
+        streakoid.activityFeedItems.create = jest.fn().mockResolvedValue(true);
+        const username = 'username';
+        streakoid.users.getOne = jest.fn().mockResolvedValue({ username });
         const _id = '1234';
         const endDate = new Date().toString();
         const currentStreak = {
@@ -44,6 +47,14 @@ describe('resetIncompleteSoloStreaks', () => {
                 pastStreaks,
                 active: false,
             },
+        });
+
+        expect(streakoid.activityFeedItems.create).toBeCalledWith({
+            activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
+            userId,
+            username,
+            soloStreakId: _id,
+            soloStreakName: incompleteSoloStreaks[0].streakName,
         });
 
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({

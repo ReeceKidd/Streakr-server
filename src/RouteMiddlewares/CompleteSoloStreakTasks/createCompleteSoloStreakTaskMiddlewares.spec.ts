@@ -21,7 +21,7 @@ import {
     getSetStreakStartDateMiddleware,
     completeSoloStreakTaskBodyValidationMiddleware,
     ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware,
-    createCompleteSoloStreakActivitFeedItemMiddleware,
+    createCompleteSoloStreakActivityFeedItemMiddleware,
     getCreateCompleteSoloStreakActivityFeedItemMiddleware,
 } from './createCompleteSoloStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -599,18 +599,17 @@ describe(`createCompleteSoloStreakActivitFeedItemMiddleware`, () => {
         expect.assertions(2);
         const user = { _id: '_id' };
         const soloStreak = { _id: '_id' };
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
         const response: any = { locals: { user, soloStreak } };
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getCreateCompleteSoloStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateCompleteSoloStreakActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItem).toBeCalled();
         expect(next).not.toBeCalled();
     });
 
@@ -646,6 +645,6 @@ describe(`createCompleteSoloStreakTaskMiddlewares`, () => {
         expect(createCompleteSoloStreakTaskMiddlewares[8]).toBe(saveTaskCompleteMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[9]).toBe(streakMaintainedMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[10]).toBe(sendTaskCompleteResponseMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[11]).toBe(createCompleteSoloStreakActivitFeedItemMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[11]).toBe(createCompleteSoloStreakActivityFeedItemMiddleware);
     });
 });

@@ -13,8 +13,15 @@ import {
 } from '../../Models/IncompleteChallengeStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import { ChallengeStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
-import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import {
+    ChallengeStreak,
+    User,
+    ActivityFeedItemTypes,
+    Challenge,
+    ActivityFeedItemType,
+} from '@streakoid/streakoid-sdk/lib';
+import { ChallengeModel, challengeModel } from '../../../src/Models/Challenge';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 export const incompleteChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -225,25 +232,50 @@ export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseC
 
 export const sendTaskIncompleteResponseMiddleware = getSendTaskIncompleteResponseMiddleware(ResponseCodes.created);
 
+export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const challenge = await challengeModel.findOne({ _id: challengeStreak.challengeId }).lean();
+        if (!challenge) {
+            throw new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskChallengeDoesNotExist);
+        }
+        response.locals.challenge = challenge;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware, err));
+    }
+};
+
+export const retreiveChallengeMiddleware = getRetreiveChallengeMiddleware(challengeModel);
+
 export const getCreateIncompleteChallengeStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
-        const newActivity = new activityFeedItemModel({
+        const challenge: Challenge = response.locals.challenge;
+        const incompletedChallengeStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.incompletedChallengeStreak,
             userId: user._id,
-            subjectId: challengeStreak._id,
-        });
-        await newActivity.save();
+            username: user.username,
+            challengeStreakId: challengeStreak._id,
+            challengeId: challengeStreak.challengeId,
+            challengeName: challenge && challenge.name,
+        };
+        createActivityFeedItemFunction(incompletedChallengeStreakActivityFeedItem);
     } catch (err) {
         next(new CustomError(ErrorType.CreateIncompleteChallengeStreakActivityFeedItemMiddleware, err));
     }
 };
 
 export const createIncompleteChallengeStreakActivityFeedItemMiddleware = getCreateIncompleteChallengeStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const createIncompleteChallengeStreakTaskMiddlewares = [
@@ -257,5 +289,6 @@ export const createIncompleteChallengeStreakTaskMiddlewares = [
     saveTaskIncompleteMiddleware,
     incompleteChallengeStreakMiddleware,
     sendTaskIncompleteResponseMiddleware,
+    retreiveChallengeMiddleware,
     createIncompleteChallengeStreakActivityFeedItemMiddleware,
 ];

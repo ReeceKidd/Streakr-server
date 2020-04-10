@@ -5,7 +5,8 @@ import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddle
 import { userModel, UserModel } from '../../../Models/User';
 import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
-import { User } from '@streakoid/streakoid-sdk/lib';
+import { User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
+import { createActivityFeedItem } from '../../../../src/helpers/createActivityFeedItem';
 
 const followUserParamsValidationSchema = {
     userId: Joi.string()
@@ -160,10 +161,34 @@ export const sendUserWithNewFollowingMiddleware = (request: Request, response: R
     try {
         const { following } = response.locals;
         response.status(ResponseCodes.created).send(following);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendUserWithNewFollowingMiddleware, err));
     }
 };
+
+export const getCreateFollowUserActivityFeedItemMiddleware = (
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const userToFollow: User = response.locals.userToFollow;
+        const followedUserActivityFeedItem: ActivityFeedItemType = {
+            activityFeedItemType: ActivityFeedItemTypes.followedUser,
+            userId: user._id,
+            username: user.username,
+            userFollowedId: userToFollow._id,
+            userFollowedUsername: userToFollow.username,
+        };
+        await createActivityFeedItemFunction(followedUserActivityFeedItem);
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateFollowUserActivityFeedItemMiddleware, err));
+    }
+};
+
+export const createFollowUserActivityFeedItemMiddleware = getCreateFollowUserActivityFeedItemMiddleware(
+    createActivityFeedItem,
+);
 
 export const followUserMiddlewares = [
     followUserParamsValidationMiddleware,
@@ -174,4 +199,5 @@ export const followUserMiddlewares = [
     addUserToFollowToSelectedUsersFollowingMiddleware,
     addSelectedUserToUserToFollowsFollowersMiddleware,
     sendUserWithNewFollowingMiddleware,
+    createFollowUserActivityFeedItemMiddleware,
 ];

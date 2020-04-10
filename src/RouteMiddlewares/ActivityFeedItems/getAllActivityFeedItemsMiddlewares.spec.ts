@@ -14,14 +14,20 @@ import { CustomError, ErrorType } from '../../customError';
 import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 
 const userIds = ['userId'];
-const subjectId = 'streakId';
+const soloStreakId = 'soloStreakId';
+const challengeStreakId = 'challengeStreakId';
+const challengeId = 'challengeId';
+const teamStreakId = 'teamStreakId';
 const activityFeedItemType = ActivityFeedItemTypes.completedSoloStreak;
 const limit = 10;
 const createdAtBefore = new Date().toISOString();
 
 const query = {
     userIds,
-    subjectId,
+    soloStreakId,
+    challengeStreakId,
+    challengeId,
+    teamStreakId,
     activityFeedItemType,
     limit,
     createdAtBefore,

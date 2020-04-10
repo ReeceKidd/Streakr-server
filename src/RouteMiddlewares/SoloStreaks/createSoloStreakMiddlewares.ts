@@ -7,9 +7,9 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User } from '@streakoid/streakoid-sdk/lib';
+import { User, ActivityFeedItemType, SoloStreak } from '@streakoid/streakoid-sdk/lib';
 import ActivityFeedItemTypes from '@streakoid/streakoid-sdk/lib/ActivityFeedItemTypes';
-import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 const createSoloStreakBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -65,24 +65,26 @@ export const sendFormattedSoloStreakMiddleware = (request: Request, response: Re
 };
 
 export const getCreateSoloStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
-        const savedSoloStreak = response.locals.savedSoloStreak;
-        const newActivity = new activityFeedItemModel({
+        const savedSoloStreak: SoloStreak = response.locals.savedSoloStreak;
+        const createdSoloStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.createdSoloStreak,
             userId: user._id,
-            subjectId: savedSoloStreak._id,
-        });
-        await newActivity.save();
+            username: user.username,
+            soloStreakId: savedSoloStreak._id,
+            soloStreakName: savedSoloStreak.streakName,
+        };
+        await createActivityFeedItemFunction(createdSoloStreakActivityFeedItem);
     } catch (err) {
         next(new CustomError(ErrorType.CreateSoloStreakActivityFeedItemMiddleware, err));
     }
 };
 
 export const createSoloStreakActivityFeedItemMiddleware = getCreateSoloStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+    createActivityFeedItem,
 );
 
 export const createSoloStreakMiddlewares = [

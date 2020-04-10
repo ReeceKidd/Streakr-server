@@ -1311,18 +1311,17 @@ describe(`createIncompleteTeamMemberStreakActivityFeedItemMiddleware`, () => {
         expect.assertions(2);
         const user = { _id: '_id' };
         const teamStreak = { _id: '_id' };
-        const save = jest.fn().mockResolvedValue(true);
-        const activityModel = jest.fn(() => ({ save }));
+        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
         const response: any = { locals: { user, teamStreak } };
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getCreateIncompleteTeamMemberStreakActivityFeedItemMiddleware(activityModel as any);
+        const middleware = getCreateIncompleteTeamMemberStreakActivityFeedItemMiddleware(createActivityFeedItem as any);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createActivityFeedItem).toBeCalled();
         expect(next).not.toBeCalled();
     });
 

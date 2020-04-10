@@ -1,6 +1,6 @@
 import { resetIncompleteSoloStreaks } from '../../../src/Agenda/SoloStreaks/resetIncompleteSoloStreaks';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
@@ -32,7 +32,7 @@ describe('resetIncompleteSoloStreaks', () => {
     });
 
     test('adds current streak to past streak,  resets the current streak and creats a lost streak tracking event.', async () => {
-        expect.assertions(26);
+        expect.assertions(29);
 
         const soloStreak = await streakoid.soloStreaks.create({ userId, streakName });
 
@@ -84,7 +84,6 @@ describe('resetIncompleteSoloStreaks', () => {
                 '__v',
             ].sort(),
         );
-
         const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
             userId,
         });
@@ -99,6 +98,26 @@ describe('resetIncompleteSoloStreaks', () => {
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+
+        const lostSoloStreakActivityFeedItems = await streakoid.activityFeedItems.getAll({
+            activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
+        });
+        const lostSoloStreakActivityFeedItem = lostSoloStreakActivityFeedItems.activityFeedItems[0];
+        expect(lostSoloStreakActivityFeedItem.activityFeedItemType).toEqual(ActivityFeedItemTypes.lostSoloStreak);
+        expect(lostSoloStreakActivityFeedItem.userId).toEqual(String(userId));
+        expect(Object.keys(lostSoloStreakActivityFeedItem).sort()).toEqual(
+            [
+                '_id',
+                'activityFeedItemType',
+                'soloStreakId',
+                'soloStreakName',
+                'userId',
+                'username',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
         );
     });
 });

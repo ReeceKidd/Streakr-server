@@ -6,7 +6,8 @@ import { userModel, UserModel } from '../../Models/User';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { PopulatedCurrentUser } from '@streakoid/streakoid-sdk/lib';
+import { PopulatedCurrentUser, User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 const registerValidationSchema = {
     username: Joi.string().required(),
@@ -131,10 +132,31 @@ export const sendFormattedUserMiddleware = (request: Request, response: Response
     try {
         const { user } = response.locals;
         response.status(ResponseCodes.created).send(user);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedUserMiddleware, err));
     }
 };
+
+export const getCreatedAccountActivityFeedItemMiddleware = (
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const createdAccountActivityFeedItem: ActivityFeedItemType = {
+            activityFeedItemType: ActivityFeedItemTypes.createdAccount,
+            userId: user._id,
+            username: user.username,
+        };
+        await createActivityFeedItemFunction(createdAccountActivityFeedItem);
+    } catch (err) {
+        next(new CustomError(ErrorType.CreatedAccountActivityFeedItemMiddleware, err));
+    }
+};
+
+export const createdAccountActivityFeedItemMiddleware = getCreatedAccountActivityFeedItemMiddleware(
+    createActivityFeedItem,
+);
 
 export const registerUserMiddlewares = [
     userRegistrationValidationMiddleware,
@@ -144,4 +166,5 @@ export const registerUserMiddlewares = [
     saveUserToDatabaseMiddleware,
     formatUserMiddleware,
     sendFormattedUserMiddleware,
+    createdAccountActivityFeedItemMiddleware,
 ];

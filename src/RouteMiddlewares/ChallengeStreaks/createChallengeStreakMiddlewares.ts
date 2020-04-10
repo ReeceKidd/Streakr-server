@@ -9,8 +9,14 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { challengeModel, ChallengeModel } from '../../Models/Challenge';
 import { UserModel, userModel } from '../../../src/Models/User';
-import { User, Challenge, ActivityFeedItemTypes, ChallengeStreak } from '@streakoid/streakoid-sdk/lib';
-import { ActivityFeedItemModel, activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import {
+    User,
+    Challenge,
+    ActivityFeedItemTypes,
+    ChallengeStreak,
+    ActivityFeedItemType,
+} from '@streakoid/streakoid-sdk/lib';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 const createChallengeStreakBodyValidationSchema = {
     challengeId: Joi.string().required(),
@@ -193,25 +199,29 @@ export const sendFormattedChallengeStreakMiddleware = (
     }
 };
 
-export const getJoinChallengeActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+export const getCreateJoinChallengeActivityFeedItemMiddleware = (
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const challengeStreak: ChallengeStreak = response.locals.savedChallengeStreak;
-        const newActivity = new activityFeedItemModel({
+        const challenge: Challenge = response.locals.challenge;
+        const joinChallengeActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.joinedChallenge,
             userId: user._id,
-            subjectId: challengeStreak._id,
-        });
-        await newActivity.save();
+            username: user.username,
+            challengeStreakId: challengeStreak._id,
+            challengeId: challenge._id,
+            challengeName: challenge.name,
+        };
+        await createActivityFeedItemFunction(joinChallengeActivityFeedItem);
     } catch (err) {
-        next(new CustomError(ErrorType.JoinChallengeActivityFeedItemMiddleware, err));
+        next(new CustomError(ErrorType.CreateJoinChallengeActivityFeedItemMiddleware, err));
     }
 };
 
-export const joinChallengeActivityFeedItemMiddleware = getJoinChallengeActivityFeedItemMiddleware(
-    activityFeedItemModel,
+export const createJoinChallengeActivityFeedItemMiddleware = getCreateJoinChallengeActivityFeedItemMiddleware(
+    createActivityFeedItem,
 );
 
 export const createChallengeStreakMiddlewares = [
@@ -224,5 +234,5 @@ export const createChallengeStreakMiddlewares = [
     addChallengeBadgeToUserBadgesMiddleware,
     createChallengeStreakMiddleware,
     sendFormattedChallengeStreakMiddleware,
-    joinChallengeActivityFeedItemMiddleware,
+    createJoinChallengeActivityFeedItemMiddleware,
 ];

@@ -1,6 +1,6 @@
 import { resetIncompleteChallengeStreaks } from '../../../src/Agenda/ChallengeStreaks/resetIncompleteChallengeStreaks';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
@@ -49,7 +49,7 @@ describe('resetIncompleteChallengeStreaks', () => {
     });
 
     test('adds current streak to past streak,  resets the current streak and creats a lost streak tracking event.', async () => {
-        expect.assertions(25);
+        expect.assertions(28);
 
         const incompleteChallengeStreaks = await streakoid.challengeStreaks.getAll({
             completedToday: false,
@@ -110,6 +110,27 @@ describe('resetIncompleteChallengeStreaks', () => {
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+
+        const lostChallengeStreakItems = await streakoid.activityFeedItems.getAll({
+            activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
+        });
+        const lostChallengeStreakItem = lostChallengeStreakItems.activityFeedItems[0];
+        expect(lostChallengeStreakItem.activityFeedItemType).toEqual(ActivityFeedItemTypes.lostChallengeStreak);
+        expect(lostChallengeStreakItem.userId).toEqual(String(userId));
+        expect(Object.keys(lostChallengeStreakItem).sort()).toEqual(
+            [
+                '_id',
+                'activityFeedItemType',
+                'challengeStreakId',
+                'challengeId',
+                'challengeName',
+                'userId',
+                'username',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
         );
     });
 });

@@ -1,5 +1,5 @@
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
 import { resetIncompleteTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/resetIncompleteTeamMemberStreaks';
@@ -34,7 +34,7 @@ describe('resetIncompleteTeamMemberStreaks', () => {
     });
 
     test('adds current team member streak to past streak, resets the current streak and creats a lost streak tracking event. Sets teamStreak completedToday to false', async () => {
-        expect.assertions(34);
+        expect.assertions(37);
 
         const creatorId = userId;
         const members = [{ memberId: userId }];
@@ -139,6 +139,27 @@ describe('resetIncompleteTeamMemberStreaks', () => {
         expect(streakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+
+        const lostTeamMemeberStreakItems = await streakoid.activityFeedItems.getAll({
+            activityFeedItemType: ActivityFeedItemTypes.lostTeamStreak,
+        });
+        const lostTeamMemeberStreakItem = lostTeamMemeberStreakItems.activityFeedItems[0];
+        expect(lostTeamMemeberStreakItem.activityFeedItemType).toEqual(ActivityFeedItemTypes.lostTeamStreak);
+        expect(lostTeamMemeberStreakItem.userId).toEqual(String(userId));
+
+        expect(Object.keys(lostTeamMemeberStreakItem).sort()).toEqual(
+            [
+                '_id',
+                'activityFeedItemType',
+                'teamStreakId',
+                'teamStreakName',
+                'userId',
+                'username',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
         );
     });
 });

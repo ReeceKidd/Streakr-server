@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
-import { SoloStreak, User, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { SoloStreak, User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -11,8 +11,7 @@ import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { completeSoloStreakTaskModel, CompleteSoloStreakTaskModel } from '../../Models/CompleteSoloStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import { ActivityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
-import { activityFeedItemModel } from '../../../src/Models/ActivityFeedItem';
+import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -230,24 +229,26 @@ export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCod
 export const sendTaskCompleteResponseMiddleware = getSendTaskCompleteResponseMiddleware(ResponseCodes.created);
 
 export const getCreateCompleteSoloStreakActivityFeedItemMiddleware = (
-    activityFeedItemModel: mongoose.Model<ActivityFeedItemModel>,
+    createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const soloStreak: SoloStreak = response.locals.soloStreak;
-        const newActivity = new activityFeedItemModel({
+        const completedSoloStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.completedSoloStreak,
             userId: user._id,
-            subjectId: soloStreak._id,
-        });
-        await newActivity.save();
+            username: user.username,
+            soloStreakId: soloStreak._id,
+            soloStreakName: soloStreak.streakName,
+        };
+        await createActivityFeedItemFunction(completedSoloStreakActivityFeedItem);
     } catch (err) {
         next(new CustomError(ErrorType.CreateCompleteSoloStreakActivityFeedItemMiddleware, err));
     }
 };
 
-export const createCompleteSoloStreakActivitFeedItemMiddleware = getCreateCompleteSoloStreakActivityFeedItemMiddleware(
-    activityFeedItemModel,
+export const createCompleteSoloStreakActivityFeedItemMiddleware = getCreateCompleteSoloStreakActivityFeedItemMiddleware(
+    createActivityFeedItem,
 );
 
 export const createCompleteSoloStreakTaskMiddlewares = [
@@ -262,5 +263,5 @@ export const createCompleteSoloStreakTaskMiddlewares = [
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
     sendTaskCompleteResponseMiddleware,
-    createCompleteSoloStreakActivitFeedItemMiddleware,
+    createCompleteSoloStreakActivityFeedItemMiddleware,
 ];

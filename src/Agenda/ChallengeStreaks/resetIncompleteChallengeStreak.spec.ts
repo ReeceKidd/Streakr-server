@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resetIncompleteChallengeStreaks } from './resetIncompleteChallengeStreaks';
 import streakoid from '../../streakoid';
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
 
 describe('resetIncompleteChallengeStreaks', () => {
@@ -10,9 +10,14 @@ describe('resetIncompleteChallengeStreaks', () => {
     });
 
     test('that incomplete challenge streaks default current streak is reset and old streak is pushed to past streaks and lost streak activity is recorded', async () => {
-        expect.assertions(2);
+        expect.assertions(3);
         challengeStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
+        streakoid.activityFeedItems.create = jest.fn().mockResolvedValue(true);
+        const username = 'username';
+        const challengeName = 'reading';
+        streakoid.users.getOne = jest.fn().mockResolvedValue({ username });
+        streakoid.challenges.getOne = jest.fn().mockResolvedValue({ _id: '_id', name: challengeName });
         const _id = '1234';
         const endDate = new Date().toString();
         const currentStreak = {
@@ -44,6 +49,15 @@ describe('resetIncompleteChallengeStreaks', () => {
                 pastStreaks,
                 active: false,
             },
+        });
+
+        expect(streakoid.activityFeedItems.create).toBeCalledWith({
+            activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
+            userId: userId,
+            username,
+            challengeStreakId: _id,
+            challengeId: '_id',
+            challengeName,
         });
 
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
