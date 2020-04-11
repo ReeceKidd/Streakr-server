@@ -11,7 +11,7 @@ import {
 } from './getAllActivityFeedItemsMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { ActivityFeedItemTypes, SupportedResponseHeaders } from '@streakoid/streakoid-sdk/lib';
 
 const userIds = ['userId'];
 const soloStreakId = 'soloStreakId';
@@ -84,15 +84,16 @@ describe('formActivityFeedItemsQueryMiddleware', () => {
 });
 
 describe('calculateTotalCountOfActivityFeedItemsMiddleware', () => {
-    test('sets response.locals.totalCountOfActivityFeedItems with the countDocuments value', async () => {
+    test('sets response.headers.x-total count header with total count.', async () => {
         expect.assertions(4);
         const countDocuments = jest.fn(() => 10);
         const find = jest.fn(() => ({ countDocuments }));
         const activityModel = {
             find,
         };
+        const set = jest.fn();
         const request: any = { query: { userIds: `["userId"]`, limit: 10, skip: 0 } };
-        const response: any = { locals: { query: { subjectId: 'subjectId' } } };
+        const response: any = { set, locals: { query: { subjectId: 'subjectId' }, headers: {} } };
         const next = jest.fn();
         const middleware = getCalculateTotalCountOfActivityFeedItemsMiddleware(activityModel as any);
 
@@ -100,7 +101,7 @@ describe('calculateTotalCountOfActivityFeedItemsMiddleware', () => {
 
         expect(find).toBeCalledWith(response.locals.query);
         expect(countDocuments).toBeCalledWith();
-        expect(response.locals.totalCountOfActivityFeedItems).toEqual(10);
+        expect(set).toBeCalledWith(SupportedResponseHeaders.TotalCount, String(request.query.limit));
         expect(next).toBeCalledWith();
     });
 
@@ -187,8 +188,7 @@ describe('sendActivityFeedItemsMiddleware', () => {
         const status = jest.fn(() => ({ send }));
         const request: any = {};
         const activityFeedItems = ['activity'];
-        const totalCountOfActivityFeedItems = 10;
-        const response: any = { locals: { activityFeedItems, totalCountOfActivityFeedItems }, status };
+        const response: any = { locals: { activityFeedItems }, status };
         const next = jest.fn();
 
         sendActivityFeedItemsMiddleware(request, response, next);
@@ -196,7 +196,7 @@ describe('sendActivityFeedItemsMiddleware', () => {
         expect.assertions(3);
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.success);
-        expect(send).toBeCalledWith({ activityFeedItems, totalCountOfActivityFeedItems });
+        expect(send).toBeCalledWith(activityFeedItems);
     });
 
     test('calls next with SendActivityFeedItemsMiddleware on middleware failure', () => {

@@ -99,6 +99,7 @@ export const getCreateArchivedTeamStreakActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.archivedTeamStreak,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 teamStreakId: teamStreak._id,
                 teamStreakName: teamStreak.streakName,
             };
@@ -126,6 +127,7 @@ export const getCreateRestoredTeamStreakActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.restoredTeamStreak,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 teamStreakId: teamStreak._id,
                 teamStreakName: teamStreak.streakName,
             };
@@ -153,6 +155,7 @@ export const getCreateDeletedTeamStreakActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.deletedTeamStreak,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 teamStreakId: teamStreak._id,
                 teamStreakName: teamStreak.streakName,
             };
@@ -180,6 +183,7 @@ export const getCreateEditedTeamStreakNameActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.editedTeamStreakName,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 teamStreakId: teamStreak._id,
                 teamStreakName: teamStreak.streakName,
             };
@@ -207,8 +211,10 @@ export const getCreateEditedTeamStreakDescriptionActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.editedTeamStreakDescription,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 teamStreakId: teamStreak._id,
                 teamStreakName: teamStreak.streakName,
+                teamStreakDescription: streakDescription,
             };
             await createActivityFeedItemFunction(restoredTeamStreakActivityFeedItem);
         }

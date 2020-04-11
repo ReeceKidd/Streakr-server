@@ -296,11 +296,11 @@ export const getCreateCompleteChallengeStreakActivityFeedItemMiddleware = (
             activityFeedItemType: ActivityFeedItemTypes.completedChallengeStreak,
             userId: user._id,
             username: user.username,
+            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
             challengeStreakId: challengeStreak._id,
             challengeId: challengeStreak.challengeId,
             challengeName: challenge && challenge.name,
         };
-        console.log(completedChallengeStreakActivityFeedItem);
         createActivityFeedItemFunction(completedChallengeStreakActivityFeedItem);
     } catch (err) {
         next(new CustomError(ErrorType.CreateCompleteChallengeStreakActivityFeedItemMiddleware, err));

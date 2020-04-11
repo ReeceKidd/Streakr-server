@@ -489,6 +489,7 @@ export const getCreateIncompleteTeamMemberStreakActivityFeedItemMiddleware = (
             activityFeedItemType: ActivityFeedItemTypes.incompletedTeamMemberStreak,
             userId: user._id,
             username: user.username,
+            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
         };

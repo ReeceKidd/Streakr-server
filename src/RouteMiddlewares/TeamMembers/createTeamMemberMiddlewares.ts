@@ -174,6 +174,7 @@ export const getCreateJoinedTeamStreakActivityFeedItemMiddleware = (
             activityFeedItemType: ActivityFeedItemTypes.joinedTeamStreak,
             userId: user._id,
             username: user.username,
+            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
         };

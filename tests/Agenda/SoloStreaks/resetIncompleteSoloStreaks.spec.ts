@@ -1,6 +1,6 @@
 import { resetIncompleteSoloStreaks } from '../../../src/Agenda/SoloStreaks/resetIncompleteSoloStreaks';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes, User } from '@streakoid/streakoid-sdk/lib';
 import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
@@ -14,13 +14,17 @@ jest.setTimeout(120000);
 describe('resetIncompleteSoloStreaks', () => {
     let streakoid: StreakoidFactory;
     let userId: string;
+    let username: string;
+    let userProfileImage: string;
     const streakName = 'Daily Spanish';
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
-            const user = await getPayingUser();
+            const user: User = await getPayingUser();
             userId = user._id;
+            username = user.username;
+            userProfileImage = user.profileImages.originalImageUrl;
             streakoid = await streakoidTest();
         }
     });
@@ -32,7 +36,7 @@ describe('resetIncompleteSoloStreaks', () => {
     });
 
     test('adds current streak to past streak,  resets the current streak and creats a lost streak tracking event.', async () => {
-        expect.assertions(29);
+        expect.assertions(34);
 
         const soloStreak = await streakoid.soloStreaks.create({ userId, streakName });
 
@@ -104,20 +108,29 @@ describe('resetIncompleteSoloStreaks', () => {
             activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
         });
         const lostSoloStreakActivityFeedItem = lostSoloStreakActivityFeedItems.activityFeedItems[0];
-        expect(lostSoloStreakActivityFeedItem.activityFeedItemType).toEqual(ActivityFeedItemTypes.lostSoloStreak);
-        expect(lostSoloStreakActivityFeedItem.userId).toEqual(String(userId));
-        expect(Object.keys(lostSoloStreakActivityFeedItem).sort()).toEqual(
-            [
-                '_id',
-                'activityFeedItemType',
-                'soloStreakId',
-                'soloStreakName',
-                'userId',
-                'username',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        if (lostSoloStreakActivityFeedItem.activityFeedItemType === ActivityFeedItemTypes.lostSoloStreak) {
+            expect(lostSoloStreakActivityFeedItem.activityFeedItemType).toEqual(ActivityFeedItemTypes.lostSoloStreak);
+            expect(lostSoloStreakActivityFeedItem.userId).toEqual(String(userId));
+            expect(lostSoloStreakActivityFeedItem.username).toEqual(String(username));
+            expect(lostSoloStreakActivityFeedItem.userProfileImage).toEqual(String(userProfileImage));
+            expect(lostSoloStreakActivityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+            expect(lostSoloStreakActivityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
+            expect(lostSoloStreakActivityFeedItem.numberOfDaysLost).toEqual(expect.any(Number));
+            expect(Object.keys(lostSoloStreakActivityFeedItem).sort()).toEqual(
+                [
+                    '_id',
+                    'activityFeedItemType',
+                    'soloStreakId',
+                    'soloStreakName',
+                    'userId',
+                    'username',
+                    'userProfileImage',
+                    'numberOfDaysLost',
+                    'createdAt',
+                    'updatedAt',
+                    '__v',
+                ].sort(),
+            );
+        }
     });
 });

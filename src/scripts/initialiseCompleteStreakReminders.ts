@@ -22,6 +22,7 @@ export const createCompleteStreakReminder = async (
             hour,
         });
         completeStreakReminderJob.schedule(jobTime);
+        await agenda.start();
         completeStreakReminderJob.repeatEvery(AgendaProcessTimes.oneDay);
         return completeStreakReminderJob.save();
     })();

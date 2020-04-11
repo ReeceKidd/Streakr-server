@@ -16,6 +16,8 @@ jest.setTimeout(120000);
 describe('resetIncompleteTeamMemberStreaks', () => {
     let streakoid: StreakoidFactory;
     let userId: string;
+    let username: string;
+    let userProfileImage: string;
     const streakName = 'Daily Spanish';
 
     beforeAll(async () => {
@@ -23,6 +25,8 @@ describe('resetIncompleteTeamMemberStreaks', () => {
             await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
+            username = user.username;
+            userProfileImage = user.profileImages.originalImageUrl;
             streakoid = await streakoidTest();
         }
     });
@@ -34,7 +38,7 @@ describe('resetIncompleteTeamMemberStreaks', () => {
     });
 
     test('adds current team member streak to past streak, resets the current streak and creats a lost streak tracking event. Sets teamStreak completedToday to false', async () => {
-        expect.assertions(37);
+        expect.assertions(42);
 
         const creatorId = userId;
         const members = [{ memberId: userId }];
@@ -145,21 +149,29 @@ describe('resetIncompleteTeamMemberStreaks', () => {
             activityFeedItemType: ActivityFeedItemTypes.lostTeamStreak,
         });
         const lostTeamMemeberStreakItem = lostTeamMemeberStreakItems.activityFeedItems[0];
-        expect(lostTeamMemeberStreakItem.activityFeedItemType).toEqual(ActivityFeedItemTypes.lostTeamStreak);
-        expect(lostTeamMemeberStreakItem.userId).toEqual(String(userId));
-
-        expect(Object.keys(lostTeamMemeberStreakItem).sort()).toEqual(
-            [
-                '_id',
-                'activityFeedItemType',
-                'teamStreakId',
-                'teamStreakName',
-                'userId',
-                'username',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        if (lostTeamMemeberStreakItem.activityFeedItemType === ActivityFeedItemTypes.lostTeamStreak) {
+            expect(lostTeamMemeberStreakItem.activityFeedItemType).toEqual(ActivityFeedItemTypes.lostTeamStreak);
+            expect(lostTeamMemeberStreakItem.userId).toEqual(String(userId));
+            expect(lostTeamMemeberStreakItem.username).toEqual(String(username));
+            expect(lostTeamMemeberStreakItem.userProfileImage).toEqual(String(userProfileImage));
+            expect(lostTeamMemeberStreakItem.teamStreakId).toEqual(String(teamStreak._id));
+            expect(lostTeamMemeberStreakItem.teamStreakName).toEqual(String(teamStreak.streakName));
+            expect(lostTeamMemeberStreakItem.numberOfDaysLost).toEqual(expect.any(Number));
+            expect(Object.keys(lostTeamMemeberStreakItem).sort()).toEqual(
+                [
+                    '_id',
+                    'activityFeedItemType',
+                    'teamStreakId',
+                    'teamStreakName',
+                    'userId',
+                    'username',
+                    'userProfileImage',
+                    'numberOfDaysLost',
+                    'createdAt',
+                    'updatedAt',
+                    '__v',
+                ].sort(),
+            );
+        }
     });
 });

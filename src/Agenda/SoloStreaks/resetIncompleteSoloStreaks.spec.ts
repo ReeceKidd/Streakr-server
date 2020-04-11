@@ -15,7 +15,8 @@ describe('resetIncompleteSoloStreaks', () => {
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         streakoid.activityFeedItems.create = jest.fn().mockResolvedValue(true);
         const username = 'username';
-        streakoid.users.getOne = jest.fn().mockResolvedValue({ username });
+        const originalImageUrl = 'google.com/image';
+        streakoid.users.getOne = jest.fn().mockResolvedValue({ username, profileImages: { originalImageUrl } });
         const _id = '1234';
         const endDate = new Date().toString();
         const currentStreak = {
@@ -53,8 +54,10 @@ describe('resetIncompleteSoloStreaks', () => {
             activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
             userId,
             username,
+            userProfileImage: originalImageUrl,
             soloStreakId: _id,
             soloStreakName: incompleteSoloStreaks[0].streakName,
+            numberOfDaysLost: currentStreak.numberOfDaysInARow,
         });
 
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({

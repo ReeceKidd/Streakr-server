@@ -894,14 +894,14 @@ describe('retreiveChallengeMiddleware', () => {
         const findOne = jest.fn(() => ({ lean }));
         const challengeModel = { findOne };
         const request: any = {};
-        const response: any = { locals: { challengeStreak: { _id: '_id' } } };
+        const response: any = { locals: { challengeStreak: { _id: '_id', challengeId: 'challengeId' } } };
         const next = jest.fn();
         const middleware = getRetreiveChallengeMiddleware(challengeModel as any);
 
         await middleware(request, response, next);
 
         expect(response.locals.challenge).toBeDefined();
-        expect(findOne).toBeCalledWith({ _id: response.locals.challengeStreak._id });
+        expect(findOne).toBeCalledWith({ _id: response.locals.challengeStreak.challengeId });
         expect(lean).toBeCalledWith();
         expect(next).toBeCalledWith();
     });

@@ -177,6 +177,7 @@ export const getCreateFollowUserActivityFeedItemMiddleware = (
             activityFeedItemType: ActivityFeedItemTypes.followedUser,
             userId: user._id,
             username: user.username,
+            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
             userFollowedId: userToFollow._id,
             userFollowedUsername: userToFollow.username,
         };

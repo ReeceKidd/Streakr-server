@@ -1,6 +1,6 @@
 import { resetIncompleteChallengeStreaks } from '../../../src/Agenda/ChallengeStreaks/resetIncompleteChallengeStreaks';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes, Challenge } from '@streakoid/streakoid-sdk/lib';
 import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
@@ -14,7 +14,10 @@ jest.setTimeout(120000);
 describe('resetIncompleteChallengeStreaks', () => {
     let streakoid: StreakoidFactory;
     let userId: string;
+    let username: string;
+    let userProfileImage: string;
     let challengeStreakId: string;
+    let challenge: Challenge;
     const name = 'Duolingo';
     const description = 'Everyday I must complete a duolingo lesson';
     const icon = 'duolingo';
@@ -26,14 +29,16 @@ describe('resetIncompleteChallengeStreaks', () => {
             await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
-            streakoid = await streakoidTest();
-            const { challenge } = await streakoid.challenges.create({
+            username = user.username;
+            (userProfileImage = user.profileImages.originalImageUrl), (streakoid = await streakoidTest());
+            const challengeResponse = await streakoid.challenges.create({
                 name,
                 description,
                 icon,
                 color,
                 levels,
             });
+            challenge = challengeResponse.challenge;
             const challengeStreak = await streakoid.challengeStreaks.create({
                 userId,
                 challengeId: challenge._id,
@@ -49,7 +54,7 @@ describe('resetIncompleteChallengeStreaks', () => {
     });
 
     test('adds current streak to past streak,  resets the current streak and creats a lost streak tracking event.', async () => {
-        expect.assertions(28);
+        expect.assertions(34);
 
         const incompleteChallengeStreaks = await streakoid.challengeStreaks.getAll({
             completedToday: false,
@@ -116,21 +121,31 @@ describe('resetIncompleteChallengeStreaks', () => {
             activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
         });
         const lostChallengeStreakItem = lostChallengeStreakItems.activityFeedItems[0];
-        expect(lostChallengeStreakItem.activityFeedItemType).toEqual(ActivityFeedItemTypes.lostChallengeStreak);
-        expect(lostChallengeStreakItem.userId).toEqual(String(userId));
-        expect(Object.keys(lostChallengeStreakItem).sort()).toEqual(
-            [
-                '_id',
-                'activityFeedItemType',
-                'challengeStreakId',
-                'challengeId',
-                'challengeName',
-                'userId',
-                'username',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        if (lostChallengeStreakItem.activityFeedItemType === ActivityFeedItemTypes.lostChallengeStreak) {
+            expect(lostChallengeStreakItem.activityFeedItemType).toEqual(ActivityFeedItemTypes.lostChallengeStreak);
+            expect(lostChallengeStreakItem.userId).toEqual(String(userId));
+            expect(lostChallengeStreakItem.username).toEqual(String(username));
+            expect(lostChallengeStreakItem.userProfileImage).toEqual(String(userProfileImage));
+            expect(lostChallengeStreakItem.challengeStreakId).toEqual(String(challengeStreakId));
+            expect(lostChallengeStreakItem.challengeId).toEqual(String(challenge._id));
+            expect(lostChallengeStreakItem.challengeName).toEqual(String(challenge.name));
+            expect(lostChallengeStreakItem.numberOfDaysLost).toEqual(expect.any(Number));
+            expect(Object.keys(lostChallengeStreakItem).sort()).toEqual(
+                [
+                    '_id',
+                    'activityFeedItemType',
+                    'challengeStreakId',
+                    'challengeId',
+                    'challengeName',
+                    'userId',
+                    'username',
+                    'userProfileImage',
+                    'numberOfDaysLost',
+                    'createdAt',
+                    'updatedAt',
+                    '__v',
+                ].sort(),
+            );
+        }
     });
 });

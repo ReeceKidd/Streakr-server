@@ -210,6 +210,7 @@ export const getCreateJoinChallengeActivityFeedItemMiddleware = (
             activityFeedItemType: ActivityFeedItemTypes.joinedChallenge,
             userId: user._id,
             username: user.username,
+            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
             challengeStreakId: challengeStreak._id,
             challengeId: challenge._id,
             challengeName: challenge.name,

@@ -16,6 +16,7 @@ describe(`createActivityFeedItemBodyValidationMiddleware`, () => {
     const activityFeedItemType = ActivityFeedItemTypes.lostSoloStreak;
     const userId = 'userId';
     const username = 'username';
+    const userProfileImage = 'google.com/image';
     const soloStreakId = 'soloStreakId';
     const soloStreakName = 'Reading';
     const challengeStreakId = 'challengeStreakId';
@@ -23,11 +24,13 @@ describe(`createActivityFeedItemBodyValidationMiddleware`, () => {
     const challengeName = 'Yoga';
     const teamStreakId = 'teamStreakId';
     const teamStreakName = 'teamStreakName';
+    const numberOfDaysLost = 10;
 
     const body = {
         activityFeedItemType,
         userId,
         username,
+        userProfileImage,
         soloStreakId,
         soloStreakName,
         challengeStreakId,
@@ -35,6 +38,7 @@ describe(`createActivityFeedItemBodyValidationMiddleware`, () => {
         challengeName,
         teamStreakId,
         teamStreakName,
+        numberOfDaysLost,
     };
 
     test('check that valid request passes', () => {

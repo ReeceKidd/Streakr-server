@@ -103,6 +103,7 @@ export const getCreateArchivedSoloStreakActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.archivedSoloStreak,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 soloStreakId: updatedSoloStreak._id,
                 soloStreakName: updatedSoloStreak.streakName,
             };
@@ -130,6 +131,7 @@ export const getCreateRestoredSoloStreakActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.restoredSoloStreak,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 soloStreakId: updatedSoloStreak._id,
                 soloStreakName: updatedSoloStreak.streakName,
             };
@@ -157,6 +159,7 @@ export const getCreateDeletedSoloStreakActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.deletedSoloStreak,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 soloStreakId: updatedSoloStreak._id,
                 soloStreakName: updatedSoloStreak.streakName,
             };
@@ -184,6 +187,7 @@ export const getCreateEditedSoloStreakNameActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.editedSoloStreakName,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 soloStreakId: updatedSoloStreak._id,
                 soloStreakName: updatedSoloStreak.streakName,
             };
@@ -211,8 +215,10 @@ export const getCreateEditedSoloStreakDescriptionActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.editedSoloStreakDescription,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 soloStreakId: updatedSoloStreak._id,
                 soloStreakName: updatedSoloStreak.streakName,
+                soloStreakDescription: streakDescription,
             };
             await createActivityFeedItemFunction(archivedSoloStreakActivityFeedItem);
         }

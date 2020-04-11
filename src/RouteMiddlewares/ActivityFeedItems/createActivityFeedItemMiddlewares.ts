@@ -13,6 +13,7 @@ const createActivityFeedItemBodyValidationSchema = {
         .required(),
     userId: Joi.string(),
     username: Joi.string(),
+    userProfileImage: Joi.string(),
     soloStreakId: Joi.string(),
     soloStreakName: Joi.string(),
     challengeStreakId: Joi.string(),
@@ -20,6 +21,7 @@ const createActivityFeedItemBodyValidationSchema = {
     challengeName: Joi.string(),
     teamStreakId: Joi.string(),
     teamStreakName: Joi.string(),
+    numberOfDaysLost: Joi.number(),
 };
 
 export const createActivityFeedItemBodyValidationMiddleware = (

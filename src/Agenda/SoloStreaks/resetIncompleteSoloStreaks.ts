@@ -44,8 +44,10 @@ export const resetIncompleteSoloStreaks = async (
                 activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
                 userId: soloStreak.userId,
                 username: user && user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 soloStreakId: soloStreak._id,
                 soloStreakName: soloStreak.streakName,
+                numberOfDaysLost: pastStreak.numberOfDaysInARow,
             };
 
             await streakoid.activityFeedItems.create(lostStreakActivityFeedItem);

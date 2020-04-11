@@ -147,6 +147,7 @@ export const getCreatedAccountActivityFeedItemMiddleware = (
             activityFeedItemType: ActivityFeedItemTypes.createdAccount,
             userId: user._id,
             username: user.username,
+            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
         };
         await createActivityFeedItemFunction(createdAccountActivityFeedItem);
     } catch (err) {

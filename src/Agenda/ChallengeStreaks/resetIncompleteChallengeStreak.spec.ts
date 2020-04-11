@@ -16,7 +16,10 @@ describe('resetIncompleteChallengeStreaks', () => {
         streakoid.activityFeedItems.create = jest.fn().mockResolvedValue(true);
         const username = 'username';
         const challengeName = 'reading';
-        streakoid.users.getOne = jest.fn().mockResolvedValue({ username });
+        const userProfileImage = 'google.com/image';
+        streakoid.users.getOne = jest
+            .fn()
+            .mockResolvedValue({ username, profileImages: { originalImageUrl: userProfileImage } });
         streakoid.challenges.getOne = jest.fn().mockResolvedValue({ _id: '_id', name: challengeName });
         const _id = '1234';
         const endDate = new Date().toString();
@@ -55,9 +58,11 @@ describe('resetIncompleteChallengeStreaks', () => {
             activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
             userId: userId,
             username,
+            userProfileImage,
             challengeStreakId: _id,
             challengeId: '_id',
             challengeName,
+            numberOfDaysLost: currentStreak.numberOfDaysInARow,
         });
 
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({

@@ -253,6 +253,7 @@ export const getCreateIncompleteSoloStreakActivityFeedItemMiddleware = (
             activityFeedItemType: ActivityFeedItemTypes.incompletedSoloStreak,
             userId: user._id,
             username: user.username,
+            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
             soloStreakId: soloStreak._id,
             soloStreakName: soloStreak.streakName,
         };

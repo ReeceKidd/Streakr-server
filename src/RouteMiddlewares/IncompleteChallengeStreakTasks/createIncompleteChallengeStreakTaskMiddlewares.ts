@@ -264,6 +264,7 @@ export const getCreateIncompleteChallengeStreakActivityFeedItemMiddleware = (
             activityFeedItemType: ActivityFeedItemTypes.incompletedChallengeStreak,
             userId: user._id,
             username: user.username,
+            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
             challengeStreakId: challengeStreak._id,
             challengeId: challengeStreak.challengeId,
             challengeName: challenge && challenge.name,

@@ -47,9 +47,11 @@ export const resetIncompleteChallengeStreaks = async (
                 activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
                 userId: challengeStreak.userId,
                 username: user && user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 challengeStreakId: challengeStreak._id,
                 challengeId: challenge._id,
                 challengeName: challenge.name,
+                numberOfDaysLost: pastStreak.numberOfDaysInARow,
             };
 
             await streakoid.activityFeedItems.create(lostChallengeStreakActivityFeedItem);

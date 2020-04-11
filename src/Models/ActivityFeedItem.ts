@@ -17,10 +17,16 @@ export const activityFeedItemSchema = new mongoose.Schema(
         username: {
             type: String,
         },
+        userProfileImage: {
+            type: String,
+        },
         soloStreakId: {
             type: String,
         },
         soloStreakName: {
+            type: String,
+        },
+        soloStreakDescription: {
             type: String,
         },
         challengeStreakId: {
@@ -38,11 +44,17 @@ export const activityFeedItemSchema = new mongoose.Schema(
         teamStreakName: {
             type: String,
         },
+        teamStreakDescription: {
+            type: String,
+        },
         userFollowedId: {
             type: String,
         },
         userFollowedUsername: {
             type: String,
+        },
+        numberOfDaysLost: {
+            type: Number,
         },
     },
     {

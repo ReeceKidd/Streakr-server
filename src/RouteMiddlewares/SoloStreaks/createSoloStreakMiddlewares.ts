@@ -74,6 +74,7 @@ export const getCreateSoloStreakActivityFeedItemMiddleware = (
             activityFeedItemType: ActivityFeedItemTypes.createdSoloStreak,
             userId: user._id,
             username: user.username,
+            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
             soloStreakId: savedSoloStreak._id,
             soloStreakName: savedSoloStreak.streakName,
         };

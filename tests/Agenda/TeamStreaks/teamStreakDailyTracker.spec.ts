@@ -481,7 +481,7 @@ describe('teamStreakDailyTracker', () => {
     });
 
     test('resets lost team streaks correctly when a lone user does not complete their task for the day', async () => {
-        expect.assertions(77);
+        expect.assertions(68);
 
         const timezone = 'Europe/London';
 
@@ -637,27 +637,6 @@ describe('teamStreakDailyTracker', () => {
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const forcedToLoseTeamStreakEvents = await streakoid.streakTrackingEvents.getAll({
-            type: StreakTrackingEventTypes.forcedToLoseStreakBecauseTeamMemberDidNotCompleteTask,
-        });
-
-        expect(forcedToLoseTeamStreakEvents.length).toEqual(1);
-
-        const forcedToLoseStreakEvent = forcedToLoseTeamStreakEvents[0];
-
-        expect(forcedToLoseStreakEvent.type).toEqual(
-            StreakTrackingEventTypes.forcedToLoseStreakBecauseTeamMemberDidNotCompleteTask,
-        );
-        expect(forcedToLoseStreakEvent.streakId).toEqual(teamMemberStreak._id);
-        expect(forcedToLoseStreakEvent.streakType).toEqual(StreakTypes.teamMember);
-        expect(forcedToLoseStreakEvent.userId).toEqual(expect.any(String));
-        expect(forcedToLoseStreakEvent._id).toEqual(expect.any(String));
-        expect(forcedToLoseStreakEvent.createdAt).toEqual(expect.any(String));
-        expect(forcedToLoseStreakEvent.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(forcedToLoseStreakEvent).sort()).toEqual(
-            ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
-        );
-
         const agendaJobId = String(job.attrs._id);
         const dailyJobs = await streakoid.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
@@ -685,8 +664,8 @@ describe('teamStreakDailyTracker', () => {
         );
     });
 
-    test('resets lost team streaks correctly when not everyone in the team has completed their task', async () => {
-        expect.assertions(102);
+    test('resets lost team streaks correctly when only one user does not complete their task for the day and maintains team member streaks of the users who did the task correctly.', async () => {
+        expect.assertions(93);
 
         const timezone = 'Europe/London';
 
@@ -807,13 +786,13 @@ describe('teamStreakDailyTracker', () => {
         const updatedUserTeamMemberStreak = await streakoid.teamMemberStreaks.getOne(userTeamMemberStreak._id);
 
         expect(updatedUserTeamMemberStreak._id).toEqual(expect.any(String));
-        expect(updatedUserTeamMemberStreak.currentStreak.startDate).toEqual(null);
-        expect(updatedUserTeamMemberStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(updatedUserTeamMemberStreak.currentStreak.startDate).toEqual(expect.any(String));
+        expect(updatedUserTeamMemberStreak.currentStreak.numberOfDaysInARow).toEqual(2);
         expect(Object.keys(updatedUserTeamMemberStreak.currentStreak).sort()).toEqual(
             ['numberOfDaysInARow', 'startDate'].sort(),
         );
         expect(updatedUserTeamMemberStreak.completedToday).toEqual(false);
-        expect(updatedUserTeamMemberStreak.active).toEqual(false);
+        expect(updatedUserTeamMemberStreak.active).toEqual(true);
         const userPastStreak = updatedTeamStreak.pastStreaks[0];
         expect(userPastStreak.endDate).toEqual(expect.any(String));
         expect(userPastStreak.numberOfDaysInARow).toEqual(1);
@@ -906,27 +885,6 @@ describe('teamStreakDailyTracker', () => {
         expect(friendTeamMemberStreakTrackingEvent.createdAt).toEqual(expect.any(String));
         expect(friendTeamMemberStreakTrackingEvent.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(friendTeamMemberStreakTrackingEvent).sort()).toEqual(
-            ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
-        );
-
-        const forcedToLoseTeamStreakEvents = await streakoid.streakTrackingEvents.getAll({
-            type: StreakTrackingEventTypes.forcedToLoseStreakBecauseTeamMemberDidNotCompleteTask,
-        });
-
-        expect(forcedToLoseTeamStreakEvents.length).toEqual(2);
-
-        const forcedToLoseStreakEvent = forcedToLoseTeamStreakEvents[0];
-
-        expect(forcedToLoseStreakEvent.type).toEqual(
-            StreakTrackingEventTypes.forcedToLoseStreakBecauseTeamMemberDidNotCompleteTask,
-        );
-        expect(forcedToLoseStreakEvent.streakId).toEqual(expect.any(String));
-        expect(forcedToLoseStreakEvent.streakType).toEqual(StreakTypes.teamMember);
-        expect(forcedToLoseStreakEvent.userId).toEqual(expect.any(String));
-        expect(forcedToLoseStreakEvent._id).toEqual(expect.any(String));
-        expect(forcedToLoseStreakEvent.createdAt).toEqual(expect.any(String));
-        expect(forcedToLoseStreakEvent.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(forcedToLoseStreakEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 

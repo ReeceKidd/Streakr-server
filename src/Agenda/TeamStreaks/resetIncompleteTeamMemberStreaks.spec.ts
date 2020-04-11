@@ -11,23 +11,27 @@ describe('resetIncompleteSoloStreaks', () => {
     });
 
     test('that incomplete teamMemberStreaks default current streak is reset, past streak is pushed to past streaks, and the teamStreak the teamMemberStreak belongs to completed today gets set to false and lost streak activity is recorded', async () => {
-        expect.assertions(3);
+        expect.assertions(6);
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
         const username = 'username';
         const teamStreakName = 'Reading';
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
-        streakoid.users.getOne = jest.fn().mockResolvedValue({ username });
-        streakoid.teamStreaks.getOne = jest.fn().mockResolvedValue({ _id: '_id', streakName: teamStreakName });
+        const userProfileImage = 'google.com/image';
+        streakoid.users.getOne = jest
+            .fn()
+            .mockResolvedValue({ username, profileImages: { originalImageUrl: userProfileImage } });
+        const teamStreakId = 'teamStreakId';
+        streakoid.teamStreaks.getOne = jest.fn().mockResolvedValue({ _id: teamStreakId, streakName: teamStreakName });
         streakoid.activityFeedItems.create = jest.fn().mockResolvedValue(true);
-        const _id = '1234';
         const endDate = new Date().toString();
         const currentStreak = {
             startDate: undefined,
             numberOfDaysInARow: 0,
         };
         const userId = '5c35116059f7ba19e4e248a9';
-        const teamStreakId = 'teamStreakId';
+        const _id = '_id';
+
         const incompleteTeamMemberStreaks = [
             {
                 _id,
@@ -68,8 +72,10 @@ describe('resetIncompleteSoloStreaks', () => {
             activityFeedItemType: ActivityFeedItemTypes.lostTeamStreak,
             userId,
             username,
-            teamStreakId: '_id',
+            userProfileImage,
+            teamStreakId,
             teamStreakName,
+            numberOfDaysLost: currentStreak.numberOfDaysInARow,
         });
 
         expect(streakoid.streakTrackingEvents.create).toBeCalledWith({

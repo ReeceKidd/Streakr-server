@@ -94,7 +94,6 @@ export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<Ch
         if (!challenge) {
             throw new CustomError(ErrorType.PatchChallengeStreakNoChallengeFound);
         }
-        console.log(challenge);
         response.locals.challenge = challenge;
         next();
     } catch (err) {
@@ -184,6 +183,7 @@ export const getCreateArchivedChallengeStreakActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.archivedChallengeStreak,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 challengeStreakId: updatedChallengeStreak._id,
                 challengeId: challenge._id,
                 challengeName: challenge.name,
@@ -213,6 +213,7 @@ export const getCreateRestoredChallengeStreakActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.restoredChallengeStreak,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 challengeStreakId: updatedChallengeStreak._id,
                 challengeId: challenge._id,
                 challengeName: challenge.name,
@@ -242,6 +243,7 @@ export const getCreateDeletedChallengeStreakActivityFeedItemMiddleware = (
                 activityFeedItemType: ActivityFeedItemTypes.deletedChallengeStreak,
                 userId: user._id,
                 username: user.username,
+                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
                 challengeStreakId: updatedChallengeStreak._id,
                 challengeId: challenge._id,
                 challengeName: challenge.name,
