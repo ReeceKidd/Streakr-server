@@ -7,6 +7,7 @@ import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
 import { User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
 import { createActivityFeedItem } from '../../../../src/helpers/createActivityFeedItem';
+import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 const followUserParamsValidationSchema = {
     userId: Joi.string()
@@ -178,8 +179,8 @@ export const getCreateFollowUserActivityFeedItemMiddleware = (
             userId: user._id,
             username: user.username,
             userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
-            userFollowedId: userToFollow._id,
-            userFollowedUsername: userToFollow.username,
+            userFollowedId: userToFollow && userToFollow._id,
+            userFollowedUsername: userToFollow && userToFollow.username,
         };
         await createActivityFeedItemFunction(followedUserActivityFeedItem);
     } catch (err) {
@@ -191,6 +192,36 @@ export const createFollowUserActivityFeedItemMiddleware = getCreateFollowUserAct
     createActivityFeedItem,
 );
 
+const expoClient = new Expo();
+
+export const getSendNewFollowerRequestNotificationMiddleware = (expo: typeof expoClient) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const user: UserModel = response.locals.user;
+        const userToFollow: UserModel = response.locals.userToFollow;
+        const { pushNotificationToken } = userToFollow;
+        if (pushNotificationToken && userToFollow.notifications.newFollowerUpdates.pushNotification) {
+            const messages: ExpoPushMessage[] = [];
+            messages.push({
+                to: pushNotificationToken,
+                sound: 'default',
+                title: 'New follower',
+                body: `${user && user.username} is following you.`,
+            });
+
+            await expo.sendPushNotificationsAsync(messages);
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.SendNewFollowerRequestNotificationMiddleware, err));
+    }
+};
+
+export const sendNewFollowerRequestNotificationMiddleware = getSendNewFollowerRequestNotificationMiddleware(expoClient);
+
 export const followUserMiddlewares = [
     followUserParamsValidationMiddleware,
     followUserBodyValidationMiddleware,
@@ -201,4 +232,5 @@ export const followUserMiddlewares = [
     addSelectedUserToUserToFollowsFollowersMiddleware,
     sendUserWithNewFollowingMiddleware,
     createFollowUserActivityFeedItemMiddleware,
+    sendNewFollowerRequestNotificationMiddleware,
 ];

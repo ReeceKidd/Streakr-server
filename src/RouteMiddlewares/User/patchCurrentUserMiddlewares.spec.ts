@@ -2,7 +2,6 @@
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import {
-    userRequestBodyValidationMiddleware,
     getPatchCurrentUserMiddleware,
     patchCurrentUserMiddlewares,
     patchCurrentUserMiddleware,
@@ -14,12 +13,13 @@ import {
     populateCurrentUserFollowingMiddleware,
     getPopulateCurrentUserFollowingMiddleware,
     getPopulateCurrentUserFollowersMiddleware,
+    patchCurrentUserRequestBodyValidationMiddleware,
 } from './patchCurrentUserMiddlewares';
 
 import { User } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
-describe('userRequestBodyValidationMiddleware', () => {
+describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
     test('allows request with all possible params to pass', () => {
         expect.assertions(1);
 
@@ -31,7 +31,7 @@ describe('userRequestBodyValidationMiddleware', () => {
                     pushNotification: true,
                     reminderTime: 18,
                 },
-                friendRequest: {
+                newFollowerUpdates: {
                     emailNotification: true,
                     pushNotification: true,
                 },
@@ -57,7 +57,7 @@ describe('userRequestBodyValidationMiddleware', () => {
         };
         const next = jest.fn();
 
-        userRequestBodyValidationMiddleware(request, response, next);
+        patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
 
         expect(next).toBeCalled();
     });
@@ -73,7 +73,7 @@ describe('userRequestBodyValidationMiddleware', () => {
         };
         const next = jest.fn();
 
-        userRequestBodyValidationMiddleware(request, response, next);
+        patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.badRequest);
         expect(send).toBeCalledWith({
@@ -94,7 +94,7 @@ describe('userRequestBodyValidationMiddleware', () => {
         };
         const next = jest.fn();
 
-        userRequestBodyValidationMiddleware(request, response, next);
+        patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
 
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
@@ -322,7 +322,7 @@ describe('formatUserMiddleware', () => {
                     pushNotification: false,
                     reminderTime: 21,
                 },
-                friendRequest: {
+                newFollowerUpdates: {
                     emailNotification: false,
                     pushNotification: false,
                 },
@@ -420,7 +420,7 @@ describe('patchUserMiddlewares', () => {
         expect.assertions(8);
 
         expect(patchCurrentUserMiddlewares.length).toBe(7);
-        expect(patchCurrentUserMiddlewares[0]).toBe(userRequestBodyValidationMiddleware);
+        expect(patchCurrentUserMiddlewares[0]).toBe(patchCurrentUserRequestBodyValidationMiddleware);
         expect(patchCurrentUserMiddlewares[1]).toBe(patchCurrentUserMiddleware);
         expect(patchCurrentUserMiddlewares[2]).toBe(populateCurrentUserBadgesMiddleware);
         expect(patchCurrentUserMiddlewares[3]).toBe(populateCurrentUserFollowingMiddleware);

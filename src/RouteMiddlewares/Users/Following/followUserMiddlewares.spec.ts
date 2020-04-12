@@ -17,6 +17,8 @@ import {
     addSelectedUserToUserToFollowsFollowersMiddleware,
     createFollowUserActivityFeedItemMiddleware,
     getCreateFollowUserActivityFeedItemMiddleware,
+    getSendNewFollowerRequestNotificationMiddleware,
+    sendNewFollowerRequestNotificationMiddleware,
 } from './followUserMiddlewares';
 
 describe('followUserMiddlewares', () => {
@@ -452,10 +454,124 @@ describe('followUserMiddlewares', () => {
         });
     });
 
-    test('are in the correct order', () => {
-        expect.assertions(10);
+    describe(`sendNewFollowerRequestNotification`, () => {
+        test('sends new follower request notification to userToFollow if user to follow has a pushNotificationToken and newFollowerUpdates.pushNotifcation enabled.', async () => {
+            expect.assertions(2);
 
-        expect(followUserMiddlewares.length).toEqual(9);
+            const user = {
+                username: 'user',
+            };
+            const userToFollow = {
+                pushNotificationToken: 'pushNotificationToken',
+                notifications: {
+                    newFollowerUpdates: {
+                        pushNotification: true,
+                    },
+                },
+            };
+            const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+            const expo: any = { sendPushNotificationsAsync };
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    user,
+                    userToFollow,
+                },
+            };
+            const next = jest.fn();
+
+            const middleware = getSendNewFollowerRequestNotificationMiddleware(expo);
+            await middleware(request, response, next);
+
+            expect(sendPushNotificationsAsync).toBeCalledWith([
+                {
+                    to: userToFollow.pushNotificationToken,
+                    sound: 'default',
+                    title: 'New follower',
+                    body: `${user.username} is following you.`,
+                },
+            ]);
+            expect(next).toBeCalledWith();
+        });
+
+        test('does not send notification if pushNotificationToken is not defined', async () => {
+            expect.assertions(2);
+
+            const user = {
+                username: 'user',
+            };
+            const userToFollow = {
+                pushNotificationToken: null,
+            };
+            const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+            const expo: any = { sendPushNotificationsAsync };
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    user,
+                    userToFollow,
+                },
+            };
+            const next = jest.fn();
+
+            const middleware = getSendNewFollowerRequestNotificationMiddleware(expo);
+            await middleware(request, response, next);
+
+            expect(sendPushNotificationsAsync).not.toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('does not send notification if newFollowerUpdates.pushNotification is not enabled.', async () => {
+            expect.assertions(2);
+
+            const user = {
+                username: 'user',
+            };
+            const userToFollow = {
+                pushNotificationToken: 'pushNotificationToken',
+                notifications: {
+                    newFollowerUpdates: {
+                        pushNotification: false,
+                    },
+                },
+            };
+            const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
+            const expo: any = { sendPushNotificationsAsync };
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    user,
+                    userToFollow,
+                },
+            };
+            const next = jest.fn();
+
+            const middleware = getSendNewFollowerRequestNotificationMiddleware(expo);
+            await middleware(request, response, next);
+
+            expect(sendPushNotificationsAsync).not.toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with SendNewFollowerRequestNotification error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+
+            const middleware = getSendNewFollowerRequestNotificationMiddleware({} as any);
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.SendNewFollowerRequestNotificationMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    test('are in the correct order', () => {
+        expect.assertions(11);
+
+        expect(followUserMiddlewares.length).toEqual(10);
         expect(followUserMiddlewares[0]).toEqual(followUserParamsValidationMiddleware);
         expect(followUserMiddlewares[1]).toEqual(followUserBodyValidationMiddleware);
         expect(followUserMiddlewares[2]).toEqual(retreiveSelectedUserMiddleware);
@@ -465,5 +581,6 @@ describe('followUserMiddlewares', () => {
         expect(followUserMiddlewares[6]).toEqual(addSelectedUserToUserToFollowsFollowersMiddleware);
         expect(followUserMiddlewares[7]).toEqual(sendUserWithNewFollowingMiddleware);
         expect(followUserMiddlewares[8]).toEqual(createFollowUserActivityFeedItemMiddleware);
+        expect(followUserMiddlewares[9]).toEqual(sendNewFollowerRequestNotificationMiddleware);
     });
 });

@@ -19,7 +19,7 @@ const userBodyValidationSchema = {
             pushNotification: Joi.boolean(),
             reminderTime: Joi.number().valid([18.0, 19.0, 20.0, 21.0, 22.0, 23.0]),
         }),
-        friendRequest: Joi.object({
+        newFollowerUpdates: Joi.object({
             emailNotification: Joi.boolean(),
             pushNotification: Joi.boolean(),
         }),
@@ -38,7 +38,11 @@ const userBodyValidationSchema = {
     hasCompletedIntroduction: Joi.boolean(),
 };
 
-export const userRequestBodyValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const patchCurrentUserRequestBodyValidationMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     Joi.validate(
         request.body,
         userBodyValidationSchema,
@@ -180,7 +184,7 @@ export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Res
 };
 
 export const patchCurrentUserMiddlewares = [
-    userRequestBodyValidationMiddleware,
+    patchCurrentUserRequestBodyValidationMiddleware,
     patchCurrentUserMiddleware,
     populateCurrentUserBadgesMiddleware,
     populateCurrentUserFollowingMiddleware,

@@ -498,6 +498,7 @@ export enum ErrorType {
     CreateIncompleteChallengeStreakTaskChallengeDoesNotExist,
     PatchChallengeStreakNoChallengeFound,
     PatchChallengeStreakRetreiveChallengeMiddleware,
+    SendNewFollowerRequestNotificationMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -4056,6 +4057,13 @@ export class CustomError extends Error {
             case ErrorType.PatchChallengeStreakRetreiveChallengeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-403`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendNewFollowerRequestNotificationMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-404`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

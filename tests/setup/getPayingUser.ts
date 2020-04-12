@@ -21,7 +21,7 @@ const getPayingUser = async (): Promise<UserModel> => {
                     pushNotification: true,
                     reminderTime: 21,
                 },
-                friendRequest: {
+                newFollowerUpdates: {
                     emailNotification: true,
                     pushNotification: true,
                 },

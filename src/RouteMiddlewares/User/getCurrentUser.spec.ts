@@ -165,7 +165,7 @@ describe('formatUserMiddleware', () => {
                     pushNotification: false,
                     reminderTime: 21,
                 },
-                friendRequest: {
+                newFollowerUpdates: {
                     emailNotification: false,
                     pushNotification: false,
                 },

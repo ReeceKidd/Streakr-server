@@ -78,7 +78,7 @@ export const userSchema = new mongoose.Schema(
                     default: 21,
                 },
             },
-            friendRequest: {
+            teamStreakUpdates: {
                 emailNotification: {
                     type: Boolean,
                     default: true,
@@ -88,7 +88,7 @@ export const userSchema = new mongoose.Schema(
                     default: true,
                 },
             },
-            teamStreakUpdates: {
+            newFollowerUpdates: {
                 emailNotification: {
                     type: Boolean,
                     default: true,
