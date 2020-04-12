@@ -20,37 +20,38 @@ import { User } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
+    const values = {
+        email: 'email@gmail.com',
+        notifications: {
+            completeStreaksReminder: {
+                emailNotification: true,
+                pushNotification: true,
+                reminderHour: 18,
+                reminderMinute: 0,
+            },
+            newFollowerUpdates: {
+                emailNotification: true,
+                pushNotification: true,
+            },
+            teamStreakUpdates: {
+                emailNotification: true,
+                pushNotification: true,
+            },
+            badgeUpdates: {
+                emailNotification: true,
+                pushNotification: true,
+            },
+        },
+        timezone: 'Europe/London',
+        pushNotificationToken: 'push-token',
+    };
     test('allows request with all possible params to pass', () => {
         expect.assertions(1);
 
-        const body = {
-            email: 'email@gmail.com',
-            notifications: {
-                completeStreaksReminder: {
-                    emailNotification: true,
-                    pushNotification: true,
-                    reminderTime: 18,
-                },
-                newFollowerUpdates: {
-                    emailNotification: true,
-                    pushNotification: true,
-                },
-                teamStreakUpdates: {
-                    emailNotification: true,
-                    pushNotification: true,
-                },
-                badgeUpdates: {
-                    emailNotification: true,
-                    pushNotification: true,
-                },
-            },
-            timezone: 'Europe/London',
-            pushNotificationToken: 'push-token',
-        };
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            body,
+            body: values,
         };
         const response: any = {
             status,
@@ -100,6 +101,58 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         expect(send).toBeCalledWith({
             message: 'child "timezone" fails because ["timezone" must be a string]',
         });
+        expect(next).not.toBeCalled();
+    });
+
+    test('sends correct response is sent when reminderHour is not valid', () => {
+        expect.assertions(2);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: {
+                notifications: {
+                    ...values.notifications,
+                    completeStreaksReminder: {
+                        ...values.notifications.completeStreaksReminder,
+                        reminderHour: 100,
+                    },
+                },
+            },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(next).not.toBeCalled();
+    });
+
+    test('sends correct response is sent when reminderMinute is not valid', () => {
+        expect.assertions(2);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body: {
+                notifications: {
+                    ...values.notifications,
+                    completeStreaksReminder: {
+                        ...values.notifications.completeStreaksReminder,
+                        reminderMinute: 100,
+                    },
+                },
+            },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(next).not.toBeCalled();
     });
 });
@@ -320,7 +373,8 @@ describe('formatUserMiddleware', () => {
                 completeStreaksReminder: {
                     emailNotification: false,
                     pushNotification: false,
-                    reminderTime: 21,
+                    reminderHour: 21,
+                    reminderMinute: 0,
                 },
                 newFollowerUpdates: {
                     emailNotification: false,

@@ -19,7 +19,8 @@ const getPayingUser = async (): Promise<UserModel> => {
                 completeStreaksReminder: {
                     emailNotification: true,
                     pushNotification: true,
-                    reminderTime: 21,
+                    reminderHour: 21,
+                    reminderMinute: 15,
                 },
                 newFollowerUpdates: {
                     emailNotification: true,

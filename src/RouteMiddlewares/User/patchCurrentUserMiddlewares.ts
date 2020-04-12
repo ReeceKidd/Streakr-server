@@ -11,13 +11,23 @@ import { BadgeModel } from '../../Models/Badge';
 import { badgeModel } from '../../Models/Badge';
 import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
 
+const validHours = [];
+for (let hour = 0; hour < 24; hour++) {
+    validHours.push(hour);
+}
+const validMinutes = [];
+for (let minute = 0; minute < 60; minute++) {
+    validMinutes.push(minute);
+}
+
 const userBodyValidationSchema = {
     email: Joi.string().email(),
     notifications: Joi.object({
         completeStreaksReminder: Joi.object({
             emailNotification: Joi.boolean(),
             pushNotification: Joi.boolean(),
-            reminderTime: Joi.number().valid([18.0, 19.0, 20.0, 21.0, 22.0, 23.0]),
+            reminderHour: Joi.number().valid(validHours),
+            reminderMinute: Joi.number().valid(validMinutes),
         }),
         newFollowerUpdates: Joi.object({
             emailNotification: Joi.boolean(),

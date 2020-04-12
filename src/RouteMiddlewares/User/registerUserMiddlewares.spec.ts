@@ -354,7 +354,8 @@ describe('formatUserMiddleware', () => {
                 completeStreaksReminder: {
                     emailNotification: false,
                     pushNotification: false,
-                    reminderTime: 21,
+                    reminderHour: 21,
+                    reminderMinute: 15,
                 },
                 newFollowerUpdates: {
                     emailNotification: false,

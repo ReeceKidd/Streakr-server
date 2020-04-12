@@ -73,9 +73,13 @@ export const userSchema = new mongoose.Schema(
                     type: Boolean,
                     default: true,
                 },
-                reminderTime: {
+                reminderHour: {
                     type: Number,
                     default: 21,
+                },
+                reminderMinute: {
+                    type: Number,
+                    default: 0,
                 },
             },
             teamStreakUpdates: {
