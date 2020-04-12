@@ -2,8 +2,9 @@
 
 // import { Request, Response, NextFunction } from 'express';
 
-// import { userModel } from '../Models/User';
 // import { CustomError, ErrorType } from '../customError';
+// import { agendaJobModel } from '../Models/AgendaJob';
+// import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -11,15 +12,8 @@
 //     next: NextFunction,
 // ): Promise<void> => {
 //     try {
-//         const users = await userModel.find({});
-//         await Promise.all(
-//             users.map(async user => {
-//                 await userModel.findByIdAndUpdate(user._id, {
-//                     $set: { 'notifications.newFollowerUpdates': { emailNotification: true, pushNotification: true } },
-//                 });
-//             }),
-//         );
-//         response.send('Success');
+//         const agendaJobs = await agendaJobModel.deleteMany({ name: AgendaJobNames.completeStreaksReminder });
+//         response.send(agendaJobs);
 //     } catch (err) {
 //         if (err instanceof CustomError) next(err);
 //         else next(new CustomError(ErrorType.GetRetreiveUserMiddleware, err));
