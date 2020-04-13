@@ -15,7 +15,7 @@ export const getPopulateCurrentUserBadgesMiddleware = (badgeModel: Model<BadgeMo
     try {
         const user: User = response.locals.user;
         const badges = await badgeModel.find({ _id: user.badges }).lean();
-        response.locals.user.badges = badges;
+        response.locals.badges = badges;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -43,7 +43,7 @@ export const getPopulateCurrentUserFollowingMiddleware = (userModel: Model<UserM
                 return basicUser;
             }),
         );
-        response.locals.user.following = following;
+        response.locals.following = following;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -71,7 +71,7 @@ export const getPopulateCurrentUserFollowersMiddleware = (userModel: Model<UserM
                 return basicUser;
             }),
         );
-        response.locals.user.followers = followers;
+        response.locals.followers = followers;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -83,21 +83,23 @@ export const populateCurrentUserFollowersMiddleware = getPopulateCurrentUserFoll
 
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const user = response.locals.user;
+        const user: User = response.locals.user;
+        const { badges, followers, following } = response.locals;
         const formattedUser: PopulatedCurrentUser = {
             _id: user._id,
             email: user.email,
             username: user.username,
             membershipInformation: user.membershipInformation,
             userType: user.userType,
-            badges: user.badges,
-            followers: user.followers,
-            following: user.following,
+            badges,
+            followers,
+            following,
             friends: user.friends,
             timezone: user.timezone,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,
+            pushNotifications: user.pushNotifications,
             notifications: user.notifications,
             profileImages: user.profileImages,
             hasCompletedIntroduction: user.hasCompletedIntroduction,

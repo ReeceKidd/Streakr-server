@@ -16,10 +16,9 @@
 //             users.map(user => {
 //                 return userModel.findByIdAndUpdate(user._id, {
 //                     $set: {
-//                         'notifications.completeStreaksReminder': {
-//                             ...user.notifications.completeStreaksReminder,
-//                             reminderHour: 21,
-//                             reminderMinute: 0,
+//                         notifications: {
+//                             ...user.notifications,
+//                             friendRequest: undefined,
 //                         },
 //                     },
 //                 });

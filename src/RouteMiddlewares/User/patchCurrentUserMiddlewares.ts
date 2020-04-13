@@ -20,6 +20,15 @@ for (let minute = 0; minute < 60; minute++) {
     validMinutes.push(minute);
 }
 
+const pushNotificationValidationSchema = Joi.object({
+    _id: Joi.string(),
+    type: Joi.string(),
+    streakId: Joi.string(),
+    streakType: Joi.string(),
+    reminderHour: Joi.number(),
+    reminderMinute: Joi.number(),
+});
+
 const userBodyValidationSchema = {
     email: Joi.string().email(),
     notifications: Joi.object({
@@ -45,6 +54,7 @@ const userBodyValidationSchema = {
     badges: Joi.array(),
     timezone: Joi.string(),
     pushNotificationToken: Joi.string(),
+    pushNotifications: Joi.array().items(pushNotificationValidationSchema),
     hasCompletedIntroduction: Joi.boolean(),
 };
 
@@ -90,7 +100,7 @@ export const getPopulateCurrentUserBadgesMiddleware = (badgeModel: mongoose.Mode
     try {
         const updatedUser: User = response.locals.updatedUser;
         const badges = await badgeModel.find({ _id: updatedUser.badges }).lean();
-        response.locals.updatedUser.badges = badges;
+        response.locals.badges = badges;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -118,7 +128,7 @@ export const getPopulateCurrentUserFollowingMiddleware = (userModel: mongoose.Mo
                 return basicUser;
             }),
         );
-        response.locals.updatedUser.following = following;
+        response.locals.following = following;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -146,7 +156,7 @@ export const getPopulateCurrentUserFollowersMiddleware = (userModel: mongoose.Mo
                 return basicUser;
             }),
         );
-        response.locals.updatedUser.followers = followers;
+        response.locals.followers = followers;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -158,7 +168,8 @@ export const populateCurrentUserFollowersMiddleware = getPopulateCurrentUserFoll
 
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const user = response.locals.updatedUser;
+        const user: User = response.locals.updatedUser;
+        const { badges, following, followers } = response.locals;
         const formattedUser: PopulatedCurrentUser = {
             _id: user._id,
             email: user.email,
@@ -166,16 +177,17 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             membershipInformation: user.membershipInformation,
             userType: user.userType,
             timezone: user.timezone,
-            badges: user.badges,
-            followers: user.followers,
-            following: user.following,
             friends: user.friends,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,
+            pushNotifications: user.pushNotifications,
             notifications: user.notifications,
             profileImages: user.profileImages,
             hasCompletedIntroduction: user.hasCompletedIntroduction,
+            badges,
+            followers,
+            following,
         };
         response.locals.formattedUser = formattedUser;
         next();

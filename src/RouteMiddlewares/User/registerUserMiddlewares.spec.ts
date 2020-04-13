@@ -350,6 +350,7 @@ describe('formatUserMiddleware', () => {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
             pushNotificationToken: 'pushNotifcationToken',
+            pushNotifications: [],
             notifications: {
                 completeStreaksReminder: {
                     emailNotification: false,
@@ -392,6 +393,7 @@ describe('formatUserMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'pushNotificationToken',
+                'pushNotifications',
                 'hasCompletedIntroduction',
                 'notifications',
                 'profileImages',

@@ -131,6 +131,10 @@ export const userSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        pushNotifications: {
+            type: Array,
+            default: [],
+        },
         hasCompletedIntroduction: {
             type: Boolean,
             default: false,
