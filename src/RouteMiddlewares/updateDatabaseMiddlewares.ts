@@ -16,10 +16,7 @@
 //             users.map(user => {
 //                 return userModel.findByIdAndUpdate(user._id, {
 //                     $set: {
-//                         notifications: {
-//                             ...user.notifications,
-//                             friendRequest: undefined,
-//                         },
+//                         pushNotifications: [],
 //                     },
 //                 });
 //             }),

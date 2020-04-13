@@ -21,7 +21,7 @@ for (let minute = 0; minute < 60; minute++) {
 }
 
 const pushNotificationValidationSchema = Joi.object({
-    _id: Joi.string(),
+    expoId: Joi.string(),
     type: Joi.string(),
     streakId: Joi.string(),
     streakType: Joi.string(),
