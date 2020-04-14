@@ -1125,7 +1125,7 @@ describe('retreiveTeamMembersMiddleware', () => {
 });
 
 describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
-    test('sends notification to team members if they have teamStreakUpdates notifications on', async () => {
+    test('sends push notification to team members if they have teamStreakUpdates notifications on', async () => {
         expect.assertions(3);
         const user = {
             _id: '_id',
@@ -1137,9 +1137,9 @@ describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
         const teamMember = {
             _id: 'teamMemberId',
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 teamStreakUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };
@@ -1164,7 +1164,7 @@ describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
         expect(next).toBeCalledWith();
     });
 
-    test('does not send notification if team member does not have push notifications on', async () => {
+    test('does not send notification if team member does not have teamStreakUpdates push notifications enabled', async () => {
         expect.assertions(3);
 
         const user = {
@@ -1177,9 +1177,9 @@ describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
         const teamMember = {
             _id: 'teamMemberId',
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 teamStreakUpdates: {
-                    pushNotification: false,
+                    enabled: false,
                 },
             },
         };
@@ -1218,9 +1218,9 @@ describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
         const teamMember = {
             _id: '_id',
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 teamStreakUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };

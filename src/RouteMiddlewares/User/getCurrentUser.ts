@@ -100,7 +100,6 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,
             pushNotifications: user.pushNotifications,
-            notifications: user.notifications,
             profileImages: user.profileImages,
             hasCompletedIntroduction: user.hasCompletedIntroduction,
         };

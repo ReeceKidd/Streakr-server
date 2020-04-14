@@ -4,6 +4,7 @@
 
 // import { CustomError, ErrorType } from '../customError';
 // import { userModel } from '../../src/Models/User';
+// import { PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -16,7 +17,24 @@
 //             users.map(user => {
 //                 return userModel.findByIdAndUpdate(user._id, {
 //                     $set: {
-//                         pushNotifications: [],
+//                         pushNotifications: {
+//                             completeAllStreaksReminder: {
+//                                 enabled: true,
+//                                 type: PushNotificationTypes.completeAllStreaksReminder,
+//                                 expoId: '',
+//                                 reminderHour: 21,
+//                                 reminderMinute: 0,
+//                             },
+//                             teamStreakUpdates: {
+//                                 enabled: true,
+//                             },
+//                             newFollowerUpdates: {
+//                                 enabled: true,
+//                             },
+//                             badgeUpdates: {
+//                                 enabled: true,
+//                             },
+//                         },
 //                     },
 //                 });
 //             }),

@@ -463,9 +463,9 @@ describe('followUserMiddlewares', () => {
             };
             const userToFollow = {
                 pushNotificationToken: 'pushNotificationToken',
-                notifications: {
+                pushNotifications: {
                     newFollowerUpdates: {
-                        pushNotification: true,
+                        enabled: true,
                     },
                 },
             };
@@ -529,9 +529,9 @@ describe('followUserMiddlewares', () => {
             };
             const userToFollow = {
                 pushNotificationToken: 'pushNotificationToken',
-                notifications: {
+                pushNotifications: {
                     newFollowerUpdates: {
-                        pushNotification: false,
+                        enabled: false,
                     },
                 },
             };

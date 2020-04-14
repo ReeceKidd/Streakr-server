@@ -509,7 +509,7 @@ describe('streakMaintainedMiddleware', () => {
 });
 
 describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
-    test('sends new challenge badge notification if user has a pushNotificationToken, badgeUpdates enabled and number of days in a row equals 7', async () => {
+    test('sends new challenge badge push notification if user has a pushNotificationToken, badgeUpdates enabled and number of days in a row equals 7', async () => {
         expect.assertions(2);
 
         const challengeStreak = {
@@ -519,9 +519,9 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
         };
         const user = {
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 badgeUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };
@@ -560,9 +560,9 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
         };
         const user = {
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 badgeUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };
@@ -601,9 +601,9 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
         };
         const user = {
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 badgeUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };
@@ -642,9 +642,9 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
         };
         const user = {
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 badgeUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };
@@ -683,9 +683,9 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
         };
         const user = {
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 badgeUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };
@@ -724,9 +724,9 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
         };
         const user = {
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 badgeUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };
@@ -765,11 +765,6 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
         };
         const user = {
             pushNotificationToken: undefined,
-            notifications: {
-                badgeUpdates: {
-                    pushNotification: true,
-                },
-            },
         };
         const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
         const expo: any = { sendPushNotificationsAsync };
@@ -798,10 +793,10 @@ describe(`sendNewChallengeBadgeNotificationMiddleware`, () => {
             },
         };
         const user = {
-            pushNotificationToken: undefined,
-            notifications: {
+            pushNotificationToken: 'pushNotificationToken',
+            pushNotifications: {
                 badgeUpdates: {
-                    pushNotification: false,
+                    enabled: false,
                 },
             },
         };

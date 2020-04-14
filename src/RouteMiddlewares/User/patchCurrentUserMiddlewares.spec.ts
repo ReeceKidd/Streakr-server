@@ -16,34 +16,20 @@ import {
     patchCurrentUserRequestBodyValidationMiddleware,
 } from './patchCurrentUserMiddlewares';
 
-import { User } from '@streakoid/streakoid-sdk/lib';
+import { User, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
-    const values = {
+    const values: {
+        email: string;
+        timezone: string;
+        pushNotificationToken: string;
+        hasCompletedIntroduction: boolean;
+    } = {
         email: 'email@gmail.com',
-        notifications: {
-            completeStreaksReminder: {
-                emailNotification: true,
-                pushNotification: true,
-                reminderHour: 18,
-                reminderMinute: 0,
-            },
-            newFollowerUpdates: {
-                emailNotification: true,
-                pushNotification: true,
-            },
-            teamStreakUpdates: {
-                emailNotification: true,
-                pushNotification: true,
-            },
-            badgeUpdates: {
-                emailNotification: true,
-                pushNotification: true,
-            },
-        },
         timezone: 'Europe/London',
         pushNotificationToken: 'push-token',
+        hasCompletedIntroduction: true,
     };
     test('allows request with all possible params to pass', () => {
         expect.assertions(1);
@@ -101,58 +87,6 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         expect(send).toBeCalledWith({
             message: 'child "timezone" fails because ["timezone" must be a string]',
         });
-        expect(next).not.toBeCalled();
-    });
-
-    test('sends correct response is sent when reminderHour is not valid', () => {
-        expect.assertions(2);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: {
-                notifications: {
-                    ...values.notifications,
-                    completeStreaksReminder: {
-                        ...values.notifications.completeStreaksReminder,
-                        reminderHour: 100,
-                    },
-                },
-            },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(next).not.toBeCalled();
-    });
-
-    test('sends correct response is sent when reminderMinute is not valid', () => {
-        expect.assertions(2);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: {
-                notifications: {
-                    ...values.notifications,
-                    completeStreaksReminder: {
-                        ...values.notifications.completeStreaksReminder,
-                        reminderMinute: 100,
-                    },
-                },
-            },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(next).not.toBeCalled();
     });
 });
@@ -368,28 +302,25 @@ describe('formatUserMiddleware', () => {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
             pushNotificationToken: 'pushNotifcationToken',
-            pushNotifications: [],
-            hasCompletedIntroduction: false,
-            notifications: {
-                completeStreaksReminder: {
-                    emailNotification: false,
-                    pushNotification: false,
-                    reminderHour: 21,
-                    reminderMinute: 0,
-                },
-                newFollowerUpdates: {
-                    emailNotification: false,
-                    pushNotification: false,
-                },
-                teamStreakUpdates: {
-                    emailNotification: false,
-                    pushNotification: false,
+            pushNotifications: {
+                completeAllStreaksReminder: {
+                    enabled: true,
+                    expoId: 'expoId',
+                    reminderHour: 10,
+                    reminderMinute: 15,
+                    type: PushNotificationTypes.completeAllStreaksReminder,
                 },
                 badgeUpdates: {
-                    emailNotification: false,
-                    pushNotification: false,
+                    enabled: true,
+                },
+                teamStreakUpdates: {
+                    enabled: true,
+                },
+                newFollowerUpdates: {
+                    enabled: true,
                 },
             },
+            hasCompletedIntroduction: false,
             stripe: {
                 customer: 'abc',
                 subscription: 'sub_1',
@@ -418,7 +349,6 @@ describe('formatUserMiddleware', () => {
                 'pushNotifications',
                 'pushNotificationToken',
                 'hasCompletedIntroduction',
-                'notifications',
                 'profileImages',
             ].sort(),
         );

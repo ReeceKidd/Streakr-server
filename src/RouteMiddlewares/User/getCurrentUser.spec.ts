@@ -12,7 +12,7 @@ import {
 } from './getCurrentUser';
 import { CustomError } from '../../customError';
 import { ErrorType } from '../../customError';
-import { User } from '@streakoid/streakoid-sdk/lib';
+import { User, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe('populateCurrentUserBadgesMiddleware', () => {
@@ -158,28 +158,25 @@ describe('formatUserMiddleware', () => {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
             pushNotificationToken: 'pushNotifcationToken',
-            pushNotifications: [],
-            hasCompletedIntroduction: false,
-            notifications: {
-                completeStreaksReminder: {
-                    emailNotification: false,
-                    pushNotification: false,
-                    reminderHour: 21,
-                    reminderMinute: 0,
-                },
-                newFollowerUpdates: {
-                    emailNotification: false,
-                    pushNotification: false,
-                },
-                teamStreakUpdates: {
-                    emailNotification: false,
-                    pushNotification: false,
+            pushNotifications: {
+                completeAllStreaksReminder: {
+                    enabled: true,
+                    expoId: 'expoId',
+                    reminderMinute: 10,
+                    reminderHour: 10,
+                    type: PushNotificationTypes.completeAllStreaksReminder,
                 },
                 badgeUpdates: {
-                    emailNotification: false,
-                    pushNotification: false,
+                    enabled: false,
+                },
+                teamStreakUpdates: {
+                    enabled: true,
+                },
+                newFollowerUpdates: {
+                    enabled: true,
                 },
             },
+            hasCompletedIntroduction: false,
             stripe: {
                 customer: 'abc',
                 subscription: 'sub_1',
@@ -208,7 +205,6 @@ describe('formatUserMiddleware', () => {
                 'pushNotificationToken',
                 'pushNotifications',
                 'hasCompletedIntroduction',
-                'notifications',
                 'profileImages',
             ].sort(),
         );

@@ -15,26 +15,6 @@ const getPayingUser = async (): Promise<UserModel> => {
                 currentMembershipStartDate: new Date(),
             },
             timezone: 'Europe/London',
-            notifications: {
-                completeStreaksReminder: {
-                    emailNotification: true,
-                    pushNotification: true,
-                    reminderHour: 21,
-                    reminderMinute: 15,
-                },
-                newFollowerUpdates: {
-                    emailNotification: true,
-                    pushNotification: true,
-                },
-                teamStreakUpdates: {
-                    emailNotification: true,
-                    pushNotification: true,
-                },
-                badgeUpdates: {
-                    emailNotification: true,
-                    pushNotification: true,
-                },
-            },
             pushNotificationToken: 'ExponentPushToken[hC0rRYEqr3N-IhTsr4h-Xo]',
         },
     });

@@ -227,7 +227,7 @@ export const getSendNewChallengeBadgeNotificationMiddleware = (expo: typeof expo
             numberOfDaysInARow === 364
         ) {
             const { pushNotificationToken } = user;
-            if (pushNotificationToken && user.notifications.badgeUpdates.pushNotification) {
+            if (pushNotificationToken && user.pushNotifications.badgeUpdates.enabled) {
                 const messages: ExpoPushMessage[] = [];
                 messages.push({
                     to: pushNotificationToken,

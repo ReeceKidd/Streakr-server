@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { User } from '@streakoid/streakoid-sdk/lib';
+import { User, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 export type UserModel = User & mongoose.Document;
@@ -63,56 +63,6 @@ export const userSchema = new mongoose.Schema(
             type: Array,
             default: [],
         },
-        notifications: {
-            completeStreaksReminder: {
-                emailNotification: {
-                    type: Boolean,
-                    default: true,
-                },
-                pushNotification: {
-                    type: Boolean,
-                    default: true,
-                },
-                reminderHour: {
-                    type: Number,
-                    default: 21,
-                },
-                reminderMinute: {
-                    type: Number,
-                    default: 0,
-                },
-            },
-            teamStreakUpdates: {
-                emailNotification: {
-                    type: Boolean,
-                    default: true,
-                },
-                pushNotification: {
-                    type: Boolean,
-                    default: true,
-                },
-            },
-            newFollowerUpdates: {
-                emailNotification: {
-                    type: Boolean,
-                    default: true,
-                },
-                pushNotification: {
-                    type: Boolean,
-                    default: true,
-                },
-            },
-            badgeUpdates: {
-                emailNotification: {
-                    type: Boolean,
-                    default: true,
-                },
-                pushNotification: {
-                    type: Boolean,
-                    default: true,
-                },
-            },
-        },
         badges: {
             type: Array,
             default: [],
@@ -132,8 +82,46 @@ export const userSchema = new mongoose.Schema(
             default: null,
         },
         pushNotifications: {
-            type: Array,
-            default: [],
+            completeAllStreaksReminder: {
+                enabled: {
+                    type: Boolean,
+                    default: false,
+                },
+                expoId: {
+                    type: String,
+                    default: '',
+                },
+                reminderHour: {
+                    type: Number,
+                    default: 21,
+                },
+                reminderMinute: {
+                    type: Number,
+                    default: 0,
+                },
+                type: {
+                    type: String,
+                    default: PushNotificationTypes.completeAllStreaksReminder,
+                },
+            },
+            teamStreakUpdates: {
+                enabled: {
+                    type: Boolean,
+                    default: true,
+                },
+            },
+            newFollowerUpdates: {
+                enabled: {
+                    type: Boolean,
+                    default: true,
+                },
+            },
+            badgeUpdates: {
+                enabled: {
+                    type: Boolean,
+                    default: true,
+                },
+            },
         },
         hasCompletedIntroduction: {
             type: Boolean,

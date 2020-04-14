@@ -351,22 +351,6 @@ describe('formatUserMiddleware', () => {
             },
             pushNotificationToken: 'pushNotifcationToken',
             pushNotifications: [],
-            notifications: {
-                completeStreaksReminder: {
-                    emailNotification: false,
-                    pushNotification: false,
-                    reminderHour: 21,
-                    reminderMinute: 15,
-                },
-                newFollowerUpdates: {
-                    emailNotification: false,
-                    pushNotification: false,
-                },
-                teamStreakUpdates: {
-                    emailNotification: false,
-                    pushNotification: false,
-                },
-            },
             stripe: {
                 customer: 'abc',
                 subscription: 'sub_1',
@@ -395,7 +379,6 @@ describe('formatUserMiddleware', () => {
                 'pushNotificationToken',
                 'pushNotifications',
                 'hasCompletedIntroduction',
-                'notifications',
                 'profileImages',
             ].sort(),
         );

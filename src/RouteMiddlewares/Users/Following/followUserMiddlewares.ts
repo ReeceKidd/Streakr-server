@@ -203,7 +203,7 @@ export const getSendNewFollowerRequestNotificationMiddleware = (expo: typeof exp
         const user: User = response.locals.user;
         const userToFollow: User = response.locals.userToFollow;
         const { pushNotificationToken } = userToFollow;
-        if (pushNotificationToken && userToFollow.notifications.newFollowerUpdates.pushNotification) {
+        if (pushNotificationToken && userToFollow.pushNotifications.newFollowerUpdates.enabled) {
             const messages: ExpoPushMessage[] = [];
             messages.push({
                 to: pushNotificationToken,

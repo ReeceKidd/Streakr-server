@@ -77,7 +77,7 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
                     if (
                         populatedMember &&
                         populatedMember.pushNotificationToken &&
-                        populatedMember.notifications.teamStreakUpdates.pushNotification &&
+                        populatedMember.pushNotifications.teamStreakUpdates.enabled &&
                         String(populatedMember._id) !== String(userWhoCreatedNote._id)
                     ) {
                         messages.push({

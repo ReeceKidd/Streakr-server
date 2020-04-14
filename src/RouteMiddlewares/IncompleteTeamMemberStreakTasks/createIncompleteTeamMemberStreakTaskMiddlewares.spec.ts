@@ -1125,7 +1125,7 @@ describe('retreiveTeamMembersMiddleware', () => {
 });
 
 describe(`notifyTeamMembersThatUserHasIncompletedTaskMiddleware`, () => {
-    test('sends user has incompleted task notification to team members if they have teamStreakUpdates notifications on', async () => {
+    test('sends user has incompleted task push notification to team members if they have teamStreakUpdates notifications on', async () => {
         expect.assertions(3);
         const user = {
             _id: '_id',
@@ -1137,9 +1137,9 @@ describe(`notifyTeamMembersThatUserHasIncompletedTaskMiddleware`, () => {
         const teamMember = {
             teamMemberId: 'teamMemberId',
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 teamStreakUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };
@@ -1178,9 +1178,9 @@ describe(`notifyTeamMembersThatUserHasIncompletedTaskMiddleware`, () => {
         const teamMember = {
             _id: 'teamMemberId',
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 teamStreakUpdates: {
-                    pushNotification: false,
+                    enabled: false,
                 },
             },
         };
@@ -1219,9 +1219,9 @@ describe(`notifyTeamMembersThatUserHasIncompletedTaskMiddleware`, () => {
         const teamMember = {
             _id: '_id',
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 teamStreakUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };

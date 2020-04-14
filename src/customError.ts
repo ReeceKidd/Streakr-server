@@ -499,6 +499,9 @@ export enum ErrorType {
     PatchChallengeStreakNoChallengeFound,
     PatchChallengeStreakRetreiveChallengeMiddleware,
     SendNewFollowerRequestNotificationMiddleware,
+    UpdateCurrentUsersPushNotificationsUserNotFound,
+    PatchCurrentUserPushNotificationsMiddleware,
+    SendUpdatedCurrentUserPushNotificationsMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1233,6 +1236,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-97`,
                     message: 'Challenge does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.UpdateCurrentUsersPushNotificationsUserNotFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-98`,
+                    message: 'User does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4064,6 +4075,20 @@ export class CustomError extends Error {
             case ErrorType.SendNewFollowerRequestNotificationMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-404`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PatchCurrentUserPushNotificationsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-405`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendUpdatedCurrentUserPushNotificationsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-406`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

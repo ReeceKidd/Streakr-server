@@ -11,50 +11,11 @@ import { BadgeModel } from '../../Models/Badge';
 import { badgeModel } from '../../Models/Badge';
 import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
 
-const validHours = [];
-for (let hour = 0; hour < 24; hour++) {
-    validHours.push(hour);
-}
-const validMinutes = [];
-for (let minute = 0; minute < 60; minute++) {
-    validMinutes.push(minute);
-}
-
-const pushNotificationValidationSchema = Joi.object({
-    expoId: Joi.string(),
-    type: Joi.string(),
-    streakId: Joi.string(),
-    streakType: Joi.string(),
-    reminderHour: Joi.number(),
-    reminderMinute: Joi.number(),
-});
-
-const userBodyValidationSchema = {
+const patchCurrentUserValidationSchema = {
     email: Joi.string().email(),
-    notifications: Joi.object({
-        completeStreaksReminder: Joi.object({
-            emailNotification: Joi.boolean(),
-            pushNotification: Joi.boolean(),
-            reminderHour: Joi.number().valid(validHours),
-            reminderMinute: Joi.number().valid(validMinutes),
-        }),
-        newFollowerUpdates: Joi.object({
-            emailNotification: Joi.boolean(),
-            pushNotification: Joi.boolean(),
-        }),
-        teamStreakUpdates: Joi.object({
-            emailNotification: Joi.boolean(),
-            pushNotification: Joi.boolean(),
-        }),
-        badgeUpdates: Joi.object({
-            emailNotification: Joi.boolean(),
-            pushNotification: Joi.boolean(),
-        }),
-    }),
     badges: Joi.array(),
     timezone: Joi.string(),
     pushNotificationToken: Joi.string(),
-    pushNotifications: Joi.array().items(pushNotificationValidationSchema),
     hasCompletedIntroduction: Joi.boolean(),
 };
 
@@ -65,7 +26,7 @@ export const patchCurrentUserRequestBodyValidationMiddleware = (
 ): void => {
     Joi.validate(
         request.body,
-        userBodyValidationSchema,
+        patchCurrentUserValidationSchema,
         getValidationErrorMessageSenderMiddleware(request, response, next),
     );
 };
@@ -182,7 +143,6 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,
             pushNotifications: user.pushNotifications,
-            notifications: user.notifications,
             profileImages: user.profileImages,
             hasCompletedIntroduction: user.hasCompletedIntroduction,
             badges,

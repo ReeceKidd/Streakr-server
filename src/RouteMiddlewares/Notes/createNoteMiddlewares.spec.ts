@@ -240,9 +240,9 @@ describe(`notifyTeamMembersThatUserHasAddedANoteMiddleware`, () => {
             memberId: 'teamMemberId',
             username: 'username',
             pushNotificationToken: 'pushNotificationToken',
-            notifications: {
+            pushNotifications: {
                 teamStreakUpdates: {
-                    pushNotification: true,
+                    enabled: true,
                 },
             },
         };
