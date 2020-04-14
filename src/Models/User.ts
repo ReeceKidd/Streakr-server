@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { User, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
+import { User } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 export type UserModel = User & mongoose.Document;
@@ -85,23 +85,18 @@ export const userSchema = new mongoose.Schema(
             completeAllStreaksReminder: {
                 enabled: {
                     type: Boolean,
-                    default: false,
                 },
                 expoId: {
                     type: String,
-                    default: '',
                 },
                 reminderHour: {
                     type: Number,
-                    default: 21,
                 },
                 reminderMinute: {
                     type: Number,
-                    default: 0,
                 },
                 type: {
                     type: String,
-                    default: PushNotificationTypes.completeAllStreaksReminder,
                 },
             },
             teamStreakUpdates: {
