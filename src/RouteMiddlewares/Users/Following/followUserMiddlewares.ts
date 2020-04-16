@@ -183,6 +183,7 @@ export const getCreateFollowUserActivityFeedItemMiddleware = (
             userFollowedUsername: userToFollow && userToFollow.username,
         };
         await createActivityFeedItemFunction(followedUserActivityFeedItem);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.CreateFollowUserActivityFeedItemMiddleware, err));
     }
@@ -214,7 +215,6 @@ export const getSendNewFollowerRequestNotificationMiddleware = (expo: typeof exp
 
             await expo.sendPushNotificationsAsync(messages);
         }
-        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendNewFollowerRequestNotificationMiddleware, err));
     }

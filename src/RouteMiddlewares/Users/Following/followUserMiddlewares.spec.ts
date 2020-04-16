@@ -435,7 +435,7 @@ describe('followUserMiddlewares', () => {
             await middleware(request, response, next);
 
             expect(createActivityFeedItem).toBeCalled();
-            expect(next).not.toBeCalled();
+            expect(next).toBeCalled();
         });
 
         test('calls next with CreateFollowUserActivityFeedItemMiddleware error on middleware failure', () => {
@@ -491,7 +491,7 @@ describe('followUserMiddlewares', () => {
                     body: `${user.username} is following you.`,
                 },
             ]);
-            expect(next).toBeCalledWith();
+            expect(next).not.toBeCalledWith();
         });
 
         test('does not send notification if pushNotificationToken is not defined', async () => {
@@ -518,7 +518,7 @@ describe('followUserMiddlewares', () => {
             await middleware(request, response, next);
 
             expect(sendPushNotificationsAsync).not.toBeCalled();
-            expect(next).toBeCalledWith();
+            expect(next).not.toBeCalledWith();
         });
 
         test('does not send notification if newFollowerUpdates.pushNotification is not enabled.', async () => {
@@ -550,7 +550,7 @@ describe('followUserMiddlewares', () => {
             await middleware(request, response, next);
 
             expect(sendPushNotificationsAsync).not.toBeCalled();
-            expect(next).toBeCalledWith();
+            expect(next).not.toBeCalledWith();
         });
 
         test('calls next with SendNewFollowerRequestNotification error on middleware failure', async () => {

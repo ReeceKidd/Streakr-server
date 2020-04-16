@@ -7,7 +7,7 @@ import { ResponseCodes } from '../../../../src/Server/responseCodes';
 import { userModel } from '../../../../src/Models/User';
 import { UserModel } from '../../../../src/Models/User';
 import { CustomError, ErrorType } from '../../../../src/customError';
-import { UserPushNotifications } from '@streakoid/streakoid-sdk/lib';
+import { User } from '@streakoid/streakoid-sdk/lib';
 const validHours = [];
 for (let hour = 0; hour < 24; hour++) {
     validHours.push(hour);
@@ -20,6 +20,18 @@ for (let minute = 0; minute < 60; minute++) {
 const completeAllStreaksPushNotificationValidationSchema = Joi.object({
     enabled: Joi.boolean().required(),
     expoId: Joi.string().required(),
+    reminderHour: Joi.number()
+        .equal(...validHours)
+        .required(),
+    reminderMinute: Joi.number()
+        .equal(...validMinutes)
+        .required(),
+    type: Joi.string(),
+});
+
+const customStreakRemindersPushNotificationValidationSchema = Joi.object({
+    enabled: Joi.boolean().required(),
+    expoId: Joi.string().required(),
     type: Joi.string().required(),
     reminderHour: Joi.number()
         .equal(...validHours)
@@ -27,6 +39,14 @@ const completeAllStreaksPushNotificationValidationSchema = Joi.object({
     reminderMinute: Joi.number()
         .equal(...validMinutes)
         .required(),
+    soloStreakId: Joi.string(),
+    soloStreakName: Joi.string(),
+    challengeStreakId: Joi.string(),
+    challengeId: Joi.string(),
+    challengeName: Joi.string(),
+    teamMemberStreakId: Joi.string(),
+    teamStreakId: Joi.string(),
+    teamStreakName: Joi.string(),
 });
 
 const patchCurrentUserPushNotificationsValidationSchema = {
@@ -40,6 +60,7 @@ const patchCurrentUserPushNotificationsValidationSchema = {
     teamStreakUpdates: Joi.object({
         enabled: Joi.boolean().required(),
     }),
+    customStreakReminders: Joi.array().items(customStreakRemindersPushNotificationValidationSchema),
 };
 
 export const patchCurrentUserPushNotificationsRequestBodyValidationMiddleware = (
@@ -60,11 +81,13 @@ export const getPatchCurrentUserPushNotificationsMiddleware = (userModel: mongoo
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { user } = response.locals;
-        const pushNotifications: UserPushNotifications = request.body;
-
+        const user: User = response.locals.user;
         const updatedUser: UserModel | null = await userModel
-            .findByIdAndUpdate(user._id, { pushNotifications }, { new: true })
+            .findByIdAndUpdate(
+                user._id,
+                { pushNotifications: { ...user.pushNotifications, ...request.body } },
+                { new: true },
+            )
             .lean();
 
         if (!updatedUser) {

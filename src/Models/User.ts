@@ -83,21 +83,25 @@ export const userSchema = new mongoose.Schema(
         },
         pushNotifications: {
             completeAllStreaksReminder: {
-                enabled: {
-                    type: Boolean,
-                },
-                expoId: {
-                    type: String,
-                },
-                reminderHour: {
-                    type: Number,
-                },
-                reminderMinute: {
-                    type: Number,
-                },
                 type: {
-                    type: String,
+                    enabled: {
+                        type: Boolean,
+                    },
+                    expoId: {
+                        type: String,
+                    },
+                    reminderHour: {
+                        type: Number,
+                    },
+                    reminderMinute: {
+                        type: Number,
+                    },
                 },
+                required: false,
+            },
+            customStreakReminders: {
+                type: Array,
+                default: [],
             },
             teamStreakUpdates: {
                 enabled: {
