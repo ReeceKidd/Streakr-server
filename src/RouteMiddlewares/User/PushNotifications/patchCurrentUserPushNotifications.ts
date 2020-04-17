@@ -26,13 +26,13 @@ const completeAllStreaksPushNotificationValidationSchema = Joi.object({
     reminderMinute: Joi.number()
         .equal(...validMinutes)
         .required(),
-    type: Joi.string(),
+    pushNotificationType: Joi.string(),
 });
 
 const customStreakRemindersPushNotificationValidationSchema = Joi.object({
     enabled: Joi.boolean().required(),
     expoId: Joi.string().required(),
-    type: Joi.string().required(),
+    pushNotificationType: Joi.string().required(),
     reminderHour: Joi.number()
         .equal(...validHours)
         .required(),

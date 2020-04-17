@@ -9,15 +9,55 @@ import {
     patchCurrentUserPushNotificationsMiddleware,
 } from './patchCurrentUserPushNotifications';
 import { UserPushNotifications, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
+import {
+    CustomStreakReminder,
+    CustomTeamMemberStreakReminder,
+    CustomChallengeStreakReminder,
+    CustomSoloStreakReminder,
+} from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
+    const customSoloStreakReminder: CustomSoloStreakReminder = {
+        expoId: 'expoId',
+        enabled: true,
+        reminderHour: 10,
+        reminderMinute: 5,
+        soloStreakId: 'soloStreakId',
+        soloStreakName: 'Reading',
+        pushNotificationType: PushNotificationTypes.customSoloStreakReminder,
+    };
+    const customChallengeStreakReminder: CustomChallengeStreakReminder = {
+        expoId: 'expoId',
+        enabled: true,
+        reminderHour: 10,
+        reminderMinute: 5,
+        challengeStreakId: 'challengeStreakId',
+        challengeId: 'challengeId',
+        challengeName: 'Reading',
+        pushNotificationType: PushNotificationTypes.customChallengeStreakReminder,
+    };
+    const customTeamMemberStreakReminder: CustomTeamMemberStreakReminder = {
+        expoId: 'expoId',
+        enabled: true,
+        reminderHour: 10,
+        reminderMinute: 5,
+        teamMemberStreakId: 'challengeStreakId',
+        teamStreakId: 'challengeId',
+        teamStreakName: 'Reading',
+        pushNotificationType: PushNotificationTypes.customTeamMemberStreakReminder,
+    };
+    const customStreakReminders: CustomStreakReminder[] = [
+        customSoloStreakReminder,
+        customChallengeStreakReminder,
+        customTeamMemberStreakReminder,
+    ];
     const values: UserPushNotifications = {
         completeAllStreaksReminder: {
             enabled: true,
             expoId: 'expoId',
             reminderHour: 22,
             reminderMinute: 10,
-            type: PushNotificationTypes.completeAllStreaksReminder,
+            pushNotificationType: PushNotificationTypes.completeAllStreaksReminder,
         },
         teamStreakUpdates: {
             enabled: true,
@@ -28,6 +68,7 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         newFollowerUpdates: {
             enabled: true,
         },
+        customStreakReminders,
     };
     test('allows request with all possible params to pass', () => {
         expect.assertions(1);
@@ -89,8 +130,9 @@ describe('patchCurrentUserPushNotificationsMiddleware', () => {
                 expoId: 'expoId',
                 reminderHour: 22,
                 reminderMinute: 21,
-                type: PushNotificationTypes.completeAllStreaksReminder,
+                pushNotificationType: PushNotificationTypes.completeAllStreaksReminder,
             },
+            customStreakReminders: [],
         };
         const request: any = {
             body: {
@@ -170,8 +212,9 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
                 expoId: 'expoId',
                 reminderHour: 22,
                 reminderMinute: 21,
-                type: PushNotificationTypes.completeAllStreaksReminder,
+                pushNotificationType: PushNotificationTypes.completeAllStreaksReminder,
             },
+            customStreakReminders: [],
         };
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));

@@ -137,6 +137,7 @@ describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
         expect.assertions(2);
         const request: any = {};
+
         const user: User = {
             _id: '_id',
             username: 'username',
@@ -164,7 +165,7 @@ describe('formatUserMiddleware', () => {
                     expoId: 'expoId',
                     reminderMinute: 10,
                     reminderHour: 10,
-                    type: PushNotificationTypes.completeAllStreaksReminder,
+                    pushNotificationType: PushNotificationTypes.completeAllStreaksReminder,
                 },
                 badgeUpdates: {
                     enabled: false,
@@ -175,6 +176,7 @@ describe('formatUserMiddleware', () => {
                 newFollowerUpdates: {
                     enabled: true,
                 },
+                customStreakReminders: [],
             },
             hasCompletedIntroduction: false,
             stripe: {

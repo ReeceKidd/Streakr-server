@@ -308,7 +308,7 @@ describe('formatUserMiddleware', () => {
                     expoId: 'expoId',
                     reminderHour: 10,
                     reminderMinute: 15,
-                    type: PushNotificationTypes.completeAllStreaksReminder,
+                    pushNotificationType: PushNotificationTypes.completeAllStreaksReminder,
                 },
                 badgeUpdates: {
                     enabled: true,
@@ -319,6 +319,7 @@ describe('formatUserMiddleware', () => {
                 newFollowerUpdates: {
                     enabled: true,
                 },
+                customStreakReminders: [],
             },
             hasCompletedIntroduction: false,
             stripe: {
