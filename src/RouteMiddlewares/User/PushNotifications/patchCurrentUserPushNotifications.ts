@@ -44,7 +44,6 @@ const customStreakRemindersPushNotificationValidationSchema = Joi.object({
     challengeStreakId: Joi.string(),
     challengeId: Joi.string(),
     challengeName: Joi.string(),
-    teamMemberStreakId: Joi.string(),
     teamStreakId: Joi.string(),
     teamStreakName: Joi.string(),
 });

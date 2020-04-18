@@ -18,7 +18,7 @@
 //                     $set: {
 //                         pushNotifications: {
 //                             ...user.pushNotifications,
-//                             customStreakReminders: [],
+//                             completeAllStreaksReminder: undefined,
 //                         },
 //                     },
 //                 });

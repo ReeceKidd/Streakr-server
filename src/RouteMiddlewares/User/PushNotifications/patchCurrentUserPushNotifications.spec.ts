@@ -11,7 +11,7 @@ import {
 import { UserPushNotifications, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
 import {
     CustomStreakReminder,
-    CustomTeamMemberStreakReminder,
+    CustomTeamStreakReminder,
     CustomChallengeStreakReminder,
     CustomSoloStreakReminder,
 } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
@@ -36,20 +36,19 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         challengeName: 'Reading',
         pushNotificationType: PushNotificationTypes.customChallengeStreakReminder,
     };
-    const customTeamMemberStreakReminder: CustomTeamMemberStreakReminder = {
+    const customTeamStreakReminder: CustomTeamStreakReminder = {
         expoId: 'expoId',
         enabled: true,
         reminderHour: 10,
         reminderMinute: 5,
-        teamMemberStreakId: 'challengeStreakId',
         teamStreakId: 'challengeId',
         teamStreakName: 'Reading',
-        pushNotificationType: PushNotificationTypes.customTeamMemberStreakReminder,
+        pushNotificationType: PushNotificationTypes.customTeamStreakReminder,
     };
     const customStreakReminders: CustomStreakReminder[] = [
         customSoloStreakReminder,
         customChallengeStreakReminder,
-        customTeamMemberStreakReminder,
+        customTeamStreakReminder,
     ];
     const values: UserPushNotifications = {
         completeAllStreaksReminder: {
