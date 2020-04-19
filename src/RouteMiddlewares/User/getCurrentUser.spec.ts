@@ -12,7 +12,7 @@ import {
 } from './getCurrentUser';
 import { CustomError } from '../../customError';
 import { ErrorType } from '../../customError';
-import { User, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
+import { User, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe('populateCurrentUserBadgesMiddleware', () => {
@@ -165,7 +165,7 @@ describe('formatUserMiddleware', () => {
                     expoId: 'expoId',
                     reminderMinute: 10,
                     reminderHour: 10,
-                    pushNotificationType: PushNotificationTypes.completeAllStreaksReminder,
+                    streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
                 },
                 badgeUpdates: {
                     enabled: false,

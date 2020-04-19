@@ -96,7 +96,7 @@ export const userSchema = new mongoose.Schema(
                     reminderMinute: {
                         type: Number,
                     },
-                    pushNotificationType: {
+                    streakReminderType: {
                         type: String,
                     },
                 },

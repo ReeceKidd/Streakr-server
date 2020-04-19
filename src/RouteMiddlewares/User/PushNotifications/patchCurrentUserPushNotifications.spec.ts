@@ -8,25 +8,25 @@ import {
     getPatchCurrentUserPushNotificationsMiddleware,
     patchCurrentUserPushNotificationsMiddleware,
 } from './patchCurrentUserPushNotifications';
-import { UserPushNotifications, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
+import { UserPushNotifications, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
 import {
-    CustomStreakReminderPushNotification,
-    CustomTeamStreakReminderPushNotification,
-    CustomChallengeStreakReminderPushNotification,
-    CustomSoloStreakReminderPushNotification,
-} from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
+    CustomSoloStreakReminder,
+    CustomChallengeStreakReminder,
+    CustomTeamStreakReminder,
+    CustomStreakReminder,
+} from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
-    const customSoloStreakReminder: CustomSoloStreakReminderPushNotification = {
+    const customSoloStreakReminder: CustomSoloStreakReminder = {
         expoId: 'expoId',
         enabled: true,
         reminderHour: 10,
         reminderMinute: 5,
         soloStreakId: 'soloStreakId',
         soloStreakName: 'Reading',
-        pushNotificationType: PushNotificationTypes.customSoloStreakReminder,
+        streakReminderType: StreakReminderTypes.customSoloStreakReminder,
     };
-    const customChallengeStreakReminder: CustomChallengeStreakReminderPushNotification = {
+    const customChallengeStreakReminder: CustomChallengeStreakReminder = {
         expoId: 'expoId',
         enabled: true,
         reminderHour: 10,
@@ -34,18 +34,18 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         challengeStreakId: 'challengeStreakId',
         challengeId: 'challengeId',
         challengeName: 'Reading',
-        pushNotificationType: PushNotificationTypes.customChallengeStreakReminder,
+        streakReminderType: StreakReminderTypes.customChallengeStreakReminder,
     };
-    const customTeamStreakReminder: CustomTeamStreakReminderPushNotification = {
+    const customTeamStreakReminder: CustomTeamStreakReminder = {
         expoId: 'expoId',
         enabled: true,
         reminderHour: 10,
         reminderMinute: 5,
         teamStreakId: 'challengeId',
         teamStreakName: 'Reading',
-        pushNotificationType: PushNotificationTypes.customTeamStreakReminder,
+        streakReminderType: StreakReminderTypes.customTeamStreakReminder,
     };
-    const customStreakReminders: CustomStreakReminderPushNotification[] = [
+    const customStreakReminders: CustomStreakReminder[] = [
         customSoloStreakReminder,
         customChallengeStreakReminder,
         customTeamStreakReminder,
@@ -56,7 +56,7 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
             expoId: 'expoId',
             reminderHour: 22,
             reminderMinute: 10,
-            pushNotificationType: PushNotificationTypes.completeAllStreaksReminder,
+            streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
         },
         teamStreakUpdates: {
             enabled: true,
@@ -129,7 +129,7 @@ describe('patchCurrentUserPushNotificationsMiddleware', () => {
                 expoId: 'expoId',
                 reminderHour: 22,
                 reminderMinute: 21,
-                pushNotificationType: PushNotificationTypes.completeAllStreaksReminder,
+                streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
             },
             customStreakReminders: [],
         };
@@ -211,7 +211,7 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
                 expoId: 'expoId',
                 reminderHour: 22,
                 reminderMinute: 21,
-                pushNotificationType: PushNotificationTypes.completeAllStreaksReminder,
+                streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
             },
             customStreakReminders: [],
         };

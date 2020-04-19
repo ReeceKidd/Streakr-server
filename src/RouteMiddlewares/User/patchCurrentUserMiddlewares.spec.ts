@@ -16,7 +16,7 @@ import {
     patchCurrentUserRequestBodyValidationMiddleware,
 } from './patchCurrentUserMiddlewares';
 
-import { User, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
+import { User, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
@@ -308,7 +308,7 @@ describe('formatUserMiddleware', () => {
                     expoId: 'expoId',
                     reminderHour: 10,
                     reminderMinute: 15,
-                    pushNotificationType: PushNotificationTypes.completeAllStreaksReminder,
+                    streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
                 },
                 badgeUpdates: {
                     enabled: true,
