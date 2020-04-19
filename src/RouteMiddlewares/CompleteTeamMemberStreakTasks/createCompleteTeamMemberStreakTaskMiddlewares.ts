@@ -9,6 +9,7 @@ import {
     User,
     ActivityFeedItemTypes,
     ActivityFeedItemType,
+    PushNotificationTypes,
 } from '@streakoid/streakoid-sdk/lib';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
@@ -24,6 +25,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { CustomError, ErrorType } from '../../customError';
 import { completeTeamStreakModel, CompleteTeamStreakModel } from '../../Models/CompleteTeamStreak';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { CompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -439,6 +441,11 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamMembers: UserModel[] = response.locals.teamMembers;
         const messages: ExpoPushMessage[] = [];
+        const data: CompletedTeamStreakUpdatePushNotification = {
+            pushNotificationType: PushNotificationTypes.completedTeamStreakUpdate,
+            teamStreakId: teamStreak._id,
+            teamStreakName: teamStreak.streakName,
+        };
         await Promise.all(
             teamMembers.map(async teamMember => {
                 if (
@@ -451,6 +458,7 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
                         sound: 'default',
                         title: `${teamStreak.streakName} update`,
                         body: `${user.username} has completed ${teamStreak.streakName}`,
+                        data,
                     });
                 }
             }),

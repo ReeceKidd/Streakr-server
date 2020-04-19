@@ -10,14 +10,14 @@ import {
 } from './patchCurrentUserPushNotifications';
 import { UserPushNotifications, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
 import {
-    CustomStreakReminder,
-    CustomTeamStreakReminder,
-    CustomChallengeStreakReminder,
-    CustomSoloStreakReminder,
+    CustomStreakReminderPushNotification,
+    CustomTeamStreakReminderPushNotification,
+    CustomChallengeStreakReminderPushNotification,
+    CustomSoloStreakReminderPushNotification,
 } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
-    const customSoloStreakReminder: CustomSoloStreakReminder = {
+    const customSoloStreakReminder: CustomSoloStreakReminderPushNotification = {
         expoId: 'expoId',
         enabled: true,
         reminderHour: 10,
@@ -26,7 +26,7 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         soloStreakName: 'Reading',
         pushNotificationType: PushNotificationTypes.customSoloStreakReminder,
     };
-    const customChallengeStreakReminder: CustomChallengeStreakReminder = {
+    const customChallengeStreakReminder: CustomChallengeStreakReminderPushNotification = {
         expoId: 'expoId',
         enabled: true,
         reminderHour: 10,
@@ -36,7 +36,7 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         challengeName: 'Reading',
         pushNotificationType: PushNotificationTypes.customChallengeStreakReminder,
     };
-    const customTeamStreakReminder: CustomTeamStreakReminder = {
+    const customTeamStreakReminder: CustomTeamStreakReminderPushNotification = {
         expoId: 'expoId',
         enabled: true,
         reminderHour: 10,
@@ -45,7 +45,7 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         teamStreakName: 'Reading',
         pushNotificationType: PushNotificationTypes.customTeamStreakReminder,
     };
-    const customStreakReminders: CustomStreakReminder[] = [
+    const customStreakReminders: CustomStreakReminderPushNotification[] = [
         customSoloStreakReminder,
         customChallengeStreakReminder,
         customTeamStreakReminder,

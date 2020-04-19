@@ -12,7 +12,8 @@ import { UserModel } from '../../../src/Models/User';
 import { TeamStreakModel } from '../../../src/Models/TeamStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { userModel } from '../../../src/Models/User';
-import { StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTypes, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
+import { AddedNoteToTeamStreakPushNotification } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
 
 const createNoteBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -71,6 +72,14 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
                 throw new CustomError(ErrorType.CreateNoteUserDoesNotExist);
             }
             const messages: ExpoPushMessage[] = [];
+            const data: AddedNoteToTeamStreakPushNotification = {
+                pushNotificationType: PushNotificationTypes.addedNoteToTeamStreak,
+                note: text,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+                userId: userWhoCreatedNote.userId,
+                username: userWhoCreatedNote.username,
+            };
             await Promise.all(
                 teamStreak.members.map(async teamMember => {
                     const populatedMember: UserModel | null = await userModel.findById(teamMember.memberId);
@@ -85,6 +94,7 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
                             sound: 'default',
                             title: `${userWhoCreatedNote.username} added a note to ${teamStreak.streakName}`,
                             body: `${text}`,
+                            data,
                         });
                     }
                 }),

@@ -20,6 +20,7 @@ import {
     getSendNewFollowerRequestNotificationMiddleware,
     sendNewFollowerRequestNotificationMiddleware,
 } from './followUserMiddlewares';
+import { PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe('followUserMiddlewares', () => {
     describe('followUserParamsValidationMiddleware', () => {
@@ -460,6 +461,7 @@ describe('followUserMiddlewares', () => {
 
             const user = {
                 username: 'user',
+                _id: '_id',
             };
             const userToFollow = {
                 pushNotificationToken: 'pushNotificationToken',
@@ -489,6 +491,11 @@ describe('followUserMiddlewares', () => {
                     sound: 'default',
                     title: 'New follower',
                     body: `${user.username} is following you.`,
+                    data: {
+                        pushNotificationType: PushNotificationTypes.newFollower,
+                        followerId: user._id,
+                        followerUsername: user.username,
+                    },
                 },
             ]);
             expect(next).not.toBeCalledWith();

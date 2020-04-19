@@ -19,6 +19,7 @@ import {
     User,
     ActivityFeedItemTypes,
     ActivityFeedItemType,
+    PushNotificationTypes,
 } from '@streakoid/streakoid-sdk/lib';
 import { incompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
 import { IncompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
@@ -26,6 +27,7 @@ import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { TeamStreakModel } from '../../../src/Models/TeamStreak';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { IncompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -433,6 +435,11 @@ export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (expo: t
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamMembers: UserModel[] = response.locals.teamMembers;
         const messages: ExpoPushMessage[] = [];
+        const data: IncompletedTeamStreakUpdatePushNotification = {
+            pushNotificationType: PushNotificationTypes.incompletedTeamStreakUpdate,
+            teamStreakId: teamStreak._id,
+            teamStreakName: teamStreak.streakName,
+        };
         await Promise.all(
             teamMembers.map(async teamMember => {
                 if (
@@ -445,6 +452,7 @@ export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (expo: t
                         sound: 'default',
                         title: `${teamStreak.streakName} update`,
                         body: `${user.username} made a mistake they have not completed ${teamStreak.streakName}`,
+                        data,
                     });
                 }
             }),

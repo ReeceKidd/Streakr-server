@@ -5,9 +5,10 @@ import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddle
 import { userModel, UserModel } from '../../../Models/User';
 import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
-import { User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
+import { User, ActivityFeedItemTypes, ActivityFeedItemType, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
 import { createActivityFeedItem } from '../../../../src/helpers/createActivityFeedItem';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
+import { NewFollowerPushNotification } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
 
 const followUserParamsValidationSchema = {
     userId: Joi.string()
@@ -204,6 +205,11 @@ export const getSendNewFollowerRequestNotificationMiddleware = (expo: typeof exp
         const user: User = response.locals.user;
         const userToFollow: User = response.locals.userToFollow;
         const { pushNotificationToken } = userToFollow;
+        const data: NewFollowerPushNotification = {
+            pushNotificationType: PushNotificationTypes.newFollower,
+            followerId: user._id,
+            followerUsername: user.username,
+        };
         if (pushNotificationToken && userToFollow.pushNotifications.newFollowerUpdates.enabled) {
             const messages: ExpoPushMessage[] = [];
             messages.push({
@@ -211,6 +217,7 @@ export const getSendNewFollowerRequestNotificationMiddleware = (expo: typeof exp
                 sound: 'default',
                 title: 'New follower',
                 body: `${user && user.username} is following you.`,
+                data,
             });
 
             await expo.sendPushNotificationsAsync(messages);
