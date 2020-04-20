@@ -8,6 +8,7 @@ import {
     ChallengeStreak,
     Challenge,
     ActivityFeedItemType,
+    StreakReminderTypes,
 } from '@streakoid/streakoid-sdk/lib';
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
@@ -16,6 +17,11 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { challengeModel, ChallengeModel } from '../../../src/Models/Challenge';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import {
+    CustomChallengeStreakReminder,
+    CustomStreakReminder,
+} from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
+import { userModel, UserModel } from '../../../src/Models/User';
 
 const challengeStreakParamsValidationSchema = {
     challengeStreakId: Joi.string().required(),
@@ -170,6 +176,56 @@ export const sendUpdatedChallengeStreakMiddleware = (
     }
 };
 
+export const getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware = (
+    userModel: mongoose.Model<UserModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { status } = request.body;
+        if (status === StreakStatus.archived) {
+            const updatedChallengeStreak: ChallengeStreak = response.locals.updatedChallengeStreak;
+            const user: User = response.locals.user;
+            const customChallengeStreakReminder = user.pushNotifications.customStreakReminders.find(
+                reminder =>
+                    reminder.streakReminderType === StreakReminderTypes.customChallengeStreakReminder &&
+                    reminder.challengeStreakId == updatedChallengeStreak._id,
+            );
+            if (
+                customChallengeStreakReminder &&
+                customChallengeStreakReminder.streakReminderType === StreakReminderTypes.customChallengeStreakReminder
+            ) {
+                const updatedCustomChallengeStreakReminder: CustomChallengeStreakReminder = {
+                    ...customChallengeStreakReminder,
+                    enabled: false,
+                };
+                const customStreakRemindersWithoutOldReminder = user.pushNotifications.customStreakReminders.filter(
+                    pushNotificaion =>
+                        !(
+                            pushNotificaion.streakReminderType === StreakReminderTypes.customChallengeStreakReminder &&
+                            pushNotificaion.challengeStreakId == updatedChallengeStreak._id
+                        ),
+                );
+
+                const newCustomStreakReminders: CustomStreakReminder[] = [
+                    ...customStreakRemindersWithoutOldReminder,
+                    updatedCustomChallengeStreakReminder,
+                ];
+                await userModel.findByIdAndUpdate(user._id, {
+                    $set: { 'pushNotifications.customStreakReminders': newCustomStreakReminders },
+                });
+            }
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else
+            next(new CustomError(ErrorType.DisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware, err));
+    }
+};
+
+export const disableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware = getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware(
+    userModel,
+);
+
 export const getCreateArchivedChallengeStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -267,6 +323,7 @@ export const patchChallengeStreakMiddlewares = [
     removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
     decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
     sendUpdatedChallengeStreakMiddleware,
+    disableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
     createArchivedChallengeStreakActivityFeedItemMiddleware,
     createRestoredChallengeStreakActivityFeedItemMiddleware,
     createDeletedChallengeStreakActivityFeedItemMiddleware,

@@ -5384,4 +5384,39 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to DisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.DisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-407`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to DisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.DisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-408`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to DisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(
+            ErrorType.DisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
+        );
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-409`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

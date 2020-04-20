@@ -502,6 +502,9 @@ export enum ErrorType {
     UpdateCurrentUsersPushNotificationsUserNotFound,
     PatchCurrentUserPushNotificationsMiddleware,
     SendUpdatedCurrentUserPushNotificationsMiddleware,
+    DisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware,
+    DisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware,
+    DisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -4089,6 +4092,27 @@ export class CustomError extends Error {
             case ErrorType.SendUpdatedCurrentUserPushNotificationsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-406`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-407`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-408`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-409`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

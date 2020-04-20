@@ -18,10 +18,16 @@ import {
     getDecreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
     getRetreiveChallengeMiddleware,
     retreiveChallengeMiddleware,
+    disableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
+    getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
 } from './patchChallengeStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakStatus } from '@streakoid/streakoid-sdk/lib';
+import { StreakStatus, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
+import {
+    CustomChallengeStreakReminder,
+    CustomStreakReminder,
+} from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
 
 describe('challengeStreakParamsValidationMiddleware', () => {
     test('sends correct error response when challengeStreakId is not defined', () => {
@@ -462,6 +468,78 @@ describe('sendUpdatedPatchMiddleware', () => {
     });
 });
 
+describe(`disableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware`, () => {
+    test('disables current user customChallengeStreakReminder for this challenge streak if they had one.', async () => {
+        expect.assertions(2);
+        const _id = '_id';
+        const updatedChallengeStreak = { _id, streakName: 'Reading', members: ['memberId'] };
+        const customChallengeStreakReminder: CustomChallengeStreakReminder = {
+            enabled: true,
+            expoId: 'expoId',
+            reminderHour: 21,
+            reminderMinute: 0,
+            streakReminderType: StreakReminderTypes.customChallengeStreakReminder,
+            challengeStreakId: _id,
+            challengeId: 'challengeId',
+            challengeName: 'reading',
+        };
+        const customStreakReminders: CustomStreakReminder[] = [customChallengeStreakReminder];
+        const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+        const userModel = {
+            findByIdAndUpdate,
+        };
+        const user = { pushNotifications: { customStreakReminders } };
+        const response: any = { locals: { updatedChallengeStreak, user } };
+        const request: any = { body: { status: StreakStatus.archived } };
+        const next = jest.fn();
+
+        const middleware = getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findByIdAndUpdate).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal archived it just calls next', async () => {
+        expect.assertions(2);
+        const updatedChallengeStreak = { _id: '_id', streakName: 'Reading' };
+        const findById = jest.fn().mockResolvedValue(true);
+        const userModel = {
+            findById,
+        };
+
+        const response: any = { locals: { updatedChallengeStreak } };
+        const request: any = { body: {} };
+        const next = jest.fn();
+
+        const middleware = getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findById).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with DisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(
+                ErrorType.DisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
+                expect.any(Error),
+            ),
+        );
+    });
+});
+
 describe(`createArchivedChallengeStreakActivityFeedItemMiddleware`, () => {
     test('creates a new archivedChallengeStreak activity if request.body.status equals archived', async () => {
         expect.assertions(2);
@@ -626,9 +704,9 @@ describe(`createDeletedChallengeStreakActivityFeedItemMiddleware`, () => {
 
 describe('patchChallengeStreakMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(11);
+        expect.assertions(12);
 
-        expect(patchChallengeStreakMiddlewares.length).toBe(10);
+        expect(patchChallengeStreakMiddlewares.length).toBe(11);
         expect(patchChallengeStreakMiddlewares[0]).toBe(challengeStreakParamsValidationMiddleware);
         expect(patchChallengeStreakMiddlewares[1]).toBe(challengeStreakRequestBodyValidationMiddleware);
         expect(patchChallengeStreakMiddlewares[2]).toBe(patchChallengeStreakMiddleware);
@@ -638,8 +716,11 @@ describe('patchChallengeStreakMiddlewares', () => {
             decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
         );
         expect(patchChallengeStreakMiddlewares[6]).toBe(sendUpdatedChallengeStreakMiddleware);
-        expect(patchChallengeStreakMiddlewares[7]).toBe(createArchivedChallengeStreakActivityFeedItemMiddleware);
-        expect(patchChallengeStreakMiddlewares[8]).toBe(createRestoredChallengeStreakActivityFeedItemMiddleware);
-        expect(patchChallengeStreakMiddlewares[9]).toBe(createDeletedChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[7]).toBe(
+            disableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
+        );
+        expect(patchChallengeStreakMiddlewares[8]).toBe(createArchivedChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[9]).toBe(createRestoredChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[10]).toBe(createDeletedChallengeStreakActivityFeedItemMiddleware);
     });
 });

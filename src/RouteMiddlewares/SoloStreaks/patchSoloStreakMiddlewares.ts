@@ -12,8 +12,11 @@ import {
     ActivityFeedItemTypes,
     ActivityFeedItemType,
     SoloStreak,
+    StreakReminderTypes,
 } from '@streakoid/streakoid-sdk/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { CustomSoloStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
+import { userModel, UserModel } from '../../../src/Models/User';
 
 const soloStreakParamsValidationSchema = {
     soloStreakId: Joi.string().required(),
@@ -90,6 +93,55 @@ export const sendUpdatedSoloStreakMiddleware = (request: Request, response: Resp
         next(new CustomError(ErrorType.SendUpdatedSoloStreakMiddleware, err));
     }
 };
+
+export const getDisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware = (
+    userModel: mongoose.Model<UserModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { status } = request.body;
+        if (status === StreakStatus.archived) {
+            const updatedSoloStreak: SoloStreak = response.locals.updatedSoloStreak;
+            const user: User = response.locals.user;
+            const customSoloStreakReminder = user.pushNotifications.customStreakReminders.find(
+                reminder =>
+                    reminder.streakReminderType === StreakReminderTypes.customSoloStreakReminder &&
+                    reminder.soloStreakId == updatedSoloStreak._id,
+            );
+            if (
+                customSoloStreakReminder &&
+                customSoloStreakReminder.streakReminderType == StreakReminderTypes.customSoloStreakReminder
+            ) {
+                const updatedCustomSoloStreakReminder: CustomSoloStreakReminder = {
+                    ...customSoloStreakReminder,
+                    enabled: false,
+                };
+                const customStreakRemindersWithoutOldReminder = user.pushNotifications.customStreakReminders.filter(
+                    pushNotificaion =>
+                        !(
+                            pushNotificaion.streakReminderType === StreakReminderTypes.customSoloStreakReminder &&
+                            pushNotificaion.soloStreakId == updatedSoloStreak._id
+                        ),
+                );
+
+                const newCustomStreakReminders: CustomStreakReminder[] = [
+                    ...customStreakRemindersWithoutOldReminder,
+                    updatedCustomSoloStreakReminder,
+                ];
+                await userModel.findByIdAndUpdate(user._id, {
+                    $set: { 'pushNotifications.customStreakReminders': newCustomStreakReminders },
+                });
+            }
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.DisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware, err));
+    }
+};
+
+export const disableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware = getDisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware(
+    userModel,
+);
 
 export const getCreateArchivedSoloStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
@@ -237,6 +289,7 @@ export const patchSoloStreakMiddlewares = [
     soloStreakRequestBodyValidationMiddleware,
     patchSoloStreakMiddleware,
     sendUpdatedSoloStreakMiddleware,
+    disableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware,
     createArchivedSoloStreakActivityFeedItemMiddleware,
     createRestoredSoloStreakActivityFeedItemMiddleware,
     createDeletedSoloStreakActivityFeedItemMiddleware,

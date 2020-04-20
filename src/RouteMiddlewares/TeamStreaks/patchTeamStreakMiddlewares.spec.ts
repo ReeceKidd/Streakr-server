@@ -16,10 +16,14 @@ import {
     createArchivedTeamStreakActivityFeedItemMiddleware,
     createRestoredTeamStreakActivityFeedItemMiddleware,
     createDeletedTeamStreakActivityFeedItemMiddleware,
+    disableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware,
+    getDisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware,
 } from './patchTeamStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
+import { CustomStreakReminder, CustomTeamStreakReminder } from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
+import { StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
 
 describe('teamStreakParamsValidationMiddleware', () => {
     test('sends correct error response when teamStreakId is not defined', () => {
@@ -456,6 +460,77 @@ describe('sendUpdatedPatchMiddleware', () => {
     });
 });
 
+describe(`disableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware`, () => {
+    test('disables team members customStreakReminders for team streak if they had one', async () => {
+        expect.assertions(3);
+        const _id = '_id';
+        const updatedTeamStreak = { _id, streakName: 'Reading', members: ['memberId'] };
+        const customTeamStreakReminder: CustomTeamStreakReminder = {
+            enabled: true,
+            expoId: 'expoId',
+            reminderHour: 21,
+            reminderMinute: 0,
+            streakReminderType: StreakReminderTypes.customTeamStreakReminder,
+            teamStreakId: _id,
+            teamStreakName: 'reading',
+        };
+        const customStreakReminders: CustomStreakReminder[] = [customTeamStreakReminder];
+        const findById = jest.fn().mockResolvedValue({ pushNotifications: { customStreakReminders } });
+        const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+        const userModel = {
+            findById,
+            findByIdAndUpdate,
+        };
+
+        const response: any = { locals: { updatedTeamStreak } };
+        const request: any = { body: { status: StreakStatus.archived } };
+        const next = jest.fn();
+
+        const middleware = getDisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalled();
+        expect(findByIdAndUpdate).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal archived it just calls next', async () => {
+        expect.assertions(2);
+        const updatedTeamStreak = { _id: '_id', streakName: 'Reading' };
+        const findById = jest.fn().mockResolvedValue(true);
+        const userModel = {
+            findById,
+        };
+
+        const response: any = { locals: { updatedTeamStreak } };
+        const request: any = { body: {} };
+        const next = jest.fn();
+
+        const middleware = getDisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findById).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with DisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getDisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.DisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe(`createArchivedTeamStreakActivityFeedItemMiddleware`, () => {
     test('creates a new archivedTeamStreak activity if request.body.status equals archived', async () => {
         expect.assertions(2);
@@ -727,17 +802,18 @@ describe(`createEditedTeamStreakDescriptionActivityFeedItemMiddleware`, () => {
 
 describe('patchTeamStreakMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(10);
+        expect.assertions(11);
 
-        expect(patchTeamStreakMiddlewares.length).toBe(9);
+        expect(patchTeamStreakMiddlewares.length).toBe(10);
         expect(patchTeamStreakMiddlewares[0]).toBe(teamStreakParamsValidationMiddleware);
         expect(patchTeamStreakMiddlewares[1]).toBe(teamStreakRequestBodyValidationMiddleware);
         expect(patchTeamStreakMiddlewares[2]).toBe(patchTeamStreakMiddleware);
         expect(patchTeamStreakMiddlewares[3]).toBe(sendUpdatedTeamStreakMiddleware);
-        expect(patchTeamStreakMiddlewares[4]).toBe(createArchivedTeamStreakActivityFeedItemMiddleware);
-        expect(patchTeamStreakMiddlewares[5]).toBe(createRestoredTeamStreakActivityFeedItemMiddleware);
-        expect(patchTeamStreakMiddlewares[6]).toBe(createDeletedTeamStreakActivityFeedItemMiddleware);
-        expect(patchTeamStreakMiddlewares[7]).toBe(createEditedTeamStreakNameActivityFeedItemMiddleware);
-        expect(patchTeamStreakMiddlewares[8]).toBe(createEditedTeamStreakDescriptionActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[4]).toBe(disableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware);
+        expect(patchTeamStreakMiddlewares[5]).toBe(createArchivedTeamStreakActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[6]).toBe(createRestoredTeamStreakActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[7]).toBe(createDeletedTeamStreakActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[8]).toBe(createEditedTeamStreakNameActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[9]).toBe(createEditedTeamStreakDescriptionActivityFeedItemMiddleware);
     });
 });

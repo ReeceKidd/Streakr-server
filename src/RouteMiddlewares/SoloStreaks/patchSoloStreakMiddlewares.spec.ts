@@ -16,10 +16,13 @@ import {
     getCreateEditedSoloStreakDescriptionActivityFeedItemMiddleware,
     createEditedSoloStreakNameActivityFeedItemMiddleware,
     createEditedSoloStreakDescriptionActivityFeedItemMiddleware,
+    disableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware,
+    getDisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware,
 } from './patchSoloStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakStatus } from '@streakoid/streakoid-sdk/lib';
+import { StreakStatus, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
+import { CustomSoloStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
 
 describe('soloStreakParamsValidationMiddleware', () => {
     test('sends correct error response when soloStreakId is not defined', () => {
@@ -262,6 +265,74 @@ describe('sendUpdatedPatchMiddleware', () => {
         sendUpdatedSoloStreakMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SendUpdatedSoloStreakMiddleware, expect.any(Error)));
+    });
+});
+
+describe(`disableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware`, () => {
+    test('disables current user customSoloStreakReminder for this solo streak if they had one.', async () => {
+        expect.assertions(2);
+        const _id = '_id';
+        const updatedSoloStreak = { _id, streakName: 'Reading', members: ['memberId'] };
+        const customSoloStreakReminder: CustomSoloStreakReminder = {
+            enabled: true,
+            expoId: 'expoId',
+            reminderHour: 21,
+            reminderMinute: 0,
+            streakReminderType: StreakReminderTypes.customSoloStreakReminder,
+            soloStreakId: _id,
+            soloStreakName: 'reading',
+        };
+        const customStreakReminders: CustomStreakReminder[] = [customSoloStreakReminder];
+        const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+        const userModel = {
+            findByIdAndUpdate,
+        };
+        const user = { pushNotifications: { customStreakReminders } };
+        const response: any = { locals: { updatedSoloStreak, user } };
+        const request: any = { body: { status: StreakStatus.archived } };
+        const next = jest.fn();
+
+        const middleware = getDisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findByIdAndUpdate).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if request.body.status does not equal archived it just calls next', async () => {
+        expect.assertions(2);
+        const updatedSoloStreak = { _id: '_id', streakName: 'Reading' };
+        const findById = jest.fn().mockResolvedValue(true);
+        const userModel = {
+            findById,
+        };
+
+        const response: any = { locals: { updatedSoloStreak } };
+        const request: any = { body: {} };
+        const next = jest.fn();
+
+        const middleware = getDisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findById).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with DisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getDisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.DisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -536,17 +607,18 @@ describe(`createEditedSoloStreakDescriptionActivityFeedItemMiddleware`, () => {
 
 describe('patchSoloStreakMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(10);
+        expect.assertions(11);
 
-        expect(patchSoloStreakMiddlewares.length).toBe(9);
+        expect(patchSoloStreakMiddlewares.length).toBe(10);
         expect(patchSoloStreakMiddlewares[0]).toBe(soloStreakParamsValidationMiddleware);
         expect(patchSoloStreakMiddlewares[1]).toBe(soloStreakRequestBodyValidationMiddleware);
         expect(patchSoloStreakMiddlewares[2]).toBe(patchSoloStreakMiddleware);
         expect(patchSoloStreakMiddlewares[3]).toBe(sendUpdatedSoloStreakMiddleware);
-        expect(patchSoloStreakMiddlewares[4]).toBe(createArchivedSoloStreakActivityFeedItemMiddleware);
-        expect(patchSoloStreakMiddlewares[5]).toBe(createRestoredSoloStreakActivityFeedItemMiddleware);
-        expect(patchSoloStreakMiddlewares[6]).toBe(createDeletedSoloStreakActivityFeedItemMiddleware);
-        expect(patchSoloStreakMiddlewares[7]).toBe(createEditedSoloStreakNameActivityFeedItemMiddleware);
-        expect(patchSoloStreakMiddlewares[8]).toBe(createEditedSoloStreakDescriptionActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[4]).toBe(disableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware);
+        expect(patchSoloStreakMiddlewares[5]).toBe(createArchivedSoloStreakActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[6]).toBe(createRestoredSoloStreakActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[7]).toBe(createDeletedSoloStreakActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[8]).toBe(createEditedSoloStreakNameActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[9]).toBe(createEditedSoloStreakDescriptionActivityFeedItemMiddleware);
     });
 });

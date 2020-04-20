@@ -7,8 +7,16 @@ import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
+import {
+    User,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
+    TeamStreak,
+    StreakReminderTypes,
+} from '@streakoid/streakoid-sdk/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { UserModel, userModel } from '../../../src/Models/User';
+import { CustomTeamStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
 
 const teamStreakParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -86,6 +94,63 @@ export const sendUpdatedTeamStreakMiddleware = (request: Request, response: Resp
         next(new CustomError(ErrorType.SendUpdatedTeamStreakMiddleware, err));
     }
 };
+
+export const getDisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware = (
+    userModel: mongoose.Model<UserModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const updatedTeamStreak: TeamStreak = response.locals.updatedTeamStreak;
+        const { status } = request.body;
+        if (status === StreakStatus.archived) {
+            await Promise.all(
+                updatedTeamStreak.members.map(async member => {
+                    const user: User | null = await userModel.findById(member.memberId);
+                    if (user) {
+                        const customTeamStreakReminder = user.pushNotifications.customStreakReminders.find(
+                            reminder =>
+                                reminder.streakReminderType === StreakReminderTypes.customTeamStreakReminder &&
+                                reminder.teamStreakId == updatedTeamStreak._id,
+                        );
+                        if (
+                            customTeamStreakReminder &&
+                            customTeamStreakReminder.streakReminderType == StreakReminderTypes.customTeamStreakReminder
+                        ) {
+                            const updatedCustomTeamStreakReminder: CustomTeamStreakReminder = {
+                                ...customTeamStreakReminder,
+                                enabled: false,
+                            };
+                            const customStreakRemindersWithoutOldReminder = user.pushNotifications.customStreakReminders.filter(
+                                pushNotificaion =>
+                                    !(
+                                        pushNotificaion.streakReminderType ===
+                                            StreakReminderTypes.customTeamStreakReminder &&
+                                        pushNotificaion.teamStreakId == updatedTeamStreak._id
+                                    ),
+                            );
+
+                            const newCustomStreakReminders: CustomStreakReminder[] = [
+                                ...customStreakRemindersWithoutOldReminder,
+                                updatedCustomTeamStreakReminder,
+                            ];
+                            await userModel.findByIdAndUpdate(user._id, {
+                                $set: { 'pushNotifications.customStreakReminders': newCustomStreakReminders },
+                            });
+                        }
+                    }
+                    return member;
+                }),
+            );
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.DisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware, err));
+    }
+};
+
+export const disableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware = getDisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware(
+    userModel,
+);
 
 export const getCreateArchivedTeamStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
@@ -233,6 +298,7 @@ export const patchTeamStreakMiddlewares = [
     teamStreakRequestBodyValidationMiddleware,
     patchTeamStreakMiddleware,
     sendUpdatedTeamStreakMiddleware,
+    disableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware,
     createArchivedTeamStreakActivityFeedItemMiddleware,
     createRestoredTeamStreakActivityFeedItemMiddleware,
     createDeletedTeamStreakActivityFeedItemMiddleware,
