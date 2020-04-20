@@ -4,6 +4,7 @@
 
 // import { CustomError, ErrorType } from '../customError';
 // import { userModel } from '../../src/Models/User';
+// import { StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -18,7 +19,12 @@
 //                     $set: {
 //                         pushNotifications: {
 //                             ...user.pushNotifications,
-//                             completeAllStreaksReminder: undefined,
+//                             completeAllStreaksReminder: {
+//                                 ...user.pushNotifications.completeAllStreaksReminder,
+//                                 streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
+//                                 pushNotificationType: undefined,
+//                             },
+//                             customStreakReminders: [],
 //                         },
 //                     },
 //                 });
