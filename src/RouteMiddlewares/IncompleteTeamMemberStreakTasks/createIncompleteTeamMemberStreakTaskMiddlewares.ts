@@ -435,10 +435,14 @@ export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (expo: t
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamMembers: UserModel[] = response.locals.teamMembers;
         const messages: ExpoPushMessage[] = [];
+        const title = `${teamStreak.streakName} update`;
+        const body = `${user.username} made a mistake they have not completed ${teamStreak.streakName}`;
         const data: IncompletedTeamStreakUpdatePushNotification = {
             pushNotificationType: PushNotificationTypes.incompletedTeamStreakUpdate,
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
+            title,
+            body,
         };
         await Promise.all(
             teamMembers.map(async teamMember => {
@@ -450,8 +454,8 @@ export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (expo: t
                     messages.push({
                         to: teamMember.pushNotificationToken,
                         sound: 'default',
-                        title: `${teamStreak.streakName} update`,
-                        body: `${user.username} made a mistake they have not completed ${teamStreak.streakName}`,
+                        title,
+                        body,
                         data,
                     });
                 }

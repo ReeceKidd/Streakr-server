@@ -7,8 +7,6 @@ import {
     patchCurrentUserMiddleware,
     formatUserMiddleware,
     sendUpdatedCurrentUserMiddleware,
-    populateCurrentUserBadgesMiddleware,
-    getPopulateCurrentUserBadgesMiddleware,
     populateCurrentUserFollowersMiddleware,
     populateCurrentUserFollowingMiddleware,
     getPopulateCurrentUserFollowingMiddleware,
@@ -157,46 +155,6 @@ describe('patchCurrentUserMiddleware', () => {
     });
 });
 
-describe('populateUserBadgesMiddleware', () => {
-    test('populates user badges', async () => {
-        expect.assertions(3);
-        const request: any = {};
-        const updatedUser = {
-            badges: ['badgeId'],
-        };
-        const response: any = { locals: { updatedUser } };
-        const next = jest.fn();
-
-        const lean = jest.fn().mockResolvedValue(updatedUser.badges);
-        const find = jest.fn(() => ({ lean }));
-
-        const badgeModel = {
-            find,
-        };
-
-        const middleware = getPopulateCurrentUserBadgesMiddleware(badgeModel as any);
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ _id: updatedUser.badges });
-        expect(lean).toBeCalled();
-        expect(next).toBeCalled();
-    });
-
-    test('calls next with PopulateUserBadgesMiddleware error on middleware failure', async () => {
-        expect.assertions(1);
-        const response: any = {};
-        const request: any = {};
-        const next = jest.fn();
-
-        const middleware = getPopulateCurrentUserBadgesMiddleware({} as any);
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith(
-            new CustomError(ErrorType.PatchCurrentUserPopulateUserBadgesMiddleware, expect.any(Error)),
-        );
-    });
-});
-
 describe('populateCurrentUserFollowingMiddleware', () => {
     test('populates updatedUser following', async () => {
         expect.assertions(3);
@@ -284,7 +242,6 @@ describe('formatUserMiddleware', () => {
         const updatedUser: User = {
             _id: '_id',
             username: 'username',
-            badges: [],
             membershipInformation: {
                 isPayingMember: true,
                 currentMembershipStartDate: new Date(),
@@ -309,9 +266,6 @@ describe('formatUserMiddleware', () => {
                     reminderHour: 10,
                     reminderMinute: 15,
                     streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
-                },
-                badgeUpdates: {
-                    enabled: true,
                 },
                 teamStreakUpdates: {
                     enabled: true,
@@ -338,7 +292,6 @@ describe('formatUserMiddleware', () => {
                 '_id',
                 'email',
                 'username',
-                'badges',
                 'membershipInformation',
                 'userType',
                 'followers',
@@ -404,15 +357,14 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
 
 describe('patchUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(8);
+        expect.assertions(7);
 
-        expect(patchCurrentUserMiddlewares.length).toBe(7);
+        expect(patchCurrentUserMiddlewares.length).toBe(6);
         expect(patchCurrentUserMiddlewares[0]).toBe(patchCurrentUserRequestBodyValidationMiddleware);
         expect(patchCurrentUserMiddlewares[1]).toBe(patchCurrentUserMiddleware);
-        expect(patchCurrentUserMiddlewares[2]).toBe(populateCurrentUserBadgesMiddleware);
-        expect(patchCurrentUserMiddlewares[3]).toBe(populateCurrentUserFollowingMiddleware);
-        expect(patchCurrentUserMiddlewares[4]).toBe(populateCurrentUserFollowersMiddleware);
-        expect(patchCurrentUserMiddlewares[5]).toBe(formatUserMiddleware);
-        expect(patchCurrentUserMiddlewares[6]).toBe(sendUpdatedCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[2]).toBe(populateCurrentUserFollowingMiddleware);
+        expect(patchCurrentUserMiddlewares[3]).toBe(populateCurrentUserFollowersMiddleware);
+        expect(patchCurrentUserMiddlewares[4]).toBe(formatUserMiddleware);
+        expect(patchCurrentUserMiddlewares[5]).toBe(sendUpdatedCurrentUserMiddleware);
     });
 });

@@ -6,8 +6,6 @@ import {
     getUserMiddlewares,
     retreiveUserMiddleware,
     formatUserMiddleware,
-    getPopulateUserBadgesMiddleware,
-    populateUserBadgesMiddleware,
     getPopulateUserFollowersMiddleware,
     getPopulateUserFollowingMiddleware,
     populateUserFollowersMiddleware,
@@ -154,44 +152,6 @@ describe('retreiveUserMiddleware', () => {
     });
 });
 
-describe('populateUserBadgesMiddleware', () => {
-    test('populates user badges', async () => {
-        expect.assertions(3);
-        const request: any = {};
-        const user = {
-            badges: ['badgeId'],
-        };
-        const response: any = { locals: { user } };
-        const next = jest.fn();
-
-        const lean = jest.fn().mockResolvedValue(user.badges);
-        const find = jest.fn(() => ({ lean }));
-
-        const badgeModel = {
-            find,
-        };
-
-        const middleware = getPopulateUserBadgesMiddleware(badgeModel as any);
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ _id: user.badges });
-        expect(lean).toBeCalled();
-        expect(next).toBeCalled();
-    });
-
-    test('calls next with PopulateCurrentUserBadgesMiddleware error on middleware failure', async () => {
-        expect.assertions(1);
-        const response: any = {};
-        const request: any = {};
-        const next = jest.fn();
-
-        const middleware = getPopulateUserBadgesMiddleware({} as any);
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateCurrentUserBadgesMiddleware, expect.any(Error)));
-    });
-});
-
 describe('populateUserFollowersMiddleware', () => {
     test('populates user followers', async () => {
         expect.assertions(3);
@@ -281,7 +241,6 @@ describe('formatUserMiddleware', () => {
                 isPayingMember: true,
                 pastMemberships: [],
             },
-            badges: [],
             email: 'test@test.com',
             createdAt: 'Jan 1st',
             updatedAt: 'Jan 1st',
@@ -311,7 +270,6 @@ describe('formatUserMiddleware', () => {
                 'username',
                 'isPayingMember',
                 'userType',
-                'badges',
                 'timezone',
                 'friends',
                 'followers',
@@ -370,15 +328,14 @@ describe('sendRetreiveUserResponseMiddleware', () => {
 
 describe('getUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(8);
+        expect.assertions(7);
 
-        expect(getUserMiddlewares.length).toEqual(7);
+        expect(getUserMiddlewares.length).toEqual(6);
         expect(getUserMiddlewares[0]).toEqual(userParamsValidationMiddleware);
         expect(getUserMiddlewares[1]).toEqual(retreiveUserMiddleware);
-        expect(getUserMiddlewares[2]).toEqual(populateUserBadgesMiddleware);
-        expect(getUserMiddlewares[3]).toEqual(populateUserFollowersMiddleware);
-        expect(getUserMiddlewares[4]).toEqual(populateUserFollowingMiddleware);
-        expect(getUserMiddlewares[5]).toEqual(formatUserMiddleware);
-        expect(getUserMiddlewares[6]).toEqual(sendUserMiddleware);
+        expect(getUserMiddlewares[2]).toEqual(populateUserFollowersMiddleware);
+        expect(getUserMiddlewares[3]).toEqual(populateUserFollowingMiddleware);
+        expect(getUserMiddlewares[4]).toEqual(formatUserMiddleware);
+        expect(getUserMiddlewares[5]).toEqual(sendUserMiddleware);
     });
 });

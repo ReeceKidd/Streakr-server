@@ -61,9 +61,6 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         teamStreakUpdates: {
             enabled: true,
         },
-        badgeUpdates: {
-            enabled: true,
-        },
         newFollowerUpdates: {
             enabled: true,
         },
@@ -116,9 +113,6 @@ describe('patchCurrentUserPushNotificationsMiddleware', () => {
         };
         const pushNotifications: UserPushNotifications = {
             teamStreakUpdates: {
-                enabled: true,
-            },
-            badgeUpdates: {
                 enabled: true,
             },
             newFollowerUpdates: {
@@ -198,9 +192,6 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
         expect.assertions(3);
         const pushNotifications: UserPushNotifications = {
             teamStreakUpdates: {
-                enabled: true,
-            },
-            badgeUpdates: {
                 enabled: true,
             },
             newFollowerUpdates: {

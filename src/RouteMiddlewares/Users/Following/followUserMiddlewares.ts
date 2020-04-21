@@ -205,18 +205,22 @@ export const getSendNewFollowerRequestNotificationMiddleware = (expo: typeof exp
         const user: User = response.locals.user;
         const userToFollow: User = response.locals.userToFollow;
         const { pushNotificationToken } = userToFollow;
+        const title = 'New follower';
+        const body = `${user && user.username} is following you.`;
         const data: NewFollowerPushNotification = {
             pushNotificationType: PushNotificationTypes.newFollower,
             followerId: user._id,
             followerUsername: user.username,
+            title,
+            body,
         };
         if (pushNotificationToken && userToFollow.pushNotifications.newFollowerUpdates.enabled) {
             const messages: ExpoPushMessage[] = [];
             messages.push({
                 to: pushNotificationToken,
                 sound: 'default',
-                title: 'New follower',
-                body: `${user && user.username} is following you.`,
+                title,
+                body,
                 data,
             });
 

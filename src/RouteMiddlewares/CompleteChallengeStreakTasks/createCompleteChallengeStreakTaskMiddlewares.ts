@@ -20,7 +20,6 @@ import {
 } from '../../Models/CompleteChallengeStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { ChallengeModel, challengeModel } from '../../../src/Models/Challenge';
 
@@ -206,47 +205,6 @@ export const getStreakMaintainedMiddleware = (challengeStreakModel: mongoose.Mod
 
 export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(challengeStreakModel);
 
-const expoClient = new Expo();
-
-export const getSendNewChallengeBadgeNotificationMiddleware = (expo: typeof expoClient) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
-        const user: User = response.locals.user;
-        const { currentStreak } = challengeStreak;
-        const { numberOfDaysInARow } = currentStreak;
-        if (
-            numberOfDaysInARow === 6 ||
-            numberOfDaysInARow === 13 ||
-            numberOfDaysInARow === 29 ||
-            numberOfDaysInARow === 89 ||
-            numberOfDaysInARow === 179 ||
-            numberOfDaysInARow === 364
-        ) {
-            const { pushNotificationToken } = user;
-            if (pushNotificationToken && user.pushNotifications.badgeUpdates.enabled) {
-                const messages: ExpoPushMessage[] = [];
-                messages.push({
-                    to: pushNotificationToken,
-                    sound: 'default',
-                    title: 'New badge',
-                    body: `You have a new challenge badge on your profile`,
-                });
-
-                await expo.sendPushNotificationsAsync(messages);
-            }
-        }
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.SendNewChallengeBadgeNotificationMiddleware, err));
-    }
-};
-
-export const sendNewChallengeBadgeNotificationMiddleware = getSendNewChallengeBadgeNotificationMiddleware(expoClient);
-
 export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
     response: Response,
@@ -321,7 +279,6 @@ export const createCompleteChallengeStreakTaskMiddlewares = [
     setDayTaskWasCompletedMiddleware,
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
-    sendNewChallengeBadgeNotificationMiddleware,
     sendTaskCompleteResponseMiddleware,
     retreiveChallengeMiddleware,
     createCompleteChallengeStreakActivityFeedItemMiddleware,

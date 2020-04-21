@@ -50,9 +50,6 @@ const customStreakRemindersPushNotificationValidationSchema = Joi.object({
 
 const patchCurrentUserPushNotificationsValidationSchema = {
     completeAllStreaksReminder: completeAllStreaksPushNotificationValidationSchema,
-    badgeUpdates: Joi.object({
-        enabled: Joi.boolean().required(),
-    }),
     newFollowerUpdates: Joi.object({
         enabled: Joi.boolean().required(),
     }),

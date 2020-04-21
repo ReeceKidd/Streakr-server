@@ -72,6 +72,8 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
                 throw new CustomError(ErrorType.CreateNoteUserDoesNotExist);
             }
             const messages: ExpoPushMessage[] = [];
+            const title = `${userWhoCreatedNote.username} added a note to ${teamStreak.streakName}`;
+            const body = `${text}`;
             const data: AddedNoteToTeamStreakPushNotification = {
                 pushNotificationType: PushNotificationTypes.addedNoteToTeamStreak,
                 note: text,
@@ -79,6 +81,8 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
                 teamStreakName: teamStreak.streakName,
                 userId: userWhoCreatedNote.userId,
                 username: userWhoCreatedNote.username,
+                title,
+                body,
             };
             await Promise.all(
                 teamStreak.members.map(async teamMember => {
@@ -92,8 +96,8 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
                         messages.push({
                             to: populatedMember.pushNotificationToken,
                             sound: 'default',
-                            title: `${userWhoCreatedNote.username} added a note to ${teamStreak.streakName}`,
-                            body: `${text}`,
+                            title,
+                            body,
                             data,
                         });
                     }

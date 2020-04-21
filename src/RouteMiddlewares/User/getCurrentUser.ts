@@ -3,27 +3,8 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { User, PopulatedCurrentUser } from '@streakoid/streakoid-sdk/lib';
 import { Model } from 'mongoose';
-import { BadgeModel, badgeModel } from '../../Models/Badge';
 import { userModel, UserModel } from '../../../src/Models/User';
 import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
-
-export const getPopulateCurrentUserBadgesMiddleware = (badgeModel: Model<BadgeModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const user: User = response.locals.user;
-        const badges = await badgeModel.find({ _id: user.badges }).lean();
-        response.locals.badges = badges;
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.PopulateCurrentUserBadgesMiddleware, err));
-    }
-};
-
-export const populateCurrentUserBadgesMiddleware = getPopulateCurrentUserBadgesMiddleware(badgeModel);
 
 export const getPopulateCurrentUserFollowingMiddleware = (userModel: Model<UserModel>) => async (
     request: Request,
@@ -84,14 +65,13 @@ export const populateCurrentUserFollowersMiddleware = getPopulateCurrentUserFoll
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const user: User = response.locals.user;
-        const { badges, followers, following } = response.locals;
+        const { followers, following } = response.locals;
         const formattedUser: PopulatedCurrentUser = {
             _id: user._id,
             email: user.email,
             username: user.username,
             membershipInformation: user.membershipInformation,
             userType: user.userType,
-            badges,
             followers,
             following,
             friends: user.friends,
@@ -120,7 +100,6 @@ export const sendCurrentUserMiddleware = (request: Request, response: Response, 
 };
 
 export const getCurrentUserMiddlewares = [
-    populateCurrentUserBadgesMiddleware,
     populateCurrentUserFollowingMiddleware,
     populateCurrentUserFollowersMiddleware,
     formatUserMiddleware,

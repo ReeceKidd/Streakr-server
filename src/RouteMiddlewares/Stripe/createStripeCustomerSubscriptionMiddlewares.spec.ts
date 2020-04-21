@@ -794,7 +794,6 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                 timezone: 'Europe/London',
                 userType: UserTypes.basic,
                 friends: [],
-                badges: [],
                 profileImages: {
                     originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
                 },
@@ -820,7 +819,6 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                     'userType',
                     'timezone',
                     'friends',
-                    'badges',
                     'createdAt',
                     'updatedAt',
                     'profileImages',

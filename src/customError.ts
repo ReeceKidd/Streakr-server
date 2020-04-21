@@ -347,10 +347,6 @@ export enum ErrorType {
     NotifyTeamMembersThatUserHasIncompletedTaskMiddleware,
     SendStreakRecommendationsMiddleware,
     FindStreakRecommendationsMiddleware,
-    FindBadgesMiddleware,
-    SendBadgesMiddleware,
-    CreateBadgeFromRequestMiddleware,
-    SendFormattedBadgeMiddleware,
     CreateChallengeFromRequestMiddleware,
     SendFormattedChallengeMiddleware,
     FindChallengesMiddleware,
@@ -394,7 +390,6 @@ export enum ErrorType {
     PatchChallengeStreakMiddleware,
     SendUpdatedChallengeStreakMiddleware,
     UpdatedChallengeStreakNotFound,
-    CreateBadgeForChallengeMiddleware,
     IsUserAlreadyInChallengeMiddleware,
     UserIsAlreadyInChallenge,
     AddUserToChallengeMiddleware,
@@ -403,18 +398,8 @@ export enum ErrorType {
     CreateChallengeStreakDoesUserExistMiddleware,
     CreateChallengeStreakUserDoesNotExist,
     GetChallengeMemberInformationMiddleware,
-    AddChallengeBadgeToUserBadgesMiddleware,
-    PopulateCurrentUserBadgesMiddleware,
-    PatchCurrentUserPopulateUserBadgesMiddleware,
-    ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware,
-    ChallengeIdMustBeDefinedForChallengeBadge,
-    GetUserPopulateUserBadgesMiddleware,
-    SendNewChallengeBadgeNotificationMiddleware,
     GetCompleteChallengeStreakTasksMiddleware,
     SendCompleteChallengeStreakTasksResponseMiddleware,
-    NoBadgeFound,
-    GetRetreiveBadgeMiddleware,
-    SendBadgeMiddleware,
     CreateNoteFromRequestMiddleware,
     SendFormattedNoteMiddleware,
     FindNotesMiddleware,
@@ -1135,14 +1120,6 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-84`,
                     message: 'User does not exist.',
-                    httpStatusCode: ResponseCodes.badRequest,
-                };
-            }
-
-            case ErrorType.NoBadgeFound: {
-                return {
-                    code: `${ResponseCodes.badRequest}-85`,
-                    message: 'Badge does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -3207,34 +3184,6 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.FindBadgesMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-280`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.SendBadgesMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-281`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.CreateBadgeFromRequestMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-282`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.SendFormattedBadgeMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-283`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
             case ErrorType.CreateChallengeFromRequestMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-284`,
@@ -3473,13 +3422,6 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateBadgeForChallengeMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-318`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
             case ErrorType.IsUserAlreadyInChallengeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-319`,
@@ -3515,48 +3457,6 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.AddChallengeBadgeToUserBadgesMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-324`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.PopulateCurrentUserBadgesMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-325`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.PatchCurrentUserPopulateUserBadgesMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-326`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-327`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.GetUserPopulateUserBadgesMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-328`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.SendNewChallengeBadgeNotificationMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-329`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
             case ErrorType.GetCompleteChallengeStreakTasksMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-330`,
@@ -3567,20 +3467,6 @@ export class CustomError extends Error {
             case ErrorType.SendCompleteChallengeStreakTasksResponseMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-331`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.GetRetreiveBadgeMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-332`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.SendBadgeMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-333`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

@@ -15,21 +15,11 @@ export const challengeSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        badgeId: {
-            type: String,
-            required: true,
-        },
         icon: {
             type: String,
-            required: true,
         },
         color: {
             type: String,
-            required: true,
-        },
-        levels: {
-            type: [{ level: Number, criteria: String }],
-            default: [],
         },
         members: {
             type: [String],

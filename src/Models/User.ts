@@ -63,10 +63,6 @@ export const userSchema = new mongoose.Schema(
             type: Array,
             default: [],
         },
-        badges: {
-            type: Array,
-            default: [],
-        },
         stripe: {
             customer: {
                 type: String,
@@ -113,12 +109,6 @@ export const userSchema = new mongoose.Schema(
                 },
             },
             newFollowerUpdates: {
-                enabled: {
-                    type: Boolean,
-                    default: true,
-                },
-            },
-            badgeUpdates: {
                 enabled: {
                     type: Boolean,
                     default: true,

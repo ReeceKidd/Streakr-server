@@ -16,7 +16,6 @@ export enum Models {
     DailyJob = 'DailyJob',
     Email = 'Email',
     StreakRecommendation = 'StreakRecommendation',
-    Badge = 'Badge',
     Challenge = 'Challenge',
     ChallengeStreak = 'ChallengeStreak',
     CompleteChallengeStreakTask = 'CompleteChallengeStreakTask',

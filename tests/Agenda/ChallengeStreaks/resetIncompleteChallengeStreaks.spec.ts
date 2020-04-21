@@ -21,8 +21,6 @@ describe('resetIncompleteChallengeStreaks', () => {
     const name = 'Duolingo';
     const description = 'Everyday I must complete a duolingo lesson';
     const icon = 'duolingo';
-    const color = 'blue';
-    const levels = [{ level: 0, criteria: 'criteria' }];
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
@@ -35,8 +33,6 @@ describe('resetIncompleteChallengeStreaks', () => {
                 name,
                 description,
                 icon,
-                color,
-                levels,
             });
             challenge = challengeResponse.challenge;
             const challengeStreak = await streakoid.challengeStreaks.create({
@@ -93,7 +89,6 @@ describe('resetIncompleteChallengeStreaks', () => {
                 'pastStreaks',
                 'userId',
                 'challengeId',
-                'badgeId',
                 'timezone',
                 'createdAt',
                 'updatedAt',

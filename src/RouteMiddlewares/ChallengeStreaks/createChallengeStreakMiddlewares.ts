@@ -143,24 +143,6 @@ export const increaseNumberOfMembersInChallengeMiddleware = getIncreaseNumberOfM
     challengeModel,
 );
 
-export const getAddChallengeBadgeToUserBadgesMiddleware = (userModel: mongoose.Model<UserModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const user: User = response.locals.user;
-        const challenge: Challenge = response.locals.challenge;
-        await userModel.findOneAndUpdate({ _id: user._id }, { $push: { badges: challenge.badgeId } });
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.AddChallengeBadgeToUserBadgesMiddleware, err));
-    }
-};
-
-export const addChallengeBadgeToUserBadgesMiddleware = getAddChallengeBadgeToUserBadgesMiddleware(userModel);
-
 export const getCreateChallengeStreakMiddleware = (challengeStreak: mongoose.Model<ChallengeStreakModel>) => async (
     request: Request,
     response: Response,
@@ -174,7 +156,6 @@ export const getCreateChallengeStreakMiddleware = (challengeStreak: mongoose.Mod
             userId,
             challengeId: challenge._id,
             timezone,
-            badgeId: challenge.badgeId,
         });
         response.locals.savedChallengeStreak = await newChallengeStreak.save();
         next();
@@ -232,7 +213,6 @@ export const createChallengeStreakMiddlewares = [
     isUserAlreadyInChallengeMiddleware,
     addUserToChallengeMembersMiddleware,
     increaseNumberOfMembersInChallengeMiddleware,
-    addChallengeBadgeToUserBadgesMiddleware,
     createChallengeStreakMiddleware,
     sendFormattedChallengeStreakMiddleware,
     createJoinChallengeActivityFeedItemMiddleware,

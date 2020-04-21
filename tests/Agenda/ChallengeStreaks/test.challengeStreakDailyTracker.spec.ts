@@ -22,8 +22,6 @@ describe('challengeStreakDailyTracker', () => {
     const name = 'Duolingo';
     const description = 'Everyday I must complete a duolingo lesson';
     const icon = 'duolingo';
-    const color = 'blue';
-    const levels = [{ level: 0, criteria: 'criteria' }];
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
@@ -86,8 +84,6 @@ describe('challengeStreakDailyTracker', () => {
             name,
             description,
             icon,
-            color,
-            levels,
         });
 
         const maintainedChallengeStreak = await streakoid.challengeStreaks.create({
@@ -152,7 +148,6 @@ describe('challengeStreakDailyTracker', () => {
                 'active',
                 'pastStreaks',
                 'userId',
-                'badgeId',
                 'challengeId',
                 'timezone',
                 'createdAt',
@@ -214,8 +209,6 @@ describe('challengeStreakDailyTracker', () => {
             name,
             description,
             icon,
-            color,
-            levels,
         });
 
         const lostChallengeStreak = await streakoid.challengeStreaks.create({
@@ -286,7 +279,6 @@ describe('challengeStreakDailyTracker', () => {
                 'active',
                 'pastStreaks',
                 'userId',
-                'badgeId',
                 'challengeId',
                 'timezone',
                 'createdAt',
@@ -349,8 +341,6 @@ describe('challengeStreakDailyTracker', () => {
             name,
             description,
             icon,
-            color,
-            levels,
         });
 
         const inactiveChallengeStreak = await streakoid.challengeStreaks.create({
@@ -388,7 +378,6 @@ describe('challengeStreakDailyTracker', () => {
                 'active',
                 'pastStreaks',
                 'userId',
-                'badgeId',
                 'challengeId',
                 'timezone',
                 'createdAt',

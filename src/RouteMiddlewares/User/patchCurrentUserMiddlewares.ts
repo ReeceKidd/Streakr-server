@@ -7,13 +7,10 @@ import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { User, PopulatedCurrentUser } from '@streakoid/streakoid-sdk/lib';
-import { BadgeModel } from '../../Models/Badge';
-import { badgeModel } from '../../Models/Badge';
 import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
 
 const patchCurrentUserValidationSchema = {
     email: Joi.string().email(),
-    badges: Joi.array(),
     timezone: Joi.string(),
     pushNotificationToken: Joi.string(),
     hasCompletedIntroduction: Joi.boolean(),
@@ -52,24 +49,6 @@ export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserMode
 };
 
 export const patchCurrentUserMiddleware = getPatchCurrentUserMiddleware(userModel);
-
-export const getPopulateCurrentUserBadgesMiddleware = (badgeModel: mongoose.Model<BadgeModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const updatedUser: User = response.locals.updatedUser;
-        const badges = await badgeModel.find({ _id: updatedUser.badges }).lean();
-        response.locals.badges = badges;
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.PatchCurrentUserPopulateUserBadgesMiddleware, err));
-    }
-};
-
-export const populateCurrentUserBadgesMiddleware = getPopulateCurrentUserBadgesMiddleware(badgeModel);
 
 export const getPopulateCurrentUserFollowingMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
@@ -130,7 +109,7 @@ export const populateCurrentUserFollowersMiddleware = getPopulateCurrentUserFoll
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const user: User = response.locals.updatedUser;
-        const { badges, following, followers } = response.locals;
+        const { following, followers } = response.locals;
         const formattedUser: PopulatedCurrentUser = {
             _id: user._id,
             email: user.email,
@@ -145,7 +124,6 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             pushNotifications: user.pushNotifications,
             profileImages: user.profileImages,
             hasCompletedIntroduction: user.hasCompletedIntroduction,
-            badges,
             followers,
             following,
         };
@@ -168,7 +146,6 @@ export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Res
 export const patchCurrentUserMiddlewares = [
     patchCurrentUserRequestBodyValidationMiddleware,
     patchCurrentUserMiddleware,
-    populateCurrentUserBadgesMiddleware,
     populateCurrentUserFollowingMiddleware,
     populateCurrentUserFollowersMiddleware,
     formatUserMiddleware,

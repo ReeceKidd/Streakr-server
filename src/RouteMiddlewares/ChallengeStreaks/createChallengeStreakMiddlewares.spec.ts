@@ -13,8 +13,6 @@ import {
     getDoesUserExistMiddleware,
     doesChallengeExistMiddleware,
     doesUserExistMiddleware,
-    addChallengeBadgeToUserBadgesMiddleware,
-    getAddChallengeBadgeToUserBadgesMiddleware,
     createJoinChallengeActivityFeedItemMiddleware,
     increaseNumberOfMembersInChallengeMiddleware,
     getIncreaseNumberOfMembersInChallengeMiddleware,
@@ -331,7 +329,6 @@ describe(`createChallengeStreakFromRequestMiddleware`, () => {
         expect.assertions(2);
         const challenge = {
             _id: 'challengId',
-            badgeId: 'badgeId',
         };
         const userId = 'abcdefg';
         const timezone = 'Europe/London';
@@ -400,45 +397,6 @@ describe('addUserToChallengeMembersMiddleware', () => {
 
         const middleware = getIsUserAlreadyInChallengeMiddleware({} as any);
         middleware(request, response, next);
-
-        expect(next).toBeCalledWith(new CustomError(ErrorType.AddUserToChallengeMiddleware, expect.any(Error)));
-    });
-});
-
-describe('addChallengeBadgeToUserBadgesMiddleware', () => {
-    test('adds challenge badge to users badges', async () => {
-        expect.assertions(2);
-        const user = {
-            _id: '_id',
-        };
-        const challenge = {
-            badgeId: 'badgeId',
-        };
-        const findOneAndUpdate = jest.fn().mockResolvedValue(false);
-        const userModel = {
-            findOneAndUpdate,
-        };
-
-        const response: any = { locals: { user, challenge } };
-        const request: any = {};
-        const next = jest.fn();
-
-        const middleware = getAddChallengeBadgeToUserBadgesMiddleware(userModel as any);
-        await middleware(request, response, next);
-
-        expect(findOneAndUpdate).toBeCalledWith({ _id: user._id }, { $push: { badges: challenge.badgeId } });
-        expect(next).toBeCalledWith();
-    });
-
-    test('calls next with AddChallengeBadgeToUserBadgesMiddleware error on middleware failure', async () => {
-        expect.assertions(1);
-
-        const response: any = {};
-        const request: any = {};
-        const next = jest.fn();
-
-        const middleware = getAddChallengeBadgeToUserBadgesMiddleware({} as any);
-        await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.AddUserToChallengeMiddleware, expect.any(Error)));
     });
@@ -523,18 +481,17 @@ describe(`createJoinChallengeActivityFeedItemMiddleware`, () => {
 
 describe(`createChallengeStreakMiddlewares`, () => {
     test('that createChallengeStreak middlewares are defined in the correct order', async () => {
-        expect.assertions(11);
+        expect.assertions(10);
 
-        expect(createChallengeStreakMiddlewares.length).toEqual(10);
+        expect(createChallengeStreakMiddlewares.length).toEqual(9);
         expect(createChallengeStreakMiddlewares[0]).toBe(createChallengeStreakBodyValidationMiddleware);
         expect(createChallengeStreakMiddlewares[1]).toBe(doesChallengeExistMiddleware);
         expect(createChallengeStreakMiddlewares[2]).toBe(doesUserExistMiddleware);
         expect(createChallengeStreakMiddlewares[3]).toBe(isUserAlreadyInChallengeMiddleware);
         expect(createChallengeStreakMiddlewares[4]).toBe(addUserToChallengeMembersMiddleware);
         expect(createChallengeStreakMiddlewares[5]).toBe(increaseNumberOfMembersInChallengeMiddleware);
-        expect(createChallengeStreakMiddlewares[6]).toBe(addChallengeBadgeToUserBadgesMiddleware);
-        expect(createChallengeStreakMiddlewares[7]).toBe(createChallengeStreakMiddleware);
-        expect(createChallengeStreakMiddlewares[8]).toBe(sendFormattedChallengeStreakMiddleware);
-        expect(createChallengeStreakMiddlewares[9]).toBe(createJoinChallengeActivityFeedItemMiddleware);
+        expect(createChallengeStreakMiddlewares[6]).toBe(createChallengeStreakMiddleware);
+        expect(createChallengeStreakMiddlewares[7]).toBe(sendFormattedChallengeStreakMiddleware);
+        expect(createChallengeStreakMiddlewares[8]).toBe(createJoinChallengeActivityFeedItemMiddleware);
     });
 });

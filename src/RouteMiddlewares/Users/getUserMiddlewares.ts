@@ -6,8 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User, PopulatedUser, Badge } from '@streakoid/streakoid-sdk/lib';
-import { BadgeModel, badgeModel } from '../../Models/Badge';
+import { User, PopulatedUser } from '@streakoid/streakoid-sdk/lib';
 import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
 
 const userParamsValidationSchema = {
@@ -44,24 +43,6 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
 };
 
 export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
-
-export const getPopulateUserBadgesMiddleware = (badgeModel: mongoose.Model<BadgeModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const user: User = response.locals.user;
-        const badges = await badgeModel.find({ _id: user.badges }).lean();
-        response.locals.badges = badges;
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.GetUserPopulateUserBadgesMiddleware, err));
-    }
-};
-
-export const populateUserBadgesMiddleware = getPopulateUserBadgesMiddleware(badgeModel);
 
 export const getPopulateUserFollowersMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
@@ -124,14 +105,12 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
         const user: User = response.locals.user;
         const followers: BasicUser[] = response.locals.followers;
         const following: BasicUser[] = response.locals.following;
-        const badges: Badge[] = response.locals.badges;
         const formattedUser: PopulatedUser = {
             _id: user._id,
             username: user.username,
             isPayingMember: user.membershipInformation.isPayingMember,
             userType: user.userType,
             timezone: user.timezone,
-            badges,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             profileImages: user.profileImages,
@@ -159,7 +138,6 @@ export const sendUserMiddleware = (request: Request, response: Response, next: N
 export const getUserMiddlewares = [
     userParamsValidationMiddleware,
     retreiveUserMiddleware,
-    populateUserBadgesMiddleware,
     populateUserFollowersMiddleware,
     populateUserFollowingMiddleware,
     formatUserMiddleware,

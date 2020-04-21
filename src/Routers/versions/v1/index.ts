@@ -18,7 +18,6 @@ import { dailyJobsRouter } from './dailyJobsRouter';
 import { completeTeamStreaksRouter } from './completeTeamStreaksRouter';
 import { emailRouter } from './emailRouter';
 import { profilePictureRouter } from './profilePicturesRouter';
-import { badgesRouter } from './badgesRouter';
 import { challengesRouter } from './challengesRouter';
 import { activityFeedItemsRouter } from './activityFeedItemsRouter';
 
@@ -62,7 +61,6 @@ v1Router.use(`/${RouterCategories.completeChallengeStreakTasks}`, completeChalle
 v1Router.use(`/${RouterCategories.incompleteChallengeStreakTasks}`, incompleteChallengeStreakTasksRouter);
 v1Router.use(`/${RouterCategories.incompleteTeamMemberStreakTasks}`, incompleteTeamMemberStreakTasksRouter);
 v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);
-v1Router.use(`/${RouterCategories.badges}`, badgesRouter);
 v1Router.use(`/${RouterCategories.challenges}`, challengesRouter);
 v1Router.use(`/${RouterCategories.challengeStreaks}`, challengeStreaksRouter);
 v1Router.use(`/${RouterCategories.notes}`, notesRouter);

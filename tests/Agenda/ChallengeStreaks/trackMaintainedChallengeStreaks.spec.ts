@@ -18,8 +18,6 @@ describe('trackMaintainedChallengeStreak', () => {
     const name = 'Duolingo';
     const description = 'Everyday I must complete a duolingo lesson';
     const icon = 'duolingo';
-    const color = 'blue';
-    const levels = [{ level: 0, criteria: 'criteria' }];
 
     beforeAll(async () => {
         if (isTestEnvironment()) {
@@ -31,8 +29,6 @@ describe('trackMaintainedChallengeStreak', () => {
                 name,
                 description,
                 icon,
-                color,
-                levels,
             });
             const challengeStreak = await streakoid.challengeStreaks.create({
                 userId,
@@ -87,7 +83,6 @@ describe('trackMaintainedChallengeStreak', () => {
                 'active',
                 'pastStreaks',
                 'userId',
-                'badgeId',
                 'challengeId',
                 'timezone',
                 'createdAt',

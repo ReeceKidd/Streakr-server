@@ -113,7 +113,6 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             followers: user.followers,
             following: user.following,
             friends: user.friends,
-            badges: user.badges,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,

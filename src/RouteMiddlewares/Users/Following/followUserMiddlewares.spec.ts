@@ -485,16 +485,21 @@ describe('followUserMiddlewares', () => {
             const middleware = getSendNewFollowerRequestNotificationMiddleware(expo);
             await middleware(request, response, next);
 
+            const title = 'New follower';
+            const body = `${user.username} is following you.`;
+
             expect(sendPushNotificationsAsync).toBeCalledWith([
                 {
                     to: userToFollow.pushNotificationToken,
                     sound: 'default',
-                    title: 'New follower',
-                    body: `${user.username} is following you.`,
+                    title,
+                    body,
                     data: {
                         pushNotificationType: PushNotificationTypes.newFollower,
                         followerId: user._id,
                         followerUsername: user.username,
+                        title,
+                        body,
                     },
                 },
             ]);

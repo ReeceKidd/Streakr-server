@@ -441,10 +441,14 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamMembers: UserModel[] = response.locals.teamMembers;
         const messages: ExpoPushMessage[] = [];
+        const title = `${teamStreak.streakName} update`;
+        const body = `${user.username} has completed ${teamStreak.streakName}`;
         const data: CompletedTeamStreakUpdatePushNotification = {
             pushNotificationType: PushNotificationTypes.completedTeamStreakUpdate,
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
+            title,
+            body,
         };
         await Promise.all(
             teamMembers.map(async teamMember => {
@@ -456,8 +460,8 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
                     messages.push({
                         to: teamMember.pushNotificationToken,
                         sound: 'default',
-                        title: `${teamStreak.streakName} update`,
-                        body: `${user.username} has completed ${teamStreak.streakName}`,
+                        title,
+                        body,
                         data,
                     });
                 }

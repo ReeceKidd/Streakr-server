@@ -18,7 +18,6 @@ export enum Collections {
     DailyJobs = 'DailyJobs',
     Emails = 'Emails',
     StreakRecommendations = 'StreakRecommendations',
-    Badges = 'Badges',
     Challenges = 'Challenges',
     ChallengeStreaks = 'ChallengeStreaks',
     CompleteChallengeStreakTasks = 'CompleteChallengeStreakTasks',

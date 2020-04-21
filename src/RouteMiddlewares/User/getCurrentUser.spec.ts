@@ -3,8 +3,6 @@ import {
     sendCurrentUserMiddleware,
     getCurrentUserMiddlewares,
     formatUserMiddleware,
-    populateCurrentUserBadgesMiddleware,
-    getPopulateCurrentUserBadgesMiddleware,
     populateCurrentUserFollowingMiddleware,
     populateCurrentUserFollowersMiddleware,
     getPopulateCurrentUserFollowingMiddleware,
@@ -14,44 +12,6 @@ import { CustomError } from '../../customError';
 import { ErrorType } from '../../customError';
 import { User, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
-
-describe('populateCurrentUserBadgesMiddleware', () => {
-    test('populates user badges', async () => {
-        expect.assertions(3);
-        const request: any = {};
-        const user = {
-            badges: ['badgeId'],
-        };
-        const response: any = { locals: { user } };
-        const next = jest.fn();
-
-        const lean = jest.fn().mockResolvedValue(user.badges);
-        const find = jest.fn(() => ({ lean }));
-
-        const badgeModel = {
-            find,
-        };
-
-        const middleware = getPopulateCurrentUserBadgesMiddleware(badgeModel as any);
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ _id: user.badges });
-        expect(lean).toBeCalled();
-        expect(next).toBeCalled();
-    });
-
-    test('calls next with PopulateCurrentUserBadgesMiddleware error on middleware failure', async () => {
-        expect.assertions(1);
-        const response: any = {};
-        const request: any = {};
-        const next = jest.fn();
-
-        const middleware = getPopulateCurrentUserBadgesMiddleware({} as any);
-        await middleware(request, response, next);
-
-        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateCurrentUserBadgesMiddleware, expect.any(Error)));
-    });
-});
 
 describe('populateCurrentUserFollowingMiddleware', () => {
     test('populates user following', async () => {
@@ -146,7 +106,6 @@ describe('formatUserMiddleware', () => {
                 currentMembershipStartDate: new Date(),
                 pastMemberships: [],
             },
-            badges: [],
             email: 'test@test.com',
             createdAt: 'Jan 1st',
             updatedAt: 'Jan 1st',
@@ -166,9 +125,6 @@ describe('formatUserMiddleware', () => {
                     reminderMinute: 10,
                     reminderHour: 10,
                     streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
-                },
-                badgeUpdates: {
-                    enabled: false,
                 },
                 teamStreakUpdates: {
                     enabled: true,
@@ -197,7 +153,6 @@ describe('formatUserMiddleware', () => {
                 'username',
                 'membershipInformation',
                 'userType',
-                'badges',
                 'followers',
                 'following',
                 'friends',
@@ -258,13 +213,12 @@ describe('sendCurrentUserMiddleware', () => {
 
 describe('getCurrentUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(6);
+        expect.assertions(5);
 
-        expect(getCurrentUserMiddlewares.length).toEqual(5);
-        expect(getCurrentUserMiddlewares[0]).toEqual(populateCurrentUserBadgesMiddleware);
-        expect(getCurrentUserMiddlewares[1]).toEqual(populateCurrentUserFollowingMiddleware);
-        expect(getCurrentUserMiddlewares[2]).toEqual(populateCurrentUserFollowersMiddleware);
-        expect(getCurrentUserMiddlewares[3]).toEqual(formatUserMiddleware);
-        expect(getCurrentUserMiddlewares[4]).toEqual(sendCurrentUserMiddleware);
+        expect(getCurrentUserMiddlewares.length).toEqual(4);
+        expect(getCurrentUserMiddlewares[0]).toEqual(populateCurrentUserFollowingMiddleware);
+        expect(getCurrentUserMiddlewares[1]).toEqual(populateCurrentUserFollowersMiddleware);
+        expect(getCurrentUserMiddlewares[2]).toEqual(formatUserMiddleware);
+        expect(getCurrentUserMiddlewares[3]).toEqual(sendCurrentUserMiddleware);
     });
 });

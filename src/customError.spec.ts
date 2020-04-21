@@ -838,17 +838,6 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
-    test(`creates correct error when type is set to NoBadgeFound`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.NoBadgeFound);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`400-85`);
-        expect(message).toBe('Badge does not exist.');
-        expect(httpStatusCode).toBe(400);
-    });
-
     test(`creates correct error when type is set to GetNoNoteFound`, () => {
         expect.assertions(3);
 
@@ -3980,50 +3969,6 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to FindBadgesMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.FindBadgesMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-280`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to FindBadgesMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.SendBadgesMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-281`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to CreateBadgeFromRequestMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.CreateBadgeFromRequestMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-282`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to SendFormattedBadgeMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.SendFormattedBadgeMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-283`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
     test(`creates correct error when type is set to CreateChallengeFromRequestMiddleware`, () => {
         expect.assertions(3);
 
@@ -4404,17 +4349,6 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateBadgeForChallengeMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.CreateBadgeForChallengeMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-318`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
     test(`creates correct error when type is set to IsUserAlreadyInChallengeMiddleware`, () => {
         expect.assertions(3);
 
@@ -4470,72 +4404,6 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to AddChallengeBadgeToUserBadgesMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.AddChallengeBadgeToUserBadgesMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-324`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to PopulateCurrentUserBadgesMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.PopulateCurrentUserBadgesMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-325`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to PatchCurrentUserPopulateUserBadgesMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.PatchCurrentUserPopulateUserBadgesMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-326`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.ChallengeIdIsDefinedForChallengeBadgeValidationMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-327`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to GetUserPopulateUserBadgesMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.GetUserPopulateUserBadgesMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-328`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to SendNewChallengeBadgeMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.SendNewChallengeBadgeNotificationMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-329`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
     test(`creates correct error when type is set to GetCompleteChallengeStreakTasksMiddleware`, () => {
         expect.assertions(3);
 
@@ -4554,28 +4422,6 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-331`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to GetRetreiveBadgeMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.GetRetreiveBadgeMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-332`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to SendBadgeMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.SendBadgeMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-333`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
