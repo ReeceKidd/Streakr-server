@@ -11,9 +11,12 @@ export const challengeSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        description: {
+        databaseName: {
             type: String,
             required: true,
+        },
+        description: {
+            type: String,
         },
         icon: {
             type: String,

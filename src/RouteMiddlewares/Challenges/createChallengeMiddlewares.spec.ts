@@ -47,65 +47,6 @@ describe(`createChallengeBodyValidationMiddleware`, () => {
 
         expect(next).toBeCalled();
     });
-
-    test('check that valid request with minimum paramaters passes', () => {
-        expect.assertions(1);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body,
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        createChallengeBodyValidationMiddleware(request, response, next);
-
-        expect(next).toBeCalled();
-    });
-
-    test('sends correct error response when name is missing', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: { ...body, name: undefined },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        createChallengeBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message: 'child "name" fails because ["name" is required]',
-        });
-        expect(next).not.toBeCalled();
-    });
-
-    test('sends correct error response when description is missing', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            body: { ...body, description: undefined },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        createChallengeBodyValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message: 'child "description" fails because ["description" is required]',
-        });
-        expect(next).not.toBeCalled();
-    });
 });
 
 describe(`saveChallengeToDatabaseMiddleware`, () => {

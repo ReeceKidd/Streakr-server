@@ -49,7 +49,7 @@ describe('findChallengesMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ name });
+        expect(find).toBeCalledWith({ name: { $regex: name.toLowerCase() } });
         expect(sort).toBeCalledWith({ numberOfMembers: -1 });
         expect(response.locals.challenges).toEqual(true);
         expect(next).toBeCalledWith();

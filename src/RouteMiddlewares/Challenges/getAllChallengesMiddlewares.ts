@@ -32,11 +32,11 @@ export const getFindChallengesMiddleware = (challengeModel: mongoose.Model<Chall
         const { name } = request.query;
 
         const query: {
-            name?: string;
+            databaseName?: { $regex: string } | string;
         } = {};
 
         if (name) {
-            query.name = name;
+            query.databaseName = { $regex: name.toLowerCase() };
         }
 
         response.locals.challenges = await challengeModel.find(query).sort({ numberOfMembers: -1 });

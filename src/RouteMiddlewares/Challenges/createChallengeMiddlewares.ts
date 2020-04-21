@@ -8,8 +8,8 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 
 const createChallengeBodyValidationSchema = {
-    name: Joi.string().required(),
-    description: Joi.string().required(),
+    name: Joi.string(),
+    description: Joi.string(),
     icon: Joi.string(),
     color: Joi.string(),
     numberOfMinutes: Joi.number(),
@@ -35,8 +35,11 @@ export const getSaveChallengeToDatabaseMiddleware = (challenge: mongoose.Model<C
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { name, description, icon, color, numberOfMinutes, whatsappGroupLink, discordGroupLink } = request.body;
+        const name: string = request.body.name;
+        const { description, icon, color, numberOfMinutes, whatsappGroupLink, discordGroupLink } = request.body;
+        const databaseName = name.toLowerCase();
         const newChallenge = new challenge({
+            databaseName,
             name,
             description,
             icon,
