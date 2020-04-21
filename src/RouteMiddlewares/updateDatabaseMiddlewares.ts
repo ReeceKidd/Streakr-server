@@ -3,8 +3,7 @@
 // import { Request, Response, NextFunction } from 'express';
 
 // import { CustomError, ErrorType } from '../customError';
-// import { userModel } from '../../src/Models/User';
-// import { StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
+// import { challengeModel } from '../../src/Models/Challenge';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -12,20 +11,12 @@
 //     next: NextFunction,
 // ): Promise<void> => {
 //     try {
-//         const users = await userModel.find({});
+//         const challenges = await challengeModel.find({});
 //         await Promise.all(
-//             users.map(user => {
-//                 return userModel.findByIdAndUpdate(user._id, {
+//             challenges.map(challenge => {
+//                 return challengeModel.findByIdAndUpdate(challenge._id, {
 //                     $set: {
-//                         pushNotifications: {
-//                             ...user.pushNotifications,
-//                             completeAllStreaksReminder: {
-//                                 ...user.pushNotifications.completeAllStreaksReminder,
-//                                 streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
-//                                 pushNotificationType: undefined,
-//                             },
-//                             customStreakReminders: [],
-//                         },
+//                         databaseName: challenge.name.toLowerCase(),
 //                     },
 //                 });
 //             }),
