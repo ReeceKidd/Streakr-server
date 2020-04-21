@@ -10,24 +10,24 @@ import {
     saveChallengeToDatabaseMiddleware,
 } from './createChallengeMiddlewares';
 
+const name = 'Paint';
+const description = 'Must sit down and paint for 30 minutes';
+const icon = 'paint-brush';
+const color = 'red';
+const numberOfMinutes = 30;
+const whatsappGroupLink = `https://whatsapp.com`;
+const discordGroupLink = `https://discord.com`;
+
+const body = {
+    name,
+    description,
+    icon,
+    color,
+    whatsappGroupLink,
+    discordGroupLink,
+};
+
 describe(`createChallengeBodyValidationMiddleware`, () => {
-    const name = 'Paint';
-    const description = 'Must sit down and paint for 30 minutes';
-    const icon = 'paint-brush';
-    const color = 'red';
-    const numberOfMinutes = 30;
-    const whatsappGroupLink = `https://whatsapp.com`;
-    const discordGroupLink = `https://discord.com`;
-
-    const body = {
-        name,
-        description,
-        icon,
-        color,
-        whatsappGroupLink,
-        discordGroupLink,
-    };
-
     test('check that valid request with all paramaters passes', () => {
         expect.assertions(1);
         const send = jest.fn();
@@ -50,7 +50,7 @@ describe(`createChallengeBodyValidationMiddleware`, () => {
 });
 
 describe(`saveChallengeToDatabaseMiddleware`, () => {
-    test('sets response.locals.savedChallenge', async () => {
+    test('sets response.locals.challenge', async () => {
         expect.assertions(2);
 
         const save = jest.fn().mockResolvedValue(true);
@@ -58,7 +58,7 @@ describe(`saveChallengeToDatabaseMiddleware`, () => {
         const challenge = jest.fn(() => ({ save }));
 
         const request: any = {
-            body: {},
+            body,
         };
         const response: any = { locals: {} };
         const next = jest.fn();
