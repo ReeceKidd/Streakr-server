@@ -349,7 +349,7 @@ export enum ErrorType {
     FindStreakRecommendationsMiddleware,
     CreateChallengeFromRequestMiddleware,
     SendFormattedChallengeMiddleware,
-    FindChallengesMiddleware,
+    FormChallengesQueryMiddleware,
     SendChallengesMiddleware,
     GetRetreiveChallengeMiddleware,
     SendChallengeMiddleware,
@@ -490,6 +490,8 @@ export enum ErrorType {
     DisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware,
     DisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware,
     DisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
+    CalculateTotalChallengesCountMiddleware,
+    FindChallengesMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -3198,7 +3200,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.FindChallengesMiddleware:
+            case ErrorType.FormChallengesQueryMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-286`,
                     message: internalServerMessage,
@@ -3999,6 +4001,20 @@ export class CustomError extends Error {
             case ErrorType.DisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-409`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CalculateTotalChallengesCountMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-410`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindChallengesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-411`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

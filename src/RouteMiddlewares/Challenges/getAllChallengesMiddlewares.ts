@@ -8,7 +8,8 @@ import { CustomError, ErrorType } from '../../customError';
 import { challengeModel, ChallengeModel } from '../../Models/Challenge';
 
 const getChallengesQueryValidationSchema = {
-    name: Joi.string(),
+    limit: Joi.number(),
+    searchQuery: Joi.string(),
 };
 
 export const getChallengesQueryValidationMiddleware = (
@@ -23,23 +24,68 @@ export const getChallengesQueryValidationMiddleware = (
     );
 };
 
-export const getFindChallengesMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const formChallengesQueryMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { name } = request.query;
+        const { searchQuery } = request.query;
 
         const query: {
             databaseName?: { $regex: string } | string;
         } = {};
 
-        if (name) {
-            query.databaseName = { $regex: name.toLowerCase() };
+        if (searchQuery) {
+            query.databaseName = { $regex: searchQuery.toLowerCase() };
         }
 
-        response.locals.challenges = await challengeModel.find(query).sort({ numberOfMembers: -1 });
+        response.locals.query = query;
+
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.FormChallengesQueryMiddleware, err));
+    }
+};
+
+export const getCalculateTotalChallengesCountMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { query } = response.locals;
+
+        const totalChallengesCount = await challengeModel.find(query).countDocuments();
+
+        response.setHeader('x-total-count', totalChallengesCount);
+
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CalculateTotalChallengesCountMiddleware, err));
+    }
+};
+
+export const calculateChallengesCountMiddleware = getCalculateTotalChallengesCountMiddleware(challengeModel);
+
+export const getFindChallengesMiddleware = (userModel: mongoose.Model<ChallengeModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { limit } = request.query;
+        const { query } = response.locals;
+
+        if (limit) {
+            response.locals.challenges = await userModel
+                .find(query)
+                .sort({ numberOfMembers: -1 })
+                .limit(Number(limit))
+                .lean();
+        } else {
+            response.locals.challenges = await userModel
+                .find(query)
+                .sort({ numberOfMembers: -1 })
+                .lean();
+        }
+
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FindChallengesMiddleware, err));
@@ -59,6 +105,8 @@ export const sendChallengesMiddleware = (request: Request, response: Response, n
 
 export const getAllChallengesMiddlewares = [
     getChallengesQueryValidationMiddleware,
+    formChallengesQueryMiddleware,
+    calculateChallengesCountMiddleware,
     findChallengesMiddleware,
     sendChallengesMiddleware,
 ];
