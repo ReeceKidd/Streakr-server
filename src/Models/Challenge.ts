@@ -14,6 +14,7 @@ export const challengeSchema = new mongoose.Schema(
         databaseName: {
             type: String,
             required: true,
+            index: true,
         },
         description: {
             type: String,
