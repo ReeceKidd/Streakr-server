@@ -15,7 +15,7 @@
 //         await Promise.all(
 //             users.map(user => {
 //                 return userModel.findByIdAndUpdate(user._id, {
-//                     $unset: { 'pushNotifications.completeAllStreaksReminder.pushNotificationType': '' },
+//                     $unset: { 'pushNotifications.completeAllStreaksReminder': '' },
 //                 });
 //             }),
 //         );

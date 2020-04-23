@@ -5,6 +5,8 @@ import { User, PopulatedCurrentUser } from '@streakoid/streakoid-sdk/lib';
 import { Model } from 'mongoose';
 import { userModel, UserModel } from '../../../src/Models/User';
 import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
+import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
+import DatabaseAchievementType from '@streakoid/streakoid-sdk/lib/models/DatabaseAchievement';
 
 export const getPopulateCurrentUserFollowingMiddleware = (userModel: Model<UserModel>) => async (
     request: Request,
@@ -62,10 +64,37 @@ export const getPopulateCurrentUserFollowersMiddleware = (userModel: Model<UserM
 
 export const populateCurrentUserFollowersMiddleware = getPopulateCurrentUserFollowersMiddleware(userModel);
 
+export const getPopulateCurrentUserAchievementsMiddleware = (achievementModel: Model<AchievementModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const achievements: DatabaseAchievementType[] = await Promise.all(
+            user.achievements.map(async achievement => {
+                const populatedAchievement: DatabaseAchievementType = await achievementModel
+                    .findById(achievement._id)
+                    .lean();
+                return populatedAchievement;
+            }),
+        );
+        response.locals.achievements = achievements;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.PopulateCurrentUserAchievementsMiddleware, err));
+    }
+};
+
+export const populateCurrentUserAchievementsMiddleware = getPopulateCurrentUserAchievementsMiddleware(achievementModel);
+
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const user: User = response.locals.user;
-        const { followers, following } = response.locals;
+        const followers: BasicUser[] = response.locals.followers;
+        const following: BasicUser[] = response.locals.following;
+        const achievements: DatabaseAchievementType[] = response.locals.achievements;
         const formattedUser: PopulatedCurrentUser = {
             _id: user._id,
             email: user.email,
@@ -82,6 +111,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             pushNotifications: user.pushNotifications,
             profileImages: user.profileImages,
             hasCompletedIntroduction: user.hasCompletedIntroduction,
+            achievements,
         };
         response.locals.formattedUser = formattedUser;
         next();
@@ -102,6 +132,7 @@ export const sendCurrentUserMiddleware = (request: Request, response: Response, 
 export const getCurrentUserMiddlewares = [
     populateCurrentUserFollowingMiddleware,
     populateCurrentUserFollowersMiddleware,
+    populateCurrentUserAchievementsMiddleware,
     formatUserMiddleware,
     sendCurrentUserMiddleware,
 ];

@@ -23,9 +23,14 @@ import {
     ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware,
     createCompleteSoloStreakActivityFeedItemMiddleware,
     getCreateCompleteSoloStreakActivityFeedItemMiddleware,
+    unlockOneHundredDaySoloStreakAchievementForUserMiddleware,
+    getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware,
 } from './createCompleteSoloStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { AchievementTypes } from '@streakoid/streakoid-sdk/lib';
+import AcheivmentTypes from '@streakoid/streakoid-sdk/lib/AchievementTypes';
+import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
 
 describe(`completeSoloStreakTaskBodyValidationMiddleware`, () => {
     const userId = 'abcdefgh';
@@ -297,9 +302,9 @@ describe('setTaskCompleteTimeMiddleware', () => {
 describe('setStreakStartDateMiddleware', () => {
     test("sets soloStreak.startDate to taskCompleteTime if it's undefined and calls next()", async () => {
         expect.assertions(2);
-        const updateOne = jest.fn().mockResolvedValue(true);
+        const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
         const soloStreakModel: any = {
-            updateOne,
+            findByIdAndUpdate,
         };
         const taskCompleteTime = new Date();
         const soloStreakId = 1;
@@ -317,12 +322,11 @@ describe('setStreakStartDateMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(updateOne).toBeCalledWith(
-            { _id: soloStreakId },
-            {
+        expect(findByIdAndUpdate).toBeCalledWith(soloStreakId, {
+            $set: {
                 currentStreak: { startDate: taskCompleteTime, numberOfDaysInARow: 0 },
             },
-        );
+        });
         expect(next).toBeCalledWith();
     });
 
@@ -511,27 +515,29 @@ describe(`saveTaskCompleteMiddleware`, () => {
 
 describe('streakMaintainedMiddleware', () => {
     test('updates streak completedToday, increments number of days, sets active and calls next', async () => {
-        expect.assertions(2);
+        expect.assertions(3);
         const soloStreakId = '123abc';
-        const updateOne = jest.fn(() => Promise.resolve(true));
+        const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
         const soloStreakModel = {
-            updateOne,
+            findByIdAndUpdate,
         };
         const request: any = { body: { soloStreakId } };
-        const response: any = {};
+        const response: any = { locals: {} };
         const next = jest.fn();
         const middleware = getStreakMaintainedMiddleware(soloStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(updateOne).toBeCalledWith(
-            { _id: soloStreakId },
+        expect(findByIdAndUpdate).toBeCalledWith(
+            soloStreakId,
             {
                 completedToday: true,
                 $inc: { 'currentStreak.numberOfDaysInARow': 1 },
                 active: true,
             },
+            { new: true },
         );
+        expect(response.locals.soloStreak).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
@@ -547,6 +553,130 @@ describe('streakMaintainedMiddleware', () => {
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.StreakMaintainedMiddleware, expect.any(Error)));
+    });
+});
+
+describe(`unlockOneHundredDaySoloStreakAchievementForUserMiddleware`, () => {
+    test('if solo streak current number of days equals 100 and user has not got the OneHundredSaySoloStreakAchievement it adds to their achievements', async () => {
+        expect.assertions(3);
+        const user = { _id: '_id', achievements: [{ achievementType: 'Other achievement' }] };
+        const soloStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 100 } };
+
+        const response: any = { locals: { user, soloStreak } };
+        const request: any = {};
+        const next = jest.fn();
+
+        const achievementId = 'achievementId';
+        const achievementType = AchievementTypes.oneHundredDaySoloStreak;
+
+        const oneHundredSaySoloStreakAchievement: UserAchievement = {
+            _id: achievementId,
+            achievementType,
+        };
+        const achievement = {
+            findOne: jest.fn().mockResolvedValue(oneHundredSaySoloStreakAchievement),
+        };
+        const userModel = {
+            findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+        };
+
+        const middleware = getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware(
+            userModel as any,
+            achievement as any,
+        );
+
+        await middleware(request, response, next);
+
+        expect(achievement.findOne).toBeCalledWith({ achievementType: AcheivmentTypes.oneHundredDaySoloStreak });
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $addToSet: { achievements: oneHundredSaySoloStreakAchievement },
+        });
+        expect(next).toBeCalled();
+    });
+
+    test('if solo streak current number of days does not equal 100 middleware ends', async () => {
+        expect.assertions(3);
+        const user = { _id: '_id', achievements: [{ achievementType: 'Other achievement' }] };
+        const soloStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 99 } };
+
+        const response: any = { locals: { user, soloStreak } };
+        const request: any = {};
+        const next = jest.fn();
+
+        const achievementId = 'achievementId';
+        const achievementType = AchievementTypes.oneHundredDaySoloStreak;
+
+        const oneHundredSaySoloStreakAchievement: UserAchievement = {
+            _id: achievementId,
+            achievementType,
+        };
+        const achievement = {
+            findOne: jest.fn().mockResolvedValue(oneHundredSaySoloStreakAchievement),
+        };
+        const userModel = {
+            findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+        };
+
+        const middleware = getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware(
+            userModel as any,
+            achievement as any,
+        );
+
+        await middleware(request, response, next);
+
+        expect(achievement.findOne).not.toBeCalled();
+        expect(userModel.findByIdAndUpdate).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('if solo streak current number of days equals 100 but user already has achievement middleware ends', async () => {
+        expect.assertions(3);
+        const user = { _id: '_id', achievements: [{ achievementType: AcheivmentTypes.oneHundredDaySoloStreak }] };
+        const soloStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 100 } };
+
+        const response: any = { locals: { user, soloStreak } };
+        const request: any = {};
+        const next = jest.fn();
+
+        const achievementId = 'achievementId';
+        const achievementType = AchievementTypes.oneHundredDaySoloStreak;
+
+        const oneHundredSaySoloStreakAchievement: UserAchievement = {
+            _id: achievementId,
+            achievementType,
+        };
+        const achievement = {
+            findOne: jest.fn().mockResolvedValue(oneHundredSaySoloStreakAchievement),
+        };
+        const userModel = {
+            findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+        };
+
+        const middleware = getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware(
+            userModel as any,
+            achievement as any,
+        );
+
+        await middleware(request, response, next);
+
+        expect(achievement.findOne).not.toBeCalled();
+        expect(userModel.findByIdAndUpdate).not.toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with UnlockOneHundredDaySoloStreakAchievementForUserMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware({} as any, {} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.UnlockOneHundredDaySoloStreakAchievementForUserMiddleware, expect.any(Error)),
+        );
     });
 });
 
@@ -631,9 +761,9 @@ describe(`createCompleteSoloStreakActivitFeedItemMiddleware`, () => {
 
 describe(`createCompleteSoloStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(13);
+        expect.assertions(14);
 
-        expect(createCompleteSoloStreakTaskMiddlewares.length).toEqual(12);
+        expect(createCompleteSoloStreakTaskMiddlewares.length).toEqual(13);
         expect(createCompleteSoloStreakTaskMiddlewares[0]).toBe(completeSoloStreakTaskBodyValidationMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[2]).toBe(ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware);
@@ -644,7 +774,10 @@ describe(`createCompleteSoloStreakTaskMiddlewares`, () => {
         expect(createCompleteSoloStreakTaskMiddlewares[7]).toBe(createCompleteSoloStreakTaskDefinitionMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[8]).toBe(saveTaskCompleteMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[9]).toBe(streakMaintainedMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[10]).toBe(sendTaskCompleteResponseMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[11]).toBe(createCompleteSoloStreakActivityFeedItemMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[10]).toBe(
+            unlockOneHundredDaySoloStreakAchievementForUserMiddleware,
+        );
+        expect(createCompleteSoloStreakTaskMiddlewares[11]).toBe(sendTaskCompleteResponseMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[12]).toBe(createCompleteSoloStreakActivityFeedItemMiddleware);
     });
 });

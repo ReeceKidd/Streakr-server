@@ -378,6 +378,7 @@ describe('formatUserMiddleware', () => {
                 'pushNotifications',
                 'hasCompletedIntroduction',
                 'profileImages',
+                'achievements',
             ].sort(),
         );
     });

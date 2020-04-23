@@ -10,7 +10,6 @@ export const errorHandler = (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next: NextFunction,
 ): Response => {
-    console.log(error);
     if (error.httpStatusCode === ResponseCodes.warning) {
         return response.status(error.httpStatusCode).send({
             ...error,

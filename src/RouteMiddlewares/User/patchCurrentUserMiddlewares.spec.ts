@@ -12,10 +12,13 @@ import {
     getPopulateCurrentUserFollowingMiddleware,
     getPopulateCurrentUserFollowersMiddleware,
     patchCurrentUserRequestBodyValidationMiddleware,
+    getPopulatePatchCurrentUserAchievementsMiddleware,
 } from './patchCurrentUserMiddlewares';
 
-import { User, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
+import { User, StreakReminderTypes, AchievementTypes } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
+import { populateCurrentUserAchievementsMiddleware } from './getCurrentUser';
+import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
     const values: {
@@ -235,6 +238,51 @@ describe('populateCurrentUserFollowersMiddleware', () => {
     });
 });
 
+describe('populatePatchCurrentUserAchievementsMiddleware', () => {
+    test('populates user achievements', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const userAchievement: UserAchievement = {
+            _id: '_id',
+            achievementType: AchievementTypes.oneHundredDaySoloStreak,
+        };
+        const user = {
+            _id: 'userId',
+            achievements: [userAchievement],
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue(true);
+        const findById = jest.fn(() => ({ lean }));
+
+        const achievementModel = {
+            findById,
+        };
+
+        const middleware = getPopulatePatchCurrentUserAchievementsMiddleware(achievementModel as any);
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalledWith(userAchievement._id);
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulatePatchCurrentUserAchievementsMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulatePatchCurrentUserAchievementsMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.PopulatePatchCurrentUserAchievementsMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
         expect.assertions(2);
@@ -280,6 +328,7 @@ describe('formatUserMiddleware', () => {
                 customer: 'abc',
                 subscription: 'sub_1',
             },
+            achievements: [],
         };
         const response: any = { locals: { updatedUser } };
         const next = jest.fn();
@@ -304,6 +353,7 @@ describe('formatUserMiddleware', () => {
                 'pushNotificationToken',
                 'hasCompletedIntroduction',
                 'profileImages',
+                'achievements',
             ].sort(),
         );
     });
@@ -357,14 +407,15 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
 
 describe('patchUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(7);
+        expect.assertions(8);
 
-        expect(patchCurrentUserMiddlewares.length).toBe(6);
+        expect(patchCurrentUserMiddlewares.length).toBe(7);
         expect(patchCurrentUserMiddlewares[0]).toBe(patchCurrentUserRequestBodyValidationMiddleware);
         expect(patchCurrentUserMiddlewares[1]).toBe(patchCurrentUserMiddleware);
         expect(patchCurrentUserMiddlewares[2]).toBe(populateCurrentUserFollowingMiddleware);
         expect(patchCurrentUserMiddlewares[3]).toBe(populateCurrentUserFollowersMiddleware);
-        expect(patchCurrentUserMiddlewares[4]).toBe(formatUserMiddleware);
-        expect(patchCurrentUserMiddlewares[5]).toBe(sendUpdatedCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[4]).toBe(populateCurrentUserAchievementsMiddleware);
+        expect(patchCurrentUserMiddlewares[5]).toBe(formatUserMiddleware);
+        expect(patchCurrentUserMiddlewares[6]).toBe(sendUpdatedCurrentUserMiddleware);
     });
 });

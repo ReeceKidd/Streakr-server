@@ -22,4 +22,5 @@ export enum Models {
     IncompleteChallengeStreakTask = 'IncompleteChallengeStreakTask',
     Note = 'Note',
     ActivityFeedItem = 'ActivityFeedItem',
+    Achievements = 'Achievements',
 }

@@ -10,10 +10,14 @@ import {
     getPopulateUserFollowingMiddleware,
     populateUserFollowersMiddleware,
     populateUserFollowingMiddleware,
+    populateUserAchievementsMiddleware,
+    getPopulateUserAchievementsMiddleware,
 } from '../Users/getUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
+import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
+import AcheivmentTypes from '@streakoid/streakoid-sdk/lib/AchievementTypes';
 
 describe(`userParamsValidationMiddleware`, () => {
     const userId = '5d43f0c2f4499975cb312b72';
@@ -230,6 +234,49 @@ describe('populateUserFollowingMiddleware', () => {
     });
 });
 
+describe('populateUserAchievementMiddleware', () => {
+    test('populates user achievements', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const userAchievement: UserAchievement = {
+            _id: '_id',
+            achievementType: AcheivmentTypes.oneHundredDaySoloStreak,
+        };
+        const user = {
+            _id: 'userId',
+            achievements: [userAchievement],
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue(true);
+        const findById = jest.fn(() => ({ lean }));
+
+        const achievementModel = {
+            findById,
+        };
+
+        const middleware = getPopulateUserAchievementsMiddleware(achievementModel as any);
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalledWith(userAchievement._id);
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulateUserAchievementMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulateUserAchievementsMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.PopulateUserAchievementMiddleware, expect.any(Error)));
+    });
+});
+
 describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
         expect.assertions(3);
@@ -256,6 +303,7 @@ describe('formatUserMiddleware', () => {
             },
             pushNotificationToken: 'pushNotificationToken',
             hasCompletedIntroduction: 'hasCompletedIntroduction',
+            achievements: [],
         };
         const response: any = { locals: { user } };
         const next = jest.fn();
@@ -277,6 +325,7 @@ describe('formatUserMiddleware', () => {
                 'createdAt',
                 'updatedAt',
                 'profileImages',
+                'achievements',
                 'pushNotificationToken',
             ].sort(),
         );
@@ -328,14 +377,15 @@ describe('sendRetreiveUserResponseMiddleware', () => {
 
 describe('getUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(7);
+        expect.assertions(8);
 
-        expect(getUserMiddlewares.length).toEqual(6);
+        expect(getUserMiddlewares.length).toEqual(7);
         expect(getUserMiddlewares[0]).toEqual(userParamsValidationMiddleware);
         expect(getUserMiddlewares[1]).toEqual(retreiveUserMiddleware);
         expect(getUserMiddlewares[2]).toEqual(populateUserFollowersMiddleware);
         expect(getUserMiddlewares[3]).toEqual(populateUserFollowingMiddleware);
-        expect(getUserMiddlewares[4]).toEqual(formatUserMiddleware);
-        expect(getUserMiddlewares[5]).toEqual(sendUserMiddleware);
+        expect(getUserMiddlewares[4]).toEqual(populateUserAchievementsMiddleware);
+        expect(getUserMiddlewares[5]).toEqual(formatUserMiddleware);
+        expect(getUserMiddlewares[6]).toEqual(sendUserMiddleware);
     });
 });

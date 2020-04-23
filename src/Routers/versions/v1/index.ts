@@ -29,6 +29,7 @@ import { completeChallengeStreakTasksRouter } from './completeChallengeStreakTas
 import { incompleteChallengeStreakTasksRouter } from './incompleteChallengeStreakTaskRouter';
 import { notesRouter } from './notesRouter';
 import { databaseStatsRouter } from './databaseStatsRouter';
+import { achievementsRouter } from './achievementRouter';
 
 const v1Router = Router();
 
@@ -46,6 +47,7 @@ v1Router.use(`/${RouterCategories.activityFeedItems}`, activityFeedItemsRouter);
 v1Router.use(`/${RouterCategories.streakRecommendations}`, streakRecommendationsRouter);
 
 // Routes containing authentication
+v1Router.use(`/${RouterCategories.achievements}`, achievementsRouter);
 v1Router.use(`/${RouterCategories.teamStreaks}`, teamStreaksRouter);
 v1Router.use(`/${RouterCategories.stripe}`, stripeRouter);
 v1Router.use(`/${RouterCategories.user}`, userRouter);

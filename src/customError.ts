@@ -492,6 +492,17 @@ export enum ErrorType {
     DisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
     CalculateTotalChallengesCountMiddleware,
     FindChallengesMiddleware,
+    FormAchievementsQueryMiddleware,
+    CalculateTotalCountOfAchievementsMiddleware,
+    FindAchievementsMiddleware,
+    SendAchievementsMiddleware,
+    SaveAchievementToDatabaseMiddleware,
+    SendAchievementMiddleware,
+    UnlockOneHundredDaySoloStreakAchievementForUserMiddleware,
+    OneHundredDaySoloStreakAchievementDoesNotExist,
+    PopulateUserAchievementMiddleware,
+    PopulateCurrentUserAchievementsMiddleware,
+    PopulatePatchCurrentUserAchievementsMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1226,6 +1237,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-98`,
                     message: 'User does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.OneHundredDaySoloStreakAchievementDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-99`,
+                    message: 'OneHundredDaySoloStreakAchievement does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4015,6 +4034,76 @@ export class CustomError extends Error {
             case ErrorType.FindChallengesMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-411`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FormAchievementsQueryMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-412`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CalculateTotalCountOfAchievementsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-413`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindAchievementsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-414`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendAchievementsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-415`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SaveAchievementToDatabaseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-416`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendAchievementMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-417`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.UnlockOneHundredDaySoloStreakAchievementForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-418`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PopulateUserAchievementMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-419`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PopulateCurrentUserAchievementsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-420`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PopulatePatchCurrentUserAchievementsMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-421`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

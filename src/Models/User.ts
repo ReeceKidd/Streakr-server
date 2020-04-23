@@ -120,6 +120,10 @@ export const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        achievements: {
+            type: Array,
+            default: [],
+        },
     },
     {
         timestamps: true,

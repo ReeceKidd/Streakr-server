@@ -2,7 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
-import { SoloStreak, User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
+import {
+    SoloStreak,
+    User,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
+    AchievementTypes,
+} from '@streakoid/streakoid-sdk/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -12,6 +18,8 @@ import { completeSoloStreakTaskModel, CompleteSoloStreakTaskModel } from '../../
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
+import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -116,15 +124,14 @@ export const getSetStreakStartDateMiddleware = (soloStreakModel: mongoose.Model<
         const soloStreak: SoloStreak = response.locals.soloStreak;
         const taskCompleteTime = response.locals.taskCompleteTime;
         if (!soloStreak.currentStreak.startDate) {
-            await soloStreakModel.updateOne(
-                { _id: soloStreak._id },
-                {
+            response.locals.soloStreak = await soloStreakModel.findByIdAndUpdate(soloStreak._id, {
+                $set: {
                     currentStreak: {
                         startDate: taskCompleteTime,
                         numberOfDaysInARow: soloStreak.currentStreak.numberOfDaysInARow,
                     },
                 },
-            );
+            });
         }
         next();
     } catch (err) {
@@ -196,13 +203,14 @@ export const getStreakMaintainedMiddleware = (soloStreakModel: mongoose.Model<So
 ): Promise<void> => {
     try {
         const { soloStreakId } = request.body;
-        await soloStreakModel.updateOne(
-            { _id: soloStreakId },
+        response.locals.soloStreak = await soloStreakModel.findByIdAndUpdate(
+            soloStreakId,
             {
                 completedToday: true,
                 $inc: { 'currentStreak.numberOfDaysInARow': 1 },
                 active: true,
             },
+            { new: true },
         );
         next();
     } catch (err) {
@@ -211,6 +219,47 @@ export const getStreakMaintainedMiddleware = (soloStreakModel: mongoose.Model<So
 };
 
 export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(soloStreakModel);
+
+export const getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware = (
+    user: mongoose.Model<UserModel>,
+    achievement: mongoose.Model<AchievementModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        const currentUser: User = response.locals.user;
+        const currentUserHas100DaySoloStreakAchievement = currentUser.achievements.find(
+            acheivementObject => acheivementObject.achievementType === AchievementTypes.oneHundredDaySoloStreak,
+        );
+        const oneHundredDays = 100;
+        if (
+            soloStreak.currentStreak.numberOfDaysInARow === oneHundredDays &&
+            !currentUserHas100DaySoloStreakAchievement
+        ) {
+            const oneHundredDaySoloStreakAchievement = await achievement.findOne({
+                achievementType: AchievementTypes.oneHundredDaySoloStreak,
+            });
+            if (!oneHundredDaySoloStreakAchievement) {
+                throw new CustomError(ErrorType.OneHundredDaySoloStreakAchievementDoesNotExist);
+            }
+            const oneHundredDaySoloStreakUserAchievement: UserAchievement = {
+                _id: oneHundredDaySoloStreakAchievement._id,
+                achievementType: AchievementTypes.oneHundredDaySoloStreak,
+            };
+            await user.findByIdAndUpdate(currentUser._id, {
+                $addToSet: { achievements: oneHundredDaySoloStreakUserAchievement },
+            });
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.UnlockOneHundredDaySoloStreakAchievementForUserMiddleware, err));
+    }
+};
+
+export const unlockOneHundredDaySoloStreakAchievementForUserMiddleware = getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware(
+    userModel,
+    achievementModel,
+);
 
 export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
@@ -263,6 +312,7 @@ export const createCompleteSoloStreakTaskMiddlewares = [
     createCompleteSoloStreakTaskDefinitionMiddleware,
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
+    unlockOneHundredDaySoloStreakAchievementForUserMiddleware,
     sendTaskCompleteResponseMiddleware,
     createCompleteSoloStreakActivityFeedItemMiddleware,
 ];

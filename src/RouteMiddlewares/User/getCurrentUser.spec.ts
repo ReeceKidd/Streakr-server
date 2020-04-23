@@ -7,11 +7,15 @@ import {
     populateCurrentUserFollowersMiddleware,
     getPopulateCurrentUserFollowingMiddleware,
     getPopulateCurrentUserFollowersMiddleware,
+    populateCurrentUserAchievementsMiddleware,
+    getPopulateCurrentUserAchievementsMiddleware,
 } from './getCurrentUser';
 import { CustomError } from '../../customError';
 import { ErrorType } from '../../customError';
 import { User, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
 import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
+import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
+import AcheivmentTypes from '@streakoid/streakoid-sdk/lib/AchievementTypes';
 
 describe('populateCurrentUserFollowingMiddleware', () => {
     test('populates user following', async () => {
@@ -93,6 +97,51 @@ describe('populateCurrentUserFollowersMiddleware', () => {
     });
 });
 
+describe('populateCurrentUserAchievementsMiddleware', () => {
+    test('populates user achievements', async () => {
+        expect.assertions(3);
+        const request: any = {};
+        const userAchievement: UserAchievement = {
+            _id: '_id',
+            achievementType: AcheivmentTypes.oneHundredDaySoloStreak,
+        };
+        const user = {
+            _id: 'userId',
+            achievements: [userAchievement],
+        };
+        const response: any = { locals: { user } };
+        const next = jest.fn();
+
+        const lean = jest.fn().mockResolvedValue(true);
+        const findById = jest.fn(() => ({ lean }));
+
+        const achievementModel = {
+            findById,
+        };
+
+        const middleware = getPopulateCurrentUserAchievementsMiddleware(achievementModel as any);
+        await middleware(request, response, next);
+
+        expect(findById).toBeCalledWith(userAchievement._id);
+        expect(lean).toBeCalled();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with PopulateCurrentUserAchievementsMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+
+        const middleware = getPopulateCurrentUserAchievementsMiddleware({} as any);
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.PopulateCurrentUserAchievementsMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
         expect.assertions(2);
@@ -139,6 +188,7 @@ describe('formatUserMiddleware', () => {
                 customer: 'abc',
                 subscription: 'sub_1',
             },
+            achievements: [],
         };
         const response: any = { locals: { user } };
         const next = jest.fn();
@@ -163,6 +213,7 @@ describe('formatUserMiddleware', () => {
                 'pushNotifications',
                 'hasCompletedIntroduction',
                 'profileImages',
+                'achievements',
             ].sort(),
         );
     });
@@ -213,12 +264,13 @@ describe('sendCurrentUserMiddleware', () => {
 
 describe('getCurrentUserMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(5);
+        expect.assertions(6);
 
-        expect(getCurrentUserMiddlewares.length).toEqual(4);
+        expect(getCurrentUserMiddlewares.length).toEqual(5);
         expect(getCurrentUserMiddlewares[0]).toEqual(populateCurrentUserFollowingMiddleware);
         expect(getCurrentUserMiddlewares[1]).toEqual(populateCurrentUserFollowersMiddleware);
-        expect(getCurrentUserMiddlewares[2]).toEqual(formatUserMiddleware);
-        expect(getCurrentUserMiddlewares[3]).toEqual(sendCurrentUserMiddleware);
+        expect(getCurrentUserMiddlewares[2]).toEqual(populateCurrentUserAchievementsMiddleware);
+        expect(getCurrentUserMiddlewares[3]).toEqual(formatUserMiddleware);
+        expect(getCurrentUserMiddlewares[4]).toEqual(sendCurrentUserMiddleware);
     });
 });

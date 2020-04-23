@@ -8,6 +8,8 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { User, PopulatedUser } from '@streakoid/streakoid-sdk/lib';
 import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
+import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
+import DatabaseAchievementType from '@streakoid/streakoid-sdk/lib/models/DatabaseAchievement';
 
 const userParamsValidationSchema = {
     userId: Joi.string()
@@ -100,11 +102,37 @@ export const getPopulateUserFollowingMiddleware = (userModel: mongoose.Model<Use
 
 export const populateUserFollowingMiddleware = getPopulateUserFollowingMiddleware(userModel);
 
+export const getPopulateUserAchievementsMiddleware = (achievementModel: mongoose.Model<AchievementModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const achievements: DatabaseAchievementType[] = await Promise.all(
+            user.achievements.map(async achievement => {
+                const populatedAchievement: DatabaseAchievementType = await achievementModel
+                    .findById(achievement._id)
+                    .lean();
+                return populatedAchievement;
+            }),
+        );
+        response.locals.achievements = achievements;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.PopulateUserAchievementMiddleware, err));
+    }
+};
+
+export const populateUserAchievementsMiddleware = getPopulateUserAchievementsMiddleware(achievementModel);
+
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const user: User = response.locals.user;
         const followers: BasicUser[] = response.locals.followers;
         const following: BasicUser[] = response.locals.following;
+        const achievements: DatabaseAchievementType[] = response.locals.achievements;
         const formattedUser: PopulatedUser = {
             _id: user._id,
             username: user.username,
@@ -116,6 +144,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             profileImages: user.profileImages,
             pushNotificationToken: user.pushNotificationToken,
             friends: user.friends,
+            achievements,
             followers,
             following,
         };
@@ -140,6 +169,7 @@ export const getUserMiddlewares = [
     retreiveUserMiddleware,
     populateUserFollowersMiddleware,
     populateUserFollowingMiddleware,
+    populateUserAchievementsMiddleware,
     formatUserMiddleware,
     sendUserMiddleware,
 ];
