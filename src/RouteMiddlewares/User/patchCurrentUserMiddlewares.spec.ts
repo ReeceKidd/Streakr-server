@@ -321,6 +321,9 @@ describe('formatUserMiddleware', () => {
                 newFollowerUpdates: {
                     enabled: true,
                 },
+                achievementUpdates: {
+                    enabled: true,
+                },
                 customStreakReminders: [],
             },
             hasCompletedIntroduction: false,

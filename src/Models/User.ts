@@ -115,6 +115,12 @@ export const userSchema = new mongoose.Schema(
                     default: true,
                 },
             },
+            achievementUpdates: {
+                enabled: {
+                    type: Boolean,
+                    default: true,
+                },
+            },
         },
         hasCompletedIntroduction: {
             type: Boolean,

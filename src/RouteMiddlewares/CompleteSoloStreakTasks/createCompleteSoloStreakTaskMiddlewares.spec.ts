@@ -25,12 +25,15 @@ import {
     getCreateCompleteSoloStreakActivityFeedItemMiddleware,
     unlockOneHundredDaySoloStreakAchievementForUserMiddleware,
     getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware,
+    sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware,
+    getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware,
 } from './createCompleteSoloStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { AchievementTypes } from '@streakoid/streakoid-sdk/lib';
 import AcheivmentTypes from '@streakoid/streakoid-sdk/lib/AchievementTypes';
 import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
+import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-sdk/lib/models/DatabaseAchievement';
 
 describe(`completeSoloStreakTaskBodyValidationMiddleware`, () => {
     const userId = 'abcdefgh';
@@ -558,7 +561,7 @@ describe('streakMaintainedMiddleware', () => {
 
 describe(`unlockOneHundredDaySoloStreakAchievementForUserMiddleware`, () => {
     test('if solo streak current number of days equals 100 and user has not got the OneHundredSaySoloStreakAchievement it adds to their achievements', async () => {
-        expect.assertions(3);
+        expect.assertions(4);
         const user = { _id: '_id', achievements: [{ achievementType: 'Other achievement' }] };
         const soloStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 100 } };
 
@@ -591,11 +594,12 @@ describe(`unlockOneHundredDaySoloStreakAchievementForUserMiddleware`, () => {
         expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
             $addToSet: { achievements: oneHundredSaySoloStreakAchievement },
         });
+        expect(response.locals.oneHundredDaySoloStreakAchievement).toBeDefined();
         expect(next).toBeCalled();
     });
 
     test('if solo streak current number of days does not equal 100 middleware ends', async () => {
-        expect.assertions(3);
+        expect.assertions(4);
         const user = { _id: '_id', achievements: [{ achievementType: 'Other achievement' }] };
         const soloStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 99 } };
 
@@ -626,11 +630,12 @@ describe(`unlockOneHundredDaySoloStreakAchievementForUserMiddleware`, () => {
 
         expect(achievement.findOne).not.toBeCalled();
         expect(userModel.findByIdAndUpdate).not.toBeCalled();
+        expect(response.locals.achievementUnlocked).toBeUndefined();
         expect(next).toBeCalled();
     });
 
     test('if solo streak current number of days equals 100 but user already has achievement middleware ends', async () => {
-        expect.assertions(3);
+        expect.assertions(4);
         const user = { _id: '_id', achievements: [{ achievementType: AcheivmentTypes.oneHundredDaySoloStreak }] };
         const soloStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 100 } };
 
@@ -661,6 +666,7 @@ describe(`unlockOneHundredDaySoloStreakAchievementForUserMiddleware`, () => {
 
         expect(achievement.findOne).not.toBeCalled();
         expect(userModel.findByIdAndUpdate).not.toBeCalled();
+        expect(response.locals.achievementUnlocked).toBeUndefined();
         expect(next).toBeCalled();
     });
 
@@ -740,7 +746,7 @@ describe(`createCompleteSoloStreakActivitFeedItemMiddleware`, () => {
         await middleware(request, response, next);
 
         expect(createActivityFeedItem).toBeCalled();
-        expect(next).not.toBeCalled();
+        expect(next).toBeCalled();
     });
 
     test('calls next with CreateCompleteSoloStreakActivityMiddleware error on middleware failure', () => {
@@ -759,11 +765,88 @@ describe(`createCompleteSoloStreakActivitFeedItemMiddleware`, () => {
     });
 });
 
+describe(`sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware`, () => {
+    test('if oneHundedDaySoloStreakAchievement is not defined just call next', async () => {
+        expect.assertions(1);
+
+        const response: any = {
+            locals: {
+                user: {
+                    pushNotificationToken: 'pushNotificationToken',
+                    pushNotifications: { achievementUpdates: { enabled: true } },
+                },
+            },
+        };
+        const request: any = { body: {} };
+
+        const next = jest.fn();
+
+        const middleware = getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).not.toBeCalled();
+    });
+
+    test('if oneHundredDaySoloStreakAchievement is defined, user has a pushNotificationToken and user has acheivementUpdates enabled it sends an UnlockedAchievementPushNotification', async () => {
+        expect.assertions(3);
+        const oneHundredDaySoloStreakAchievement: OneHundredDaySoloStreakDatabaseAchievement = {
+            _id: '_id',
+            achievementType: AchievementTypes.oneHundredDaySoloStreak,
+            createdAt: 'createdAt',
+            description: 'Completed 100 days',
+            name: '100 Days',
+            updatedAt: 'updatedAt',
+        };
+        const user = {
+            _id: 'userId',
+            username: 'username',
+            pushNotificationToken: 'pushNotificationToken',
+            pushNotifications: { achievementUpdates: { enabled: true } },
+        };
+        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(['message']);
+        const chunkPushNotifications = jest.fn().mockResolvedValue(['message']);
+        const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
+        const request: any = {};
+        const response: any = {
+            locals: {
+                user,
+                oneHundredDaySoloStreakAchievement,
+            },
+        };
+        const next = jest.fn();
+
+        const middleware = getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware(expo as any);
+        await middleware(request, response, next);
+        expect(sendPushNotificationsAsync).toBeCalled();
+        expect(chunkPushNotifications).toBeCalled();
+        expect(next).not.toBeCalledWith();
+    });
+
+    test('calls next with SendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+
+        const response: any = {};
+        const request: any = {};
+        const next = jest.fn();
+        const middleware = getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware({} as any);
+
+        middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(
+                ErrorType.SendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware,
+                expect.any(Error),
+            ),
+        );
+    });
+});
+
 describe(`createCompleteSoloStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(14);
+        expect.assertions(15);
 
-        expect(createCompleteSoloStreakTaskMiddlewares.length).toEqual(13);
+        expect(createCompleteSoloStreakTaskMiddlewares.length).toEqual(14);
         expect(createCompleteSoloStreakTaskMiddlewares[0]).toBe(completeSoloStreakTaskBodyValidationMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[2]).toBe(ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware);
@@ -779,5 +862,8 @@ describe(`createCompleteSoloStreakTaskMiddlewares`, () => {
         );
         expect(createCompleteSoloStreakTaskMiddlewares[11]).toBe(sendTaskCompleteResponseMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[12]).toBe(createCompleteSoloStreakActivityFeedItemMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[13]).toBe(
+            sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware,
+        );
     });
 });

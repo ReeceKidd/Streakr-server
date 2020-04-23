@@ -56,6 +56,9 @@ const patchCurrentUserPushNotificationsValidationSchema = {
     teamStreakUpdates: Joi.object({
         enabled: Joi.boolean().required(),
     }),
+    achievementUpdates: Joi.object({
+        enabled: Joi.boolean().required(),
+    }),
     customStreakReminders: Joi.array().items(customStreakRemindersPushNotificationValidationSchema),
 };
 

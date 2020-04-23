@@ -64,6 +64,9 @@ describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         newFollowerUpdates: {
             enabled: true,
         },
+        achievementUpdates: {
+            enabled: true,
+        },
         customStreakReminders,
     };
     test('allows request with all possible params to pass', () => {
@@ -116,6 +119,9 @@ describe('patchCurrentUserPushNotificationsMiddleware', () => {
                 enabled: true,
             },
             newFollowerUpdates: {
+                enabled: true,
+            },
+            achievementUpdates: {
                 enabled: true,
             },
             completeAllStreaksReminder: {
@@ -195,6 +201,9 @@ describe('sendUpdatedCurrentUserMiddleware', () => {
                 enabled: true,
             },
             newFollowerUpdates: {
+                enabled: true,
+            },
+            achievementUpdates: {
                 enabled: true,
             },
             completeAllStreaksReminder: {

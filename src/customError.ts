@@ -503,6 +503,7 @@ export enum ErrorType {
     PopulateUserAchievementMiddleware,
     PopulateCurrentUserAchievementsMiddleware,
     PopulatePatchCurrentUserAchievementsMiddleware,
+    SendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -4104,6 +4105,13 @@ export class CustomError extends Error {
             case ErrorType.PopulatePatchCurrentUserAchievementsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-421`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-422`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

@@ -8,7 +8,9 @@ import {
     ActivityFeedItemTypes,
     ActivityFeedItemType,
     AchievementTypes,
+    PushNotificationTypes,
 } from '@streakoid/streakoid-sdk/lib';
+import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -20,6 +22,8 @@ import { CustomError, ErrorType } from '../../customError';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
 import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
+import { UnlockedAchievementPushNotification } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
+import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-sdk/lib/models/DatabaseAchievement';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -248,6 +252,7 @@ export const getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware = (
             await user.findByIdAndUpdate(currentUser._id, {
                 $addToSet: { achievements: oneHundredDaySoloStreakUserAchievement },
             });
+            response.locals.oneHundredDaySoloStreakAchievement = oneHundredDaySoloStreakAchievement;
         }
         next();
     } catch (err) {
@@ -292,6 +297,7 @@ export const getCreateCompleteSoloStreakActivityFeedItemMiddleware = (
             soloStreakName: soloStreak.streakName,
         };
         await createActivityFeedItemFunction(completedSoloStreakActivityFeedItem);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.CreateCompleteSoloStreakActivityFeedItemMiddleware, err));
     }
@@ -299,6 +305,50 @@ export const getCreateCompleteSoloStreakActivityFeedItemMiddleware = (
 
 export const createCompleteSoloStreakActivityFeedItemMiddleware = getCreateCompleteSoloStreakActivityFeedItemMiddleware(
     createActivityFeedItem,
+);
+
+const expoClient = new Expo();
+
+export const getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware = (
+    expo: typeof expoClient,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const oneHundredDaySoloStreakAchievement: OneHundredDaySoloStreakDatabaseAchievement =
+            response.locals.oneHundredDaySoloStreakAchievement;
+        if (
+            oneHundredDaySoloStreakAchievement &&
+            user.pushNotificationToken &&
+            user.pushNotifications.achievementUpdates.enabled
+        ) {
+            const messages: ExpoPushMessage[] = [];
+            const title = `Unlocked ${oneHundredDaySoloStreakAchievement.name}`;
+            const body = `You unlocked an achievement for: ${oneHundredDaySoloStreakAchievement.description}`;
+            const data: UnlockedAchievementPushNotification = {
+                pushNotificationType: PushNotificationTypes.unlockedAchievement,
+                achievementId: oneHundredDaySoloStreakAchievement._id,
+                title,
+                body,
+            };
+            messages.push({
+                to: user.pushNotificationToken,
+                sound: 'default',
+                title,
+                body,
+                data,
+            });
+            const chunks = await expo.chunkPushNotifications(messages);
+            for (const chunk of chunks) {
+                await expo.sendPushNotificationsAsync(chunk);
+            }
+        }
+    } catch (err) {
+        next(new CustomError(ErrorType.SendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware, err));
+    }
+};
+
+export const sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware = getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware(
+    expoClient,
 );
 
 export const createCompleteSoloStreakTaskMiddlewares = [
@@ -315,4 +365,5 @@ export const createCompleteSoloStreakTaskMiddlewares = [
     unlockOneHundredDaySoloStreakAchievementForUserMiddleware,
     sendTaskCompleteResponseMiddleware,
     createCompleteSoloStreakActivityFeedItemMiddleware,
+    sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware,
 ];
