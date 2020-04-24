@@ -20,7 +20,7 @@ describe('createAdjustForDaylightSavingsTimeJob', () => {
         }
     });
 
-    test('creates an adjustForDaylightSavingsTime job that runs everyday at miday for the localised time', async () => {
+    test('creates an adjustForDaylightSavingsTime job that runs everyday at midday for the localized time', async () => {
         expect.assertions(5);
 
         const timezone = 'Europe/London';
