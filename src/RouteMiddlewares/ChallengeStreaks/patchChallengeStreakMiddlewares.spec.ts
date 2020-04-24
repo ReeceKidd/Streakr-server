@@ -25,9 +25,9 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { StreakStatus, StreakReminderTypes } from '@streakoid/streakoid-models/lib';
 import {
-    CustomChallengeStreakReminder,
     CustomStreakReminder,
-} from '@streakoid/streakoid-models/lib/models/StreakReminders';
+    CustomChallengeStreakReminder,
+} from '@streakoid/streakoid-models/lib/Models/StreakReminders';
 
 describe('challengeStreakParamsValidationMiddleware', () => {
     test('sends correct error response when challengeStreakId is not defined', () => {
