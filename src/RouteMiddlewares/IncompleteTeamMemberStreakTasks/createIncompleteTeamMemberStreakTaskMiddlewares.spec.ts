@@ -44,7 +44,7 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 
 describe(`incompleteTeamMemberStreakTaskBodyValidationMiddleware`, () => {
-    const userId = 'abcdefgh';
+    const userId = 'userId';
     const teamMemberStreakId = '123456';
     const teamStreakId = 'teamStreakId';
 
