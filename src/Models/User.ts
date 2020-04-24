@@ -52,6 +52,10 @@ export const userSchema = new mongoose.Schema(
                 originalImageUrl,
             },
         },
+        followers: {
+            type: Array,
+            default: [],
+        },
         following: {
             type: Array,
             default: [],
