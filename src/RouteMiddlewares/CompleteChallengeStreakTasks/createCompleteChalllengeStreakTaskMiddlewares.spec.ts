@@ -213,7 +213,7 @@ describe('retrieveUserMiddleware', () => {
         const lean = jest.fn(() => true);
         const findOne = jest.fn(() => ({ lean }));
         const userModel = { findOne };
-        const userId = 'abcdefg';
+        const userId = 'userId';
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();

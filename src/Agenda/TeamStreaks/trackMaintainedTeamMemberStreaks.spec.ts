@@ -11,7 +11,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
 
     test('creates a streak tracking event for each streak that is maintained', async () => {
         expect.assertions(2);
-        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = 1;
         const currentStreak = {

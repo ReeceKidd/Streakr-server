@@ -11,8 +11,8 @@ describe('trackMaintainedSoloStreaks', () => {
 
     test('creates a streak tracking event for each streak that is maintained', async () => {
         expect.assertions(2);
-        soloStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
-        streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
+        soloStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
+        streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true) as any;
         const _id = 1;
         const currentStreak = {
             startDate: '24/02/95',

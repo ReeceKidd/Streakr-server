@@ -11,7 +11,7 @@ describe('resetIncompleteChallengeStreaks', () => {
 
     test('that incomplete challenge streaks default current streak is reset and old streak is pushed to past streaks and lost streak activity is recorded', async () => {
         expect.assertions(3);
-        challengeStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+        challengeStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         streakoid.activityFeedItems.create = jest.fn().mockResolvedValue(true);
         const username = 'username';

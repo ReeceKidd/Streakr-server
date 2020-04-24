@@ -12,8 +12,8 @@ describe('resetIncompleteTeamStreaks', () => {
 
     test('incomplete team streaks current streak is reset and old streak is pushed to past streaks, lost streak activity is recorded and each teamMemberStreak is reset', async () => {
         expect.assertions(2);
-        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
-        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
+        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = '1234';
         const endDate = new Date().toString();

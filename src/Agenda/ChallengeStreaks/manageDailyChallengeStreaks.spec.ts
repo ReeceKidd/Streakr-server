@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 jest.mock('moment-timezone', () => ({
     tz: jest.fn(() => ({
         toDate: jest.fn(() => new Date()),
@@ -38,8 +39,8 @@ describe('manageDailyChallengeStreaks', () => {
 
     test('calls trackMaintainedChallengeStreaks, trackInactiveChallengeStreaks, resetIncompleteChallengeStreaks and creates DailyJob', async () => {
         expect.assertions(7);
-        streakoid.dailyJobs.create = jest.fn(() => ({}));
-        challengeStreakModel.find = jest.fn().mockResolvedValue([]);
+        streakoid.dailyJobs.create = jest.fn(() => ({})) as any;
+        challengeStreakModel.find = jest.fn().mockResolvedValue([]) as any;
         const agendaJobId = 'agendaJobId';
         const timezone = 'Europe/London';
         await manageDailyChallengeStreaks({ agendaJobId, timezone });

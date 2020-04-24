@@ -12,8 +12,8 @@ describe('resetIncompleteSoloStreaks', () => {
 
     test('that incomplete teamMemberStreaks default current streak is reset, past streak is pushed to past streaks, and the teamStreak the teamMemberStreak belongs to completed today gets set to false and lost streak activity is recorded', async () => {
         expect.assertions(6);
-        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
-        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} });
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
+        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
         const username = 'username';
         const teamStreakName = 'Reading';
         streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);

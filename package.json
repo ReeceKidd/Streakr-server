@@ -66,7 +66,7 @@
         "@types/bcryptjs": "^2.4.2",
         "@types/bull": "^3.10.2",
         "@types/express": "^4.16.0",
-        "@types/jest": "^23.3.9",
+        "@types/jest": "^23.3.14",
         "@types/joi": "^13.6.3",
         "@types/jsonwebtoken": "^8.3.0",
         "@types/moment-timezone": "^0.5.12",
