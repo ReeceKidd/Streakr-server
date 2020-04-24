@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createChallengeStreakDailyTrackerJob } from '../../../src/scripts/initaliseChallengeStreakTimezoneCheckers';
-import StreakStatus from '@streakoid/streakoid-models/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes, AgendaJobNames } from '@streakoid/streakoid-models/lib';
-import { StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
+import { StreakTrackingEventTypes, StreakTypes, AgendaJobNames, StreakStatus } from '@streakoid/streakoid-models/lib';
 
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
 import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEvent';
@@ -13,6 +11,7 @@ import { streakoidTest } from '../../setup/streakoidTest';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
+import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
 jest.setTimeout(500000);
 
@@ -47,7 +46,7 @@ describe('challengeStreakDailyTracker', () => {
         }
     });
 
-    test('initialises challengeStreakDailyTracker job correctly', async () => {
+    test('initializes challengeStreakDailyTracker job correctly', async () => {
         expect.assertions(10);
 
         const timezone = 'Europe/London';

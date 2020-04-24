@@ -1,11 +1,11 @@
 import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-models/lib';
-import { londonTimezone, StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
 import { trackInactiveTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/trackInactiveTeamMemberStreaks';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
+import { StreakoidFactory, londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
 
 jest.setTimeout(120000);
 

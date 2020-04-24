@@ -1,6 +1,6 @@
 import { getIdToken } from './getIdToken';
 import { getServiceConfig } from '../../src/getServiceConfig';
-import { streakoidClientFactory, streakoidFactory } from '@streakoid/streakoid-models/lib';
+import { streakoidClientFactory, streakoidFactory } from '@streakoid/streakoid-sdk/lib';
 const { APPLICATION_URL } = getServiceConfig();
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

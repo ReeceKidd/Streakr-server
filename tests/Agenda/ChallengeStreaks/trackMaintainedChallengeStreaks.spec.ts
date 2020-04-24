@@ -1,6 +1,4 @@
-import StreakStatus from '@streakoid/streakoid-models/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-models/lib';
-import { StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
+import { StreakTrackingEventTypes, StreakTypes, StreakStatus } from '@streakoid/streakoid-models/lib';
 
 import { trackMaintainedChallengeStreaks } from '.../../../src/Agenda/ChallengeStreaks/trackMaintainedChallengeStreaks';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
@@ -8,6 +6,7 @@ import { setupDatabase } from '../../setup/setupDatabase';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
+import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
 jest.setTimeout(120000);
 
