@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     getStreakTrackingEventMiddlewares,
-    retreiveStreakTrackingEventMiddleware,
-    getRetreiveStreakTrackingEventMiddleware,
+    retrieveStreakTrackingEventMiddleware,
+    getRetrieveStreakTrackingEventMiddleware,
     sendStreakTrackingEventMiddleware,
     getStreakTrackingEventParamsValidationMiddleware,
     getSendStreakTrackingEventMiddleware,
@@ -73,7 +73,7 @@ describe(`getStreakTrackingEventParamsValidationMiddleware`, () => {
     });
 });
 
-describe('retreiveStreakTrackingEventMiddleware', () => {
+describe('retrieveStreakTrackingEventMiddleware', () => {
     test('sets response.locals.streakTrackingEvent', async () => {
         expect.assertions(3);
         const lean = jest.fn(() => Promise.resolve(true));
@@ -85,7 +85,7 @@ describe('retreiveStreakTrackingEventMiddleware', () => {
         const request: any = { params: { streakTrackingEventId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveStreakTrackingEventMiddleware(streakTrackingEventModel as any);
+        const middleware = getRetrieveStreakTrackingEventMiddleware(streakTrackingEventModel as any);
 
         await middleware(request, response, next);
 
@@ -105,14 +105,14 @@ describe('retreiveStreakTrackingEventMiddleware', () => {
         const request: any = { params: { streakTrackingEventId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveStreakTrackingEventMiddleware(streakTrackingEventModel as any);
+        const middleware = getRetrieveStreakTrackingEventMiddleware(streakTrackingEventModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.GetStreakTrackingEventNoStreakTrackingEventFound));
     });
 
-    test('calls next with RetreiveStreakTrackingEventMiddleware error on middleware failure', async () => {
+    test('calls next with RetrieveStreakTrackingEventMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const errorMessage = 'error';
         const lean = jest.fn(() => Promise.reject(errorMessage));
@@ -124,12 +124,12 @@ describe('retreiveStreakTrackingEventMiddleware', () => {
         const request: any = { params: { streakTrackingEventId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveStreakTrackingEventMiddleware(streakTrackingEventModel as any);
+        const middleware = getRetrieveStreakTrackingEventMiddleware(streakTrackingEventModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.RetreiveStreakTrackingEventMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.RetrieveStreakTrackingEventMiddleware, expect.any(Error)),
         );
     });
 });
@@ -176,7 +176,7 @@ describe('getStreakTrackingEventMiddlewares', () => {
 
         expect(getStreakTrackingEventMiddlewares.length).toEqual(3);
         expect(getStreakTrackingEventMiddlewares[0]).toEqual(getStreakTrackingEventParamsValidationMiddleware);
-        expect(getStreakTrackingEventMiddlewares[1]).toEqual(retreiveStreakTrackingEventMiddleware);
+        expect(getStreakTrackingEventMiddlewares[1]).toEqual(retrieveStreakTrackingEventMiddleware);
         expect(getStreakTrackingEventMiddlewares[2]).toEqual(sendStreakTrackingEventMiddleware);
     });
 });

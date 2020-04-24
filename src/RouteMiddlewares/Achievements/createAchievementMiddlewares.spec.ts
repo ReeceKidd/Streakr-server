@@ -10,7 +10,7 @@ import {
     saveAchievementToDatabaseMiddleware,
     getSaveAchievementToDatabaseMiddleware,
 } from './createAchievementMiddlewares';
-import { AchievementTypes } from '@streakoid/streakoid-sdk/lib';
+import { AchievementTypes } from '@streakoid/streakoid-models/lib';
 
 describe(`createAchievementBodyValidationMiddleware`, () => {
     const achievementType = AchievementTypes.oneHundredDaySoloStreak;
@@ -119,7 +119,7 @@ describe(`sendAchievementMiddleware`, () => {
     test('sends savedAchievement in request', () => {
         expect.assertions(3);
         const achievementType = 'LostStreak';
-        const subjectId = 'abcdefg';
+        const subjectId = 'subjectId';
         const userId = '12345';
         const achievement = {
             achievementType,

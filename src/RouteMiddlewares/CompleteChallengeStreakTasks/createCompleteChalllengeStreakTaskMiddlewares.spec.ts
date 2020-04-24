@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     createCompleteChallengeStreakTaskMiddlewares,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     setTaskCompleteTimeMiddleware,
     setDayTaskWasCompletedMiddleware,
     sendTaskCompleteResponseMiddleware,
@@ -10,7 +10,7 @@ import {
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
     getChallengeStreakExistsMiddleware,
-    getRetreiveUserMiddleware,
+    getRetrieveUserMiddleware,
     getSetDayTaskWasCompletedMiddleware,
     getSetTaskCompleteTimeMiddleware,
     getSaveTaskCompleteMiddleware,
@@ -22,8 +22,8 @@ import {
     ensureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware,
     getCreateCompleteChallengeStreakActivityFeedItemMiddleware,
     createCompleteChallengeStreakActivityFeedItemMiddleware,
-    retreiveChallengeMiddleware,
-    getRetreiveChallengeMiddleware,
+    retrieveChallengeMiddleware,
+    getRetrieveChallengeMiddleware,
 } from './createCompleteChallengeStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -197,7 +197,7 @@ describe('ensureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware', () => {
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware({} as any);
+        const middleware = getRetrieveUserMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -207,7 +207,7 @@ describe('ensureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware', () => {
     });
 });
 
-describe('retreiveUserMiddleware', () => {
+describe('retrieveUserMiddleware', () => {
     test('sets response.locals.user and calls next()', async () => {
         expect.assertions(4);
         const lean = jest.fn(() => true);
@@ -217,7 +217,7 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
@@ -236,14 +236,14 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskUserDoesNotExist));
     });
 
-    test('throws RetreiveUserMiddleware error on middleware failure', async () => {
+    test('throws RetrieveUserMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -253,12 +253,12 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { status, locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetreiveUserMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetrieveUserMiddleware, expect.any(Error)),
         );
     });
 });
@@ -282,7 +282,7 @@ describe('setTaskCompleteTimeMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws SetTaskCompleteTimeMiddlewre error on middleware failure', () => {
+    test('throws SetTaskCompleteTimeMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const tz = jest.fn(() => true);
         const moment = jest.fn(() => ({ tz }));
@@ -555,7 +555,7 @@ describe('sendTaskCompleteResponseMiddleware', () => {
     });
 });
 
-describe('retreiveChallengeMiddleware', () => {
+describe('retrieveChallengeMiddleware', () => {
     test('sets response.locals.challenge and calls next()', async () => {
         expect.assertions(4);
         const lean = jest.fn(() => true);
@@ -564,7 +564,7 @@ describe('retreiveChallengeMiddleware', () => {
         const request: any = {};
         const response: any = { locals: { challengeStreak: { _id: '_id', challengeId: 'challengeId' } } };
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMiddleware(challengeModel as any);
+        const middleware = getRetrieveChallengeMiddleware(challengeModel as any);
 
         await middleware(request, response, next);
 
@@ -582,24 +582,24 @@ describe('retreiveChallengeMiddleware', () => {
         const request: any = {};
         const response: any = { locals: { challengeStreak: { _id: '_id' } } };
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMiddleware(challengeModel as any);
+        const middleware = getRetrieveChallengeMiddleware(challengeModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskChallengeDoesNotExist));
     });
 
-    test('throws RetreiveChallengeMiddleware error on middleware failure', async () => {
+    test('throws RetrieveChallengeMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMiddleware({} as any);
+        const middleware = getRetrieveChallengeMiddleware({} as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetrieveChallengeMiddleware, expect.any(Error)),
         );
     });
 });
@@ -651,14 +651,14 @@ describe(`createCompleteChallengeStreakTaskMiddlewares`, () => {
         expect(createCompleteChallengeStreakTaskMiddlewares[2]).toBe(
             ensureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware,
         );
-        expect(createCompleteChallengeStreakTaskMiddlewares[3]).toBe(retreiveUserMiddleware);
+        expect(createCompleteChallengeStreakTaskMiddlewares[3]).toBe(retrieveUserMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[4]).toBe(setTaskCompleteTimeMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[5]).toBe(setStreakStartDateMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[6]).toBe(setDayTaskWasCompletedMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[7]).toBe(saveTaskCompleteMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[8]).toBe(streakMaintainedMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[9]).toBe(sendTaskCompleteResponseMiddleware);
-        expect(createCompleteChallengeStreakTaskMiddlewares[10]).toBe(retreiveChallengeMiddleware);
+        expect(createCompleteChallengeStreakTaskMiddlewares[10]).toBe(retrieveChallengeMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[11]).toBe(
             createCompleteChallengeStreakActivityFeedItemMiddleware,
         );

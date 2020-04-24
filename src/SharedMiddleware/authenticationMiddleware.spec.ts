@@ -2,8 +2,8 @@
 import {
     authenticationMiddlewares,
     ensureAudienceMatchesCognitoUserPool,
-    getRetreiveUserMiddleware,
-    retreiveUserMiddleware,
+    getRetrieveUserMiddleware,
+    retrieveUserMiddleware,
     decodeJWTMiddleware,
     getDecodeJWTMiddleware,
 } from './authenticationMiddlewares';
@@ -105,7 +105,7 @@ describe(`ensureAudienceMatchesCognitoUserPool`, () => {
     });
 });
 
-describe('retreiveUserMiddleware', () => {
+describe('retrieveUserMiddleware', () => {
     test('sets response.locals.user and calls next()', async () => {
         expect.assertions(4);
         const username = 'username';
@@ -118,7 +118,7 @@ describe('retreiveUserMiddleware', () => {
         const request: any = {};
         const response: any = { locals: { decodedJwt } };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
@@ -137,7 +137,7 @@ describe('retreiveUserMiddleware', () => {
         const request: any = {};
         const response: any = { locals: { decodedJwt } };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
@@ -156,14 +156,14 @@ describe('retreiveUserMiddleware', () => {
         const request: any = {};
         const response: any = { locals: { decodedJwt } };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.AuthUserDoesNotExist));
     });
 
-    test('throws RetreiveUserMiddleware error on middleware failure', async () => {
+    test('throws RetrieveUserMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -173,11 +173,11 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { status, locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveUserMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveUserMiddleware, expect.any(Error)));
     });
 });
 
@@ -188,6 +188,6 @@ describe(`authenticationMiddlewares`, () => {
         expect(authenticationMiddlewares.length).toEqual(3);
         expect(authenticationMiddlewares[0]).toBe(decodeJWTMiddleware);
         expect(authenticationMiddlewares[1]).toBe(ensureAudienceMatchesCognitoUserPool);
-        expect(authenticationMiddlewares[2]).toBe(retreiveUserMiddleware);
+        expect(authenticationMiddlewares[2]).toBe(retrieveUserMiddleware);
     });
 });

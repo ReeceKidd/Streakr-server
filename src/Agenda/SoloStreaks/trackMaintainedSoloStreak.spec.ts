@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import streakoid from '../../streakoid';
-import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-models/lib';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
 describe('trackMaintainedSoloStreaks', () => {

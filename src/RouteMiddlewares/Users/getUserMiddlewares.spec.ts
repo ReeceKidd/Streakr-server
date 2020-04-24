@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     userParamsValidationMiddleware,
-    getRetreiveUserMiddleware,
+    getRetrieveUserMiddleware,
     sendUserMiddleware,
     getUserMiddlewares,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     formatUserMiddleware,
     getPopulateUserFollowersMiddleware,
     getPopulateUserFollowingMiddleware,
@@ -15,9 +15,9 @@ import {
 } from '../Users/getUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
-import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
-import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
-import AcheivmentTypes from '@streakoid/streakoid-sdk/lib/AchievementTypes';
+import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
+import { AchievementTypes } from '@streakoid/streakoid-models/lib';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
 describe(`userParamsValidationMiddleware`, () => {
     const userId = '5d43f0c2f4499975cb312b72';
@@ -103,7 +103,7 @@ describe(`userParamsValidationMiddleware`, () => {
     });
 });
 
-describe('retreiveUserMiddleware', () => {
+describe('retrieveUserMiddleware', () => {
     test('sets response.locals.user', async () => {
         expect.assertions(3);
         const lean = jest.fn().mockResolvedValue(true);
@@ -115,7 +115,7 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { params: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
@@ -135,24 +135,24 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { params: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.NoUserFound, expect.any(Error)));
     });
 
-    test('calls next with GetRetreiveUserMiddleware error on middleware failure', async () => {
+    test('calls next with GetRetrieveUserMiddleware error on middleware failure', async () => {
         expect.assertions(1);
 
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware({} as any);
+        const middleware = getRetrieveUserMiddleware({} as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveUserMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveUserMiddleware, expect.any(Error)));
     });
 });
 
@@ -240,7 +240,7 @@ describe('populateUserAchievementMiddleware', () => {
         const request: any = {};
         const userAchievement: UserAchievement = {
             _id: '_id',
-            achievementType: AcheivmentTypes.oneHundredDaySoloStreak,
+            achievementType: AchievementTypes.oneHundredDaySoloStreak,
         };
         const user = {
             _id: 'userId',
@@ -293,7 +293,6 @@ describe('formatUserMiddleware', () => {
             updatedAt: 'Jan 1st',
             timezone: 'Europe/London',
             userType: UserTypes.basic,
-            friends: [],
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
@@ -319,7 +318,6 @@ describe('formatUserMiddleware', () => {
                 'isPayingMember',
                 'userType',
                 'timezone',
-                'friends',
                 'followers',
                 'following',
                 'createdAt',
@@ -343,7 +341,7 @@ describe('formatUserMiddleware', () => {
     });
 });
 
-describe('sendRetreiveUserResponseMiddleware', () => {
+describe('sendRetrieveUserResponseMiddleware', () => {
     test('sends user', () => {
         expect.assertions(3);
         const send = jest.fn();
@@ -360,7 +358,7 @@ describe('sendRetreiveUserResponseMiddleware', () => {
         expect(send).toBeCalledWith(user);
     });
 
-    test('calls next with SendRetreiveUserResponseMiddleware error on middleware failure', async () => {
+    test('calls next with SendRetrieveUserResponseMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const error = 'error';
@@ -381,7 +379,7 @@ describe('getUserMiddlewares', () => {
 
         expect(getUserMiddlewares.length).toEqual(7);
         expect(getUserMiddlewares[0]).toEqual(userParamsValidationMiddleware);
-        expect(getUserMiddlewares[1]).toEqual(retreiveUserMiddleware);
+        expect(getUserMiddlewares[1]).toEqual(retrieveUserMiddleware);
         expect(getUserMiddlewares[2]).toEqual(populateUserFollowersMiddleware);
         expect(getUserMiddlewares[3]).toEqual(populateUserFollowingMiddleware);
         expect(getUserMiddlewares[4]).toEqual(populateUserAchievementsMiddleware);

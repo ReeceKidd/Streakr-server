@@ -3,7 +3,7 @@ import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import { setupDatabase } from '../../../tests/setup/setupDatabase';
 import { adjustForDaylightSavingsTime } from '../../../src/Agenda/AdjustForDaylightSavingsTime/adjustForDaylightSavingsTime';
 import { agendaJobModel } from '../../../src/Models/AgendaJob';
-import { AgendaJobNames, AgendaJob } from '@streakoid/streakoid-sdk/lib';
+import { AgendaJobNames, AgendaJob } from '@streakoid/streakoid-models/lib';
 import moment = require('moment');
 
 jest.setTimeout(120000);

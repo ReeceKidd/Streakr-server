@@ -10,7 +10,7 @@ import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { incompleteSoloStreakTaskModel, IncompleteSoloStreakTaskModel } from '../../Models/IncompleteSoloStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import { SoloStreak, User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
+import { SoloStreak, User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 export const incompleteSoloStreakTaskBodyValidationSchema = {
@@ -97,7 +97,7 @@ export const getResetStreakStartDateMiddleware = (soloStreakModel: mongoose.Mode
 
 export const resetStreakStartDateMiddleware = getResetStreakStartDateMiddleware(soloStreakModel);
 
-export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -112,11 +112,11 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateIncompleteSoloStreakTaskRetreiveUserMiddleware, err));
+        else next(new CustomError(ErrorType.CreateIncompleteSoloStreakTaskRetrieveUserMiddleware, err));
     }
 };
 
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
+export const retrieveUserMiddleware = getRetrieveUserMiddleware(userModel);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getSetTaskIncompleteTimeMiddleware = (moment: any) => (
@@ -272,7 +272,7 @@ export const createIncompleteSoloStreakTaskMiddlewares = [
     soloStreakExistsMiddleware,
     ensureSoloStreakTaskHasBeenCompletedTodayMiddleware,
     resetStreakStartDateMiddleware,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     setTaskIncompleteTimeMiddleware,
     setDayTaskWasIncompletedMiddleware,
     createIncompleteSoloStreakTaskDefinitionMiddleware,

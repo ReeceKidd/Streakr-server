@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     getOneTeamMemberStreakMiddlewares,
-    retreiveTeamMemberStreakMiddleware,
-    getRetreiveTeamMemberStreakMiddleware,
+    retrieveTeamMemberStreakMiddleware,
+    getRetrieveTeamMemberStreakMiddleware,
     sendTeamMemberStreakMiddleware,
     getTeamMemberStreakParamsValidationMiddleware,
     getSendTeamMemberStreakMiddleware,
@@ -73,7 +73,7 @@ describe(`getTeamMemberStreakParamsValidationMiddleware`, () => {
     });
 });
 
-describe('retreiveTeamMemberStreakMiddleware', () => {
+describe('retrieveTeamMemberStreakMiddleware', () => {
     test('sets response.locals.teamMemberStreak', async () => {
         expect.assertions(3);
         const lean = jest.fn(() => Promise.resolve(true));
@@ -85,7 +85,7 @@ describe('retreiveTeamMemberStreakMiddleware', () => {
         const request: any = { params: { teamMemberStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveTeamMemberStreakMiddleware(teamMemberStreakModel as any);
+        const middleware = getRetrieveTeamMemberStreakMiddleware(teamMemberStreakModel as any);
 
         await middleware(request, response, next);
 
@@ -105,14 +105,14 @@ describe('retreiveTeamMemberStreakMiddleware', () => {
         const request: any = { params: { teamMemberStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveTeamMemberStreakMiddleware(teamMemberStreakModel as any);
+        const middleware = getRetrieveTeamMemberStreakMiddleware(teamMemberStreakModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.GetTeamMemberStreakNoTeamMemberStreakFound));
     });
 
-    test('calls next with RetreiveTeamMemberStreakMiddleware error on middleware failure', async () => {
+    test('calls next with RetrieveTeamMemberStreakMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const errorMessage = 'error';
         const lean = jest.fn(() => Promise.reject(errorMessage));
@@ -124,11 +124,11 @@ describe('retreiveTeamMemberStreakMiddleware', () => {
         const request: any = { params: { teamMemberStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveTeamMemberStreakMiddleware(teamMemberStreakModel as any);
+        const middleware = getRetrieveTeamMemberStreakMiddleware(teamMemberStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveTeamMemberStreakMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveTeamMemberStreakMiddleware, expect.any(Error)));
     });
 });
 
@@ -174,7 +174,7 @@ describe('getTeamMemberStreakMiddlewares', () => {
 
         expect(getOneTeamMemberStreakMiddlewares.length).toEqual(3);
         expect(getOneTeamMemberStreakMiddlewares[0]).toEqual(getTeamMemberStreakParamsValidationMiddleware);
-        expect(getOneTeamMemberStreakMiddlewares[1]).toEqual(retreiveTeamMemberStreakMiddleware);
+        expect(getOneTeamMemberStreakMiddlewares[1]).toEqual(retrieveTeamMemberStreakMiddleware);
         expect(getOneTeamMemberStreakMiddlewares[2]).toEqual(sendTeamMemberStreakMiddleware);
     });
 });

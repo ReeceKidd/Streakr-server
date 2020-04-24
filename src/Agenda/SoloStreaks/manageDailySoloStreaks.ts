@@ -1,5 +1,5 @@
 import moment from 'moment-timezone';
-import { AgendaJobNames, StreakTypes, DailyJob, SoloStreak } from '@streakoid/streakoid-sdk/lib';
+import { AgendaJobNames, StreakTypes, DailyJob, SoloStreak } from '@streakoid/streakoid-models/lib';
 
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';

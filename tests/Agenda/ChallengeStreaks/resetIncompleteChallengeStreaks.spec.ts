@@ -1,13 +1,18 @@
 import { resetIncompleteChallengeStreaks } from '../../../src/Agenda/ChallengeStreaks/resetIncompleteChallengeStreaks';
-import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes, Challenge } from '@streakoid/streakoid-sdk/lib';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
+import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import {
+    Challenge,
+    StreakStatus,
+    StreakTrackingEventTypes,
+    StreakTypes,
+    ActivityFeedItemTypes,
+} from '@streakoid/streakoid-models/lib';
 
 jest.setTimeout(120000);
 
@@ -49,7 +54,7 @@ describe('resetIncompleteChallengeStreaks', () => {
         }
     });
 
-    test('adds current streak to past streak,  resets the current streak and creats a lost streak tracking event.', async () => {
+    test('adds current streak to past streak,  resets the current streak and creates a lost streak tracking event.', async () => {
         expect.assertions(34);
 
         const incompleteChallengeStreaks = await streakoid.challengeStreaks.getAll({

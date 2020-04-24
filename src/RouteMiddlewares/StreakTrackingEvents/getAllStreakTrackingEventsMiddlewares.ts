@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { streakTrackingEventModel, StreakTrackingEventModel } from '../../Models/StreakTrackingEvent';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
-import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes } from '@streakoid/streakoid-models/lib';
 
 const streakTrackingEventQueryValidationSchema = {
     type: Joi.string().valid(Object.keys(StreakTrackingEventTypes)),
@@ -26,7 +26,7 @@ export const streakTrackingEventQueryValidationMiddleware = (
     );
 };
 
-export const getRetreiveStreakTrackingEventsMiddleware = (
+export const getRetrieveStreakTrackingEventsMiddleware = (
     streakTrackingEventModel: mongoose.Model<StreakTrackingEventModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -55,7 +55,7 @@ export const getRetreiveStreakTrackingEventsMiddleware = (
     }
 };
 
-export const retreiveStreakTrackingEventsMiddleware = getRetreiveStreakTrackingEventsMiddleware(
+export const retrieveStreakTrackingEventsMiddleware = getRetrieveStreakTrackingEventsMiddleware(
     streakTrackingEventModel,
 );
 
@@ -74,6 +74,6 @@ export const sendStreakTrackingEventsResponseMiddleware = (
 
 export const getAllStreakTrackingEventsMiddlewares = [
     streakTrackingEventQueryValidationMiddleware,
-    retreiveStreakTrackingEventsMiddleware,
+    retrieveStreakTrackingEventsMiddleware,
     sendStreakTrackingEventsResponseMiddleware,
 ];

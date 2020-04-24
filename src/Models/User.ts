@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { User } from '@streakoid/streakoid-sdk/lib';
-import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
+import { User } from '@streakoid/streakoid-models/lib';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
 export type UserModel = User & mongoose.Document;
 
@@ -51,14 +51,6 @@ export const userSchema = new mongoose.Schema(
             default: {
                 originalImageUrl,
             },
-        },
-        friends: {
-            type: Array,
-            default: [],
-        },
-        followers: {
-            type: Array,
-            default: [],
         },
         following: {
             type: Array,

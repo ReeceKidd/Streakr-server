@@ -8,7 +8,7 @@ import {
     StreakTypes,
     ActivityFeedItemTypes,
     ActivityFeedItemType,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
 
 export const resetIncompleteChallengeStreaks = async (

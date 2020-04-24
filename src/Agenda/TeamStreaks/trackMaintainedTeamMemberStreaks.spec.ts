@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { trackMaintainedTeamMemberStreaks } from './trackMaintainedTeamMemberStreaks';
 import streakoid from '../../streakoid';
-import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-models/lib';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 
 describe('trackMaintainedTeamMemberStreaks', () => {

@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { Note } from '@streakoid/streakoid-sdk/lib';
+import { Note } from '@streakoid/streakoid-models/lib';
 
 export type NoteModel = Note & mongoose.Document;
 

@@ -6,17 +6,17 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import {
     User,
     ActivityFeedItemTypes,
     ActivityFeedItemType,
     TeamStreak,
     StreakReminderTypes,
-} from '@streakoid/streakoid-sdk/lib';
+    StreakStatus,
+} from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { UserModel, userModel } from '../../../src/Models/User';
-import { CustomTeamStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
+import { CustomTeamStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-models/lib/models/StreakReminders';
 
 const teamStreakParamsValidationSchema = {
     teamStreakId: Joi.string().required(),

@@ -88,7 +88,7 @@ export const getS3UploadOriginalImageMiddleware = (s3Client: typeof s3) => async
 
 export const s3UploadOriginalImageMiddleware = getS3UploadOriginalImageMiddleware(s3);
 
-export const getRetreiveVersionedObjectMiddleware = (s3Client: typeof s3) => async (
+export const getRetrieveVersionedObjectMiddleware = (s3Client: typeof s3) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -109,7 +109,7 @@ export const getRetreiveVersionedObjectMiddleware = (s3Client: typeof s3) => asy
     }
 };
 
-export const retreiveVersionedObjectMiddleware = getRetreiveVersionedObjectMiddleware(s3);
+export const retrieveVersionedObjectMiddleware = getRetrieveVersionedObjectMiddleware(s3);
 
 export const defineProfilePictureUrlsMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -158,7 +158,7 @@ const createProfilePictureMiddlewares = [
     singleImageUploadMiddleware,
     imageTypeValidationMiddleware,
     s3UploadOriginalImageMiddleware,
-    retreiveVersionedObjectMiddleware,
+    retrieveVersionedObjectMiddleware,
     defineProfilePictureUrlsMiddleware,
     setUserProfilePicturesMiddleware,
     sendProfilePicturesMiddleware,

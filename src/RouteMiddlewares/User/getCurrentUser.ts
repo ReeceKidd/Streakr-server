@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User, PopulatedCurrentUser } from '@streakoid/streakoid-sdk/lib';
+import { User, PopulatedCurrentUser, BasicUser } from '@streakoid/streakoid-models/lib';
 import { Model } from 'mongoose';
 import { userModel, UserModel } from '../../../src/Models/User';
-import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
 import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
-import DatabaseAchievementType from '@streakoid/streakoid-sdk/lib/models/DatabaseAchievement';
+import { DatabaseAchievementType } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 
 export const getPopulateCurrentUserFollowingMiddleware = (userModel: Model<UserModel>) => async (
     request: Request,
@@ -103,7 +102,6 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             userType: user.userType,
             followers,
             following,
-            friends: user.friends,
             timezone: user.timezone,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,

@@ -1,6 +1,6 @@
-import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import StreakStatus from '@streakoid/streakoid-models/lib/StreakStatus';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-models/lib';
+import { StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
 
 import { trackMaintainedSoloStreaks } from '.../../../src/Agenda/SoloStreaks/trackMaintainedSoloStreaks';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';

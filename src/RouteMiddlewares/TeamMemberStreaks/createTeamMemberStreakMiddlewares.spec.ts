@@ -6,10 +6,10 @@ import {
     getCreateTeamMemberStreakFromRequestMiddleware,
     saveTeamMemberStreakToDatabaseMiddleware,
     sendFormattedTeamMemberStreakMiddleware,
-    retreiveUserMiddleware,
-    getRetreiveTeamStreakMiddleware,
-    getRetreiveUserMiddleware,
-    retreiveTeamStreakMiddleware,
+    retrieveUserMiddleware,
+    getRetrieveTeamStreakMiddleware,
+    getRetrieveUserMiddleware,
+    retrieveTeamStreakMiddleware,
 } from './createTeamMemberStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -83,7 +83,7 @@ describe(`createTeamMemberStreakBodyValidationMiddleware`, () => {
     });
 });
 
-describe('retreiveUserMiddleware', () => {
+describe('retrieveUserMiddleware', () => {
     test('sets response.locals.user and calls next()', async () => {
         expect.assertions(4);
         const lean = jest.fn(() => true);
@@ -93,7 +93,7 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
@@ -112,14 +112,14 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.CreateTeamMemberStreakUserDoesNotExist));
     });
 
-    test('throws CreateTeamMemberStreakRetreiveUserMiddleware error on middleware failure', async () => {
+    test('throws CreateTeamMemberStreakRetrieveUserMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -129,17 +129,17 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { status, locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreateTeamMemberStreakRetreiveUserMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.CreateTeamMemberStreakRetrieveUserMiddleware, expect.any(Error)),
         );
     });
 });
 
-describe('retreiveTeamStreakMiddleware', () => {
+describe('retrieveTeamStreakMiddleware', () => {
     test('sets response.locals.teamStreak and calls next()', async () => {
         expect.assertions(3);
         const teamStreakId = 'abc';
@@ -150,7 +150,7 @@ describe('retreiveTeamStreakMiddleware', () => {
         const next = jest.fn();
         const findOne = jest.fn(() => Promise.resolve(true));
         const teamStreakModel = { findOne };
-        const middleware = getRetreiveTeamStreakMiddleware(teamStreakModel as any);
+        const middleware = getRetrieveTeamStreakMiddleware(teamStreakModel as any);
 
         await middleware(request, response, next);
 
@@ -169,26 +169,26 @@ describe('retreiveTeamStreakMiddleware', () => {
         const next = jest.fn();
         const findOne = jest.fn(() => Promise.resolve(false));
         const teamStreakModel = { findOne };
-        const middleware = getRetreiveTeamStreakMiddleware(teamStreakModel as any);
+        const middleware = getRetrieveTeamStreakMiddleware(teamStreakModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.CreateTeamMemberStreakTeamStreakDoesNotExist));
     });
 
-    test('throws CreateTeamMemberStreakRetreiveTeamStreakMiddleware error on middleware failure', async () => {
+    test('throws CreateTeamMemberStreakRetrieveTeamStreakMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = { locals: {} };
         const next = jest.fn();
         const findOne = jest.fn(() => Promise.resolve(true));
         const teamStreakModel = { findOne };
-        const middleware = getRetreiveTeamStreakMiddleware(teamStreakModel as any);
+        const middleware = getRetrieveTeamStreakMiddleware(teamStreakModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreateTeamMemberStreakRetreiveTeamStreakMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.CreateTeamMemberStreakRetrieveTeamStreakMiddleware, expect.any(Error)),
         );
     });
 });
@@ -342,8 +342,8 @@ describe(`createTeamMemberStreakMiddlewares`, () => {
 
         expect(createTeamMemberStreakMiddlewares.length).toEqual(6);
         expect(createTeamMemberStreakMiddlewares[0]).toBe(createTeamMemberStreakBodyValidationMiddleware);
-        expect(createTeamMemberStreakMiddlewares[1]).toBe(retreiveUserMiddleware);
-        expect(createTeamMemberStreakMiddlewares[2]).toBe(retreiveTeamStreakMiddleware);
+        expect(createTeamMemberStreakMiddlewares[1]).toBe(retrieveUserMiddleware);
+        expect(createTeamMemberStreakMiddlewares[2]).toBe(retrieveTeamStreakMiddleware);
         expect(createTeamMemberStreakMiddlewares[3]).toBe(createTeamMemberStreakFromRequestMiddleware);
         expect(createTeamMemberStreakMiddlewares[4]).toBe(saveTeamMemberStreakToDatabaseMiddleware);
         expect(createTeamMemberStreakMiddlewares[5]).toBe(sendFormattedTeamMemberStreakMiddleware);

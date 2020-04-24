@@ -32,7 +32,7 @@ export const createTeamMemberStreakBodyValidationMiddleware = (
     );
 };
 
-export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -47,13 +47,13 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateTeamMemberStreakRetreiveUserMiddleware, err));
+        else next(new CustomError(ErrorType.CreateTeamMemberStreakRetrieveUserMiddleware, err));
     }
 };
 
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
+export const retrieveUserMiddleware = getRetrieveUserMiddleware(userModel);
 
-export const getRetreiveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+export const getRetrieveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -68,11 +68,11 @@ export const getRetreiveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateTeamMemberStreakRetreiveTeamStreakMiddleware, err));
+        else next(new CustomError(ErrorType.CreateTeamMemberStreakRetrieveTeamStreakMiddleware, err));
     }
 };
 
-export const retreiveTeamStreakMiddleware = getRetreiveTeamStreakMiddleware(teamStreakModel);
+export const retrieveTeamStreakMiddleware = getRetrieveTeamStreakMiddleware(teamStreakModel);
 
 export const getCreateTeamMemberStreakFromRequestMiddleware = (
     teamMemberStreak: mongoose.Model<TeamMemberStreakModel>,
@@ -124,8 +124,8 @@ export const sendFormattedTeamMemberStreakMiddleware = (
 
 export const createTeamMemberStreakMiddlewares = [
     createTeamMemberStreakBodyValidationMiddleware,
-    retreiveUserMiddleware,
-    retreiveTeamStreakMiddleware,
+    retrieveUserMiddleware,
+    retrieveTeamStreakMiddleware,
     createTeamMemberStreakFromRequestMiddleware,
     saveTeamMemberStreakToDatabaseMiddleware,
     sendFormattedTeamMemberStreakMiddleware,

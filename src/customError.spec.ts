@@ -486,10 +486,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
-    test(`creates correct error when type is set to RetreiveFormattedRequesteeDoesNotExist`, () => {
+    test(`creates correct error when type is set to RetrieveFormattedRequesteeDoesNotExist`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveFormattedRequesteeDoesNotExist);
+        const customError = new CustomError(ErrorType.RetrieveFormattedRequesteeDoesNotExist);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-51`);
@@ -497,10 +497,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
-    test(`creates correct error when type is set to RetreiveFormattedRequesterDoesNotExist`, () => {
+    test(`creates correct error when type is set to RetrieveFormattedRequesterDoesNotExist`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveFormattedRequesterDoesNotExist);
+        const customError = new CustomError(ErrorType.RetrieveFormattedRequesterDoesNotExist);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-52`);
@@ -1147,10 +1147,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveUserWithEmailMiddlewareError`, () => {
+    test(`creates correct error when type is set to RetrieveUserWithEmailMiddlewareError`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveUserWithEmailMiddlewareError);
+        const customError = new CustomError(ErrorType.RetrieveUserWithEmailMiddlewareError);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-02`);
@@ -1224,10 +1224,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveTimezoneHeaderMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveTimezoneHeaderMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveTimezoneHeaderMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveTimezoneHeaderMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-09`);
@@ -1246,10 +1246,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-11`);
@@ -1433,10 +1433,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveSoloStreakMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveSoloStreakMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveSoloStreakMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveSoloStreakMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-28`);
@@ -1829,10 +1829,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to GetRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to GetRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.GetRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.GetRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-64`);
@@ -1851,10 +1851,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveIncompleteSoloStreaksMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveIncompleteSoloStreaksMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveIncompleteSoloStreaksMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveIncompleteSoloStreaksMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-66`);
@@ -1862,10 +1862,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveFriendsMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveFriendsMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveFriendsMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveFriendsMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-67`);
@@ -1895,10 +1895,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to DeleteUserGetRetreivedUserMiddleware`, () => {
+    test(`creates correct error when type is set to DeleteUserGetRetrievedUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.UnfollowUserRetreiveSelectedUserMiddleware);
+        const customError = new CustomError(ErrorType.UnfollowUserRetrieveSelectedUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-74`);
@@ -2027,10 +2027,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveTeamStreaksMembersInformation`, () => {
+    test(`creates correct error when type is set to RetrieveTeamStreaksMembersInformation`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveTeamStreaksMembersInformation);
+        const customError = new CustomError(ErrorType.RetrieveTeamStreaksMembersInformation);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-87`);
@@ -2060,10 +2060,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveTeamStreakMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveTeamStreakMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveTeamStreakMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveTeamStreakMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-90`);
@@ -2082,10 +2082,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveTeamStreakMembersInformation`, () => {
+    test(`creates correct error when type is set to RetrieveTeamStreakMembersInformation`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveTeamStreakMembersInformation);
+        const customError = new CustomError(ErrorType.RetrieveTeamStreakMembersInformation);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-92`);
@@ -2148,10 +2148,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveStreakTrackingEventMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveStreakTrackingEventMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveStreakTrackingEventMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveStreakTrackingEventMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-98`);
@@ -2269,10 +2269,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveTeamStreakCreatorInformationMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveTeamStreakCreatorInformationMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveTeamStreakCreatorInformationMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveTeamStreakCreatorInformationMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-109`);
@@ -2313,10 +2313,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateTeamMemberStreakRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to CreateTeamMemberStreakRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateTeamMemberStreakRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.CreateTeamMemberStreakRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-113`);
@@ -2324,10 +2324,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateTeamMemberStreakRetreiveTeamStreakMiddleware`, () => {
+    test(`creates correct error when type is set to CreateTeamMemberStreakRetrieveTeamStreakMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateTeamMemberStreakRetreiveTeamStreakMiddleware);
+        const customError = new CustomError(ErrorType.CreateTeamMemberStreakRetrieveTeamStreakMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-114`);
@@ -2368,10 +2368,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateCompleteTeamMemberStreakTaskRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to CreateCompleteTeamMemberStreakTaskRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateCompleteTeamMemberStreakTaskRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.CreateCompleteTeamMemberStreakTaskRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-118`);
@@ -2467,10 +2467,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveTeamMemberStreakMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveTeamMemberStreakMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveTeamMemberStreakMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveTeamMemberStreakMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-127`);
@@ -2654,10 +2654,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to DeleteTeamMemberRetreiveTeamStreakMiddleware`, () => {
+    test(`creates correct error when type is set to DeleteTeamMemberRetrieveTeamStreakMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.DeleteTeamMemberRetreiveTeamStreakMiddleware);
+        const customError = new CustomError(ErrorType.DeleteTeamMemberRetrieveTeamStreakMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-144`);
@@ -2665,10 +2665,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveTeamMemberMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveTeamMemberMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveTeamMemberMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveTeamMemberMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-145`);
@@ -2742,10 +2742,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveRequesterMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveRequesterMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveRequesterMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveRequesterMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-152`);
@@ -2753,10 +2753,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveRequesterMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveRequesterMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveRequesteeMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveRequesteeMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-153`);
@@ -2775,10 +2775,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveCreatedTeamStreakCreatorInformationMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveCreatedTeamStreakCreatorInformationMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveCreatedTeamStreakCreatorInformationMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveCreatedTeamStreakCreatorInformationMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-169`);
@@ -2797,10 +2797,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveFormattedRequesterMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveFormattedRequesterMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveFormattedRequesterMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveFormattedRequesterMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-171`);
@@ -2808,10 +2808,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveFormattedRequesteeMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveFormattedRequesteeMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveFormattedRequesteeMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveFormattedRequesteeMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-172`);
@@ -2885,10 +2885,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateIncompleteSoloStreakTaskRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to CreateIncompleteSoloStreakTaskRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateIncompleteSoloStreakTaskRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.CreateIncompleteSoloStreakTaskRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-179`);
@@ -3019,10 +3019,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateIncompleteTeamMemberStreakTaskRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to CreateIncompleteTeamMemberStreakTaskRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-191`);
@@ -3241,10 +3241,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateCompleteTeamStreakRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to CreateCompleteTeamStreakRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.CreateCompleteTeamStreakRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-211`);
@@ -3384,10 +3384,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to AuthRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to AuthRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.AuthRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.AuthRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-224`);
@@ -3538,10 +3538,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to ValidateStripeTokenMiddlware`, () => {
+    test(`creates correct error when type is set to ValidateStripeTokenMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.ValidateStripeTokenMiddlware);
+        const customError = new CustomError(ErrorType.ValidateStripeTokenMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-238`);
@@ -3637,10 +3637,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to DeleteFriendRetreiveFriendMiddleware`, () => {
+    test(`creates correct error when type is set to DeleteFriendRetrieveFriendMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.DeleteFriendRetreiveFriendMiddleware);
+        const customError = new CustomError(ErrorType.DeleteFriendRetrieveFriendMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-248`);
@@ -3758,10 +3758,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RegisterDeviceForPushNotificationRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to RegisterDeviceForPushNotificationRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RegisterDeviceForPushNotificationRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.RegisterDeviceForPushNotificationRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-259`);
@@ -3901,10 +3901,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateCompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware`, () => {
+    test(`creates correct error when type is set to CreateCompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateCompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware);
+        const customError = new CustomError(ErrorType.CreateCompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-273`);
@@ -3945,11 +3945,11 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware`, () => {
+    test(`creates correct error when type is set to CreateIncompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware`, () => {
         expect.assertions(3);
 
         const customError = new CustomError(
-            ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware,
+            ErrorType.CreateIncompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware,
         );
         const { code, message, httpStatusCode } = customError;
 
@@ -4024,10 +4024,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to GetRetreiveChallengeMiddleware`, () => {
+    test(`creates correct error when type is set to GetRetrieveChallengeMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.GetRetreiveChallengeMiddleware);
+        const customError = new CustomError(ErrorType.GetRetrieveChallengeMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-288`);
@@ -4090,10 +4090,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveChallengeStreakMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveChallengeStreakMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveChallengeStreakMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveChallengeStreakMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-294`);
@@ -4134,10 +4134,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateCompleteChallengeStreakTaskRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to CreateCompleteChallengeStreakTaskRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-298`);
@@ -4250,10 +4250,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateIncompleteChallengeStreakTaskRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to CreateIncompleteChallengeStreakTaskRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-308`);
@@ -4481,10 +4481,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveNoteMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveNoteMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveNoteMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveNoteMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-338`);
@@ -4967,10 +4967,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to GetFollowersRetreiveUserMiddleware`, () => {
+    test(`creates correct error when type is set to GetFollowersRetrieveUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.GetFollowersRetreiveUserMiddleware);
+        const customError = new CustomError(ErrorType.GetFollowersRetrieveUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-382`);
@@ -5000,10 +5000,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveSelectedUserMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveSelectedUserMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveSelectedUserMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveSelectedUserMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-385`);
@@ -5022,10 +5022,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to RetreiveUserToFollowMiddleware`, () => {
+    test(`creates correct error when type is set to RetrieveUserToFollowMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.RetreiveUserToFollowMiddleware);
+        const customError = new CustomError(ErrorType.RetrieveUserToFollowMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-387`);
@@ -5176,10 +5176,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware`, () => {
+    test(`creates correct error when type is set to CreateCompleteChallengeStreakTaskRetrieveChallengeMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware);
+        const customError = new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetrieveChallengeMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-401`);
@@ -5187,10 +5187,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware`, () => {
+    test(`creates correct error when type is set to CreateIncompleteChallengeStreakTaskRetrieveChallengeMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware);
+        const customError = new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskRetrieveChallengeMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-402`);
@@ -5198,10 +5198,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to PatchChallengeStreakRetreiveChallengeMiddleware`, () => {
+    test(`creates correct error when type is set to PatchChallengeStreakRetrieveChallengeMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.PatchChallengeStreakRetreiveChallengeMiddleware);
+        const customError = new CustomError(ErrorType.PatchChallengeStreakRetrieveChallengeMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-403`);

@@ -2,7 +2,7 @@
 import { trackInactiveChallengeStreaks } from './trackInactiveChallengeStreaks';
 import streakoid from '../../streakoid';
 
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-models/lib';
 
 describe('trackInactiveChallengeStreaks', () => {
     afterEach(() => {

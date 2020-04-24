@@ -17,9 +17,9 @@ import {
 } from './registerUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
-describe(`userRegistrationValidationMiddlware`, () => {
+describe(`userRegistrationValidationMiddleware`, () => {
     const mockUsername = 'mockUsername';
     const mockEmail = 'mock@gmail.com';
 
@@ -348,7 +348,7 @@ describe('formatUserMiddleware', () => {
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
-            pushNotificationToken: 'pushNotifcationToken',
+            pushNotificationToken: 'pushNotificationToken',
             pushNotifications: [],
             stripe: {
                 customer: 'abc',
@@ -370,7 +370,6 @@ describe('formatUserMiddleware', () => {
                 'userType',
                 'followers',
                 'following',
-                'friends',
                 'timezone',
                 'createdAt',
                 'updatedAt',

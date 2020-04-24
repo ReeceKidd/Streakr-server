@@ -15,10 +15,10 @@ import {
     getPopulatePatchCurrentUserAchievementsMiddleware,
 } from './patchCurrentUserMiddlewares';
 
-import { User, StreakReminderTypes, AchievementTypes } from '@streakoid/streakoid-sdk/lib';
-import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
+import { User, StreakReminderTypes, AchievementTypes } from '@streakoid/streakoid-models/lib';
 import { populateCurrentUserAchievementsMiddleware } from './getCurrentUser';
-import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
+import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
     const values: {
@@ -302,11 +302,10 @@ describe('formatUserMiddleware', () => {
             userType: UserTypes.basic,
             followers: [],
             following: [],
-            friends: [],
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
-            pushNotificationToken: 'pushNotifcationToken',
+            pushNotificationToken: 'pushNotificationToken',
             pushNotifications: {
                 completeAllStreaksReminder: {
                     enabled: true,
@@ -348,7 +347,6 @@ describe('formatUserMiddleware', () => {
                 'userType',
                 'followers',
                 'following',
-                'friends',
                 'timezone',
                 'createdAt',
                 'updatedAt',

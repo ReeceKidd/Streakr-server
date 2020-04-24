@@ -10,8 +10,8 @@ import {
     singleImageUploadMiddleware,
     setUserProfilePicturesMiddleware,
     s3UploadOriginalImageMiddleware,
-    retreiveVersionedObjectMiddleware,
-    getRetreiveVersionedObjectMiddleware,
+    retrieveVersionedObjectMiddleware,
+    getRetrieveVersionedObjectMiddleware,
 } from './createProfilePictureMiddlewares';
 import { CustomError } from '../../../src/customError';
 import { ErrorType } from '../../../src/customError';
@@ -186,8 +186,8 @@ describe(`s3UploadOriginalImageMiddleware`, () => {
     });
 });
 
-describe(`retreiveVersionedObjectMiddleware`, () => {
-    test('retreives versions of objects and sets mostRecentImageVersionId', async () => {
+describe(`retrieveVersionedObjectMiddleware`, () => {
+    test('retrieves versions of objects and sets mostRecentImageVersionId', async () => {
         expect.assertions(4);
         const VersionId = 'v1';
         const Version = {
@@ -207,7 +207,7 @@ describe(`retreiveVersionedObjectMiddleware`, () => {
         };
         const next = jest.fn();
 
-        const middleware = getRetreiveVersionedObjectMiddleware(s3Client as any);
+        const middleware = getRetrieveVersionedObjectMiddleware(s3Client as any);
         await middleware(request, response, next);
 
         expect(listObjectVersions).toBeCalledWith({
@@ -341,7 +341,7 @@ describe('createProfilePictureMiddlewares', () => {
         expect(createProfilePictureMiddlewares[0]).toEqual(singleImageUploadMiddleware);
         expect(createProfilePictureMiddlewares[1]).toEqual(imageTypeValidationMiddleware);
         expect(createProfilePictureMiddlewares[2]).toEqual(s3UploadOriginalImageMiddleware);
-        expect(createProfilePictureMiddlewares[3]).toEqual(retreiveVersionedObjectMiddleware);
+        expect(createProfilePictureMiddlewares[3]).toEqual(retrieveVersionedObjectMiddleware);
         expect(createProfilePictureMiddlewares[4]).toEqual(defineProfilePictureUrlsMiddleware);
         expect(createProfilePictureMiddlewares[5]).toEqual(setUserProfilePicturesMiddleware);
         expect(createProfilePictureMiddlewares[6]).toEqual(sendProfilePicturesMiddleware);

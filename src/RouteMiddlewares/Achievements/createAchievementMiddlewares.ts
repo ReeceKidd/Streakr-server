@@ -4,7 +4,7 @@ import * as Joi from 'joi';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { AchievementTypes } from '@streakoid/streakoid-sdk/lib';
+import { AchievementTypes } from '@streakoid/streakoid-models/lib';
 import { achievementModel } from '../../../src/Models/Achievement';
 
 const createAchievementBodyValidationSchema = {

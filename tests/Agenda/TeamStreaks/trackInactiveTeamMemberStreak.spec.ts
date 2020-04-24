@@ -1,5 +1,5 @@
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
-import { londonTimezone, StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-models/lib';
+import { londonTimezone, StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
 import { trackInactiveTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/trackInactiveTeamMemberStreaks';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';

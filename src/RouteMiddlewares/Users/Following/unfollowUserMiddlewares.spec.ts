@@ -5,8 +5,8 @@ import {
     unfollowUserMiddleware,
     deleteSelectedUserFromUserToUnfollowFollowersMiddleware,
     sendUserUnfollowedResponseMiddleware,
-    retreiveSelectedUserMiddleware,
-    getRetreiveSelectedUserMiddleware,
+    retrieveSelectedUserMiddleware,
+    getRetrieveSelectedUserMiddleware,
     getUnfollowUserMiddleware,
     getDeleteSelectedUserFromUserToUnfollowFollowersMiddleware,
 } from './unfollowUserMiddlewares';
@@ -165,7 +165,7 @@ describe('unfollowUserMiddlewares', () => {
         });
     });
 
-    describe('retreiveSelectedUserMiddleware', () => {
+    describe('retrieveSelectedUserMiddleware', () => {
         test('sets response.locals.user and calls next()', async () => {
             expect.assertions(4);
             const lean = jest.fn(() => true);
@@ -175,7 +175,7 @@ describe('unfollowUserMiddlewares', () => {
             const request: any = { params: { userId } };
             const response: any = { locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveSelectedUserMiddleware(userModel as any);
+            const middleware = getRetrieveSelectedUserMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
@@ -194,24 +194,24 @@ describe('unfollowUserMiddlewares', () => {
             const request: any = { params: { userId } };
             const response: any = { locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveSelectedUserMiddleware(userModel as any);
+            const middleware = getRetrieveSelectedUserMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
             expect(next).toBeCalledWith(new CustomError(ErrorType.UnfollowUserNoSelectedUserFound));
         });
 
-        test('throws UnfollowUserRetreiveSelectedUserMiddleware error on middleware failure', async () => {
+        test('throws UnfollowUserRetrieveSelectedUserMiddleware error on middleware failure', async () => {
             expect.assertions(1);
             const request: any = {};
             const response: any = {};
             const next = jest.fn();
-            const middleware = getRetreiveSelectedUserMiddleware({} as any);
+            const middleware = getRetrieveSelectedUserMiddleware({} as any);
 
             await middleware(request, response, next);
 
             expect(next).toBeCalledWith(
-                new CustomError(ErrorType.UnfollowUserRetreiveSelectedUserMiddleware, expect.any(Error)),
+                new CustomError(ErrorType.UnfollowUserRetrieveSelectedUserMiddleware, expect.any(Error)),
             );
         });
     });
@@ -381,7 +381,7 @@ describe('unfollowUserMiddlewares', () => {
         expect(unfollowUserMiddlewares.length).toEqual(6);
 
         expect(unfollowUserMiddlewares[0]).toEqual(unfollowUserParamsValidationMiddleware);
-        expect(unfollowUserMiddlewares[1]).toEqual(retreiveSelectedUserMiddleware);
+        expect(unfollowUserMiddlewares[1]).toEqual(retrieveSelectedUserMiddleware);
         expect(unfollowUserMiddlewares[2]).toEqual(doesUserToUnfollowExistInSelectedUsersFollowingMiddleware);
         expect(unfollowUserMiddlewares[3]).toEqual(unfollowUserMiddleware);
         expect(unfollowUserMiddlewares[4]).toEqual(deleteSelectedUserFromUserToUnfollowFollowersMiddleware);

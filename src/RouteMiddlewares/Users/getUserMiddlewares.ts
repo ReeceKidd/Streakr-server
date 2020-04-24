@@ -6,10 +6,9 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User, PopulatedUser } from '@streakoid/streakoid-sdk/lib';
-import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
+import { User, PopulatedUser, BasicUser } from '@streakoid/streakoid-models/lib';
 import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
-import DatabaseAchievementType from '@streakoid/streakoid-sdk/lib/models/DatabaseAchievement';
+import { DatabaseAchievementType } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 
 const userParamsValidationSchema = {
     userId: Joi.string()
@@ -25,7 +24,7 @@ export const userParamsValidationMiddleware = (request: Request, response: Respo
     );
 };
 
-export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -40,11 +39,11 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.GetRetreiveUserMiddleware, err));
+        else next(new CustomError(ErrorType.GetRetrieveUserMiddleware, err));
     }
 };
 
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
+export const retrieveUserMiddleware = getRetrieveUserMiddleware(userModel);
 
 export const getPopulateUserFollowersMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
@@ -143,7 +142,6 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             updatedAt: user.updatedAt,
             profileImages: user.profileImages,
             pushNotificationToken: user.pushNotificationToken,
-            friends: user.friends,
             achievements,
             followers,
             following,
@@ -166,7 +164,7 @@ export const sendUserMiddleware = (request: Request, response: Response, next: N
 
 export const getUserMiddlewares = [
     userParamsValidationMiddleware,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     populateUserFollowersMiddleware,
     populateUserFollowingMiddleware,
     populateUserAchievementsMiddleware,

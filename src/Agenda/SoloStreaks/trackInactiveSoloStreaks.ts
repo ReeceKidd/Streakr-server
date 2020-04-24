@@ -1,5 +1,10 @@
 import streakoid from '../../streakoid';
-import { SoloStreak, StreakTrackingEvent, StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import {
+    SoloStreak,
+    StreakTrackingEvent,
+    StreakTrackingEventTypes,
+    StreakTypes,
+} from '@streakoid/streakoid-models/lib';
 
 export const trackInactiveSoloStreaks = async (inactiveSoloStreaks: SoloStreak[]): Promise<StreakTrackingEvent[]> => {
     return Promise.all(

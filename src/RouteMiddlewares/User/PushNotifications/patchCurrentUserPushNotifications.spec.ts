@@ -8,13 +8,13 @@ import {
     getPatchCurrentUserPushNotificationsMiddleware,
     patchCurrentUserPushNotificationsMiddleware,
 } from './patchCurrentUserPushNotifications';
-import { UserPushNotifications, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
+import { UserPushNotifications, StreakReminderTypes } from '@streakoid/streakoid-models/lib';
 import {
     CustomSoloStreakReminder,
     CustomChallengeStreakReminder,
     CustomTeamStreakReminder,
     CustomStreakReminder,
-} from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
+} from '@streakoid/streakoid-models/lib/models/StreakReminders';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
     const customSoloStreakReminder: CustomSoloStreakReminder = {

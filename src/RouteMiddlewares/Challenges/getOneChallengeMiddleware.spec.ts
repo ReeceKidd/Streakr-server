@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     challengeParamsValidationMiddleware,
-    getRetreiveChallengeMiddleware,
+    getRetrieveChallengeMiddleware,
     sendChallengeMiddleware,
     getOneChallengeMiddlewares,
-    retreiveChallengeMiddleware,
-    getRetreiveChallengeMemberInformationMiddleware,
-    retreiveChallengeMemberInformationMiddleware,
+    retrieveChallengeMiddleware,
+    getRetrieveChallengeMemberInformationMiddleware,
+    retrieveChallengeMemberInformationMiddleware,
 } from '../Challenges/getOneChallengeMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
@@ -95,7 +95,7 @@ describe(`challengeParamsValidationMiddleware`, () => {
     });
 });
 
-describe('retreiveChallengeMiddleware', () => {
+describe('retrieveChallengeMiddleware', () => {
     test('sets response.locals.challenge', async () => {
         expect.assertions(3);
         const lean = jest.fn().mockResolvedValue(true);
@@ -107,7 +107,7 @@ describe('retreiveChallengeMiddleware', () => {
         const request: any = { params: { challengeId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMiddleware(challengeModel as any);
+        const middleware = getRetrieveChallengeMiddleware(challengeModel as any);
 
         await middleware(request, response, next);
 
@@ -127,24 +127,24 @@ describe('retreiveChallengeMiddleware', () => {
         const request: any = { params: { challengeId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMiddleware(challengeModel as any);
+        const middleware = getRetrieveChallengeMiddleware(challengeModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.NoChallengeFound, expect.any(Error)));
     });
 
-    test('calls next with GetRetreiveChallengeMiddleware error on middleware failure', async () => {
+    test('calls next with GetRetrieveChallengeMiddleware error on middleware failure', async () => {
         expect.assertions(1);
 
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMiddleware({} as any);
+        const middleware = getRetrieveChallengeMiddleware({} as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.GetRetreiveChallengeMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.GetRetrieveChallengeMiddleware, expect.any(Error)));
     });
 });
 
@@ -164,7 +164,7 @@ describe('getChallengeMemberInformationMiddleware', () => {
         const request: any = {};
         const response: any = { locals: { challenge } };
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMemberInformationMiddleware(userModel as any);
+        const middleware = getRetrieveChallengeMemberInformationMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
@@ -173,17 +173,17 @@ describe('getChallengeMemberInformationMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('calls next with GetRetreiveChallengeMiddleware error on middleware failure', async () => {
+    test('calls next with GetRetrieveChallengeMiddleware error on middleware failure', async () => {
         expect.assertions(1);
 
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMiddleware({} as any);
+        const middleware = getRetrieveChallengeMiddleware({} as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.GetRetreiveChallengeMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.GetRetrieveChallengeMiddleware, expect.any(Error)));
     });
 });
 
@@ -204,7 +204,7 @@ describe('sendChallengeMiddleware', () => {
         expect(send).toBeCalledWith(challenge);
     });
 
-    test('calls next with SendRetreiveChallengeResponseMiddleware error on middleware failure', async () => {
+    test('calls next with SendRetrieveChallengeResponseMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const error = 'error';
@@ -225,8 +225,8 @@ describe('getOneChallengeMiddlewares', () => {
 
         expect(getOneChallengeMiddlewares.length).toEqual(4);
         expect(getOneChallengeMiddlewares[0]).toEqual(challengeParamsValidationMiddleware);
-        expect(getOneChallengeMiddlewares[1]).toEqual(retreiveChallengeMiddleware);
-        expect(getOneChallengeMiddlewares[2]).toEqual(retreiveChallengeMemberInformationMiddleware);
+        expect(getOneChallengeMiddlewares[1]).toEqual(retrieveChallengeMiddleware);
+        expect(getOneChallengeMiddlewares[2]).toEqual(retrieveChallengeMemberInformationMiddleware);
         expect(getOneChallengeMiddlewares[3]).toEqual(sendChallengeMiddleware);
     });
 });

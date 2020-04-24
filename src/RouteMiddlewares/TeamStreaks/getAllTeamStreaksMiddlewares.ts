@@ -7,11 +7,9 @@ import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { userModel, UserModel } from '../../Models/User';
-import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
 import { TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
-import { TeamStreak, PopulatedTeamMember } from '@streakoid/streakoid-sdk/lib';
+import { TeamStreak, PopulatedTeamMember, StreakStatus } from '@streakoid/streakoid-models/lib';
 import { teamMemberStreakModel } from '../../Models/TeamMemberStreak';
-import { GetAllTeamStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamStreaks';
 
 const getTeamStreaksQueryValidationSchema = {
     creatorId: Joi.string(),
@@ -20,7 +18,7 @@ const getTeamStreaksQueryValidationSchema = {
     status: Joi.string().valid(Object.keys(StreakStatus)),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
-    sortField: Joi.string().valid(Object.keys(GetAllTeamStreaksSortFields)),
+    sortField: Joi.string(),
 };
 
 export const getTeamStreaksQueryValidationMiddleware = (
@@ -87,7 +85,7 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
 
 export const findTeamStreaksMiddleware = getFindTeamStreaksMiddleware(teamStreakModel);
 
-export const getRetreiveTeamStreaksMembersInformationMiddleware = (
+export const getRetrieveTeamStreaksMembersInformationMiddleware = (
     userModel: mongoose.Model<UserModel>,
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -128,11 +126,11 @@ export const getRetreiveTeamStreaksMembersInformationMiddleware = (
         response.locals.teamStreaks = teamStreaksWithPopulatedData;
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.RetreiveTeamStreaksMembersInformation, err));
+        next(new CustomError(ErrorType.RetrieveTeamStreaksMembersInformation, err));
     }
 };
 
-export const retreiveTeamStreaksMembersInformationMiddleware = getRetreiveTeamStreaksMembersInformationMiddleware(
+export const retrieveTeamStreaksMembersInformationMiddleware = getRetrieveTeamStreaksMembersInformationMiddleware(
     userModel,
     teamMemberStreakModel,
 );
@@ -149,6 +147,6 @@ export const sendTeamStreaksMiddleware = (request: Request, response: Response, 
 export const getAllTeamStreaksMiddlewares = [
     getTeamStreaksQueryValidationMiddleware,
     findTeamStreaksMiddleware,
-    retreiveTeamStreaksMembersInformationMiddleware,
+    retrieveTeamStreaksMembersInformationMiddleware,
     sendTeamStreaksMiddleware,
 ];

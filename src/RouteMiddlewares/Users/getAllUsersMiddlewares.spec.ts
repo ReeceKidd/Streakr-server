@@ -13,7 +13,7 @@ import {
 } from './getAllUsersMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
 describe(`getUsersValidationMiddleware`, () => {
     const limit = 10;
@@ -348,7 +348,7 @@ describe('findUsersMiddleware', () => {
 });
 
 describe('formatUsersMiddleware', () => {
-    test('formates each user in response.locals.users', () => {
+    test('formats each user in response.locals.users', () => {
         expect.assertions(3);
         const request: any = {};
         const user = {
@@ -363,7 +363,6 @@ describe('formatUsersMiddleware', () => {
             updatedAt: 'Jan 1st',
             timezone: 'Europe/London',
             userType: UserTypes.basic,
-            friends: [],
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
@@ -389,7 +388,6 @@ describe('formatUsersMiddleware', () => {
                 'isPayingMember',
                 'userType',
                 'timezone',
-                'friends',
                 'createdAt',
                 'updatedAt',
                 'profileImages',

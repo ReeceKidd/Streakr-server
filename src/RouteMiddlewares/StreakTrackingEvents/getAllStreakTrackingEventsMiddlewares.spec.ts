@@ -3,12 +3,12 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import {
     streakTrackingEventQueryValidationMiddleware,
-    getRetreiveStreakTrackingEventsMiddleware,
+    getRetrieveStreakTrackingEventsMiddleware,
     sendStreakTrackingEventsResponseMiddleware,
     getAllStreakTrackingEventsMiddlewares,
-    retreiveStreakTrackingEventsMiddleware,
+    retrieveStreakTrackingEventsMiddleware,
 } from './getAllStreakTrackingEventsMiddlewares';
-import { StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes } from '@streakoid/streakoid-models/lib';
 
 describe('streakTrackingEventQueryValidationMiddleware', () => {
     test('allows type as a query paramater', () => {
@@ -92,7 +92,7 @@ describe('streakTrackingEventQueryValidationMiddleware', () => {
     });
 });
 
-describe('getRetreiveStreakTrackingEventsMiddleware', () => {
+describe('getRetrieveStreakTrackingEventsMiddleware', () => {
     test('queries streakTrackingEvent model and sets response.locals.streakTrackingEvents with just userId', async () => {
         expect.assertions(3);
 
@@ -104,7 +104,7 @@ describe('getRetreiveStreakTrackingEventsMiddleware', () => {
         const request: any = { query: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveStreakTrackingEventsMiddleware(streakTrackingEventModel as any);
+        const middleware = getRetrieveStreakTrackingEventsMiddleware(streakTrackingEventModel as any);
 
         await middleware(request, response, next);
 
@@ -124,7 +124,7 @@ describe('getRetreiveStreakTrackingEventsMiddleware', () => {
         const request: any = { query: { streakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveStreakTrackingEventsMiddleware(streakTrackingEventModel as any);
+        const middleware = getRetrieveStreakTrackingEventsMiddleware(streakTrackingEventModel as any);
 
         await middleware(request, response, next);
 
@@ -145,7 +145,7 @@ describe('getRetreiveStreakTrackingEventsMiddleware', () => {
         const request: any = { query: { userId, streakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveStreakTrackingEventsMiddleware(streakTrackingEventModel as any);
+        const middleware = getRetrieveStreakTrackingEventsMiddleware(streakTrackingEventModel as any);
 
         await middleware(request, response, next);
 
@@ -164,7 +164,7 @@ describe('getRetreiveStreakTrackingEventsMiddleware', () => {
         const request: any = { query: {} };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveStreakTrackingEventsMiddleware(streakTrackingEventModel as any);
+        const middleware = getRetrieveStreakTrackingEventsMiddleware(streakTrackingEventModel as any);
 
         await middleware(request, response, next);
 
@@ -180,7 +180,7 @@ describe('getRetreiveStreakTrackingEventsMiddleware', () => {
         const response: any = {};
         const next = jest.fn();
 
-        const middleware = getRetreiveStreakTrackingEventsMiddleware({} as any);
+        const middleware = getRetrieveStreakTrackingEventsMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -225,7 +225,7 @@ describe('getAllStreakTrackingEventMiddlewares', () => {
 
         expect(getAllStreakTrackingEventsMiddlewares.length).toEqual(3);
         expect(getAllStreakTrackingEventsMiddlewares[0]).toEqual(streakTrackingEventQueryValidationMiddleware);
-        expect(getAllStreakTrackingEventsMiddlewares[1]).toEqual(retreiveStreakTrackingEventsMiddleware);
+        expect(getAllStreakTrackingEventsMiddlewares[1]).toEqual(retrieveStreakTrackingEventsMiddleware);
         expect(getAllStreakTrackingEventsMiddlewares[2]).toEqual(sendStreakTrackingEventsResponseMiddleware);
     });
 });

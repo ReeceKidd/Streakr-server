@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createTeamStreakDailyTrackerJob } from '../../../src/scripts/initaliseTeamStreakTimezoneCheckers';
-import { StreakTypes, StreakStatus, StreakTrackingEventTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
-import { londonTimezone, StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { StreakTypes, StreakStatus, StreakTrackingEventTypes, AgendaJobNames } from '@streakoid/streakoid-models/lib';
+import { londonTimezone, StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
 
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEvent';

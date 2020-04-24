@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { Email } from '@streakoid/streakoid-sdk/lib';
+import { Email } from '@streakoid/streakoid-models/lib';
 
 export type EmailModel = Email & mongoose.Document;
 

@@ -7,7 +7,7 @@ import {
     StreakTypes,
     ActivityFeedItemTypes,
     ActivityFeedItemType,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 import streakoid from '../../streakoid';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';

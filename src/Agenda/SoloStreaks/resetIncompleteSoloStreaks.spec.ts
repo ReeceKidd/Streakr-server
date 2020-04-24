@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import streakoid from '../../streakoid';
-import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-models/lib';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
 describe('resetIncompleteSoloStreaks', () => {

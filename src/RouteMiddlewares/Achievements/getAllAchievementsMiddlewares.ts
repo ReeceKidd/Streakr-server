@@ -5,7 +5,7 @@ import * as mongoose from 'mongoose';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { SupportedResponseHeaders, AchievementTypes } from '@streakoid/streakoid-sdk/lib';
+import { SupportedResponseHeaders, AchievementTypes } from '@streakoid/streakoid-models/lib';
 import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
 
 const getAchievementsQueryValidationSchema = {

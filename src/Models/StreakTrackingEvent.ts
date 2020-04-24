@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { StreakTrackingEvent, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEvent, StreakTypes } from '@streakoid/streakoid-models/lib';
 
 export type StreakTrackingEventModel = StreakTrackingEvent & mongoose.Document;
 

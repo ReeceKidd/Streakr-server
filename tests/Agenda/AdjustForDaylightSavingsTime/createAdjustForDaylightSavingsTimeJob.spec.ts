@@ -2,7 +2,7 @@ import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import { setupDatabase } from '../../../tests/setup/setupDatabase';
 import { createAdjustForDaylightSavingsTimeJob } from '../../../src/scripts/initialiseAdjustForDaylightSavingsTimeJobs';
-import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
+import { AgendaJobNames } from '@streakoid/streakoid-models/lib';
 import moment = require('moment');
 
 jest.setTimeout(120000);

@@ -4,7 +4,7 @@ import {
     StreakTrackingEventTypes,
     StreakTypes,
     TeamMemberStreak,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 
 export const trackInactiveTeamMemberStreaks = async (
     inactiveTeamMemberStreaks: TeamMemberStreak[],

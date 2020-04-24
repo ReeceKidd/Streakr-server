@@ -18,7 +18,7 @@ export const getNoteParamsValidationMiddleware = (request: Request, response: Re
     );
 };
 
-export const getRetreiveNoteMiddleware = (noteModel: mongoose.Model<NoteModel>) => async (
+export const getRetrieveNoteMiddleware = (noteModel: mongoose.Model<NoteModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -33,11 +33,11 @@ export const getRetreiveNoteMiddleware = (noteModel: mongoose.Model<NoteModel>) 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveNoteMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveNoteMiddleware, err));
     }
 };
 
-export const retreiveNoteMiddleware = getRetreiveNoteMiddleware(noteModel);
+export const retrieveNoteMiddleware = getRetrieveNoteMiddleware(noteModel);
 
 export const sendNoteMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -48,4 +48,4 @@ export const sendNoteMiddleware = (request: Request, response: Response, next: N
     }
 };
 
-export const getOneNoteMiddlewares = [getNoteParamsValidationMiddleware, retreiveNoteMiddleware, sendNoteMiddleware];
+export const getOneNoteMiddlewares = [getNoteParamsValidationMiddleware, retrieveNoteMiddleware, sendNoteMiddleware];

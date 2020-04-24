@@ -22,7 +22,7 @@ export const getSoloStreakParamsValidationMiddleware = (
     );
 };
 
-export const getRetreiveSoloStreakMiddleware = (soloStreakModel: mongoose.Model<SoloStreakModel>) => async (
+export const getRetrieveSoloStreakMiddleware = (soloStreakModel: mongoose.Model<SoloStreakModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -37,11 +37,11 @@ export const getRetreiveSoloStreakMiddleware = (soloStreakModel: mongoose.Model<
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveSoloStreakMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveSoloStreakMiddleware, err));
     }
 };
 
-export const retreiveSoloStreakMiddleware = getRetreiveSoloStreakMiddleware(soloStreakModel);
+export const retrieveSoloStreakMiddleware = getRetrieveSoloStreakMiddleware(soloStreakModel);
 
 export const sendSoloStreakMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -54,6 +54,6 @@ export const sendSoloStreakMiddleware = (request: Request, response: Response, n
 
 export const getOneSoloStreakMiddlewares = [
     getSoloStreakParamsValidationMiddleware,
-    retreiveSoloStreakMiddleware,
+    retrieveSoloStreakMiddleware,
     sendSoloStreakMiddleware,
 ];

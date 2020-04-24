@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     createCompleteSoloStreakTaskMiddlewares,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     setTaskCompleteTimeMiddleware,
     setDayTaskWasCompletedMiddleware,
     sendTaskCompleteResponseMiddleware,
@@ -11,7 +11,7 @@ import {
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
     getSoloStreakExistsMiddleware,
-    getRetreiveUserMiddleware,
+    getRetrieveUserMiddleware,
     getSetDayTaskWasCompletedMiddleware,
     getSetTaskCompleteTimeMiddleware,
     getSaveTaskCompleteMiddleware,
@@ -30,13 +30,12 @@ import {
 } from './createCompleteSoloStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { AchievementTypes } from '@streakoid/streakoid-sdk/lib';
-import AcheivmentTypes from '@streakoid/streakoid-sdk/lib/AchievementTypes';
-import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
-import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-sdk/lib/models/DatabaseAchievement';
+import { AchievementTypes } from '@streakoid/streakoid-models/lib';
+import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/models/DatabaseAchievement';
+import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 
 describe(`completeSoloStreakTaskBodyValidationMiddleware`, () => {
-    const userId = 'abcdefgh';
+    const userId = 'userId';
     const soloStreakId = '123456';
 
     test('calls next() when correct body is supplied', () => {
@@ -204,7 +203,7 @@ describe('ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware', () => {
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware({} as any);
+        const middleware = getRetrieveUserMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -214,17 +213,17 @@ describe('ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware', () => {
     });
 });
 
-describe('retreiveUserMiddleware', () => {
+describe('retrieveUserMiddleware', () => {
     test('sets response.locals.user and calls next()', async () => {
         expect.assertions(4);
         const lean = jest.fn(() => true);
         const findOne = jest.fn(() => ({ lean }));
         const userModel = { findOne };
-        const userId = 'abcdefg';
+        const userId = 'userId';
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
@@ -243,14 +242,14 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.UserDoesNotExist));
     });
 
-    test('throws RetreiveUserMiddleware error on middleware failure', async () => {
+    test('throws RetrieveUserMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -260,11 +259,11 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { status, locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveUserMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveUserMiddleware, expect.any(Error)));
     });
 });
 
@@ -287,7 +286,7 @@ describe('setTaskCompleteTimeMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws SetTaskCompleteTimeMiddlewre error on middleware failure', () => {
+    test('throws SetTaskCompleteTimeMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const tz = jest.fn(() => true);
         const moment = jest.fn(() => ({ tz }));
@@ -437,7 +436,7 @@ describe('createCompleteSoloStreakTaskDefinitionMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws CreateCompleteSoloStreakTaskDefinitionMiddlware error on middleware failure', () => {
+    test('throws CreateCompleteSoloStreakTaskDefinitionMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = {};
@@ -590,7 +589,7 @@ describe(`unlockOneHundredDaySoloStreakAchievementForUserMiddleware`, () => {
 
         await middleware(request, response, next);
 
-        expect(achievement.findOne).toBeCalledWith({ achievementType: AcheivmentTypes.oneHundredDaySoloStreak });
+        expect(achievement.findOne).toBeCalledWith({ achievementType: AchievementTypes.oneHundredDaySoloStreak });
         expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
             $addToSet: { achievements: oneHundredSaySoloStreakAchievement },
         });
@@ -636,7 +635,7 @@ describe(`unlockOneHundredDaySoloStreakAchievementForUserMiddleware`, () => {
 
     test('if solo streak current number of days equals 100 but user already has achievement middleware ends', async () => {
         expect.assertions(4);
-        const user = { _id: '_id', achievements: [{ achievementType: AcheivmentTypes.oneHundredDaySoloStreak }] };
+        const user = { _id: '_id', achievements: [{ achievementType: AchievementTypes.oneHundredDaySoloStreak }] };
         const soloStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 100 } };
 
         const response: any = { locals: { user, soloStreak } };
@@ -850,7 +849,7 @@ describe(`createCompleteSoloStreakTaskMiddlewares`, () => {
         expect(createCompleteSoloStreakTaskMiddlewares[0]).toBe(completeSoloStreakTaskBodyValidationMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[2]).toBe(ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[3]).toBe(retreiveUserMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[3]).toBe(retrieveUserMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[4]).toBe(setTaskCompleteTimeMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[5]).toBe(setStreakStartDateMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[6]).toBe(setDayTaskWasCompletedMiddleware);

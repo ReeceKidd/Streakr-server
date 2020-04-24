@@ -9,7 +9,7 @@ import {
     ActivityFeedItemType,
     AchievementTypes,
     PushNotificationTypes,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -21,9 +21,9 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { CustomError, ErrorType } from '../../customError';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
-import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
-import { UnlockedAchievementPushNotification } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
-import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-sdk/lib/models/DatabaseAchievement';
+import { UnlockedAchievementPushNotification } from '@streakoid/streakoid-models/lib/models/PushNotifications';
+import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/models/DatabaseAchievement';
+import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -80,7 +80,7 @@ export const ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware = (
     }
 };
 
-export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -95,11 +95,11 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveUserMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveUserMiddleware, err));
     }
 };
 
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
+export const retrieveUserMiddleware = getRetrieveUserMiddleware(userModel);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getSetTaskCompleteTimeMiddleware = (moment: any) => (
@@ -232,7 +232,7 @@ export const getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware = (
         const soloStreak: SoloStreak = response.locals.soloStreak;
         const currentUser: User = response.locals.user;
         const currentUserHas100DaySoloStreakAchievement = currentUser.achievements.find(
-            acheivementObject => acheivementObject.achievementType === AchievementTypes.oneHundredDaySoloStreak,
+            achievementObject => achievementObject.achievementType === AchievementTypes.oneHundredDaySoloStreak,
         );
         const oneHundredDays = 100;
         if (
@@ -355,7 +355,7 @@ export const createCompleteSoloStreakTaskMiddlewares = [
     completeSoloStreakTaskBodyValidationMiddleware,
     soloStreakExistsMiddleware,
     ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     setTaskCompleteTimeMiddleware,
     setStreakStartDateMiddleware,
     setDayTaskWasCompletedMiddleware,

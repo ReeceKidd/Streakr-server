@@ -32,7 +32,7 @@ mongoose.set('useCreateIndex', true);
 mongoose.connect(DATABASE_URI).catch(async err => {
     try {
         const message = `
-        Envirionment: ${NODE_ENV}
+        Environment: ${NODE_ENV}
         ${err.message}`;
         await sendEmail({ subject: 'Database Failure', text: message, emailFrom: 'notify@streakoid.com' });
     } catch (err) {
@@ -49,11 +49,11 @@ agenda
         console.log(err);
     });
 
-// Scripts used to initialise the daily streak complete checks.
+// Scripts used to initialize the daily streak complete checks.
 //initialiseTeamStreakTimezoneCheckerJobs();
 //initialiseSoloStreakTimezoneCheckerJobs();
 //initialiseAdjustForDaylightSavingsJobs();
-//initialiseCompleteStreakReminderJobs();
+//initializeCompleteStreakReminderJobs();
 //initialiseChallengeStreakTimezoneCheckerJobs();
 
 app.use(`/${ApiVersions.v1}`, v1Router);

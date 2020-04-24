@@ -8,7 +8,7 @@ import {
 } from './getAllDailyJobsMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
+import { AgendaJobNames } from '@streakoid/streakoid-models/lib';
 
 const agendaJobId = 'agendaJobId';
 const jobName = AgendaJobNames.soloStreakDailyTracker;

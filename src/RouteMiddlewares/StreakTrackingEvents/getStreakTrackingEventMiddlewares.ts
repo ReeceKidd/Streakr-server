@@ -23,7 +23,7 @@ export const getStreakTrackingEventParamsValidationMiddleware = (
     );
 };
 
-export const getRetreiveStreakTrackingEventMiddleware = (
+export const getRetrieveStreakTrackingEventMiddleware = (
     streakTrackingEventModel: mongoose.Model<StreakTrackingEventModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -36,11 +36,11 @@ export const getRetreiveStreakTrackingEventMiddleware = (
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveStreakTrackingEventMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveStreakTrackingEventMiddleware, err));
     }
 };
 
-export const retreiveStreakTrackingEventMiddleware = getRetreiveStreakTrackingEventMiddleware(streakTrackingEventModel);
+export const retrieveStreakTrackingEventMiddleware = getRetrieveStreakTrackingEventMiddleware(streakTrackingEventModel);
 
 export const getSendStreakTrackingEventMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
@@ -59,6 +59,6 @@ export const sendStreakTrackingEventMiddleware = getSendStreakTrackingEventMiddl
 
 export const getStreakTrackingEventMiddlewares = [
     getStreakTrackingEventParamsValidationMiddleware,
-    retreiveStreakTrackingEventMiddleware,
+    retrieveStreakTrackingEventMiddleware,
     sendStreakTrackingEventMiddleware,
 ];

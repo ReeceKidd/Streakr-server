@@ -1,6 +1,6 @@
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-models/lib';
 import { trackMaintainedTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/trackMaintainedTeamMemberStreaks';
-import { londonTimezone, StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { londonTimezone, StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { getPayingUser } from '../../setup/getPayingUser';

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { RouterCategories } from '@streakoid/streakoid-sdk/lib';
+import { RouterCategories } from '@streakoid/streakoid-models/lib';
 
 import { soloStreaksRouter } from './soloStreaksRouter';
 import { usersRouter } from './usersRouter';

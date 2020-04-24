@@ -6,7 +6,6 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { challengeStreakModel, ChallengeStreakModel } from '../../Models/ChallengeStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreak';
 
 const getChallengeStreaksQueryValidationSchema = {
     userId: Joi.string(),
@@ -15,7 +14,7 @@ const getChallengeStreaksQueryValidationSchema = {
     status: Joi.string(),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
-    sortField: Joi.string().valid(Object.keys(GetAllChallengeStreaksSortFields)),
+    sortField: Joi.string(),
 };
 
 export const getChallengeStreaksQueryValidationMiddleware = (

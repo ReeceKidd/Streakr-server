@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resetIncompleteTeamStreaks } from './resetIncompleteTeamStreaks';
 import streakoid from '../../streakoid';
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-models/lib';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 

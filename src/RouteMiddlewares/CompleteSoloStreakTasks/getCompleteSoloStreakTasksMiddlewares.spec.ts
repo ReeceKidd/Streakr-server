@@ -3,10 +3,10 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import {
     completeSoloStreakTaskQueryValidationMiddleware,
-    getRetreiveCompleteSoloStreakTasksMiddleware,
+    getRetrieveCompleteSoloStreakTasksMiddleware,
     sendCompleteSoloStreakTasksResponseMiddleware,
     getCompleteSoloStreakTasksMiddlewares,
-    retreiveCompleteSoloStreakTasksMiddleware,
+    retrieveCompleteSoloStreakTasksMiddleware,
 } from './getCompleteSoloStreakTasksMiddlewares';
 
 describe('completeSoloStreakTaskQueryValidationMiddleware', () => {
@@ -72,7 +72,7 @@ describe('completeSoloStreakTaskQueryValidationMiddleware', () => {
     });
 });
 
-describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
+describe('getRetrieveCompleteSoloStreakTasksMiddleware', () => {
     test('queries with just userId', async () => {
         expect.assertions(3);
 
@@ -84,7 +84,7 @@ describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
         const request: any = { query: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
+        const middleware = getRetrieveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -104,7 +104,7 @@ describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
         const request: any = { query: { streakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
+        const middleware = getRetrieveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -125,7 +125,7 @@ describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
         const request: any = { query: { userId, streakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
+        const middleware = getRetrieveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -144,7 +144,7 @@ describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
         const request: any = { query: {} };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
+        const middleware = getRetrieveCompleteSoloStreakTasksMiddleware(completeSoloStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -160,7 +160,7 @@ describe('getRetreiveCompleteSoloStreakTasksMiddleware', () => {
         const response: any = {};
         const next = jest.fn();
 
-        const middleware = getRetreiveCompleteSoloStreakTasksMiddleware({} as any);
+        const middleware = getRetrieveCompleteSoloStreakTasksMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -205,7 +205,7 @@ describe('getCompleteSoloStreakTaskMiddlewares', () => {
 
         expect(getCompleteSoloStreakTasksMiddlewares.length).toEqual(3);
         expect(getCompleteSoloStreakTasksMiddlewares[0]).toEqual(completeSoloStreakTaskQueryValidationMiddleware);
-        expect(getCompleteSoloStreakTasksMiddlewares[1]).toEqual(retreiveCompleteSoloStreakTasksMiddleware);
+        expect(getCompleteSoloStreakTasksMiddlewares[1]).toEqual(retrieveCompleteSoloStreakTasksMiddleware);
         expect(getCompleteSoloStreakTasksMiddlewares[2]).toEqual(sendCompleteSoloStreakTasksResponseMiddleware);
     });
 });

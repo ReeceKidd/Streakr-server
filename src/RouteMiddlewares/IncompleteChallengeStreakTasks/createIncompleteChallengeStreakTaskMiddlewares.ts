@@ -19,7 +19,7 @@ import {
     ActivityFeedItemTypes,
     Challenge,
     ActivityFeedItemType,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 import { ChallengeModel, challengeModel } from '../../../src/Models/Challenge';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
@@ -105,7 +105,7 @@ export const getResetStreakStartDateMiddleware = (challengeStreakModel: mongoose
 
 export const resetStreakStartDateMiddleware = getResetStreakStartDateMiddleware(challengeStreakModel);
 
-export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -120,11 +120,11 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskRetreiveUserMiddleware, err));
+        else next(new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskRetrieveUserMiddleware, err));
     }
 };
 
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
+export const retrieveUserMiddleware = getRetrieveUserMiddleware(userModel);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getSetTaskIncompleteTimeMiddleware = (moment: any) => (
@@ -232,7 +232,7 @@ export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseC
 
 export const sendTaskIncompleteResponseMiddleware = getSendTaskIncompleteResponseMiddleware(ResponseCodes.created);
 
-export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
+export const getRetrieveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -247,11 +247,11 @@ export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<Ch
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware, err));
+        else next(new CustomError(ErrorType.CreateIncompleteChallengeStreakTaskRetrieveChallengeMiddleware, err));
     }
 };
 
-export const retreiveChallengeMiddleware = getRetreiveChallengeMiddleware(challengeModel);
+export const retrieveChallengeMiddleware = getRetrieveChallengeMiddleware(challengeModel);
 
 export const getCreateIncompleteChallengeStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
@@ -284,12 +284,12 @@ export const createIncompleteChallengeStreakTaskMiddlewares = [
     challengeStreakExistsMiddleware,
     ensureChallengeStreakTaskHasBeenCompletedTodayMiddleware,
     resetStreakStartDateMiddleware,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     setTaskIncompleteTimeMiddleware,
     setDayTaskWasIncompletedMiddleware,
     saveTaskIncompleteMiddleware,
     incompleteChallengeStreakMiddleware,
     sendTaskIncompleteResponseMiddleware,
-    retreiveChallengeMiddleware,
+    retrieveChallengeMiddleware,
     createIncompleteChallengeStreakActivityFeedItemMiddleware,
 ];

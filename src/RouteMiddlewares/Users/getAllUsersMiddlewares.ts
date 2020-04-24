@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { UserModel, userModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User, FormattedUser } from '@streakoid/streakoid-sdk/lib';
+import { User, FormattedUser } from '@streakoid/streakoid-models/lib';
 
 export const minimumSeachQueryLength = 1;
 export const maximumSearchQueryLength = 64;
@@ -106,7 +106,6 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
                 isPayingMember: user.membershipInformation.isPayingMember,
                 userType: user.userType,
                 timezone: user.timezone,
-                friends: user.friends,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,
                 profileImages: user.profileImages,

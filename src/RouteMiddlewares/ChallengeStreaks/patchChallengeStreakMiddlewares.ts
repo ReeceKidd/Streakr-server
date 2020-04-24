@@ -9,7 +9,7 @@ import {
     Challenge,
     ActivityFeedItemType,
     StreakReminderTypes,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { challengeStreakModel, ChallengeStreakModel } from '../../Models/ChallengeStreak';
@@ -20,7 +20,7 @@ import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedI
 import {
     CustomChallengeStreakReminder,
     CustomStreakReminder,
-} from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
+} from '@streakoid/streakoid-models/lib/models/StreakReminders';
 import { userModel, UserModel } from '../../../src/Models/User';
 
 const challengeStreakParamsValidationSchema = {
@@ -89,7 +89,7 @@ export const getPatchChallengeStreakMiddleware = (challengeStreakModel: mongoose
 
 export const patchChallengeStreakMiddleware = getPatchChallengeStreakMiddleware(challengeStreakModel);
 
-export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
+export const getRetrieveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -104,11 +104,11 @@ export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<Ch
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.PatchChallengeStreakRetreiveChallengeMiddleware, err));
+        else next(new CustomError(ErrorType.PatchChallengeStreakRetrieveChallengeMiddleware, err));
     }
 };
 
-export const retreiveChallengeMiddleware = getRetreiveChallengeMiddleware(challengeModel);
+export const retrieveChallengeMiddleware = getRetrieveChallengeMiddleware(challengeModel);
 
 export const getRemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware = (
     challengeModel: mongoose.Model<ChallengeModel>,
@@ -319,7 +319,7 @@ export const patchChallengeStreakMiddlewares = [
     challengeStreakParamsValidationMiddleware,
     challengeStreakRequestBodyValidationMiddleware,
     patchChallengeStreakMiddleware,
-    retreiveChallengeMiddleware,
+    retrieveChallengeMiddleware,
     removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
     decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
     sendUpdatedChallengeStreakMiddleware,

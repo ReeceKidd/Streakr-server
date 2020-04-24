@@ -6,7 +6,7 @@ import {
     StreakTrackingEventTypes,
     StreakTypes,
     PopulatedTeamStreak,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 
 export const resetIncompleteTeamStreaks = async (

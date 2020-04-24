@@ -5,10 +5,15 @@ import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddle
 import { userModel, UserModel } from '../../../Models/User';
 import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
-import { User, ActivityFeedItemTypes, ActivityFeedItemType, PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
+import {
+    User,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
+    PushNotificationTypes,
+} from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../../src/helpers/createActivityFeedItem';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
-import { NewFollowerPushNotification } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
+import { NewFollowerPushNotification } from '@streakoid/streakoid-models/lib/models/PushNotifications';
 
 const followUserParamsValidationSchema = {
     userId: Joi.string()
@@ -42,7 +47,7 @@ export const followUserBodyValidationMiddleware = (request: Request, response: R
     );
 };
 
-export const getRetreiveSelectedUserMiddleware = (userModel: Model<UserModel>) => async (
+export const getRetrieveSelectedUserMiddleware = (userModel: Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -57,11 +62,11 @@ export const getRetreiveSelectedUserMiddleware = (userModel: Model<UserModel>) =
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveSelectedUserMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveSelectedUserMiddleware, err));
     }
 };
 
-export const retreiveSelectedUserMiddleware = getRetreiveSelectedUserMiddleware(userModel);
+export const retrieveSelectedUserMiddleware = getRetrieveSelectedUserMiddleware(userModel);
 
 export const isSelectedUserAlreadyFollowingUserMiddleware = (
     request: Request,
@@ -83,7 +88,7 @@ export const isSelectedUserAlreadyFollowingUserMiddleware = (
     }
 };
 
-export const getRetreiveUserToFollowMiddleware = (userModel: Model<UserModel>) => async (
+export const getRetrieveUserToFollowMiddleware = (userModel: Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -98,11 +103,11 @@ export const getRetreiveUserToFollowMiddleware = (userModel: Model<UserModel>) =
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveUserToFollowMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveUserToFollowMiddleware, err));
     }
 };
 
-export const retreiveUserToFollowMiddleware = getRetreiveUserToFollowMiddleware(userModel);
+export const retrieveUserToFollowMiddleware = getRetrieveUserToFollowMiddleware(userModel);
 
 export const getAddUserToFollowToSelectedUsersFollowingMiddleware = (userModel: Model<UserModel>) => async (
     request: Request,
@@ -236,9 +241,9 @@ export const sendNewFollowerRequestNotificationMiddleware = getSendNewFollowerRe
 export const followUserMiddlewares = [
     followUserParamsValidationMiddleware,
     followUserBodyValidationMiddleware,
-    retreiveSelectedUserMiddleware,
+    retrieveSelectedUserMiddleware,
     isSelectedUserAlreadyFollowingUserMiddleware,
-    retreiveUserToFollowMiddleware,
+    retrieveUserToFollowMiddleware,
     addUserToFollowToSelectedUsersFollowingMiddleware,
     addSelectedUserToUserToFollowsFollowersMiddleware,
     sendUserWithNewFollowingMiddleware,

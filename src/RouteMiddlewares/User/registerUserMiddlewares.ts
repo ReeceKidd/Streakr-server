@@ -6,7 +6,12 @@ import { userModel, UserModel } from '../../Models/User';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { PopulatedCurrentUser, User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-sdk/lib';
+import {
+    PopulatedCurrentUser,
+    User,
+    ActivityFeedItemTypes,
+    ActivityFeedItemType,
+} from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 const registerValidationSchema = {
@@ -112,7 +117,6 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             timezone: user.timezone,
             followers: user.followers,
             following: user.following,
-            friends: user.friends,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,

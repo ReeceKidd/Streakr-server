@@ -23,7 +23,7 @@ export const getChallengeStreakParamsValidationMiddleware = (
     );
 };
 
-export const getRetreiveChallengeStreakMiddleware = (
+export const getRetrieveChallengeStreakMiddleware = (
     challengeStreakModel: mongoose.Model<ChallengeStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -36,11 +36,11 @@ export const getRetreiveChallengeStreakMiddleware = (
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveChallengeStreakMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveChallengeStreakMiddleware, err));
     }
 };
 
-export const retreiveChallengeStreakMiddleware = getRetreiveChallengeStreakMiddleware(challengeStreakModel);
+export const retrieveChallengeStreakMiddleware = getRetrieveChallengeStreakMiddleware(challengeStreakModel);
 
 export const getSendChallengeStreakMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
@@ -59,6 +59,6 @@ export const sendChallengeStreakMiddleware = getSendChallengeStreakMiddleware(Re
 
 export const getOneChallengeStreakMiddlewares = [
     getChallengeStreakParamsValidationMiddleware,
-    retreiveChallengeStreakMiddleware,
+    retrieveChallengeStreakMiddleware,
     sendChallengeStreakMiddleware,
 ];

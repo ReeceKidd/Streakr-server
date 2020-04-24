@@ -15,7 +15,7 @@ import {
     ActivityFeedItemTypes,
     ChallengeStreak,
     ActivityFeedItemType,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 const createChallengeStreakBodyValidationSchema = {

@@ -16,18 +16,18 @@ import {
     getRemoveUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
     decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
     getDecreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
-    getRetreiveChallengeMiddleware,
-    retreiveChallengeMiddleware,
+    getRetrieveChallengeMiddleware,
+    retrieveChallengeMiddleware,
     disableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
     getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
 } from './patchChallengeStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakStatus, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakStatus, StreakReminderTypes } from '@streakoid/streakoid-models/lib';
 import {
     CustomChallengeStreakReminder,
     CustomStreakReminder,
-} from '@streakoid/streakoid-sdk/lib/models/StreakReminders';
+} from '@streakoid/streakoid-models/lib/models/StreakReminders';
 
 describe('challengeStreakParamsValidationMiddleware', () => {
     test('sends correct error response when challengeStreakId is not defined', () => {
@@ -215,7 +215,7 @@ describe('patchChallengeStreakMiddleware', () => {
     });
 });
 
-describe('retreiveChallengeMiddleware', () => {
+describe('retrieveChallengeMiddleware', () => {
     test('sets response.locals.challenge and calls next()', async () => {
         expect.assertions(4);
         const lean = jest.fn(() => true);
@@ -224,7 +224,7 @@ describe('retreiveChallengeMiddleware', () => {
         const request: any = {};
         const response: any = { locals: { updatedChallengeStreak: { _id: '_id', challengeId: 'challengeId' } } };
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMiddleware(challengeModel as any);
+        const middleware = getRetrieveChallengeMiddleware(challengeModel as any);
 
         await middleware(request, response, next);
 
@@ -242,24 +242,24 @@ describe('retreiveChallengeMiddleware', () => {
         const request: any = {};
         const response: any = { locals: { updatedChallengeStreak: { _id: '_id', challengeId: 'challengeId' } } };
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMiddleware(challengeModel as any);
+        const middleware = getRetrieveChallengeMiddleware(challengeModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.PatchChallengeStreakNoChallengeFound));
     });
 
-    test('throws PatchChallengeStreakRetreiveChallengeMiddleware error on middleware failure', async () => {
+    test('throws PatchChallengeStreakRetrieveChallengeMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveChallengeMiddleware({} as any);
+        const middleware = getRetrieveChallengeMiddleware({} as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.PatchChallengeStreakRetreiveChallengeMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.PatchChallengeStreakRetrieveChallengeMiddleware, expect.any(Error)),
         );
     });
 });
@@ -710,7 +710,7 @@ describe('patchChallengeStreakMiddlewares', () => {
         expect(patchChallengeStreakMiddlewares[0]).toBe(challengeStreakParamsValidationMiddleware);
         expect(patchChallengeStreakMiddlewares[1]).toBe(challengeStreakRequestBodyValidationMiddleware);
         expect(patchChallengeStreakMiddlewares[2]).toBe(patchChallengeStreakMiddleware);
-        expect(patchChallengeStreakMiddlewares[3]).toBe(retreiveChallengeMiddleware);
+        expect(patchChallengeStreakMiddlewares[3]).toBe(retrieveChallengeMiddleware);
         expect(patchChallengeStreakMiddlewares[4]).toBe(removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware);
         expect(patchChallengeStreakMiddlewares[5]).toBe(
             decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,

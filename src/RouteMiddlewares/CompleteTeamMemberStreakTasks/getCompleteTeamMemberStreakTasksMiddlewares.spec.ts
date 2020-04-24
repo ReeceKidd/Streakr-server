@@ -3,10 +3,10 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import {
     completeTeamMemberStreakTaskQueryValidationMiddleware,
-    getRetreiveCompleteTeamMemberStreakTasksMiddleware,
+    getRetrieveCompleteTeamMemberStreakTasksMiddleware,
     sendCompleteTeamMemberStreakTasksResponseMiddleware,
     getCompleteTeamMemberStreakTasksMiddlewares,
-    retreiveCompleteTeamMemberStreakTasksMiddleware,
+    retrieveCompleteTeamMemberStreakTasksMiddleware,
 } from './getCompleteTeamMemberStreakTasksMiddlewares';
 
 describe('completeTeamMemberStreakTaskQueryValidationMiddleware', () => {
@@ -116,7 +116,7 @@ describe('completeTeamMemberStreakTaskQueryValidationMiddleware', () => {
     });
 });
 
-describe('getRetreiveCompleteTeamMemberStreakTasksMiddleware', () => {
+describe('getRetrieveCompleteTeamMemberStreakTasksMiddleware', () => {
     test('queries with just userId', async () => {
         expect.assertions(3);
 
@@ -128,7 +128,7 @@ describe('getRetreiveCompleteTeamMemberStreakTasksMiddleware', () => {
         const request: any = { query: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteTeamMemberStreakTasksMiddleware(completeTeamMemberStreakTaskModel as any);
+        const middleware = getRetrieveCompleteTeamMemberStreakTasksMiddleware(completeTeamMemberStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -148,7 +148,7 @@ describe('getRetreiveCompleteTeamMemberStreakTasksMiddleware', () => {
         const request: any = { query: { teamMemberStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteTeamMemberStreakTasksMiddleware(completeTeamMemberStreakTaskModel as any);
+        const middleware = getRetrieveCompleteTeamMemberStreakTasksMiddleware(completeTeamMemberStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -168,7 +168,7 @@ describe('getRetreiveCompleteTeamMemberStreakTasksMiddleware', () => {
         const request: any = { query: { teamStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteTeamMemberStreakTasksMiddleware(completeTeamMemberStreakTaskModel as any);
+        const middleware = getRetrieveCompleteTeamMemberStreakTasksMiddleware(completeTeamMemberStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -192,7 +192,7 @@ describe('getRetreiveCompleteTeamMemberStreakTasksMiddleware', () => {
         };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteTeamMemberStreakTasksMiddleware(completeTeamMemberStreakTaskModel as any);
+        const middleware = getRetrieveCompleteTeamMemberStreakTasksMiddleware(completeTeamMemberStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -211,7 +211,7 @@ describe('getRetreiveCompleteTeamMemberStreakTasksMiddleware', () => {
         const request: any = { query: {} };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteTeamMemberStreakTasksMiddleware(completeTeamMemberStreakTaskModel as any);
+        const middleware = getRetrieveCompleteTeamMemberStreakTasksMiddleware(completeTeamMemberStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -227,7 +227,7 @@ describe('getRetreiveCompleteTeamMemberStreakTasksMiddleware', () => {
         const response: any = {};
         const next = jest.fn();
 
-        const middleware = getRetreiveCompleteTeamMemberStreakTasksMiddleware({} as any);
+        const middleware = getRetrieveCompleteTeamMemberStreakTasksMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -279,7 +279,7 @@ describe('getCompleteTeamMemberStreakTaskMiddlewares', () => {
         expect(getCompleteTeamMemberStreakTasksMiddlewares[0]).toEqual(
             completeTeamMemberStreakTaskQueryValidationMiddleware,
         );
-        expect(getCompleteTeamMemberStreakTasksMiddlewares[1]).toEqual(retreiveCompleteTeamMemberStreakTasksMiddleware);
+        expect(getCompleteTeamMemberStreakTasksMiddlewares[1]).toEqual(retrieveCompleteTeamMemberStreakTasksMiddleware);
         expect(getCompleteTeamMemberStreakTasksMiddlewares[2]).toEqual(
             sendCompleteTeamMemberStreakTasksResponseMiddleware,
         );

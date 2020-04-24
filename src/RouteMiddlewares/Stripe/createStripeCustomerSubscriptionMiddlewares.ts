@@ -7,7 +7,7 @@ import { getServiceConfig } from '../../getServiceConfig';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { userModel, UserModel } from '../../Models/User';
-import { FormattedUser, User, PaymentPlans } from '@streakoid/streakoid-sdk/lib';
+import { FormattedUser, User, PaymentPlans } from '@streakoid/streakoid-models/lib';
 
 const { STRIPE_SECRET_KEY, STRIPE_MONTHLY_PLAN, STRIPE_ANNUAL_PLAN } = getServiceConfig();
 
@@ -73,7 +73,7 @@ export const validateStripeTokenMiddleware = (request: Request, response: Respon
     } catch (err) {
         if (err instanceof CustomError) next(err);
         else {
-            next(new CustomError(ErrorType.ValidateStripeTokenMiddlware, err));
+            next(new CustomError(ErrorType.ValidateStripeTokenMiddleware, err));
         }
     }
 };
@@ -252,7 +252,6 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             isPayingMember: user.membershipInformation.isPayingMember,
             userType: user.userType,
             timezone: user.timezone,
-            friends: user.friends,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             profileImages: user.profileImages,

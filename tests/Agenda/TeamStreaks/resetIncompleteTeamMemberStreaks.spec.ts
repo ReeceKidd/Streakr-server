@@ -1,6 +1,6 @@
-import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import StreakStatus from '@streakoid/streakoid-models/lib/StreakStatus';
+import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-models/lib';
+import { StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
 
 import { resetIncompleteTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/resetIncompleteTeamMemberStreaks';
 import { resetIncompleteTeamStreaks } from '../../../src/Agenda/TeamStreaks/resetIncompleteTeamStreaks';

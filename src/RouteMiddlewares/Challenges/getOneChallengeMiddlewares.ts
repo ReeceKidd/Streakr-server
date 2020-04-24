@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { challengeModel, ChallengeModel } from '../../Models/Challenge';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { Challenge, ChallengeMember } from '@streakoid/streakoid-sdk/lib';
+import { Challenge, ChallengeMember } from '@streakoid/streakoid-models/lib';
 import { UserModel, userModel } from '../../Models/User';
 
 const challengeParamsValidationSchema = {
@@ -23,7 +23,7 @@ export const challengeParamsValidationMiddleware = (request: Request, response: 
     );
 };
 
-export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
+export const getRetrieveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -38,13 +38,13 @@ export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<Ch
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.GetRetreiveChallengeMiddleware, err));
+        else next(new CustomError(ErrorType.GetRetrieveChallengeMiddleware, err));
     }
 };
 
-export const retreiveChallengeMiddleware = getRetreiveChallengeMiddleware(challengeModel);
+export const retrieveChallengeMiddleware = getRetrieveChallengeMiddleware(challengeModel);
 
-export const getRetreiveChallengeMemberInformationMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveChallengeMemberInformationMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -74,7 +74,7 @@ export const getRetreiveChallengeMemberInformationMiddleware = (userModel: mongo
     }
 };
 
-export const retreiveChallengeMemberInformationMiddleware = getRetreiveChallengeMemberInformationMiddleware(userModel);
+export const retrieveChallengeMemberInformationMiddleware = getRetrieveChallengeMemberInformationMiddleware(userModel);
 
 export const sendChallengeMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -87,7 +87,7 @@ export const sendChallengeMiddleware = (request: Request, response: Response, ne
 
 export const getOneChallengeMiddlewares = [
     challengeParamsValidationMiddleware,
-    retreiveChallengeMiddleware,
-    retreiveChallengeMemberInformationMiddleware,
+    retrieveChallengeMiddleware,
+    retrieveChallengeMemberInformationMiddleware,
     sendChallengeMiddleware,
 ];

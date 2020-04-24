@@ -5,22 +5,22 @@ import {
     followUserMiddlewares,
     followUserParamsValidationMiddleware,
     followUserBodyValidationMiddleware,
-    retreiveSelectedUserMiddleware,
+    retrieveSelectedUserMiddleware,
     isSelectedUserAlreadyFollowingUserMiddleware,
-    retreiveUserToFollowMiddleware,
+    retrieveUserToFollowMiddleware,
     addUserToFollowToSelectedUsersFollowingMiddleware,
     sendUserWithNewFollowingMiddleware,
     getAddSelectedUserToUserToFollowFollowersMiddleware,
     getAddUserToFollowToSelectedUsersFollowingMiddleware,
-    getRetreiveUserToFollowMiddleware,
-    getRetreiveSelectedUserMiddleware,
+    getRetrieveUserToFollowMiddleware,
+    getRetrieveSelectedUserMiddleware,
     addSelectedUserToUserToFollowsFollowersMiddleware,
     createFollowUserActivityFeedItemMiddleware,
     getCreateFollowUserActivityFeedItemMiddleware,
     getSendNewFollowerRequestNotificationMiddleware,
     sendNewFollowerRequestNotificationMiddleware,
 } from './followUserMiddlewares';
-import { PushNotificationTypes } from '@streakoid/streakoid-sdk/lib';
+import { PushNotificationTypes } from '@streakoid/streakoid-models/lib';
 
 describe('followUserMiddlewares', () => {
     describe('followUserParamsValidationMiddleware', () => {
@@ -153,7 +153,7 @@ describe('followUserMiddlewares', () => {
         });
     });
 
-    describe('retreiveSelectedUserMiddleware', () => {
+    describe('retrieveSelectedUserMiddleware', () => {
         test('sets response.locals.user and calls next()', async () => {
             expect.assertions(4);
             const lean = jest.fn(() => true);
@@ -163,7 +163,7 @@ describe('followUserMiddlewares', () => {
             const request: any = { params: { userId } };
             const response: any = { locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveSelectedUserMiddleware(userModel as any);
+            const middleware = getRetrieveSelectedUserMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
@@ -182,24 +182,24 @@ describe('followUserMiddlewares', () => {
             const request: any = { params: { userId } };
             const response: any = { locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveSelectedUserMiddleware(userModel as any);
+            const middleware = getRetrieveSelectedUserMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
             expect(next).toBeCalledWith(new CustomError(ErrorType.SelectedUserDoesNotExist));
         });
 
-        test('throws RetreiveSelectedUserMiddleware error on middleware failure', async () => {
+        test('throws RetrieveSelectedUserMiddleware error on middleware failure', async () => {
             expect.assertions(1);
 
             const request: any = {};
             const response: any = {};
             const next = jest.fn();
-            const middleware = getRetreiveSelectedUserMiddleware({} as any);
+            const middleware = getRetrieveSelectedUserMiddleware({} as any);
 
             await middleware(request, response, next);
 
-            expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveSelectedUserMiddleware, expect.any(Error)));
+            expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveSelectedUserMiddleware, expect.any(Error)));
         });
     });
 
@@ -256,7 +256,7 @@ describe('followUserMiddlewares', () => {
         });
     });
 
-    describe('retreiveUserToFollowMiddleware', () => {
+    describe('retrieveUserToFollowMiddleware', () => {
         test('sets response.locals.userToFollow and calls next()', async () => {
             expect.assertions(4);
             const lean = jest.fn(() => true);
@@ -266,7 +266,7 @@ describe('followUserMiddlewares', () => {
             const request: any = { body: { userToFollowId } };
             const response: any = { locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveUserToFollowMiddleware(userModel as any);
+            const middleware = getRetrieveUserToFollowMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
@@ -285,23 +285,23 @@ describe('followUserMiddlewares', () => {
             const request: any = { body: { userToFollowId } };
             const response: any = { locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveUserToFollowMiddleware(userModel as any);
+            const middleware = getRetrieveUserToFollowMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
             expect(next).toBeCalledWith(new CustomError(ErrorType.UserToFollowDoesNotExist));
         });
 
-        test('throws RetreiveUserToFollowMiddleware error on middleware failure', async () => {
+        test('throws RetrieveUserToFollowMiddleware error on middleware failure', async () => {
             expect.assertions(1);
             const request: any = {};
             const response: any = {};
             const next = jest.fn();
-            const middleware = getRetreiveUserToFollowMiddleware({} as any);
+            const middleware = getRetrieveUserToFollowMiddleware({} as any);
 
             await middleware(request, response, next);
 
-            expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveUserToFollowMiddleware, expect.any(Error)));
+            expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveUserToFollowMiddleware, expect.any(Error)));
         });
     });
 
@@ -456,7 +456,7 @@ describe('followUserMiddlewares', () => {
     });
 
     describe(`sendNewFollowerRequestNotification`, () => {
-        test('sends new follower request notification to userToFollow if user to follow has a pushNotificationToken and newFollowerUpdates.pushNotifcation enabled.', async () => {
+        test('sends new follower request notification to userToFollow if user to follow has a pushNotificationToken and newFollowerUpdates.pushNotification enabled.', async () => {
             expect.assertions(2);
 
             const user = {
@@ -586,9 +586,9 @@ describe('followUserMiddlewares', () => {
         expect(followUserMiddlewares.length).toEqual(10);
         expect(followUserMiddlewares[0]).toEqual(followUserParamsValidationMiddleware);
         expect(followUserMiddlewares[1]).toEqual(followUserBodyValidationMiddleware);
-        expect(followUserMiddlewares[2]).toEqual(retreiveSelectedUserMiddleware);
+        expect(followUserMiddlewares[2]).toEqual(retrieveSelectedUserMiddleware);
         expect(followUserMiddlewares[3]).toEqual(isSelectedUserAlreadyFollowingUserMiddleware);
-        expect(followUserMiddlewares[4]).toEqual(retreiveUserToFollowMiddleware);
+        expect(followUserMiddlewares[4]).toEqual(retrieveUserToFollowMiddleware);
         expect(followUserMiddlewares[5]).toEqual(addUserToFollowToSelectedUsersFollowingMiddleware);
         expect(followUserMiddlewares[6]).toEqual(addSelectedUserToUserToFollowsFollowersMiddleware);
         expect(followUserMiddlewares[7]).toEqual(sendUserWithNewFollowingMiddleware);

@@ -3,10 +3,10 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import {
     incompleteTeamStreakQueryValidationMiddleware,
-    getRetreiveIncompleteTeamStreaksMiddleware,
+    getRetrieveIncompleteTeamStreaksMiddleware,
     sendIncompleteTeamStreaksResponseMiddleware,
     getIncompleteTeamStreaksMiddlewares,
-    retreiveIncompleteTeamStreaksMiddleware,
+    retrieveIncompleteTeamStreaksMiddleware,
 } from './getIncompleteTeamStreaksMiddlewares';
 
 describe('incompleteTeamStreakQueryValidationMiddleware', () => {
@@ -53,7 +53,7 @@ describe('incompleteTeamStreakQueryValidationMiddleware', () => {
     });
 });
 
-describe('getRetreiveIncompleteTeamStreaksMiddleware', () => {
+describe('getRetrieveIncompleteTeamStreaksMiddleware', () => {
     const teamStreakId = 'teamStreakId';
 
     test('queries with just teamStreakId', async () => {
@@ -66,7 +66,7 @@ describe('getRetreiveIncompleteTeamStreaksMiddleware', () => {
         const request: any = { query: { teamStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveIncompleteTeamStreaksMiddleware(incompleteTeamStreakModel as any);
+        const middleware = getRetrieveIncompleteTeamStreaksMiddleware(incompleteTeamStreakModel as any);
 
         await middleware(request, response, next);
 
@@ -85,7 +85,7 @@ describe('getRetreiveIncompleteTeamStreaksMiddleware', () => {
         const request: any = { query: {} };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveIncompleteTeamStreaksMiddleware(incompleteTeamStreakModel as any);
+        const middleware = getRetrieveIncompleteTeamStreaksMiddleware(incompleteTeamStreakModel as any);
 
         await middleware(request, response, next);
 
@@ -101,7 +101,7 @@ describe('getRetreiveIncompleteTeamStreaksMiddleware', () => {
         const response: any = {};
         const next = jest.fn();
 
-        const middleware = getRetreiveIncompleteTeamStreaksMiddleware({} as any);
+        const middleware = getRetrieveIncompleteTeamStreaksMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -146,7 +146,7 @@ describe('getIncompleteTeamStreakMiddlewares', () => {
 
         expect(getIncompleteTeamStreaksMiddlewares.length).toEqual(3);
         expect(getIncompleteTeamStreaksMiddlewares[0]).toEqual(incompleteTeamStreakQueryValidationMiddleware);
-        expect(getIncompleteTeamStreaksMiddlewares[1]).toEqual(retreiveIncompleteTeamStreaksMiddleware);
+        expect(getIncompleteTeamStreaksMiddlewares[1]).toEqual(retrieveIncompleteTeamStreaksMiddleware);
         expect(getIncompleteTeamStreaksMiddlewares[2]).toEqual(sendIncompleteTeamStreaksResponseMiddleware);
     });
 });

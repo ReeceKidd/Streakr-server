@@ -12,10 +12,9 @@ import {
 } from './getCurrentUser';
 import { CustomError } from '../../customError';
 import { ErrorType } from '../../customError';
-import { User, StreakReminderTypes } from '@streakoid/streakoid-sdk/lib';
-import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
-import UserAchievement from '@streakoid/streakoid-sdk/lib/models/UserAchievement';
-import AcheivmentTypes from '@streakoid/streakoid-sdk/lib/AchievementTypes';
+import { User, StreakReminderTypes, AchievementTypes } from '@streakoid/streakoid-models/lib';
+import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
 describe('populateCurrentUserFollowingMiddleware', () => {
     test('populates user following', async () => {
@@ -103,7 +102,7 @@ describe('populateCurrentUserAchievementsMiddleware', () => {
         const request: any = {};
         const userAchievement: UserAchievement = {
             _id: '_id',
-            achievementType: AcheivmentTypes.oneHundredDaySoloStreak,
+            achievementType: AchievementTypes.oneHundredDaySoloStreak,
         };
         const user = {
             _id: 'userId',
@@ -162,11 +161,10 @@ describe('formatUserMiddleware', () => {
             userType: UserTypes.basic,
             followers: [],
             following: [],
-            friends: [],
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
-            pushNotificationToken: 'pushNotifcationToken',
+            pushNotificationToken: 'pushNotificationToken',
             pushNotifications: {
                 completeAllStreaksReminder: {
                     enabled: true,
@@ -208,7 +206,6 @@ describe('formatUserMiddleware', () => {
                 'userType',
                 'followers',
                 'following',
-                'friends',
                 'timezone',
                 'createdAt',
                 'updatedAt',
@@ -250,7 +247,7 @@ describe('sendCurrentUserMiddleware', () => {
         expect(send).toBeCalledWith(formattedUser);
     });
 
-    test('calls next with SendRetreiveUserResponseMiddleware error on middleware failure', async () => {
+    test('calls next with SendRetrieveUserResponseMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const error = 'error';

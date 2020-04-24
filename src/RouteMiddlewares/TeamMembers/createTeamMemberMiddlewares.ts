@@ -17,7 +17,7 @@ import {
     User,
     ActivityFeedItemTypes,
     ActivityFeedItemType,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 export const createTeamMemberParamsValidationSchema = {

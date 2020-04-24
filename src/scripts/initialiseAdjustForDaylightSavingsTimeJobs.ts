@@ -3,7 +3,7 @@ import moment from 'moment';
 import { agendaJobModel } from '../Models/AgendaJob';
 import { agenda, AgendaProcessTimes } from '../Agenda/agenda';
 import Agenda from 'agenda';
-import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
+import { AgendaJobNames } from '@streakoid/streakoid-models/lib';
 
 export const createAdjustForDaylightSavingsTimeJob = async (
     timezone: string,

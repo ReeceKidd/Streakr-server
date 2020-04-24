@@ -22,7 +22,7 @@
 //         response.send('success');
 //     } catch (err) {
 //         if (err instanceof CustomError) next(err);
-//         else next(new CustomError(ErrorType.GetRetreiveUserMiddleware, err));
+//         else next(new CustomError(ErrorType.GetRetrieveUserMiddleware, err));
 //     }
 // };
 

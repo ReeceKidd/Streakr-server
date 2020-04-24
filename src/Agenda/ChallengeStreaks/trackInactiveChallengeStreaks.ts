@@ -4,7 +4,7 @@ import {
     StreakTrackingEvent,
     StreakTrackingEventTypes,
     StreakTypes,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 
 export const trackInactiveChallengeStreaks = async (
     inactiveChallengeStreaks: ChallengeStreak[],

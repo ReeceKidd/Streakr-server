@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddle
 import { userModel, UserModel } from '../../../Models/User';
 import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
-import BasicUser from '@streakoid/streakoid-sdk/lib/models/BasicUser';
+import { BasicUser } from '@streakoid/streakoid-models/lib';
 
 const getFollowersParamsValidationSchema = {
     userId: Joi.string().required(),
@@ -24,7 +24,7 @@ export const getFollowersParamsValidationMiddleware = (
     );
 };
 
-export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -39,13 +39,13 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.GetFollowersRetreiveUserMiddleware, err));
+        else next(new CustomError(ErrorType.GetFollowersRetrieveUserMiddleware, err));
     }
 };
 
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
+export const retrieveUserMiddleware = getRetrieveUserMiddleware(userModel);
 
-export const getRetreiveFollowersInfoMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveFollowersInfoMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -54,14 +54,14 @@ export const getRetreiveFollowersInfoMiddleware = (userModel: mongoose.Model<Use
         const currentUser = response.locals.user;
         const followers = await Promise.all(
             currentUser.followers.map(async (user: string) => {
-                const retreivedUser: UserModel = await userModel.findById(user).lean();
-                if (!retreivedUser) {
+                const retrievedUser: UserModel = await userModel.findById(user).lean();
+                if (!retrievedUser) {
                     return null;
                 }
                 const basicUser: BasicUser = {
-                    userId: retreivedUser._id,
-                    username: retreivedUser.username,
-                    profileImage: retreivedUser.profileImages.originalImageUrl,
+                    userId: retrievedUser._id,
+                    username: retrievedUser.username,
+                    profileImage: retrievedUser.profileImages.originalImageUrl,
                 };
                 return basicUser;
             }),
@@ -73,7 +73,7 @@ export const getRetreiveFollowersInfoMiddleware = (userModel: mongoose.Model<Use
     }
 };
 
-export const retreiveFollowersInfoMiddleware = getRetreiveFollowersInfoMiddleware(userModel);
+export const retrieveFollowersInfoMiddleware = getRetrieveFollowersInfoMiddleware(userModel);
 
 export const sendFollowersMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -86,7 +86,7 @@ export const sendFollowersMiddleware = (request: Request, response: Response, ne
 
 export const getFollowersMiddlewares = [
     getFollowersParamsValidationMiddleware,
-    retreiveUserMiddleware,
-    retreiveFollowersInfoMiddleware,
+    retrieveUserMiddleware,
+    retrieveFollowersInfoMiddleware,
     sendFollowersMiddleware,
 ];

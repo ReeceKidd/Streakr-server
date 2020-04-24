@@ -28,7 +28,7 @@ export const incompleteTeamMemberStreakTaskQueryValidationMiddleware = (
     );
 };
 
-export const getRetreiveIncompleteTeamMemberStreakTasksMiddleware = (
+export const getRetrieveIncompleteTeamMemberStreakTasksMiddleware = (
     incompleteTeamMemberStreakTaskModel: mongoose.Model<IncompleteTeamMemberStreakTaskModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -56,7 +56,7 @@ export const getRetreiveIncompleteTeamMemberStreakTasksMiddleware = (
     }
 };
 
-export const retreiveIncompleteTeamMemberStreakTasksMiddleware = getRetreiveIncompleteTeamMemberStreakTasksMiddleware(
+export const retrieveIncompleteTeamMemberStreakTasksMiddleware = getRetrieveIncompleteTeamMemberStreakTasksMiddleware(
     incompleteTeamMemberStreakTaskModel,
 );
 
@@ -75,6 +75,6 @@ export const sendIncompleteTeamMemberStreakTasksResponseMiddleware = (
 
 export const getIncompleteTeamMemberStreakTasksMiddlewares = [
     incompleteTeamMemberStreakTaskQueryValidationMiddleware,
-    retreiveIncompleteTeamMemberStreakTasksMiddleware,
+    retrieveIncompleteTeamMemberStreakTasksMiddleware,
     sendIncompleteTeamMemberStreakTasksResponseMiddleware,
 ];

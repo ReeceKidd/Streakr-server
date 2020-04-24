@@ -10,7 +10,7 @@ import {
     ActivityFeedItemTypes,
     ActivityFeedItemType,
     PushNotificationTypes,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -25,7 +25,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { CustomError, ErrorType } from '../../customError';
 import { completeTeamStreakModel, CompleteTeamStreakModel } from '../../Models/CompleteTeamStreak';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
-import { CompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
+import { CompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-models/lib/models/PushNotifications';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -106,7 +106,7 @@ export const ensureTeamMemberStreakTaskHasNotBeenCompletedTodayMiddleware = (
     }
 };
 
-export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -121,11 +121,11 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateCompleteTeamMemberStreakTaskRetreiveUserMiddleware, err));
+        else next(new CustomError(ErrorType.CreateCompleteTeamMemberStreakTaskRetrieveUserMiddleware, err));
     }
 };
 
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
+export const retrieveUserMiddleware = getRetrieveUserMiddleware(userModel);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getSetTaskCompleteTimeMiddleware = (moment: any) => (
@@ -408,7 +408,7 @@ export const getTeamStreakMaintainedMiddleware = (teamStreakModel: mongoose.Mode
 
 export const teamStreakMaintainedMiddleware = getTeamStreakMaintainedMiddleware(teamStreakModel);
 
-export const getRetreiveTeamMembersMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveTeamMembersMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -423,11 +423,11 @@ export const getRetreiveTeamMembersMiddleware = (userModel: mongoose.Model<UserM
         response.locals.teamMembers = teamMembersWithoutCurrentUser;
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.CreateCompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware, err));
+        next(new CustomError(ErrorType.CreateCompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware, err));
     }
 };
 
-export const retreiveTeamMembersMiddleware = getRetreiveTeamMembersMiddleware(userModel);
+export const retrieveTeamMembersMiddleware = getRetrieveTeamMembersMiddleware(userModel);
 
 const expoClient = new Expo();
 
@@ -524,7 +524,7 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     teamStreakExistsMiddleware,
     teamMemberStreakExistsMiddleware,
     ensureTeamMemberStreakTaskHasNotBeenCompletedTodayMiddleware,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     setTaskCompleteTimeMiddleware,
     setStreakStartDateMiddleware,
     setDayTaskWasCompletedMiddleware,
@@ -537,7 +537,7 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     createCompleteTeamStreakDefinitionMiddleware,
     saveCompleteTeamStreakMiddleware,
     teamStreakMaintainedMiddleware,
-    retreiveTeamMembersMiddleware,
+    retrieveTeamMembersMiddleware,
     notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
     sendCompleteTeamMemberStreakTaskResponseMiddleware,
     createCompleteTeamMemberStreakActivityFeedItemMiddleware,

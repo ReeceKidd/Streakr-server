@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import * as moment from 'moment-timezone';
 import { CustomError, ErrorType } from '../customError';
-import { SupportedRequestHeaders } from '@streakoid/streakoid-sdk/lib';
+import { SupportedRequestHeaders } from '@streakoid/streakoid-models/lib';
 
-export const retreiveTimezoneHeaderMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const retrieveTimezoneHeaderMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const timezone = request.header(SupportedRequestHeaders.Timezone);
         if (!timezone) {
@@ -13,7 +13,7 @@ export const retreiveTimezoneHeaderMiddleware = (request: Request, response: Res
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveTimezoneHeaderMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveTimezoneHeaderMiddleware, err));
     }
 };
 
@@ -37,4 +37,4 @@ export const getValidateTimezoneMiddleware = (isValidTimezone: Function) => (
 
 export const validateTimezoneMiddleware = getValidateTimezoneMiddleware(moment.tz.zone);
 
-export const timezoneMiddlewares = [retreiveTimezoneHeaderMiddleware, validateTimezoneMiddleware];
+export const timezoneMiddlewares = [retrieveTimezoneHeaderMiddleware, validateTimezoneMiddleware];

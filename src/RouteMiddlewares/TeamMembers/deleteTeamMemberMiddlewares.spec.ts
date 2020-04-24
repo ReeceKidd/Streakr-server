@@ -4,10 +4,10 @@ import {
     teamMemberParamsValidationMiddleware,
     deleteTeamMemberMiddleware,
     sendTeamMemberDeletedResponseMiddleware,
-    retreiveTeamMemberMiddleware,
+    retrieveTeamMemberMiddleware,
     getDeleteTeamMemberMiddleware,
-    getRetreiveTeamStreakMiddleware,
-    retreiveTeamStreakMiddleware,
+    getRetrieveTeamStreakMiddleware,
+    retrieveTeamStreakMiddleware,
 } from './deleteTeamMemberMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -111,7 +111,7 @@ describe('teamMemberParamsValidationMiddleware', () => {
     });
 });
 
-describe('retreiveTeamStreakMiddleware', () => {
+describe('retrieveTeamStreakMiddleware', () => {
     test('sets response.locals.teamStreak and calls next()', async () => {
         expect.assertions(4);
         const teamStreakId = 'abc';
@@ -123,7 +123,7 @@ describe('retreiveTeamStreakMiddleware', () => {
         const lean = jest.fn().mockResolvedValue(true);
         const findById = jest.fn(() => ({ lean }));
         const TeamStreakModel = { findById };
-        const middleware = getRetreiveTeamStreakMiddleware(TeamStreakModel as any);
+        const middleware = getRetrieveTeamStreakMiddleware(TeamStreakModel as any);
 
         await middleware(request, response, next);
 
@@ -144,29 +144,29 @@ describe('retreiveTeamStreakMiddleware', () => {
         const lean = jest.fn().mockResolvedValue(false);
         const findById = jest.fn(() => ({ lean }));
         const TeamStreakModel = { findById };
-        const middleware = getRetreiveTeamStreakMiddleware(TeamStreakModel as any);
+        const middleware = getRetrieveTeamStreakMiddleware(TeamStreakModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.NoTeamStreakFound));
     });
 
-    test('throws DeleteTeamMemberRetreiveTeamStreakMiddleware error on middleware failure', async () => {
+    test('throws DeleteTeamMemberRetrieveTeamStreakMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveTeamStreakMiddleware({} as any);
+        const middleware = getRetrieveTeamStreakMiddleware({} as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.DeleteTeamMemberRetreiveTeamStreakMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.DeleteTeamMemberRetrieveTeamStreakMiddleware, expect.any(Error)),
         );
     });
 });
 
-describe('retreiveTeamMemberMiddleware', () => {
+describe('retrieveTeamMemberMiddleware', () => {
     test('sets response.locals.member and calls next()', async () => {
         expect.assertions(2);
         const memberId = 'abc';
@@ -181,23 +181,23 @@ describe('retreiveTeamMemberMiddleware', () => {
         const response: any = { locals: { teamStreak } };
         const next = jest.fn();
 
-        await retreiveTeamMemberMiddleware(request, response, next);
+        await retrieveTeamMemberMiddleware(request, response, next);
 
         expect(response.locals.member).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
-    test('calls next with RetreiveTeamMemberMiddleware error on middleware failure', async () => {
+    test('calls next with RetrieveTeamMemberMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveTeamStreakMiddleware({} as any);
+        const middleware = getRetrieveTeamStreakMiddleware({} as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.DeleteTeamMemberRetreiveTeamStreakMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.DeleteTeamMemberRetrieveTeamStreakMiddleware, expect.any(Error)),
         );
     });
 });
@@ -279,8 +279,8 @@ describe('deleteTeamMemberMiddlewares', () => {
 
         expect(deleteTeamMemberMiddlewares.length).toEqual(5);
         expect(deleteTeamMemberMiddlewares[0]).toEqual(teamMemberParamsValidationMiddleware);
-        expect(deleteTeamMemberMiddlewares[1]).toEqual(retreiveTeamStreakMiddleware);
-        expect(deleteTeamMemberMiddlewares[2]).toEqual(retreiveTeamMemberMiddleware);
+        expect(deleteTeamMemberMiddlewares[1]).toEqual(retrieveTeamStreakMiddleware);
+        expect(deleteTeamMemberMiddlewares[2]).toEqual(retrieveTeamMemberMiddleware);
         expect(deleteTeamMemberMiddlewares[3]).toEqual(deleteTeamMemberMiddleware);
         expect(deleteTeamMemberMiddlewares[4]).toEqual(sendTeamMemberDeletedResponseMiddleware);
     });

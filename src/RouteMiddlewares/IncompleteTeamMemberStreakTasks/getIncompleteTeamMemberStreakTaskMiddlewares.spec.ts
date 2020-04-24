@@ -3,10 +3,10 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import {
     incompleteTeamMemberStreakTaskQueryValidationMiddleware,
-    getRetreiveIncompleteTeamMemberStreakTasksMiddleware,
+    getRetrieveIncompleteTeamMemberStreakTasksMiddleware,
     sendIncompleteTeamMemberStreakTasksResponseMiddleware,
     getIncompleteTeamMemberStreakTasksMiddlewares,
-    retreiveIncompleteTeamMemberStreakTasksMiddleware,
+    retrieveIncompleteTeamMemberStreakTasksMiddleware,
 } from './getIncompleteTeamMemberStreakTaskMiddlewares';
 
 describe('incompleteTeamMemberStreakTaskQueryValidationMiddleware', () => {
@@ -118,7 +118,7 @@ describe('incompleteTeamMemberStreakTaskQueryValidationMiddleware', () => {
     });
 });
 
-describe('getRetreiveIncompleteTeamMemberStreakTasksMiddleware', () => {
+describe('getRetrieveIncompleteTeamMemberStreakTasksMiddleware', () => {
     test('queries with all query paramaters', async () => {
         expect.assertions(3);
 
@@ -132,7 +132,7 @@ describe('getRetreiveIncompleteTeamMemberStreakTasksMiddleware', () => {
         const request: any = { query: { userId, teamMemberStreakId, teamStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveIncompleteTeamMemberStreakTasksMiddleware(
+        const middleware = getRetrieveIncompleteTeamMemberStreakTasksMiddleware(
             incompleteTeamMemberStreakTaskModel as any,
         );
 
@@ -154,7 +154,7 @@ describe('getRetreiveIncompleteTeamMemberStreakTasksMiddleware', () => {
         const request: any = { query: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveIncompleteTeamMemberStreakTasksMiddleware(
+        const middleware = getRetrieveIncompleteTeamMemberStreakTasksMiddleware(
             incompleteTeamMemberStreakTaskModel as any,
         );
 
@@ -176,7 +176,7 @@ describe('getRetreiveIncompleteTeamMemberStreakTasksMiddleware', () => {
         const request: any = { query: { teamMemberStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveIncompleteTeamMemberStreakTasksMiddleware(
+        const middleware = getRetrieveIncompleteTeamMemberStreakTasksMiddleware(
             incompleteTeamMemberStreakTaskModel as any,
         );
 
@@ -198,7 +198,7 @@ describe('getRetreiveIncompleteTeamMemberStreakTasksMiddleware', () => {
         const request: any = { query: { teamStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveIncompleteTeamMemberStreakTasksMiddleware(
+        const middleware = getRetrieveIncompleteTeamMemberStreakTasksMiddleware(
             incompleteTeamMemberStreakTaskModel as any,
         );
 
@@ -219,7 +219,7 @@ describe('getRetreiveIncompleteTeamMemberStreakTasksMiddleware', () => {
         const request: any = { query: {} };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveIncompleteTeamMemberStreakTasksMiddleware(
+        const middleware = getRetrieveIncompleteTeamMemberStreakTasksMiddleware(
             incompleteTeamMemberStreakTaskModel as any,
         );
 
@@ -237,7 +237,7 @@ describe('getRetreiveIncompleteTeamMemberStreakTasksMiddleware', () => {
         const response: any = {};
         const next = jest.fn();
 
-        const middleware = getRetreiveIncompleteTeamMemberStreakTasksMiddleware({} as any);
+        const middleware = getRetrieveIncompleteTeamMemberStreakTasksMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -287,7 +287,7 @@ describe('getIncompleteTeamMemberStreakTaskMiddlewares', () => {
             incompleteTeamMemberStreakTaskQueryValidationMiddleware,
         );
         expect(getIncompleteTeamMemberStreakTasksMiddlewares[1]).toEqual(
-            retreiveIncompleteTeamMemberStreakTasksMiddleware,
+            retrieveIncompleteTeamMemberStreakTasksMiddleware,
         );
         expect(getIncompleteTeamMemberStreakTasksMiddlewares[2]).toEqual(
             sendIncompleteTeamMemberStreakTasksResponseMiddleware,

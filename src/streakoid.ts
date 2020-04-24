@@ -1,8 +1,10 @@
 import { streakoidFactory, streakoidClientFactory } from '@streakoid/streakoid-sdk';
 
 import { getServiceConfig } from './getServiceConfig';
-import { londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
+
 const { APPLICATION_URL } = getServiceConfig();
+
+export const londonTimezone = 'Europe/London';
 
 const streakoidClient = streakoidClientFactory(APPLICATION_URL, londonTimezone);
 

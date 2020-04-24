@@ -5,13 +5,12 @@ import {
     getFindTeamStreaksMiddleware,
     findTeamStreaksMiddleware,
     sendTeamStreaksMiddleware,
-    retreiveTeamStreaksMembersInformationMiddleware,
-    getRetreiveTeamStreaksMembersInformationMiddleware,
+    retrieveTeamStreaksMembersInformationMiddleware,
+    getRetrieveTeamStreaksMembersInformationMiddleware,
 } from './getAllTeamStreaksMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { GetAllTeamStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamStreaks';
+import { StreakStatus } from '@streakoid/streakoid-models/lib';
 
 describe('getTeamStreaksValidationMiddleware', () => {
     const creatorId = 'creatorId';
@@ -20,7 +19,7 @@ describe('getTeamStreaksValidationMiddleware', () => {
     const status = StreakStatus.live;
     const completedToday = true;
     const active = true;
-    const sortField = GetAllTeamStreaksSortFields.currentStreak;
+    const sortField = 'currentStreak';
     const query = {
         creatorId,
         memberId,
@@ -146,7 +145,7 @@ describe('findTeamStreaksMiddleware', () => {
         const teamStreakModel = {
             find,
         };
-        const sortField = GetAllTeamStreaksSortFields.currentStreak;
+        const sortField = 'currentStreak';
         const request: any = { query: { sortField } };
         const response: any = { locals: {} };
         const next = jest.fn();
@@ -175,8 +174,8 @@ describe('findTeamStreaksMiddleware', () => {
     });
 });
 
-describe('retreiveTeamStreakMembersInformationMiddleware', () => {
-    test('retreives team streak members information for each team team and sets response.locals.TeamStreaks', async () => {
+describe('retrieveTeamStreakMembersInformationMiddleware', () => {
+    test('retrieves team streak members information for each team team and sets response.locals.TeamStreaks', async () => {
         expect.assertions(5);
 
         const user = {
@@ -199,7 +198,7 @@ describe('retreiveTeamStreakMembersInformationMiddleware', () => {
         const response: any = { locals: { teamStreaks } };
         const next = jest.fn();
 
-        const middleware = getRetreiveTeamStreaksMembersInformationMiddleware(userModel, teamStreakModel);
+        const middleware = getRetrieveTeamStreaksMembersInformationMiddleware(userModel, teamStreakModel);
         await middleware(request, response, next);
 
         expect(findOne).toHaveBeenCalledTimes(2);
@@ -212,18 +211,18 @@ describe('retreiveTeamStreakMembersInformationMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('calls next with RetreiveTeamStreakMembersInformation on middleware failure', async () => {
+    test('calls next with RetrieveTeamStreakMembersInformation on middleware failure', async () => {
         expect.assertions(1);
 
         const response: any = {};
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getRetreiveTeamStreaksMembersInformationMiddleware({} as any, {} as any);
+        const middleware = getRetrieveTeamStreaksMembersInformationMiddleware({} as any, {} as any);
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.RetreiveTeamStreaksMembersInformation, expect.any(Error)),
+            new CustomError(ErrorType.RetrieveTeamStreaksMembersInformation, expect.any(Error)),
         );
     });
 });
@@ -280,7 +279,7 @@ describe(`getAllTeamStreaksMiddlewares`, () => {
         expect(getAllTeamStreaksMiddlewares.length).toEqual(4);
         expect(getAllTeamStreaksMiddlewares[0]).toBe(getTeamStreaksQueryValidationMiddleware);
         expect(getAllTeamStreaksMiddlewares[1]).toBe(findTeamStreaksMiddleware);
-        expect(getAllTeamStreaksMiddlewares[2]).toBe(retreiveTeamStreaksMembersInformationMiddleware);
+        expect(getAllTeamStreaksMiddlewares[2]).toBe(retrieveTeamStreaksMembersInformationMiddleware);
         expect(getAllTeamStreaksMiddlewares[3]).toBe(sendTeamStreaksMiddleware);
     });
 });

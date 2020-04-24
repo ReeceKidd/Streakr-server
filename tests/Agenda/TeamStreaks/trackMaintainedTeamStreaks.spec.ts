@@ -1,5 +1,5 @@
-import { StreakTrackingEventTypes, StreakTypes, StreakStatus } from '@streakoid/streakoid-sdk/lib';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { StreakTrackingEventTypes, StreakTypes, StreakStatus } from '@streakoid/streakoid-models/lib';
+import { StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { getPayingUser } from '../../setup/getPayingUser';

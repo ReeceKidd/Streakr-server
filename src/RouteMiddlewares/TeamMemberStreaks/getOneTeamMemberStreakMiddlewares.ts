@@ -23,7 +23,7 @@ export const getTeamMemberStreakParamsValidationMiddleware = (
     );
 };
 
-export const getRetreiveTeamMemberStreakMiddleware = (
+export const getRetrieveTeamMemberStreakMiddleware = (
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -36,11 +36,11 @@ export const getRetreiveTeamMemberStreakMiddleware = (
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveTeamMemberStreakMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveTeamMemberStreakMiddleware, err));
     }
 };
 
-export const retreiveTeamMemberStreakMiddleware = getRetreiveTeamMemberStreakMiddleware(teamMemberStreakModel);
+export const retrieveTeamMemberStreakMiddleware = getRetrieveTeamMemberStreakMiddleware(teamMemberStreakModel);
 
 export const getSendTeamMemberStreakMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
@@ -59,6 +59,6 @@ export const sendTeamMemberStreakMiddleware = getSendTeamMemberStreakMiddleware(
 
 export const getOneTeamMemberStreakMiddlewares = [
     getTeamMemberStreakParamsValidationMiddleware,
-    retreiveTeamMemberStreakMiddleware,
+    retrieveTeamMemberStreakMiddleware,
     sendTeamMemberStreakMiddleware,
 ];

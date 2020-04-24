@@ -20,14 +20,14 @@ import {
     ActivityFeedItemTypes,
     ActivityFeedItemType,
     PushNotificationTypes,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 import { incompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
 import { IncompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { TeamStreakModel } from '../../../src/Models/TeamStreak';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
-import { IncompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-sdk/lib/models/PushNotifications';
+import { IncompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-models/lib/models/PushNotifications';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -131,7 +131,7 @@ export const getResetStreakStartDateMiddleware = (
 
 export const resetStreakStartDateMiddleware = getResetStreakStartDateMiddleware(teamMemberStreakModel);
 
-export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -146,11 +146,11 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveUserMiddleware, err));
+        else next(new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskRetrieveUserMiddleware, err));
     }
 };
 
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
+export const retrieveUserMiddleware = getRetrieveUserMiddleware(userModel);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getSetTaskIncompleteTimeMiddleware = (moment: any) => (
@@ -402,7 +402,7 @@ export const getCreateTeamStreakIncompleteMiddleware = (
 
 export const createTeamStreakIncompleteMiddleware = getCreateTeamStreakIncompleteMiddleware(incompleteTeamStreakModel);
 
-export const getRetreiveTeamMembersMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveTeamMembersMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -417,11 +417,11 @@ export const getRetreiveTeamMembersMiddleware = (userModel: mongoose.Model<UserM
         response.locals.teamMembers = teamMembersWithoutCurrentUser;
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware, err));
+        next(new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware, err));
     }
 };
 
-export const retreiveTeamMembersMiddleware = getRetreiveTeamMembersMiddleware(userModel);
+export const retrieveTeamMembersMiddleware = getRetrieveTeamMembersMiddleware(userModel);
 
 const expoClient = new Expo();
 
@@ -521,7 +521,7 @@ export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     teamStreakExistsMiddleware,
     ensureTeamMemberStreakTaskHasBeenCompletedTodayMiddleware,
     resetStreakStartDateMiddleware,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     setTaskIncompleteTimeMiddleware,
     setDayTaskWasIncompletedMiddleware,
     createIncompleteTeamMemberStreakTaskDefinitionMiddleware,
@@ -532,7 +532,7 @@ export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     hasAtLeastOneTeamMemberCompletedTheirTaskMiddleware,
     makeTeamStreakInactiveMiddleware,
     createTeamStreakIncompleteMiddleware,
-    retreiveTeamMembersMiddleware,
+    retrieveTeamMembersMiddleware,
     notifiyTeamMembersThatUserHasIncompletedTaskMiddleware,
     sendTaskIncompleteResponseMiddleware,
     createIncompleteTeamMemberStreakActivityFeedItemMiddleware,

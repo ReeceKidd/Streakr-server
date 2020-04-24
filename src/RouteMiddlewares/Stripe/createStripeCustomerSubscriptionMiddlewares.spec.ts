@@ -23,8 +23,8 @@ import {
 } from './createStripeCustomerSubscriptionMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import UserTypes from '@streakoid/streakoid-sdk/lib/userTypes';
-import { PaymentPlans } from '@streakoid/streakoid-sdk/lib';
+import { PaymentPlans } from '@streakoid/streakoid-models/lib';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
 describe('createStripeCustomerSubscriptionMiddlewares', () => {
     afterEach(() => {
@@ -345,7 +345,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             expect(next).toBeCalledWith(new CustomError(ErrorType.StripeTokenMissingEmail, expect.any(Error)));
         });
 
-        test('calls next with ValidateStripeTokenMiddlware on middleware failure', () => {
+        test('calls next with ValidateStripeTokenMiddleware on middleware failure', () => {
             expect.assertions(1);
             const request: any = {};
             const response: any = {
@@ -355,7 +355,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
 
             validateStripeTokenMiddleware(request, response, next);
 
-            expect(next).toBeCalledWith(new CustomError(ErrorType.ValidateStripeTokenMiddlware, expect.any(Error)));
+            expect(next).toBeCalledWith(new CustomError(ErrorType.ValidateStripeTokenMiddleware, expect.any(Error)));
         });
     });
 
@@ -793,7 +793,6 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                 updatedAt: 'Jan 1st',
                 timezone: 'Europe/London',
                 userType: UserTypes.basic,
-                friends: [],
                 profileImages: {
                     originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
                 },
@@ -818,7 +817,6 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                     'isPayingMember',
                     'userType',
                     'timezone',
-                    'friends',
                     'createdAt',
                     'updatedAt',
                     'profileImages',

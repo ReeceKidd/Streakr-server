@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     getFollowersMiddlewares,
-    getRetreiveUserMiddleware,
-    retreiveUserMiddleware,
+    getRetrieveUserMiddleware,
+    retrieveUserMiddleware,
     getFollowersParamsValidationMiddleware,
     sendFollowersMiddleware,
-    retreiveFollowersInfoMiddleware,
-    getRetreiveFollowersInfoMiddleware,
+    retrieveFollowersInfoMiddleware,
+    getRetrieveFollowersInfoMiddleware,
 } from './getFollowersMiddlewares';
 import { CustomError, ErrorType } from '../../../customError';
 
@@ -55,7 +55,7 @@ describe(`getFollowersMiddlewares`, () => {
         });
     });
 
-    describe('retreiveUserMiddleware', () => {
+    describe('retrieveUserMiddleware', () => {
         test('sets response.locals.user and calls next()', async () => {
             expect.assertions(4);
             const lean = jest.fn(() => true);
@@ -65,7 +65,7 @@ describe(`getFollowersMiddlewares`, () => {
             const request: any = { params: { userId } };
             const response: any = { locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveUserMiddleware(userModel as any);
+            const middleware = getRetrieveUserMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
@@ -84,14 +84,14 @@ describe(`getFollowersMiddlewares`, () => {
             const request: any = { params: { userId } };
             const response: any = { locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveUserMiddleware(userModel as any);
+            const middleware = getRetrieveUserMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
             expect(next).toBeCalledWith(new CustomError(ErrorType.GetFollowersUserDoesNotExist));
         });
 
-        test('throws RetreiveUserMiddleware error on middleware failure', async () => {
+        test('throws RetrieveUserMiddleware error on middleware failure', async () => {
             expect.assertions(1);
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
@@ -101,16 +101,16 @@ describe(`getFollowersMiddlewares`, () => {
             const request: any = { body: { userId } };
             const response: any = { status, locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveUserMiddleware(userModel as any);
+            const middleware = getRetrieveUserMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
-            expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveUserMiddleware, expect.any(Error)));
+            expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveUserMiddleware, expect.any(Error)));
         });
     });
 
-    describe('retreiveFollowersInfoMiddleware', () => {
-        test('maps over followers and retreives profile images and username.', async () => {
+    describe('retrieveFollowersInfoMiddleware', () => {
+        test('maps over followers and retrieves profile images and username.', async () => {
             expect.assertions(4);
             const lean = jest.fn(() => ({ profileImages: { originalImageUrl: 'google.com/image' } }));
             const findById = jest.fn(() => ({ lean }));
@@ -123,7 +123,7 @@ describe(`getFollowersMiddlewares`, () => {
             const request: any = { params: { userId } };
             const response: any = { locals: { user } };
             const next = jest.fn();
-            const middleware = getRetreiveFollowersInfoMiddleware(userModel as any);
+            const middleware = getRetrieveFollowersInfoMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
@@ -146,7 +146,7 @@ describe(`getFollowersMiddlewares`, () => {
             const request: any = { params: { userId } };
             const response: any = { locals: { user } };
             const next = jest.fn();
-            const middleware = getRetreiveFollowersInfoMiddleware(userModel as any);
+            const middleware = getRetrieveFollowersInfoMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
@@ -166,7 +166,7 @@ describe(`getFollowersMiddlewares`, () => {
             const request: any = { body: { userId } };
             const response: any = { status, locals: {} };
             const next = jest.fn();
-            const middleware = getRetreiveFollowersInfoMiddleware(userModel as any);
+            const middleware = getRetrieveFollowersInfoMiddleware(userModel as any);
 
             await middleware(request, response, next);
 
@@ -213,8 +213,8 @@ describe(`getFollowersMiddlewares`, () => {
         expect(getFollowersMiddlewares.length).toBe(4);
 
         expect(getFollowersMiddlewares[0]).toEqual(getFollowersParamsValidationMiddleware);
-        expect(getFollowersMiddlewares[1]).toEqual(retreiveUserMiddleware);
-        expect(getFollowersMiddlewares[2]).toEqual(retreiveFollowersInfoMiddleware);
+        expect(getFollowersMiddlewares[1]).toEqual(retrieveUserMiddleware);
+        expect(getFollowersMiddlewares[2]).toEqual(retrieveFollowersInfoMiddleware);
         expect(getFollowersMiddlewares[3]).toEqual(sendFollowersMiddleware);
     });
 });

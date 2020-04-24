@@ -27,7 +27,7 @@ export const completeChallengeStreakTaskQueryValidationMiddleware = (
     );
 };
 
-export const getRetreiveCompleteChallengeStreakTasksMiddleware = (
+export const getRetrieveCompleteChallengeStreakTasksMiddleware = (
     completeChallengeStreakTaskModel: mongoose.Model<CompleteChallengeStreakTaskModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -51,7 +51,7 @@ export const getRetreiveCompleteChallengeStreakTasksMiddleware = (
     }
 };
 
-export const retreiveCompleteChallengeStreakTasksMiddleware = getRetreiveCompleteChallengeStreakTasksMiddleware(
+export const retrieveCompleteChallengeStreakTasksMiddleware = getRetrieveCompleteChallengeStreakTasksMiddleware(
     completeChallengeStreakTaskModel,
 );
 
@@ -70,6 +70,6 @@ export const sendCompleteChallengeStreakTasksResponseMiddleware = (
 
 export const getCompleteChallengeStreakTasksMiddlewares = [
     completeChallengeStreakTaskQueryValidationMiddleware,
-    retreiveCompleteChallengeStreakTasksMiddleware,
+    retrieveCompleteChallengeStreakTasksMiddleware,
     sendCompleteChallengeStreakTasksResponseMiddleware,
 ];

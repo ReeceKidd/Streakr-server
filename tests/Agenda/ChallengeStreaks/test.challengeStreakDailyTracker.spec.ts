@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createChallengeStreakDailyTrackerJob } from '../../../src/scripts/initaliseChallengeStreakTimezoneCheckers';
-import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import StreakStatus from '@streakoid/streakoid-models/lib/StreakStatus';
+import { StreakTrackingEventTypes, StreakTypes, AgendaJobNames } from '@streakoid/streakoid-models/lib';
+import { StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
 
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
 import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEvent';

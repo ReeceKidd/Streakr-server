@@ -21,8 +21,8 @@
     "author": "Reece Kidd",
     "license": "ISC",
     "dependencies": {
-        "@streakoid/streakoid-sdk": "^1.0.502",
-        "@streakoid/streakoid-shared": "^1.0.426",
+        "@streakoid/streakoid-models": "^1.0.5",
+        "@streakoid/streakoid-sdk": "^1.0.504",
         "@types/amazon-cognito-auth-js": "^1.2.1",
         "@types/cors": "^2.8.5",
         "@types/dotenv": "^6.1.1",

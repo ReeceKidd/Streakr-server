@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     getOneNoteMiddlewares,
-    retreiveNoteMiddleware,
-    getRetreiveNoteMiddleware,
+    retrieveNoteMiddleware,
+    getRetrieveNoteMiddleware,
     sendNoteMiddleware,
     getNoteParamsValidationMiddleware,
 } from './getOneNoteMiddlewares';
@@ -72,7 +72,7 @@ describe(`getNoteParamsValidationMiddleware`, () => {
     });
 });
 
-describe('retreiveNoteMiddleware', () => {
+describe('retrieveNoteMiddleware', () => {
     test('sets response.locals.note', async () => {
         expect.assertions(3);
         const lean = jest.fn(() => Promise.resolve(true));
@@ -84,7 +84,7 @@ describe('retreiveNoteMiddleware', () => {
         const request: any = { params: { noteId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveNoteMiddleware(noteModel as any);
+        const middleware = getRetrieveNoteMiddleware(noteModel as any);
 
         await middleware(request, response, next);
 
@@ -104,14 +104,14 @@ describe('retreiveNoteMiddleware', () => {
         const request: any = { params: { noteId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveNoteMiddleware(noteModel as any);
+        const middleware = getRetrieveNoteMiddleware(noteModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.GetNoNoteFound));
     });
 
-    test('calls next with RetreiveNoteMiddleware error on middleware failure', async () => {
+    test('calls next with RetrieveNoteMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const errorMessage = 'error';
         const lean = jest.fn(() => Promise.reject(errorMessage));
@@ -123,11 +123,11 @@ describe('retreiveNoteMiddleware', () => {
         const request: any = { params: { noteId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveNoteMiddleware(noteModel as any);
+        const middleware = getRetrieveNoteMiddleware(noteModel as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveNoteMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveNoteMiddleware, expect.any(Error)));
     });
 });
 
@@ -164,7 +164,7 @@ describe('getOneNoteMiddlewares', () => {
 
         expect(getOneNoteMiddlewares.length).toEqual(3);
         expect(getOneNoteMiddlewares[0]).toEqual(getNoteParamsValidationMiddleware);
-        expect(getOneNoteMiddlewares[1]).toEqual(retreiveNoteMiddleware);
+        expect(getOneNoteMiddlewares[1]).toEqual(retrieveNoteMiddleware);
         expect(getOneNoteMiddlewares[2]).toEqual(sendNoteMiddleware);
     });
 });

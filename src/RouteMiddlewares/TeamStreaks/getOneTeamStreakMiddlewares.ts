@@ -25,7 +25,7 @@ export const getTeamStreakParamsValidationMiddleware = (
     );
 };
 
-export const getRetreiveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+export const getRetrieveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -40,13 +40,13 @@ export const getRetreiveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveTeamStreakMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveTeamStreakMiddleware, err));
     }
 };
 
-export const retreiveTeamStreakMiddleware = getRetreiveTeamStreakMiddleware(teamStreakModel);
+export const retrieveTeamStreakMiddleware = getRetrieveTeamStreakMiddleware(teamStreakModel);
 
-export const getRetreiveTeamStreakMembersInformationMiddleware = (
+export const getRetrieveTeamStreakMembersInformationMiddleware = (
     userModel: mongoose.Model<UserModel>,
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -71,16 +71,16 @@ export const getRetreiveTeamStreakMembersInformationMiddleware = (
         response.locals.teamStreak = teamStreak;
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.RetreiveTeamStreakMembersInformation, err));
+        next(new CustomError(ErrorType.RetrieveTeamStreakMembersInformation, err));
     }
 };
 
-export const retreiveTeamStreakMembersInformationMiddleware = getRetreiveTeamStreakMembersInformationMiddleware(
+export const retrieveTeamStreakMembersInformationMiddleware = getRetrieveTeamStreakMembersInformationMiddleware(
     userModel,
     teamMemberStreakModel,
 );
 
-export const getRetreiveTeamStreakCreatorInformationMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveTeamStreakCreatorInformationMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -96,11 +96,11 @@ export const getRetreiveTeamStreakCreatorInformationMiddleware = (userModel: mon
         response.locals.teamStreak = teamStreak;
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.RetreiveTeamStreakCreatorInformationMiddleware, err));
+        next(new CustomError(ErrorType.RetrieveTeamStreakCreatorInformationMiddleware, err));
     }
 };
 
-export const retreiveTeamStreakCreatorInformationMiddleware = getRetreiveTeamStreakCreatorInformationMiddleware(
+export const retrieveTeamStreakCreatorInformationMiddleware = getRetrieveTeamStreakCreatorInformationMiddleware(
     userModel,
 );
 
@@ -121,8 +121,8 @@ export const sendTeamStreakMiddleware = getSendTeamStreakMiddleware(ResponseCode
 
 export const getOneTeamStreakMiddlewares = [
     getTeamStreakParamsValidationMiddleware,
-    retreiveTeamStreakMiddleware,
-    retreiveTeamStreakMembersInformationMiddleware,
-    retreiveTeamStreakCreatorInformationMiddleware,
+    retrieveTeamStreakMiddleware,
+    retrieveTeamStreakMembersInformationMiddleware,
+    retrieveTeamStreakCreatorInformationMiddleware,
     sendTeamStreakMiddleware,
 ];

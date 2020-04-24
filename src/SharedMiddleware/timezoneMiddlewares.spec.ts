@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { retreiveTimezoneHeaderMiddleware, getValidateTimezoneMiddleware } from './timezoneMiddlewares';
+import { retrieveTimezoneHeaderMiddleware, getValidateTimezoneMiddleware } from './timezoneMiddlewares';
 import { CustomError, ErrorType } from '../customError';
 
-describe('retreiveTimezoneHeaderMiddleware', () => {
+describe('retrieveTimezoneHeaderMiddleware', () => {
     test('sets response.locals.timezone and calls next()', () => {
         const timezone = 'Europe/London';
         expect.assertions(3);
@@ -15,7 +15,7 @@ describe('retreiveTimezoneHeaderMiddleware', () => {
         };
         const next = jest.fn();
 
-        retreiveTimezoneHeaderMiddleware(request, response, next);
+        retrieveTimezoneHeaderMiddleware(request, response, next);
 
         expect(header).toBeCalledWith('x-timezone');
         expect(response.locals.timezone).toBeDefined();
@@ -34,12 +34,12 @@ describe('retreiveTimezoneHeaderMiddleware', () => {
         };
         const next = jest.fn();
 
-        retreiveTimezoneHeaderMiddleware(request, response, next);
+        retrieveTimezoneHeaderMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.MissingTimezoneHeader));
     });
 
-    test('throws RetreiveTimezoneHeaderMiddleware when middleware fails', () => {
+    test('throws RetrieveTimezoneHeaderMiddleware when middleware fails', () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = {
@@ -47,9 +47,9 @@ describe('retreiveTimezoneHeaderMiddleware', () => {
         };
         const next = jest.fn();
 
-        retreiveTimezoneHeaderMiddleware(request, response, next);
+        retrieveTimezoneHeaderMiddleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveTimezoneHeaderMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveTimezoneHeaderMiddleware, expect.any(Error)));
     });
 });
 

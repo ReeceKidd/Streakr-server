@@ -8,7 +8,6 @@ import {
 } from './getAllChallengeStreaksMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreak';
 
 describe('getChallengeStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
@@ -132,7 +131,7 @@ describe('findChallengeStreaksMiddleware', () => {
         const challengeStreakModel = {
             find,
         };
-        const sortField = GetAllChallengeStreaksSortFields.currentStreak;
+        const sortField = 'currentStreak';
         const request: any = { query: { sortField } };
         const response: any = { locals: {} };
         const next = jest.fn();

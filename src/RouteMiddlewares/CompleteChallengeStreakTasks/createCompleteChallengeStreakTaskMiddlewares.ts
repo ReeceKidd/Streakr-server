@@ -8,7 +8,7 @@ import {
     ActivityFeedItemTypes,
     ActivityFeedItemType,
     Challenge,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -76,7 +76,7 @@ export const ensureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware = (
     }
 };
 
-export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -91,11 +91,11 @@ export const getRetreiveUserMiddleware = (userModel: mongoose.Model<UserModel>) 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetreiveUserMiddleware, err));
+        else next(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetrieveUserMiddleware, err));
     }
 };
 
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
+export const retrieveUserMiddleware = getRetrieveUserMiddleware(userModel);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getSetTaskCompleteTimeMiddleware = (moment: any) => (
@@ -221,7 +221,7 @@ export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCod
 
 export const sendTaskCompleteResponseMiddleware = getSendTaskCompleteResponseMiddleware(ResponseCodes.created);
 
-export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
+export const getRetrieveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -236,11 +236,11 @@ export const getRetreiveChallengeMiddleware = (challengeModel: mongoose.Model<Ch
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware, err));
+        else next(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetrieveChallengeMiddleware, err));
     }
 };
 
-export const retreiveChallengeMiddleware = getRetreiveChallengeMiddleware(challengeModel);
+export const retrieveChallengeMiddleware = getRetrieveChallengeMiddleware(challengeModel);
 
 export const getCreateCompleteChallengeStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
@@ -273,13 +273,13 @@ export const createCompleteChallengeStreakTaskMiddlewares = [
     completeChallengeStreakTaskBodyValidationMiddleware,
     challengeStreakExistsMiddleware,
     ensureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     setTaskCompleteTimeMiddleware,
     setStreakStartDateMiddleware,
     setDayTaskWasCompletedMiddleware,
     saveTaskCompleteMiddleware,
     streakMaintainedMiddleware,
     sendTaskCompleteResponseMiddleware,
-    retreiveChallengeMiddleware,
+    retrieveChallengeMiddleware,
     createCompleteChallengeStreakActivityFeedItemMiddleware,
 ];

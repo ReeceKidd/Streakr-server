@@ -24,7 +24,7 @@ export const incompleteSoloStreakTaskQueryValidationMiddleware = (
     );
 };
 
-export const getRetreiveIncompleteSoloStreakTasksMiddleware = (
+export const getRetrieveIncompleteSoloStreakTasksMiddleware = (
     incompleteSoloStreakTaskModel: mongoose.Model<IncompleteSoloStreakTaskModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -48,7 +48,7 @@ export const getRetreiveIncompleteSoloStreakTasksMiddleware = (
     }
 };
 
-export const retreiveIncompleteSoloStreakTasksMiddleware = getRetreiveIncompleteSoloStreakTasksMiddleware(
+export const retrieveIncompleteSoloStreakTasksMiddleware = getRetrieveIncompleteSoloStreakTasksMiddleware(
     incompleteSoloStreakTaskModel,
 );
 
@@ -67,6 +67,6 @@ export const sendIncompleteSoloStreakTasksResponseMiddleware = (
 
 export const getIncompleteSoloStreakTasksMiddlewares = [
     incompleteSoloStreakTaskQueryValidationMiddleware,
-    retreiveIncompleteSoloStreakTasksMiddleware,
+    retrieveIncompleteSoloStreakTasksMiddleware,
     sendIncompleteSoloStreakTasksResponseMiddleware,
 ];

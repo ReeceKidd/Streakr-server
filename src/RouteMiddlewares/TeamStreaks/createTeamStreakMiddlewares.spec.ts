@@ -11,8 +11,8 @@ import {
     updateTeamStreakMembersArrayMiddleware,
     getUpdateTeamStreakMembersArray,
     populateTeamStreakMembersInformationMiddleware,
-    retreiveCreatedTeamStreakCreatorInformationMiddleware,
-    getRetreiveCreatedTeamStreakCreatorInformationMiddleware,
+    retrieveCreatedTeamStreakCreatorInformationMiddleware,
+    getRetrieveCreatedTeamStreakCreatorInformationMiddleware,
     getPopulateTeamStreakMembersInformationMiddleware,
     createdTeamStreakActivityFeedItemMiddleware,
     getCreateTeamStreakActivityFeedItemMiddleware,
@@ -550,12 +550,12 @@ describe('populateTeamStreakMembersInformation', () => {
         const middleware = getPopulateTeamStreakMembersInformationMiddleware({} as any, {} as any);
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveTeamStreakMembersInformation, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveTeamStreakMembersInformation, expect.any(Error)));
     });
 });
 
-describe('retreiveCreatedTeamStreakCreatorInformation', () => {
-    test('retreives team streak creator information and sets response.locals.newTeamStreak', async () => {
+describe('retrieveCreatedTeamStreakCreatorInformation', () => {
+    test('retrieves team streak creator information and sets response.locals.newTeamStreak', async () => {
         expect.assertions(4);
 
         const user = { _id: '12345678', username: 'usernames' };
@@ -570,7 +570,7 @@ describe('retreiveCreatedTeamStreakCreatorInformation', () => {
         const response: any = { locals: { newTeamStreak } };
         const next = jest.fn();
 
-        const middleware = getRetreiveCreatedTeamStreakCreatorInformationMiddleware(userModel);
+        const middleware = getRetrieveCreatedTeamStreakCreatorInformationMiddleware(userModel);
         await middleware(request, response, next);
 
         expect(findOne).toHaveBeenCalledWith({ _id: creatorId });
@@ -579,18 +579,18 @@ describe('retreiveCreatedTeamStreakCreatorInformation', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('calls next with RetreiveCreatedTeamStreakCreatorInformationMiddleware on middleware failure', async () => {
+    test('calls next with RetrieveCreatedTeamStreakCreatorInformationMiddleware on middleware failure', async () => {
         expect.assertions(1);
 
         const response: any = {};
         const request: any = {};
         const next = jest.fn();
 
-        const middleware = getRetreiveCreatedTeamStreakCreatorInformationMiddleware({} as any);
+        const middleware = getRetrieveCreatedTeamStreakCreatorInformationMiddleware({} as any);
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.RetreiveCreatedTeamStreakCreatorInformationMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.RetrieveCreatedTeamStreakCreatorInformationMiddleware, expect.any(Error)),
         );
     });
 });
@@ -685,7 +685,7 @@ describe(`createTeamStreakMiddlewares`, () => {
         expect(createTeamStreakMiddlewares[2]).toBe(createTeamMemberStreaksMiddleware);
         expect(createTeamStreakMiddlewares[3]).toBe(updateTeamStreakMembersArrayMiddleware);
         expect(createTeamStreakMiddlewares[4]).toBe(populateTeamStreakMembersInformationMiddleware);
-        expect(createTeamStreakMiddlewares[5]).toBe(retreiveCreatedTeamStreakCreatorInformationMiddleware);
+        expect(createTeamStreakMiddlewares[5]).toBe(retrieveCreatedTeamStreakCreatorInformationMiddleware);
         expect(createTeamStreakMiddlewares[6]).toBe(sendTeamStreakMiddleware);
         expect(createTeamStreakMiddlewares[7]).toBe(createdTeamStreakActivityFeedItemMiddleware);
     });

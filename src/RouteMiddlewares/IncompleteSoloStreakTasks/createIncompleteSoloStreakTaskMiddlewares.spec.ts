@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     createIncompleteSoloStreakTaskMiddlewares,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     setTaskIncompleteTimeMiddleware,
     setDayTaskWasIncompletedMiddleware,
     sendTaskIncompleteResponseMiddleware,
@@ -11,7 +11,7 @@ import {
     saveTaskIncompleteMiddleware,
     getIncompleteSoloStreakMiddleware,
     getSoloStreakExistsMiddleware,
-    getRetreiveUserMiddleware,
+    getRetrieveUserMiddleware,
     getSetDayTaskWasIncompletedMiddleware,
     getSetTaskIncompleteTimeMiddleware,
     getSaveTaskIncompleteMiddleware,
@@ -198,7 +198,7 @@ describe('ensureSoloStreakTaskHasBeenCompletedTodayMiddleware', () => {
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware({} as any);
+        const middleware = getRetrieveUserMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -280,7 +280,7 @@ describe('resetStreakStartDateMiddleware', () => {
     });
 });
 
-describe('retreiveUserMiddleware', () => {
+describe('retrieveUserMiddleware', () => {
     test('sets response.locals.user and calls next()', async () => {
         expect.assertions(4);
         const lean = jest.fn(() => true);
@@ -290,7 +290,7 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
@@ -309,14 +309,14 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.CreateIncompleteSoloStreakTaskUserDoesNotExist));
     });
 
-    test('throws CreateIncompleteSoloStreakTaskRetreiveUserMiddleware error on middleware failure', async () => {
+    test('throws CreateIncompleteSoloStreakTaskRetrieveUserMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -326,12 +326,12 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { status, locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreateIncompleteSoloStreakTaskRetreiveUserMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.CreateIncompleteSoloStreakTaskRetrieveUserMiddleware, expect.any(Error)),
         );
     });
 });
@@ -355,7 +355,7 @@ describe('setTaskIncompleteTimeMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws SetTaskIncompleteTimeMiddlewre error on middleware failure', () => {
+    test('throws SetTaskIncompleteTimeMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const tz = jest.fn(() => true);
         const moment = jest.fn(() => ({ tz }));
@@ -437,7 +437,7 @@ describe('createIncompleteSoloStreakTaskDefinitionMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws CreateIncompleteSoloStreakTaskDefinitionMiddlware error on middleware failure', () => {
+    test('throws CreateIncompleteSoloStreakTaskDefinitionMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = {};
@@ -681,7 +681,7 @@ describe(`createIncompleteSoloStreakTaskMiddlewares`, () => {
         expect(createIncompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[2]).toBe(ensureSoloStreakTaskHasBeenCompletedTodayMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[3]).toBe(resetStreakStartDateMiddleware);
-        expect(createIncompleteSoloStreakTaskMiddlewares[4]).toBe(retreiveUserMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[4]).toBe(retrieveUserMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[5]).toBe(setTaskIncompleteTimeMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[6]).toBe(setDayTaskWasIncompletedMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[7]).toBe(createIncompleteSoloStreakTaskDefinitionMiddleware);

@@ -3,10 +3,10 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import {
     completeChallengeStreakTaskQueryValidationMiddleware,
-    getRetreiveCompleteChallengeStreakTasksMiddleware,
+    getRetrieveCompleteChallengeStreakTasksMiddleware,
     sendCompleteChallengeStreakTasksResponseMiddleware,
     getCompleteChallengeStreakTasksMiddlewares,
-    retreiveCompleteChallengeStreakTasksMiddleware,
+    retrieveCompleteChallengeStreakTasksMiddleware,
 } from './getCompleteChallengeStreakTaskMiddlewares';
 
 describe('completeChallengeStreakTaskQueryValidationMiddleware', () => {
@@ -72,7 +72,7 @@ describe('completeChallengeStreakTaskQueryValidationMiddleware', () => {
     });
 });
 
-describe('getRetreiveCompleteChallengeStreakTasksMiddleware', () => {
+describe('getRetrieveCompleteChallengeStreakTasksMiddleware', () => {
     test('queries with just userId', async () => {
         expect.assertions(3);
 
@@ -84,7 +84,7 @@ describe('getRetreiveCompleteChallengeStreakTasksMiddleware', () => {
         const request: any = { query: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteChallengeStreakTasksMiddleware(completeChallengeStreakTaskModel as any);
+        const middleware = getRetrieveCompleteChallengeStreakTasksMiddleware(completeChallengeStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -104,7 +104,7 @@ describe('getRetreiveCompleteChallengeStreakTasksMiddleware', () => {
         const request: any = { query: { challengeStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteChallengeStreakTasksMiddleware(completeChallengeStreakTaskModel as any);
+        const middleware = getRetrieveCompleteChallengeStreakTasksMiddleware(completeChallengeStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -125,7 +125,7 @@ describe('getRetreiveCompleteChallengeStreakTasksMiddleware', () => {
         const request: any = { query: { userId, challengeStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteChallengeStreakTasksMiddleware(completeChallengeStreakTaskModel as any);
+        const middleware = getRetrieveCompleteChallengeStreakTasksMiddleware(completeChallengeStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -144,7 +144,7 @@ describe('getRetreiveCompleteChallengeStreakTasksMiddleware', () => {
         const request: any = { query: {} };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveCompleteChallengeStreakTasksMiddleware(completeChallengeStreakTaskModel as any);
+        const middleware = getRetrieveCompleteChallengeStreakTasksMiddleware(completeChallengeStreakTaskModel as any);
 
         await middleware(request, response, next);
 
@@ -160,7 +160,7 @@ describe('getRetreiveCompleteChallengeStreakTasksMiddleware', () => {
         const response: any = {};
         const next = jest.fn();
 
-        const middleware = getRetreiveCompleteChallengeStreakTasksMiddleware({} as any);
+        const middleware = getRetrieveCompleteChallengeStreakTasksMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -209,7 +209,7 @@ describe('getCompleteChallengeStreakTaskMiddlewares', () => {
         expect(getCompleteChallengeStreakTasksMiddlewares[0]).toEqual(
             completeChallengeStreakTaskQueryValidationMiddleware,
         );
-        expect(getCompleteChallengeStreakTasksMiddlewares[1]).toEqual(retreiveCompleteChallengeStreakTasksMiddleware);
+        expect(getCompleteChallengeStreakTasksMiddlewares[1]).toEqual(retrieveCompleteChallengeStreakTasksMiddleware);
         expect(getCompleteChallengeStreakTasksMiddlewares[2]).toEqual(
             sendCompleteChallengeStreakTasksResponseMiddleware,
         );

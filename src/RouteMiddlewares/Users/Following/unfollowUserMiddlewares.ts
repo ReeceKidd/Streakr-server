@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddle
 import { userModel, UserModel } from '../../../Models/User';
 import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
-import { User } from '@streakoid/streakoid-sdk/lib';
+import { User } from '@streakoid/streakoid-models/lib';
 
 const unfollowUserParamsValidationSchema = {
     userId: Joi.string()
@@ -29,7 +29,7 @@ export const unfollowUserParamsValidationMiddleware = (
     );
 };
 
-export const getRetreiveSelectedUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getRetrieveSelectedUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -44,11 +44,11 @@ export const getRetreiveSelectedUserMiddleware = (userModel: mongoose.Model<User
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.UnfollowUserRetreiveSelectedUserMiddleware, err));
+        else next(new CustomError(ErrorType.UnfollowUserRetrieveSelectedUserMiddleware, err));
     }
 };
 
-export const retreiveSelectedUserMiddleware = getRetreiveSelectedUserMiddleware(userModel);
+export const retrieveSelectedUserMiddleware = getRetrieveSelectedUserMiddleware(userModel);
 
 export const doesUserToUnfollowExistInSelectedUsersFollowingMiddleware = (
     request: Request,
@@ -131,7 +131,7 @@ export const sendUserUnfollowedResponseMiddleware = (
 
 export const unfollowUserMiddlewares = [
     unfollowUserParamsValidationMiddleware,
-    retreiveSelectedUserMiddleware,
+    retrieveSelectedUserMiddleware,
     doesUserToUnfollowExistInSelectedUsersFollowingMiddleware,
     unfollowUserMiddleware,
     deleteSelectedUserFromUserToUnfollowFollowersMiddleware,

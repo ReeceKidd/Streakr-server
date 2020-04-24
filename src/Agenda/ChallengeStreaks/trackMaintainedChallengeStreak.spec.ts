@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { trackMaintainedChallengeStreaks } from './trackMaintainedChallengeStreaks';
 import streakoid from '../../streakoid';
-import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-sdk/lib';
+import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-models/lib';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
 
 describe('trackMaintainedChallengeStreaks', () => {

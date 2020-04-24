@@ -1,4 +1,4 @@
-import { PopulatedCurrentUser } from '@streakoid/streakoid-sdk/lib';
+import { PopulatedCurrentUser } from '@streakoid/streakoid-models/lib';
 
 import streakoid from '../../src/streakoid';
 

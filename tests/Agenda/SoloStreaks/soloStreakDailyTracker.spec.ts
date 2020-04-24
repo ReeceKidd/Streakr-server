@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSoloStreakDailyTrackerJob } from '../../../src/scripts/initaliseSoloStreakTimezoneCheckers';
-import StreakStatus from '@streakoid/streakoid-sdk/lib/StreakStatus';
-import { StreakTrackingEventTypes, StreakTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import StreakStatus from '@streakoid/streakoid-models/lib/StreakStatus';
+import { StreakTrackingEventTypes, StreakTypes, AgendaJobNames } from '@streakoid/streakoid-models/lib';
+import { StreakoidFactory } from '@streakoid/streakoid-models/lib/streakoid';
 
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEvent';

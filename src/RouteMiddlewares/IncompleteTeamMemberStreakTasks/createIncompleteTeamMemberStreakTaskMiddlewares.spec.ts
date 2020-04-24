@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     createIncompleteTeamMemberStreakTaskMiddlewares,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
     setTaskIncompleteTimeMiddleware,
     setDayTaskWasIncompletedMiddleware,
     sendTaskIncompleteResponseMiddleware,
@@ -11,7 +11,7 @@ import {
     saveTaskIncompleteMiddleware,
     getIncompleteTeamMemberStreakMiddleware,
     getTeamMemberStreakExistsMiddleware,
-    getRetreiveUserMiddleware,
+    getRetrieveUserMiddleware,
     getSetDayTaskWasIncompletedMiddleware,
     getSetTaskIncompleteTimeMiddleware,
     getSaveTaskIncompleteMiddleware,
@@ -33,9 +33,9 @@ import {
     getHasAtLeastOneTeamMemberCompletedTheirTaskMiddleware,
     getMakeTeamStreakInactiveMiddleware,
     makeTeamStreakInactiveMiddleware,
-    retreiveTeamMembersMiddleware,
+    retrieveTeamMembersMiddleware,
     notifiyTeamMembersThatUserHasIncompletedTaskMiddleware,
-    getRetreiveTeamMembersMiddleware,
+    getRetrieveTeamMembersMiddleware,
     getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware,
     getCreateIncompleteTeamMemberStreakActivityFeedItemMiddleware,
     createIncompleteTeamMemberStreakActivityFeedItemMiddleware,
@@ -385,7 +385,7 @@ describe('resetStreakStartDateMiddleware', () => {
     });
 });
 
-describe('retreiveUserMiddleware', () => {
+describe('retrieveUserMiddleware', () => {
     test('sets response.locals.user and calls next()', async () => {
         expect.assertions(4);
         const lean = jest.fn(() => true);
@@ -395,7 +395,7 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
@@ -414,14 +414,14 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskUserDoesNotExist));
     });
 
-    test('throws CreateIncompleteTeamMemberStreakTaskRetreiveUserMiddleware error on middleware failure', async () => {
+    test('throws CreateIncompleteTeamMemberStreakTaskRetrieveUserMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -431,12 +431,12 @@ describe('retreiveUserMiddleware', () => {
         const request: any = { body: { userId } };
         const response: any = { status, locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveUserMiddleware(userModel as any);
+        const middleware = getRetrieveUserMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveUserMiddleware, expect.any(Error)),
+            new CustomError(ErrorType.CreateIncompleteTeamMemberStreakTaskRetrieveUserMiddleware, expect.any(Error)),
         );
     });
 });
@@ -460,7 +460,7 @@ describe('setTaskIncompleteTimeMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws SetTaskIncompleteTimeMiddlewre error on middleware failure', () => {
+    test('throws SetTaskIncompleteTimeMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const tz = jest.fn(() => true);
         const moment = jest.fn(() => ({ tz }));
@@ -544,7 +544,7 @@ describe('createIncompleteTeamMemberStreakTaskDefinitionMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws CreateIncompleteTeamMemberStreakTaskDefinitionMiddlware error on middleware failure', () => {
+    test('throws CreateIncompleteTeamMemberStreakTaskDefinitionMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = {};
@@ -1078,8 +1078,8 @@ describe('createTeamStreakIncompleteMiddleware', () => {
     });
 });
 
-describe('retreiveTeamMembersMiddleware', () => {
-    test('retreives team members without current user and calls next.', async () => {
+describe('retrieveTeamMembersMiddleware', () => {
+    test('retrieves team members without current user and calls next.', async () => {
         expect.assertions(3);
         const user = {
             _id: '_id',
@@ -1097,7 +1097,7 @@ describe('retreiveTeamMembersMiddleware', () => {
         const request: any = {};
         const response: any = { locals: { user, teamStreak } };
         const next = jest.fn();
-        const middleware = getRetreiveTeamMembersMiddleware(userModel as any);
+        const middleware = getRetrieveTeamMembersMiddleware(userModel as any);
 
         await middleware(request, response, next);
 
@@ -1106,18 +1106,18 @@ describe('retreiveTeamMembersMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws RetreiveTeamMembers error on middleware failure', async () => {
+    test('throws RetrieveTeamMembers error on middleware failure', async () => {
         expect.assertions(1);
         const request: any = {};
         const response: any = {};
         const next = jest.fn();
-        const middleware = getRetreiveTeamMembersMiddleware({} as any);
+        const middleware = getRetrieveTeamMembersMiddleware({} as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(
             new CustomError(
-                ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware,
+                ErrorType.CreateIncompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware,
                 expect.any(Error),
             ),
         );
@@ -1355,7 +1355,7 @@ describe(`createIncompleteTeamMemberStreakTaskMiddlewares`, () => {
             ensureTeamMemberStreakTaskHasBeenCompletedTodayMiddleware,
         );
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[4]).toBe(resetStreakStartDateMiddleware);
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[5]).toBe(retreiveUserMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[5]).toBe(retrieveUserMiddleware);
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[6]).toBe(setTaskIncompleteTimeMiddleware);
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[7]).toBe(setDayTaskWasIncompletedMiddleware);
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[8]).toBe(
@@ -1370,7 +1370,7 @@ describe(`createIncompleteTeamMemberStreakTaskMiddlewares`, () => {
         );
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[14]).toBe(makeTeamStreakInactiveMiddleware);
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[15]).toBe(createTeamStreakIncompleteMiddleware);
-        expect(createIncompleteTeamMemberStreakTaskMiddlewares[16]).toBe(retreiveTeamMembersMiddleware);
+        expect(createIncompleteTeamMemberStreakTaskMiddlewares[16]).toBe(retrieveTeamMembersMiddleware);
         expect(createIncompleteTeamMemberStreakTaskMiddlewares[17]).toBe(
             notifiyTeamMembersThatUserHasIncompletedTaskMiddleware,
         );

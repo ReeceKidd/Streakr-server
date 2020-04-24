@@ -8,7 +8,7 @@ import {
     StreakTypes,
     ActivityFeedItemTypes,
     ActivityFeedItemType,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 
 export const resetIncompleteSoloStreaks = async (

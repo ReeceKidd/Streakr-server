@@ -25,7 +25,7 @@ export const teamMemberParamsValidationMiddleware = (
     );
 };
 
-export const getRetreiveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+export const getRetrieveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -40,13 +40,13 @@ export const getRetreiveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.DeleteTeamMemberRetreiveTeamStreakMiddleware, err));
+        else next(new CustomError(ErrorType.DeleteTeamMemberRetrieveTeamStreakMiddleware, err));
     }
 };
 
-export const retreiveTeamStreakMiddleware = getRetreiveTeamStreakMiddleware(teamStreakModel);
+export const retrieveTeamStreakMiddleware = getRetrieveTeamStreakMiddleware(teamStreakModel);
 
-export const retreiveTeamMemberMiddleware = async (
+export const retrieveTeamMemberMiddleware = async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -65,7 +65,7 @@ export const retreiveTeamMemberMiddleware = async (
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.RetreiveTeamMemberMiddleware, err));
+        else next(new CustomError(ErrorType.RetrieveTeamMemberMiddleware, err));
     }
 };
 export const getDeleteTeamMemberMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
@@ -104,8 +104,8 @@ export const sendTeamMemberDeletedResponseMiddleware = (
 
 export const deleteTeamMemberMiddlewares = [
     teamMemberParamsValidationMiddleware,
-    retreiveTeamStreakMiddleware,
-    retreiveTeamMemberMiddleware,
+    retrieveTeamStreakMiddleware,
+    retrieveTeamMemberMiddleware,
     deleteTeamMemberMiddleware,
     sendTeamMemberDeletedResponseMiddleware,
 ];

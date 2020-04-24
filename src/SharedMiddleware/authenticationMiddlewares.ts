@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { CustomError, ErrorType } from '../customError';
 import { UserModel, userModel } from '../Models/User';
 import { getServiceConfig } from '../../src/getServiceConfig';
-import { SupportedRequestHeaders } from '@streakoid/streakoid-sdk/lib';
+import { SupportedRequestHeaders } from '@streakoid/streakoid-models/lib';
 
 const { COGNITO_APP_CLIENT_ID } = getServiceConfig();
 
@@ -46,7 +46,7 @@ export const ensureAudienceMatchesCognitoUserPool = (
     }
 };
 
-export const getRetreiveUserMiddleware = (userModel: Model<UserModel>) => async (
+export const getRetrieveUserMiddleware = (userModel: Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -65,14 +65,14 @@ export const getRetreiveUserMiddleware = (userModel: Model<UserModel>) => async 
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.AuthRetreiveUserMiddleware, err));
+        else next(new CustomError(ErrorType.AuthRetrieveUserMiddleware, err));
     }
 };
 
-export const retreiveUserMiddleware = getRetreiveUserMiddleware(userModel);
+export const retrieveUserMiddleware = getRetrieveUserMiddleware(userModel);
 
 export const authenticationMiddlewares = [
     decodeJWTMiddleware,
     ensureAudienceMatchesCognitoUserPool,
-    retreiveUserMiddleware,
+    retrieveUserMiddleware,
 ];

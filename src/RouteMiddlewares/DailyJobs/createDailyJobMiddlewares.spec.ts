@@ -9,7 +9,7 @@ import {
     createDailyJobMiddlewares,
     saveDailyJobToDatabaseMiddleware,
 } from './createDailyJobMiddlewares';
-import { StreakTypes, AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
+import { StreakTypes, AgendaJobNames } from '@streakoid/streakoid-models/lib';
 
 describe(`createDailyJobBodyValidationMiddleware`, () => {
     const agendaJobId = 'agendaJobId';

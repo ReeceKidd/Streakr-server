@@ -4,7 +4,7 @@ import * as Joi from 'joi';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { ActivityFeedItemTypes } from '@streakoid/streakoid-sdk/lib';
+import { ActivityFeedItemTypes } from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 
 const createActivityFeedItemBodyValidationSchema = {

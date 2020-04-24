@@ -3,7 +3,7 @@ import Agenda from 'agenda';
 import { getServiceConfig } from '../getServiceConfig';
 import { manageDailySoloStreaks } from './SoloStreaks/manageDailySoloStreaks';
 import { sendEmail } from '../email';
-import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
+import { AgendaJobNames } from '@streakoid/streakoid-models/lib';
 import { manageDailyTeamStreaks } from './TeamStreaks/manageDailyTeamStreaks';
 import { adjustForDaylightSavingsTime } from './AdjustForDaylightSavingsTime/adjustForDaylightSavingsTime';
 import { manageDailyChallengeStreaks } from './ChallengeStreaks/manageDailyChallengeStreaks';

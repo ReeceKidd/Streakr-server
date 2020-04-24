@@ -7,7 +7,7 @@ export enum ErrorType {
     AddStripeSubscriptionToUserMiddleware,
     UserDoesNotExist,
     PasswordDoesNotMatchHash,
-    RetreiveUserWithEmailMiddlewareError,
+    RetrieveUserWithEmailMiddlewareError,
     CompareRequestPasswordToUserHashedPasswordMiddleware,
     SetMinimumUserDataMiddleware,
     SetJsonWebTokenExpiryInfoMiddleware,
@@ -16,9 +16,9 @@ export enum ErrorType {
     SoloStreakDoesNotExist,
     SoloStreakExistsMiddleware,
     MissingTimezoneHeader,
-    RetreiveTimezoneHeaderMiddleware,
+    RetrieveTimezoneHeaderMiddleware,
     ValidateTimezoneMiddleware,
-    RetreiveUserMiddleware,
+    RetrieveUserMiddleware,
     SetTaskCompleteTimeMiddleware,
     SetStreakStartDateMiddleware,
     SoloStreakHasBeenCompletedToday,
@@ -38,7 +38,7 @@ export enum ErrorType {
     DeleteSoloStreakMiddleware,
     SendSoloStreakDeletedResponseMiddleware,
     GetSoloStreakNoSoloStreakFound,
-    RetreiveSoloStreakMiddleware,
+    RetrieveSoloStreakMiddleware,
     SendSoloStreakMiddleware,
     FindSoloStreaksMiddleware,
     SendSoloStreaksMiddleware,
@@ -82,10 +82,10 @@ export enum ErrorType {
     DeleteCompleteSoloStreakTaskMiddleware,
     SendCompleteSoloStreakTaskDeletedResponseMiddleware,
     NoUserFound,
-    GetRetreiveUserMiddleware,
+    GetRetrieveUserMiddleware,
     SendUserMiddleware,
-    RetreiveIncompleteSoloStreaksMiddleware,
-    RetreiveFriendsMiddleware,
+    RetrieveIncompleteSoloStreaksMiddleware,
+    RetrieveFriendsMiddleware,
     SendFormattedFollowingMiddleware,
     FriendDoesNotExist,
     DoesFriendExistMiddleware,
@@ -93,12 +93,12 @@ export enum ErrorType {
     IsAlreadyAFriend,
     UserIsAlreadyFollowing,
     UnfollowUserNoSelectedUserFound,
-    UnfollowUserRetreiveSelectedUserMiddleware,
+    UnfollowUserRetrieveSelectedUserMiddleware,
     DoesUserToUnfollowExistInSelectedUsersFollowingMiddleware,
     UnfollowUserMiddleware,
     UserToUnfollowDoesNotExistInSelectedUsersFollowing,
     GetFollowingUserDoesNotExist,
-    GetFollowingRetreiveUserMiddleware,
+    GetFollowingRetrieveUserMiddleware,
     FormatFriendsMiddleware,
     TeamStreakDefineCurrentTimeMiddleware,
     TeamStreakDefineStartDayMiddleware,
@@ -108,21 +108,21 @@ export enum ErrorType {
     SendFormattedTeamStreakMiddleware,
     FindTeamStreaksMiddleware,
     SendTeamStreaksMiddleware,
-    RetreiveTeamStreaksMembersInformation,
+    RetrieveTeamStreaksMembersInformation,
     SendTeamStreakDeletedResponseMiddleware,
     DeleteTeamStreakMiddleware,
     NoTeamStreakToDeleteFound,
     GetTeamStreakNoTeamStreakFound,
-    RetreiveTeamStreakMiddleware,
+    RetrieveTeamStreakMiddleware,
     SendTeamStreakMiddleware,
-    RetreiveTeamStreakMembersInformation,
+    RetrieveTeamStreakMembersInformation,
     SaveStreakTrackingEventToDatabase,
     SaveStreakTrackingEventToDatabaseMiddleware,
     SendFormattedStreakTrackingEventMiddleware,
     GetStreakTrackingEventsMiddleware,
     SendStreakTrackingEventsResponseMiddleware,
     GetStreakTrackingEventNoStreakTrackingEventFound,
-    RetreiveStreakTrackingEventMiddleware,
+    RetrieveStreakTrackingEventMiddleware,
     SendStreakTrackingEventMiddleware,
     NoStreakTrackingEventToDeleteFound,
     DeleteStreakTrackingEventMiddleware,
@@ -136,19 +136,19 @@ export enum ErrorType {
     DeleteFeedbackMiddleware,
     SendFeedbackDeletedResponseMiddleware,
     NoFeedbackToDeleteFound,
-    RetreiveTeamStreakCreatorInformationMiddleware,
+    RetrieveTeamStreakCreatorInformationMiddleware,
     CreateTeamMemberStreakFromRequestMiddleware,
     SaveTeamMemberStreakToDatabaseMiddleware,
     SendFormattedTeamMemberStreakMiddleware,
-    CreateTeamMemberStreakRetreiveUserMiddleware,
+    CreateTeamMemberStreakRetrieveUserMiddleware,
     CreateTeamMemberStreakUserDoesNotExist,
     CreateTeamMemberStreakTeamStreakDoesNotExist,
-    CreateTeamMemberStreakRetreiveTeamStreakMiddleware,
+    CreateTeamMemberStreakRetrieveTeamStreakMiddleware,
     DeleteTeamMemberStreakMiddleware,
     SendTeamMemberStreakDeletedResponseMiddleware,
     NoTeamMemberStreakToDeleteFound,
     TeamMemberStreakExistsMiddleware,
-    CreateCompleteTeamMemberStreakTaskRetreiveUserMiddleware,
+    CreateCompleteTeamMemberStreakTaskRetrieveUserMiddleware,
     SetTeamMemberStreakTaskCompleteTimeMiddleware,
     SetTeamMemberStreakStartDateMiddleware,
     SetDayTeamMemberStreakTaskWasCompletedMiddleware,
@@ -159,7 +159,7 @@ export enum ErrorType {
     TeamMemberStreakTaskHasBeenCompletedToday,
     TeamMemberStreakDoesNotExist,
     CreateCompleteTeamMemberStreakTaskDefinitionMiddleware,
-    RetreiveTeamMemberStreakMiddleware,
+    RetrieveTeamMemberStreakMiddleware,
     SendTeamMemberStreakMiddleware,
     GetTeamMemberStreakNoTeamMemberStreakFound,
     TeamStreakDoesNotExist,
@@ -183,8 +183,8 @@ export enum ErrorType {
     CreateTeamMemberTeamStreakDoesNotExist,
     CreateTeamMemberCreateTeamMemberStreakMiddleware,
     AddFollowerToTeamStreakMiddleware,
-    DeleteTeamMemberRetreiveTeamStreakMiddleware,
-    RetreiveTeamMemberMiddleware,
+    DeleteTeamMemberRetrieveTeamStreakMiddleware,
+    RetrieveTeamMemberMiddleware,
     DeleteTeamMemberMiddleware,
     SendTeamMemberDeletedResponseMiddleware,
     NoTeamStreakFound,
@@ -194,27 +194,27 @@ export enum ErrorType {
     PatchUserMiddleware,
     SendUpdatedUserMiddleware,
     UpdatedUserNotFound,
-    RetreiveRequesterMiddleware,
-    RetreiveRequesteeMiddleware,
+    RetrieveRequesterMiddleware,
+    RetrieveRequesteeMiddleware,
     RequesteeUserIsAlreadyFollowing,
     RequesterDoesNotExist,
     RequesteeDoesNotExist,
     RequesteeIsAlreadyAFriend,
     PopulateTeamStreakMembersInformation,
-    RetreiveCreatedTeamStreakCreatorInformationMiddleware,
+    RetrieveCreatedTeamStreakCreatorInformationMiddleware,
     AddUserToFriendsFriendListMiddleware,
     AddFriendToUsersFriendListNotFound,
-    RetreiveFormattedRequesterDoesNotExist,
-    RetreiveFormattedRequesteeDoesNotExist,
-    RetreiveFormattedRequesterMiddleware,
-    RetreiveFormattedRequesteeMiddleware,
+    RetrieveFormattedRequesterDoesNotExist,
+    RetrieveFormattedRequesteeDoesNotExist,
+    RetrieveFormattedRequesterMiddleware,
+    RetrieveFormattedRequesteeMiddleware,
     SetTaskIncompleteTimeMiddleware,
     SetDayTaskWasIncompletedMiddleware,
     CreateIncompleteSoloStreakTaskDefinitionMiddleware,
     SaveTaskIncompleteMiddleware,
     SendTaskIncompleteResponseMiddleware,
     CreateIncompleteSoloStreakTaskSoloStreakExistsMiddleware,
-    CreateIncompleteSoloStreakTaskRetreiveUserMiddleware,
+    CreateIncompleteSoloStreakTaskRetrieveUserMiddleware,
     IncompleteSoloStreakMiddleware,
     CreateIncompleteSoloStreakTaskSoloStreakDoesNotExist,
     CreateIncompleteSoloStreakTaskUserDoesNotExist,
@@ -233,7 +233,7 @@ export enum ErrorType {
     CreateIncompleteTeamMemberStreakTaskUserDoesNotExist,
     CreateIncompleteTeamMemberStreakTaskTeamMemberStreakExistsMiddleware,
     EnsureTeamMemberStreakTaskHasBeenCompletedTodayMiddleware,
-    CreateIncompleteTeamMemberStreakTaskRetreiveUserMiddleware,
+    CreateIncompleteTeamMemberStreakTaskRetrieveUserMiddleware,
     CreateIncompleteTeamMemberStreakSetTaskIncompleteTimeMiddleware,
     CreateIncompleteTeamMemberStreakSetDayTaskWasIncompletedMiddleware,
     CreateIncompleteTeamMemberStreakTaskDefinitionMiddleware,
@@ -259,7 +259,7 @@ export enum ErrorType {
     SendFormattedDailyJobMiddleware,
     CreateCompleteTeamStreakTeamStreakExistsMiddleware,
     EnsureTeamStreakTaskHasNotBeenCompletedTodayMiddleware,
-    CreateCompleteTeamStreakRetreiveUserMiddleware,
+    CreateCompleteTeamStreakRetrieveUserMiddleware,
     CreateCompleteTeamStreakSetTaskCompleteTimeMiddleware,
     CreateCompleteTeamStreakSetStreakStartDateMiddleware,
     CreateCompleteTeamStreakSetDayTaskWasCompletedMiddleware,
@@ -278,7 +278,7 @@ export enum ErrorType {
     TokenDoesNotExist,
     DecodeJWTMiddleware,
     AuthUserDoesNotExist,
-    AuthRetreiveUserMiddleware,
+    AuthRetrieveUserMiddleware,
     AuthInvalidTokenNoCognitoUsername,
     AudienceDoesNotMatchCognitoAppClientId,
     EnsureAudienceMatchesCognitoUserPool,
@@ -297,7 +297,7 @@ export enum ErrorType {
     HasRequesterAlreadySentInvite,
     StripeTokenMissingId,
     StripeTokenMissingEmail,
-    ValidateStripeTokenMiddlware,
+    ValidateStripeTokenMiddleware,
     ImageTypeValidationMiddleware,
     InvalidImageFormat,
     ManipulateProfilePictureMiddleware,
@@ -309,7 +309,7 @@ export enum ErrorType {
     SetUserProfilePictures,
     SendProfilePictures,
     GetFollowingInfoMiddleware,
-    DeleteFriendRetreiveFriendMiddleware,
+    DeleteFriendRetrieveFriendMiddleware,
     DeleteSelectedUserFromUserToUnfollowFollowersMiddleware,
     DeleteFriendNoFriendFound,
     GetIncompleteTeamStreaksMiddleware,
@@ -324,7 +324,7 @@ export enum ErrorType {
     IncompleteTeamMemberStreakTaskTeamMemberStreakDoesNotExist,
     HasUserPaidMembershipMiddleware,
     UserHasNotPaidMembership,
-    RegisterDeviceForPushNotificationRetreiveUserMiddleware,
+    RegisterDeviceForPushNotificationRetrieveUserMiddleware,
     CreatePlatformEndpointMiddleware,
     SendSuccessfullyRegisteredDevice,
     RegisterDeviceForPushNotificationUserNotFound,
@@ -339,11 +339,11 @@ export enum ErrorType {
     GetCurrentUserFormatUserMiddleware,
     PatchCurrentUserFormatUserMiddleware,
     NotifyTeamMembersThatUserHasCompletedTaskMiddleware,
-    CreateCompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware,
+    CreateCompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware,
     CreateStreakRecommendationFromRequestMiddleware,
     SaveStreakRecommendationToDatabaseMiddleware,
     SendFormattedStreakRecommendationMiddleware,
-    CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware,
+    CreateIncompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware,
     NotifyTeamMembersThatUserHasIncompletedTaskMiddleware,
     SendStreakRecommendationsMiddleware,
     FindStreakRecommendationsMiddleware,
@@ -351,19 +351,19 @@ export enum ErrorType {
     SendFormattedChallengeMiddleware,
     FormChallengesQueryMiddleware,
     SendChallengesMiddleware,
-    GetRetreiveChallengeMiddleware,
+    GetRetrieveChallengeMiddleware,
     SendChallengeMiddleware,
     NoChallengeFound,
     CreateChallengeStreakFromRequestMiddleware,
     SendFormattedChallengeStreakMiddleware,
     FindChallengeStreaksMiddleware,
     SendChallengeStreaksMiddleware,
-    RetreiveChallengeStreakMiddleware,
+    RetrieveChallengeStreakMiddleware,
     SendChallengeStreakMiddleware,
     GetChallengeStreakNoChallengeStreakFound,
     ChallengeStreakExistsMiddleware,
     EnsureChallengeStreakTaskHasNotBeenCompletedTodayMiddleware,
-    CreateCompleteChallengeStreakTaskRetreiveUserMiddleware,
+    CreateCompleteChallengeStreakTaskRetrieveUserMiddleware,
     CreateCompleteChallengeStreakTaskSetTaskCompleteTimeMiddleware,
     CreateCompleteChallengeStreakTaskSetStreakStartDateMiddleware,
     CreateCompleteChallengeStreakTaskSetDayTaskWasCompletedMiddleware,
@@ -376,7 +376,7 @@ export enum ErrorType {
     ChallengeStreakHasBeenCompletedToday,
     CreateIncompleteChallengeStreakTaskChallengeStreakExistsMiddleware,
     EnsureChallengeStreakTaskHasBeenCompletedTodayMiddleware,
-    CreateIncompleteChallengeStreakTaskRetreiveUserMiddleware,
+    CreateIncompleteChallengeStreakTaskRetrieveUserMiddleware,
     CreateIncompleteChallengeStreakTaskDefinitionMiddleware,
     IncompleteChallengeStreakMiddleware,
     SendChallengeTaskIncompleteResponseMiddleware,
@@ -404,7 +404,7 @@ export enum ErrorType {
     SendFormattedNoteMiddleware,
     FindNotesMiddleware,
     SendNotesMiddleware,
-    RetreiveNoteMiddleware,
+    RetrieveNoteMiddleware,
     SendNoteMiddleware,
     GetNoNoteFound,
     DeleteNoteMiddleware,
@@ -456,16 +456,16 @@ export enum ErrorType {
     GetFollowersUserDoesNotExist,
     SendFormattedFollowersMiddleware,
     GetFollowersInfoMiddleware,
-    GetFollowersRetreiveUserMiddleware,
+    GetFollowersRetrieveUserMiddleware,
     UserToFollowDoesNotExist,
     SelectedUserIsAlreadyFollowingUser,
     SelectedUserDoesNotExist,
     SendUserWithNewFollowingMiddleware,
     AddSelectedUserToUserToFollowFollowersMiddleware,
     AddUserToFollowToSelectedUsersFollowing,
-    RetreiveUserToFollowMiddleware,
+    RetrieveUserToFollowMiddleware,
     IsSelectedUserIsAlreadFollowingUserMiddleware,
-    RetreiveSelectedUserMiddleware,
+    RetrieveSelectedUserMiddleware,
     NoUserToFollowFound,
     PopulateUserFollowersMiddleware,
     PopulateUserFollowingMiddleware,
@@ -477,12 +477,12 @@ export enum ErrorType {
     CreateFollowUserActivityFeedItemMiddleware,
     SaveActivityFeedItemToDatabaseMiddleware,
     SendActivityFeedItemMiddleware,
-    CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware,
+    CreateCompleteChallengeStreakTaskRetrieveChallengeMiddleware,
     CreateCompleteChallengeStreakTaskChallengeDoesNotExist,
-    CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware,
+    CreateIncompleteChallengeStreakTaskRetrieveChallengeMiddleware,
     CreateIncompleteChallengeStreakTaskChallengeDoesNotExist,
     PatchChallengeStreakNoChallengeFound,
-    PatchChallengeStreakRetreiveChallengeMiddleware,
+    PatchChallengeStreakRetrieveChallengeMiddleware,
     SendNewFollowerRequestNotificationMiddleware,
     UpdateCurrentUsersPushNotificationsUserNotFound,
     PatchCurrentUserPushNotificationsMiddleware,
@@ -882,7 +882,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.RetreiveFormattedRequesteeDoesNotExist: {
+            case ErrorType.RetrieveFormattedRequesteeDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-51`,
                     message: 'Requestee does not exist.',
@@ -890,7 +890,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.RetreiveFormattedRequesterDoesNotExist: {
+            case ErrorType.RetrieveFormattedRequesterDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-52`,
                     message: 'Requester does not exist.',
@@ -1353,7 +1353,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveUserWithEmailMiddlewareError: {
+            case ErrorType.RetrieveUserWithEmailMiddlewareError: {
                 return {
                     code: `${ResponseCodes.warning}-02`,
                     message: internalServerMessage,
@@ -1409,7 +1409,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.RetreiveTimezoneHeaderMiddleware: {
+            case ErrorType.RetrieveTimezoneHeaderMiddleware: {
                 return {
                     code: `${ResponseCodes.warning}-09`,
                     message: internalServerMessage,
@@ -1425,7 +1425,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.RetreiveUserMiddleware: {
+            case ErrorType.RetrieveUserMiddleware: {
                 return {
                     code: `${ResponseCodes.warning}-11`,
                     message: internalServerMessage,
@@ -1554,7 +1554,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveSoloStreakMiddleware:
+            case ErrorType.RetrieveSoloStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-28`,
                     message: internalServerMessage,
@@ -1806,7 +1806,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.GetRetreiveUserMiddleware:
+            case ErrorType.GetRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-64`,
                     message: internalServerMessage,
@@ -1820,14 +1820,14 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveIncompleteSoloStreaksMiddleware:
+            case ErrorType.RetrieveIncompleteSoloStreaksMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-66`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveFriendsMiddleware:
+            case ErrorType.RetrieveFriendsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-67`,
                     message: internalServerMessage,
@@ -1862,7 +1862,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.UnfollowUserRetreiveSelectedUserMiddleware:
+            case ErrorType.UnfollowUserRetrieveSelectedUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-74`,
                     message: internalServerMessage,
@@ -1883,7 +1883,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.GetFollowingRetreiveUserMiddleware:
+            case ErrorType.GetFollowingRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-77`,
                     message: internalServerMessage,
@@ -1953,7 +1953,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveTeamStreaksMembersInformation:
+            case ErrorType.RetrieveTeamStreaksMembersInformation:
                 return {
                     code: `${ResponseCodes.warning}-87`,
                     message: internalServerMessage,
@@ -1974,7 +1974,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveTeamStreakMiddleware:
+            case ErrorType.RetrieveTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-90`,
                     message: internalServerMessage,
@@ -1988,7 +1988,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveTeamStreakMembersInformation:
+            case ErrorType.RetrieveTeamStreakMembersInformation:
                 return {
                     code: `${ResponseCodes.warning}-92`,
                     message: internalServerMessage,
@@ -2030,7 +2030,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveStreakTrackingEventMiddleware:
+            case ErrorType.RetrieveStreakTrackingEventMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-98`,
                     message: internalServerMessage,
@@ -2107,7 +2107,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveTeamStreakCreatorInformationMiddleware:
+            case ErrorType.RetrieveTeamStreakCreatorInformationMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-109`,
                     message: internalServerMessage,
@@ -2135,14 +2135,14 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateTeamMemberStreakRetreiveUserMiddleware:
+            case ErrorType.CreateTeamMemberStreakRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-113`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateTeamMemberStreakRetreiveTeamStreakMiddleware:
+            case ErrorType.CreateTeamMemberStreakRetrieveTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-114`,
                     message: internalServerMessage,
@@ -2170,7 +2170,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamMemberStreakTaskRetreiveUserMiddleware:
+            case ErrorType.CreateCompleteTeamMemberStreakTaskRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-118`,
                     message: internalServerMessage,
@@ -2233,7 +2233,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveTeamMemberStreakMiddleware:
+            case ErrorType.RetrieveTeamMemberStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-127`,
                     message: internalServerMessage,
@@ -2352,14 +2352,14 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.DeleteTeamMemberRetreiveTeamStreakMiddleware:
+            case ErrorType.DeleteTeamMemberRetrieveTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-144`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveTeamMemberMiddleware:
+            case ErrorType.RetrieveTeamMemberMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-145`,
                     message: internalServerMessage,
@@ -2408,14 +2408,14 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveRequesterMiddleware:
+            case ErrorType.RetrieveRequesterMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-152`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveRequesteeMiddleware:
+            case ErrorType.RetrieveRequesteeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-153`,
                     message: internalServerMessage,
@@ -2436,7 +2436,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveCreatedTeamStreakCreatorInformationMiddleware:
+            case ErrorType.RetrieveCreatedTeamStreakCreatorInformationMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-169`,
                     message: internalServerMessage,
@@ -2450,14 +2450,14 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveFormattedRequesterMiddleware:
+            case ErrorType.RetrieveFormattedRequesterMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-171`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveFormattedRequesteeMiddleware:
+            case ErrorType.RetrieveFormattedRequesteeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-172`,
                     message: internalServerMessage,
@@ -2506,7 +2506,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateIncompleteSoloStreakTaskRetreiveUserMiddleware:
+            case ErrorType.CreateIncompleteSoloStreakTaskRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-179`,
                     message: internalServerMessage,
@@ -2590,7 +2590,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveUserMiddleware:
+            case ErrorType.CreateIncompleteTeamMemberStreakTaskRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-191`,
                     message: internalServerMessage,
@@ -2730,7 +2730,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamStreakRetreiveUserMiddleware:
+            case ErrorType.CreateCompleteTeamStreakRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-211`,
                     message: internalServerMessage,
@@ -2821,7 +2821,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.AuthRetreiveUserMiddleware:
+            case ErrorType.AuthRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-224`,
                     message: internalServerMessage,
@@ -2919,7 +2919,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.ValidateStripeTokenMiddlware:
+            case ErrorType.ValidateStripeTokenMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-238`,
                     message: internalServerMessage,
@@ -2989,7 +2989,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.DeleteFriendRetreiveFriendMiddleware:
+            case ErrorType.DeleteFriendRetrieveFriendMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-248`,
                     message: internalServerMessage,
@@ -3066,7 +3066,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RegisterDeviceForPushNotificationRetreiveUserMiddleware:
+            case ErrorType.RegisterDeviceForPushNotificationRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-259`,
                     message: internalServerMessage,
@@ -3157,7 +3157,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware:
+            case ErrorType.CreateCompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-273`,
                     message: internalServerMessage,
@@ -3185,7 +3185,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateIncompleteTeamMemberStreakTaskRetreiveTeamMembersMiddleware:
+            case ErrorType.CreateIncompleteTeamMemberStreakTaskRetrieveTeamMembersMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-277`,
                     message: internalServerMessage,
@@ -3234,7 +3234,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.GetRetreiveChallengeMiddleware:
+            case ErrorType.GetRetrieveChallengeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-288`,
                     message: internalServerMessage,
@@ -3276,7 +3276,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveChallengeStreakMiddleware:
+            case ErrorType.RetrieveChallengeStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-294`,
                     message: internalServerMessage,
@@ -3304,7 +3304,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteChallengeStreakTaskRetreiveUserMiddleware:
+            case ErrorType.CreateCompleteChallengeStreakTaskRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-298`,
                     message: internalServerMessage,
@@ -3374,7 +3374,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateIncompleteChallengeStreakTaskRetreiveUserMiddleware:
+            case ErrorType.CreateIncompleteChallengeStreakTaskRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-308`,
                     message: internalServerMessage,
@@ -3521,7 +3521,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveNoteMiddleware:
+            case ErrorType.RetrieveNoteMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-338`,
                     message: internalServerMessage,
@@ -3829,7 +3829,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.GetFollowersRetreiveUserMiddleware:
+            case ErrorType.GetFollowersRetrieveUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-382`,
                     message: internalServerMessage,
@@ -3850,7 +3850,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveSelectedUserMiddleware:
+            case ErrorType.RetrieveSelectedUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-385`,
                     message: internalServerMessage,
@@ -3864,7 +3864,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.RetreiveUserToFollowMiddleware:
+            case ErrorType.RetrieveUserToFollowMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-387`,
                     message: internalServerMessage,
@@ -3962,21 +3962,21 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteChallengeStreakTaskRetreiveChallengeMiddleware:
+            case ErrorType.CreateCompleteChallengeStreakTaskRetrieveChallengeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-401`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateIncompleteChallengeStreakTaskRetreiveChallengeMiddleware:
+            case ErrorType.CreateIncompleteChallengeStreakTaskRetrieveChallengeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-402`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.PatchChallengeStreakRetreiveChallengeMiddleware:
+            case ErrorType.PatchChallengeStreakRetrieveChallengeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-403`,
                     message: internalServerMessage,

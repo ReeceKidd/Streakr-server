@@ -5,7 +5,7 @@ import * as mongoose from 'mongoose';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { AgendaJobNames } from '@streakoid/streakoid-sdk/lib';
+import { AgendaJobNames } from '@streakoid/streakoid-models/lib';
 import { dailyJobModel, DailyJobModel } from '../../../src/Models/DailyJob';
 
 const getDailyJobsQueryValidationSchema = {

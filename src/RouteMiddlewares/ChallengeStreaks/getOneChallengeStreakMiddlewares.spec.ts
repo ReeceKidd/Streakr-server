@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     getOneChallengeStreakMiddlewares,
-    retreiveChallengeStreakMiddleware,
-    getRetreiveChallengeStreakMiddleware,
+    retrieveChallengeStreakMiddleware,
+    getRetrieveChallengeStreakMiddleware,
     sendChallengeStreakMiddleware,
     getChallengeStreakParamsValidationMiddleware,
     getSendChallengeStreakMiddleware,
@@ -73,7 +73,7 @@ describe(`getChallengeStreakParamsValidationMiddleware`, () => {
     });
 });
 
-describe('retreiveChallengeStreakMiddleware', () => {
+describe('retrieveChallengeStreakMiddleware', () => {
     test('sets response.locals.challengeStreak', async () => {
         expect.assertions(3);
         const lean = jest.fn(() => Promise.resolve(true));
@@ -85,7 +85,7 @@ describe('retreiveChallengeStreakMiddleware', () => {
         const request: any = { params: { challengeStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveChallengeStreakMiddleware(challengeStreakModel as any);
+        const middleware = getRetrieveChallengeStreakMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
@@ -105,14 +105,14 @@ describe('retreiveChallengeStreakMiddleware', () => {
         const request: any = { params: { challengeStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveChallengeStreakMiddleware(challengeStreakModel as any);
+        const middleware = getRetrieveChallengeStreakMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.GetChallengeStreakNoChallengeStreakFound));
     });
 
-    test('calls next with RetreiveChallengeStreakMiddleware error on middleware failure', async () => {
+    test('calls next with RetrieveChallengeStreakMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const errorMessage = 'error';
         const lean = jest.fn(() => Promise.reject(errorMessage));
@@ -124,11 +124,11 @@ describe('retreiveChallengeStreakMiddleware', () => {
         const request: any = { params: { challengeStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getRetreiveChallengeStreakMiddleware(challengeStreakModel as any);
+        const middleware = getRetrieveChallengeStreakMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.RetreiveChallengeStreakMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.RetrieveChallengeStreakMiddleware, expect.any(Error)));
     });
 });
 
@@ -174,7 +174,7 @@ describe('getOneChallengeStreakMiddlewares', () => {
 
         expect(getOneChallengeStreakMiddlewares.length).toEqual(3);
         expect(getOneChallengeStreakMiddlewares[0]).toEqual(getChallengeStreakParamsValidationMiddleware);
-        expect(getOneChallengeStreakMiddlewares[1]).toEqual(retreiveChallengeStreakMiddleware);
+        expect(getOneChallengeStreakMiddlewares[1]).toEqual(retrieveChallengeStreakMiddleware);
         expect(getOneChallengeStreakMiddlewares[2]).toEqual(sendChallengeStreakMiddleware);
     });
 });

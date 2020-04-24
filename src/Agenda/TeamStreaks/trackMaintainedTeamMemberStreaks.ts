@@ -3,7 +3,7 @@ import {
     StreakTrackingEvent,
     StreakTrackingEventTypes,
     StreakTypes,
-} from '@streakoid/streakoid-sdk/lib';
+} from '@streakoid/streakoid-models/lib';
 
 import streakoid from '../../streakoid';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';

@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Models } from './Models';
 import { Collections } from './Collections';
-import { IncompleteTeamMemberStreakTask } from '@streakoid/streakoid-sdk/lib';
+import { IncompleteTeamMemberStreakTask } from '@streakoid/streakoid-models/lib';
 
 export type IncompleteTeamMemberStreakTaskModel = IncompleteTeamMemberStreakTask & mongoose.Document;
 
