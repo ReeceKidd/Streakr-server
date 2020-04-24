@@ -20,7 +20,7 @@ import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedI
 import {
     CustomChallengeStreakReminder,
     CustomStreakReminder,
-} from '@streakoid/streakoid-models/lib/models/StreakReminders';
+} from '@streakoid/streakoid-models/lib/Models/StreakReminders';
 import { userModel, UserModel } from '../../../src/Models/User';
 
 const challengeStreakParamsValidationSchema = {

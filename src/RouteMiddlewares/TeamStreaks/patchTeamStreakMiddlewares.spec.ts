@@ -21,7 +21,7 @@ import {
 } from './patchTeamStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { CustomStreakReminder, CustomTeamStreakReminder } from '@streakoid/streakoid-models/lib/models/StreakReminders';
+import { CustomStreakReminder, CustomTeamStreakReminder } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
 import { StreakReminderTypes, StreakStatus } from '@streakoid/streakoid-models/lib';
 
 describe('teamStreakParamsValidationMiddleware', () => {

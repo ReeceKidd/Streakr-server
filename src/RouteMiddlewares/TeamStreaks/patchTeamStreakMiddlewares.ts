@@ -16,7 +16,7 @@ import {
 } from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { UserModel, userModel } from '../../../src/Models/User';
-import { CustomTeamStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-models/lib/models/StreakReminders';
+import { CustomTeamStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
 
 const teamStreakParamsValidationSchema = {
     teamStreakId: Joi.string().required(),

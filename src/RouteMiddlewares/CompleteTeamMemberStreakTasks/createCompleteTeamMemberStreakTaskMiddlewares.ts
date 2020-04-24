@@ -25,7 +25,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { CustomError, ErrorType } from '../../customError';
 import { completeTeamStreakModel, CompleteTeamStreakModel } from '../../Models/CompleteTeamStreak';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
-import { CompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-models/lib/models/PushNotifications';
+import { CompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),

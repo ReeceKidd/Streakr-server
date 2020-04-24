@@ -31,7 +31,7 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { AchievementTypes } from '@streakoid/streakoid-models/lib';
-import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/models/DatabaseAchievement';
+import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 
 describe(`completeSoloStreakTaskBodyValidationMiddleware`, () => {

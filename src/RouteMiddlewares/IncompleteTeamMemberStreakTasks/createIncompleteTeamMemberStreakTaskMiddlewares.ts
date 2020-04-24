@@ -27,7 +27,7 @@ import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { TeamStreakModel } from '../../../src/Models/TeamStreak';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
-import { IncompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-models/lib/models/PushNotifications';
+import { IncompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),

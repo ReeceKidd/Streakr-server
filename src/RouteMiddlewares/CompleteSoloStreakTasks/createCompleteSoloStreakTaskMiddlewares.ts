@@ -21,8 +21,8 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { CustomError, ErrorType } from '../../customError';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
-import { UnlockedAchievementPushNotification } from '@streakoid/streakoid-models/lib/models/PushNotifications';
-import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/models/DatabaseAchievement';
+import { UnlockedAchievementPushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
+import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 
 export const completeSoloStreakTaskBodyValidationSchema = {

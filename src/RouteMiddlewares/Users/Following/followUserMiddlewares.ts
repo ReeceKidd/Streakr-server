@@ -13,7 +13,7 @@ import {
 } from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../../src/helpers/createActivityFeedItem';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
-import { NewFollowerPushNotification } from '@streakoid/streakoid-models/lib/models/PushNotifications';
+import { NewFollowerPushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
 
 const followUserParamsValidationSchema = {
     userId: Joi.string()

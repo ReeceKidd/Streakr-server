@@ -14,7 +14,7 @@ import {
     CustomChallengeStreakReminder,
     CustomTeamStreakReminder,
     CustomStreakReminder,
-} from '@streakoid/streakoid-models/lib/models/StreakReminders';
+} from '@streakoid/streakoid-models/lib/Models/StreakReminders';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
     const customSoloStreakReminder: CustomSoloStreakReminder = {

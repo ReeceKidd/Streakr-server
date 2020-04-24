@@ -15,7 +15,7 @@ import {
     StreakReminderTypes,
 } from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
-import { CustomSoloStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-models/lib/models/StreakReminders';
+import { CustomSoloStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
 import { userModel, UserModel } from '../../../src/Models/User';
 
 const soloStreakParamsValidationSchema = {
