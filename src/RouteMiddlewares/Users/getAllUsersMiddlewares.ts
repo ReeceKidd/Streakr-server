@@ -19,6 +19,7 @@ const getUsersValidationSchema = {
         .max(maximumSearchQueryLength),
     username: Joi.string(),
     email: Joi.string().email(),
+    userIds: Joi.array().items(Joi.string()),
 };
 
 export const getUsersValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
@@ -31,11 +32,12 @@ export const getUsersValidationMiddleware = (request: Request, response: Respons
 
 export const formUsersQueryMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { searchQuery, username, email } = request.query;
+        const { searchQuery, username, email, userIds } = request.query;
 
         const query: {
             username?: { $regex: string } | string;
             email?: string;
+            _id?: { $in: string[] };
         } = {};
         if (searchQuery) {
             query.username = { $regex: searchQuery.toLowerCase() };
@@ -43,6 +45,9 @@ export const formUsersQueryMiddleware = (request: Request, response: Response, n
             query.username = username;
         } else if (email) {
             query.email = email;
+        } else if (userIds) {
+            const parsedUserIds = JSON.parse(userIds);
+            query._id = { $in: parsedUserIds };
         }
         response.locals.query = query;
         next();

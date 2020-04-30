@@ -21,6 +21,7 @@ describe(`getUsersValidationMiddleware`, () => {
     const searchQuery = 'searchQuery';
     const username = 'username';
     const email = 'email@gmail.com';
+    const userIds = ['user1', 'user2'];
 
     const query = {
         limit,
@@ -28,6 +29,7 @@ describe(`getUsersValidationMiddleware`, () => {
         searchQuery,
         username,
         email,
+        userIds,
     };
 
     test('valid request passes', () => {
@@ -198,6 +200,27 @@ describe(`getUsersValidationMiddleware`, () => {
         });
         expect(next).not.toBeCalled();
     });
+
+    test(`sends correct response when userIds is not an array`, () => {
+        expect.assertions(3);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            query: { userIds: 123 },
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        getUsersValidationMiddleware(request, response, next);
+
+        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+        expect(send).toBeCalledWith({
+            message: 'child "userIds" fails because ["userIds" must be an array]',
+        });
+        expect(next).not.toBeCalled();
+    });
 });
 
 describe('formUsersQueryMiddleware', () => {
@@ -243,6 +266,21 @@ describe('formUsersQueryMiddleware', () => {
         formUsersQueryMiddleware(request, response, next);
 
         expect(response.locals.query).toEqual({ email });
+        expect(next).toBeCalledWith();
+    });
+
+    test('sets response.locals.query using userIds', () => {
+        expect.assertions(2);
+        const userIds = '{}';
+        const request: any = { query: { userIds } };
+        const response: any = {
+            locals: {},
+        };
+        const next = jest.fn();
+
+        formUsersQueryMiddleware(request, response, next);
+
+        expect(response.locals.query).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
