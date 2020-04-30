@@ -227,6 +227,30 @@ export const getIncompleteSoloStreakMiddleware = (soloStreakModel: mongoose.Mode
 
 export const incompleteSoloStreakMiddleware = getIncompleteSoloStreakMiddleware(soloStreakModel);
 
+export const getDecreaseTotalStreakCompletesForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        response.locals.user = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $inc: { totalStreakCompletes: -1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.IncompleteSoloStreakTaskDecreaseTotalStreakCompletesForUserMiddleware, err));
+    }
+};
+
+export const decreaseTotalStreakCompletesForUserMiddleware = getDecreaseTotalStreakCompletesForUserMiddleware(
+    userModel,
+);
+
 export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
     response: Response,
@@ -278,6 +302,7 @@ export const createIncompleteSoloStreakTaskMiddlewares = [
     createIncompleteSoloStreakTaskDefinitionMiddleware,
     saveTaskIncompleteMiddleware,
     incompleteSoloStreakMiddleware,
+    decreaseTotalStreakCompletesForUserMiddleware,
     sendTaskIncompleteResponseMiddleware,
     createIncompleteSoloStreakActivitFeedItemMiddleware,
 ];

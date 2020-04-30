@@ -9,13 +9,13 @@ import {
     createCompleteSoloStreakTaskDefinitionMiddleware,
     soloStreakExistsMiddleware,
     saveTaskCompleteMiddleware,
-    streakMaintainedMiddleware,
+    increaseNumberOfDaysInARowForSoloStreakMiddleware,
     getSoloStreakExistsMiddleware,
     getRetrieveUserMiddleware,
     getSetDayTaskWasCompletedMiddleware,
     getSetTaskCompleteTimeMiddleware,
     getSaveTaskCompleteMiddleware,
-    getStreakMaintainedMiddleware,
+    getIncreaseNumberOfDaysInARowForSoloStreakMiddleware,
     getSendTaskCompleteResponseMiddleware,
     setStreakStartDateMiddleware,
     getSetStreakStartDateMiddleware,
@@ -27,6 +27,8 @@ import {
     getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware,
     sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware,
     getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware,
+    increaseTotalStreakCompletesForUserMiddleware,
+    getIncreaseTotalStreakCompletesForUserMiddleware,
 } from './createCompleteSoloStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -515,7 +517,7 @@ describe(`saveTaskCompleteMiddleware`, () => {
     });
 });
 
-describe('streakMaintainedMiddleware', () => {
+describe('increaseNumberOfDaysInARowForSoloStreakMiddleware', () => {
     test('updates streak completedToday, increments number of days, sets active and calls next', async () => {
         expect.assertions(3);
         const soloStreakId = '123abc';
@@ -526,7 +528,7 @@ describe('streakMaintainedMiddleware', () => {
         const request: any = { body: { soloStreakId } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getStreakMaintainedMiddleware(soloStreakModel as any);
+        const middleware = getIncreaseNumberOfDaysInARowForSoloStreakMiddleware(soloStreakModel as any);
 
         await middleware(request, response, next);
 
@@ -543,18 +545,65 @@ describe('streakMaintainedMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('throws StreakMaintainedMiddleware error on middleware failure', async () => {
+    test('throws IncreaseNumberOfDaysInARowForSoloStreakMiddleware error on middleware failure', async () => {
         expect.assertions(1);
         const soloStreakId = '123abc';
         const soloStreakModel = {};
         const request: any = { params: { soloStreakId } };
         const response: any = {};
         const next = jest.fn();
-        const middleware = getStreakMaintainedMiddleware(soloStreakModel as any);
+        const middleware = getIncreaseNumberOfDaysInARowForSoloStreakMiddleware(soloStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.StreakMaintainedMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.IncreaseNumberOfDaysInARowForSoloStreakMiddleware, expect.any(Error)),
+        );
+    });
+});
+
+describe('increaseTotalStreakCompletesForUserMiddleware', () => {
+    test('increments totalStreakCompletes on user by one and calls next', async () => {
+        expect.assertions(3);
+        const userId = '123abc';
+        const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+        const userModel = {
+            findByIdAndUpdate,
+        };
+        const request: any = { body: { userId } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getIncreaseTotalStreakCompletesForUserMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findByIdAndUpdate).toBeCalledWith(
+            userId,
+            {
+                $inc: { totalStreakCompletes: 1 },
+            },
+            { new: true },
+        );
+        expect(response.locals.user).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws CompleteSoloStreakTaskIncreaseTotalStreakCompletesForUserMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const userModel = {};
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getIncreaseTotalStreakCompletesForUserMiddleware(userModel as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(
+                ErrorType.CompleteSoloStreakTaskIncreaseTotalStreakCompletesForUserMiddleware,
+                expect.any(Error),
+            ),
+        );
     });
 });
 
@@ -843,9 +892,9 @@ describe(`sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddlewa
 
 describe(`createCompleteSoloStreakTaskMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(15);
+        expect.assertions(16);
 
-        expect(createCompleteSoloStreakTaskMiddlewares.length).toEqual(14);
+        expect(createCompleteSoloStreakTaskMiddlewares.length).toEqual(15);
         expect(createCompleteSoloStreakTaskMiddlewares[0]).toBe(completeSoloStreakTaskBodyValidationMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[2]).toBe(ensureSoloStreakTaskHasNotBeenCompletedTodayMiddleware);
@@ -855,13 +904,14 @@ describe(`createCompleteSoloStreakTaskMiddlewares`, () => {
         expect(createCompleteSoloStreakTaskMiddlewares[6]).toBe(setDayTaskWasCompletedMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[7]).toBe(createCompleteSoloStreakTaskDefinitionMiddleware);
         expect(createCompleteSoloStreakTaskMiddlewares[8]).toBe(saveTaskCompleteMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[9]).toBe(streakMaintainedMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[10]).toBe(
+        expect(createCompleteSoloStreakTaskMiddlewares[9]).toBe(increaseNumberOfDaysInARowForSoloStreakMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[10]).toBe(increaseTotalStreakCompletesForUserMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[11]).toBe(
             unlockOneHundredDaySoloStreakAchievementForUserMiddleware,
         );
-        expect(createCompleteSoloStreakTaskMiddlewares[11]).toBe(sendTaskCompleteResponseMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[12]).toBe(createCompleteSoloStreakActivityFeedItemMiddleware);
-        expect(createCompleteSoloStreakTaskMiddlewares[13]).toBe(
+        expect(createCompleteSoloStreakTaskMiddlewares[12]).toBe(sendTaskCompleteResponseMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[13]).toBe(createCompleteSoloStreakActivityFeedItemMiddleware);
+        expect(createCompleteSoloStreakTaskMiddlewares[14]).toBe(
             sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware,
         );
     });

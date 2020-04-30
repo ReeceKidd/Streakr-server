@@ -4,6 +4,9 @@
 
 // import { CustomError, ErrorType } from '../customError';
 // import { userModel } from '../../src/Models/User';
+// import { completeSoloStreakTaskModel } from '../../src/Models/CompleteSoloStreakTask';
+// import { completeChallengeStreakTaskModel } from '../../src/Models/CompleteChallengeStreakTask';
+// import { completeTeamMemberStreakTaskModel } from '../../src/Models/CompleteTeamMemberStreakTask';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -13,9 +16,13 @@
 //     try {
 //         const users = await userModel.find({});
 //         await Promise.all(
-//             users.map(user => {
-//                 return userModel.findByIdAndUpdate(user._id, {
-//                     $set: { pushNotifications: { ...user.pushNotifications, achievementUpdates: { enabled: true } } },
+//             users.map(async user => {
+//                 const completeTotalSoloStreaks = await completeSoloStreakTaskModel.count({ userId: user._id });
+//                 const completeTotalChallengeStreaks = await completeChallengeStreakTaskModel.count({
+//                     userId: user._id,
+//                 });
+//                 const completeTeamStreakChallengeStreaks = await completeTeamMemberStreakTaskModel.count({
+//                     user: user._id,
 //                 });
 //             }),
 //         );

@@ -182,11 +182,9 @@ export const getSaveTaskCompleteMiddleware = (
 
 export const saveTaskCompleteMiddleware = getSaveTaskCompleteMiddleware(completeChallengeStreakTaskModel);
 
-export const getStreakMaintainedMiddleware = (challengeStreakModel: mongoose.Model<ChallengeStreakModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const getIncreaseNumberOfDaysInARowForChallengeStreakMiddleware = (
+    challengeStreakModel: mongoose.Model<ChallengeStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { challengeStreakId } = request.body;
         const updatedChallengeStreak = await challengeStreakModel
@@ -199,11 +197,42 @@ export const getStreakMaintainedMiddleware = (challengeStreakModel: mongoose.Mod
         response.locals.challengeStreak = updatedChallengeStreak;
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskStreakMaintainedMiddleware, err));
+        next(
+            new CustomError(
+                ErrorType.CreateCompleteChallengeStreakTaskIncreaseNumberOfDaysInARowForChallengeStreakMiddleware,
+                err,
+            ),
+        );
     }
 };
 
-export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(challengeStreakModel);
+export const increaseNumberOfDaysInARowForChallengeStreakMiddleware = getIncreaseNumberOfDaysInARowForChallengeStreakMiddleware(
+    challengeStreakModel,
+);
+
+export const getIncreaseTotalStreakCompletesForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        response.locals.user = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $inc: { totalStreakCompletes: 1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CompleteChallengeStreakTaskIncreaseTotalStreakCompletesForUserMiddleware, err));
+    }
+};
+
+export const increaseTotalStreakCompletesForUserMiddleware = getIncreaseTotalStreakCompletesForUserMiddleware(
+    userModel,
+);
 
 export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
@@ -278,7 +307,8 @@ export const createCompleteChallengeStreakTaskMiddlewares = [
     setStreakStartDateMiddleware,
     setDayTaskWasCompletedMiddleware,
     saveTaskCompleteMiddleware,
-    streakMaintainedMiddleware,
+    increaseNumberOfDaysInARowForChallengeStreakMiddleware,
+    increaseTotalStreakCompletesForUserMiddleware,
     sendTaskCompleteResponseMiddleware,
     retrieveChallengeMiddleware,
     createCompleteChallengeStreakActivityFeedItemMiddleware,

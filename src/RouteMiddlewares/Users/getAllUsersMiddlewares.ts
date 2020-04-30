@@ -110,6 +110,7 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
                 updatedAt: user.updatedAt,
                 profileImages: user.profileImages,
                 pushNotificationToken: user.pushNotificationToken,
+                totalStreakCompletes: user.totalStreakCompletes,
             };
             return formattedUser;
         });

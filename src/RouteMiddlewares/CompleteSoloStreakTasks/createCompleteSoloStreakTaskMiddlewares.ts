@@ -200,11 +200,9 @@ export const getSaveTaskCompleteMiddleware = (
 
 export const saveTaskCompleteMiddleware = getSaveTaskCompleteMiddleware(completeSoloStreakTaskModel);
 
-export const getStreakMaintainedMiddleware = (soloStreakModel: mongoose.Model<SoloStreakModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const getIncreaseNumberOfDaysInARowForSoloStreakMiddleware = (
+    soloStreakModel: mongoose.Model<SoloStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { soloStreakId } = request.body;
         response.locals.soloStreak = await soloStreakModel.findByIdAndUpdate(
@@ -218,11 +216,37 @@ export const getStreakMaintainedMiddleware = (soloStreakModel: mongoose.Model<So
         );
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.StreakMaintainedMiddleware, err));
+        next(new CustomError(ErrorType.IncreaseNumberOfDaysInARowForSoloStreakMiddleware, err));
     }
 };
 
-export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(soloStreakModel);
+export const increaseNumberOfDaysInARowForSoloStreakMiddleware = getIncreaseNumberOfDaysInARowForSoloStreakMiddleware(
+    soloStreakModel,
+);
+
+export const getIncreaseTotalStreakCompletesForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        response.locals.user = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $inc: { totalStreakCompletes: 1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CompleteSoloStreakTaskIncreaseTotalStreakCompletesForUserMiddleware, err));
+    }
+};
+
+export const increaseTotalStreakCompletesForUserMiddleware = getIncreaseTotalStreakCompletesForUserMiddleware(
+    userModel,
+);
 
 export const getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware = (
     user: mongoose.Model<UserModel>,
@@ -361,7 +385,8 @@ export const createCompleteSoloStreakTaskMiddlewares = [
     setDayTaskWasCompletedMiddleware,
     createCompleteSoloStreakTaskDefinitionMiddleware,
     saveTaskCompleteMiddleware,
-    streakMaintainedMiddleware,
+    increaseNumberOfDaysInARowForSoloStreakMiddleware,
+    increaseTotalStreakCompletesForUserMiddleware,
     unlockOneHundredDaySoloStreakAchievementForUserMiddleware,
     sendTaskCompleteResponseMiddleware,
     createCompleteSoloStreakActivityFeedItemMiddleware,

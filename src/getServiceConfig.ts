@@ -25,6 +25,7 @@ export interface AppConfigHttp {
     PROFILE_PICTURES_BUCKET: string;
     SNS_PLATFORM_APPLICATION_ARN: string;
     SNS_TOPIC_ARN: string;
+    DEFAULT_USER_PROFILE_IMAGE_URL: string;
 }
 
 export type AppConfig = AppConfigHttp;
@@ -55,6 +56,7 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         PROFILE_PICTURES_BUCKET,
         SNS_PLATFORM_APPLICATION_ARN,
         SNS_TOPIC_ARN,
+        DEFAULT_USER_PROFILE_IMAGE_URL,
     } = environment;
 
     if (!NODE_ENV) throw new Error('NODE_ENV is not provided.');
@@ -143,6 +145,10 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         throw new Error('SNS_TOPIC_ARN is not provided.');
     }
 
+    if (!DEFAULT_USER_PROFILE_IMAGE_URL) {
+        throw new Error('DEFAULT_USER_PROFILE_IMAGE_URL is not provided.');
+    }
+
     return {
         NODE_ENV,
         PORT,
@@ -168,5 +174,6 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         PROFILE_PICTURES_BUCKET,
         SNS_PLATFORM_APPLICATION_ARN,
         SNS_TOPIC_ARN,
+        DEFAULT_USER_PROFILE_IMAGE_URL,
     } as AppConfigHttp;
 };

@@ -3,10 +3,12 @@ import { Collections } from './Collections';
 import { Models } from './Models';
 import { User } from '@streakoid/streakoid-models/lib';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { getServiceConfig } from '../../src/getServiceConfig';
+const { DEFAULT_USER_PROFILE_IMAGE_URL } = getServiceConfig();
 
 export type UserModel = User & mongoose.Document;
 
-export const originalImageUrl = 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg';
+export const originalImageUrl = DEFAULT_USER_PROFILE_IMAGE_URL;
 
 export const userSchema = new mongoose.Schema(
     {
@@ -59,6 +61,10 @@ export const userSchema = new mongoose.Schema(
         following: {
             type: Array,
             default: [],
+        },
+        totalStreakCompletes: {
+            type: Number,
+            default: 0,
         },
         stripe: {
             customer: {

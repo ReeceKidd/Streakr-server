@@ -260,6 +260,32 @@ export const getIncompleteTeamMemberStreakMiddleware = (
 
 export const incompleteTeamMemberStreakMiddleware = getIncompleteTeamMemberStreakMiddleware(teamMemberStreakModel);
 
+export const getDecreaseTotalStreakCompletesForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        response.locals.user = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $inc: { totalStreakCompletes: -1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(
+            new CustomError(ErrorType.IncompleteTeamMemberStreakTaskDecreaseTotalStreakCompletesForUserMiddleware, err),
+        );
+    }
+};
+
+export const decreaseTotalStreakCompletesForUserMiddleware = getDecreaseTotalStreakCompletesForUserMiddleware(
+    userModel,
+);
+
 export const getResetTeamStreakStartDateMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
     response: Response,
@@ -527,6 +553,7 @@ export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     createIncompleteTeamMemberStreakTaskDefinitionMiddleware,
     saveTaskIncompleteMiddleware,
     incompleteTeamMemberStreakMiddleware,
+    decreaseTotalStreakCompletesForUserMiddleware,
     resetTeamStreakStartDateMiddleware,
     incompleteTeamStreakMiddleware,
     hasAtLeastOneTeamMemberCompletedTheirTaskMiddleware,

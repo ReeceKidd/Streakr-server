@@ -25,7 +25,6 @@ export enum ErrorType {
     HasTaskAlreadyBeenCompletedTodayMiddleware,
     CreateCompleteSoloStreakTaskDefinitionMiddleware,
     SaveTaskCompleteMiddleware,
-    StreakMaintainedMiddleware,
     SendTaskCompleteResponseMiddleware,
     SetDayTaskWasCompletedMiddleware,
     DefineCurrentTimeMiddleware,
@@ -368,7 +367,7 @@ export enum ErrorType {
     CreateCompleteChallengeStreakTaskSetStreakStartDateMiddleware,
     CreateCompleteChallengeStreakTaskSetDayTaskWasCompletedMiddleware,
     CreateCompleteChallengeStreakTaskDefinitionMiddleware,
-    CreateCompleteChallengeStreakTaskStreakMaintainedMiddleware,
+    CreateCompleteChallengeStreakTaskIncreaseNumberOfDaysInARowForChallengeStreakMiddleware,
     CreateCompleteChallengeStreakTaskSendTaskCompleteResponseMiddleware,
     CreateCompleteChallengeStreakTaskSaveTaskCompleteMiddleware,
     CreateCompleteChallengeStreakTaskUserDoesNotExist,
@@ -504,6 +503,13 @@ export enum ErrorType {
     PopulateCurrentUserAchievementsMiddleware,
     PopulatePatchCurrentUserAchievementsMiddleware,
     SendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware,
+    IncreaseNumberOfDaysInARowForSoloStreakMiddleware,
+    CompleteSoloStreakTaskIncreaseTotalStreakCompletesForUserMiddleware,
+    IncompleteSoloStreakTaskDecreaseTotalStreakCompletesForUserMiddleware,
+    CompleteChallengeStreakTaskIncreaseTotalStreakCompletesForUserMiddleware,
+    IncompleteChallengeStreakTaskDecreaseTotalStreakCompletesForUserMiddleware,
+    CompleteTeamMemberStreakTaskIncreaseTotalStreakCompletesForUserMiddleware,
+    IncompleteTeamMemberStreakTaskDecreaseTotalStreakCompletesForUserMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1473,7 +1479,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.StreakMaintainedMiddleware: {
+            case ErrorType.IncreaseNumberOfDaysInARowForSoloStreakMiddleware: {
                 return {
                     code: `${ResponseCodes.warning}-17`,
                     message: internalServerMessage,
@@ -3339,7 +3345,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateCompleteChallengeStreakTaskStreakMaintainedMiddleware:
+            case ErrorType.CreateCompleteChallengeStreakTaskIncreaseNumberOfDaysInARowForChallengeStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-303`,
                     message: internalServerMessage,
@@ -4112,6 +4118,48 @@ export class CustomError extends Error {
             case ErrorType.SendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-422`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CompleteSoloStreakTaskIncreaseTotalStreakCompletesForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-423`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncompleteSoloStreakTaskDecreaseTotalStreakCompletesForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-424`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CompleteChallengeStreakTaskIncreaseTotalStreakCompletesForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-425`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncompleteChallengeStreakTaskDecreaseTotalStreakCompletesForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-426`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CompleteTeamMemberStreakTaskIncreaseTotalStreakCompletesForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-427`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncompleteTeamMemberStreakTaskDecreaseTotalStreakCompletesForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-428`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

@@ -216,6 +216,32 @@ export const getIncompleteChallengeStreakMiddleware = (
 
 export const incompleteChallengeStreakMiddleware = getIncompleteChallengeStreakMiddleware(challengeStreakModel);
 
+export const getDecreaseTotalStreakCompletesForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        response.locals.user = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $inc: { totalStreakCompletes: -1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(
+            new CustomError(ErrorType.IncompleteChallengeStreakTaskDecreaseTotalStreakCompletesForUserMiddleware, err),
+        );
+    }
+};
+
+export const decreaseTotalStreakCompletesForUserMiddleware = getDecreaseTotalStreakCompletesForUserMiddleware(
+    userModel,
+);
+
 export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
     response: Response,
@@ -289,6 +315,7 @@ export const createIncompleteChallengeStreakTaskMiddlewares = [
     setDayTaskWasIncompletedMiddleware,
     saveTaskIncompleteMiddleware,
     incompleteChallengeStreakMiddleware,
+    decreaseTotalStreakCompletesForUserMiddleware,
     sendTaskIncompleteResponseMiddleware,
     retrieveChallengeMiddleware,
     createIncompleteChallengeStreakActivityFeedItemMiddleware,

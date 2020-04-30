@@ -23,7 +23,7 @@ import {
 } from './createStripeCustomerSubscriptionMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { PaymentPlans } from '@streakoid/streakoid-models/lib';
+import { PaymentPlans, User, StreakReminderTypes } from '@streakoid/streakoid-models/lib';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
 describe('createStripeCustomerSubscriptionMiddlewares', () => {
@@ -781,11 +781,12 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         test('populates response.locals.user with a formattedUser', () => {
             expect.assertions(3);
             const request: any = {};
-            const user = {
+            const user: User = {
                 _id: '_id',
                 username: 'username',
                 membershipInformation: {
                     isPayingMember: true,
+                    currentMembershipStartDate: new Date(),
                     pastMemberships: [],
                 },
                 email: 'test@test.com',
@@ -793,15 +794,38 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                 updatedAt: 'Jan 1st',
                 timezone: 'Europe/London',
                 userType: UserTypes.basic,
+                followers: [],
+                following: [],
+                hasCompletedIntroduction: true,
+                achievements: [],
+                totalStreakCompletes: 10,
                 profileImages: {
                     originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+                },
+                pushNotificationToken: 'pushNotificationToken',
+                pushNotifications: {
+                    completeAllStreaksReminder: {
+                        enabled: true,
+                        expoId: 'expoId',
+                        reminderHour: 10,
+                        reminderMinute: 15,
+                        streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
+                    },
+                    teamStreakUpdates: {
+                        enabled: true,
+                    },
+                    newFollowerUpdates: {
+                        enabled: true,
+                    },
+                    achievementUpdates: {
+                        enabled: true,
+                    },
+                    customStreakReminders: [],
                 },
                 stripe: {
                     customer: 'abc',
                     subscription: 'sub_1',
                 },
-                pushNotificationToken: 'pushNotificationToken',
-                hasCompletedIntroduction: 'hasCompletedIntroduction',
             };
             const response: any = { locals: { user } };
             const next = jest.fn();
@@ -821,6 +845,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                     'updatedAt',
                     'profileImages',
                     'pushNotificationToken',
+                    'totalStreakCompletes',
                 ].sort(),
             );
         });

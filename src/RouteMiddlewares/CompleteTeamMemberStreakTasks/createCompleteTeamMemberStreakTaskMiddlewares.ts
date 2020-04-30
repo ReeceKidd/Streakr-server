@@ -217,11 +217,9 @@ export const createCompleteTeamMemberStreakTaskMiddleware = getCreateCompleteTea
     completeTeamMemberStreakTaskModel,
 );
 
-export const getStreakMaintainedMiddleware = (teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const getTeamMemberStreakMaintainedMiddleware = (
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { teamMemberStreakId } = request.body;
         await teamMemberStreakModel.findByIdAndUpdate(
@@ -239,7 +237,31 @@ export const getStreakMaintainedMiddleware = (teamMemberStreakModel: mongoose.Mo
     }
 };
 
-export const streakMaintainedMiddleware = getStreakMaintainedMiddleware(teamMemberStreakModel);
+export const teamMemberStreakMaintainedMiddleware = getTeamMemberStreakMaintainedMiddleware(teamMemberStreakModel);
+
+export const getIncreaseTotalStreakCompletesForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        response.locals.user = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $inc: { totalStreakCompletes: 1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CompleteTeamMemberStreakTaskIncreaseTotalStreakCompletesForUserMiddleware, err));
+    }
+};
+
+export const increaseTotalStreakCompletesForUserMiddleware = getIncreaseTotalStreakCompletesForUserMiddleware(
+    userModel,
+);
 
 export const getSetTeamStreakToActiveMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
@@ -529,7 +551,8 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     setStreakStartDateMiddleware,
     setDayTaskWasCompletedMiddleware,
     createCompleteTeamMemberStreakTaskMiddleware,
-    streakMaintainedMiddleware,
+    teamMemberStreakMaintainedMiddleware,
+    increaseTotalStreakCompletesForUserMiddleware,
     setTeamStreakToActiveMiddleware,
     haveAllTeamMembersCompletedTasksMiddleware,
     setTeamStreakStartDateMiddleware,

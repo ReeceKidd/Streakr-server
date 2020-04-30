@@ -18,6 +18,7 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { User, StreakReminderTypes } from '@streakoid/streakoid-models/lib';
 
 describe(`userRegistrationValidationMiddleware`, () => {
     const mockUsername = 'mockUsername';
@@ -331,7 +332,7 @@ describe('formatUserMiddleware', () => {
     test('populates response.locals.user with a formattedUser', () => {
         expect.assertions(2);
         const request: any = {};
-        const savedUser = {
+        const savedUser: User = {
             _id: '_id',
             username: 'username',
             membershipInformation: {
@@ -345,11 +346,33 @@ describe('formatUserMiddleware', () => {
             timezone: 'Europe/London',
             userType: UserTypes.basic,
             followers: [],
+            following: [],
+            hasCompletedIntroduction: true,
+            achievements: [],
+            totalStreakCompletes: 10,
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
             pushNotificationToken: 'pushNotificationToken',
-            pushNotifications: [],
+            pushNotifications: {
+                completeAllStreaksReminder: {
+                    enabled: true,
+                    expoId: 'expoId',
+                    reminderHour: 10,
+                    reminderMinute: 15,
+                    streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
+                },
+                teamStreakUpdates: {
+                    enabled: true,
+                },
+                newFollowerUpdates: {
+                    enabled: true,
+                },
+                achievementUpdates: {
+                    enabled: true,
+                },
+                customStreakReminders: [],
+            },
             stripe: {
                 customer: 'abc',
                 subscription: 'sub_1',
@@ -378,6 +401,7 @@ describe('formatUserMiddleware', () => {
                 'hasCompletedIntroduction',
                 'profileImages',
                 'achievements',
+                'totalStreakCompletes',
             ].sort(),
         );
     });
