@@ -7,6 +7,9 @@
 // import { completeSoloStreakTaskModel } from '../../src/Models/CompleteSoloStreakTask';
 // import { completeChallengeStreakTaskModel } from '../../src/Models/CompleteChallengeStreakTask';
 // import { completeTeamMemberStreakTaskModel } from '../../src/Models/CompleteTeamMemberStreakTask';
+// import { incompleteSoloStreakTaskModel } from '../../src/Models/IncompleteSoloStreakTask';
+// import { incompleteChallengeStreakTaskModel } from '../../src/Models/IncompleteChallengeStreakTask';
+// import { incompleteTeamMemberStreakTaskModel } from '../../src/Models/IncompleteTeamMemberStreakTask';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -17,13 +20,23 @@
 //         const users = await userModel.find({});
 //         await Promise.all(
 //             users.map(async user => {
-//                 const completeTotalSoloStreaks = await completeSoloStreakTaskModel.count({ userId: user._id });
-//                 const completeTotalChallengeStreaks = await completeChallengeStreakTaskModel.count({
+//                 const completeSoloStreaks = await completeSoloStreakTaskModel.count({ userId: user._id });
+//                 const incompleteSoloStreaks = await incompleteSoloStreakTaskModel.count({ userId: user._id });
+//                 const soloStreaks = completeSoloStreaks - incompleteSoloStreaks;
+//                 const completeChallengeStreaks = await completeChallengeStreakTaskModel.count({
 //                     userId: user._id,
 //                 });
-//                 const completeTeamStreakChallengeStreaks = await completeTeamMemberStreakTaskModel.count({
-//                     user: user._id,
+//                 const incompleteChallengeStreaks = await incompleteChallengeStreakTaskModel.count({ userId: user._id });
+//                 const challengeStreaks = completeChallengeStreaks - incompleteChallengeStreaks;
+//                 const completeTeamMemberStreaks = await completeTeamMemberStreakTaskModel.count({
+//                     userId: user._id,
 //                 });
+//                 const incompleteTeamMemberStreaks = await incompleteTeamMemberStreakTaskModel.count({
+//                     userId: user._id,
+//                 });
+//                 const teamMemberStreakTasks = completeTeamMemberStreaks - incompleteTeamMemberStreaks;
+//                 const total = soloStreaks + challengeStreaks + teamMemberStreakTasks;
+//                 await userModel.findByIdAndUpdate(user._id, { $set: { totalStreakCompletes: total } });
 //             }),
 //         );
 //         response.send('success');

@@ -314,7 +314,8 @@ describe('findUsersMiddleware', () => {
         const lean = jest.fn().mockResolvedValue([{ username: 'username' }]);
         const limit = jest.fn(() => ({ lean }));
         const skip = jest.fn(() => ({ limit }));
-        const find = jest.fn(() => ({ skip }));
+        const sort = jest.fn(() => ({ skip }));
+        const find = jest.fn(() => ({ sort }));
         const userModel = { find };
         const request: any = { query: { skip: 10, limit: 10 } };
         const response: any = {
@@ -327,6 +328,7 @@ describe('findUsersMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({});
+        expect(sort).toBeCalledWith({ totalStreakCompletes: -1 });
         expect(skip).toBeCalledWith(10);
         expect(limit).toBeCalledWith(10);
         expect(lean).toBeCalledWith();
