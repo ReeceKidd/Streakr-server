@@ -310,7 +310,7 @@ describe('calculateTotalUsersCountMiddleware', () => {
 
 describe('findUsersMiddleware', () => {
     test('sets response.locals.users with the limited number of users', async () => {
-        expect.assertions(6);
+        expect.assertions(7);
         const lean = jest.fn().mockResolvedValue([{ username: 'username' }]);
         const limit = jest.fn(() => ({ lean }));
         const skip = jest.fn(() => ({ limit }));
