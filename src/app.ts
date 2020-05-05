@@ -3,6 +3,7 @@ import * as bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import * as Sentry from '@sentry/node';
 
 import ApiVersions from './Server/versions';
 import v1Router from './Routers/versions/v1';
@@ -14,6 +15,10 @@ import { sendEmail } from './email';
 
 dotenv.config();
 const { DATABASE_URI, NODE_ENV } = getServiceConfig();
+
+if (NODE_ENV !== 'test') {
+    Sentry.init({ dsn: 'https://ef376eda094746328e5904569e6ccbe7@o387464.ingest.sentry.io/5222901' });
+}
 
 const app = express();
 
