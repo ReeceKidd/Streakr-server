@@ -3,7 +3,7 @@ import moment from 'moment';
 import { agendaJobModel } from '../Models/AgendaJob';
 import { agenda, AgendaTimeRanges, AgendaProcessTimes } from '../Agenda/agenda';
 import Agenda from 'agenda';
-import { AgendaJobNames } from '@streakoid/streakoid-models/lib';
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
 
 export const createChallengeStreakDailyTrackerJob = async (
     timezone: string,
@@ -48,5 +48,5 @@ export const initialiseChallengeStreakTimezoneCheckerJobs = async () => {
         }),
     );
 
-    console.log('Initalised challenge streak timezone checker jobs');
+    console.log('Initialized challenge streak timezone checker jobs');
 };
