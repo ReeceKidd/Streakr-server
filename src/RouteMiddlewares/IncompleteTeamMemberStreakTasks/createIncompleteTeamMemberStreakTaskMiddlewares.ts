@@ -13,14 +13,6 @@ import {
 } from '../../Models/IncompleteTeamMemberStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import {
-    TeamMemberStreak,
-    TeamStreak,
-    User,
-    ActivityFeedItemTypes,
-    ActivityFeedItemType,
-    PushNotificationTypes,
-} from '@streakoid/streakoid-models/lib';
 import { incompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
 import { IncompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
@@ -28,6 +20,12 @@ import { TeamStreakModel } from '../../../src/Models/TeamStreak';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { IncompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
+import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),

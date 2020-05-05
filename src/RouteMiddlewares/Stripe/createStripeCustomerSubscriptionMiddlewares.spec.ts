@@ -23,8 +23,10 @@ import {
 } from './createStripeCustomerSubscriptionMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { PaymentPlans, User, StreakReminderTypes } from '@streakoid/streakoid-models/lib';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import PaymentPlans from '@streakoid/streakoid-models/lib/Types/PaymentPlans';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 
 describe('createStripeCustomerSubscriptionMiddlewares', () => {
     afterEach(() => {

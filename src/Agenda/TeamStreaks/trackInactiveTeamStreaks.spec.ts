@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { trackInactiveTeamStreaks } from './trackInactiveTeamStreaks';
 import streakoid from '../../streakoid';
-
-import { StreakTrackingEventTypes, StreakTypes } from '@streakoid/streakoid-models/lib';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 describe('trackInactiveTeamStreaks', () => {
     afterEach(() => {

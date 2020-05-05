@@ -20,7 +20,7 @@ describe('incompleteTeamMemberStreakTaskQueryValidationMiddleware', () => {
         teamStreakId,
     };
 
-    test('allows userId, teamMemberStreak, and teamStreakId as query paramaters', () => {
+    test('allows userId, teamMemberStreak, and teamStreakId as query parameters', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));

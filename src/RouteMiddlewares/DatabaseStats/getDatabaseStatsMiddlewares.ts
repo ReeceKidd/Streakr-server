@@ -7,7 +7,8 @@ import { SoloStreakModel, soloStreakModel } from '../../Models/SoloStreak';
 import { TeamMemberStreakModel, teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 import { ChallengeStreakModel, challengeStreakModel } from '../../Models/ChallengeStreak';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { StreakStatus, DatabaseStats } from '@streakoid/streakoid-models/lib';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import { DatabaseStats } from '@streakoid/streakoid-models/lib/Models/DatabaseStats';
 
 export const getCountTotalUsersMiddleware = (userModel: Model<UserModel>) => async (
     request: Request,

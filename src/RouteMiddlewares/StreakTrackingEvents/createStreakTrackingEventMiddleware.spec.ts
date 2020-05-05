@@ -9,7 +9,8 @@ import {
     createStreakTrackingEventMiddlewares,
     saveStreakTrackingEventToDatabaseMiddleware,
 } from './createStreakTrackingEventMiddleware';
-import { StreakTypes, StreakTrackingEventTypes } from '@streakoid/streakoid-models/lib';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 describe(`createStreakTrackingEventBodyValidationMiddleware`, () => {
     const type = StreakTrackingEventTypes.lostStreak;

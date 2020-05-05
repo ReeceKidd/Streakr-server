@@ -5,15 +5,13 @@ import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddle
 import { userModel, UserModel } from '../../../Models/User';
 import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
-import {
-    User,
-    ActivityFeedItemTypes,
-    ActivityFeedItemType,
-    PushNotificationTypes,
-} from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../../src/helpers/createActivityFeedItem';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 import { NewFollowerPushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 
 const followUserParamsValidationSchema = {
     userId: Joi.string()

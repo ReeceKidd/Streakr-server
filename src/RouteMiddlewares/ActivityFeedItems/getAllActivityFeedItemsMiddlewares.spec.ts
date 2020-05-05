@@ -11,7 +11,8 @@ import {
 } from './getAllActivityFeedItemsMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { ActivityFeedItemTypes, SupportedResponseHeaders } from '@streakoid/streakoid-models/lib';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import SupportedResponseHeaders from '@streakoid/streakoid-models/lib/Types/SupportedResponseHeaders';
 
 const userIds = ['userId'];
 const soloStreakId = 'soloStreakId';

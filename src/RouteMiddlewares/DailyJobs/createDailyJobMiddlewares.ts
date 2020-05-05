@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { dailyJobModel, DailyJobModel } from '../../Models/DailyJob';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakTypes } from '@streakoid/streakoid-models/lib';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 const createDailyJobBodyValidationSchema = {
     agendaJobId: Joi.string().required(),

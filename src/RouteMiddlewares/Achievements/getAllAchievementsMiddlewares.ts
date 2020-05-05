@@ -5,8 +5,9 @@ import * as mongoose from 'mongoose';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { SupportedResponseHeaders, AchievementTypes } from '@streakoid/streakoid-models/lib';
 import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import SupportedResponseHeaders from '@streakoid/streakoid-models/lib/Types/SupportedResponseHeaders';
 
 const getAchievementsQueryValidationSchema = {
     achievementType: Joi.string().valid(Object.keys(AchievementTypes)),

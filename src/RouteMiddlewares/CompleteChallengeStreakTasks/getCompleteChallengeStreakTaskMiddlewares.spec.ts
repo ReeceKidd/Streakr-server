@@ -10,7 +10,7 @@ import {
 } from './getCompleteChallengeStreakTaskMiddlewares';
 
 describe('completeChallengeStreakTaskQueryValidationMiddleware', () => {
-    test('allows userId as a query paramater', () => {
+    test('allows userId as a query paramter', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));

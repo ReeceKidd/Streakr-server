@@ -6,17 +6,15 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import {
-    User,
-    ActivityFeedItemTypes,
-    ActivityFeedItemType,
-    TeamStreak,
-    StreakReminderTypes,
-    StreakStatus,
-} from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { UserModel, userModel } from '../../../src/Models/User';
 import { CustomTeamStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 const teamStreakParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -120,11 +118,11 @@ export const getDisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware = 
                                 enabled: false,
                             };
                             const customStreakRemindersWithoutOldReminder = user.pushNotifications.customStreakReminders.filter(
-                                pushNotificaion =>
+                                pushNotification =>
                                     !(
-                                        pushNotificaion.streakReminderType ===
+                                        pushNotification.streakReminderType ===
                                             StreakReminderTypes.customTeamStreakReminder &&
-                                        pushNotificaion.teamStreakId == updatedTeamStreak._id
+                                        pushNotification.teamStreakId == updatedTeamStreak._id
                                     ),
                             );
 

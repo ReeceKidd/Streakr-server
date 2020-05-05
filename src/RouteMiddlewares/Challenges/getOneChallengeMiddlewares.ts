@@ -6,8 +6,9 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { challengeModel, ChallengeModel } from '../../Models/Challenge';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { Challenge, ChallengeMember } from '@streakoid/streakoid-models/lib';
 import { UserModel, userModel } from '../../Models/User';
+import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
+import { ChallengeMember } from '@streakoid/streakoid-models/lib/Models/ChallengeMember';
 
 const challengeParamsValidationSchema = {
     challengeId: Joi.string()

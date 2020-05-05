@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resetIncompleteChallengeStreaks } from './resetIncompleteChallengeStreaks';
 import streakoid from '../../streakoid';
-import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-models/lib';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 describe('resetIncompleteChallengeStreaks', () => {
     afterEach(() => {

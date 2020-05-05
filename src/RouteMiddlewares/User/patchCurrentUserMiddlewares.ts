@@ -6,10 +6,12 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User, PopulatedCurrentUser, BasicUser } from '@streakoid/streakoid-models/lib';
 import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
 import { populateCurrentUserAchievementsMiddleware } from './getCurrentUser';
 import { DatabaseAchievementType } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { BasicUser } from '@streakoid/streakoid-models/lib/Models/BasicUser';
+import { PopulatedCurrentUser } from '@streakoid/streakoid-models/lib/Models/PopulatedCurrentUser';
 
 const patchCurrentUserValidationSchema = {
     email: Joi.string().email(),

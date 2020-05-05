@@ -8,10 +8,10 @@ import {
     getAllStreakTrackingEventsMiddlewares,
     retrieveStreakTrackingEventsMiddleware,
 } from './getAllStreakTrackingEventsMiddlewares';
-import { StreakTrackingEventTypes } from '@streakoid/streakoid-models/lib';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 
 describe('streakTrackingEventQueryValidationMiddleware', () => {
-    test('allows type as a query paramater', () => {
+    test('allows type as a query paramter', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));

@@ -32,9 +32,9 @@ import {
 } from './createCompleteSoloStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { AchievementTypes } from '@streakoid/streakoid-models/lib';
 import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 
 describe(`completeSoloStreakTaskBodyValidationMiddleware`, () => {
     const userId = 'userId';

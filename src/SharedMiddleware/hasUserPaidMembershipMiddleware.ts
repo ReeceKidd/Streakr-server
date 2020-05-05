@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomError, ErrorType } from '../customError';
-import { User } from '@streakoid/streakoid-models/lib';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 export const hasUserPaidMembershipMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {

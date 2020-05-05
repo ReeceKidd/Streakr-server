@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { Challenge } from '@streakoid/streakoid-models/lib';
+import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
 
 export type ChallengeModel = Challenge & mongoose.Document;
 

@@ -7,7 +7,9 @@ import { getServiceConfig } from '../../getServiceConfig';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { userModel, UserModel } from '../../Models/User';
-import { FormattedUser, User, PaymentPlans } from '@streakoid/streakoid-models/lib';
+import PaymentPlans from '@streakoid/streakoid-models/lib/Types/PaymentPlans';
+import { FormattedUser } from '@streakoid/streakoid-models/lib/Models/FormattedUser';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 const { STRIPE_SECRET_KEY, STRIPE_MONTHLY_PLAN, STRIPE_ANNUAL_PLAN } = getServiceConfig();
 

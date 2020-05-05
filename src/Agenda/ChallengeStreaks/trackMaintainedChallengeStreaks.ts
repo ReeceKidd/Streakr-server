@@ -1,11 +1,9 @@
 import streakoid from '../../streakoid';
-import {
-    ChallengeStreak,
-    StreakTrackingEvent,
-    StreakTrackingEventTypes,
-    StreakTypes,
-} from '@streakoid/streakoid-models/lib';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
+import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
+import { StreakTrackingEvent } from '@streakoid/streakoid-models/lib/Models/StreakTrackingEvent';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export const trackMaintainedChallengeStreaks = async (
     maintainedChallengeStreaks: ChallengeStreak[],

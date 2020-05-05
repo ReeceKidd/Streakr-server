@@ -10,7 +10,7 @@ import {
     saveActivityFeedItemToDatabaseMiddleware,
     getSaveActivityFeedItemToDatabaseMiddleware,
 } from './createActivityFeedItemMiddlewares';
-import { ActivityFeedItemTypes } from '@streakoid/streakoid-models/lib';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 describe(`createActivityFeedItemBodyValidationMiddleware`, () => {
     const activityFeedItemType = ActivityFeedItemTypes.lostSoloStreak;

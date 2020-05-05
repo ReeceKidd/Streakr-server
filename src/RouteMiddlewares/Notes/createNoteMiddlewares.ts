@@ -12,8 +12,9 @@ import { UserModel } from '../../../src/Models/User';
 import { TeamStreakModel } from '../../../src/Models/TeamStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { userModel } from '../../../src/Models/User';
-import { StreakTypes, PushNotificationTypes } from '@streakoid/streakoid-models/lib';
 import { AddedNoteToTeamStreakPushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 
 const createNoteBodyValidationSchema = {
     userId: Joi.string().required(),

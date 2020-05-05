@@ -1,13 +1,11 @@
 import streakoid from '../../streakoid';
-import {
-    CurrentStreak,
-    PastStreak,
-    StreakTrackingEvent,
-    StreakTrackingEventTypes,
-    StreakTypes,
-    PopulatedTeamStreak,
-} from '@streakoid/streakoid-models/lib';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
+import { PopulatedTeamStreak } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamStreak';
+import { StreakTrackingEvent } from '@streakoid/streakoid-models/lib/Models/StreakTrackingEvent';
+import { PastStreak } from '@streakoid/streakoid-models/lib/Models/PastStreak';
+import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export const resetIncompleteTeamStreaks = async (
     incompleteTeamStreaks: PopulatedTeamStreak[],

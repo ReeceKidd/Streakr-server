@@ -22,7 +22,8 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { CustomStreakReminder, CustomTeamStreakReminder } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
-import { StreakReminderTypes, StreakStatus } from '@streakoid/streakoid-models/lib';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 
 describe('teamStreakParamsValidationMiddleware', () => {
     test('sends correct error response when teamStreakId is not defined', () => {

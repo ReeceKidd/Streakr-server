@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import {
@@ -15,10 +18,11 @@ import {
     getPopulatePatchCurrentUserAchievementsMiddleware,
 } from './patchCurrentUserMiddlewares';
 
-import { User, StreakReminderTypes, AchievementTypes } from '@streakoid/streakoid-models/lib';
 import { populateCurrentUserAchievementsMiddleware } from './getCurrentUser';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 
 describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
     const values: {

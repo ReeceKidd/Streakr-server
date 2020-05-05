@@ -11,7 +11,8 @@ import {
 } from './getAllAchievementsMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { AchievementTypes, SupportedResponseHeaders } from '@streakoid/streakoid-models/lib';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import SupportedResponseHeaders from '@streakoid/streakoid-models/lib/Types/SupportedResponseHeaders';
 
 const achievementType = AchievementTypes.oneHundredDaySoloStreak;
 

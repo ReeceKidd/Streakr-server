@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { ActivityFeedItemTypes } from '@streakoid/streakoid-models/lib';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 export type ActivityFeedItemModel = mongoose.Document;
 

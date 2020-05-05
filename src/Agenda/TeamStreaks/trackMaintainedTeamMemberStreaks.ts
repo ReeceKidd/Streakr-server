@@ -1,12 +1,9 @@
-import {
-    TeamMemberStreak,
-    StreakTrackingEvent,
-    StreakTrackingEventTypes,
-    StreakTypes,
-} from '@streakoid/streakoid-models/lib';
-
 import streakoid from '../../streakoid';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
+import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
+import { StreakTrackingEvent } from '@streakoid/streakoid-models/lib/Models/StreakTrackingEvent';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export const trackMaintainedTeamMemberStreaks = async (
     maintainedTeamMemberStreaks: TeamMemberStreak[],

@@ -1,11 +1,14 @@
 import moment from 'moment-timezone';
-import { AgendaJobNames, StreakTypes, DailyJob, SoloStreak } from '@streakoid/streakoid-models/lib';
 
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import streakoid from '../../streakoid';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
+import { DailyJob } from '@streakoid/streakoid-models/lib/Models/DailyJob';
+import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export const manageDailySoloStreaks = async ({
     agendaJobId,

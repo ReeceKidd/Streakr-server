@@ -23,11 +23,12 @@ import {
 } from './patchChallengeStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakStatus, StreakReminderTypes } from '@streakoid/streakoid-models/lib';
 import {
     CustomStreakReminder,
     CustomChallengeStreakReminder,
 } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 
 describe('challengeStreakParamsValidationMiddleware', () => {
     test('sends correct error response when challengeStreakId is not defined', () => {

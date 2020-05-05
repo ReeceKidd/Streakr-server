@@ -9,14 +9,12 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { challengeModel, ChallengeModel } from '../../Models/Challenge';
 import { UserModel, userModel } from '../../../src/Models/User';
-import {
-    User,
-    Challenge,
-    ActivityFeedItemTypes,
-    ChallengeStreak,
-    ActivityFeedItemType,
-} from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
+import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 const createChallengeStreakBodyValidationSchema = {
     challengeId: Joi.string().required(),

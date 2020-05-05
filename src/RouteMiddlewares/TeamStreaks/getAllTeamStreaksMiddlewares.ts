@@ -8,8 +8,10 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { userModel, UserModel } from '../../Models/User';
 import { TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
-import { TeamStreak, PopulatedTeamMember, StreakStatus } from '@streakoid/streakoid-models/lib';
 import { teamMemberStreakModel } from '../../Models/TeamMemberStreak';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import { PopulatedTeamMember } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamMember';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 
 const getTeamStreaksQueryValidationSchema = {
     creatorId: Joi.string(),

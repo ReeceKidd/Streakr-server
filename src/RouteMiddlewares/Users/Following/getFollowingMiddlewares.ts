@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddle
 import { userModel, UserModel } from '../../../Models/User';
 import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
-import { BasicUser } from '@streakoid/streakoid-models/lib';
+import { BasicUser } from '@streakoid/streakoid-models/lib/Models/BasicUser';
 
 const getFollowingParamsValidationSchema = {
     userId: Joi.string().required(),

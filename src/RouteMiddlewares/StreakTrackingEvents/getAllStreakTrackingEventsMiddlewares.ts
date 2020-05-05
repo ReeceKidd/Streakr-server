@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { streakTrackingEventModel, StreakTrackingEventModel } from '../../Models/StreakTrackingEvent';
 import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
-import { StreakTrackingEventTypes } from '@streakoid/streakoid-models/lib';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 
 const streakTrackingEventQueryValidationSchema = {
     type: Joi.string().valid(Object.keys(StreakTrackingEventTypes)),

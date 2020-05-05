@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Models } from './Models';
 import { Collections } from './Collections';
-import { CompleteSoloStreakTask } from '@streakoid/streakoid-models/lib';
+import { CompleteSoloStreakTask } from '@streakoid/streakoid-models/lib/Models/CompleteSoloStreakTask';
 
 export type CompleteSoloStreakTaskModel = CompleteSoloStreakTask & mongoose.Document;
 

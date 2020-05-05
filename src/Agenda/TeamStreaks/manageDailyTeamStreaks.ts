@@ -1,5 +1,4 @@
 import moment from 'moment-timezone';
-import { DailyJob, AgendaJobNames, StreakTypes, TeamMemberStreak } from '@streakoid/streakoid-models/lib';
 
 import streakoid from '../../streakoid';
 import { resetIncompleteTeamMemberStreaks } from './resetIncompleteTeamMemberStreaks';
@@ -9,6 +8,10 @@ import { trackInactiveTeamStreaks } from './trackInactiveTeamStreaks';
 import { resetIncompleteTeamStreaks } from './resetIncompleteTeamStreaks';
 import { trackMaintainedTeamStreaks } from './trackMaintainedTeamStreaks';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
+import { DailyJob } from '@streakoid/streakoid-models/lib/Models/DailyJob';
+import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export const manageDailyTeamStreaks = async ({
     agendaJobId,

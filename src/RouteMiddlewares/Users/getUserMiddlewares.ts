@@ -6,9 +6,11 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { userModel, UserModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User, PopulatedUser, BasicUser } from '@streakoid/streakoid-models/lib';
 import { AchievementModel, achievementModel } from '../../../src/Models/Achievement';
 import { DatabaseAchievementType } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { BasicUser } from '@streakoid/streakoid-models/lib/Models/BasicUser';
+import { PopulatedUser } from '@streakoid/streakoid-models/lib/Models/PopulatedUser';
 
 const userParamsValidationSchema = {
     userId: Joi.string()

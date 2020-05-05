@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { CustomError, ErrorType } from '../customError';
 import { UserModel, userModel } from '../Models/User';
 import { getServiceConfig } from '../../src/getServiceConfig';
-import { SupportedRequestHeaders } from '@streakoid/streakoid-models/lib';
+import SupportedRequestHeaders from '@streakoid/streakoid-models/lib/Types/SupportedRequestHeaders';
 
 const { COGNITO_APP_CLIENT_ID } = getServiceConfig();
 

@@ -21,8 +21,9 @@ import {
 } from './patchSoloStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakStatus, StreakReminderTypes } from '@streakoid/streakoid-models/lib';
 import { CustomSoloStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 describe('soloStreakParamsValidationMiddleware', () => {
     test('sends correct error response when soloStreakId is not defined', () => {

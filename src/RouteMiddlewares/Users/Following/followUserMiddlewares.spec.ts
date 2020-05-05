@@ -20,7 +20,7 @@ import {
     getSendNewFollowerRequestNotificationMiddleware,
     sendNewFollowerRequestNotificationMiddleware,
 } from './followUserMiddlewares';
-import { PushNotificationTypes } from '@streakoid/streakoid-models/lib';
+import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 
 describe('followUserMiddlewares', () => {
     describe('followUserParamsValidationMiddleware', () => {

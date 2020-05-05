@@ -2,7 +2,8 @@
 import { agendaJobModel } from '../../../src/Models/AgendaJob';
 import moment from 'moment';
 import { AgendaTimeRanges } from '../agenda';
-import { AgendaJob, AgendaJobNames } from '@streakoid/streakoid-models/lib';
+import { AgendaJob } from '@streakoid/streakoid-models/lib/Models/AgendaJob';
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
 
 export const adjustForDaylightSavingsTime = async (timezone: string) => {
     const soloStreakDailyTrackerJob: AgendaJob = await agendaJobModel

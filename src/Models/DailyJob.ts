@@ -1,7 +1,9 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { DailyJob, StreakTypes, AgendaJobNames } from '@streakoid/streakoid-models/lib';
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { DailyJob } from '@streakoid/streakoid-models/lib/Models/DailyJob';
 
 export type DailyJobModel = DailyJob & mongoose.Document;
 

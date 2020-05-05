@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { Models } from './Models';
 import { Collections } from './Collections';
-import { AgendaJob } from '@streakoid/streakoid-models/lib';
+import { AgendaJob } from '@streakoid/streakoid-models/lib/Models/AgendaJob';
 
 export type AgendaJobModel = AgendaJob & mongoose.Document;
 

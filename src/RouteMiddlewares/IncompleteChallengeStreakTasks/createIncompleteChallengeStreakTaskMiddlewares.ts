@@ -13,15 +13,13 @@ import {
 } from '../../Models/IncompleteChallengeStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import {
-    ChallengeStreak,
-    User,
-    ActivityFeedItemTypes,
-    Challenge,
-    ActivityFeedItemType,
-} from '@streakoid/streakoid-models/lib';
 import { ChallengeModel, challengeModel } from '../../../src/Models/Challenge';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 export const incompleteChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),

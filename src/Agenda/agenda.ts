@@ -3,10 +3,10 @@ import Agenda from 'agenda';
 import { getServiceConfig } from '../getServiceConfig';
 import { manageDailySoloStreaks } from './SoloStreaks/manageDailySoloStreaks';
 import { sendEmail } from '../email';
-import { AgendaJobNames } from '@streakoid/streakoid-models/lib';
 import { manageDailyTeamStreaks } from './TeamStreaks/manageDailyTeamStreaks';
 import { adjustForDaylightSavingsTime } from './AdjustForDaylightSavingsTime/adjustForDaylightSavingsTime';
 import { manageDailyChallengeStreaks } from './ChallengeStreaks/manageDailyChallengeStreaks';
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
 
 const { DATABASE_URI, NODE_ENV } = getServiceConfig();
 
@@ -29,13 +29,15 @@ export const agenda = new Agenda({
     processEvery: '30 Seconds',
 });
 
-agenda.on('fail', async (err, job) => {
+agenda.on('fail', async (err: Error, job) => {
     try {
         const message = `
         Envirionment: ${NODE_ENV}
         Ran job: ${job.attrs.name} for timezone: ${job.attrs.data.timezone},
       At ${new Date()}
       Failure reason: ${err.message}
+      Error name: ${err.name}
+      Error stack: ${err.stack}
       Failure count ${job.attrs.failCount}
       err: ${err.toString()}`;
         await sendEmail({ subject: 'Agenda Failure', text: message, emailFrom: 'notify@streakoid.com' });

@@ -10,7 +10,7 @@ import {
 } from './createNoteMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakTypes } from '@streakoid/streakoid-models/lib';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 const userId = '12345678';
 const subjectId = 'abcdefghijk';

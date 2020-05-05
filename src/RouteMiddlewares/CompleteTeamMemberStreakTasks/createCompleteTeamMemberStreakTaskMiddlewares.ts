@@ -3,14 +3,6 @@ import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import {
-    TeamMemberStreak,
-    TeamStreak,
-    User,
-    ActivityFeedItemTypes,
-    ActivityFeedItemType,
-    PushNotificationTypes,
-} from '@streakoid/streakoid-models/lib';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -26,6 +18,12 @@ import { CustomError, ErrorType } from '../../customError';
 import { completeTeamStreakModel, CompleteTeamStreakModel } from '../../Models/CompleteTeamStreak';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { CompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
+import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),

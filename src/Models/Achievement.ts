@@ -1,7 +1,8 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { AchievementType, AchievementTypes } from '@streakoid/streakoid-models/lib';
+import { AchievementType } from '@streakoid/streakoid-models/lib/Models/Achievement';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 
 export type AchievementModel = AchievementType & mongoose.Document;
 

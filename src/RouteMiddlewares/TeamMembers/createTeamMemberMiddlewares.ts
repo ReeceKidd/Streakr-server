@@ -11,14 +11,12 @@ import { CustomError, ErrorType } from '../../customError';
 
 import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import {
-    TeamMember,
-    TeamStreak,
-    User,
-    ActivityFeedItemTypes,
-    ActivityFeedItemType,
-} from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { TeamMember } from '@streakoid/streakoid-models/lib/Models/TeamMember';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 export const createTeamMemberParamsValidationSchema = {
     teamStreakId: Joi.string().required(),

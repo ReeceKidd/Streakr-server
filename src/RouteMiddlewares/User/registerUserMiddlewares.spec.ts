@@ -18,7 +18,8 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
-import { User, StreakReminderTypes } from '@streakoid/streakoid-models/lib';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 
 describe(`userRegistrationValidationMiddleware`, () => {
     const mockUsername = 'mockUsername';

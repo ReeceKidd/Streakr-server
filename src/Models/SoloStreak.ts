@@ -1,7 +1,8 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { SoloStreak, StreakStatus } from '@streakoid/streakoid-models/lib';
+import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 export type SoloStreakModel = SoloStreak & mongoose.Document;
 

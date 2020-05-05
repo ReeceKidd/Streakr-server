@@ -1,15 +1,6 @@
 import * as Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import * as mongoose from 'mongoose';
-import {
-    ActivityFeedItemTypes,
-    User,
-    StreakStatus,
-    ChallengeStreak,
-    Challenge,
-    ActivityFeedItemType,
-    StreakReminderTypes,
-} from '@streakoid/streakoid-models/lib';
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { challengeStreakModel, ChallengeStreakModel } from '../../Models/ChallengeStreak';
@@ -22,6 +13,13 @@ import {
     CustomStreakReminder,
 } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
 import { userModel, UserModel } from '../../../src/Models/User';
+import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
+import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 const challengeStreakParamsValidationSchema = {
     challengeStreakId: Joi.string().required(),

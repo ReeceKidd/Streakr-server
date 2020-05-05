@@ -7,7 +7,7 @@ import { ResponseCodes } from '../../../../src/Server/responseCodes';
 import { userModel } from '../../../../src/Models/User';
 import { UserModel } from '../../../../src/Models/User';
 import { CustomError, ErrorType } from '../../../../src/customError';
-import { User } from '@streakoid/streakoid-models/lib';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 const validHours = [];
 for (let hour = 0; hour < 24; hour++) {
     validHours.push(hour);

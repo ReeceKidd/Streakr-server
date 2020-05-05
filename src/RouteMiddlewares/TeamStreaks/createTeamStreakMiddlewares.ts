@@ -8,8 +8,11 @@ import { CustomError, ErrorType } from '../../customError';
 import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { userModel, UserModel } from '../../Models/User';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { User, ActivityFeedItemTypes, ActivityFeedItemType, TeamStreak } from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 export interface TeamStreakRegistrationRequestBody {
     creatorId: string;

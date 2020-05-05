@@ -2,14 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
-import {
-    SoloStreak,
-    User,
-    ActivityFeedItemTypes,
-    ActivityFeedItemType,
-    AchievementTypes,
-    PushNotificationTypes,
-} from '@streakoid/streakoid-models/lib';
 import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -24,6 +16,12 @@ import { AchievementModel, achievementModel } from '../../../src/Models/Achievem
 import { UnlockedAchievementPushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
 import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
+import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),

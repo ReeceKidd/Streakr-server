@@ -1,15 +1,13 @@
 import streakoid from '../../streakoid';
-import {
-    ChallengeStreak,
-    CurrentStreak,
-    PastStreak,
-    StreakTrackingEvent,
-    StreakTrackingEventTypes,
-    StreakTypes,
-    ActivityFeedItemTypes,
-    ActivityFeedItemType,
-} from '@streakoid/streakoid-models/lib';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
+import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
+import { StreakTrackingEvent } from '@streakoid/streakoid-models/lib/Models/StreakTrackingEvent';
+import { PastStreak } from '@streakoid/streakoid-models/lib/Models/PastStreak';
+import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export const resetIncompleteChallengeStreaks = async (
     incompleteChallengeStreaks: ChallengeStreak[],

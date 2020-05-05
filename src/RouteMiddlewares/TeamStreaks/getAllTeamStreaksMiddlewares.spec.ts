@@ -10,7 +10,7 @@ import {
 } from './getAllTeamStreaksMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakStatus } from '@streakoid/streakoid-models/lib';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 describe('getTeamStreaksValidationMiddleware', () => {
     const creatorId = 'creatorId';

@@ -10,8 +10,11 @@ import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { incompleteSoloStreakTaskModel, IncompleteSoloStreakTaskModel } from '../../Models/IncompleteSoloStreakTask';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
-import { SoloStreak, User, ActivityFeedItemTypes, ActivityFeedItemType } from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 export const incompleteSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),

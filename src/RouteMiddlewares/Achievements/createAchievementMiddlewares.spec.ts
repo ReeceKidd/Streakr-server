@@ -10,7 +10,7 @@ import {
     saveAchievementToDatabaseMiddleware,
     getSaveAchievementToDatabaseMiddleware,
 } from './createAchievementMiddlewares';
-import { AchievementTypes } from '@streakoid/streakoid-models/lib';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 
 describe(`createAchievementBodyValidationMiddleware`, () => {
     const achievementType = AchievementTypes.oneHundredDaySoloStreak;

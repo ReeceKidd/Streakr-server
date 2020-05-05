@@ -7,8 +7,11 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User, ActivityFeedItemType, SoloStreak, ActivityFeedItemTypes } from '@streakoid/streakoid-models/lib';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 const createSoloStreakBodyValidationSchema = {
     userId: Joi.string().required(),

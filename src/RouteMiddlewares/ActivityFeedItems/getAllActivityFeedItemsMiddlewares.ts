@@ -6,7 +6,8 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { activityFeedItemModel, ActivityFeedItemModel } from '../../Models/ActivityFeedItem';
-import { ActivityFeedItemTypes, SupportedResponseHeaders } from '@streakoid/streakoid-models/lib';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import SupportedResponseHeaders from '@streakoid/streakoid-models/lib/Types/SupportedResponseHeaders';
 
 const getActivityFeedItemsQueryValidationSchema = {
     limit: Joi.number().required(),

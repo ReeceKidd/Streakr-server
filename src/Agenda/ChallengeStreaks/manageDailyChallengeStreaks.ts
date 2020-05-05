@@ -1,11 +1,14 @@
 import moment from 'moment-timezone';
-import { AgendaJobNames, StreakTypes, DailyJob, ChallengeStreak } from '@streakoid/streakoid-models/lib';
 
 import { trackMaintainedChallengeStreaks } from './trackMaintainedChallengeStreaks';
 import { trackInactiveChallengeStreaks } from './trackInactiveChallengeStreaks';
 import { resetIncompleteChallengeStreaks } from './resetIncompleteChallengeStreaks';
 import streakoid from '../../streakoid';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
+import { DailyJob } from '@streakoid/streakoid-models/lib/Models/DailyJob';
+import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export const manageDailyChallengeStreaks = async ({
     agendaJobId,

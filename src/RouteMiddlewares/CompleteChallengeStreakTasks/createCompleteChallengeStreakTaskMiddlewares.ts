@@ -2,13 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
-import {
-    ChallengeStreak,
-    User,
-    ActivityFeedItemTypes,
-    ActivityFeedItemType,
-    Challenge,
-} from '@streakoid/streakoid-models/lib';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -22,6 +15,11 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { CustomError, ErrorType } from '../../customError';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { ChallengeModel, challengeModel } from '../../../src/Models/Challenge';
+import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 export const completeChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),

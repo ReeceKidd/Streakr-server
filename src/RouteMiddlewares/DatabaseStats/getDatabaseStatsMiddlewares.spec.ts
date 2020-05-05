@@ -15,7 +15,7 @@ import {
 } from './getDatabaseStatsMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { StreakStatus } from '@streakoid/streakoid-models/lib';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 describe('countTotalUserMiddlewares', () => {
     test('counts total number of users in the database', async () => {

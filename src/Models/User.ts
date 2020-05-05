@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { User } from '@streakoid/streakoid-models/lib';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import { getServiceConfig } from '../../src/getServiceConfig';
 const { DEFAULT_USER_PROFILE_IMAGE_URL } = getServiceConfig();

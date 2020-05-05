@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as moment from 'moment-timezone';
 import { CustomError, ErrorType } from '../customError';
-import { SupportedRequestHeaders } from '@streakoid/streakoid-models/lib';
+import SupportedRequestHeaders from '@streakoid/streakoid-models/lib/Types/SupportedRequestHeaders';
 
 export const retrieveTimezoneHeaderMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {

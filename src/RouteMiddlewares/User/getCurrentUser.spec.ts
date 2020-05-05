@@ -12,9 +12,11 @@ import {
 } from './getCurrentUser';
 import { CustomError } from '../../customError';
 import { ErrorType } from '../../customError';
-import { User, StreakReminderTypes, AchievementTypes } from '@streakoid/streakoid-models/lib';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 
 describe('populateCurrentUserFollowingMiddleware', () => {
     test('populates user following', async () => {

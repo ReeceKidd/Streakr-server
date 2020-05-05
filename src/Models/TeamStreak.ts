@@ -1,7 +1,8 @@
 import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
-import { TeamStreak, StreakStatus } from '@streakoid/streakoid-models/lib';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 export type TeamStreakModel = TeamStreak & mongoose.Document;
 

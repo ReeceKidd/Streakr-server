@@ -1,16 +1,14 @@
-import {
-    TeamMemberStreak,
-    CurrentStreak,
-    PastStreak,
-    StreakTrackingEvent,
-    StreakTrackingEventTypes,
-    StreakTypes,
-    ActivityFeedItemTypes,
-    ActivityFeedItemType,
-} from '@streakoid/streakoid-models/lib';
 import streakoid from '../../streakoid';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
+import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
+import { StreakTrackingEvent } from '@streakoid/streakoid-models/lib/Models/StreakTrackingEvent';
+import { PastStreak } from '@streakoid/streakoid-models/lib/Models/PastStreak';
+import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
+import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export const resetIncompleteTeamMemberStreaks = async (
     incompleteTeamMemberStreaks: TeamMemberStreak[],
