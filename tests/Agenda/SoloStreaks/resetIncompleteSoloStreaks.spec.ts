@@ -1,11 +1,4 @@
 import { resetIncompleteSoloStreaks } from '../../../src/Agenda/SoloStreaks/resetIncompleteSoloStreaks';
-import {
-    StreakTrackingEventTypes,
-    StreakTypes,
-    ActivityFeedItemTypes,
-    User,
-    StreakStatus,
-} from '@streakoid/streakoid-models/lib';
 
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
@@ -13,6 +6,11 @@ import { getPayingUser } from '../../setup/getPayingUser';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
 import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 jest.setTimeout(120000);
 

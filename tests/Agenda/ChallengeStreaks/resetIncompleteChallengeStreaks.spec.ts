@@ -6,13 +6,11 @@ import { getPayingUser } from '../../setup/getPayingUser';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
 import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
-import {
-    Challenge,
-    StreakStatus,
-    StreakTrackingEventTypes,
-    StreakTypes,
-    ActivityFeedItemTypes,
-} from '@streakoid/streakoid-models/lib';
+import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
 jest.setTimeout(120000);
 

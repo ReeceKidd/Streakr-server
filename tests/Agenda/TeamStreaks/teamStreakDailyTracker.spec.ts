@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createTeamStreakDailyTrackerJob } from '../../../src/scripts/initaliseTeamStreakTimezoneCheckers';
-import { StreakTypes, StreakStatus, StreakTrackingEventTypes, AgendaJobNames } from '@streakoid/streakoid-models/lib';
 
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEvent';
@@ -15,6 +14,10 @@ import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { getFriend } from '../../../tests/setup/getFriend';
 import { StreakoidFactory, londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
 
 jest.setTimeout(120000);
 

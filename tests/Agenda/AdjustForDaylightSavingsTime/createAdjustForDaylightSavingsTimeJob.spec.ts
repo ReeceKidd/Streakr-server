@@ -2,8 +2,8 @@ import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import { setupDatabase } from '../../../tests/setup/setupDatabase';
 import { createAdjustForDaylightSavingsTimeJob } from '../../../src/scripts/initialiseAdjustForDaylightSavingsTimeJobs';
-import { AgendaJobNames } from '@streakoid/streakoid-models/lib';
 import moment = require('moment');
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
 
 jest.setTimeout(120000);
 
@@ -31,10 +31,10 @@ describe('createAdjustForDaylightSavingsTimeJob', () => {
         expect(job.attrs.data.timezone).toEqual('Europe/London');
         expect(job.attrs.repeatInterval).toEqual('1 day');
 
-        const localisedNextRunAtHour = moment.tz(new Date(job.attrs.nextRunAt), timezone).hour();
-        const localisedNextRunAtMinute = moment.tz(new Date(job.attrs.nextRunAt), timezone).minute();
+        const localizedNextRunAtHour = moment.tz(new Date(job.attrs.nextRunAt), timezone).hour();
+        const localizedNextRunAtMinute = moment.tz(new Date(job.attrs.nextRunAt), timezone).minute();
 
-        expect(localisedNextRunAtHour).toEqual(12);
-        expect(localisedNextRunAtMinute).toEqual(0);
+        expect(localizedNextRunAtHour).toEqual(12);
+        expect(localizedNextRunAtMinute).toEqual(0);
     });
 });
