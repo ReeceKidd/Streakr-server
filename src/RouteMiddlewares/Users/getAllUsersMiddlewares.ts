@@ -6,7 +6,8 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { UserModel, userModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { User, FormattedUser } from '@streakoid/streakoid-models/lib';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { FormattedUser } from '@streakoid/streakoid-models/lib/Models/FormattedUser';
 
 export const minimumSeachQueryLength = 1;
 export const maximumSearchQueryLength = 64;

@@ -14,14 +14,14 @@ export const errorHandler = (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next: NextFunction,
 ): Response => {
-    if (error.httpStatusCode === ResponseCodes.warning) {
-        if (NODE_ENV !== 'test') {
-            const user = response.locals.user;
-            if (user && user.email && user.username && user._id) {
-                Sentry.setUser({ email: user.email, username: user.username, id: user._id });
-            }
-            Sentry.captureException(error);
+    if (NODE_ENV !== 'test') {
+        const user = response.locals.user;
+        if (user && user.email && user.username && user._id) {
+            Sentry.setUser({ email: user.email, username: user.username, id: user._id });
         }
+        Sentry.captureException(error);
+    }
+    if (error.httpStatusCode === ResponseCodes.warning) {
         return response.status(error.httpStatusCode).send({
             ...error,
             message: 'Internal server error',

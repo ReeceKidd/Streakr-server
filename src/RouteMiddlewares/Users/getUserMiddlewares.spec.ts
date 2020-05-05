@@ -16,8 +16,10 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
-import { AchievementTypes, User, StreakReminderTypes } from '@streakoid/streakoid-models/lib';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 
 describe(`userParamsValidationMiddleware`, () => {
     const userId = '5d43f0c2f4499975cb312b72';

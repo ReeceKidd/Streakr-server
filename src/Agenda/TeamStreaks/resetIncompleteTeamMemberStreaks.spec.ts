@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { resetIncompleteTeamMemberStreaks } from './resetIncompleteTeamMemberStreaks';
 import streakoid from '../../streakoid';
-import { StreakTrackingEventTypes, StreakTypes, ActivityFeedItemTypes } from '@streakoid/streakoid-models/lib';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 describe('resetIncompleteSoloStreaks', () => {
     afterEach(() => {

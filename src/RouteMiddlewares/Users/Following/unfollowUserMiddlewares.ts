@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddle
 import { userModel, UserModel } from '../../../Models/User';
 import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
-import { User } from '@streakoid/streakoid-models/lib';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 const unfollowUserParamsValidationSchema = {
     userId: Joi.string()
