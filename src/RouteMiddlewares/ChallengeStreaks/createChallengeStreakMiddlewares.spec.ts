@@ -330,14 +330,20 @@ describe(`createChallengeStreakFromRequestMiddleware`, () => {
         const challenge = {
             _id: 'challengId',
         };
-        const userId = 'abcdefg';
+        const user = {
+            _id: 'userId',
+            username: 'username',
+            profileImages: {
+                originalImageUrl: 'google.com/image',
+            },
+        };
         const timezone = 'Europe/London';
         const save = jest.fn().mockResolvedValue(true);
 
         const challengeStreak = jest.fn(() => ({ save }));
 
-        const response: any = { locals: { timezone, challenge } };
-        const request: any = { body: { userId } };
+        const response: any = { locals: { timezone, challenge, user } };
+        const request: any = {};
         const next = jest.fn();
 
         const middleware = getCreateChallengeStreakMiddleware(challengeStreak as any);
