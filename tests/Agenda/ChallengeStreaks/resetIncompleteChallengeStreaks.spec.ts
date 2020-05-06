@@ -6,7 +6,6 @@ import { getPayingUser } from '../../setup/getPayingUser';
 import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
 import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
-import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
@@ -16,44 +15,43 @@ jest.setTimeout(120000);
 
 describe('resetIncompleteChallengeStreaks', () => {
     let streakoid: StreakoidFactory;
-    let userId: string;
-    let username: string;
-    let userProfileImage: string;
-    let challengeStreakId: string;
-    let challenge: Challenge;
-    const name = 'Duolingo';
-    const description = 'Everyday I must complete a duolingo lesson';
-    const icon = 'duolingo';
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
-            const user = await getPayingUser();
-            userId = user._id;
-            username = user.username;
-            (userProfileImage = user.profileImages.originalImageUrl), (streakoid = await streakoidTest());
-            const challengeResponse = await streakoid.challenges.create({
-                name,
-                description,
-                icon,
-            });
-            challenge = challengeResponse.challenge;
-            const challengeStreak = await streakoid.challengeStreaks.create({
-                userId,
-                challengeId: challenge._id,
-            });
-            challengeStreakId = challengeStreak._id;
+            streakoid = await streakoidTest();
         }
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         if (isTestEnvironment()) {
             await tearDownDatabase();
         }
     });
 
-    test('adds current streak to past streak,  resets the current streak and creates a lost streak tracking event.', async () => {
-        expect.assertions(34);
+    test('adds current streak to past streak, resets the current streak and creates a lost streak tracking event.', async () => {
+        expect.assertions(38);
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+
+        const user = await getPayingUser();
+        const userId = user._id;
+        const username = user.username;
+        const userProfileImage = user.profileImages.originalImageUrl;
+
+        const challengeResponse = await streakoid.challenges.create({
+            name,
+            description,
+            icon,
+        });
+        const challenge = challengeResponse.challenge;
+        const challengeStreak = await streakoid.challengeStreaks.create({
+            userId,
+            challengeId: challenge._id,
+        });
+        const challengeStreakId = challengeStreak._id;
 
         const incompleteChallengeStreaks = await streakoid.challengeStreaks.getAll({
             completedToday: false,
@@ -66,6 +64,10 @@ describe('resetIncompleteChallengeStreaks', () => {
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
         expect(updatedChallengeStreak.userId).toEqual(expect.any(String));
+        expect(updatedChallengeStreak.username).toEqual(user.username);
+        expect(updatedChallengeStreak.userProfileImage).toEqual(user.profileImages.originalImageUrl);
+        expect(updatedChallengeStreak.challengeId).toEqual(challenge._id);
+        expect(updatedChallengeStreak.challengeName).toEqual(challenge.name);
         expect(updatedChallengeStreak.completedToday).toEqual(false);
         expect(updatedChallengeStreak.active).toEqual(false);
         expect(updatedChallengeStreak.pastStreaks.length).toEqual(1);
@@ -91,7 +93,10 @@ describe('resetIncompleteChallengeStreaks', () => {
                 'active',
                 'pastStreaks',
                 'userId',
+                'username',
+                'userProfileImage',
                 'challengeId',
+                'challengeName',
                 'timezone',
                 'createdAt',
                 'updatedAt',
