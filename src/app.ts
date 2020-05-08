@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import * as Sentry from '@sentry/node';
+import { Request, Response, NextFunction } from 'express';
 
 import ApiVersions from './Server/versions';
 import v1Router from './Routers/versions/v1';
@@ -17,10 +18,26 @@ dotenv.config();
 const { DATABASE_URI, NODE_ENV } = getServiceConfig();
 
 if (NODE_ENV !== 'test') {
-    Sentry.init({ dsn: 'https://ef376eda094746328e5904569e6ccbe7@o387464.ingest.sentry.io/5222901' });
+    Sentry.init({
+        dsn: 'https://ef376eda094746328e5904569e6ccbe7@o387464.ingest.sentry.io/5222901',
+        attachStacktrace: true,
+    });
 }
 
 const app = express();
+
+const setUserInformationForSentry = (request: Request, response: Response, next: NextFunction): void => {
+    const user = response.locals.user;
+    if (user && user.email && user.username && user._id) {
+        Sentry.setUser({ email: user.email, username: user.username, id: user._id });
+    }
+    next();
+};
+
+if (NODE_ENV !== 'test') {
+    app.use(Sentry.Handlers.requestHandler());
+    app.use(setUserInformationForSentry);
+}
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -62,6 +79,10 @@ agenda
 //initialiseChallengeStreakTimezoneCheckerJobs();
 
 app.use(`/${ApiVersions.v1}`, v1Router);
+
+if (NODE_ENV !== 'test') {
+    app.use(Sentry.Handlers.errorHandler());
+}
 
 app.use(errorHandler);
 

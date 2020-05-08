@@ -2,6 +2,8 @@
 
 // import { CustomError, ErrorType } from '../customError';
 // import { userModel } from '../../src/Models/User';
+// import { soloStreakModel } from '../../src/Models/SoloStreak';
+// import { challengeStreakModel } from '../../src/Models/ChallengeStreak';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -9,17 +11,23 @@
 //     next: NextFunction,
 // ): Promise<void> => {
 //     try {
-//         const users = await userModel.find({
-//             'profileImages.originalImageUrl': 'https://streakoid-images.s3-eu-west-1.amazonaws.com/oid-icon.png',
-//         });
+//         const users = await userModel.find({});
 //         await Promise.all(
 //             users.map(async user => {
-//                 await userModel.findByIdAndUpdate(user._id, {
-//                     $set: {
-//                         'profileImages.originalImageUrl':
-//                             'https://streakoid-images.s3-eu-west-1.amazonaws.com/user-icon.png',
-//                     },
-//                 });
+//                 const soloStreaks = await soloStreakModel.find({ userId: user._id });
+//                 await Promise.all(
+//                     soloStreaks.map(soloStreak => {
+//                         return soloStreakModel.findByIdAndUpdate(soloStreak._id, { $set: { timezone: user.timezone } });
+//                     }),
+//                 );
+//                 const challengeStreaks = await challengeStreakModel.find({ userId: user._id });
+//                 await Promise.all(
+//                     challengeStreaks.map(challengeStreak => {
+//                         return challengeStreakModel.findByIdAndUpdate(challengeStreak._id, {
+//                             $set: { timezone: user.timezone },
+//                         });
+//                     }),
+//                 );
 //             }),
 //         );
 //         response.send('success');
