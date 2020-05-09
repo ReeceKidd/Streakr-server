@@ -105,6 +105,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             followers,
             following,
             totalStreakCompletes: user.totalStreakCompletes,
+            totalLiveStreaks: user.totalLiveStreaks,
             timezone: user.timezone,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,

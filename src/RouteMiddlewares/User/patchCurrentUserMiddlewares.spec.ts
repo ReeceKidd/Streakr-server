@@ -305,6 +305,7 @@ describe('formatUserMiddleware', () => {
             timezone: 'Europe/London',
             userType: UserTypes.basic,
             totalStreakCompletes: 10,
+            totalLiveStreaks: 0,
             followers: [],
             following: [],
             profileImages: {
@@ -353,6 +354,7 @@ describe('formatUserMiddleware', () => {
                 'followers',
                 'following',
                 'totalStreakCompletes',
+                'totalLiveStreaks',
                 'timezone',
                 'createdAt',
                 'updatedAt',

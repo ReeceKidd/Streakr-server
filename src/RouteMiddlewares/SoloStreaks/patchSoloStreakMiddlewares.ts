@@ -92,6 +92,30 @@ export const sendUpdatedSoloStreakMiddleware = (request: Request, response: Resp
     }
 };
 
+export const getDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware = (
+    userModel: mongoose.Model<UserModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { status } = request.body;
+        if (status === StreakStatus.archived) {
+            const user: User = response.locals.user;
+            await userModel.findByIdAndUpdate(user._id, { $inc: { totalLiveStreaks: -1 } });
+        }
+        next();
+    } catch (err) {
+        next(
+            new CustomError(
+                ErrorType.PatchSoloStreakDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+                err,
+            ),
+        );
+    }
+};
+
+export const decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware = getDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware(
+    userModel,
+);
+
 export const getDisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware = (
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -114,10 +138,10 @@ export const getDisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware = (
                     enabled: false,
                 };
                 const customStreakRemindersWithoutOldReminder = user.pushNotifications.customStreakReminders.filter(
-                    pushNotificaion =>
+                    pushNotification =>
                         !(
-                            pushNotificaion.streakReminderType === StreakReminderTypes.customSoloStreakReminder &&
-                            pushNotificaion.soloStreakId == updatedSoloStreak._id
+                            pushNotification.streakReminderType === StreakReminderTypes.customSoloStreakReminder &&
+                            pushNotification.soloStreakId == updatedSoloStreak._id
                         ),
                 );
 
@@ -288,6 +312,7 @@ export const patchSoloStreakMiddlewares = [
     patchSoloStreakMiddleware,
     sendUpdatedSoloStreakMiddleware,
     disableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware,
+    decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
     createArchivedSoloStreakActivityFeedItemMiddleware,
     createRestoredSoloStreakActivityFeedItemMiddleware,
     createDeletedSoloStreakActivityFeedItemMiddleware,

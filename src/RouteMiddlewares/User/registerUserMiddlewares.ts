@@ -105,7 +105,7 @@ export const saveUserToDatabaseMiddleware = getSaveUserToDatabaseMiddleware(user
 
 export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const user = response.locals.savedUser;
+        const user: User = response.locals.savedUser;
         const formattedUser: PopulatedCurrentUser = {
             _id: user._id,
             email: user.email,
@@ -114,15 +114,16 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             userType: user.userType,
             timezone: user.timezone,
             totalStreakCompletes: user.totalStreakCompletes,
-            followers: user.followers,
-            following: user.following,
+            totalLiveStreaks: user.totalLiveStreaks,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,
             pushNotifications: user.pushNotifications,
             profileImages: user.profileImages,
-            achievements: user.achievements,
             hasCompletedIntroduction: user.hasCompletedIntroduction,
+            followers: [],
+            following: [],
+            achievements: [],
         };
         response.locals.user = formattedUser;
         next();

@@ -155,6 +155,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             profileImages: user.profileImages,
             hasCompletedIntroduction: user.hasCompletedIntroduction,
             totalStreakCompletes: user.totalStreakCompletes,
+            totalLiveStreaks: user.totalLiveStreaks,
             achievements,
             followers,
             following,

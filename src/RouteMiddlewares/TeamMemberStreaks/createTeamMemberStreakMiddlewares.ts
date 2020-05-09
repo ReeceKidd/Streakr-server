@@ -117,10 +117,26 @@ export const sendFormattedTeamMemberStreakMiddleware = (
     try {
         const { savedTeamMemberStreak } = response.locals;
         response.status(ResponseCodes.created).send(savedTeamMemberStreak);
+        next();
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedTeamMemberStreakMiddleware, err));
     }
 };
+
+export const getIncreaseUsersTotalLiveStreaksByOneMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        userModel.findByIdAndUpdate(userId, { $inc: { totalLiveStreaks: 1 } });
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateTeamMemberStreakIncreaseUsersTotalLiveStreaksByOneMiddleware, err));
+    }
+};
+
+export const increaseUsersTotalLiveStreaksByOneMiddleware = getIncreaseUsersTotalLiveStreaksByOneMiddleware(userModel);
 
 export const createTeamMemberStreakMiddlewares = [
     createTeamMemberStreakBodyValidationMiddleware,
@@ -129,4 +145,5 @@ export const createTeamMemberStreakMiddlewares = [
     createTeamMemberStreakFromRequestMiddleware,
     saveTeamMemberStreakToDatabaseMiddleware,
     sendFormattedTeamMemberStreakMiddleware,
+    increaseUsersTotalLiveStreaksByOneMiddleware,
 ];

@@ -12,6 +12,7 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { userModel, UserModel } from '../../../src/Models/User';
 
 const createSoloStreakBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -66,6 +67,22 @@ export const sendFormattedSoloStreakMiddleware = (request: Request, response: Re
     }
 };
 
+export const getIncreaseUsersTotalLiveStreaksByOneMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        await userModel.findByIdAndUpdate(user._id, { $inc: { totalLiveStreaks: 1 } });
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateSoloStreakIncreaseUsersTotalLiveStreaksByOneMiddleware, err));
+    }
+};
+
+export const increaseUsersTotalLiveStreaksByOneMiddleware = getIncreaseUsersTotalLiveStreaksByOneMiddleware(userModel);
+
 export const getCreateSoloStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -94,5 +111,6 @@ export const createSoloStreakMiddlewares = [
     createSoloStreakBodyValidationMiddleware,
     createSoloStreakFromRequestMiddleware,
     sendFormattedSoloStreakMiddleware,
+    increaseUsersTotalLiveStreaksByOneMiddleware,
     createSoloStreakActivityFeedItemMiddleware,
 ];

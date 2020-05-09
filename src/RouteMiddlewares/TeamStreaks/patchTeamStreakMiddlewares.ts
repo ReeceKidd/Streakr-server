@@ -93,6 +93,29 @@ export const sendUpdatedTeamStreakMiddleware = (request: Request, response: Resp
     }
 };
 
+export const getDecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware = (
+    userModel: mongoose.Model<UserModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { status } = request.body;
+        if (status === StreakStatus.archived) {
+            const updatedTeamStreak: TeamStreak = response.locals.updatedTeamStreak;
+            await Promise.all(
+                updatedTeamStreak.members.map(member => {
+                    return userModel.findByIdAndUpdate(member.memberId, { $inc: { totalLiveStreaks: -1 } });
+                }),
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.DecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware, err));
+    }
+};
+
+export const decreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware = getDecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware(
+    userModel,
+);
+
 export const getDisableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware = (
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -296,6 +319,7 @@ export const patchTeamStreakMiddlewares = [
     teamStreakRequestBodyValidationMiddleware,
     patchTeamStreakMiddleware,
     sendUpdatedTeamStreakMiddleware,
+    decreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware,
     disableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware,
     createArchivedTeamStreakActivityFeedItemMiddleware,
     createRestoredTeamStreakActivityFeedItemMiddleware,

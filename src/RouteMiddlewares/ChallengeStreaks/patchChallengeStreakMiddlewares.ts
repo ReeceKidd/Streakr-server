@@ -174,6 +174,30 @@ export const sendUpdatedChallengeStreakMiddleware = (
     }
 };
 
+export const getDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware = (
+    userModel: mongoose.Model<UserModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { status } = request.body;
+        if (status === StreakStatus.archived) {
+            const user: User = response.locals.user;
+            await userModel.findByIdAndUpdate(user._id, { $inc: { totalLiveStreaks: -1 } });
+        }
+        next();
+    } catch (err) {
+        next(
+            new CustomError(
+                ErrorType.PatchChallengeStreakDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+                err,
+            ),
+        );
+    }
+};
+
+export const decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware = getDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware(
+    userModel,
+);
+
 export const getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware = (
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -321,6 +345,7 @@ export const patchChallengeStreakMiddlewares = [
     removeUserFromChallengeIfChallengeStreakIsDeletedMiddleware,
     decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
     sendUpdatedChallengeStreakMiddleware,
+    decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
     disableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
     createArchivedChallengeStreakActivityFeedItemMiddleware,
     createRestoredChallengeStreakActivityFeedItemMiddleware,

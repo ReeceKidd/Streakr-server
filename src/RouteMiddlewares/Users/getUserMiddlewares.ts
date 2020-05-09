@@ -145,6 +145,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             profileImages: user.profileImages,
             pushNotificationToken: user.pushNotificationToken,
             totalStreakCompletes: user.totalStreakCompletes,
+            totalLiveStreaks: user.totalLiveStreaks,
             achievements,
             followers,
             following,

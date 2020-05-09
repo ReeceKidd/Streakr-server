@@ -66,6 +66,10 @@ export const userSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        totalLiveStreaks: {
+            type: Number,
+            default: 0,
+        },
         stripe: {
             customer: {
                 type: String,

@@ -351,6 +351,7 @@ describe('formatUserMiddleware', () => {
             hasCompletedIntroduction: true,
             achievements: [],
             totalStreakCompletes: 10,
+            totalLiveStreaks: 0,
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
@@ -403,6 +404,7 @@ describe('formatUserMiddleware', () => {
                 'profileImages',
                 'achievements',
                 'totalStreakCompletes',
+                'totalLiveStreaks',
             ].sort(),
         );
     });

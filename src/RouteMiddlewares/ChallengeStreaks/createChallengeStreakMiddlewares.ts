@@ -148,10 +148,10 @@ export const getCreateChallengeStreakMiddleware = (challengeStreak: mongoose.Mod
 ): Promise<void> => {
     try {
         const challenge: Challenge = response.locals.challenge;
-        const { timezone } = response.locals;
-        const { userId } = request.body;
+        const { timezone, user } = response.locals;
         const newChallengeStreak = new challengeStreak({
-            userId,
+            userId: user._id,
+            username: user.username,
             challengeId: challenge._id,
             timezone,
         });
@@ -177,6 +177,22 @@ export const sendFormattedChallengeStreakMiddleware = (
         next(new CustomError(ErrorType.SendFormattedChallengeStreakMiddleware, err));
     }
 };
+
+export const getIncreaseUsersTotalLiveStreaksByOneMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        await userModel.findByIdAndUpdate(userId, { $inc: { totalLiveStreaks: 1 } });
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreateChallengeStreakIncreaseUsersTotalLiveStreaksByOneMiddleware, err));
+    }
+};
+
+export const increaseUsersTotalLiveStreaksByOneMiddleware = getIncreaseUsersTotalLiveStreaksByOneMiddleware(userModel);
 
 export const getCreateJoinChallengeActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
@@ -213,5 +229,6 @@ export const createChallengeStreakMiddlewares = [
     increaseNumberOfMembersInChallengeMiddleware,
     createChallengeStreakMiddleware,
     sendFormattedChallengeStreakMiddleware,
+    increaseUsersTotalLiveStreaksByOneMiddleware,
     createJoinChallengeActivityFeedItemMiddleware,
 ];

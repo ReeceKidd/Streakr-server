@@ -167,6 +167,7 @@ describe('formatUserMiddleware', () => {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
             totalStreakCompletes: 10,
+            totalLiveStreaks: 0,
             pushNotificationToken: 'pushNotificationToken',
             pushNotifications: {
                 completeAllStreaksReminder: {
@@ -210,6 +211,7 @@ describe('formatUserMiddleware', () => {
                 'followers',
                 'following',
                 'totalStreakCompletes',
+                'totalLiveStreaks',
                 'timezone',
                 'createdAt',
                 'updatedAt',
