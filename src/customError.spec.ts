@@ -5552,11 +5552,11 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to DecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware`, () => {
+    test(`creates correct error when type is set to decreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware`, () => {
         expect.assertions(3);
 
         const customError = new CustomError(
-            ErrorType.DecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+            ErrorType.DecreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
         );
         const { code, message, httpStatusCode } = customError;
 
@@ -5574,6 +5574,45 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-434`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PatchSoloStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(
+            ErrorType.PatchSoloStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+        );
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-435`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to IncreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(
+            ErrorType.IncreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+        );
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-436`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PatchChallengeStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(
+            ErrorType.PatchChallengeStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+        );
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-437`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

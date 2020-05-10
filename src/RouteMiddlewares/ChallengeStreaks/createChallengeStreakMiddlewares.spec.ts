@@ -333,20 +333,27 @@ describe(`createChallengeStreakMiddlewares`, () => {
         });
     });
 
-    describe(`createChallengeStreakFromRequestMiddleware`, () => {
+    describe(`createChallengeStreakMiddleware`, () => {
         test('sets response.locals.savedChallengeStreak', async () => {
             expect.assertions(2);
             const challenge = {
                 _id: 'challengeId',
+                name: 'challenge name',
             };
-            const userId = 'userId';
+            const user = {
+                _id: '_id',
+                username: 'username',
+                profileImages: {
+                    originalImageURL: 'google.com/profile',
+                },
+            };
             const timezone = 'Europe/London';
             const save = jest.fn().mockResolvedValue(true);
 
             const challengeStreak = jest.fn(() => ({ save }));
 
-            const response: any = { locals: { timezone, challenge } };
-            const request: any = { body: { userId } };
+            const response: any = { locals: { timezone, challenge, user } };
+            const request: any = {};
             const next = jest.fn();
 
             const middleware = getCreateChallengeStreakMiddleware(challengeStreak as any);

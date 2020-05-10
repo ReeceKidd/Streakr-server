@@ -22,6 +22,8 @@ import {
     getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
     decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
     getDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+    increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+    getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
 } from './patchChallengeStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -475,7 +477,7 @@ describe('patchChallengeStreakMiddlewares', () => {
     });
 
     describe(`decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware `, () => {
-        test('decreases users totalLiveStreaks by one when user archives a solo streak', async () => {
+        test('decreases users totalLiveStreaks by one when user archives a challenge streak', async () => {
             expect.assertions(2);
             const user = { _id: '_id' };
 
@@ -528,6 +530,66 @@ describe('patchChallengeStreakMiddlewares', () => {
             expect(next).toBeCalledWith(
                 new CustomError(
                     ErrorType.PatchChallengeStreakDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
+    describe(`increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware `, () => {
+        test('increases users totalLiveStreaks by one when user restores a challenge streak', async () => {
+            expect.assertions(2);
+            const user = { _id: '_id' };
+
+            const userModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            };
+
+            const response: any = { locals: { user } };
+            const request: any = { body: { status: StreakStatus.live } };
+            const next = jest.fn();
+
+            const middleware = getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware(userModel as any);
+
+            await middleware(request, response, next);
+
+            expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, { $inc: { totalLiveStreaks: 1 } });
+            expect(next).toBeCalled();
+        });
+
+        test('just calls next if streak status does not equal live.', async () => {
+            expect.assertions(2);
+            const user = { _id: '_id' };
+
+            const userModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            };
+
+            const response: any = { locals: { user } };
+            const request: any = { body: { status: StreakStatus.archived } };
+            const next = jest.fn();
+
+            const middleware = getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware(userModel as any);
+
+            await middleware(request, response, next);
+
+            expect(userModel.findByIdAndUpdate).not.toBeCalled();
+            expect(next).toBeCalled();
+        });
+
+        test('calls next with PatchChallengeStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware error on middleware failure', () => {
+            expect.assertions(1);
+
+            const response: any = {};
+            const request: any = {};
+            const next = jest.fn();
+            const middleware = getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware({} as any);
+
+            middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.PatchChallengeStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
                     expect.any(Error),
                 ),
             );
@@ -781,9 +843,9 @@ describe('patchChallengeStreakMiddlewares', () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(13);
+        expect.assertions(14);
 
-        expect(patchChallengeStreakMiddlewares.length).toBe(12);
+        expect(patchChallengeStreakMiddlewares.length).toBe(13);
         expect(patchChallengeStreakMiddlewares[0]).toBe(challengeStreakParamsValidationMiddleware);
         expect(patchChallengeStreakMiddlewares[1]).toBe(challengeStreakRequestBodyValidationMiddleware);
         expect(patchChallengeStreakMiddlewares[2]).toBe(patchChallengeStreakMiddleware);
@@ -797,10 +859,13 @@ describe('patchChallengeStreakMiddlewares', () => {
             decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
         );
         expect(patchChallengeStreakMiddlewares[8]).toBe(
+            increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+        );
+        expect(patchChallengeStreakMiddlewares[9]).toBe(
             disableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
         );
-        expect(patchChallengeStreakMiddlewares[9]).toBe(createArchivedChallengeStreakActivityFeedItemMiddleware);
-        expect(patchChallengeStreakMiddlewares[10]).toBe(createRestoredChallengeStreakActivityFeedItemMiddleware);
-        expect(patchChallengeStreakMiddlewares[11]).toBe(createDeletedChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[10]).toBe(createArchivedChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[11]).toBe(createRestoredChallengeStreakActivityFeedItemMiddleware);
+        expect(patchChallengeStreakMiddlewares[12]).toBe(createDeletedChallengeStreakActivityFeedItemMiddleware);
     });
 });

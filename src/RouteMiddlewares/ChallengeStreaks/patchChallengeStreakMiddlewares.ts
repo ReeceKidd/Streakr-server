@@ -198,6 +198,30 @@ export const decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware = 
     userModel,
 );
 
+export const getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware = (
+    userModel: mongoose.Model<UserModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { status } = request.body;
+        if (status === StreakStatus.live) {
+            const user: User = response.locals.user;
+            await userModel.findByIdAndUpdate(user._id, { $inc: { totalLiveStreaks: 1 } });
+        }
+        next();
+    } catch (err) {
+        next(
+            new CustomError(
+                ErrorType.PatchChallengeStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+                err,
+            ),
+        );
+    }
+};
+
+export const increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware = getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware(
+    userModel,
+);
+
 export const getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware = (
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -220,10 +244,10 @@ export const getDisableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddl
                     enabled: false,
                 };
                 const customStreakRemindersWithoutOldReminder = user.pushNotifications.customStreakReminders.filter(
-                    pushNotificaion =>
+                    pushNotification =>
                         !(
-                            pushNotificaion.streakReminderType === StreakReminderTypes.customChallengeStreakReminder &&
-                            pushNotificaion.challengeStreakId == updatedChallengeStreak._id
+                            pushNotification.streakReminderType === StreakReminderTypes.customChallengeStreakReminder &&
+                            pushNotification.challengeStreakId == updatedChallengeStreak._id
                         ),
                 );
 
@@ -346,6 +370,7 @@ export const patchChallengeStreakMiddlewares = [
     decreaseNumberOfChallengeMembersWhenChallengeStreakIsDeletedMiddleware,
     sendUpdatedChallengeStreakMiddleware,
     decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+    increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
     disableChallengeStreakReminderWhenChallengeStreakIsArchivedMiddleware,
     createArchivedChallengeStreakActivityFeedItemMiddleware,
     createRestoredChallengeStreakActivityFeedItemMiddleware,

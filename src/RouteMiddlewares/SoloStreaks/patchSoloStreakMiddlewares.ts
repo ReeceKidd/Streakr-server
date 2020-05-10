@@ -116,6 +116,30 @@ export const decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware = 
     userModel,
 );
 
+export const getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware = (
+    userModel: mongoose.Model<UserModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { status } = request.body;
+        if (status === StreakStatus.live) {
+            const user: User = response.locals.user;
+            await userModel.findByIdAndUpdate(user._id, { $inc: { totalLiveStreaks: 1 } });
+        }
+        next();
+    } catch (err) {
+        next(
+            new CustomError(
+                ErrorType.PatchSoloStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+                err,
+            ),
+        );
+    }
+};
+
+export const increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware = getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware(
+    userModel,
+);
+
 export const getDisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware = (
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -313,6 +337,7 @@ export const patchSoloStreakMiddlewares = [
     sendUpdatedSoloStreakMiddleware,
     disableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware,
     decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+    increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
     createArchivedSoloStreakActivityFeedItemMiddleware,
     createRestoredSoloStreakActivityFeedItemMiddleware,
     createDeletedSoloStreakActivityFeedItemMiddleware,

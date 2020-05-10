@@ -514,8 +514,11 @@ export enum ErrorType {
     CreateTeamMemberStreakIncreaseUsersTotalLiveStreaksByOneMiddleware,
     CreateChallengeStreakIncreaseUsersTotalLiveStreaksByOneMiddleware,
     PatchSoloStreakDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
-    DecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+    DecreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
     PatchChallengeStreakDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+    PatchSoloStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+    IncreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+    PatchChallengeStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -4198,7 +4201,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.DecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware:
+            case ErrorType.DecreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-433`,
                     message: internalServerMessage,
@@ -4208,6 +4211,27 @@ export class CustomError extends Error {
             case ErrorType.PatchChallengeStreakDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-434`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PatchSoloStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-435`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-436`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PatchChallengeStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-437`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

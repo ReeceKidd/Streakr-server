@@ -17,6 +17,15 @@ export const challengeStreakSchema = new mongoose.Schema(
             required: true,
             type: String,
         },
+        username: {
+            type: String,
+        },
+        userProfileImage: {
+            type: String,
+        },
+        challengeName: {
+            type: String,
+        },
         status: {
             type: String,
             default: StreakStatus.live,

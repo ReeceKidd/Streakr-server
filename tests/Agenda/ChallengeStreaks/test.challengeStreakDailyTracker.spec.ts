@@ -20,21 +20,15 @@ jest.setTimeout(500000);
 
 describe('challengeStreakDailyTracker', () => {
     let streakoid: StreakoidFactory;
-    let userId: string;
-    const name = 'Duolingo';
-    const description = 'Everyday I must complete a duolingo lesson';
-    const icon = 'duolingo';
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
-            const user = await getPayingUser();
-            userId = user._id;
             streakoid = await streakoidTest();
         }
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         if (isTestEnvironment()) {
             await tearDownDatabase();
         }
@@ -78,15 +72,22 @@ describe('challengeStreakDailyTracker', () => {
     });
 
     test('maintains streaks correctly', async () => {
-        expect.assertions(38);
+        expect.assertions(42);
 
         const timezone = 'Europe/London';
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
 
         const { challenge } = await streakoid.challenges.create({
             name,
             description,
             icon,
         });
+
+        const user = await getPayingUser();
+        const userId = user._id;
 
         const maintainedChallengeStreak = await streakoid.challengeStreaks.create({
             userId,
@@ -130,6 +131,10 @@ describe('challengeStreakDailyTracker', () => {
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
         expect(updatedChallengeStreak.userId).toEqual(expect.any(String));
+        expect(updatedChallengeStreak.username).toEqual(user.username);
+        expect(updatedChallengeStreak.userProfileImage).toEqual(user.profileImages.originalImageUrl);
+        expect(updatedChallengeStreak.challengeId).toEqual(challenge._id);
+        expect(updatedChallengeStreak.challengeName).toEqual(challenge.name);
         expect(updatedChallengeStreak.completedToday).toEqual(false);
         expect(updatedChallengeStreak.active).toEqual(true);
         expect(updatedChallengeStreak.pastStreaks.length).toEqual(0);
@@ -150,7 +155,10 @@ describe('challengeStreakDailyTracker', () => {
                 'active',
                 'pastStreaks',
                 'userId',
+                'username',
+                'userProfileImage',
                 'challengeId',
+                'challengeName',
                 'timezone',
                 'createdAt',
                 'updatedAt',
@@ -207,11 +215,18 @@ describe('challengeStreakDailyTracker', () => {
 
         const timezone = 'Europe/London';
 
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+
         const { challenge } = await streakoid.challenges.create({
             name,
             description,
             icon,
         });
+
+        const user = await getPayingUser();
+        const userId = user._id;
 
         const lostChallengeStreak = await streakoid.challengeStreaks.create({
             userId,
@@ -281,7 +296,10 @@ describe('challengeStreakDailyTracker', () => {
                 'active',
                 'pastStreaks',
                 'userId',
+                'username',
+                'userProfileImage',
                 'challengeId',
+                'challengeName',
                 'timezone',
                 'createdAt',
                 'updatedAt',
@@ -339,11 +357,18 @@ describe('challengeStreakDailyTracker', () => {
 
         const timezone = 'Europe/London';
 
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+
         const { challenge } = await streakoid.challenges.create({
             name,
             description,
             icon,
         });
+
+        const user = await getPayingUser();
+        const userId = user._id;
 
         const inactiveChallengeStreak = await streakoid.challengeStreaks.create({
             userId,
@@ -380,7 +405,10 @@ describe('challengeStreakDailyTracker', () => {
                 'active',
                 'pastStreaks',
                 'userId',
+                'username',
+                'userProfileImage',
                 'challengeId',
+                'challengeName',
                 'timezone',
                 'createdAt',
                 'updatedAt',

@@ -93,7 +93,7 @@ export const sendUpdatedTeamStreakMiddleware = (request: Request, response: Resp
     }
 };
 
-export const getDecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware = (
+export const getDecreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware = (
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -108,11 +108,34 @@ export const getDecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddlewar
         }
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.DecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware, err));
+        next(new CustomError(ErrorType.DecreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware, err));
     }
 };
 
-export const decreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware = getDecreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware(
+export const decreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware = getDecreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware(
+    userModel,
+);
+
+export const getIncreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware = (
+    userModel: mongoose.Model<UserModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { status } = request.body;
+        if (status === StreakStatus.live) {
+            const updatedTeamStreak: TeamStreak = response.locals.updatedTeamStreak;
+            await Promise.all(
+                updatedTeamStreak.members.map(member => {
+                    return userModel.findByIdAndUpdate(member.memberId, { $inc: { totalLiveStreaks: 1 } });
+                }),
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.IncreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware, err));
+    }
+};
+
+export const increaseTeamMembersLiveStreaksByOneWhenStreakIsRestoredMiddleware = getIncreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware(
     userModel,
 );
 
@@ -319,7 +342,8 @@ export const patchTeamStreakMiddlewares = [
     teamStreakRequestBodyValidationMiddleware,
     patchTeamStreakMiddleware,
     sendUpdatedTeamStreakMiddleware,
-    decreaseTeamMembersLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+    decreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+    increaseTeamMembersLiveStreaksByOneWhenStreakIsRestoredMiddleware,
     disableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware,
     createArchivedTeamStreakActivityFeedItemMiddleware,
     createRestoredTeamStreakActivityFeedItemMiddleware,

@@ -148,11 +148,14 @@ export const getCreateChallengeStreakMiddleware = (challengeStreak: mongoose.Mod
 ): Promise<void> => {
     try {
         const challenge: Challenge = response.locals.challenge;
-        const { timezone, user } = response.locals;
+        const user: User = response.locals.user;
+        const { timezone } = response.locals;
         const newChallengeStreak = new challengeStreak({
             userId: user._id,
             username: user.username,
+            userProfileImage: user.profileImages.originalImageUrl,
             challengeId: challenge._id,
+            challengeName: challenge.name,
             timezone,
         });
         response.locals.savedChallengeStreak = await newChallengeStreak.save();

@@ -130,7 +130,7 @@ export const getIncreaseUsersTotalLiveStreaksByOneMiddleware = (userModel: mongo
 ): Promise<void> => {
     try {
         const { userId } = request.body;
-        userModel.findByIdAndUpdate(userId, { $inc: { totalLiveStreaks: 1 } });
+        await userModel.findByIdAndUpdate(userId, { $inc: { totalLiveStreaks: 1 } });
     } catch (err) {
         next(new CustomError(ErrorType.CreateTeamMemberStreakIncreaseUsersTotalLiveStreaksByOneMiddleware, err));
     }

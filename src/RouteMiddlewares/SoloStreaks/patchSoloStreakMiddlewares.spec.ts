@@ -20,6 +20,8 @@ import {
     getDisableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware,
     getDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
     decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+    increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+    getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
 } from './patchSoloStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -326,6 +328,66 @@ describe('patchSoloStreakMiddlewares', () => {
             expect(next).toBeCalledWith(
                 new CustomError(
                     ErrorType.PatchSoloStreakDecreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
+    describe(`increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware `, () => {
+        test('increases users totalLiveStreaks by one when user restores a solo streak', async () => {
+            expect.assertions(2);
+            const user = { _id: '_id' };
+
+            const userModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            };
+
+            const response: any = { locals: { user } };
+            const request: any = { body: { status: StreakStatus.live } };
+            const next = jest.fn();
+
+            const middleware = getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware(userModel as any);
+
+            await middleware(request, response, next);
+
+            expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, { $inc: { totalLiveStreaks: 1 } });
+            expect(next).toBeCalled();
+        });
+
+        test('just calls next if streak status does not equal live.', async () => {
+            expect.assertions(2);
+            const user = { _id: '_id' };
+
+            const userModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            };
+
+            const response: any = { locals: { user } };
+            const request: any = { body: { status: StreakStatus.archived } };
+            const next = jest.fn();
+
+            const middleware = getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware(userModel as any);
+
+            await middleware(request, response, next);
+
+            expect(userModel.findByIdAndUpdate).not.toBeCalled();
+            expect(next).toBeCalled();
+        });
+
+        test('calls next with PatchSoloStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware error on middleware failure', () => {
+            expect.assertions(1);
+
+            const response: any = {};
+            const request: any = {};
+            const next = jest.fn();
+            const middleware = getIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware({} as any);
+
+            middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.PatchSoloStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
                     expect.any(Error),
                 ),
             );
@@ -676,19 +738,20 @@ describe('patchSoloStreakMiddlewares', () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(12);
+        expect.assertions(13);
 
-        expect(patchSoloStreakMiddlewares.length).toBe(11);
+        expect(patchSoloStreakMiddlewares.length).toBe(12);
         expect(patchSoloStreakMiddlewares[0]).toBe(soloStreakParamsValidationMiddleware);
         expect(patchSoloStreakMiddlewares[1]).toBe(soloStreakRequestBodyValidationMiddleware);
         expect(patchSoloStreakMiddlewares[2]).toBe(patchSoloStreakMiddleware);
         expect(patchSoloStreakMiddlewares[3]).toBe(sendUpdatedSoloStreakMiddleware);
         expect(patchSoloStreakMiddlewares[4]).toBe(disableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware);
         expect(patchSoloStreakMiddlewares[5]).toBe(decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware);
-        expect(patchSoloStreakMiddlewares[6]).toBe(createArchivedSoloStreakActivityFeedItemMiddleware);
-        expect(patchSoloStreakMiddlewares[7]).toBe(createRestoredSoloStreakActivityFeedItemMiddleware);
-        expect(patchSoloStreakMiddlewares[8]).toBe(createDeletedSoloStreakActivityFeedItemMiddleware);
-        expect(patchSoloStreakMiddlewares[9]).toBe(createEditedSoloStreakNameActivityFeedItemMiddleware);
-        expect(patchSoloStreakMiddlewares[10]).toBe(createEditedSoloStreakDescriptionActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[6]).toBe(increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware);
+        expect(patchSoloStreakMiddlewares[7]).toBe(createArchivedSoloStreakActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[8]).toBe(createRestoredSoloStreakActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[9]).toBe(createDeletedSoloStreakActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[10]).toBe(createEditedSoloStreakNameActivityFeedItemMiddleware);
+        expect(patchSoloStreakMiddlewares[11]).toBe(createEditedSoloStreakDescriptionActivityFeedItemMiddleware);
     });
 });
