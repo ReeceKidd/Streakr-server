@@ -30,6 +30,7 @@ import { incompleteChallengeStreakTasksRouter } from './incompleteChallengeStrea
 import { notesRouter } from './notesRouter';
 import { databaseStatsRouter } from './databaseStatsRouter';
 import { achievementsRouter } from './achievementRouter';
+//import { updateDatabaseMiddlewares } from '../../../../src/RouteMiddlewares/updateDatabaseMiddlewares';
 
 const v1Router = Router();
 
