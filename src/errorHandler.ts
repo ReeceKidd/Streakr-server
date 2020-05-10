@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { CustomError } from './customError';
 import { ResponseCodes } from './Server/responseCodes';
 import { NextFunction } from 'connect';
+import * as Sentry from '@sentry/node';
 
 export const errorHandler = (
     error: CustomError,
@@ -11,6 +12,7 @@ export const errorHandler = (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     next: NextFunction,
 ): Response => {
+    Sentry.captureException(error);
     if (error.httpStatusCode === ResponseCodes.warning) {
         return response.status(error.httpStatusCode).send({
             ...error,

@@ -4,6 +4,8 @@
 // import { userModel } from '../../src/Models/User';
 // import { soloStreakModel } from '../../src/Models/SoloStreak';
 // import { challengeStreakModel } from '../../src/Models/ChallengeStreak';
+// import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+// import { teamMemberStreakModel } from '../../src/Models/TeamMemberStreak';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -11,23 +13,20 @@
 //     next: NextFunction,
 // ): Promise<void> => {
 //     try {
-//         const users = await userModel.find({});
+//         const users = await userModel.find();
 //         await Promise.all(
 //             users.map(async user => {
-//                 const soloStreaks = await soloStreakModel.find({ userId: user._id });
-//                 await Promise.all(
-//                     soloStreaks.map(soloStreak => {
-//                         return soloStreakModel.findByIdAndUpdate(soloStreak._id, { $set: { timezone: user.timezone } });
-//                     }),
-//                 );
-//                 const challengeStreaks = await challengeStreakModel.find({ userId: user._id });
-//                 await Promise.all(
-//                     challengeStreaks.map(challengeStreak => {
-//                         return challengeStreakModel.findByIdAndUpdate(challengeStreak._id, {
-//                             $set: { timezone: user.timezone },
-//                         });
-//                     }),
-//                 );
+//                 const soloStreaks = await soloStreakModel.count({ userId: user._id, status: StreakStatus.live });
+//                 const challengeStreaks = await challengeStreakModel.count({
+//                     userId: user._id,
+//                     status: StreakStatus.live,
+//                 });
+//                 const teamMemberStreaks = await teamMemberStreakModel.count({
+//                     userId: user._id,
+//                     active: true,
+//                 });
+//                 const total = soloStreaks + challengeStreaks + teamMemberStreaks;
+//                 await userModel.findByIdAndUpdate(user._id, { $set: { totalLiveStreaks: total } });
 //             }),
 //         );
 //         response.send('success');

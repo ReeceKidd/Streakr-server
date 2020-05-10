@@ -80,10 +80,6 @@ agenda
 
 app.use(`/${ApiVersions.v1}`, v1Router);
 
-if (NODE_ENV !== 'test') {
-    app.use(Sentry.Handlers.errorHandler());
-}
-
 app.use(errorHandler);
 
 export default app;
