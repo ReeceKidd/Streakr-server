@@ -26,17 +26,8 @@ if (NODE_ENV !== 'test') {
 
 const app = express();
 
-const setUserInformationForSentry = (request: Request, response: Response, next: NextFunction): void => {
-    const user = response.locals.user;
-    if (user && user.email && user.username && user._id) {
-        Sentry.setUser({ email: user.email, username: user.username, id: user._id });
-    }
-    next();
-};
-
 if (NODE_ENV !== 'test') {
     app.use(Sentry.Handlers.requestHandler());
-    app.use(setUserInformationForSentry);
 }
 
 app.use(cors());
@@ -79,6 +70,19 @@ agenda
 //initialiseChallengeStreakTimezoneCheckerJobs();
 
 app.use(`/${ApiVersions.v1}`, v1Router);
+
+const setUserInformationForSentry = (request: Request, response: Response, next: NextFunction): void => {
+    const user = response.locals.user;
+    if (user && user.email && user.username && user._id) {
+        Sentry.setUser({ email: user.email, username: user.username, id: user._id });
+    }
+    next();
+};
+
+if (NODE_ENV !== 'test') {
+    app.use(setUserInformationForSentry);
+    app.use(Sentry.Handlers.errorHandler());
+}
 
 app.use(errorHandler);
 
