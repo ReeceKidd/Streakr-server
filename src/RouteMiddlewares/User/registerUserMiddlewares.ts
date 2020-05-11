@@ -118,6 +118,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,
+            endpointArn: user.endpointArn,
             pushNotifications: user.pushNotifications,
             profileImages: user.profileImages,
             hasCompletedIntroduction: user.hasCompletedIntroduction,

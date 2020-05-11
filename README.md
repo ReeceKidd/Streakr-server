@@ -47,7 +47,7 @@ COGNITO_PASSWORD=Password1
 
 PROFILE_PICTURES_BUCKET=streakoid-profile-pictures
 
-SNS_PLATFORM_APPLICATION_ARN=arn:aws:sns:eu-west-1:932661412733:app/GCM/Firebase
+ANDROID_SNS_PLATFORM_APPLICATION_ARN=arn:aws:sns:eu-west-1:932661412733:app/GCM/Firebase
 
 SNS_TOPIC_ARN=arn:aws:sns:eu-west-1:932661412733:Streakoid ```
 ````

@@ -992,6 +992,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to UnsupportedDeviceType`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.UnsupportedDeviceType);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-100`);
+        expect(message).toBe('Unsupported device type.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 

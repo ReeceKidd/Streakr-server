@@ -519,6 +519,7 @@ export enum ErrorType {
     PatchSoloStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
     IncreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
     PatchChallengeStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
+    UnsupportedDeviceType,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1261,6 +1262,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-99`,
                     message: 'OneHundredDaySoloStreakAchievement does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.UnsupportedDeviceType: {
+                return {
+                    code: `${ResponseCodes.badRequest}-100`,
+                    message: 'Unsupported device type.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }

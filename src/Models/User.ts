@@ -84,6 +84,10 @@ export const userSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        endpointArn: {
+            type: String,
+            default: null,
+        },
         pushNotifications: {
             completeAllStreaksReminder: {
                 type: {

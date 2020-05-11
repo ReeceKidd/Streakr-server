@@ -23,7 +23,8 @@ export interface AppConfigHttp {
     COGNITO_EMAIL: string;
     COGNITO_PASSWORD: string;
     PROFILE_PICTURES_BUCKET: string;
-    SNS_PLATFORM_APPLICATION_ARN: string;
+    ANDROID_SNS_PLATFORM_APPLICATION_ARN: string;
+    IOS_SNS_PLATFORM_APPLICATION_ARN: string;
     SNS_TOPIC_ARN: string;
     DEFAULT_USER_PROFILE_IMAGE_URL: string;
 }
@@ -54,7 +55,8 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         COGNITO_EMAIL,
         COGNITO_PASSWORD,
         PROFILE_PICTURES_BUCKET,
-        SNS_PLATFORM_APPLICATION_ARN,
+        ANDROID_SNS_PLATFORM_APPLICATION_ARN,
+        IOS_SNS_PLATFORM_APPLICATION_ARN,
         SNS_TOPIC_ARN,
         DEFAULT_USER_PROFILE_IMAGE_URL,
     } = environment;
@@ -137,8 +139,12 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         throw new Error('PROFILE_PICTURES_BUCKET is not provided.');
     }
 
-    if (!SNS_PLATFORM_APPLICATION_ARN) {
-        throw new Error('SNS_PLATFORM_APPLICATION_ARN is not provided.');
+    if (!ANDROID_SNS_PLATFORM_APPLICATION_ARN) {
+        throw new Error('ANDROID_SNS_PLATFORM_APPLICATION_ARN is not provided.');
+    }
+
+    if (!IOS_SNS_PLATFORM_APPLICATION_ARN) {
+        throw new Error('IOS_SNS_PLATFORM_APPLICATION_ARN is not provided.');
     }
 
     if (!SNS_TOPIC_ARN) {
@@ -172,7 +178,8 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         COGNITO_EMAIL,
         COGNITO_PASSWORD,
         PROFILE_PICTURES_BUCKET,
-        SNS_PLATFORM_APPLICATION_ARN,
+        ANDROID_SNS_PLATFORM_APPLICATION_ARN,
+        IOS_SNS_PLATFORM_APPLICATION_ARN,
         SNS_TOPIC_ARN,
         DEFAULT_USER_PROFILE_IMAGE_URL,
     } as AppConfigHttp;

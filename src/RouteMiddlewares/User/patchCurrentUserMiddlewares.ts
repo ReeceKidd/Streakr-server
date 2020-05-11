@@ -12,11 +12,18 @@ import { DatabaseAchievementType } from '@streakoid/streakoid-models/lib/Models/
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { BasicUser } from '@streakoid/streakoid-models/lib/Models/BasicUser';
 import { PopulatedCurrentUser } from '@streakoid/streakoid-models/lib/Models/PopulatedCurrentUser';
+import { SNS } from '../../../src/sns';
+import { getServiceConfig } from '../../../src/getServiceConfig';
+import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 
 const patchCurrentUserValidationSchema = {
     email: Joi.string().email(),
     timezone: Joi.string(),
-    pushNotificationToken: Joi.string(),
+    pushNotificationToken: Joi.string(), // Legacy support,
+    pushNotification: {
+        pushNotificationToken: Joi.string().required(),
+        deviceType: Joi.string().required(),
+    },
     hasCompletedIntroduction: Joi.boolean(),
 };
 
@@ -53,6 +60,71 @@ export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserMode
 };
 
 export const patchCurrentUserMiddleware = getPatchCurrentUserMiddleware(userModel);
+
+export const getCreatePlatformEndpointMiddleware = (sns: typeof SNS) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const user: User = response.locals.updatedUser;
+        const { pushNotification } = request.body;
+        if (pushNotification) {
+            const { pushNotificationToken, deviceType } = request.body.pushNotification;
+
+            if (!user.endpointArn) {
+                if (deviceType === PushNotificationSupportedDeviceTypes.android) {
+                    const { EndpointArn } = await sns
+                        .createPlatformEndpoint({
+                            PlatformApplicationArn: getServiceConfig().ANDROID_SNS_PLATFORM_APPLICATION_ARN,
+                            Token: pushNotificationToken,
+                            CustomUserData: user._id,
+                        })
+                        .promise();
+                    response.locals.endpointArn = EndpointArn;
+                } else if (deviceType === PushNotificationSupportedDeviceTypes.ios) {
+                    const { EndpointArn } = await sns
+                        .createPlatformEndpoint({
+                            PlatformApplicationArn: getServiceConfig().IOS_SNS_PLATFORM_APPLICATION_ARN,
+                            Token: pushNotificationToken,
+                            CustomUserData: user._id,
+                        })
+                        .promise();
+                    response.locals.endpointArn = EndpointArn;
+                } else {
+                    throw new CustomError(ErrorType.UnsupportedDeviceType);
+                }
+            }
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.CreatePlatformEndpointMiddleware, err));
+    }
+};
+
+export const createPlatformEndpointMiddleware = getCreatePlatformEndpointMiddleware(SNS);
+
+export const getUpdatedEndpointArnForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { endpointArn } = response.locals;
+        if (endpointArn) {
+            const user: User = response.locals.updatedUser;
+            response.locals.updatedUser = await userModel
+                .findByIdAndUpdate(user._id, { $set: { endpointArn } }, { new: true })
+                .lean();
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.PatchCurrentUserMiddleware, err));
+    }
+};
+
+export const updateEndpointArnForUserMiddleware = getUpdatedEndpointArnForUserMiddleware(userModel);
 
 export const getPopulateCurrentUserFollowingMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
@@ -151,6 +223,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             pushNotificationToken: user.pushNotificationToken,
+            endpointArn: user.endpointArn,
             pushNotifications: user.pushNotifications,
             profileImages: user.profileImages,
             hasCompletedIntroduction: user.hasCompletedIntroduction,
@@ -179,6 +252,8 @@ export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Res
 export const patchCurrentUserMiddlewares = [
     patchCurrentUserRequestBodyValidationMiddleware,
     patchCurrentUserMiddleware,
+    createPlatformEndpointMiddleware,
+    updateEndpointArnForUserMiddleware,
     populateCurrentUserFollowingMiddleware,
     populateCurrentUserFollowersMiddleware,
     populateCurrentUserAchievementsMiddleware,

@@ -23,7 +23,8 @@ describe('getServiceConfig', () => {
         COGNITO_EMAIL: 'COGNITO_EMAIL',
         COGNITO_PASSWORD: 'COGNITO_PASSWORD',
         PROFILE_PICTURES_BUCKET: 'PROFILE_PICTURES_BUCKET',
-        SNS_PLATFORM_APPLICATION_ARN: 'SNS_PLATFORM_APPLICATION_ARN',
+        ANDROID_SNS_PLATFORM_APPLICATION_ARN: 'ANDROID_SNS_PLATFORM_APPLICATION_ARN',
+        IOS_SNS_PLATFORM_APPLICATION_ARN: 'ANDROID_SNS_PLATFORM_APPLICATION_ARN',
         SNS_TOPIC_ARN: 'SNS_TOPIC_ARN',
         DEFAULT_USER_PROFILE_IMAGE_URL: 'DEFAULT_USER_PROFILE_IMAGE_URL',
     };
@@ -322,17 +323,31 @@ describe('getServiceConfig', () => {
         }
     });
 
-    test('that correct error is thrown when SNS_PLATFORM_APPLICATION_ARN is not provided.', () => {
+    test('that correct error is thrown when ANDROID_SNS_PLATFORM_APPLICATION_ARN is not provided.', () => {
         expect.assertions(1);
         const environment = {
             ...environmentMock,
-            SNS_PLATFORM_APPLICATION_ARN: undefined,
+            ANDROID_SNS_PLATFORM_APPLICATION_ARN: undefined,
         };
 
         try {
             getServiceConfig(environment);
         } catch (err) {
-            expect(err.message).toEqual('SNS_PLATFORM_APPLICATION_ARN is not provided.');
+            expect(err.message).toEqual('ANDROID_SNS_PLATFORM_APPLICATION_ARN is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when IOS_SNS_PLATFORM_APPLICATION_ARN is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            IOS_SNS_PLATFORM_APPLICATION_ARN: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('IOS_SNS_PLATFORM_APPLICATION_ARN is not provided.');
         }
     });
 
