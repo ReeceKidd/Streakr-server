@@ -105,7 +105,7 @@ export const getCreatePlatformEndpointMiddleware = (sns: typeof SNS) => async (
 
 export const createPlatformEndpointMiddleware = getCreatePlatformEndpointMiddleware(SNS);
 
-export const getUpdatedEndpointArnForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getUpdateUserPushNotificationInformationMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -113,18 +113,22 @@ export const getUpdatedEndpointArnForUserMiddleware = (userModel: mongoose.Model
     try {
         const { endpointArn } = response.locals;
         if (endpointArn) {
+            const { pushNotification } = request.body;
+            const { pushNotificationToken } = pushNotification;
             const user: User = response.locals.updatedUser;
             response.locals.updatedUser = await userModel
-                .findByIdAndUpdate(user._id, { $set: { endpointArn } }, { new: true })
+                .findByIdAndUpdate(user._id, { $set: { endpointArn, pushNotificationToken } }, { new: true })
                 .lean();
         }
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.PatchCurrentUserMiddleware, err));
+        next(new CustomError(ErrorType.UpdateUserPushNotificationInformationMiddleware, err));
     }
 };
 
-export const updateEndpointArnForUserMiddleware = getUpdatedEndpointArnForUserMiddleware(userModel);
+export const updateUserPushNotificationInformationMiddleware = getUpdateUserPushNotificationInformationMiddleware(
+    userModel,
+);
 
 export const getPopulateCurrentUserFollowingMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
@@ -253,7 +257,7 @@ export const patchCurrentUserMiddlewares = [
     patchCurrentUserRequestBodyValidationMiddleware,
     patchCurrentUserMiddleware,
     createPlatformEndpointMiddleware,
-    updateEndpointArnForUserMiddleware,
+    updateUserPushNotificationInformationMiddleware,
     populateCurrentUserFollowingMiddleware,
     populateCurrentUserFollowersMiddleware,
     populateCurrentUserAchievementsMiddleware,

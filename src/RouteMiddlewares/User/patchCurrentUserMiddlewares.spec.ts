@@ -17,8 +17,9 @@ import {
     patchCurrentUserRequestBodyValidationMiddleware,
     getPopulatePatchCurrentUserAchievementsMiddleware,
     createPlatformEndpointMiddleware,
-    updateEndpointArnForUserMiddleware,
+    updateUserPushNotificationInformationMiddleware,
     getCreatePlatformEndpointMiddleware,
+    getUpdateUserPushNotificationInformationMiddleware,
 } from './patchCurrentUserMiddlewares';
 
 import { populateCurrentUserAchievementsMiddleware } from './getCurrentUser';
@@ -317,7 +318,59 @@ describe('patchCurrentUserMiddlewares', () => {
         });
     });
 
-    describe('updateEndpointArnForUserMiddleware', () => {});
+    describe('updateUserPushNotificationInformationMiddleware', () => {
+        test('if response.locals.endpointArn is defined update the users endpointArn and pushNotificationToken', async () => {
+            expect.assertions(3);
+            const endpointArn = 'endpointArn';
+            const pushNotification = {
+                pushNotificationToken: 'pushNotificationToken',
+            };
+            const request: any = {
+                body: {
+                    pushNotification,
+                },
+            };
+            const updatedUser = {
+                _id: '_id',
+            };
+            const response: any = { locals: { updatedUser, endpointArn } };
+            const next = jest.fn();
+            const lean = jest.fn().mockResolvedValue(true);
+            const findByIdAndUpdate = jest.fn(() => ({ lean }));
+            const userModel = {
+                findByIdAndUpdate,
+            };
+            const middleware = getUpdateUserPushNotificationInformationMiddleware(userModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                updatedUser._id,
+                {
+                    $set: {
+                        endpointArn,
+                        pushNotificationToken: pushNotification.pushNotificationToken,
+                    },
+                },
+                { new: true },
+            );
+            expect(response.locals.updatedUser).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with UpdateUserPushNotificationInformationMiddleware on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+
+            const middleware = getUpdateUserPushNotificationInformationMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.UpdateUserPushNotificationInformationMiddleware));
+        });
+    });
 
     describe('populateCurrentUserFollowingMiddleware', () => {
         test('populates updatedUser following', async () => {
@@ -581,7 +634,7 @@ describe('patchCurrentUserMiddlewares', () => {
         expect(patchCurrentUserMiddlewares[0]).toBe(patchCurrentUserRequestBodyValidationMiddleware);
         expect(patchCurrentUserMiddlewares[1]).toBe(patchCurrentUserMiddleware);
         expect(patchCurrentUserMiddlewares[2]).toBe(createPlatformEndpointMiddleware);
-        expect(patchCurrentUserMiddlewares[3]).toBe(updateEndpointArnForUserMiddleware);
+        expect(patchCurrentUserMiddlewares[3]).toBe(updateUserPushNotificationInformationMiddleware);
         expect(patchCurrentUserMiddlewares[4]).toBe(populateCurrentUserFollowingMiddleware);
         expect(patchCurrentUserMiddlewares[5]).toBe(populateCurrentUserFollowersMiddleware);
         expect(patchCurrentUserMiddlewares[6]).toBe(populateCurrentUserAchievementsMiddleware);
