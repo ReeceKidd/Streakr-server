@@ -745,9 +745,9 @@ describe('patchSoloStreakMiddlewares', () => {
         expect(patchSoloStreakMiddlewares[1]).toBe(soloStreakRequestBodyValidationMiddleware);
         expect(patchSoloStreakMiddlewares[2]).toBe(patchSoloStreakMiddleware);
         expect(patchSoloStreakMiddlewares[3]).toBe(sendUpdatedSoloStreakMiddleware);
-        expect(patchSoloStreakMiddlewares[4]).toBe(disableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware);
-        expect(patchSoloStreakMiddlewares[5]).toBe(decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware);
-        expect(patchSoloStreakMiddlewares[6]).toBe(increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware);
+        expect(patchSoloStreakMiddlewares[4]).toBe(decreaseUsersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware);
+        expect(patchSoloStreakMiddlewares[5]).toBe(increaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware);
+        expect(patchSoloStreakMiddlewares[6]).toBe(disableSoloStreakReminderWhenSoloStreakIsArchivedMiddleware);
         expect(patchSoloStreakMiddlewares[7]).toBe(createArchivedSoloStreakActivityFeedItemMiddleware);
         expect(patchSoloStreakMiddlewares[8]).toBe(createRestoredSoloStreakActivityFeedItemMiddleware);
         expect(patchSoloStreakMiddlewares[9]).toBe(createDeletedSoloStreakActivityFeedItemMiddleware);
