@@ -4,7 +4,6 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import * as Sentry from '@sentry/node';
-import { Request, Response, NextFunction } from 'express';
 
 import ApiVersions from './Server/versions';
 import v1Router from './Routers/versions/v1';
@@ -70,19 +69,6 @@ agenda
 //initialiseChallengeStreakTimezoneCheckerJobs();
 
 app.use(`/${ApiVersions.v1}`, v1Router);
-
-const setUserInformationForSentry = (request: Request, response: Response, next: NextFunction): void => {
-    const user = response.locals.user;
-    if (user && user.email && user.username && user._id) {
-        Sentry.setUser({ email: user.email, username: user.username, id: user._id });
-    }
-    next();
-};
-
-if (NODE_ENV !== 'test') {
-    app.use(setUserInformationForSentry);
-    app.use(Sentry.Handlers.errorHandler());
-}
 
 app.use(errorHandler);
 
