@@ -4,6 +4,8 @@ import { CustomError } from './customError';
 import { ResponseCodes } from './Server/responseCodes';
 import { NextFunction } from 'connect';
 import * as Sentry from '@sentry/node';
+import { getServiceConfig } from './getServiceConfig';
+const { NODE_ENV } = getServiceConfig();
 
 export const errorHandler = (
     error: CustomError,
@@ -13,7 +15,10 @@ export const errorHandler = (
     next: NextFunction,
 ): Response => {
     if (error.httpStatusCode === ResponseCodes.warning) {
-        Sentry.captureException(error);
+        if (NODE_ENV !== 'test') {
+            Sentry.captureException(error);
+        }
+
         return response.status(error.httpStatusCode).send({
             ...error,
             message: 'Internal server error',
