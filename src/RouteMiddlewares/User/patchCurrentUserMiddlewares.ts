@@ -71,29 +71,29 @@ export const getCreatePlatformEndpointMiddleware = (sns: typeof SNS) => async (
         const { pushNotification } = request.body;
         if (pushNotification) {
             const { pushNotificationToken, deviceType } = request.body.pushNotification;
-
-            if (!user.endpointArn) {
-                if (deviceType === PushNotificationSupportedDeviceTypes.android) {
-                    const { EndpointArn } = await sns
-                        .createPlatformEndpoint({
-                            PlatformApplicationArn: getServiceConfig().ANDROID_SNS_PLATFORM_APPLICATION_ARN,
-                            Token: pushNotificationToken,
-                            CustomUserData: user._id,
-                        })
-                        .promise();
-                    response.locals.endpointArn = EndpointArn;
-                } else if (deviceType === PushNotificationSupportedDeviceTypes.ios) {
-                    const { EndpointArn } = await sns
-                        .createPlatformEndpoint({
-                            PlatformApplicationArn: getServiceConfig().IOS_SNS_PLATFORM_APPLICATION_ARN,
-                            Token: pushNotificationToken,
-                            CustomUserData: user._id,
-                        })
-                        .promise();
-                    response.locals.endpointArn = EndpointArn;
-                } else {
-                    throw new CustomError(ErrorType.UnsupportedDeviceType);
-                }
+            if (user.endpointArn) {
+                await sns.deleteEndpoint({ EndpointArn: user.endpointArn }).promise();
+            }
+            if (deviceType === PushNotificationSupportedDeviceTypes.android) {
+                const { EndpointArn } = await sns
+                    .createPlatformEndpoint({
+                        PlatformApplicationArn: getServiceConfig().ANDROID_SNS_PLATFORM_APPLICATION_ARN,
+                        Token: pushNotificationToken,
+                        CustomUserData: String(user._id),
+                    })
+                    .promise();
+                response.locals.endpointArn = EndpointArn;
+            } else if (deviceType === PushNotificationSupportedDeviceTypes.ios) {
+                const { EndpointArn } = await sns
+                    .createPlatformEndpoint({
+                        PlatformApplicationArn: getServiceConfig().IOS_SNS_PLATFORM_APPLICATION_ARN,
+                        Token: pushNotificationToken,
+                        CustomUserData: String(user._id),
+                    })
+                    .promise();
+                response.locals.endpointArn = EndpointArn;
+            } else {
+                throw new CustomError(ErrorType.UnsupportedDeviceType);
             }
         }
         next();
@@ -119,6 +119,7 @@ export const getUpdateUserPushNotificationInformationMiddleware = (userModel: mo
             response.locals.updatedUser = await userModel
                 .findByIdAndUpdate(user._id, { $set: { endpointArn, pushNotificationToken } }, { new: true })
                 .lean();
+            console.log(response.locals.updatedUser);
         }
         next();
     } catch (err) {
