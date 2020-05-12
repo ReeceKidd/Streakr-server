@@ -20,7 +20,6 @@ export const errorHandler = (
             if (user) {
                 Sentry.setUser({ email: user.email, id: user._id, username: user.username });
             }
-            Sentry.captureException(error);
         }
 
         return response.status(error.httpStatusCode).send({

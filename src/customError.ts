@@ -1,5 +1,7 @@
 /* eslint-disable */
 import { ResponseCodes } from './Server/responseCodes';
+import * as Sentry from '@sentry/node';
+import { getServiceConfig } from './getServiceConfig';
 
 export enum ErrorType {
     InternalServerError,
@@ -532,8 +534,11 @@ export class CustomError extends Error {
     public httpStatusCode: ResponseCodes;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(type: ErrorType, ...params: any[]) {
-        super(...params);
+    constructor(type: ErrorType, err?: Error) {
+        super();
+        if (err && getServiceConfig().NODE_ENV !== 'test') {
+            Sentry.captureException(err);
+        }
         const { code, message, httpStatusCode } = this.createCustomErrorData(type);
         this.code = code;
         this.message = message;
