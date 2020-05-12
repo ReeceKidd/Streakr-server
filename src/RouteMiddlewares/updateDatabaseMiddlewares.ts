@@ -13,29 +13,10 @@
 //     next: NextFunction,
 // ): Promise<void> => {
 //     try {
-//         const users = await userModel.find();
+//         const users = await userModel.find({});
 //         await Promise.all(
 //             users.map(async user => {
-//                 // const soloStreaks = await soloStreakModel.countDocuments({
-//                 //     userId: user._id,
-//                 //     status: StreakStatus.live,
-//                 // });
-//                 // const challengeStreaks = await challengeStreakModel.countDocuments({
-//                 //     userId: user._id,
-//                 //     status: StreakStatus.live,
-//                 // });
-//                 // const teamMemberStreaks = await teamMemberStreakModel.countDocuments({
-//                 //     userId: user._id,
-//                 //     active: true,
-//                 // });
-//                 // const total = soloStreaks + challengeStreaks + teamMemberStreaks;
-//                 // await userModel.findByIdAndUpdate(user._id, { $set: { totalLiveStreaks: Number(total) } });
-//                 await userModel.findByIdAndUpdate(user._id, {
-//                     $set: {
-//                         totalStreakCompletes: Number(user.totalStreakCompletes),
-//                         totalLiveStreaks: Number(user.totalLiveStreaks),
-//                     },
-//                 });
+//                 await userModel.findByIdAndUpdate(user._id, { $set: { endpointArn: null } });
 //             }),
 //         );
 //         response.send('success');

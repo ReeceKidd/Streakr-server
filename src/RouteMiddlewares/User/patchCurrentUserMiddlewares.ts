@@ -71,9 +71,6 @@ export const getCreatePlatformEndpointMiddleware = (sns: typeof SNS) => async (
         const { pushNotification } = request.body;
         if (pushNotification) {
             const { pushNotificationToken, deviceType } = request.body.pushNotification;
-            if (user.endpointArn) {
-                await sns.deleteEndpoint({ EndpointArn: user.endpointArn }).promise();
-            }
             if (deviceType === PushNotificationSupportedDeviceTypes.android) {
                 const { EndpointArn } = await sns
                     .createPlatformEndpoint({

@@ -34,6 +34,8 @@ import { achievementsRouter } from './achievementRouter';
 
 const v1Router = Router();
 
+//v1Router.post('/update', ...updateDatabaseMiddlewares);
+
 v1Router.use(...timezoneMiddlewares);
 
 //Registration API gateway

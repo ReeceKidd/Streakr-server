@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { CustomError } from './customError';
 import { ResponseCodes } from './Server/responseCodes';
 import { NextFunction } from 'connect';
+import * as Sentry from '@sentry/node';
 
 export const errorHandler = (
     error: CustomError,
@@ -12,6 +13,7 @@ export const errorHandler = (
     next: NextFunction,
 ): Response => {
     if (error.httpStatusCode === ResponseCodes.warning) {
+        Sentry.captureException(error);
         return response.status(error.httpStatusCode).send({
             ...error,
             message: 'Internal server error',
