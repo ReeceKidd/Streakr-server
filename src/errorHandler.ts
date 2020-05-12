@@ -16,6 +16,10 @@ export const errorHandler = (
 ): Response => {
     if (error.httpStatusCode === ResponseCodes.warning) {
         if (NODE_ENV !== 'test') {
+            const user = response.locals.user;
+            if (user) {
+                Sentry.setUser({ email: user.email, id: user._id, username: user.username });
+            }
             Sentry.captureException(error);
         }
 

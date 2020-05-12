@@ -116,7 +116,6 @@ export const getUpdateUserPushNotificationInformationMiddleware = (userModel: mo
             response.locals.updatedUser = await userModel
                 .findByIdAndUpdate(user._id, { $set: { endpointArn, pushNotificationToken } }, { new: true })
                 .lean();
-            console.log(response.locals.updatedUser);
         }
         next();
     } catch (err) {

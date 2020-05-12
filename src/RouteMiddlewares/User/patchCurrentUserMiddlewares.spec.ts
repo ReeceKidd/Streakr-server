@@ -282,33 +282,6 @@ describe('patchCurrentUserMiddlewares', () => {
             expect(next).toBeCalledWith();
         });
 
-        test('deletes endPoint when if it already exists', async () => {
-            expect.assertions(2);
-            const promise = jest.fn().mockResolvedValue({ EndpointArn: true });
-            const deleteEndpoint = jest.fn(() => ({ promise }));
-            const sns = {
-                deleteEndpoint,
-            };
-            const pushNotificationToken = 'pushNotificationToken';
-            const deviceType = PushNotificationSupportedDeviceTypes.android;
-            const pushNotification = {
-                pushNotificationToken,
-                deviceType,
-            };
-            const request: any = { body: { pushNotification } };
-            const updatedUser = { _id: '_id', endpointArn: 'endpointArn' };
-            const response: any = { locals: { updatedUser } };
-            const next = jest.fn();
-            const middleware = getCreatePlatformEndpointMiddleware(sns as any);
-
-            await middleware(request, response, next);
-
-            expect(deleteEndpoint).toBeCalledWith({
-                EndpointArn: updatedUser.endpointArn,
-            });
-            expect(promise).toBeCalledWith();
-        });
-
         test('throws UnsupportedDeviceType error when device is unsupported and user does not have an endpointArn defined.', async () => {
             expect.assertions(1);
             const promise = jest.fn().mockResolvedValue({ EndpointArn: true });
