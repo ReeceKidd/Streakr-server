@@ -95,7 +95,6 @@ export const getCreatePlatformEndpointMiddleware = (sns: typeof SNS) => async (
         }
         next();
     } catch (err) {
-        console.log(1, err);
         if (err instanceof CustomError) next(err);
         else next(new CustomError(ErrorType.CreatePlatformEndpointMiddleware, err));
     }
@@ -124,7 +123,6 @@ export const getUpdateUserPushNotificationInformationMiddleware = (userModel: mo
         }
         next();
     } catch (err) {
-        console.log(2, err);
         next(new CustomError(ErrorType.UpdateUserPushNotificationInformationMiddleware, err));
     }
 };

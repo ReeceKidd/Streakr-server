@@ -37,16 +37,16 @@ describe('patchCurrentUserMiddlewares', () => {
             timezone: string;
             pushNotificationToken: string;
             pushNotification: {
-                pushNotificationToken: string;
+                token: string;
                 deviceType: string;
             };
             hasCompletedIntroduction: boolean;
         } = {
             email: 'email@gmail.com',
             timezone: 'Europe/London',
-            pushNotificationToken: 'push-token',
+            pushNotificationToken: 'pusnNotificationToken',
             pushNotification: {
-                pushNotificationToken: 'notificationToken',
+                token: 'notificationToken',
                 deviceType: PushNotificationSupportedDeviceTypes.android,
             },
             hasCompletedIntroduction: true,
@@ -106,50 +106,6 @@ describe('patchCurrentUserMiddlewares', () => {
             expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
             expect(send).toBeCalledWith({
                 message: 'child "timezone" fails because ["timezone" must be a string]',
-            });
-            expect(next).not.toBeCalled();
-        });
-
-        test('sends correct response is when pushNotification is sent without a pushNotificationToken', () => {
-            expect.assertions(3);
-            const send = jest.fn();
-            const status = jest.fn(() => ({ send }));
-            const request: any = {
-                body: { pushNotification: { deviceType: PushNotificationSupportedDeviceTypes.android } },
-            };
-            const response: any = {
-                status,
-            };
-            const next = jest.fn();
-
-            patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
-
-            expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-            expect(send).toBeCalledWith({
-                message:
-                    'child "pushNotification" fails because [child "pushNotificationToken" fails because ["pushNotificationToken" is required]]',
-            });
-            expect(next).not.toBeCalled();
-        });
-
-        test('sends correct response is when pushNotification is sent without a device type', () => {
-            expect.assertions(3);
-            const send = jest.fn();
-            const status = jest.fn(() => ({ send }));
-            const request: any = {
-                body: { pushNotification: { pushNotificationToken: 'token' } },
-            };
-            const response: any = {
-                status,
-            };
-            const next = jest.fn();
-
-            patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
-
-            expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-            expect(send).toBeCalledWith({
-                message:
-                    'child "pushNotification" fails because [child "deviceType" fails because ["deviceType" is required]]',
             });
             expect(next).not.toBeCalled();
         });
@@ -229,10 +185,10 @@ describe('patchCurrentUserMiddlewares', () => {
             const sns = {
                 createPlatformEndpoint,
             };
-            const pushNotificationToken = 'pushNotificationToken';
+            const token = 'token';
             const deviceType = PushNotificationSupportedDeviceTypes.android;
             const pushNotification = {
-                pushNotificationToken,
+                token,
                 deviceType,
             };
             const request: any = { body: { pushNotification } };
@@ -243,7 +199,7 @@ describe('patchCurrentUserMiddlewares', () => {
             await middleware(request, response, next);
 
             expect(createPlatformEndpoint).toBeCalledWith({
-                Token: pushNotificationToken,
+                Token: token,
                 PlatformApplicationArn: getServiceConfig().ANDROID_SNS_PLATFORM_APPLICATION_ARN,
                 CustomUserData: response.locals.updatedUser._id,
             });
@@ -259,10 +215,10 @@ describe('patchCurrentUserMiddlewares', () => {
             const sns = {
                 createPlatformEndpoint,
             };
-            const pushNotificationToken = 'pushNotificationToken';
+            const token = 'token';
             const deviceType = PushNotificationSupportedDeviceTypes.ios;
             const pushNotification = {
-                pushNotificationToken,
+                token,
                 deviceType,
             };
             const request: any = { body: { pushNotification } };
@@ -273,7 +229,7 @@ describe('patchCurrentUserMiddlewares', () => {
             await middleware(request, response, next);
 
             expect(createPlatformEndpoint).toBeCalledWith({
-                Token: pushNotificationToken,
+                Token: token,
                 PlatformApplicationArn: getServiceConfig().IOS_SNS_PLATFORM_APPLICATION_ARN,
                 CustomUserData: response.locals.updatedUser._id,
             });
@@ -289,10 +245,10 @@ describe('patchCurrentUserMiddlewares', () => {
             const sns = {
                 createPlatformEndpoint,
             };
-            const pushNotificationToken = 'pushNotificationToken';
+            const token = 'token';
             const deviceType = 'unsupported';
             const pushNotification = {
-                pushNotificationToken,
+                token,
                 deviceType,
             };
             const request: any = { body: { pushNotification } };
@@ -319,11 +275,11 @@ describe('patchCurrentUserMiddlewares', () => {
     });
 
     describe('updateUserPushNotificationInformationMiddleware', () => {
-        test('if response.locals.endpointArn is defined update the users endpointArn and pushNotificationToken', async () => {
+        test('if response.locals.endpointArn is defined update the users endpointArn and token', async () => {
             expect.assertions(3);
             const endpointArn = 'endpointArn';
             const pushNotification = {
-                pushNotificationToken: 'pushNotificationToken',
+                token: 'token',
                 deviceType: PushNotificationSupportedDeviceTypes.android,
             };
             const request: any = {
@@ -352,7 +308,7 @@ describe('patchCurrentUserMiddlewares', () => {
                         pushNotification: {
                             endpointArn,
                             deviceType: pushNotification.deviceType,
-                            pushNotificationToken: pushNotification.pushNotificationToken,
+                            token: pushNotification.token,
                         },
                     },
                 },
