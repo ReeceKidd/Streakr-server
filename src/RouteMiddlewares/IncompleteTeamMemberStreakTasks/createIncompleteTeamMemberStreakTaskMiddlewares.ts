@@ -471,12 +471,12 @@ export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (expo: t
         await Promise.all(
             teamMembers.map(async teamMember => {
                 if (
-                    teamMember.pushNotificationToken &&
+                    teamMember.pushNotification.token &&
                     teamMember.pushNotifications.teamStreakUpdates.enabled &&
                     String(teamMember._id) !== String(user._id)
                 ) {
                     messages.push({
-                        to: teamMember.pushNotificationToken,
+                        to: teamMember.pushNotification.token,
                         sound: 'default',
                         title,
                         body,

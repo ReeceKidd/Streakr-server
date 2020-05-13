@@ -17,6 +17,7 @@ import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 
 describe('getCurrentUserMiddlewares', () => {
     describe('populateCurrentUserFollowingMiddleware', () => {
@@ -169,8 +170,11 @@ describe('getCurrentUserMiddlewares', () => {
                 },
                 totalStreakCompletes: 10,
                 totalLiveStreaks: 0,
-                pushNotificationToken: 'pushNotificationToken',
-                endpointArn: 'endpointArn',
+                pushNotification: {
+                    token: 'token',
+                    endpointArn: 'endpointArn',
+                    deviceType: PushNotificationSupportedDeviceTypes.android,
+                },
                 pushNotifications: {
                     completeAllStreaksReminder: {
                         enabled: true,
@@ -217,8 +221,7 @@ describe('getCurrentUserMiddlewares', () => {
                     'timezone',
                     'createdAt',
                     'updatedAt',
-                    'pushNotificationToken',
-                    'endpointArn',
+                    'pushNotification',
                     'pushNotifications',
                     'hasCompletedIntroduction',
                     'profileImages',

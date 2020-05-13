@@ -143,7 +143,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             profileImages: user.profileImages,
-            pushNotificationToken: user.pushNotificationToken,
+            pushNotificationToken: user.pushNotification.token,
             totalStreakCompletes: Number(user.totalStreakCompletes),
             totalLiveStreaks: Number(user.totalLiveStreaks),
             achievements,

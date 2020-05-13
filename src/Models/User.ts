@@ -80,13 +80,19 @@ export const userSchema = new mongoose.Schema(
                 default: null,
             },
         },
-        pushNotificationToken: {
-            type: String,
-            default: null,
-        },
-        endpointArn: {
-            type: String,
-            default: null,
+        pushNotification: {
+            token: {
+                type: String,
+                default: null,
+            },
+            endpointArn: {
+                type: String,
+                default: null,
+            },
+            deviceType: {
+                type: String,
+                default: null,
+            },
         },
         pushNotifications: {
             completeAllStreaksReminder: {

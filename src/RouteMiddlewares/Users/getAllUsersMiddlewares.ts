@@ -116,7 +116,7 @@ export const formatUsersMiddleware = (request: Request, response: Response, next
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,
                 profileImages: user.profileImages,
-                pushNotificationToken: user.pushNotificationToken,
+                pushNotification: user.pushNotification,
                 totalStreakCompletes: Number(user.totalStreakCompletes),
             };
             return formattedUser;

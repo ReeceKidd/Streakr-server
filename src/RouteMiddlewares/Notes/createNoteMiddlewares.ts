@@ -90,12 +90,12 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
                     const populatedMember: UserModel | null = await userModel.findById(teamMember.memberId);
                     if (
                         populatedMember &&
-                        populatedMember.pushNotificationToken &&
+                        populatedMember.pushNotification.token &&
                         populatedMember.pushNotifications.teamStreakUpdates.enabled &&
                         String(populatedMember._id) !== String(userWhoCreatedNote._id)
                     ) {
                         messages.push({
-                            to: populatedMember.pushNotificationToken,
+                            to: populatedMember.pushNotification.token,
                             sound: 'default',
                             title,
                             body,

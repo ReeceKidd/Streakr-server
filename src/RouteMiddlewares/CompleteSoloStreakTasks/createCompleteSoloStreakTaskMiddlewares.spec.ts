@@ -35,6 +35,10 @@ import { CustomError, ErrorType } from '../../customError';
 import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 
 describe(`completeSoloStreakTaskBodyValidationMiddleware`, () => {
     const userId = 'userId';
@@ -817,12 +821,61 @@ describe(`sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddlewa
     test('if oneHundedDaySoloStreakAchievement is not defined just call next', async () => {
         expect.assertions(1);
 
+        const user: User = {
+            _id: '_id',
+            username: 'username',
+            membershipInformation: {
+                isPayingMember: true,
+                currentMembershipStartDate: new Date(),
+                pastMemberships: [],
+            },
+            email: 'test@test.com',
+            createdAt: 'Jan 1st',
+            updatedAt: 'Jan 1st',
+            timezone: 'Europe/London',
+            userType: UserTypes.basic,
+            totalStreakCompletes: 10,
+            totalLiveStreaks: 0,
+            followers: [],
+            following: [],
+            profileImages: {
+                originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+            },
+            pushNotification: {
+                token: 'token',
+                endpointArn: 'endpointArn',
+                deviceType: PushNotificationSupportedDeviceTypes.android,
+            },
+            pushNotifications: {
+                completeAllStreaksReminder: {
+                    enabled: true,
+                    expoId: 'expoId',
+                    reminderHour: 10,
+                    reminderMinute: 15,
+                    streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
+                },
+                teamStreakUpdates: {
+                    enabled: true,
+                },
+                newFollowerUpdates: {
+                    enabled: true,
+                },
+                achievementUpdates: {
+                    enabled: true,
+                },
+                customStreakReminders: [],
+            },
+            hasCompletedIntroduction: false,
+            stripe: {
+                customer: 'abc',
+                subscription: 'sub_1',
+            },
+            achievements: [],
+        };
+
         const response: any = {
             locals: {
-                user: {
-                    pushNotificationToken: 'pushNotificationToken',
-                    pushNotifications: { achievementUpdates: { enabled: true } },
-                },
+                user,
             },
         };
         const request: any = { body: {} };
@@ -846,11 +899,56 @@ describe(`sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddlewa
             name: '100 Days',
             updatedAt: 'updatedAt',
         };
-        const user = {
-            _id: 'userId',
+        const user: User = {
+            _id: '_id',
             username: 'username',
-            pushNotificationToken: 'pushNotificationToken',
-            pushNotifications: { achievementUpdates: { enabled: true } },
+            membershipInformation: {
+                isPayingMember: true,
+                currentMembershipStartDate: new Date(),
+                pastMemberships: [],
+            },
+            email: 'test@test.com',
+            createdAt: 'Jan 1st',
+            updatedAt: 'Jan 1st',
+            timezone: 'Europe/London',
+            userType: UserTypes.basic,
+            totalStreakCompletes: 10,
+            totalLiveStreaks: 0,
+            followers: [],
+            following: [],
+            profileImages: {
+                originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+            },
+            pushNotification: {
+                token: 'token',
+                endpointArn: 'endpointArn',
+                deviceType: PushNotificationSupportedDeviceTypes.android,
+            },
+            pushNotifications: {
+                completeAllStreaksReminder: {
+                    enabled: true,
+                    expoId: 'expoId',
+                    reminderHour: 10,
+                    reminderMinute: 15,
+                    streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
+                },
+                teamStreakUpdates: {
+                    enabled: true,
+                },
+                newFollowerUpdates: {
+                    enabled: true,
+                },
+                achievementUpdates: {
+                    enabled: true,
+                },
+                customStreakReminders: [],
+            },
+            hasCompletedIntroduction: false,
+            stripe: {
+                customer: 'abc',
+                subscription: 'sub_1',
+            },
+            achievements: [],
         };
         const sendPushNotificationsAsync = jest.fn().mockResolvedValue(['message']);
         const chunkPushNotifications = jest.fn().mockResolvedValue(['message']);

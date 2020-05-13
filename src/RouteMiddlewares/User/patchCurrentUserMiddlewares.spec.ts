@@ -324,6 +324,7 @@ describe('patchCurrentUserMiddlewares', () => {
             const endpointArn = 'endpointArn';
             const pushNotification = {
                 pushNotificationToken: 'pushNotificationToken',
+                deviceType: PushNotificationSupportedDeviceTypes.android,
             };
             const request: any = {
                 body: {
@@ -348,8 +349,11 @@ describe('patchCurrentUserMiddlewares', () => {
                 updatedUser._id,
                 {
                     $set: {
-                        endpointArn,
-                        pushNotificationToken: pushNotification.pushNotificationToken,
+                        pushNotification: {
+                            endpointArn,
+                            deviceType: pushNotification.deviceType,
+                            pushNotificationToken: pushNotification.pushNotificationToken,
+                        },
                     },
                 },
                 { new: true },
@@ -521,8 +525,11 @@ describe('patchCurrentUserMiddlewares', () => {
                 profileImages: {
                     originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
                 },
-                pushNotificationToken: 'pushNotificationToken',
-                endpointArn: 'endpointArn',
+                pushNotification: {
+                    token: 'token',
+                    endpointArn: 'endpointArn',
+                    deviceType: PushNotificationSupportedDeviceTypes.android,
+                },
                 pushNotifications: {
                     completeAllStreaksReminder: {
                         enabled: true,
@@ -570,8 +577,7 @@ describe('patchCurrentUserMiddlewares', () => {
                     'createdAt',
                     'updatedAt',
                     'pushNotifications',
-                    'pushNotificationToken',
-                    'endpointArn',
+                    'pushNotification',
                     'hasCompletedIntroduction',
                     'profileImages',
                     'achievements',

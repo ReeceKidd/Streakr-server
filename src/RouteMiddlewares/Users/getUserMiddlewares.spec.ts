@@ -20,6 +20,7 @@ import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 
 describe(`userParamsValidationMiddleware`, () => {
     const userId = '5d43f0c2f4499975cb312b72';
@@ -305,8 +306,11 @@ describe('formatUserMiddleware', () => {
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
-            pushNotificationToken: 'pushNotificationToken',
-            endpointArn: 'endpointArn',
+            pushNotification: {
+                token: 'token',
+                endpointArn: 'endpointArn',
+                deviceType: PushNotificationSupportedDeviceTypes.android,
+            },
             pushNotifications: {
                 completeAllStreaksReminder: {
                     enabled: true,

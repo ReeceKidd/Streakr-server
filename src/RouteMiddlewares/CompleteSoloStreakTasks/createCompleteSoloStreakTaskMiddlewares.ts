@@ -340,7 +340,7 @@ export const getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMi
             response.locals.oneHundredDaySoloStreakAchievement;
         if (
             oneHundredDaySoloStreakAchievement &&
-            user.pushNotificationToken &&
+            user.pushNotification &&
             user.pushNotifications.achievementUpdates.enabled
         ) {
             const messages: ExpoPushMessage[] = [];
@@ -353,7 +353,7 @@ export const getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMi
                 body,
             };
             messages.push({
-                to: user.pushNotificationToken,
+                to: user.pushNotification.token,
                 sound: 'default',
                 title,
                 body,

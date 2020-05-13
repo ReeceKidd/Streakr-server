@@ -27,6 +27,7 @@ import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import PaymentPlans from '@streakoid/streakoid-models/lib/Types/PaymentPlans';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 
 describe('createStripeCustomerSubscriptionMiddlewares', () => {
     afterEach(() => {
@@ -805,8 +806,11 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                 profileImages: {
                     originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
                 },
-                pushNotificationToken: 'pushNotificationToken',
-                endpointArn: 'endpointArn',
+                pushNotification: {
+                    token: 'token',
+                    endpointArn: 'endpointArn',
+                    deviceType: PushNotificationSupportedDeviceTypes.android,
+                },
                 pushNotifications: {
                     completeAllStreaksReminder: {
                         enabled: true,
@@ -848,7 +852,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
                     'createdAt',
                     'updatedAt',
                     'profileImages',
-                    'pushNotificationToken',
+                    'pushNotification',
                     'totalStreakCompletes',
                 ].sort(),
             );

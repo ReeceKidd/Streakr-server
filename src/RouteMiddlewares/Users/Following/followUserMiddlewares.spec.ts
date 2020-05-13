@@ -21,6 +21,10 @@ import {
     sendNewFollowerRequestNotificationMiddleware,
 } from './followUserMiddlewares';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
 describe('followUserMiddlewares', () => {
     describe('followUserParamsValidationMiddleware', () => {
@@ -459,17 +463,107 @@ describe('followUserMiddlewares', () => {
         test('sends new follower request notification to userToFollow if user to follow has a pushNotificationToken and newFollowerUpdates.pushNotification enabled.', async () => {
             expect.assertions(2);
 
-            const user = {
-                username: 'user',
+            const user: User = {
                 _id: '_id',
-            };
-            const userToFollow = {
-                pushNotificationToken: 'pushNotificationToken',
+                username: 'username',
+                membershipInformation: {
+                    isPayingMember: true,
+                    currentMembershipStartDate: new Date(),
+                    pastMemberships: [],
+                },
+                email: 'test@test.com',
+                createdAt: 'Jan 1st',
+                updatedAt: 'Jan 1st',
+                timezone: 'Europe/London',
+                userType: UserTypes.basic,
+                totalStreakCompletes: 10,
+                totalLiveStreaks: 0,
+                followers: [],
+                following: [],
+                profileImages: {
+                    originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+                },
+                pushNotification: {
+                    token: 'token',
+                    endpointArn: 'endpointArn',
+                    deviceType: PushNotificationSupportedDeviceTypes.android,
+                },
                 pushNotifications: {
+                    completeAllStreaksReminder: {
+                        enabled: true,
+                        expoId: 'expoId',
+                        reminderHour: 10,
+                        reminderMinute: 15,
+                        streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
+                    },
+                    teamStreakUpdates: {
+                        enabled: true,
+                    },
                     newFollowerUpdates: {
                         enabled: true,
                     },
+                    achievementUpdates: {
+                        enabled: true,
+                    },
+                    customStreakReminders: [],
                 },
+                hasCompletedIntroduction: false,
+                stripe: {
+                    customer: 'abc',
+                    subscription: 'sub_1',
+                },
+                achievements: [],
+            };
+            const userToFollow: User = {
+                _id: '_id',
+                username: 'username',
+                membershipInformation: {
+                    isPayingMember: true,
+                    currentMembershipStartDate: new Date(),
+                    pastMemberships: [],
+                },
+                email: 'test@test.com',
+                createdAt: 'Jan 1st',
+                updatedAt: 'Jan 1st',
+                timezone: 'Europe/London',
+                userType: UserTypes.basic,
+                totalStreakCompletes: 10,
+                totalLiveStreaks: 0,
+                followers: [],
+                following: [],
+                profileImages: {
+                    originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+                },
+                pushNotification: {
+                    token: 'token',
+                    endpointArn: 'endpointArn',
+                    deviceType: PushNotificationSupportedDeviceTypes.android,
+                },
+                pushNotifications: {
+                    completeAllStreaksReminder: {
+                        enabled: true,
+                        expoId: 'expoId',
+                        reminderHour: 10,
+                        reminderMinute: 15,
+                        streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
+                    },
+                    teamStreakUpdates: {
+                        enabled: true,
+                    },
+                    newFollowerUpdates: {
+                        enabled: true,
+                    },
+                    achievementUpdates: {
+                        enabled: true,
+                    },
+                    customStreakReminders: [],
+                },
+                hasCompletedIntroduction: false,
+                stripe: {
+                    customer: 'abc',
+                    subscription: 'sub_1',
+                },
+                achievements: [],
             };
             const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
             const expo: any = { sendPushNotificationsAsync };
@@ -490,7 +584,7 @@ describe('followUserMiddlewares', () => {
 
             expect(sendPushNotificationsAsync).toBeCalledWith([
                 {
-                    to: userToFollow.pushNotificationToken,
+                    to: userToFollow.pushNotification.token,
                     sound: 'default',
                     title,
                     body,

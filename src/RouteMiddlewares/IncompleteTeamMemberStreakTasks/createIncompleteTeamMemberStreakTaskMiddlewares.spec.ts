@@ -44,6 +44,62 @@ import {
 } from './createIncompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+
+const teamMember: User = {
+    _id: '_id',
+    username: 'username',
+    membershipInformation: {
+        isPayingMember: true,
+        currentMembershipStartDate: new Date(),
+        pastMemberships: [],
+    },
+    email: 'test@test.com',
+    createdAt: 'Jan 1st',
+    updatedAt: 'Jan 1st',
+    timezone: 'Europe/London',
+    userType: UserTypes.basic,
+    totalStreakCompletes: 10,
+    totalLiveStreaks: 0,
+    followers: [],
+    following: [],
+    profileImages: {
+        originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+    },
+    pushNotification: {
+        token: 'token',
+        endpointArn: 'endpointArn',
+        deviceType: PushNotificationSupportedDeviceTypes.android,
+    },
+    pushNotifications: {
+        completeAllStreaksReminder: {
+            enabled: true,
+            expoId: 'expoId',
+            reminderHour: 10,
+            reminderMinute: 15,
+            streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
+        },
+        teamStreakUpdates: {
+            enabled: true,
+        },
+        newFollowerUpdates: {
+            enabled: true,
+        },
+        achievementUpdates: {
+            enabled: true,
+        },
+        customStreakReminders: [],
+    },
+    hasCompletedIntroduction: false,
+    stripe: {
+        customer: 'abc',
+        subscription: 'sub_1',
+    },
+    achievements: [],
+};
 
 describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
     describe(`incompleteTeamMemberStreakTaskBodyValidationMiddleware`, () => {
@@ -1195,15 +1251,7 @@ describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
-            const teamMember = {
-                teamMemberId: 'teamMemberId',
-                pushNotificationToken: 'pushNotificationToken',
-                pushNotifications: {
-                    teamStreakUpdates: {
-                        enabled: true,
-                    },
-                },
-            };
+
             const teamMembers = [teamMember];
             const sendPushNotificationsAsync = jest.fn().mockResolvedValue(['message']);
             const chunkPushNotifications = jest.fn().mockResolvedValue(['message']);
@@ -1236,15 +1284,6 @@ describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
-            const teamMember = {
-                _id: 'teamMemberId',
-                pushNotificationToken: 'pushNotificationToken',
-                pushNotifications: {
-                    teamStreakUpdates: {
-                        enabled: false,
-                    },
-                },
-            };
             const teamMembers = [teamMember];
             const sendPushNotificationsAsync = jest.fn().mockResolvedValue([]);
             const chunkPushNotifications = jest.fn().mockResolvedValue([]);
@@ -1276,15 +1315,6 @@ describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
             };
             const teamStreak = {
                 streakName: 'Daily Spanish',
-            };
-            const teamMember = {
-                _id: '_id',
-                pushNotificationToken: 'pushNotificationToken',
-                pushNotifications: {
-                    teamStreakUpdates: {
-                        enabled: true,
-                    },
-                },
             };
             const teamMembers = [teamMember];
             const sendPushNotificationsAsync = jest.fn().mockResolvedValue([]);

@@ -3,12 +3,13 @@ import { SNS } from '../../src/sns';
 import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import { PushNotificationType } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
 
-const buildAPSPayloadString = ({ message, data }: { message: string; data: PushNotificationType }): string => {
+const buildAPSPayloadString = ({ body, data }: { body: string; data: PushNotificationType }): string => {
     return JSON.stringify({
-        data,
         aps: {
-            alert: message,
+            alert: body,
+            'content-available': 1,
         },
+        data,
     });
 };
 const buildFCMPayloadString = ({
@@ -21,11 +22,11 @@ const buildFCMPayloadString = ({
     data: PushNotificationType;
 }): string => {
     return JSON.stringify({
-        data,
         notification: {
             title,
             body,
         },
+        data,
     });
 };
 
@@ -46,12 +47,13 @@ export const sendPushNotification = ({
         payload = '';
     if (platform === PushNotificationSupportedDeviceTypes.ios) {
         payloadKey = 'APNS';
-        payload = buildAPSPayloadString({ message: body, data });
+        payload = buildAPSPayloadString({ body, data });
     } else if (platform === PushNotificationSupportedDeviceTypes.android) {
-        payloadKey = 'FCM';
+        payloadKey = 'GCM';
         payload = buildFCMPayloadString({ title, body, data });
     } else {
-        throw new Error('Unsupported platform');
+        payloadKey = 'default';
+        payload = body;
     }
     const snsMessage = {
         [payloadKey]: payload,

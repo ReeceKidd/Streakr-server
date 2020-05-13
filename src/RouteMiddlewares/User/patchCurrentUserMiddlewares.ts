@@ -21,8 +21,8 @@ const patchCurrentUserValidationSchema = {
     timezone: Joi.string(),
     pushNotificationToken: Joi.string(), // Legacy support,
     pushNotification: {
-        pushNotificationToken: Joi.string().required(),
-        deviceType: Joi.string().required(),
+        token: Joi.string(),
+        deviceType: Joi.string(),
     },
     hasCompletedIntroduction: Joi.boolean(),
 };
@@ -70,12 +70,12 @@ export const getCreatePlatformEndpointMiddleware = (sns: typeof SNS) => async (
         const user: User = response.locals.updatedUser;
         const { pushNotification } = request.body;
         if (pushNotification) {
-            const { pushNotificationToken, deviceType } = request.body.pushNotification;
+            const { token, deviceType } = request.body.pushNotification;
             if (deviceType === PushNotificationSupportedDeviceTypes.android) {
                 const { EndpointArn } = await sns
                     .createPlatformEndpoint({
                         PlatformApplicationArn: getServiceConfig().ANDROID_SNS_PLATFORM_APPLICATION_ARN,
-                        Token: pushNotificationToken,
+                        Token: token,
                         CustomUserData: String(user._id),
                     })
                     .promise();
@@ -84,7 +84,7 @@ export const getCreatePlatformEndpointMiddleware = (sns: typeof SNS) => async (
                 const { EndpointArn } = await sns
                     .createPlatformEndpoint({
                         PlatformApplicationArn: getServiceConfig().IOS_SNS_PLATFORM_APPLICATION_ARN,
-                        Token: pushNotificationToken,
+                        Token: token,
                         CustomUserData: String(user._id),
                     })
                     .promise();
@@ -95,6 +95,7 @@ export const getCreatePlatformEndpointMiddleware = (sns: typeof SNS) => async (
         }
         next();
     } catch (err) {
+        console.log(1, err);
         if (err instanceof CustomError) next(err);
         else next(new CustomError(ErrorType.CreatePlatformEndpointMiddleware, err));
     }
@@ -111,14 +112,19 @@ export const getUpdateUserPushNotificationInformationMiddleware = (userModel: mo
         const { endpointArn } = response.locals;
         if (endpointArn) {
             const { pushNotification } = request.body;
-            const { pushNotificationToken } = pushNotification;
+            const { token, deviceType } = pushNotification;
             const user: User = response.locals.updatedUser;
             response.locals.updatedUser = await userModel
-                .findByIdAndUpdate(user._id, { $set: { endpointArn, pushNotificationToken } }, { new: true })
+                .findByIdAndUpdate(
+                    user._id,
+                    { $set: { pushNotification: { endpointArn, token, deviceType } } },
+                    { new: true },
+                )
                 .lean();
         }
         next();
     } catch (err) {
+        console.log(2, err);
         next(new CustomError(ErrorType.UpdateUserPushNotificationInformationMiddleware, err));
     }
 };
@@ -223,8 +229,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             timezone: user.timezone,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
-            pushNotificationToken: user.pushNotificationToken,
-            endpointArn: user.endpointArn,
+            pushNotification: user.pushNotification,
             pushNotifications: user.pushNotifications,
             profileImages: user.profileImages,
             hasCompletedIntroduction: user.hasCompletedIntroduction,

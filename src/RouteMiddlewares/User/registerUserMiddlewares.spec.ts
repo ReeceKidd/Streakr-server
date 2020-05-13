@@ -20,6 +20,7 @@ import { CustomError, ErrorType } from '../../customError';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 
 describe(`userRegistrationValidationMiddleware`, () => {
     const mockUsername = 'mockUsername';
@@ -355,8 +356,11 @@ describe('formatUserMiddleware', () => {
             profileImages: {
                 originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
             },
-            pushNotificationToken: 'pushNotificationToken',
-            endpointArn: 'endPointArn',
+            pushNotification: {
+                token: 'token',
+                endpointArn: 'endpointArn',
+                deviceType: PushNotificationSupportedDeviceTypes.android,
+            },
             pushNotifications: {
                 completeAllStreaksReminder: {
                     enabled: true,
@@ -399,8 +403,7 @@ describe('formatUserMiddleware', () => {
                 'timezone',
                 'createdAt',
                 'updatedAt',
-                'pushNotificationToken',
-                'endpointArn',
+                'pushNotification',
                 'pushNotifications',
                 'hasCompletedIntroduction',
                 'profileImages',
