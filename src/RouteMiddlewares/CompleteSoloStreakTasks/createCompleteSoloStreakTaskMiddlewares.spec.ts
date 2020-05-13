@@ -889,8 +889,8 @@ describe(`sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddlewa
         expect(next).not.toBeCalled();
     });
 
-    test('if oneHundredDaySoloStreakAchievement is defined, user has a pushNotificationToken and user has acheivementUpdates enabled it sends an UnlockedAchievementPushNotification', async () => {
-        expect.assertions(3);
+    test('if oneHundredDaySoloStreakAchievement is defined, user has a deviceType, endpointArn and user has acheivementUpdates enabled it sends an UnlockedAchievementPushNotification', async () => {
+        expect.assertions(2);
         const oneHundredDaySoloStreakAchievement: OneHundredDaySoloStreakDatabaseAchievement = {
             _id: '_id',
             achievementType: AchievementTypes.oneHundredDaySoloStreak,
@@ -950,9 +950,8 @@ describe(`sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddlewa
             },
             achievements: [],
         };
-        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(['message']);
-        const chunkPushNotifications = jest.fn().mockResolvedValue(['message']);
-        const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
+
+        const sendPushNotification = jest.fn().mockResolvedValue(true);
         const request: any = {};
         const response: any = {
             locals: {
@@ -962,10 +961,11 @@ describe(`sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddlewa
         };
         const next = jest.fn();
 
-        const middleware = getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware(expo as any);
+        const middleware = getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware(
+            sendPushNotification as any,
+        );
         await middleware(request, response, next);
-        expect(sendPushNotificationsAsync).toBeCalled();
-        expect(chunkPushNotifications).toBeCalled();
+        expect(sendPushNotification).toBeCalled();
         expect(next).not.toBeCalledWith();
     });
 

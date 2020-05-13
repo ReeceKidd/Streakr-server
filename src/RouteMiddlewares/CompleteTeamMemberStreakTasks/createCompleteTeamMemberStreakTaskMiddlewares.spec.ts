@@ -1184,10 +1184,10 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
     });
 
     describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
-        test('sends push notification to team members if they have teamStreakUpdates notifications on', async () => {
-            expect.assertions(3);
+        test('sends push notification to team members if they have teamStreakUpdates notifications enabled, a devicType and an endpointArn', async () => {
+            expect.assertions(2);
             const user = {
-                _id: '_id',
+                _id: 'userId',
                 username: 'username',
             };
             const teamStreak = {
@@ -1245,9 +1245,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
                 achievements: [],
             };
             const teamMembers = [teamMember];
-            const sendPushNotificationsAsync = jest.fn().mockResolvedValue(['message']);
-            const chunkPushNotifications = jest.fn().mockResolvedValue(['message']);
-            const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
             const response: any = {
                 locals: {
@@ -1258,15 +1256,14 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             };
             const next = jest.fn();
 
-            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(expo);
+            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(sendPushNotification as any);
             await middleware(request, response, next);
-            expect(sendPushNotificationsAsync).toBeCalled();
-            expect(chunkPushNotifications).toBeCalled();
+            expect(sendPushNotification).toBeCalled();
             expect(next).toBeCalledWith();
         });
 
         test('does not send notification if team member does not have teamStreakUpdates push notifications enabled', async () => {
-            expect.assertions(3);
+            expect.assertions(2);
 
             const user = {
                 _id: '_id',
@@ -1327,9 +1324,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
                 achievements: [],
             };
             const teamMembers = [teamMember];
-            const sendPushNotificationsAsync = jest.fn().mockResolvedValue([]);
-            const chunkPushNotifications = jest.fn().mockResolvedValue([]);
-            const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
             const response: any = {
                 locals: {
@@ -1340,16 +1335,15 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             };
             const next = jest.fn();
 
-            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(expo);
+            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(sendPushNotification as any);
             await middleware(request, response, next);
 
-            expect(chunkPushNotifications).toBeCalled();
-            expect(sendPushNotificationsAsync).not.toBeCalled();
+            expect(sendPushNotification).not.toBeCalled();
             expect(next).toBeCalledWith();
         });
 
         test('does not send notification to user that completed the task', async () => {
-            expect.assertions(3);
+            expect.assertions(2);
 
             const user = {
                 _id: '_id',
@@ -1410,9 +1404,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
                 achievements: [],
             };
             const teamMembers = [teamMember];
-            const sendPushNotificationsAsync = jest.fn().mockResolvedValue([]);
-            const chunkPushNotifications = jest.fn().mockResolvedValue([]);
-            const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
             const response: any = {
                 locals: {
@@ -1423,11 +1415,10 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             };
             const next = jest.fn();
 
-            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(expo);
+            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(sendPushNotification);
             await middleware(request, response, next);
 
-            expect(chunkPushNotifications).toBeCalled();
-            expect(sendPushNotificationsAsync).not.toBeCalled();
+            expect(sendPushNotification).not.toBeCalled();
             expect(next).toBeCalledWith();
         });
 

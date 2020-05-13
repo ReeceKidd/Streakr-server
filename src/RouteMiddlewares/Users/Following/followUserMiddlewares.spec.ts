@@ -20,7 +20,6 @@ import {
     getSendNewFollowerRequestNotificationMiddleware,
     sendNewFollowerRequestNotificationMiddleware,
 } from './followUserMiddlewares';
-import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
@@ -565,8 +564,7 @@ describe('followUserMiddlewares', () => {
                 },
                 achievements: [],
             };
-            const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
-            const expo: any = { sendPushNotificationsAsync };
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
             const response: any = {
                 locals: {
@@ -576,27 +574,10 @@ describe('followUserMiddlewares', () => {
             };
             const next = jest.fn();
 
-            const middleware = getSendNewFollowerRequestNotificationMiddleware(expo);
+            const middleware = getSendNewFollowerRequestNotificationMiddleware(sendPushNotification as any);
             await middleware(request, response, next);
 
-            const title = 'New follower';
-            const body = `${user.username} is following you.`;
-
-            expect(sendPushNotificationsAsync).toBeCalledWith([
-                {
-                    to: userToFollow.pushNotification.token,
-                    sound: 'default',
-                    title,
-                    body,
-                    data: {
-                        pushNotificationType: PushNotificationTypes.newFollower,
-                        followerId: user._id,
-                        followerUsername: user.username,
-                        title,
-                        body,
-                    },
-                },
-            ]);
+            expect(sendPushNotification).toBeCalled();
             expect(next).not.toBeCalledWith();
         });
 
@@ -609,8 +590,7 @@ describe('followUserMiddlewares', () => {
             const userToFollow = {
                 pushNotificationToken: null,
             };
-            const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
-            const expo: any = { sendPushNotificationsAsync };
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
             const response: any = {
                 locals: {
@@ -620,10 +600,10 @@ describe('followUserMiddlewares', () => {
             };
             const next = jest.fn();
 
-            const middleware = getSendNewFollowerRequestNotificationMiddleware(expo);
+            const middleware = getSendNewFollowerRequestNotificationMiddleware(sendPushNotification as any);
             await middleware(request, response, next);
 
-            expect(sendPushNotificationsAsync).not.toBeCalled();
+            expect(sendPushNotification).not.toBeCalled();
             expect(next).not.toBeCalledWith();
         });
 
@@ -641,8 +621,7 @@ describe('followUserMiddlewares', () => {
                     },
                 },
             };
-            const sendPushNotificationsAsync = jest.fn().mockResolvedValue(true);
-            const expo: any = { sendPushNotificationsAsync };
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
             const response: any = {
                 locals: {
@@ -652,10 +631,10 @@ describe('followUserMiddlewares', () => {
             };
             const next = jest.fn();
 
-            const middleware = getSendNewFollowerRequestNotificationMiddleware(expo);
+            const middleware = getSendNewFollowerRequestNotificationMiddleware(sendPushNotification as any);
             await middleware(request, response, next);
 
-            expect(sendPushNotificationsAsync).not.toBeCalled();
+            expect(sendPushNotification).not.toBeCalled();
             expect(next).not.toBeCalledWith();
         });
 

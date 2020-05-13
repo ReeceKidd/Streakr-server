@@ -7,7 +7,6 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { noteModel, NoteModel } from '../../Models/Note';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 import { UserModel } from '../../../src/Models/User';
 import { TeamStreakModel } from '../../../src/Models/TeamStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
@@ -15,6 +14,8 @@ import { userModel } from '../../../src/Models/User';
 import { AddedNoteToTeamStreakPushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
+import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 const createNoteBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -54,10 +55,8 @@ export const getCreateNoteFromRequestMiddleware = (noteModel: mongoose.Model<Not
 
 export const createNoteFromRequestMiddleware = getCreateNoteFromRequestMiddleware(noteModel);
 
-const expoClient = new Expo();
-
 export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
-    expo: typeof expoClient,
+    sendPush: typeof sendPushNotification,
     teamStreakModel: mongoose.Model<TeamStreakModel>,
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -72,7 +71,6 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
             if (!userWhoCreatedNote) {
                 throw new CustomError(ErrorType.CreateNoteUserDoesNotExist);
             }
-            const messages: ExpoPushMessage[] = [];
             const title = `${userWhoCreatedNote.username} added a note to ${teamStreak.streakName}`;
             const body = `${text}`;
             const data: AddedNoteToTeamStreakPushNotification = {
@@ -87,29 +85,27 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
             };
             await Promise.all(
                 teamStreak.members.map(async teamMember => {
-                    const populatedMember: UserModel | null = await userModel.findById(teamMember.memberId);
+                    const populatedMember: User | null = await userModel.findById(teamMember.memberId);
+                    if (!populatedMember) {
+                        return;
+                    }
+                    const { pushNotification, pushNotifications } = populatedMember;
+                    const deviceType = pushNotification && pushNotification.deviceType;
+                    const endpointArn = pushNotification && pushNotification.endpointArn;
+                    const teamStreakUpdatesEnabled =
+                        pushNotifications &&
+                        pushNotifications.teamStreakUpdates &&
+                        pushNotifications.teamStreakUpdates.enabled;
                     if (
-                        populatedMember &&
-                        populatedMember.pushNotification.token &&
-                        populatedMember.pushNotifications.teamStreakUpdates.enabled &&
+                        deviceType &&
+                        endpointArn &&
+                        teamStreakUpdatesEnabled &&
                         String(populatedMember._id) !== String(userWhoCreatedNote._id)
                     ) {
-                        messages.push({
-                            to: populatedMember.pushNotification.token,
-                            sound: 'default',
-                            title,
-                            body,
-                            data,
-                        });
+                        return sendPush({ title, body, data, endpointArn, deviceType });
                     }
                 }),
             );
-            if (messages.length > 0) {
-                const chunks = await expo.chunkPushNotifications(messages);
-                for (const chunk of chunks) {
-                    await expo.sendPushNotificationsAsync(chunk);
-                }
-            }
         }
         next();
     } catch (err) {
@@ -118,7 +114,7 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
 };
 
 export const notifiyTeamMembersThatUserHasAddedANoteMiddleware = getNotifyTeamMembersThatUserHasAddedANoteMiddleware(
-    expoClient,
+    sendPushNotification,
     teamStreakModel,
     userModel,
 );

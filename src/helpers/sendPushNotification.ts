@@ -31,24 +31,24 @@ const buildFCMPayloadString = ({
 };
 
 export const sendPushNotification = ({
-    endpoint,
-    platform,
+    endpointArn,
+    deviceType,
     title,
     body,
     data,
 }: {
-    endpoint: string;
-    platform: PushNotificationSupportedDeviceTypes;
+    endpointArn: string;
+    deviceType: PushNotificationSupportedDeviceTypes;
     title: string;
     body: string;
     data: PushNotificationType;
 }): Promise<unknown> => {
     let payloadKey,
         payload = '';
-    if (platform === PushNotificationSupportedDeviceTypes.ios) {
+    if (deviceType === PushNotificationSupportedDeviceTypes.ios) {
         payloadKey = 'APNS';
         payload = buildAPSPayloadString({ body, data });
-    } else if (platform === PushNotificationSupportedDeviceTypes.android) {
+    } else if (deviceType === PushNotificationSupportedDeviceTypes.android) {
         payloadKey = 'GCM';
         payload = buildFCMPayloadString({ title, body, data });
     } else {
@@ -61,7 +61,7 @@ export const sendPushNotification = ({
 
     const snsParams = {
         Message: JSON.stringify(snsMessage),
-        TargetArn: endpoint,
+        TargetArn: endpointArn,
         MessageStructure: 'json',
     };
     console.log(snsParams);

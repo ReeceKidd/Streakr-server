@@ -17,7 +17,6 @@ import { incompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStr
 import { IncompleteTeamStreakModel } from '../../../src/Models/IncompleteTeamStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { TeamStreakModel } from '../../../src/Models/TeamStreak';
-import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { IncompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
 import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
@@ -26,6 +25,7 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -447,18 +447,13 @@ export const getRetrieveTeamMembersMiddleware = (userModel: mongoose.Model<UserM
 
 export const retrieveTeamMembersMiddleware = getRetrieveTeamMembersMiddleware(userModel);
 
-const expoClient = new Expo();
-
-export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (expo: typeof expoClient) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (
+    sendPush: typeof sendPushNotification,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamMembers: UserModel[] = response.locals.teamMembers;
-        const messages: ExpoPushMessage[] = [];
         const title = `${teamStreak.streakName} update`;
         const body = `${user.username} made a mistake they have not completed ${teamStreak.streakName}`;
         const data: IncompletedTeamStreakUpdatePushNotification = {
@@ -470,25 +465,24 @@ export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (expo: t
         };
         await Promise.all(
             teamMembers.map(async teamMember => {
+                const { pushNotification, pushNotifications } = teamMember;
+                const deviceType = pushNotification && pushNotification.deviceType;
+                const endpointArn = pushNotification && pushNotification.endpointArn;
+                const teamStreakUpdatesEnabled =
+                    pushNotifications &&
+                    pushNotifications.teamStreakUpdates &&
+                    pushNotifications.teamStreakUpdates.enabled;
                 if (
-                    teamMember.pushNotification.token &&
-                    teamMember.pushNotifications.teamStreakUpdates.enabled &&
+                    deviceType &&
+                    endpointArn &&
+                    teamStreakUpdatesEnabled &&
                     String(teamMember._id) !== String(user._id)
                 ) {
-                    messages.push({
-                        to: teamMember.pushNotification.token,
-                        sound: 'default',
-                        title,
-                        body,
-                        data,
-                    });
+                    sendPush({ title, body, data, deviceType, endpointArn });
                 }
             }),
         );
-        const chunks = await expo.chunkPushNotifications(messages);
-        for (const chunk of chunks) {
-            await expo.sendPushNotificationsAsync(chunk);
-        }
+
         next();
     } catch (err) {
         next(new CustomError(ErrorType.NotifyTeamMembersThatUserHasIncompletedTaskMiddleware, err));
@@ -496,7 +490,7 @@ export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (expo: t
 };
 
 export const notifiyTeamMembersThatUserHasIncompletedTaskMiddleware = getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware(
-    expoClient,
+    sendPushNotification,
 );
 
 export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (

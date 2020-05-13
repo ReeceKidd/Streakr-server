@@ -233,8 +233,8 @@ describe(`notifyTeamMembersThatUserHasAddedANoteMiddleware`, () => {
         expect(next).toBeCalledWith();
     });
 
-    test('if subjectId is a teamStreak notify other team members that a note was created', async () => {
-        expect.assertions(3);
+    test('if streakType is a teamStreak notify other team members that a note was created', async () => {
+        expect.assertions(2);
         const user = {
             _id: 'userId',
             username: 'username',
@@ -295,9 +295,7 @@ describe(`notifyTeamMembersThatUserHasAddedANoteMiddleware`, () => {
             members: [populatedMember],
         };
         const teamMembers = [populatedMember];
-        const sendPushNotificationsAsync = jest.fn().mockResolvedValue(['message']);
-        const chunkPushNotifications = jest.fn().mockResolvedValue(['message']);
-        const expo: any = { chunkPushNotifications, sendPushNotificationsAsync };
+        const sendPushNotification = jest.fn().mockResolvedValue(true);
         const request: any = {
             body: {
                 streakType: StreakTypes.team,
@@ -321,13 +319,12 @@ describe(`notifyTeamMembersThatUserHasAddedANoteMiddleware`, () => {
         };
 
         const middleware = getNotifyTeamMembersThatUserHasAddedANoteMiddleware(
-            expo as any,
+            sendPushNotification as any,
             teamStreakModel as any,
             userModel as any,
         );
         await middleware(request, response, next);
-        expect(sendPushNotificationsAsync).toBeCalled();
-        expect(chunkPushNotifications).toBeCalled();
+        expect(sendPushNotification).toBeCalled();
         expect(next).toBeCalledWith();
     });
 

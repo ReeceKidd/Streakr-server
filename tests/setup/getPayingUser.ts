@@ -15,7 +15,7 @@ const getPayingUser = async (): Promise<UserModel> => {
                 currentMembershipStartDate: new Date(),
             },
             timezone: 'Europe/London',
-            pushNotificationToken: 'ExponentPushToken[hC0rRYEqr3N-IhTsr4h-Xo]',
+            pushNotificationToken: 'pushNotification',
         },
     });
     if (!updatedUser) {

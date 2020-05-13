@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
-import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -22,6 +21,7 @@ import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementT
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
+import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -329,21 +329,19 @@ export const createCompleteSoloStreakActivityFeedItemMiddleware = getCreateCompl
     createActivityFeedItem,
 );
 
-const expoClient = new Expo();
-
 export const getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware = (
-    expo: typeof expoClient,
+    sendPush: typeof sendPushNotification,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const oneHundredDaySoloStreakAchievement: OneHundredDaySoloStreakDatabaseAchievement =
             response.locals.oneHundredDaySoloStreakAchievement;
-        if (
-            oneHundredDaySoloStreakAchievement &&
-            user.pushNotification &&
-            user.pushNotifications.achievementUpdates.enabled
-        ) {
-            const messages: ExpoPushMessage[] = [];
+        const { pushNotification, pushNotifications } = user;
+        const deviceType = pushNotification && pushNotification.deviceType;
+        const endpointArn = pushNotification && pushNotification.endpointArn;
+        const achievementUpdatesEnabled =
+            pushNotifications && pushNotifications.achievementUpdates && pushNotifications.achievementUpdates.enabled;
+        if (oneHundredDaySoloStreakAchievement && deviceType && endpointArn && achievementUpdatesEnabled) {
             const title = `Unlocked ${oneHundredDaySoloStreakAchievement.name}`;
             const body = `You unlocked an achievement for: ${oneHundredDaySoloStreakAchievement.description}`;
             const data: UnlockedAchievementPushNotification = {
@@ -352,17 +350,7 @@ export const getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMi
                 title,
                 body,
             };
-            messages.push({
-                to: user.pushNotification.token,
-                sound: 'default',
-                title,
-                body,
-                data,
-            });
-            const chunks = await expo.chunkPushNotifications(messages);
-            for (const chunk of chunks) {
-                await expo.sendPushNotificationsAsync(chunk);
-            }
+            sendPush({ title, body, data, endpointArn, deviceType });
         }
     } catch (err) {
         next(new CustomError(ErrorType.SendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware, err));
@@ -370,7 +358,7 @@ export const getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMi
 };
 
 export const sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware = getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware(
-    expoClient,
+    sendPushNotification,
 );
 
 export const createCompleteSoloStreakTaskMiddlewares = [

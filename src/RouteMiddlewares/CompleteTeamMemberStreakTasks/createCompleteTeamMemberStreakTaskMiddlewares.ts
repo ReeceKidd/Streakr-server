@@ -3,7 +3,6 @@ import moment from 'moment-timezone';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import Expo, { ExpoPushMessage } from 'expo-server-sdk';
 
 import { ResponseCodes } from '../../Server/responseCodes';
 
@@ -24,6 +23,7 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -449,9 +449,7 @@ export const getRetrieveTeamMembersMiddleware = (userModel: mongoose.Model<UserM
 
 export const retrieveTeamMembersMiddleware = getRetrieveTeamMembersMiddleware(userModel);
 
-const expoClient = new Expo();
-
-export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typeof expoClient) => async (
+export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (sendPush: typeof sendPushNotification) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -460,7 +458,7 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
         const user: User = response.locals.user;
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamMembers: UserModel[] = response.locals.teamMembers;
-        const messages: ExpoPushMessage[] = [];
+
         const title = `${teamStreak.streakName} update`;
         const body = `${user.username} has completed ${teamStreak.streakName}`;
         const data: CompletedTeamStreakUpdatePushNotification = {
@@ -472,25 +470,23 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
         };
         await Promise.all(
             teamMembers.map(async teamMember => {
+                const { pushNotification, pushNotifications } = teamMember;
+                const deviceType = pushNotification && pushNotification.deviceType;
+                const endpointArn = pushNotification && pushNotification.endpointArn;
+                const teamMemberTeamStreakUpdatesEnabled =
+                    pushNotifications &&
+                    pushNotifications.teamStreakUpdates &&
+                    pushNotifications.teamStreakUpdates.enabled;
                 if (
-                    teamMember.pushNotification.token &&
-                    teamMember.pushNotifications.teamStreakUpdates.enabled &&
+                    deviceType &&
+                    endpointArn &&
+                    teamMemberTeamStreakUpdatesEnabled &&
                     String(teamMember._id) !== String(user._id)
                 ) {
-                    messages.push({
-                        to: teamMember.pushNotification.token,
-                        sound: 'default',
-                        title,
-                        body,
-                        data,
-                    });
+                    return sendPush({ title, body, data, deviceType, endpointArn });
                 }
             }),
         );
-        const chunks = await expo.chunkPushNotifications(messages);
-        for (const chunk of chunks) {
-            await expo.sendPushNotificationsAsync(chunk);
-        }
         next();
     } catch (err) {
         next(new CustomError(ErrorType.NotifyTeamMembersThatUserHasCompletedTaskMiddleware, err));
@@ -498,7 +494,7 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (expo: typ
 };
 
 export const notifiyTeamMembersThatUserHasCompletedTaskMiddleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(
-    expoClient,
+    sendPushNotification,
 );
 
 export const sendCompleteTeamMemberStreakTaskResponseMiddleware = (
