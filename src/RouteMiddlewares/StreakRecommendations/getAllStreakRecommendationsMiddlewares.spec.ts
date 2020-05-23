@@ -11,10 +11,14 @@ import { CustomError, ErrorType } from '../../customError';
 
 describe('getStreakRecommendationsValidationMiddleware', () => {
     test('passes valid request', () => {
+        const limit = 10;
+        const random = true;
+        const sortedByNumberOfMembers = true;
+
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
-        const request: any = {};
+        const request: any = { query: { limit, random, sortedByNumberOfMembers } };
         const response: any = {
             status,
         };
@@ -46,22 +50,22 @@ describe('findStreakRecommendationsMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(aggregate).toBeCalledWith([{ $sample: { size: Number(limit) } }]);
+        expect(aggregate).toBeCalledWith([{ $sample: { size: Number(limit) } }, { $limit: Number(limit) }]);
         expect(response.locals.streakRecommendations).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
-    test('if random is false it returns the number of streak recommendations based on the limit', async () => {
-        expect.assertions(4);
-        const limit = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ limit }));
+    test('if sortedByNumberOfMembers is true it returns limited streak recommendations that are sorted by number of members ', async () => {
+        expect.assertions(3);
+        const aggregate = jest.fn(() => Promise.resolve(true));
         const streakRecommendationModel = {
-            find,
+            aggregate,
         };
+        const limit = 5;
         const request: any = {
             query: {
-                random: false,
-                limit: 5,
+                sortedByNumberOfMembers: true,
+                limit,
             },
         };
         const response: any = { locals: {} };
@@ -70,8 +74,31 @@ describe('findStreakRecommendationsMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({});
-        expect(limit).toBeCalledWith(Number('5'));
+        expect(aggregate).toBeCalledWith([{ $sort: { numberOfMembers: -1 } }, { $limit: Number(limit) }]);
+        expect(response.locals.streakRecommendations).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('if random and sortedByNumberOfMembers is false it returns a limited number of streak recommendations', async () => {
+        expect.assertions(3);
+        const aggregate = jest.fn(() => Promise.resolve(true));
+        const streakRecommendationModel = {
+            aggregate,
+        };
+        const limit = 5;
+        const request: any = {
+            query: {
+                random: false,
+                limit,
+            },
+        };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindStreakRecommendationsMiddleware(streakRecommendationModel as any);
+
+        await middleware(request, response, next);
+
+        expect(aggregate).toBeCalledWith([{ $limit: Number(limit) }]);
         expect(response.locals.streakRecommendations).toEqual(true);
         expect(next).toBeCalledWith();
     });

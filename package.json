@@ -15,7 +15,8 @@
         "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
         "preversion": "npm run lint",
         "version": "git push",
-        "update": "npm version patch"
+        "update": "npm version patch",
+        "streakoid": "rm -rf node_modules/@streakoid/ && npm i @streakoid/streakoid-sdk @streakoid/streakoid-models"
     },
     "keywords": [],
     "author": "Reece Kidd",
@@ -23,7 +24,7 @@
     "dependencies": {
         "@sentry/node": "^5.15.5",
         "@streakoid/streakoid-models": "^1.0.30",
-        "@streakoid/streakoid-sdk": "^1.0.514",
+        "@streakoid/streakoid-sdk": "^1.0.515",
         "@streakoid/streakoid-shared": "^1.0.481",
         "@types/amazon-cognito-auth-js": "^1.2.1",
         "@types/cors": "^2.8.5",

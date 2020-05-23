@@ -8,8 +8,9 @@ import { Model } from 'mongoose';
 import { ChallengeModel, challengeModel } from '../../../src/Models/Challenge';
 
 const getStreakRecommendationsQueryValidationSchema = {
-    random: Joi.boolean(),
     limit: Joi.number().required(),
+    random: Joi.boolean(),
+    sortedByNumberOfMembers: Joi.boolean(),
 };
 
 export const getStreakRecommendationsQueryValidationMiddleware = (
@@ -30,14 +31,18 @@ export const getFindStreakRecommendationsMiddleware = (challengeModel: Model<Cha
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { random, limit } = request.query;
+        const { random, limit, sortedByNumberOfMembers } = request.query;
+        const aggregation = [];
         if (random) {
-            response.locals.streakRecommendations = await challengeModel.aggregate([
-                { $sample: { size: Number(limit) } },
-            ]);
-        } else {
-            response.locals.streakRecommendations = await challengeModel.find({}).limit(Number(limit));
+            aggregation.push({ $sample: { size: Number(limit) } });
         }
+        if (sortedByNumberOfMembers) {
+            aggregation.push({ $sort: { numberOfMembers: -1 } });
+        }
+        aggregation.push({ $limit: Number(limit) });
+
+        response.locals.streakRecommendations = await challengeModel.aggregate(aggregation);
+
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FindStreakRecommendationsMiddleware, err));
