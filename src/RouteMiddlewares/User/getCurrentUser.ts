@@ -113,6 +113,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             pushNotifications: user.pushNotifications,
             profileImages: user.profileImages,
             hasCompletedTutorial: user.hasCompletedTutorial,
+            hasCompletedIntroduction: user.hasCompletedIntroduction,
             onboarding: user.onboarding,
             hasCompletedOnboarding: user.hasCompletedOnboarding,
             achievements,

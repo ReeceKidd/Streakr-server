@@ -517,6 +517,7 @@ describe('patchCurrentUserMiddlewares', () => {
                     },
                     customStreakReminders: [],
                 },
+                hasCompletedIntroduction: false,
                 hasCompletedTutorial: false,
                 onboarding: {
                     whyDoYouWantToBuildNewHabitsChoice: WhyDoYouWantToBuildNewHabitsTypes.education,
@@ -551,6 +552,7 @@ describe('patchCurrentUserMiddlewares', () => {
                     'updatedAt',
                     'pushNotifications',
                     'pushNotification',
+                    'hasCompletedIntroduction',
                     'hasCompletedTutorial',
                     'onboarding',
                     'hasCompletedOnboarding',

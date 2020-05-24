@@ -125,6 +125,7 @@ describe(`registerTemporaryUserMiddlewares`, () => {
                     'pushNotification',
                     'pushNotifications',
                     'hasCompletedTutorial',
+                    'hasCompletedIntroduction',
                     'onboarding',
                     'hasCompletedOnboarding',
                     'profileImages',

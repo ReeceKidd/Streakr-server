@@ -49,6 +49,7 @@ export const getMockUser = (): User => ({
         },
         customStreakReminders: [],
     },
+    hasCompletedIntroduction: true,
     hasCompletedTutorial: false,
     onboarding: {
         whyDoYouWantToBuildNewHabitsChoice: WhyDoYouWantToBuildNewHabitsTypes.education,

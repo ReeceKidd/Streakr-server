@@ -26,6 +26,26 @@ export const temporaryUserRegistrationValidationMiddleware = (
     );
 };
 
+// export const getDoesUserIdentifierAlreadyExistMiddleware = (user: Model<UserModel>) => async (
+//     request: Request,
+//     response: Response,
+//     next: NextFunction,
+// ): Promise<void> => {
+//     try {
+//         const { userIdentifier } = request.body;
+//         const { timezone } = response.locals;
+//         const newUser = new user({
+//             userIdentifier,
+//             userType: UserTypes.unregistered,
+//             timezone,
+//         });
+//         response.locals.savedUser = await newUser.save();
+//         next();
+//     } catch (err) {
+//         next(new CustomError(ErrorType.UserIdentifierAlreadyExistMiddleware, err));
+//     }
+// };
+
 export const getSaveTemporaryUserToDatabaseMiddleware = (user: Model<UserModel>) => async (
     request: Request,
     response: Response,
@@ -66,6 +86,7 @@ export const formatTemporaryUserMiddleware = (request: Request, response: Respon
             pushNotifications: user.pushNotifications,
             profileImages: user.profileImages,
             hasCompletedTutorial: user.hasCompletedTutorial,
+            hasCompletedIntroduction: user.hasCompletedIntroduction,
             onboarding: user.onboarding,
             hasCompletedOnboarding: user.hasCompletedOnboarding,
             followers: [],
