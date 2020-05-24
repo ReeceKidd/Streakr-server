@@ -29,6 +29,9 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 import { getServiceConfig } from '../../../src/getServiceConfig';
 import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
+import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
+import WhatBestDescribesYouTypes from '@streakoid/streakoid-models/lib/Types/WhatBestDescribesYouTypes';
+import { Onboarding } from '@streakoid/streakoid-models/lib/Models/Onboarding';
 
 describe('patchCurrentUserMiddlewares', () => {
     describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
@@ -41,6 +44,9 @@ describe('patchCurrentUserMiddlewares', () => {
                 deviceType: string;
             };
             hasCompletedIntroduction: boolean;
+            hasCompletedTutorial: boolean;
+            onboarding: Onboarding;
+            hasCompletedOnboarding: boolean;
         } = {
             email: 'email@gmail.com',
             timezone: 'Europe/London',
@@ -50,6 +56,12 @@ describe('patchCurrentUserMiddlewares', () => {
                 deviceType: PushNotificationSupportedDeviceTypes.android,
             },
             hasCompletedIntroduction: true,
+            hasCompletedTutorial: true,
+            onboarding: {
+                whatBestDescribesYouChoice: WhatBestDescribesYouTypes.competitor,
+                whyDoYouWantToBuildNewHabitsChoice: WhyDoYouWantToBuildNewHabitsTypes.education,
+            },
+            hasCompletedOnboarding: true,
         };
         test('allows request with all possible params to pass', () => {
             expect.assertions(1);
@@ -505,7 +517,12 @@ describe('patchCurrentUserMiddlewares', () => {
                     },
                     customStreakReminders: [],
                 },
-                hasCompletedIntroduction: false,
+                hasCompletedTutorial: false,
+                onboarding: {
+                    whyDoYouWantToBuildNewHabitsChoice: WhyDoYouWantToBuildNewHabitsTypes.education,
+                    whatBestDescribesYouChoice: WhatBestDescribesYouTypes.competitor,
+                },
+                hasCompletedOnboarding: false,
                 stripe: {
                     customer: 'abc',
                     subscription: 'sub_1',
@@ -534,7 +551,9 @@ describe('patchCurrentUserMiddlewares', () => {
                     'updatedAt',
                     'pushNotifications',
                     'pushNotification',
-                    'hasCompletedIntroduction',
+                    'hasCompletedTutorial',
+                    'onboarding',
+                    'hasCompletedOnboarding',
                     'profileImages',
                     'achievements',
                 ].sort(),

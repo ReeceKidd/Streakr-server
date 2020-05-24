@@ -112,7 +112,9 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             pushNotification: user.pushNotification,
             pushNotifications: user.pushNotifications,
             profileImages: user.profileImages,
-            hasCompletedIntroduction: user.hasCompletedIntroduction,
+            hasCompletedTutorial: user.hasCompletedTutorial,
+            onboarding: user.onboarding,
+            hasCompletedOnboarding: user.hasCompletedOnboarding,
             achievements,
         };
         response.locals.formattedUser = formattedUser;

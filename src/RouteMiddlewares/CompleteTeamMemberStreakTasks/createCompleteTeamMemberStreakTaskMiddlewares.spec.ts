@@ -44,10 +44,7 @@ import {
 } from './createCompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
-import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
-import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
-import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { getMockUser } from '../../testHelpers/getMockUser';
 
 describe('completeTeamMemberStreakTaskMiddlewares', () => {
     describe(`completeTeamMemberStreakTaskBodyValidationMiddleware`, () => {
@@ -1193,57 +1190,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
-            const teamMember: User = {
-                _id: '_id',
-                username: 'username',
-                membershipInformation: {
-                    isPayingMember: true,
-                    currentMembershipStartDate: new Date(),
-                    pastMemberships: [],
-                },
-                email: 'test@test.com',
-                createdAt: 'Jan 1st',
-                updatedAt: 'Jan 1st',
-                timezone: 'Europe/London',
-                userType: UserTypes.basic,
-                totalStreakCompletes: 10,
-                totalLiveStreaks: 0,
-                followers: [],
-                following: [],
-                profileImages: {
-                    originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-                },
-                pushNotification: {
-                    token: 'token',
-                    endpointArn: 'endpointArn',
-                    deviceType: PushNotificationSupportedDeviceTypes.android,
-                },
-                pushNotifications: {
-                    completeAllStreaksReminder: {
-                        enabled: true,
-                        expoId: 'expoId',
-                        reminderHour: 10,
-                        reminderMinute: 15,
-                        streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
-                    },
-                    teamStreakUpdates: {
-                        enabled: true,
-                    },
-                    newFollowerUpdates: {
-                        enabled: true,
-                    },
-                    achievementUpdates: {
-                        enabled: true,
-                    },
-                    customStreakReminders: [],
-                },
-                hasCompletedIntroduction: false,
-                stripe: {
-                    customer: 'abc',
-                    subscription: 'sub_1',
-                },
-                achievements: [],
-            };
+            const teamMember = getMockUser();
             const teamMembers = [teamMember];
             const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
@@ -1272,57 +1219,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
-            const teamMember: User = {
-                _id: '_id',
-                username: 'username',
-                membershipInformation: {
-                    isPayingMember: true,
-                    currentMembershipStartDate: new Date(),
-                    pastMemberships: [],
-                },
-                email: 'test@test.com',
-                createdAt: 'Jan 1st',
-                updatedAt: 'Jan 1st',
-                timezone: 'Europe/London',
-                userType: UserTypes.basic,
-                totalStreakCompletes: 10,
-                totalLiveStreaks: 0,
-                followers: [],
-                following: [],
-                profileImages: {
-                    originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-                },
-                pushNotification: {
-                    token: 'token',
-                    endpointArn: 'endpointArn',
-                    deviceType: PushNotificationSupportedDeviceTypes.android,
-                },
-                pushNotifications: {
-                    completeAllStreaksReminder: {
-                        enabled: true,
-                        expoId: 'expoId',
-                        reminderHour: 10,
-                        reminderMinute: 15,
-                        streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
-                    },
-                    teamStreakUpdates: {
-                        enabled: true,
-                    },
-                    newFollowerUpdates: {
-                        enabled: true,
-                    },
-                    achievementUpdates: {
-                        enabled: true,
-                    },
-                    customStreakReminders: [],
-                },
-                hasCompletedIntroduction: false,
-                stripe: {
-                    customer: 'abc',
-                    subscription: 'sub_1',
-                },
-                achievements: [],
-            };
+            const teamMember = getMockUser();
             const teamMembers = [teamMember];
             const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
@@ -1352,57 +1249,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
-            const teamMember: User = {
-                _id: '_id',
-                username: 'username',
-                membershipInformation: {
-                    isPayingMember: true,
-                    currentMembershipStartDate: new Date(),
-                    pastMemberships: [],
-                },
-                email: 'test@test.com',
-                createdAt: 'Jan 1st',
-                updatedAt: 'Jan 1st',
-                timezone: 'Europe/London',
-                userType: UserTypes.basic,
-                totalStreakCompletes: 10,
-                totalLiveStreaks: 0,
-                followers: [],
-                following: [],
-                profileImages: {
-                    originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-                },
-                pushNotification: {
-                    token: 'token',
-                    endpointArn: 'endpointArn',
-                    deviceType: PushNotificationSupportedDeviceTypes.android,
-                },
-                pushNotifications: {
-                    completeAllStreaksReminder: {
-                        enabled: true,
-                        expoId: 'expoId',
-                        reminderHour: 10,
-                        reminderMinute: 15,
-                        streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
-                    },
-                    teamStreakUpdates: {
-                        enabled: true,
-                    },
-                    newFollowerUpdates: {
-                        enabled: true,
-                    },
-                    achievementUpdates: {
-                        enabled: true,
-                    },
-                    customStreakReminders: [],
-                },
-                hasCompletedIntroduction: false,
-                stripe: {
-                    customer: 'abc',
-                    subscription: 'sub_1',
-                },
-                achievements: [],
-            };
+            const teamMember = getMockUser();
             const teamMembers = [teamMember];
             const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};

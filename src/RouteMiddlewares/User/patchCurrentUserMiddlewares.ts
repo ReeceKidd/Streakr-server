@@ -24,7 +24,13 @@ const patchCurrentUserValidationSchema = {
         token: Joi.string(),
         deviceType: Joi.string(),
     },
-    hasCompletedIntroduction: Joi.boolean(),
+    hasCompletedIntroduction: Joi.boolean(), // Legacy support
+    hasCompletedTutorial: Joi.boolean(),
+    onboarding: {
+        whatBestDescribesYouChoice: Joi.string(),
+        whyDoYouWantToBuildNewHabitsChoice: Joi.string(),
+    },
+    hasCompletedOnboarding: Joi.boolean(),
 };
 
 export const patchCurrentUserRequestBodyValidationMiddleware = (
@@ -230,7 +236,9 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             pushNotification: user.pushNotification,
             pushNotifications: user.pushNotifications,
             profileImages: user.profileImages,
-            hasCompletedIntroduction: user.hasCompletedIntroduction,
+            hasCompletedTutorial: user.hasCompletedTutorial,
+            onboarding: user.onboarding,
+            hasCompletedOnboarding: user.hasCompletedOnboarding,
             totalStreakCompletes: Number(user.totalStreakCompletes),
             totalLiveStreaks: Number(user.totalLiveStreaks),
             achievements,

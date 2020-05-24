@@ -20,10 +20,7 @@ import {
     getSendNewFollowerRequestNotificationMiddleware,
     sendNewFollowerRequestNotificationMiddleware,
 } from './followUserMiddlewares';
-import { User } from '@streakoid/streakoid-models/lib/Models/User';
-import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
-import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
-import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { getMockUser } from '../../../testHelpers/getMockUser';
 
 describe('followUserMiddlewares', () => {
     describe('followUserParamsValidationMiddleware', () => {
@@ -462,108 +459,8 @@ describe('followUserMiddlewares', () => {
         test('sends new follower request notification to userToFollow if user to follow has a pushNotificationToken and newFollowerUpdates.pushNotification enabled.', async () => {
             expect.assertions(2);
 
-            const user: User = {
-                _id: '_id',
-                username: 'username',
-                membershipInformation: {
-                    isPayingMember: true,
-                    currentMembershipStartDate: new Date(),
-                    pastMemberships: [],
-                },
-                email: 'test@test.com',
-                createdAt: 'Jan 1st',
-                updatedAt: 'Jan 1st',
-                timezone: 'Europe/London',
-                userType: UserTypes.basic,
-                totalStreakCompletes: 10,
-                totalLiveStreaks: 0,
-                followers: [],
-                following: [],
-                profileImages: {
-                    originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-                },
-                pushNotification: {
-                    token: 'token',
-                    endpointArn: 'endpointArn',
-                    deviceType: PushNotificationSupportedDeviceTypes.android,
-                },
-                pushNotifications: {
-                    completeAllStreaksReminder: {
-                        enabled: true,
-                        expoId: 'expoId',
-                        reminderHour: 10,
-                        reminderMinute: 15,
-                        streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
-                    },
-                    teamStreakUpdates: {
-                        enabled: true,
-                    },
-                    newFollowerUpdates: {
-                        enabled: true,
-                    },
-                    achievementUpdates: {
-                        enabled: true,
-                    },
-                    customStreakReminders: [],
-                },
-                hasCompletedIntroduction: false,
-                stripe: {
-                    customer: 'abc',
-                    subscription: 'sub_1',
-                },
-                achievements: [],
-            };
-            const userToFollow: User = {
-                _id: '_id',
-                username: 'username',
-                membershipInformation: {
-                    isPayingMember: true,
-                    currentMembershipStartDate: new Date(),
-                    pastMemberships: [],
-                },
-                email: 'test@test.com',
-                createdAt: 'Jan 1st',
-                updatedAt: 'Jan 1st',
-                timezone: 'Europe/London',
-                userType: UserTypes.basic,
-                totalStreakCompletes: 10,
-                totalLiveStreaks: 0,
-                followers: [],
-                following: [],
-                profileImages: {
-                    originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-                },
-                pushNotification: {
-                    token: 'token',
-                    endpointArn: 'endpointArn',
-                    deviceType: PushNotificationSupportedDeviceTypes.android,
-                },
-                pushNotifications: {
-                    completeAllStreaksReminder: {
-                        enabled: true,
-                        expoId: 'expoId',
-                        reminderHour: 10,
-                        reminderMinute: 15,
-                        streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
-                    },
-                    teamStreakUpdates: {
-                        enabled: true,
-                    },
-                    newFollowerUpdates: {
-                        enabled: true,
-                    },
-                    achievementUpdates: {
-                        enabled: true,
-                    },
-                    customStreakReminders: [],
-                },
-                hasCompletedIntroduction: false,
-                stripe: {
-                    customer: 'abc',
-                    subscription: 'sub_1',
-                },
-                achievements: [],
-            };
+            const user = getMockUser();
+            const userToFollow = getMockUser();
             const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
             const response: any = {

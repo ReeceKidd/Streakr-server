@@ -138,13 +138,21 @@ export const userSchema = new mongoose.Schema(
                 },
             },
         },
-        hasCompletedIntroduction: {
-            type: Boolean,
-            default: false,
-        },
         achievements: {
             type: Array,
             default: [],
+        },
+        hasCompletedTutorial: {
+            type: Boolean,
+            default: false,
+        },
+        onboarding: {
+            whyDoYouWantToBuildNewHabitsChoice: { type: String, default: null },
+            whatBestDescribesYouChoice: { type: String, default: null },
+        },
+        hasCompletedOnboarding: {
+            type: Boolean,
+            default: false,
         },
     },
     {
