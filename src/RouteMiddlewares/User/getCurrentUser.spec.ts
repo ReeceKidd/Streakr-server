@@ -20,6 +20,7 @@ import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakRem
 import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
 import WhatBestDescribesYouTypes from '@streakoid/streakoid-models/lib/Types/WhatBestDescribesYouTypes';
+import { getMockUser } from '../../testHelpers/getMockUser';
 
 describe('getCurrentUserMiddlewares', () => {
     describe('populateCurrentUserFollowingMiddleware', () => {
@@ -152,63 +153,7 @@ describe('getCurrentUserMiddlewares', () => {
             expect.assertions(2);
             const request: any = {};
 
-            const user: User = {
-                _id: '_id',
-                username: 'username',
-                membershipInformation: {
-                    isPayingMember: true,
-                    currentMembershipStartDate: new Date(),
-                    pastMemberships: [],
-                },
-                email: 'test@test.com',
-                createdAt: 'Jan 1st',
-                updatedAt: 'Jan 1st',
-                timezone: 'Europe/London',
-                userType: UserTypes.basic,
-                followers: [],
-                following: [],
-                profileImages: {
-                    originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-                },
-                totalStreakCompletes: 10,
-                totalLiveStreaks: 0,
-                pushNotification: {
-                    token: 'token',
-                    endpointArn: 'endpointArn',
-                    deviceType: PushNotificationSupportedDeviceTypes.android,
-                },
-                pushNotifications: {
-                    completeAllStreaksReminder: {
-                        enabled: true,
-                        expoId: 'expoId',
-                        reminderMinute: 10,
-                        reminderHour: 10,
-                        streakReminderType: StreakReminderTypes.completeAllStreaksReminder,
-                    },
-                    teamStreakUpdates: {
-                        enabled: true,
-                    },
-                    newFollowerUpdates: {
-                        enabled: true,
-                    },
-                    achievementUpdates: {
-                        enabled: true,
-                    },
-                    customStreakReminders: [],
-                },
-                hasCompletedTutorial: false,
-                hasCompletedIntroduction: false,
-                onboarding: {
-                    whyDoYouWantToBuildNewHabitsChoice: WhyDoYouWantToBuildNewHabitsTypes.education,
-                    whatBestDescribesYouChoice: WhatBestDescribesYouTypes.competitor,
-                },
-                hasCompletedOnboarding: false,
-                stripe: {
-                    customer: 'abc',
-                    subscription: 'sub_1',
-                },
-                achievements: [],
-            };
+            const user = getMockUser();
             const response: any = { locals: { user } };
             const next = jest.fn();
 

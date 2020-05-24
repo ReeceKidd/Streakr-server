@@ -10,6 +10,8 @@ import {
     formatTemporaryUserMiddleware,
     sendFormattedTemporaryUserMiddleware,
     registerTemporaryUserMiddlewares,
+    doesUserIdentifierExistMiddleware,
+    getDoesUserIdentifierExistMiddleware,
 } from './registerTemporaryUserMiddleware';
 
 describe(`registerTemporaryUserMiddlewares`, () => {
@@ -52,6 +54,57 @@ describe(`registerTemporaryUserMiddlewares`, () => {
                 message: 'child "userIdentifier" fails because ["userIdentifier" is required]',
             });
             expect(next).not.toBeCalled();
+        });
+    });
+
+    describe(`doesUserEmailExistMiddleware`, () => {
+        test('calls next() if user does not exist', async () => {
+            expect.assertions(2);
+            const userIdentifier = 'userIdentifier';
+            const findOne = jest.fn(() => Promise.resolve(false));
+            const UserModel = {
+                findOne,
+            };
+            const request: any = { body: { userIdentifier } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getDoesUserIdentifierExistMiddleware(UserModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findOne).toBeCalledWith({ userIdentifier });
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws UserIdentifierExists if userIdentifier is found', async () => {
+            expect.assertions(1);
+            const userIdentifier = 'userIdentifier';
+            const findOne = jest.fn(() => Promise.resolve(true));
+            const UserModel = {
+                findOne,
+            };
+            const request: any = { body: { userIdentifier } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getDoesUserIdentifierExistMiddleware(UserModel as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.UserIdentifierExists));
+        });
+
+        test('calls next with DoesUserEmailExistMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getDoesUserIdentifierExistMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.DoesUserIdentifierExistMiddleware, expect.any(Error)),
+            );
         });
     });
 
@@ -184,12 +237,13 @@ describe(`registerTemporaryUserMiddlewares`, () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(5);
+        expect.assertions(6);
 
-        expect(registerTemporaryUserMiddlewares.length).toEqual(4);
+        expect(registerTemporaryUserMiddlewares.length).toEqual(5);
         expect(registerTemporaryUserMiddlewares[0]).toBe(temporaryUserRegistrationValidationMiddleware);
-        expect(registerTemporaryUserMiddlewares[1]).toBe(saveTemporaryUserToDatabaseMiddleware);
-        expect(registerTemporaryUserMiddlewares[2]).toBe(formatTemporaryUserMiddleware);
-        expect(registerTemporaryUserMiddlewares[3]).toBe(sendFormattedTemporaryUserMiddleware);
+        expect(registerTemporaryUserMiddlewares[1]).toBe(doesUserIdentifierExistMiddleware);
+        expect(registerTemporaryUserMiddlewares[2]).toBe(saveTemporaryUserToDatabaseMiddleware);
+        expect(registerTemporaryUserMiddlewares[3]).toBe(formatTemporaryUserMiddleware);
+        expect(registerTemporaryUserMiddlewares[4]).toBe(sendFormattedTemporaryUserMiddleware);
     });
 });

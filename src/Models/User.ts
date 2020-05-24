@@ -21,6 +21,7 @@ export const userSchema = new mongoose.Schema(
         },
         userIdentifier: {
             type: String,
+            default: null,
         },
         membershipInformation: {
             isPayingMember: {

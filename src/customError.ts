@@ -526,6 +526,8 @@ export enum ErrorType {
     SaveTemporaryUserToDatabaseMiddleware,
     RegisterTemporaryUserFormatUserMiddleware,
     SendFormattedTemporaryUserMiddleware,
+    UserIdentifierExists,
+    DoesUserIdentifierExistMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1279,6 +1281,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-100`,
                     message: 'Unsupported device type.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.UserIdentifierExists: {
+                return {
+                    code: `${ResponseCodes.badRequest}-101`,
+                    message: 'User identifier already exists.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4278,6 +4288,13 @@ export class CustomError extends Error {
             case ErrorType.SendFormattedTemporaryUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-441`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DoesUserIdentifierExistMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-442`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

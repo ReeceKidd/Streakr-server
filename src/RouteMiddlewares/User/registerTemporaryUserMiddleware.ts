@@ -26,25 +26,25 @@ export const temporaryUserRegistrationValidationMiddleware = (
     );
 };
 
-// export const getDoesUserIdentifierAlreadyExistMiddleware = (user: Model<UserModel>) => async (
-//     request: Request,
-//     response: Response,
-//     next: NextFunction,
-// ): Promise<void> => {
-//     try {
-//         const { userIdentifier } = request.body;
-//         const { timezone } = response.locals;
-//         const newUser = new user({
-//             userIdentifier,
-//             userType: UserTypes.unregistered,
-//             timezone,
-//         });
-//         response.locals.savedUser = await newUser.save();
-//         next();
-//     } catch (err) {
-//         next(new CustomError(ErrorType.UserIdentifierAlreadyExistMiddleware, err));
-//     }
-// };
+export const getDoesUserIdentifierExistMiddleware = (userModel: Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userIdentifier } = request.body;
+        const user = await userModel.findOne({ userIdentifier });
+        if (user) {
+            throw new CustomError(ErrorType.UserIdentifierExists);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.DoesUserIdentifierExistMiddleware, err));
+    }
+};
+
+export const doesUserIdentifierExistMiddleware = getDoesUserIdentifierExistMiddleware(userModel);
 
 export const getSaveTemporaryUserToDatabaseMiddleware = (user: Model<UserModel>) => async (
     request: Request,
@@ -73,8 +73,8 @@ export const formatTemporaryUserMiddleware = (request: Request, response: Respon
         const user: User = response.locals.savedUser;
         const formattedUser: PopulatedCurrentUser = {
             _id: user._id,
-            email: user.email,
             username: user.username,
+            email: user.email,
             membershipInformation: user.membershipInformation,
             userType: user.userType,
             timezone: user.timezone,
@@ -116,6 +116,7 @@ export const sendFormattedTemporaryUserMiddleware = (
 
 export const registerTemporaryUserMiddlewares = [
     temporaryUserRegistrationValidationMiddleware,
+    doesUserIdentifierExistMiddleware,
     saveTemporaryUserToDatabaseMiddleware,
     formatTemporaryUserMiddleware,
     sendFormattedTemporaryUserMiddleware,
