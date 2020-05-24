@@ -13,11 +13,14 @@ export const originalImageUrl = DEFAULT_USER_PROFILE_IMAGE_URL;
 export const userSchema = new mongoose.Schema(
     {
         username: {
-            required: true,
             type: String,
             unique: true,
             trim: true,
             index: true,
+            default: null,
+        },
+        userIdentifier: {
+            type: String,
         },
         membershipInformation: {
             isPayingMember: {
@@ -34,14 +37,14 @@ export const userSchema = new mongoose.Schema(
             },
         },
         email: {
-            required: true,
             type: String,
             unique: true,
             trim: true,
+            default: null,
         },
         userType: {
             type: String,
-            enum: [UserTypes.basic, UserTypes.admin],
+            enum: [UserTypes.basic, UserTypes.admin, UserTypes.unregistered],
             default: UserTypes.basic,
         },
         timezone: {

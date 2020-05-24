@@ -21,7 +21,7 @@ describe('resetIncompleteTeamMemberStreaks', () => {
     let userProfileImage: string;
     const streakName = 'Daily Spanish';
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
             const user = await getPayingUser();
@@ -32,7 +32,7 @@ describe('resetIncompleteTeamMemberStreaks', () => {
         }
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         if (isTestEnvironment()) {
             await tearDownDatabase();
         }

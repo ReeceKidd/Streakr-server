@@ -62,7 +62,7 @@ describe(`decodeJWTMiddleware`, () => {
 });
 
 describe(`ensureAudienceMatchesCognitoUserPool`, () => {
-    afterAll(() => {
+    afterEach(() => {
         jest.resetAllMocks();
     });
     test('if decodedJWT audience matches cognito app client ID call next.', () => {

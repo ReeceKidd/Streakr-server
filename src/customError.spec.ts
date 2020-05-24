@@ -5638,4 +5638,37 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to SaveTemporaryUserToDatabaseMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SaveTemporaryUserToDatabaseMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-439`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RegisterTemporaryUserFormatUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RegisterTemporaryUserFormatUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-440`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RegisterTemporaryUserFormatUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendFormattedTemporaryUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-441`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

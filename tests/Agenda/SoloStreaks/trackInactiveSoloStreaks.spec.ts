@@ -17,7 +17,7 @@ describe('trackInactiveSoloStreak', () => {
     const streakName = 'Daily Spanish';
     const streakDescription = 'Everyday I must do Spanish';
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
             const user = await getPayingUser();
@@ -26,7 +26,7 @@ describe('trackInactiveSoloStreak', () => {
         }
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         if (isTestEnvironment()) {
             await tearDownDatabase();
         }

@@ -26,7 +26,7 @@ describe('teamStreakDailyTracker', () => {
     let userId: string;
     let friendId: string;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
             const user = await getPayingUser();
@@ -37,7 +37,7 @@ describe('teamStreakDailyTracker', () => {
         }
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         if (isTestEnvironment()) {
             await tearDownDatabase();
         }

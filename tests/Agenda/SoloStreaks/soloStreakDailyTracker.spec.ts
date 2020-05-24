@@ -22,7 +22,7 @@ describe('soloStreakDailyTracker', () => {
     let streakoid: StreakoidFactory;
     let userId: string;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
             const user = await getPayingUser();
@@ -31,7 +31,7 @@ describe('soloStreakDailyTracker', () => {
         }
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         if (isTestEnvironment()) {
             await tearDownDatabase();
         }

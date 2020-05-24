@@ -523,6 +523,9 @@ export enum ErrorType {
     PatchChallengeStreakIncreaseUsersTotalLiveStreaksByOneWhenStreakIsRestoredMiddleware,
     UnsupportedDeviceType,
     IncreaseTeamStreakMembersTotalLiveStreaksByOneMiddleware,
+    SaveTemporaryUserToDatabaseMiddleware,
+    RegisterTemporaryUserFormatUserMiddleware,
+    SendFormattedTemporaryUserMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -4254,6 +4257,27 @@ export class CustomError extends Error {
             case ErrorType.IncreaseTeamStreakMembersTotalLiveStreaksByOneMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-438`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SaveTemporaryUserToDatabaseMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-439`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RegisterTemporaryUserFormatUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-440`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendFormattedTemporaryUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-441`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

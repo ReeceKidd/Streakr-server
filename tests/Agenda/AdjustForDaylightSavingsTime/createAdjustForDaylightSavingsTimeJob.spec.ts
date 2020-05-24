@@ -8,13 +8,13 @@ import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames
 jest.setTimeout(120000);
 
 describe('createAdjustForDaylightSavingsTimeJob', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
         }
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         if (isTestEnvironment()) {
             await tearDownDatabase();
         }

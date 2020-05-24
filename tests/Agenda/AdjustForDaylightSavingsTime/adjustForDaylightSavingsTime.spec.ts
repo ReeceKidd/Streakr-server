@@ -10,7 +10,7 @@ import { AgendaJob } from '@streakoid/streakoid-models/lib/Models/AgendaJob';
 jest.setTimeout(120000);
 
 describe('adjustForDaylightSavingsTime', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
             const soloStreakDailyTracker = new agendaJobModel({
@@ -48,7 +48,7 @@ describe('adjustForDaylightSavingsTime', () => {
         }
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         if (isTestEnvironment()) {
             await tearDownDatabase();
         }

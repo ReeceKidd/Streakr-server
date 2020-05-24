@@ -19,7 +19,7 @@ describe('trackInactiveChallengeStreak', () => {
     const description = 'Everyday I must complete a duolingo lesson';
     const icon = 'duolingo';
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
             const user = await getPayingUser();
@@ -38,7 +38,7 @@ describe('trackInactiveChallengeStreak', () => {
         }
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         if (isTestEnvironment()) {
             await tearDownDatabase();
         }
