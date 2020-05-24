@@ -75,7 +75,6 @@ export const formatTemporaryUserMiddleware = (request: Request, response: Respon
         response.locals.user = formattedUser;
         next();
     } catch (err) {
-        console.log(err);
         next(new CustomError(ErrorType.RegisterTemporaryUserFormatUserMiddleware, err));
     }
 };
