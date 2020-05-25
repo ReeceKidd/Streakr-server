@@ -136,7 +136,7 @@ describe(`doesUserEmailExistMiddleware`, () => {
     const mockEmail = 'test@gmail.com';
     const ERROR_MESSAGE = 'error';
 
-    test('calls next() if user does not exist', async () => {
+    test('calls next() if email does not exist', async () => {
         expect.assertions(2);
         const findOne = jest.fn(() => Promise.resolve(false));
         const UserModel = {
@@ -226,7 +226,7 @@ describe(`doesUsernameExistMiddleware`, () => {
     const mockUsername = 'testname';
     const ERROR_MESSAGE = 'error';
 
-    test('calls next() when user does not exist', async () => {
+    test('calls next() when username does not exist', async () => {
         expect.assertions(2);
         const findOne = jest.fn(() => Promise.resolve(false));
         const UserModel = {

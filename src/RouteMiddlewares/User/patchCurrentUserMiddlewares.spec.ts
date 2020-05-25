@@ -20,6 +20,10 @@ import {
     updateUserPushNotificationInformationMiddleware,
     getCreatePlatformEndpointMiddleware,
     getUpdateUserPushNotificationInformationMiddleware,
+    doesUserEmailExistMiddleware,
+    doesUsernameExistMiddleware,
+    getDoesUserEmailExistMiddleware,
+    getDoesUsernameExistMiddleware,
 } from './patchCurrentUserMiddlewares';
 
 import { populateCurrentUserAchievementsMiddleware } from './getCurrentUser';
@@ -118,6 +122,112 @@ describe('patchCurrentUserMiddlewares', () => {
                 message: 'child "timezone" fails because ["timezone" must be a string]',
             });
             expect(next).not.toBeCalled();
+        });
+    });
+
+    describe(`doesUserEmailExistMiddleware`, () => {
+        test('calls next() if EMAIL does not exist', async () => {
+            expect.assertions(2);
+            const email = 'person@gmail.com';
+            const findOne = jest.fn(() => Promise.resolve(false));
+            const UserModel = {
+                findOne,
+            };
+            const request: any = { body: { email } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getDoesUserEmailExistMiddleware(UserModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findOne).toBeCalledWith({ email });
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws PatchCurrentUserEmailAlreadyExists if email exists', async () => {
+            expect.assertions(1);
+            const email = 'person@gmail.com';
+            const findOne = jest.fn(() => Promise.resolve(true));
+            const UserModel = {
+                findOne,
+            };
+            const request: any = { body: { email } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getDoesUserEmailExistMiddleware(UserModel as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.PatchCurrentUserEmailAlreadyExists));
+        });
+
+        test('calls next with PatchCurrentUserDoesUserEmailExistMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getDoesUserEmailExistMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.PatchCurrentUserDoesUserEmailExistMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe(`doesUsernameExistMiddleware`, () => {
+        test('calls next() when username does not exist', async () => {
+            const username = 'username';
+            expect.assertions(2);
+            const findOne = jest.fn(() => Promise.resolve(false));
+            const UserModel = {
+                findOne,
+            };
+            const request: any = { body: { username } };
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getDoesUsernameExistMiddleware(UserModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findOne).toBeCalledWith({ username });
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws PatchCurrentUserUsernameAlreadyExists error when username exists', async () => {
+            expect.assertions(2);
+            const username = 'username';
+            const findOne = jest.fn(() => Promise.resolve(true));
+            const UserModel = {
+                findOne,
+            };
+            const request: any = { body: { username } };
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getDoesUsernameExistMiddleware(UserModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findOne).toBeCalledWith({ username });
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.PatchCurrentUserUsernameAlreadyExists, expect.any(Error)),
+            );
+        });
+
+        test('calls next with PatchCurrentUserDoesUsernameAlreadyExistMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getDoesUsernameExistMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.PatchCurrentUserDoesUsernameAlreadyExistMiddleware, expect.any(Error)),
+            );
         });
     });
 
@@ -553,17 +663,19 @@ describe('patchCurrentUserMiddlewares', () => {
         });
     });
     test('are defined in the correct order', () => {
-        expect.assertions(10);
+        expect.assertions(12);
 
-        expect(patchCurrentUserMiddlewares.length).toBe(9);
+        expect(patchCurrentUserMiddlewares.length).toBe(11);
         expect(patchCurrentUserMiddlewares[0]).toBe(patchCurrentUserRequestBodyValidationMiddleware);
-        expect(patchCurrentUserMiddlewares[1]).toBe(patchCurrentUserMiddleware);
-        expect(patchCurrentUserMiddlewares[2]).toBe(createPlatformEndpointMiddleware);
-        expect(patchCurrentUserMiddlewares[3]).toBe(updateUserPushNotificationInformationMiddleware);
-        expect(patchCurrentUserMiddlewares[4]).toBe(populateCurrentUserFollowingMiddleware);
-        expect(patchCurrentUserMiddlewares[5]).toBe(populateCurrentUserFollowersMiddleware);
-        expect(patchCurrentUserMiddlewares[6]).toBe(populateCurrentUserAchievementsMiddleware);
-        expect(patchCurrentUserMiddlewares[7]).toBe(formatUserMiddleware);
-        expect(patchCurrentUserMiddlewares[8]).toBe(sendUpdatedCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware);
+        expect(patchCurrentUserMiddlewares[2]).toBe(doesUsernameExistMiddleware);
+        expect(patchCurrentUserMiddlewares[3]).toBe(patchCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[4]).toBe(createPlatformEndpointMiddleware);
+        expect(patchCurrentUserMiddlewares[5]).toBe(updateUserPushNotificationInformationMiddleware);
+        expect(patchCurrentUserMiddlewares[6]).toBe(populateCurrentUserFollowingMiddleware);
+        expect(patchCurrentUserMiddlewares[7]).toBe(populateCurrentUserFollowersMiddleware);
+        expect(patchCurrentUserMiddlewares[8]).toBe(populateCurrentUserAchievementsMiddleware);
+        expect(patchCurrentUserMiddlewares[9]).toBe(formatUserMiddleware);
+        expect(patchCurrentUserMiddlewares[10]).toBe(sendUpdatedCurrentUserMiddleware);
     });
 });

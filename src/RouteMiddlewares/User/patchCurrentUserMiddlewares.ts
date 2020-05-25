@@ -18,19 +18,22 @@ import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/li
 
 const patchCurrentUserValidationSchema = {
     email: Joi.string().email(),
+    username: Joi.string(),
+    name: Joi.string(),
     timezone: Joi.string(),
-    pushNotificationToken: Joi.string(), // Legacy support,
     pushNotification: {
         token: Joi.string(),
         deviceType: Joi.string(),
     },
-    hasCompletedIntroduction: Joi.boolean(), // Legacy support
+
     hasCompletedTutorial: Joi.boolean(),
     onboarding: {
         whatBestDescribesYouChoice: Joi.string(),
         whyDoYouWantToBuildNewHabitsChoice: Joi.string(),
     },
     hasCompletedOnboarding: Joi.boolean(),
+    pushNotificationToken: Joi.string(), // Legacy support,
+    hasCompletedIntroduction: Joi.boolean(), // Legacy support
 };
 
 export const patchCurrentUserRequestBodyValidationMiddleware = (
@@ -45,6 +48,52 @@ export const patchCurrentUserRequestBodyValidationMiddleware = (
     );
 };
 
+export const getDoesUserEmailExistMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { email } = request.body;
+        if (email) {
+            const user = await userModel.findOne({ email });
+            if (user) {
+                throw new CustomError(ErrorType.PatchCurrentUserEmailAlreadyExists);
+            }
+        }
+
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.PatchCurrentUserDoesUserEmailExistMiddleware, err));
+    }
+};
+
+export const doesUserEmailExistMiddleware = getDoesUserEmailExistMiddleware(userModel);
+
+export const getDoesUsernameExistMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { username } = request.body;
+        if (username) {
+            const user = await userModel.findOne({ username: username.toLowerCase() });
+            if (user) {
+                throw new CustomError(ErrorType.PatchCurrentUserUsernameAlreadyExists);
+            }
+        }
+
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.PatchCurrentUserDoesUsernameAlreadyExistMiddleware));
+    }
+};
+
+export const doesUsernameExistMiddleware = getDoesUsernameExistMiddleware(userModel);
+
 export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
@@ -52,7 +101,10 @@ export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserMode
 ): Promise<void> => {
     try {
         const { user } = response.locals;
-        const keysToUpdate = request.body;
+        const keysToUpdate = {
+            ...request.body,
+            username: request.body.username && request.body.username.toLowerCase(),
+        };
         const updatedUser = await userModel.findByIdAndUpdate(user._id, { ...keysToUpdate }, { new: true }).lean();
         if (!updatedUser) {
             throw new CustomError(ErrorType.UpdateCurrentUserNotFound);
@@ -264,6 +316,8 @@ export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Res
 
 export const patchCurrentUserMiddlewares = [
     patchCurrentUserRequestBodyValidationMiddleware,
+    doesUserEmailExistMiddleware,
+    doesUsernameExistMiddleware,
     patchCurrentUserMiddleware,
     createPlatformEndpointMiddleware,
     updateUserPushNotificationInformationMiddleware,

@@ -528,6 +528,10 @@ export enum ErrorType {
     SendFormattedTemporaryUserMiddleware,
     UserIdentifierExists,
     DoesUserIdentifierExistMiddleware,
+    PatchCurrentUserEmailAlreadyExists,
+    PatchCurrentUserUsernameAlreadyExists,
+    PatchCurrentUserDoesUserEmailExistMiddleware,
+    PatchCurrentUserDoesUsernameAlreadyExistMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1289,6 +1293,22 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-101`,
                     message: 'User identifier already exists.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.PatchCurrentUserEmailAlreadyExists: {
+                return {
+                    code: `${ResponseCodes.badRequest}-102`,
+                    message: 'Email already exists.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.PatchCurrentUserUsernameAlreadyExists: {
+                return {
+                    code: `${ResponseCodes.badRequest}-103`,
+                    message: 'Username already exists.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4295,6 +4315,20 @@ export class CustomError extends Error {
             case ErrorType.DoesUserIdentifierExistMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-442`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PatchCurrentUserDoesUserEmailExistMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-443`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PatchCurrentUserDoesUsernameAlreadyExistMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-444`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

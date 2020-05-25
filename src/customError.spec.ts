@@ -1014,6 +1014,28 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to PatchCurrentUserEmailAlreadyExists`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PatchCurrentUserEmailAlreadyExists);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-102`);
+        expect(message).toBe('Email already exists.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to PatchCurrentUserUsernameAlreadyExists`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PatchCurrentUserUsernameAlreadyExists);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-103`);
+        expect(message).toBe('Username already exists.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -5690,6 +5712,28 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-442`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PatchCurrentUserDoesUserEmailExistMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PatchCurrentUserDoesUserEmailExistMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-443`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PatchCurrentUserDoesUsernameAlreadyExistMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PatchCurrentUserDoesUsernameAlreadyExistMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-444`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
