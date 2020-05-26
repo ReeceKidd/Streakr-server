@@ -6,36 +6,49 @@ import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
-import { testSDK } from '../../testSDK/testSDK';
+import { testSDK, TestSDKFactory } from '../../SDK/testSDK';
+import { Mongoose } from 'mongoose';
+import { getDatabaseURI } from '../../setup/getDatabaseURI';
+import { disconnectDatabase } from '../../setup/disconnectDatabase';
 
 jest.setTimeout(120000);
 
-describe('trackInactiveSoloStreak', () => {
-    let userId: string;
-    const streakName = 'Daily Spanish';
-    const streakDescription = 'Everyday I must do Spanish';
+const testName = 'trackInactiveSoloStreak';
 
-    beforeEach(async () => {
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: TestSDKFactory;
+    beforeAll(async () => {
         if (isTestEnvironment()) {
-            await setupDatabase();
-            const user = await getPayingUser();
-            userId = user._id;
+            database = await setupDatabase({ testName });
+            SDK = testSDK({ databaseURI: getDatabaseURI({ testName }) });
         }
     });
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            await tearDownDatabase();
+            await tearDownDatabase({ database });
+        }
+    });
+
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
         }
     });
 
     test('creates a streak inactive tracking event', async () => {
         expect.assertions(21);
 
-        const soloStreak = await testSDK.soloStreaks.create({ userId, streakName, streakDescription });
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({ userId, streakName, streakDescription });
         const soloStreakId = soloStreak._id;
 
-        const inactiveSoloStreaks = await testSDK.soloStreaks.getAll({
+        const inactiveSoloStreaks = await SDK.soloStreaks.getAll({
             completedToday: false,
             active: false,
             userId,
@@ -43,7 +56,7 @@ describe('trackInactiveSoloStreak', () => {
 
         await trackInactiveSoloStreaks(inactiveSoloStreaks);
 
-        const updatedSoloStreak = await testSDK.soloStreaks.getOne(soloStreakId);
+        const updatedSoloStreak = await SDK.soloStreaks.getOne(soloStreakId);
 
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
@@ -76,7 +89,7 @@ describe('trackInactiveSoloStreak', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];

@@ -1,13 +1,12 @@
 import mongoose from 'mongoose';
-import { getServiceConfig } from '../../src/getServiceConfig';
-const { DATABASE_URI } = getServiceConfig();
+import { getDatabaseURI } from './getDatabaseURI';
 
-const setupDatabase = async (): Promise<typeof mongoose> => {
+const setupDatabase = async ({ testName }: { testName: string }): Promise<typeof mongoose> => {
     mongoose.set('useNewUrlParser', true);
     mongoose.set('useFindAndModify', false);
     mongoose.set('useCreateIndex', true);
     mongoose.set('useUnifiedTopology', true);
-    const database = await mongoose.connect(DATABASE_URI);
+    const database = await mongoose.connect(getDatabaseURI({ testName }));
     await mongoose.connection.dropDatabase();
     return database;
 };

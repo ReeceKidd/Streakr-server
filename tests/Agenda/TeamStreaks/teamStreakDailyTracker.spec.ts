@@ -11,32 +11,40 @@ import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
-import { testSDK } from '../../testSDK/testSDK';
+import { testSDK, TestSDKFactory } from '../../SDK/testSDK';
+import { Mongoose } from 'mongoose';
+import { getDatabaseURI } from '../../setup/getDatabaseURI';
+import { disconnectDatabase } from '../../setup/disconnectDatabase';
 
 jest.setTimeout(120000);
 
-describe('teamStreakDailyTracker', () => {
-    let userId: string;
-    let friendId: string;
+const testName = 'teamStreakDailyTracker';
 
-    beforeEach(async () => {
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: TestSDKFactory;
+    beforeAll(async () => {
         if (isTestEnvironment()) {
-            await setupDatabase();
-            const user = await getPayingUser();
-            userId = user._id;
-            const friend = await getFriend();
-            friendId = friend._id;
+            database = await setupDatabase({ testName });
+            SDK = testSDK({ databaseURI: getDatabaseURI({ testName }) });
         }
     });
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            await tearDownDatabase();
+            await tearDownDatabase({ database });
+        }
+    });
+
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
         }
     });
 
     test('initialises teamStreakDailyTracker job correctly', async () => {
         expect.assertions(10);
+
         const timezone = 'Europe/London';
         const job = await createTeamStreakDailyTrackerJob(timezone);
         const { attrs } = job as any;
@@ -65,6 +73,8 @@ describe('teamStreakDailyTracker', () => {
     test('maintains team streaks correctly when a lone user has completed their task', async () => {
         expect.assertions(61);
 
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
         const timezone = 'Europe/London';
 
         const streakName = 'Painting';
@@ -73,20 +83,20 @@ describe('teamStreakDailyTracker', () => {
         const creatorId = userId;
         const members = [{ memberId: userId }];
 
-        const teamStreak = await testSDK.teamStreaks.create({
+        const teamStreak = await SDK.teamStreaks.create({
             creatorId,
             streakName,
             streakDescription,
             members,
         });
 
-        const teamMemberStreaks = await testSDK.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
             userId: userId,
             teamStreakId: teamStreak._id,
         });
         const teamMemberStreak = teamMemberStreaks[0];
 
-        await testSDK.completeTeamMemberStreakTasks.create({
+        await SDK.completeTeamMemberStreakTasks.create({
             userId: userId,
             teamStreakId: teamStreak._id,
             teamMemberStreakId: teamMemberStreak._id,
@@ -96,7 +106,7 @@ describe('teamStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedTeamStreak = await testSDK.teamStreaks.getOne(teamStreak._id);
+        const updatedTeamStreak = await SDK.teamStreaks.getOne(teamStreak._id);
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -146,7 +156,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const teamStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const teamStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamStreak._id,
         });
         const teamStreakTrackingEvent = teamStreakTrackingEvents[0];
@@ -161,7 +171,7 @@ describe('teamStreakDailyTracker', () => {
             ['_id', 'type', 'streakId', 'streakType', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const updatedTeamMemberStreak = await testSDK.teamMemberStreaks.getOne(teamMemberStreak._id);
+        const updatedTeamMemberStreak = await SDK.teamMemberStreaks.getOne(teamMemberStreak._id);
 
         expect(updatedTeamMemberStreak._id).toEqual(expect.any(String));
         expect(updatedTeamMemberStreak.currentStreak.startDate).toEqual(expect.any(String));
@@ -193,7 +203,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const teamMemberStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const teamMemberStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamMemberStreak._id,
         });
         const teamMemberStreakTrackingEvent = teamMemberStreakTrackingEvents[0];
@@ -210,7 +220,7 @@ describe('teamStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));
@@ -239,6 +249,11 @@ describe('teamStreakDailyTracker', () => {
     test('maintains team streaks correctly when all team members have completed their task', async () => {
         expect.assertions(82);
 
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const friend = await getFriend({ testName });
+        const friendId = friend._id;
+
         const timezone = 'Europe/London';
 
         const streakName = 'Painting';
@@ -247,19 +262,19 @@ describe('teamStreakDailyTracker', () => {
         const creatorId = userId;
         const members = [{ memberId: userId }, { memberId: friendId }];
 
-        const teamStreak = await testSDK.teamStreaks.create({
+        const teamStreak = await SDK.teamStreaks.create({
             creatorId,
             streakName,
             streakDescription,
             members,
         });
 
-        const teamMemberStreaks = await testSDK.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
             teamStreakId: teamStreak._id,
         });
         const userTeamMemberStreak = teamMemberStreaks[0];
 
-        await testSDK.completeTeamMemberStreakTasks.create({
+        await SDK.completeTeamMemberStreakTasks.create({
             userId: userId,
             teamStreakId: teamStreak._id,
             teamMemberStreakId: userTeamMemberStreak._id,
@@ -267,7 +282,7 @@ describe('teamStreakDailyTracker', () => {
 
         const friendTeamMemberStreak = teamMemberStreaks[1];
 
-        await testSDK.completeTeamMemberStreakTasks.create({
+        await SDK.completeTeamMemberStreakTasks.create({
             userId: userId,
             teamStreakId: teamStreak._id,
             teamMemberStreakId: friendTeamMemberStreak._id,
@@ -277,7 +292,7 @@ describe('teamStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedTeamStreak = await testSDK.teamStreaks.getOne(teamStreak._id);
+        const updatedTeamStreak = await SDK.teamStreaks.getOne(teamStreak._id);
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -327,7 +342,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const teamStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const teamStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamStreak._id,
         });
         const teamStreakTrackingEvent = teamStreakTrackingEvents[0];
@@ -342,7 +357,7 @@ describe('teamStreakDailyTracker', () => {
             ['_id', 'type', 'streakId', 'streakType', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const updatedUserTeamMemberStreak = await testSDK.teamMemberStreaks.getOne(userTeamMemberStreak._id);
+        const updatedUserTeamMemberStreak = await SDK.teamMemberStreaks.getOne(userTeamMemberStreak._id);
 
         expect(updatedUserTeamMemberStreak._id).toEqual(expect.any(String));
         expect(updatedUserTeamMemberStreak.currentStreak.startDate).toEqual(expect.any(String));
@@ -374,7 +389,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const teamMemberStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const teamMemberStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: updatedUserTeamMemberStreak._id,
         });
         const userTeamMemberStreakTrackingEvent = teamMemberStreakTrackingEvents[0];
@@ -390,7 +405,7 @@ describe('teamStreakDailyTracker', () => {
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const updatedFriendTeamMemberStreak = await testSDK.teamMemberStreaks.getOne(userTeamMemberStreak._id);
+        const updatedFriendTeamMemberStreak = await SDK.teamMemberStreaks.getOne(userTeamMemberStreak._id);
 
         expect(updatedFriendTeamMemberStreak._id).toEqual(expect.any(String));
         expect(updatedFriendTeamMemberStreak.currentStreak.startDate).toEqual(expect.any(String));
@@ -422,7 +437,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const friendTeamMemberStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const friendTeamMemberStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: updatedFriendTeamMemberStreak._id,
         });
         const friendTeamMemberStreakTrackingEvent = friendTeamMemberStreakTrackingEvents[0];
@@ -439,7 +454,7 @@ describe('teamStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));
@@ -468,6 +483,9 @@ describe('teamStreakDailyTracker', () => {
     test('resets lost team streaks correctly when a lone user does not complete their task for the day', async () => {
         expect.assertions(68);
 
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
         const timezone = 'Europe/London';
 
         const streakName = 'Painting';
@@ -476,20 +494,20 @@ describe('teamStreakDailyTracker', () => {
         const creatorId = userId;
         const members = [{ memberId: userId }];
 
-        const teamStreak = await testSDK.teamStreaks.create({
+        const teamStreak = await SDK.teamStreaks.create({
             creatorId,
             streakName,
             streakDescription,
             members,
         });
 
-        const teamMemberStreaks = await testSDK.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
             userId: userId,
             teamStreakId: teamStreak._id,
         });
         const teamMemberStreak = teamMemberStreaks[0];
 
-        await testSDK.completeTeamMemberStreakTasks.create({
+        await SDK.completeTeamMemberStreakTasks.create({
             userId: userId,
             teamStreakId: teamStreak._id,
             teamMemberStreakId: teamMemberStreak._id,
@@ -501,7 +519,7 @@ describe('teamStreakDailyTracker', () => {
         // Simulates an additional day passing where team member does not complete task.
         await job.run();
 
-        const updatedTeamStreak = await testSDK.teamStreaks.getOne(teamStreak._id);
+        const updatedTeamStreak = await SDK.teamStreaks.getOne(teamStreak._id);
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -555,7 +573,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const teamStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const teamStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamStreak._id,
         });
         const teamStreakTrackingEvent = teamStreakTrackingEvents[1];
@@ -570,7 +588,7 @@ describe('teamStreakDailyTracker', () => {
             ['_id', 'type', 'streakId', 'streakType', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const updatedTeamMemberStreak = await testSDK.teamMemberStreaks.getOne(teamMemberStreak._id);
+        const updatedTeamMemberStreak = await SDK.teamMemberStreaks.getOne(teamMemberStreak._id);
 
         expect(updatedTeamMemberStreak._id).toEqual(expect.any(String));
         expect(updatedTeamMemberStreak.currentStreak.startDate).toEqual(null);
@@ -606,7 +624,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const teamMemberStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const teamMemberStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamMemberStreak._id,
         });
         const teamMemberStreakTrackingEvent = teamMemberStreakTrackingEvents[1];
@@ -623,7 +641,7 @@ describe('teamStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));
@@ -652,6 +670,11 @@ describe('teamStreakDailyTracker', () => {
     test('resets lost team streaks correctly when only one user does not complete their task for the day and maintains team member streaks of the users who did the task correctly.', async () => {
         expect.assertions(93);
 
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const friend = await getFriend({ testName });
+        const friendId = friend._id;
+
         const timezone = 'Europe/London';
 
         const streakName = 'Painting';
@@ -660,19 +683,19 @@ describe('teamStreakDailyTracker', () => {
         const creatorId = userId;
         const members = [{ memberId: userId }, { memberId: friendId }];
 
-        const teamStreak = await testSDK.teamStreaks.create({
+        const teamStreak = await SDK.teamStreaks.create({
             creatorId,
             streakName,
             streakDescription,
             members,
         });
 
-        const teamMemberStreaks = await testSDK.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
             teamStreakId: teamStreak._id,
         });
         const userTeamMemberStreak = teamMemberStreaks[0];
 
-        await testSDK.completeTeamMemberStreakTasks.create({
+        await SDK.completeTeamMemberStreakTasks.create({
             userId: userId,
             teamStreakId: teamStreak._id,
             teamMemberStreakId: userTeamMemberStreak._id,
@@ -680,7 +703,7 @@ describe('teamStreakDailyTracker', () => {
 
         const friendTeamMemberStreak = teamMemberStreaks[1];
 
-        await testSDK.completeTeamMemberStreakTasks.create({
+        await SDK.completeTeamMemberStreakTasks.create({
             userId: friendId,
             teamStreakId: teamStreak._id,
             teamMemberStreakId: friendTeamMemberStreak._id,
@@ -691,14 +714,14 @@ describe('teamStreakDailyTracker', () => {
         await job.run();
         // Simulates a day passing with only one user completing streak
 
-        await testSDK.completeTeamMemberStreakTasks.create({
+        await SDK.completeTeamMemberStreakTasks.create({
             userId: userId,
             teamStreakId: teamStreak._id,
             teamMemberStreakId: userTeamMemberStreak._id,
         });
         await job.run();
 
-        const updatedTeamStreak = await testSDK.teamStreaks.getOne(teamStreak._id);
+        const updatedTeamStreak = await SDK.teamStreaks.getOne(teamStreak._id);
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -753,7 +776,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const teamStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const teamStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamStreak._id,
         });
         const teamStreakTrackingEvent = teamStreakTrackingEvents[1];
@@ -768,7 +791,7 @@ describe('teamStreakDailyTracker', () => {
             ['_id', 'type', 'streakId', 'streakType', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const updatedUserTeamMemberStreak = await testSDK.teamMemberStreaks.getOne(userTeamMemberStreak._id);
+        const updatedUserTeamMemberStreak = await SDK.teamMemberStreaks.getOne(userTeamMemberStreak._id);
 
         expect(updatedUserTeamMemberStreak._id).toEqual(expect.any(String));
         expect(updatedUserTeamMemberStreak.currentStreak.startDate).toEqual(expect.any(String));
@@ -804,7 +827,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const teamMemberStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const teamMemberStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: updatedUserTeamMemberStreak._id,
         });
         const userTeamMemberStreakTrackingEvent = teamMemberStreakTrackingEvents[1];
@@ -820,7 +843,7 @@ describe('teamStreakDailyTracker', () => {
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const updatedFriendTeamMemberStreak = await testSDK.teamMemberStreaks.getOne(friendTeamMemberStreak._id);
+        const updatedFriendTeamMemberStreak = await SDK.teamMemberStreaks.getOne(friendTeamMemberStreak._id);
 
         expect(updatedFriendTeamMemberStreak._id).toEqual(expect.any(String));
         expect(updatedFriendTeamMemberStreak.currentStreak.startDate).toEqual(null);
@@ -857,7 +880,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const friendTeamMemberStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const friendTeamMemberStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: updatedFriendTeamMemberStreak._id,
         });
         const friendTeamMemberStreakTrackingEvent = friendTeamMemberStreakTrackingEvents[1];
@@ -874,7 +897,7 @@ describe('teamStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));
@@ -903,6 +926,11 @@ describe('teamStreakDailyTracker', () => {
     test('manages inactive team streaks correctly when all members have been inactive', async () => {
         expect.assertions(82);
 
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const friend = await getFriend({ testName });
+        const friendId = friend._id;
+
         const timezone = 'Europe/London';
 
         const streakName = 'Painting';
@@ -911,14 +939,14 @@ describe('teamStreakDailyTracker', () => {
         const creatorId = userId;
         const members = [{ memberId: userId }, { memberId: friendId }];
 
-        const teamStreak = await testSDK.teamStreaks.create({
+        const teamStreak = await SDK.teamStreaks.create({
             creatorId,
             streakName,
             streakDescription,
             members,
         });
 
-        const teamMemberStreaks = await testSDK.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
             teamStreakId: teamStreak._id,
         });
         const userTeamMemberStreak = teamMemberStreaks[0];
@@ -929,7 +957,7 @@ describe('teamStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedTeamStreak = await testSDK.teamStreaks.getOne(teamStreak._id);
+        const updatedTeamStreak = await SDK.teamStreaks.getOne(teamStreak._id);
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -979,7 +1007,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const teamStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const teamStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamStreak._id,
         });
         const teamStreakTrackingEvent = teamStreakTrackingEvents[0];
@@ -994,7 +1022,7 @@ describe('teamStreakDailyTracker', () => {
             ['_id', 'type', 'streakId', 'streakType', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const updatedUserTeamMemberStreak = await testSDK.teamMemberStreaks.getOne(userTeamMemberStreak._id);
+        const updatedUserTeamMemberStreak = await SDK.teamMemberStreaks.getOne(userTeamMemberStreak._id);
 
         expect(updatedUserTeamMemberStreak._id).toEqual(expect.any(String));
         expect(updatedUserTeamMemberStreak.currentStreak.startDate).toBeUndefined();
@@ -1024,7 +1052,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const teamMemberStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const teamMemberStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: updatedUserTeamMemberStreak._id,
         });
         const userTeamMemberStreakTrackingEvent = teamMemberStreakTrackingEvents[0];
@@ -1040,7 +1068,7 @@ describe('teamStreakDailyTracker', () => {
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const updatedFriendTeamMemberStreak = await testSDK.teamMemberStreaks.getOne(friendTeamMemberStreak._id);
+        const updatedFriendTeamMemberStreak = await SDK.teamMemberStreaks.getOne(friendTeamMemberStreak._id);
 
         expect(updatedFriendTeamMemberStreak._id).toEqual(expect.any(String));
         expect(updatedFriendTeamMemberStreak.currentStreak.startDate).toBeUndefined();
@@ -1070,7 +1098,7 @@ describe('teamStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const friendTeamMemberStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const friendTeamMemberStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: updatedFriendTeamMemberStreak._id,
         });
         const friendTeamMemberStreakTrackingEvent = friendTeamMemberStreakTrackingEvents[0];
@@ -1087,7 +1115,7 @@ describe('teamStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));

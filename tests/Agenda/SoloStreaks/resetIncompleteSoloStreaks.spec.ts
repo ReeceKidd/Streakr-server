@@ -4,44 +4,55 @@ import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
-import { testSDK } from '../../testSDK/testSDK';
+import { testSDK, TestSDKFactory } from '../../SDK/testSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { Mongoose } from 'mongoose';
+import { getDatabaseURI } from '../../setup/getDatabaseURI';
+import { disconnectDatabase } from '../../setup/disconnectDatabase';
 
 jest.setTimeout(120000);
 
-describe('resetIncompleteSoloStreaks', () => {
-    let userId: string;
-    let username: string;
-    let userProfileImage: string;
-    const streakName = 'Daily Spanish';
+const testName = 'resetIncompleteSoloStreaks';
 
-    beforeEach(async () => {
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: TestSDKFactory;
+    beforeAll(async () => {
         if (isTestEnvironment()) {
-            await setupDatabase();
-            const user = await getPayingUser();
-            userId = user._id;
-            username = user.username || '';
-            userProfileImage = user.profileImages.originalImageUrl;
+            database = await setupDatabase({ testName });
+            SDK = testSDK({ databaseURI: getDatabaseURI({ testName }) });
         }
     });
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            await tearDownDatabase();
+            await tearDownDatabase({ database });
+        }
+    });
+
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
         }
     });
 
     test('adds current streak to past streak,  resets the current streak and creates a lost streak tracking event.', async () => {
         expect.assertions(34);
 
-        const soloStreak = await testSDK.soloStreaks.create({ userId, streakName });
+        const user = await getPayingUser({ testName });
+        const streakName = 'Daily Spanish';
+        const userId = user._id;
+        const username = user.username || '';
+        const userProfileImage = user.profileImages.originalImageUrl;
+
+        const soloStreak = await SDK.soloStreaks.create({ userId, streakName });
 
         const soloStreakId = soloStreak._id;
 
-        const incompleteSoloStreaks = await testSDK.soloStreaks.getAll({
+        const incompleteSoloStreaks = await SDK.soloStreaks.getAll({
             userId,
             completedToday: false,
         });
@@ -49,7 +60,7 @@ describe('resetIncompleteSoloStreaks', () => {
         const endDate = new Date();
         await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate.toString());
 
-        const updatedSoloStreak = await testSDK.soloStreaks.getOne(soloStreakId);
+        const updatedSoloStreak = await SDK.soloStreaks.getOne(soloStreakId);
 
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
@@ -87,7 +98,7 @@ describe('resetIncompleteSoloStreaks', () => {
                 '__v',
             ].sort(),
         );
-        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];
@@ -103,7 +114,7 @@ describe('resetIncompleteSoloStreaks', () => {
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const lostSoloStreakActivityFeedItems = await testSDK.activityFeedItems.getAll({
+        const lostSoloStreakActivityFeedItems = await SDK.activityFeedItems.getAll({
             activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
         });
         const lostSoloStreakActivityFeedItem = lostSoloStreakActivityFeedItems.activityFeedItems[0];

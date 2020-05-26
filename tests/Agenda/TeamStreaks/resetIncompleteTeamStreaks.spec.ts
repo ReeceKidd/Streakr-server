@@ -7,44 +7,57 @@ import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
-import { testSDK } from '../../testSDK/testSDK';
+import { testSDK, TestSDKFactory } from '../../SDK/testSDK';
+import { Mongoose } from 'mongoose';
+import { getDatabaseURI } from '../../setup/getDatabaseURI';
+import { disconnectDatabase } from '../../setup/disconnectDatabase';
 
 jest.setTimeout(120000);
 
-describe('resetIncompleteTeamStreaks', () => {
-    let userId: string;
-    const streakName = 'Daily Spanish';
+const testName = 'resetIncompleteTeamStreaks';
 
-    beforeEach(async () => {
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: TestSDKFactory;
+    beforeAll(async () => {
         if (isTestEnvironment()) {
-            await setupDatabase();
-            const user = await getPayingUser();
-            userId = user._id;
+            database = await setupDatabase({ testName });
+            SDK = testSDK({ databaseURI: getDatabaseURI({ testName }) });
         }
     });
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            await tearDownDatabase();
+            await tearDownDatabase({ database });
+        }
+    });
+
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
         }
     });
 
     test('adds current streak to past streak,  resets the current streak and creates a lost streak tracking event.', async () => {
         expect.assertions(34);
 
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+
         const creatorId = userId;
         const members = [{ memberId: userId }];
-        const teamStreak = await testSDK.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreak = await SDK.teamStreaks.create({ creatorId, streakName, members });
         const teamStreakId = teamStreak._id;
 
         const numberOfDaysInARow = 1;
         // Emulate team  streak being active
-        await testSDK.teamStreaks.update({
+        await SDK.teamStreaks.update({
             teamStreakId,
             updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow } },
         });
 
-        const incompleteTeamStreaks = await testSDK.teamStreaks.getAll({
+        const incompleteTeamStreaks = await SDK.teamStreaks.getAll({
             completedToday: false,
             active: true,
         });
@@ -52,7 +65,7 @@ describe('resetIncompleteTeamStreaks', () => {
         const endDate = new Date();
         await resetIncompleteTeamStreaks(incompleteTeamStreaks, endDate.toString());
 
-        const updatedTeamStreak = await testSDK.teamStreaks.getOne(teamStreakId);
+        const updatedTeamStreak = await SDK.teamStreaks.getOne(teamStreakId);
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -102,7 +115,7 @@ describe('resetIncompleteTeamStreaks', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamStreakId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];

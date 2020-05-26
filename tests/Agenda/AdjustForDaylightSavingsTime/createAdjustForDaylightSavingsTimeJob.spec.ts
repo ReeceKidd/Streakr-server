@@ -4,19 +4,23 @@ import { setupDatabase } from '../../../tests/setup/setupDatabase';
 import { createAdjustForDaylightSavingsTimeJob } from '../../../src/scripts/initialiseAdjustForDaylightSavingsTimeJobs';
 import moment = require('moment');
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import { Mongoose } from 'mongoose';
 
 jest.setTimeout(120000);
 
-describe('createAdjustForDaylightSavingsTimeJob', () => {
+const testName = 'createAdjustForDaylightSavingsTimeJob';
+
+describe(testName, () => {
+    let database: Mongoose;
     beforeEach(async () => {
         if (isTestEnvironment()) {
-            await setupDatabase();
+            database = await setupDatabase({ testName });
         }
     });
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            await tearDownDatabase();
+            await tearDownDatabase({ database });
         }
     });
 

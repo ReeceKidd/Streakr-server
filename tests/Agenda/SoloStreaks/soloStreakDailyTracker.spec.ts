@@ -1,10 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSoloStreakDailyTrackerJob } from '../../../src/scripts/initaliseSoloStreakTimezoneCheckers';
-
-import { soloStreakModel } from '../../../src/Models/SoloStreak';
-import { streakTrackingEventModel } from '../../../src/Models/StreakTrackingEvent';
-import { dailyJobModel } from '../../../src/Models/DailyJob';
-import { completeSoloStreakTaskModel } from '../../../src/Models/CompleteSoloStreakTask';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { setupDatabase } from '../../setup/setupDatabase';
@@ -13,37 +8,38 @@ import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
-import { testSDK } from '../../testSDK/testSDK';
+import { testSDK, TestSDKFactory } from '../../SDK/testSDK';
+import { Mongoose } from 'mongoose';
+import { getDatabaseURI } from '../../setup/getDatabaseURI';
+import { disconnectDatabase } from '../../setup/disconnectDatabase';
 
 jest.setTimeout(500000);
 
-describe('soloStreakDailyTracker', () => {
-    let userId: string;
+const testName = 'soloStreakDailyTracker';
 
-    beforeEach(async () => {
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: TestSDKFactory;
+    beforeAll(async () => {
         if (isTestEnvironment()) {
-            await setupDatabase();
-            const user = await getPayingUser();
-            userId = user._id;
+            database = await setupDatabase({ testName });
+            SDK = testSDK({ databaseURI: getDatabaseURI({ testName }) });
         }
     });
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            await tearDownDatabase();
+            await tearDownDatabase({ database });
         }
     });
 
-    afterEach(async () => {
+    afterAll(async () => {
         if (isTestEnvironment()) {
-            await soloStreakModel.deleteMany({});
-            await streakTrackingEventModel.deleteMany({});
-            await completeSoloStreakTaskModel.deleteMany({});
-            await dailyJobModel.deleteMany({});
+            await disconnectDatabase({ database });
         }
     });
 
-    test('initialises soloStreakDailyTracker job correctly', async () => {
+    test('initializes soloStreakDailyTracker job correctly', async () => {
         expect.assertions(10);
         const timezone = 'Europe/London';
         const job = await createSoloStreakDailyTrackerJob(timezone);
@@ -72,20 +68,22 @@ describe('soloStreakDailyTracker', () => {
 
     test('maintains streaks correctly', async () => {
         expect.assertions(40);
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
 
         const timezone = 'Europe/London';
 
         const streakName = 'Painting';
         const streakDescription = 'Everyday we must paint for 30 minutes';
 
-        const maintainedSoloStreak = await testSDK.soloStreaks.create({
+        const maintainedSoloStreak = await SDK.soloStreaks.create({
             userId,
             streakName,
             streakDescription,
         });
         const maintainedSoloStreakId = maintainedSoloStreak._id;
 
-        const completeSoloStreakTask = await testSDK.completeSoloStreakTasks.create({
+        const completeSoloStreakTask = await SDK.completeSoloStreakTasks.create({
             userId,
             soloStreakId: maintainedSoloStreakId,
         });
@@ -114,7 +112,7 @@ describe('soloStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedSoloStreak = await testSDK.soloStreaks.getOne(maintainedSoloStreakId);
+        const updatedSoloStreak = await SDK.soloStreaks.getOne(maintainedSoloStreakId);
 
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
@@ -149,7 +147,7 @@ describe('soloStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
             streakId: maintainedSoloStreakId,
         });
@@ -167,7 +165,7 @@ describe('soloStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));
@@ -196,19 +194,22 @@ describe('soloStreakDailyTracker', () => {
     test('manages lost streaks correctly', async () => {
         expect.assertions(44);
 
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
         const timezone = 'Europe/London';
 
         const streakName = 'Stretching';
         const streakDescription = 'Everyday I must stretch for 30 minutes';
 
-        const lostSoloStreak = await testSDK.soloStreaks.create({
+        const lostSoloStreak = await SDK.soloStreaks.create({
             userId,
             streakName,
             streakDescription,
         });
         const lostSoloStreakId = lostSoloStreak._id;
 
-        const completeSoloStreakTask = await testSDK.completeSoloStreakTasks.create({
+        const completeSoloStreakTask = await SDK.completeSoloStreakTasks.create({
             userId,
             soloStreakId: lostSoloStreakId,
         });
@@ -239,7 +240,7 @@ describe('soloStreakDailyTracker', () => {
         // Simulates an additional day passing
         await job.run();
 
-        const updatedSoloStreak = await testSDK.soloStreaks.getOne(lostSoloStreakId);
+        const updatedSoloStreak = await SDK.soloStreaks.getOne(lostSoloStreakId);
 
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
@@ -279,7 +280,7 @@ describe('soloStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const lostStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const lostStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
             streakId: lostSoloStreakId,
             type: StreakTrackingEventTypes.lostStreak,
@@ -298,7 +299,7 @@ describe('soloStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));
@@ -327,11 +328,14 @@ describe('soloStreakDailyTracker', () => {
     test('manages inactive streaks correctly', async () => {
         expect.assertions(31);
 
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
         const timezone = 'Europe/London';
         const streakName = 'Singing';
         const streakDescription = 'Everyday we must do 20 minutes of singing';
 
-        const inactiveSoloStreak = await testSDK.soloStreaks.create({
+        const inactiveSoloStreak = await SDK.soloStreaks.create({
             userId,
             streakName,
             streakDescription,
@@ -342,7 +346,7 @@ describe('soloStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedSoloStreak = await testSDK.soloStreaks.getOne(inactiveSoloStreakId);
+        const updatedSoloStreak = await SDK.soloStreaks.getOne(inactiveSoloStreakId);
 
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
@@ -376,7 +380,7 @@ describe('soloStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
             streakId: inactiveSoloStreakId,
         });
@@ -394,7 +398,7 @@ describe('soloStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));

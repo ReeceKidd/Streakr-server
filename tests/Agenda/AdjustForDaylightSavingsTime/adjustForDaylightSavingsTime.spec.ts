@@ -6,13 +6,18 @@ import { agendaJobModel } from '../../../src/Models/AgendaJob';
 import moment = require('moment');
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
 import { AgendaJob } from '@streakoid/streakoid-models/lib/Models/AgendaJob';
+import { Mongoose } from 'mongoose';
 
 jest.setTimeout(120000);
 
-describe('adjustForDaylightSavingsTime', () => {
+const testName = 'adjustForDaylightSavingsTime';
+
+describe(testName, () => {
+    let database: Mongoose;
+
     beforeEach(async () => {
         if (isTestEnvironment()) {
-            await setupDatabase();
+            database = await setupDatabase({ testName });
             const soloStreakDailyTracker = new agendaJobModel({
                 name: 'soloStreakDailyTracker',
                 data: {
@@ -50,7 +55,7 @@ describe('adjustForDaylightSavingsTime', () => {
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            await tearDownDatabase();
+            await tearDownDatabase({ database });
         }
     });
     test('if localized run time hour does not equal 0 it means that daylight saving has occurred so next run at time gets adjusted', async () => {

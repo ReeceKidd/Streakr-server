@@ -3,59 +3,71 @@ import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
-import { testSDK } from '../../testSDK/testSDK';
+import { testSDK, TestSDKFactory } from '../../SDK/testSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { Mongoose } from 'mongoose';
+import { getDatabaseURI } from '../../setup/getDatabaseURI';
+import { disconnectDatabase } from '../../setup/disconnectDatabase';
 
 jest.setTimeout(120000);
 
-describe('trackMaintainedChallengeStreak', () => {
-    let userId: string;
-    let challengeStreakId: string;
-    const name = 'Duolingo';
-    const description = 'Everyday I must complete a duolingo lesson';
-    const icon = 'duolingo';
+const testName = 'trackMaintainedChallengeStreak';
 
-    beforeEach(async () => {
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: TestSDKFactory;
+    beforeAll(async () => {
         if (isTestEnvironment()) {
-            await setupDatabase();
-            const user = await getPayingUser();
-            userId = user._id;
-            const { challenge } = await testSDK.challenges.create({
-                name,
-                description,
-                icon,
-            });
-            const challengeStreak = await testSDK.challengeStreaks.create({
-                userId,
-                challengeId: challenge._id,
-            });
-            challengeStreakId = challengeStreak._id;
+            database = await setupDatabase({ testName });
+            SDK = testSDK({ databaseURI: getDatabaseURI({ testName }) });
         }
     });
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            await tearDownDatabase();
+            await tearDownDatabase({ database });
+        }
+    });
+
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
         }
     });
 
     test('updates challenge streak completedToday field and creates a streak maintained tracking event', async () => {
         expect.assertions(22);
 
-        await testSDK.completeChallengeStreakTasks.create({
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+        const challengeStreak = await SDK.challengeStreaks.create({
+            userId,
+            challengeId: challenge._id,
+        });
+        const challengeStreakId = challengeStreak._id;
+
+        await SDK.completeChallengeStreakTasks.create({
             userId,
             challengeStreakId,
         });
 
-        const maintainedChallengeStreaks = await testSDK.challengeStreaks.getAll({
+        const maintainedChallengeStreaks = await SDK.challengeStreaks.getAll({
             completedToday: true,
         });
 
         await trackMaintainedChallengeStreaks(maintainedChallengeStreaks);
 
-        const updatedChallengeStreak = await testSDK.challengeStreaks.getOne({ challengeStreakId });
+        const updatedChallengeStreak = await SDK.challengeStreaks.getOne({ challengeStreakId });
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
         expect(updatedChallengeStreak.userId).toBeDefined();
@@ -91,7 +103,7 @@ describe('trackMaintainedChallengeStreak', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];

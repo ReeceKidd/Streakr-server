@@ -5,24 +5,38 @@ import { isTestEnvironment } from '../../setup/isTestEnvironment';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
-import { testSDK } from '../../testSDK/testSDK';
+import { testSDK, TestSDKFactory } from '../../SDK/testSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import { Mongoose } from 'mongoose';
+import { getDatabaseURI } from '../../setup/getDatabaseURI';
+import { disconnectDatabase } from '../../setup/disconnectDatabase';
 
 jest.setTimeout(500000);
 
-describe('challengeStreakDailyTracker', () => {
-    beforeEach(async () => {
+const testName = 'challengeStreakDailyTracker';
+
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: TestSDKFactory;
+    beforeAll(async () => {
         if (isTestEnvironment()) {
-            await setupDatabase();
+            database = await setupDatabase({ testName });
+            SDK = testSDK({ databaseURI: getDatabaseURI({ testName }) });
         }
     });
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            await tearDownDatabase();
+            await tearDownDatabase({ database });
+        }
+    });
+
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
         }
     });
 
@@ -63,23 +77,23 @@ describe('challengeStreakDailyTracker', () => {
         const description = 'Everyday I must complete a duolingo lesson';
         const icon = 'duolingo';
 
-        const { challenge } = await testSDK.challenges.create({
+        const { challenge } = await SDK.challenges.create({
             name,
             description,
             icon,
         });
 
-        const user = await getPayingUser();
+        const user = await getPayingUser({ testName });
         const userId = user._id;
 
-        const maintainedChallengeStreak = await testSDK.challengeStreaks.create({
+        const maintainedChallengeStreak = await SDK.challengeStreaks.create({
             userId,
             challengeId: challenge._id,
         });
 
         const maintainedChallengeStreakId = maintainedChallengeStreak._id;
 
-        const completeChallengeStreakTask = await testSDK.completeChallengeStreakTasks.create({
+        const completeChallengeStreakTask = await SDK.completeChallengeStreakTasks.create({
             userId,
             challengeStreakId: maintainedChallengeStreakId,
         });
@@ -108,7 +122,7 @@ describe('challengeStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedChallengeStreak = await testSDK.challengeStreaks.getOne({
+        const updatedChallengeStreak = await SDK.challengeStreaks.getOne({
             challengeStreakId: maintainedChallengeStreakId,
         });
 
@@ -149,7 +163,7 @@ describe('challengeStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
             streakId: maintainedChallengeStreakId,
         });
@@ -167,7 +181,7 @@ describe('challengeStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));
@@ -202,22 +216,22 @@ describe('challengeStreakDailyTracker', () => {
         const description = 'Everyday I must complete a duolingo lesson';
         const icon = 'duolingo';
 
-        const { challenge } = await testSDK.challenges.create({
+        const { challenge } = await SDK.challenges.create({
             name,
             description,
             icon,
         });
 
-        const user = await getPayingUser();
+        const user = await getPayingUser({ testName });
         const userId = user._id;
 
-        const lostChallengeStreak = await testSDK.challengeStreaks.create({
+        const lostChallengeStreak = await SDK.challengeStreaks.create({
             userId,
             challengeId: challenge._id,
         });
         const lostChallengeStreakId = lostChallengeStreak._id;
 
-        const completeChallengeStreakTask = await testSDK.completeChallengeStreakTasks.create({
+        const completeChallengeStreakTask = await SDK.completeChallengeStreakTasks.create({
             userId,
             challengeStreakId: lostChallengeStreakId,
         });
@@ -248,7 +262,7 @@ describe('challengeStreakDailyTracker', () => {
         // Simulates an additional day passing
         await job.run();
 
-        const updatedChallengeStreak = await testSDK.challengeStreaks.getOne({
+        const updatedChallengeStreak = await SDK.challengeStreaks.getOne({
             challengeStreakId: lostChallengeStreakId,
         });
 
@@ -290,7 +304,7 @@ describe('challengeStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const lostStreakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const lostStreakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
             streakId: lostChallengeStreakId,
             type: StreakTrackingEventTypes.lostStreak,
@@ -309,7 +323,7 @@ describe('challengeStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));
@@ -344,16 +358,16 @@ describe('challengeStreakDailyTracker', () => {
         const description = 'Everyday I must complete a duolingo lesson';
         const icon = 'duolingo';
 
-        const { challenge } = await testSDK.challenges.create({
+        const { challenge } = await SDK.challenges.create({
             name,
             description,
             icon,
         });
 
-        const user = await getPayingUser();
+        const user = await getPayingUser({ testName });
         const userId = user._id;
 
-        const inactiveChallengeStreak = await testSDK.challengeStreaks.create({
+        const inactiveChallengeStreak = await SDK.challengeStreaks.create({
             userId,
             challengeId: challenge._id,
         });
@@ -363,7 +377,7 @@ describe('challengeStreakDailyTracker', () => {
 
         await job.run();
 
-        const updatedChallengeStreak = await testSDK.challengeStreaks.getOne({
+        const updatedChallengeStreak = await SDK.challengeStreaks.getOne({
             challengeStreakId: inactiveChallengeStreakId,
         });
 
@@ -399,7 +413,7 @@ describe('challengeStreakDailyTracker', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
             streakId: inactiveChallengeStreakId,
         });
@@ -417,7 +431,7 @@ describe('challengeStreakDailyTracker', () => {
         );
 
         const agendaJobId = String(job.attrs._id);
-        const dailyJobs = await testSDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
         const dailyJob = dailyJobs[0];
 
         expect(dailyJob._id).toEqual(expect.any(String));
