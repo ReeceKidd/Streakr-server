@@ -21,7 +21,6 @@
 //         );
 //         response.send('success');
 //     } catch (err) {
-//         console.log(err);
 //         if (err instanceof CustomError) next(err);
 //         else next(new CustomError(ErrorType.GetRetrieveUserMiddleware, err));
 //     }

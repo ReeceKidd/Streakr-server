@@ -1,10 +1,9 @@
 import { trackMaintainedChallengeStreaks } from '.../../../src/Agenda/ChallengeStreaks/trackMaintainedChallengeStreaks';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
-import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { testSDK } from '../../testSDK/testSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
@@ -12,7 +11,6 @@ import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 jest.setTimeout(120000);
 
 describe('trackMaintainedChallengeStreak', () => {
-    let streakoid: StreakoidFactory;
     let userId: string;
     let challengeStreakId: string;
     const name = 'Duolingo';
@@ -24,13 +22,12 @@ describe('trackMaintainedChallengeStreak', () => {
             await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
-            streakoid = await streakoidTest();
-            const { challenge } = await streakoid.challenges.create({
+            const { challenge } = await testSDK.challenges.create({
                 name,
                 description,
                 icon,
             });
-            const challengeStreak = await streakoid.challengeStreaks.create({
+            const challengeStreak = await testSDK.challengeStreaks.create({
                 userId,
                 challengeId: challenge._id,
             });
@@ -47,18 +44,18 @@ describe('trackMaintainedChallengeStreak', () => {
     test('updates challenge streak completedToday field and creates a streak maintained tracking event', async () => {
         expect.assertions(22);
 
-        await streakoid.completeChallengeStreakTasks.create({
+        await testSDK.completeChallengeStreakTasks.create({
             userId,
             challengeStreakId,
         });
 
-        const maintainedChallengeStreaks = await streakoid.challengeStreaks.getAll({
+        const maintainedChallengeStreaks = await testSDK.challengeStreaks.getAll({
             completedToday: true,
         });
 
         await trackMaintainedChallengeStreaks(maintainedChallengeStreaks);
 
-        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne({ challengeStreakId });
+        const updatedChallengeStreak = await testSDK.challengeStreaks.getOne({ challengeStreakId });
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
         expect(updatedChallengeStreak.userId).toBeDefined();
@@ -94,7 +91,7 @@ describe('trackMaintainedChallengeStreak', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
             userId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];

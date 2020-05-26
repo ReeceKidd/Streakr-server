@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+jest.mock('../../helpers/createStreakTrackingEvent', () => ({
+    __esModule: true,
+    createStreakTrackingEvent: jest.fn().mockResolvedValue(true),
+}));
+
 import { trackMaintainedChallengeStreaks } from './trackMaintainedChallengeStreaks';
-import streakoid from '../../streakoid';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
 
 describe('trackMaintainedChallengeStreaks', () => {
     afterEach(() => {
@@ -13,7 +18,6 @@ describe('trackMaintainedChallengeStreaks', () => {
     test('creates a streak tracking event for each streak that is maintained', async () => {
         expect.assertions(2);
         challengeStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
-        streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = 1;
         const currentStreak = {
             startDate: '24/02/95',
@@ -40,7 +44,7 @@ describe('trackMaintainedChallengeStreaks', () => {
         expect(challengeStreakModel.findByIdAndUpdate).toBeCalledWith(_id, {
             $set: { completedToday: false },
         });
-        expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
+        expect(createStreakTrackingEvent).toBeCalledWith({
             type: StreakTrackingEventTypes.maintainedStreak,
             streakId: _id,
             userId,

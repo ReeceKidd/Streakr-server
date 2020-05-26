@@ -3,23 +3,19 @@ import { resetIncompleteChallengeStreaks } from '../../../src/Agenda/ChallengeSt
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
-import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { testSDK } from '../../testSDK/testSDK';
 
 jest.setTimeout(120000);
 
 describe('resetIncompleteChallengeStreaks', () => {
-    let streakoid: StreakoidFactory;
-
     beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
-            streakoid = await streakoidTest();
         }
     });
 
@@ -41,26 +37,25 @@ describe('resetIncompleteChallengeStreaks', () => {
         const username = user.username;
         const userProfileImage = user.profileImages.originalImageUrl;
 
-        const challengeResponse = await streakoid.challenges.create({
+        const { challenge } = await testSDK.challenges.create({
             name,
             description,
             icon,
         });
-        const challenge = challengeResponse.challenge;
-        const challengeStreak = await streakoid.challengeStreaks.create({
+        const challengeStreak = await testSDK.challengeStreaks.create({
             userId,
             challengeId: challenge._id,
         });
         const challengeStreakId = challengeStreak._id;
 
-        const incompleteChallengeStreaks = await streakoid.challengeStreaks.getAll({
+        const incompleteChallengeStreaks = await testSDK.challengeStreaks.getAll({
             completedToday: false,
         });
 
         const endDate = new Date();
         await resetIncompleteChallengeStreaks(incompleteChallengeStreaks, endDate.toString());
 
-        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne({ challengeStreakId });
+        const updatedChallengeStreak = await testSDK.challengeStreaks.getOne({ challengeStreakId });
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
         expect(updatedChallengeStreak.userId).toEqual(expect.any(String));
@@ -104,7 +99,7 @@ describe('resetIncompleteChallengeStreaks', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
             userId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];
@@ -120,7 +115,7 @@ describe('resetIncompleteChallengeStreaks', () => {
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const lostChallengeStreakItems = await streakoid.activityFeedItems.getAll({
+        const lostChallengeStreakItems = await testSDK.activityFeedItems.getAll({
             activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
         });
         const lostChallengeStreakItem = lostChallengeStreakItems.activityFeedItems[0];

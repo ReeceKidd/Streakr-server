@@ -1,11 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+jest.mock('../../helpers/createActivityFeedItem', () => ({
+    __esModule: true,
+    createActivityFeedItem: jest.fn().mockResolvedValue(true),
+}));
+jest.mock('../../helpers/createStreakTrackingEvent', () => ({
+    __esModule: true,
+    createStreakTrackingEvent: jest.fn().mockResolvedValue(true),
+}));
 import { resetIncompleteTeamMemberStreaks } from './resetIncompleteTeamMemberStreaks';
-import streakoid from '../../streakoid';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { createActivityFeedItem } from '../../helpers/createActivityFeedItem';
+import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
+import { userModel } from '../../Models/User';
+import { getMockUser } from '../../testHelpers/getMockUser';
+import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
+import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 
 describe('resetIncompleteSoloStreaks', () => {
     afterEach(() => {
@@ -13,47 +26,23 @@ describe('resetIncompleteSoloStreaks', () => {
     });
 
     test('that incomplete teamMemberStreaks default current streak is reset, past streak is pushed to past streaks, and the teamStreak the teamMemberStreak belongs to completed today gets set to false and lost streak activity is recorded', async () => {
-        expect.assertions(6);
-        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
-        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
-        const username = 'username';
-        const teamStreakName = 'Reading';
-        streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
-        const userProfileImage = 'google.com/image';
-        streakoid.users.getOne = jest
-            .fn()
-            .mockResolvedValue({ username, profileImages: { originalImageUrl: userProfileImage } });
-        const teamStreakId = 'teamStreakId';
-        streakoid.teamStreaks.getOne = jest.fn().mockResolvedValue({ _id: teamStreakId, streakName: teamStreakName });
-        streakoid.activityFeedItems.create = jest.fn().mockResolvedValue(true);
-        const endDate = new Date().toString();
-        const currentStreak = {
-            startDate: undefined,
-            numberOfDaysInARow: 0,
-        };
-        const userId = '5c35116059f7ba19e4e248a9';
-        const _id = '_id';
+        expect.assertions(5);
+        const user = getMockUser();
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
+        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
+        userModel.findById = jest.fn().mockResolvedValue(user) as any;
 
-        const incompleteTeamMemberStreaks = [
-            {
-                _id,
-                teamStreakId,
-                currentStreak,
-                startDate: new Date().toString(),
-                completedToday: false,
-                pastStreaks: [],
-                streakName: 'Daily Danish',
-                streakDescription: 'Each day I must do Danish',
-                userId,
-                timezone: 'Europe/London',
-                createdAt: new Date().toString(),
-                updatedAt: new Date().toString(),
-            } as any,
-        ];
-        const pastStreaks = [{ numberOfDaysInARow: 0, endDate, startDate: endDate }];
+        const incompleteTeamMemberStreaks = [teamMemberStreak];
+
+        const endDate = new Date().toString();
+
         await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks as any, endDate);
 
-        expect(teamMemberStreakModel.findByIdAndUpdate).toBeCalledWith(_id, {
+        const pastStreaks = [{ numberOfDaysInARow: 0, endDate, startDate: endDate }];
+
+        expect(teamMemberStreakModel.findByIdAndUpdate).toBeCalledWith(teamMemberStreak._id, {
             $set: {
                 currentStreak: { startDate: '', numberOfDaysInARow: 0 },
                 pastStreaks,
@@ -61,29 +50,28 @@ describe('resetIncompleteSoloStreaks', () => {
             },
         });
 
-        expect(teamStreakModel.findByIdAndUpdate).toBeCalledWith(teamStreakId, {
+        expect(teamStreakModel.findByIdAndUpdate).toBeCalledWith(teamMemberStreak.teamStreakId, {
             $set: {
                 completedToday: false,
             },
         });
 
-        expect(streakoid.users.getOne).toBeCalled();
-        expect(streakoid.teamStreaks.getOne).toBeCalled();
+        expect(userModel.findById).toBeCalledWith(teamMemberStreak.userId);
 
-        expect(streakoid.activityFeedItems.create).toBeCalledWith({
+        expect(createActivityFeedItem).toBeCalledWith({
             activityFeedItemType: ActivityFeedItemTypes.lostTeamStreak,
-            userId,
-            username,
-            userProfileImage,
-            teamStreakId,
-            teamStreakName,
-            numberOfDaysLost: currentStreak.numberOfDaysInARow,
+            userId: user._id,
+            username: user.username,
+            userProfileImage: user.profileImages.originalImageUrl,
+            teamStreakId: teamStreak._id,
+            teamStreakName: teamStreak.streakName,
+            numberOfDaysLost: teamMemberStreak.currentStreak.numberOfDaysInARow,
         });
 
-        expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
+        expect(createStreakTrackingEvent).toBeCalledWith({
             type: StreakTrackingEventTypes.lostStreak,
-            streakId: _id,
-            userId,
+            streakId: teamMemberStreak._id,
+            userId: user._id,
             streakType: StreakTypes.teamMember,
         });
     });

@@ -1,34 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 // @ts-ignore
-import * as fetch from 'node-fetch';
-(global as any).fetch = fetch;
-(global as any).navigator = {
-    userAgent: 'NodeJS',
-};
 
-import Amplify from 'aws-amplify';
-import { Auth } from 'aws-amplify';
-import { getServiceConfig } from '../../src/getServiceConfig';
-
-const {
-    COGNITO_REGION,
-    COGNITO_USER_POOL_ID,
-    COGNITO_APP_CLIENT_ID,
-    COGNITO_USERNAME,
-    COGNITO_PASSWORD,
-} = getServiceConfig();
-
-Amplify.configure({
-    Auth: {
-        region: COGNITO_REGION,
-        userPoolId: COGNITO_USER_POOL_ID,
-        userPoolWebClientId: COGNITO_APP_CLIENT_ID,
-    },
-});
-
-export const getIdToken = async (): Promise<string> => {
-    const cognitoUser = await Auth.signIn(COGNITO_USERNAME, COGNITO_PASSWORD);
-    const { idToken } = cognitoUser.signInUserSession;
-    return idToken.jwtToken;
+export const getIdToken = async (): string => {
+    return 'eyJraWQiOiJkc3lrWWlWd25lakFtKzVac1wvY0JWQ3F0b3BzRng5WEpta1hkcUp4TXhyTT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJjYzdiZDAzOS01NjMxLTRhZmUtODJkOC00ODAzMzUzOTE3YmQiLCJhdWQiOiI2OGFncDhiY205YmlkaGg0cDk3cmoxa2UxZyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJldmVudF9pZCI6IjVjMTg5YTg2LTlkMjEtNDU1My04OTk5LTg4NzIwM2QzZWMyOCIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNTkwMTY2ODQ0LCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb21cL2V1LXdlc3QtMV9qek5HMnNrZTkiLCJjb2duaXRvOnVzZXJuYW1lIjoicmVlY2UiLCJleHAiOjE1OTA0MjI0NzIsImlhdCI6MTU5MDQxODg3MiwiZW1haWwiOiJyZWVjZWtpZGQ5NUBnbWFpbC5jb20ifQ.AtC0QbyqgobyyrmKl4rcNqS8zet6-5SYoKqWOz0ULIIM8FEtlPoCIXyZVAZcPH5TrCTULpwnpP_BfWjI6mmxHffd36JAoF8yRe5jF9oZZTFkE30nJWxGNx1GgWVT0lC4AQtU_KUqUmiepW488LMZu488rH3KbZL4RPg4S5ZKdzIetL8m606Pqyzs2-ZsyG8V1x_jHxLfrMoCjuGZaOhxjVyxVoTKq91GbOkrlrZ2rgCm0t6IaLQ1VUlFuL6EpaJEgxjxqd6OYEbFWGk-kIckqvaU-dHYANIb7KqpRpc_uClEYneJrz2R8PBkAQ8GcNMsnJGdaiEULnee4zQkG0nYJQ';
 };

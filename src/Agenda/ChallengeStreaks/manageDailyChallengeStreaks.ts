@@ -3,12 +3,12 @@ import moment from 'moment-timezone';
 import { trackMaintainedChallengeStreaks } from './trackMaintainedChallengeStreaks';
 import { trackInactiveChallengeStreaks } from './trackInactiveChallengeStreaks';
 import { resetIncompleteChallengeStreaks } from './resetIncompleteChallengeStreaks';
-import streakoid from '../../streakoid';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
 import { DailyJob } from '@streakoid/streakoid-models/lib/Models/DailyJob';
 import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { createDailyJob } from '../../helpers/createDailyJob';
 
 export const manageDailyChallengeStreaks = async ({
     agendaJobId,
@@ -51,7 +51,7 @@ export const manageDailyChallengeStreaks = async ({
         .toDate()
         .toString();
 
-    return streakoid.dailyJobs.create({
+    return createDailyJob({
         agendaJobId: String(agendaJobId),
         jobName: AgendaJobNames.challengeStreakDailyTracker,
         timezone,

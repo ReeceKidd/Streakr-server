@@ -1,10 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+jest.mock('../../helpers/createActivityFeedItem', () => ({
+    __esModule: true,
+    createActivityFeedItem: jest.fn().mockResolvedValue(true),
+}));
+jest.mock('../../helpers/createStreakTrackingEvent', () => ({
+    __esModule: true,
+    createStreakTrackingEvent: jest.fn().mockResolvedValue(true),
+}));
+
 import { resetIncompleteChallengeStreaks } from './resetIncompleteChallengeStreaks';
-import streakoid from '../../streakoid';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { createActivityFeedItem } from '../../helpers/createActivityFeedItem';
+import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
+import { userModel } from '../../Models/User';
+import { getMockUser } from '../../testHelpers/getMockUser';
+import { challengeModel } from '../../Models/Challenge';
 
 describe('resetIncompleteChallengeStreaks', () => {
     afterEach(() => {
@@ -12,24 +25,19 @@ describe('resetIncompleteChallengeStreaks', () => {
     });
 
     test('that incomplete challenge streaks default current streak is reset and old streak is pushed to past streaks and lost streak activity is recorded', async () => {
-        expect.assertions(3);
+        expect.assertions(5);
         challengeStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
-        streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
-        streakoid.activityFeedItems.create = jest.fn().mockResolvedValue(true);
-        const username = 'username';
+        userModel.findById = jest.fn().mockResolvedValue(getMockUser()) as any;
+        const challengeId = 'challengeId';
         const challengeName = 'reading';
-        const userProfileImage = 'google.com/image';
-        streakoid.users.getOne = jest
-            .fn()
-            .mockResolvedValue({ username, profileImages: { originalImageUrl: userProfileImage } });
-        streakoid.challenges.getOne = jest.fn().mockResolvedValue({ _id: '_id', name: challengeName });
+        challengeModel.findById = jest.fn().mockResolvedValue({ _id: challengeId, name: challengeName }) as any;
         const _id = '1234';
         const endDate = new Date().toString();
         const currentStreak = {
             startDate: undefined,
             numberOfDaysInARow: 0,
         };
-        const userId = '5c35116059f7ba19e4e248a9';
+        const userId = getMockUser()._id;
         const incompleteChallengeStreaks = [
             {
                 _id,
@@ -40,6 +48,7 @@ describe('resetIncompleteChallengeStreaks', () => {
                 streakName: 'Daily Danish',
                 streakDescription: 'Each day I must do Danish',
                 userId,
+                challengeId,
                 timezone: 'Europe/London',
                 createdAt: new Date().toString(),
                 updatedAt: new Date().toString(),
@@ -56,18 +65,22 @@ describe('resetIncompleteChallengeStreaks', () => {
             },
         });
 
-        expect(streakoid.activityFeedItems.create).toBeCalledWith({
+        expect(userModel.findById).toBeCalledWith(userId);
+
+        expect(challengeModel.findById).toBeCalledWith(challengeId);
+
+        expect(createActivityFeedItem).toBeCalledWith({
             activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
-            userId: userId,
-            username,
-            userProfileImage,
+            userId,
+            username: getMockUser().username,
+            userProfileImage: getMockUser().profileImages.originalImageUrl,
             challengeStreakId: _id,
-            challengeId: '_id',
+            challengeId,
             challengeName,
             numberOfDaysLost: currentStreak.numberOfDaysInARow,
         });
 
-        expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
+        expect(createStreakTrackingEvent).toBeCalledWith({
             type: StreakTrackingEventTypes.lostStreak,
             streakId: _id,
             userId,

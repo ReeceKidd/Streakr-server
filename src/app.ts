@@ -14,7 +14,9 @@ import { agenda } from './Agenda/agenda';
 import { sendEmail } from './email';
 
 dotenv.config();
-const { DATABASE_URI, NODE_ENV } = getServiceConfig();
+const { NODE_ENV, DATABASE_URI } = getServiceConfig();
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 
 if (NODE_ENV !== 'test') {
     Sentry.init({
@@ -44,22 +46,24 @@ mongoose.set('useCreateIndex', true);
 mongoose.connect(DATABASE_URI).catch(async err => {
     try {
         const message = `
-        Environment: ${NODE_ENV}
-        ${err.message}`;
+            Environment: ${NODE_ENV}
+            ${err.message}`;
         await sendEmail({ subject: 'Database Failure', text: message, emailFrom: 'notify@streakoid.com' });
     } catch (err) {
         console.log(err);
     }
 });
 
-agenda
-    .start()
-    .then(() => {
-        console.log('Agenda processing');
-    })
-    .catch(err => {
-        console.log(err);
-    });
+if (NODE_ENV !== 'test') {
+    agenda
+        .start()
+        .then(() => {
+            console.log('Agenda processing');
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}
 
 // Scripts used to initialize the daily streak complete checks.
 //initialiseTeamStreakTimezoneCheckerJobs();

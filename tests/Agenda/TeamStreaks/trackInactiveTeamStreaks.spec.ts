@@ -3,17 +3,15 @@ import { originalImageUrl } from '../../../src/Models/User';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
-import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { testSDK } from '../../testSDK/testSDK';
 
 jest.setTimeout(120000);
 
 describe('trackInactiveTeamStreak', () => {
-    let streakoid: StreakoidFactory;
     let userId: string;
     const streakName = 'Daily Spanish';
 
@@ -22,7 +20,6 @@ describe('trackInactiveTeamStreak', () => {
             await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
-            streakoid = await streakoidTest();
         }
     });
 
@@ -37,18 +34,18 @@ describe('trackInactiveTeamStreak', () => {
 
         const creatorId = userId;
         const members = [{ memberId: userId }];
-        const teamStreak = await streakoid.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreak = await testSDK.teamStreaks.create({ creatorId, streakName, members });
 
         const teamStreakId = teamStreak._id;
 
-        const inactiveTeamStreaks = await streakoid.teamStreaks.getAll({
+        const inactiveTeamStreaks = await testSDK.teamStreaks.getAll({
             completedToday: false,
             active: false,
         });
 
         await trackInactiveTeamStreaks(inactiveTeamStreaks);
 
-        const updatedTeamStreak = await streakoid.teamStreaks.getOne(teamStreakId);
+        const updatedTeamStreak = await testSDK.teamStreaks.getOne(teamStreakId);
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -95,7 +92,7 @@ describe('trackInactiveTeamStreak', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
             streakId: teamStreakId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];

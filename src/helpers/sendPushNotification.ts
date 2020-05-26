@@ -64,6 +64,5 @@ export const sendPushNotification = ({
         TargetArn: endpointArn,
         MessageStructure: 'json',
     };
-    console.log(snsParams);
     return SNS.publish(snsParams).promise();
 };

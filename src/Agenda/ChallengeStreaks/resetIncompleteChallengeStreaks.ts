@@ -1,4 +1,3 @@
-import streakoid from '../../streakoid';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
 import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
 import { StreakTrackingEvent } from '@streakoid/streakoid-models/lib/Models/StreakTrackingEvent';
@@ -8,6 +7,12 @@ import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/Act
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { userModel } from '../../Models/User';
+import { challengeModel } from '../../Models/Challenge';
+import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { createActivityFeedItem } from '../../helpers/createActivityFeedItem';
+import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
 
 export const resetIncompleteChallengeStreaks = async (
     incompleteChallengeStreaks: ChallengeStreak[],
@@ -36,30 +41,30 @@ export const resetIncompleteChallengeStreaks = async (
                 },
             });
 
-            const user = await streakoid.users.getOne(challengeStreak.userId);
-            const challenge = await streakoid.challenges.getOne({
-                challengeId: challengeStreak.challengeId,
-            });
+            const user: User | null = await userModel.findById(challengeStreak.userId);
+
+            const challenge: Challenge | null = await challengeModel.findById(challengeStreak.challengeId);
 
             const lostChallengeStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
                 userId: challengeStreak.userId,
-                username: user && user.username,
-                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
+                username: (user && user.username) || '',
+                userProfileImage: (user && user.profileImages && user.profileImages.originalImageUrl) || '',
                 challengeStreakId: challengeStreak._id,
-                challengeId: challenge._id,
-                challengeName: challenge.name,
+                challengeId: (challenge && challenge._id) || '',
+                challengeName: (challenge && challenge.name) || '',
                 numberOfDaysLost: pastStreak.numberOfDaysInARow,
             };
 
-            await streakoid.activityFeedItems.create(lostChallengeStreakActivityFeedItem);
+            await createActivityFeedItem(lostChallengeStreakActivityFeedItem);
 
-            return streakoid.streakTrackingEvents.create({
+            const streakTrackingEvent = await createStreakTrackingEvent({
                 type: StreakTrackingEventTypes.lostStreak,
                 streakId: challengeStreak._id,
                 userId: challengeStreak.userId,
                 streakType: StreakTypes.challenge,
             });
+            return streakTrackingEvent;
         }),
     );
 };

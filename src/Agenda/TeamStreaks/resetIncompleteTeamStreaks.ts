@@ -1,14 +1,14 @@
-import streakoid from '../../streakoid';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
-import { PopulatedTeamStreak } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamStreak';
 import { StreakTrackingEvent } from '@streakoid/streakoid-models/lib/Models/StreakTrackingEvent';
 import { PastStreak } from '@streakoid/streakoid-models/lib/Models/PastStreak';
 import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 
 export const resetIncompleteTeamStreaks = async (
-    incompleteTeamStreaks: PopulatedTeamStreak[],
+    incompleteTeamStreaks: TeamStreak[],
     endDate: string,
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(
@@ -34,7 +34,7 @@ export const resetIncompleteTeamStreaks = async (
                 },
             });
 
-            return streakoid.streakTrackingEvents.create({
+            return createStreakTrackingEvent({
                 type: StreakTrackingEventTypes.lostStreak,
                 streakId: teamStreak._id,
                 streakType: StreakTypes.team,

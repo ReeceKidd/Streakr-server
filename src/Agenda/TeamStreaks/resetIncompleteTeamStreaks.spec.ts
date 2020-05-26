@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+jest.mock('../../helpers/createStreakTrackingEvent', () => ({
+    __esModule: true,
+    createStreakTrackingEvent: jest.fn().mockResolvedValue(true),
+}));
 import { resetIncompleteTeamStreaks } from './resetIncompleteTeamStreaks';
-import streakoid from '../../streakoid';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { teamMemberStreakModel } from '../../../src/Models/TeamMemberStreak';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
 
 describe('resetIncompleteTeamStreaks', () => {
     afterEach(() => {
@@ -15,7 +19,6 @@ describe('resetIncompleteTeamStreaks', () => {
         expect.assertions(2);
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
-        streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = '1234';
         const endDate = new Date().toString();
         const currentStreak = {
@@ -65,7 +68,7 @@ describe('resetIncompleteTeamStreaks', () => {
             },
         });
 
-        expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
+        expect(createStreakTrackingEvent).toBeCalledWith({
             type: StreakTrackingEventTypes.lostStreak,
             streakId: _id,
             streakType: StreakTypes.team,

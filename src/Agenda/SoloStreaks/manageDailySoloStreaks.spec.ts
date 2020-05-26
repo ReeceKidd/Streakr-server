@@ -24,13 +24,17 @@ jest.mock('./resetIncompleteSoloStreaks', () => ({
     __esModule: true,
     resetIncompleteSoloStreaks: jest.fn().mockResolvedValue(true),
 }));
+jest.mock('../../helpers/createDailyJob', () => ({
+    __esModule: true,
+    createDailyJob: jest.fn().mockResolvedValue(true),
+}));
 
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
 import { manageDailySoloStreaks } from './manageDailySoloStreaks';
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
-import streakoid from '../../streakoid';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
+import { createDailyJob } from '../../helpers/createDailyJob';
 
 describe('manageDailySoloStreaks', () => {
     afterEach(() => {
@@ -39,7 +43,6 @@ describe('manageDailySoloStreaks', () => {
 
     test('calls trackMaintainedSoloStreaks, trackInactiveSoloStreaks, resetIncompleteSoloStreaks and creates DailyJob', async () => {
         expect.assertions(7);
-        streakoid.dailyJobs.create = jest.fn(() => ({})) as any;
         soloStreakModel.find = jest.fn().mockResolvedValue([]) as any;
         const agendaJobId = 'agendaJobId';
         const timezone = 'Europe/London';
@@ -66,6 +69,6 @@ describe('manageDailySoloStreaks', () => {
         });
         expect(resetIncompleteSoloStreaks).toBeCalledWith(expect.any(Array), expect.any(String));
 
-        expect(streakoid.dailyJobs.create).toBeCalled();
+        expect(createDailyJob).toBeCalled();
     });
 });

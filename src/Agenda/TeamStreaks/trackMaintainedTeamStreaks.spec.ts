@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+jest.mock('../../helpers/createStreakTrackingEvent', () => ({
+    __esModule: true,
+    createStreakTrackingEvent: jest.fn().mockResolvedValue(true),
+}));
 import { trackMaintainedTeamStreaks } from './trackMaintainedTeamStreaks';
-import streakoid from '../../streakoid';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
 
 describe('trackMaintainedTeamStreaks', () => {
     afterEach(() => {
@@ -13,7 +17,6 @@ describe('trackMaintainedTeamStreaks', () => {
     test('creates a streak tracking event for each streak that is maintained', async () => {
         expect.assertions(2);
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
-        streakoid.streakTrackingEvents.create = jest.fn().mockResolvedValue(true);
         const _id = 1;
         const currentStreak = {
             startDate: '24/02/95',
@@ -40,7 +43,7 @@ describe('trackMaintainedTeamStreaks', () => {
                 completedToday: false,
             },
         });
-        expect(streakoid.streakTrackingEvents.create).toBeCalledWith({
+        expect(createStreakTrackingEvent).toBeCalledWith({
             type: StreakTrackingEventTypes.maintainedStreak,
             streakId: _id,
             streakType: StreakTypes.team,

@@ -1,4 +1,3 @@
-import streakoid from '../../streakoid';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
 import { StreakTrackingEvent } from '@streakoid/streakoid-models/lib/Models/StreakTrackingEvent';
@@ -8,6 +7,10 @@ import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/Act
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { userModel } from '../../Models/User';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { createActivityFeedItem } from '../../helpers/createActivityFeedItem';
+import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
 
 export const resetIncompleteSoloStreaks = async (
     incompleteSoloStreaks: SoloStreak[],
@@ -36,21 +39,21 @@ export const resetIncompleteSoloStreaks = async (
                 },
             });
 
-            const user = await streakoid.users.getOne(soloStreak.userId);
+            const user: User | null = await userModel.findById(soloStreak.userId);
 
             const lostStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
                 userId: soloStreak.userId,
-                username: user && user.username,
-                userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
+                username: (user && user.username) || '',
+                userProfileImage: (user && user.profileImages && user.profileImages.originalImageUrl) || '',
                 soloStreakId: soloStreak._id,
                 soloStreakName: soloStreak.streakName,
                 numberOfDaysLost: pastStreak.numberOfDaysInARow,
             };
 
-            await streakoid.activityFeedItems.create(lostStreakActivityFeedItem);
+            await createActivityFeedItem(lostStreakActivityFeedItem);
 
-            return streakoid.streakTrackingEvents.create({
+            return createStreakTrackingEvent({
                 type: StreakTrackingEventTypes.lostStreak,
                 streakId: soloStreak._id,
                 userId: soloStreak.userId,

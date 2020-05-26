@@ -11,7 +11,6 @@ export interface AppConfigHttp {
     STRIPE_SECRET_KEY: string;
     STRIPE_MONTHLY_PLAN: string;
     STRIPE_ANNUAL_PLAN: string;
-    APPLICATION_URL: string;
     EMAIL_USER: string;
     EMAIL_PASSWORD: string;
     EMAIL_FROM: string;
@@ -43,7 +42,6 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         STRIPE_SECRET_KEY,
         STRIPE_MONTHLY_PLAN,
         STRIPE_ANNUAL_PLAN,
-        APPLICATION_URL,
         EMAIL_USER,
         EMAIL_PASSWORD,
         EMAIL_FROM,
@@ -89,10 +87,6 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
 
     if (!STRIPE_ANNUAL_PLAN) {
         throw new Error('STRIPE_ANNUAL_PLAN is not provided.');
-    }
-
-    if (!APPLICATION_URL) {
-        throw new Error('APPLICATION_URL is not provided.');
     }
 
     if (!EMAIL_USER) {
@@ -166,7 +160,6 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         STRIPE_SECRET_KEY,
         STRIPE_MONTHLY_PLAN,
         STRIPE_ANNUAL_PLAN,
-        APPLICATION_URL,
         EMAIL_USER,
         EMAIL_PASSWORD,
         EMAIL_FROM,

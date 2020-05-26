@@ -8,7 +8,6 @@ import {
 } from './getAllSoloStreaksMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
 
 describe('getSoloStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
@@ -153,7 +152,7 @@ describe('findSoloStreaksMiddleware', () => {
         const soloStreakModel = {
             find,
         };
-        const sortField = GetAllSoloStreaksSortFields.currentStreak;
+        const sortField = 'currentStreak';
         const request: any = { query: { sortField } };
         const response: any = { locals: {} };
         const next = jest.fn();

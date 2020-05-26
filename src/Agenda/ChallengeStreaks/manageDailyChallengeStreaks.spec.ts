@@ -24,13 +24,17 @@ jest.mock('./resetIncompleteChallengeStreaks', () => ({
     __esModule: true,
     resetIncompleteChallengeStreaks: jest.fn().mockResolvedValue(true),
 }));
+jest.mock('../../helpers/createDailyJob', () => ({
+    __esModule: true,
+    createDailyJob: jest.fn().mockResolvedValue(true),
+}));
 
 import { resetIncompleteChallengeStreaks } from './resetIncompleteChallengeStreaks';
 import { manageDailyChallengeStreaks } from './manageDailyChallengeStreaks';
 import { trackMaintainedChallengeStreaks } from './trackMaintainedChallengeStreaks';
 import { trackInactiveChallengeStreaks } from './trackInactiveChallengeStreaks';
-import streakoid from '../../streakoid';
 import { challengeStreakModel } from '../../../src/Models/ChallengeStreak';
+import { createDailyJob } from '../../helpers/createDailyJob';
 
 describe('manageDailyChallengeStreaks', () => {
     afterEach(() => {
@@ -39,7 +43,6 @@ describe('manageDailyChallengeStreaks', () => {
 
     test('calls trackMaintainedChallengeStreaks, trackInactiveChallengeStreaks, resetIncompleteChallengeStreaks and creates DailyJob', async () => {
         expect.assertions(7);
-        streakoid.dailyJobs.create = jest.fn(() => ({})) as any;
         challengeStreakModel.find = jest.fn().mockResolvedValue([]) as any;
         const agendaJobId = 'agendaJobId';
         const timezone = 'Europe/London';
@@ -66,6 +69,6 @@ describe('manageDailyChallengeStreaks', () => {
         });
         expect(resetIncompleteChallengeStreaks).toBeCalledWith(expect.any(Array), expect.any(String));
 
-        expect(streakoid.dailyJobs.create).toBeCalled();
+        expect(createDailyJob).toBeCalled();
     });
 });

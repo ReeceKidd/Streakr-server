@@ -3,12 +3,12 @@ import moment from 'moment-timezone';
 import { trackMaintainedSoloStreaks } from './trackMaintainedSoloStreaks';
 import { trackInactiveSoloStreaks } from './trackInactiveSoloStreaks';
 import { resetIncompleteSoloStreaks } from './resetIncompleteSoloStreaks';
-import streakoid from '../../streakoid';
 import { soloStreakModel } from '../../../src/Models/SoloStreak';
 import { DailyJob } from '@streakoid/streakoid-models/lib/Models/DailyJob';
 import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { createDailyJob } from '../../helpers/createDailyJob';
 
 export const manageDailySoloStreaks = async ({
     agendaJobId,
@@ -51,7 +51,7 @@ export const manageDailySoloStreaks = async ({
         .toDate()
         .toString();
 
-    return streakoid.dailyJobs.create({
+    return createDailyJob({
         agendaJobId: String(agendaJobId),
         jobName: AgendaJobNames.soloStreakDailyTracker,
         timezone,

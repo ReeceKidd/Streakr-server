@@ -4,18 +4,16 @@ import { originalImageUrl } from '../../../src/Models/User';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
-import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { testSDK } from '../../testSDK/testSDK';
 
 jest.setTimeout(120000);
 
 describe('resetIncompleteTeamMemberStreaks', () => {
-    let streakoid: StreakoidFactory;
     let userId: string;
     let username: string;
     let userProfileImage: string;
@@ -26,9 +24,8 @@ describe('resetIncompleteTeamMemberStreaks', () => {
             await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
-            username = user.username;
+            username = user.username || '';
             userProfileImage = user.profileImages.originalImageUrl;
-            streakoid = await streakoidTest();
         }
     });
 
@@ -43,16 +40,16 @@ describe('resetIncompleteTeamMemberStreaks', () => {
 
         const creatorId = userId;
         const members = [{ memberId: userId }];
-        const teamStreak = await streakoid.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreak = await testSDK.teamStreaks.create({ creatorId, streakName, members });
         const teamStreakId = teamStreak._id;
 
         //Emulate team streak being active so the incomplete team member streak can reset it.
-        await streakoid.teamStreaks.update({
+        await testSDK.teamStreaks.update({
             teamStreakId,
             updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
         });
 
-        const teamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await testSDK.teamMemberStreaks.getAll({
             userId,
             teamStreakId,
         });
@@ -60,12 +57,12 @@ describe('resetIncompleteTeamMemberStreaks', () => {
         const teamMemberStreakId = teamMemberStreak._id;
 
         // Emulate team member streak being active
-        await streakoid.teamMemberStreaks.update({
+        await testSDK.teamMemberStreaks.update({
             teamMemberStreakId: teamMemberStreakId,
             updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
         });
 
-        const incompleteTeamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
+        const incompleteTeamMemberStreaks = await testSDK.teamMemberStreaks.getAll({
             completedToday: false,
             active: true,
         });
@@ -74,14 +71,14 @@ describe('resetIncompleteTeamMemberStreaks', () => {
 
         await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks, endDate.toString());
 
-        const incompleteTeamStreaks = await streakoid.teamStreaks.getAll({
+        const incompleteTeamStreaks = await testSDK.teamStreaks.getAll({
             completedToday: false,
             active: true,
         });
 
         await resetIncompleteTeamStreaks(incompleteTeamStreaks, endDate.toString());
 
-        const updatedTeamStreak = await streakoid.teamStreaks.getOne(teamStreakId);
+        const updatedTeamStreak = await testSDK.teamStreaks.getOne(teamStreakId);
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -130,7 +127,7 @@ describe('resetIncompleteTeamMemberStreaks', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
             streakId: teamMemberStreakId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];
@@ -146,7 +143,7 @@ describe('resetIncompleteTeamMemberStreaks', () => {
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const lostTeamMemberStreakItems = await streakoid.activityFeedItems.getAll({
+        const lostTeamMemberStreakItems = await testSDK.activityFeedItems.getAll({
             activityFeedItemType: ActivityFeedItemTypes.lostTeamStreak,
         });
         const lostTeamMemberStreakItem = lostTeamMemberStreakItems.activityFeedItems[0];

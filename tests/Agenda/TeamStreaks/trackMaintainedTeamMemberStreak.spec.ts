@@ -1,17 +1,15 @@
 import { trackMaintainedTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/trackMaintainedTeamMemberStreaks';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
-import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
-import { StreakoidFactory, londonTimezone } from '@streakoid/streakoid-sdk/lib/streakoid';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { testSDK } from '../../testSDK/testSDK';
 
 jest.setTimeout(120000);
 
 describe('trackMaintainedTeamMemberStreak', () => {
-    let streakoid: StreakoidFactory;
     let userId: string;
     const streakName = 'Daily Spanish';
 
@@ -20,7 +18,6 @@ describe('trackMaintainedTeamMemberStreak', () => {
             await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
-            streakoid = await streakoidTest();
         }
     });
 
@@ -35,16 +32,16 @@ describe('trackMaintainedTeamMemberStreak', () => {
 
         const creatorId = userId;
         const members = [{ memberId: userId }];
-        const teamStreak = await streakoid.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreak = await testSDK.teamStreaks.create({ creatorId, streakName, members });
         const teamStreakId = teamStreak._id;
 
-        const teamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await testSDK.teamMemberStreaks.getAll({
             userId,
             teamStreakId,
         });
         const teamMemberStreakId = teamMemberStreaks[0]._id;
 
-        const completeTeamMemberStreakTask = await streakoid.completeTeamMemberStreakTasks.create({
+        const completeTeamMemberStreakTask = await testSDK.completeTeamMemberStreakTasks.create({
             userId,
             teamStreakId,
             teamMemberStreakId: teamMemberStreakId,
@@ -72,13 +69,13 @@ describe('trackMaintainedTeamMemberStreak', () => {
             ].sort(),
         );
 
-        const maintainedTeamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
+        const maintainedTeamMemberStreaks = await testSDK.teamMemberStreaks.getAll({
             completedToday: true,
         });
 
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks);
 
-        const teamMemberStreak = await streakoid.teamMemberStreaks.getOne(teamMemberStreakId);
+        const teamMemberStreak = await testSDK.teamMemberStreaks.getOne(teamMemberStreakId);
 
         expect(teamMemberStreak._id).toEqual(expect.any(String));
         expect(teamMemberStreak.currentStreak.startDate).toEqual(expect.any(String));
@@ -89,7 +86,7 @@ describe('trackMaintainedTeamMemberStreak', () => {
         expect(teamMemberStreak.pastStreaks).toEqual([]);
         expect(teamMemberStreak.userId).toEqual(expect.any(String));
         expect(teamMemberStreak.teamStreakId).toEqual(teamStreakId);
-        expect(teamMemberStreak.timezone).toEqual(londonTimezone);
+        expect(teamMemberStreak.timezone).toEqual('Europe/London');
         expect(teamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(teamMemberStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(teamMemberStreak).sort()).toEqual(
@@ -108,7 +105,7 @@ describe('trackMaintainedTeamMemberStreak', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
             streakId: teamMemberStreakId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];

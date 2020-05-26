@@ -2,17 +2,15 @@ import { trackInactiveSoloStreaks } from '../../../src/Agenda/SoloStreaks/trackI
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
-import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { testSDK } from '../../testSDK/testSDK';
 
 jest.setTimeout(120000);
 
 describe('trackInactiveSoloStreak', () => {
-    let streakoid: StreakoidFactory;
     let userId: string;
     const streakName = 'Daily Spanish';
     const streakDescription = 'Everyday I must do Spanish';
@@ -22,7 +20,6 @@ describe('trackInactiveSoloStreak', () => {
             await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
-            streakoid = await streakoidTest();
         }
     });
 
@@ -35,10 +32,10 @@ describe('trackInactiveSoloStreak', () => {
     test('creates a streak inactive tracking event', async () => {
         expect.assertions(21);
 
-        const soloStreak = await streakoid.soloStreaks.create({ userId, streakName, streakDescription });
+        const soloStreak = await testSDK.soloStreaks.create({ userId, streakName, streakDescription });
         const soloStreakId = soloStreak._id;
 
-        const inactiveSoloStreaks = await streakoid.soloStreaks.getAll({
+        const inactiveSoloStreaks = await testSDK.soloStreaks.getAll({
             completedToday: false,
             active: false,
             userId,
@@ -46,7 +43,7 @@ describe('trackInactiveSoloStreak', () => {
 
         await trackInactiveSoloStreaks(inactiveSoloStreaks);
 
-        const updatedSoloStreak = await streakoid.soloStreaks.getOne(soloStreakId);
+        const updatedSoloStreak = await testSDK.soloStreaks.getOne(soloStreakId);
 
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
@@ -79,7 +76,7 @@ describe('trackInactiveSoloStreak', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
             userId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];

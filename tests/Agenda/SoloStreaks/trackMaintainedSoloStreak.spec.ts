@@ -1,18 +1,16 @@
 import { trackMaintainedSoloStreaks } from '.../../../src/Agenda/SoloStreaks/trackMaintainedSoloStreaks';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
-import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { testSDK } from '../../testSDK/testSDK';
 
 jest.setTimeout(120000);
 
 describe('trackMaintainedSoloStreak', () => {
-    let streakoid: StreakoidFactory;
     let userId: string;
     const streakName = 'Daily Spanish';
     const streakDescription = 'Everyday I must study Spanish';
@@ -22,7 +20,6 @@ describe('trackMaintainedSoloStreak', () => {
             await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
-            streakoid = await streakoidTest();
         }
     });
 
@@ -35,22 +32,22 @@ describe('trackMaintainedSoloStreak', () => {
     test('updates solo streak completedToday field and creates a streak maintained tracking event', async () => {
         expect.assertions(23);
 
-        const soloStreak = await streakoid.soloStreaks.create({ userId, streakName, streakDescription });
+        const soloStreak = await testSDK.soloStreaks.create({ userId, streakName, streakDescription });
         const soloStreakId = soloStreak._id;
 
-        await streakoid.completeSoloStreakTasks.create({
+        await testSDK.completeSoloStreakTasks.create({
             userId,
             soloStreakId,
         });
 
-        const maintainedSoloStreaks = await streakoid.soloStreaks.getAll({
+        const maintainedSoloStreaks = await testSDK.soloStreaks.getAll({
             completedToday: true,
             userId,
         });
 
         await trackMaintainedSoloStreaks(maintainedSoloStreaks);
 
-        const updatedSoloStreak = await streakoid.soloStreaks.getOne(soloStreakId);
+        const updatedSoloStreak = await testSDK.soloStreaks.getOne(soloStreakId);
 
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
@@ -85,7 +82,7 @@ describe('trackMaintainedSoloStreak', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
             userId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];

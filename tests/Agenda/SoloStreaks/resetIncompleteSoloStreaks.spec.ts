@@ -3,10 +3,8 @@ import { resetIncompleteSoloStreaks } from '../../../src/Agenda/SoloStreaks/rese
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
-import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
-import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { testSDK } from '../../testSDK/testSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
@@ -15,7 +13,6 @@ import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/Activit
 jest.setTimeout(120000);
 
 describe('resetIncompleteSoloStreaks', () => {
-    let streakoid: StreakoidFactory;
     let userId: string;
     let username: string;
     let userProfileImage: string;
@@ -24,11 +21,10 @@ describe('resetIncompleteSoloStreaks', () => {
     beforeEach(async () => {
         if (isTestEnvironment()) {
             await setupDatabase();
-            const user: User = await getPayingUser();
+            const user = await getPayingUser();
             userId = user._id;
-            username = user.username;
+            username = user.username || '';
             userProfileImage = user.profileImages.originalImageUrl;
-            streakoid = await streakoidTest();
         }
     });
 
@@ -41,11 +37,11 @@ describe('resetIncompleteSoloStreaks', () => {
     test('adds current streak to past streak,  resets the current streak and creates a lost streak tracking event.', async () => {
         expect.assertions(34);
 
-        const soloStreak = await streakoid.soloStreaks.create({ userId, streakName });
+        const soloStreak = await testSDK.soloStreaks.create({ userId, streakName });
 
         const soloStreakId = soloStreak._id;
 
-        const incompleteSoloStreaks = await streakoid.soloStreaks.getAll({
+        const incompleteSoloStreaks = await testSDK.soloStreaks.getAll({
             userId,
             completedToday: false,
         });
@@ -53,7 +49,7 @@ describe('resetIncompleteSoloStreaks', () => {
         const endDate = new Date();
         await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate.toString());
 
-        const updatedSoloStreak = await streakoid.soloStreaks.getOne(soloStreakId);
+        const updatedSoloStreak = await testSDK.soloStreaks.getOne(soloStreakId);
 
         expect(updatedSoloStreak.streakName).toEqual(streakName);
         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
@@ -91,7 +87,7 @@ describe('resetIncompleteSoloStreaks', () => {
                 '__v',
             ].sort(),
         );
-        const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
             userId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];
@@ -107,7 +103,7 @@ describe('resetIncompleteSoloStreaks', () => {
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const lostSoloStreakActivityFeedItems = await streakoid.activityFeedItems.getAll({
+        const lostSoloStreakActivityFeedItems = await testSDK.activityFeedItems.getAll({
             activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
         });
         const lostSoloStreakActivityFeedItem = lostSoloStreakActivityFeedItems.activityFeedItems[0];

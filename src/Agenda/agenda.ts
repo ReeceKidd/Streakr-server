@@ -1,12 +1,12 @@
 import Agenda from 'agenda';
 
 import { getServiceConfig } from '../getServiceConfig';
-import { manageDailySoloStreaks } from './SoloStreaks/manageDailySoloStreaks';
 import { sendEmail } from '../email';
-import { manageDailyTeamStreaks } from './TeamStreaks/manageDailyTeamStreaks';
 import { adjustForDaylightSavingsTime } from './AdjustForDaylightSavingsTime/adjustForDaylightSavingsTime';
-import { manageDailyChallengeStreaks } from './ChallengeStreaks/manageDailyChallengeStreaks';
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import { manageDailySoloStreaks } from './SoloStreaks/manageDailySoloStreaks';
+import { manageDailyTeamStreaks } from './TeamStreaks/manageDailyTeamStreaks';
+import { manageDailyChallengeStreaks } from './ChallengeStreaks/manageDailyChallengeStreaks';
 
 const { DATABASE_URI, NODE_ENV } = getServiceConfig();
 

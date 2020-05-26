@@ -1,19 +1,17 @@
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
-import { streakoidTest } from '../../../tests/setup/streakoidTest';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { tearDownDatabase } from '../../../tests/setup/tearDownDatabase';
 import { trackMaintainedTeamStreaks } from '../../../src/Agenda/TeamStreaks/trackMaintainedTeamStreaks';
 import { originalImageUrl } from '../../../src/Models/User';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { testSDK } from '../../testSDK/testSDK';
 
 jest.setTimeout(120000);
 
 describe('trackMaintainedTeamStreak', () => {
-    let streakoid: StreakoidFactory;
     let userId: string;
     const streakName = 'Daily Spanish';
 
@@ -22,7 +20,6 @@ describe('trackMaintainedTeamStreak', () => {
             await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
-            streakoid = await streakoidTest();
         }
     });
 
@@ -37,23 +34,23 @@ describe('trackMaintainedTeamStreak', () => {
 
         const creatorId = userId;
         const members = [{ memberId: userId }];
-        const teamStreak = await streakoid.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreak = await testSDK.teamStreaks.create({ creatorId, streakName, members });
         const teamStreakId = teamStreak._id;
 
-        const teamMemberStreaks = await streakoid.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await testSDK.teamMemberStreaks.getAll({
             userId,
             teamStreakId,
         });
 
         const teamMemberStreakId = teamMemberStreaks[0]._id;
 
-        await streakoid.completeTeamMemberStreakTasks.create({
+        await testSDK.completeTeamMemberStreakTasks.create({
             userId,
             teamStreakId,
             teamMemberStreakId: teamMemberStreakId,
         });
 
-        const completeTeamStreaks = await streakoid.completeTeamStreaks.getAll({ teamStreakId: teamStreak._id });
+        const completeTeamStreaks = await testSDK.completeTeamStreaks.getAll({ teamStreakId: teamStreak._id });
         const completeTeamStreak = completeTeamStreaks[0];
 
         expect(completeTeamStreak._id).toBeDefined();
@@ -66,13 +63,13 @@ describe('trackMaintainedTeamStreak', () => {
             ['_id', 'teamStreakId', 'taskCompleteTime', 'taskCompleteDay', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const maintainedTeamStreaks = await streakoid.teamStreaks.getAll({
+        const maintainedTeamStreaks = await testSDK.teamStreaks.getAll({
             completedToday: true,
         });
 
         await trackMaintainedTeamStreaks(maintainedTeamStreaks);
 
-        const updatedTeamStreak = await streakoid.teamStreaks.getOne(teamStreakId);
+        const updatedTeamStreak = await testSDK.teamStreaks.getOne(teamStreakId);
 
         expect(updatedTeamStreak.streakName).toEqual(streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -120,7 +117,7 @@ describe('trackMaintainedTeamStreak', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
             streakId: teamStreakId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];

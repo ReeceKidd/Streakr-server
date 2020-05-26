@@ -3,8 +3,7 @@ import { isTestEnvironment } from '../../setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
-import { streakoidTest } from '../../setup/streakoidTest';
-import { StreakoidFactory } from '@streakoid/streakoid-sdk/lib/streakoid';
+import { testSDK } from '../../testSDK/testSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
@@ -12,7 +11,6 @@ import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 jest.setTimeout(120000);
 
 describe('trackInactiveChallengeStreak', () => {
-    let streakoid: StreakoidFactory;
     let userId: string;
     let challengeStreakId: string;
     const name = 'Duolingo';
@@ -24,13 +22,12 @@ describe('trackInactiveChallengeStreak', () => {
             await setupDatabase();
             const user = await getPayingUser();
             userId = user._id;
-            streakoid = await streakoidTest();
-            const { challenge } = await streakoid.challenges.create({
+            const { challenge } = await testSDK.challenges.create({
                 name,
                 description,
                 icon,
             });
-            const challengeStreak = await streakoid.challengeStreaks.create({
+            const challengeStreak = await testSDK.challengeStreaks.create({
                 userId,
                 challengeId: challenge._id,
             });
@@ -47,14 +44,14 @@ describe('trackInactiveChallengeStreak', () => {
     test('creates a streak inactive tracking event', async () => {
         expect.assertions(21);
 
-        const inactiveChallengeStreaks = await streakoid.challengeStreaks.getAll({
+        const inactiveChallengeStreaks = await testSDK.challengeStreaks.getAll({
             completedToday: false,
             active: false,
         });
 
         await trackInactiveChallengeStreaks(inactiveChallengeStreaks);
 
-        const updatedChallengeStreak = await streakoid.challengeStreaks.getOne({ challengeStreakId });
+        const updatedChallengeStreak = await testSDK.challengeStreaks.getOne({ challengeStreakId });
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
         expect(updatedChallengeStreak.userId).toBeDefined();
@@ -89,7 +86,7 @@ describe('trackInactiveChallengeStreak', () => {
             ].sort(),
         );
 
-        const streakTrackingEvents = await streakoid.streakTrackingEvents.getAll({
+        const streakTrackingEvents = await testSDK.streakTrackingEvents.getAll({
             userId,
         });
         const streakTrackingEvent = streakTrackingEvents[0];
