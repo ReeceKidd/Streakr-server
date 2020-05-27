@@ -27,7 +27,7 @@ const challenges = ({ getRequest, postRequest }: { getRequest: GetRequest; postR
     const getOne = async ({ challengeId }: { challengeId: string }): Promise<PopulatedChallenge> => {
         try {
             return getRequest({
-                route: `/${ApiVersions.v1}/${RouterCategories.challenges}/${ApiVersions.v1}/${challengeId}`,
+                route: `/${ApiVersions.v1}/${RouterCategories.challenges}/${challengeId}`,
             });
         } catch (err) {
             return Promise.reject(err);

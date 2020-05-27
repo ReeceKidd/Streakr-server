@@ -3,14 +3,24 @@ import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 import RouterCategories from '@streakoid/streakoid-models/lib/Types/RouterCategories';
 import ApiVersions from '../../src/Server/versions';
-import { GetRequest, PostRequest } from './request';
+import { GetRequest, PostRequest, PatchRequest } from './request';
+import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
+import { PastStreak } from '@streakoid/streakoid-models/lib/Models/PastStreak';
 
 export enum GetAllSoloStreaksSortFields {
     currentStreak = 'currentStreak',
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const soloStreaks = ({ getRequest, postRequest }: { getRequest: GetRequest; postRequest: PostRequest }) => {
+const soloStreaks = ({
+    getRequest,
+    postRequest,
+    patchRequest,
+}: {
+    getRequest: GetRequest;
+    postRequest: PostRequest;
+    patchRequest: PatchRequest;
+}) => {
     const getAll = async ({
         userId,
         completedToday,
@@ -87,10 +97,37 @@ const soloStreaks = ({ getRequest, postRequest }: { getRequest: GetRequest; post
             return Promise.reject(err);
         }
     };
+    const update = async ({
+        soloStreakId,
+        updateData,
+    }: {
+        soloStreakId: string;
+        updateData?: {
+            streakName?: string;
+            streakDescription?: string;
+            status?: StreakStatus;
+            numberOfMinutes?: number;
+            completedToday?: boolean;
+            timezone?: string;
+            active?: boolean;
+            currentStreak?: CurrentStreak;
+            pastStreaks?: PastStreak[];
+        };
+    }): Promise<SoloStreak> => {
+        try {
+            return patchRequest({
+                route: `/${ApiVersions.v1}/${RouterCategories.soloStreaks}/${soloStreakId}`,
+                params: updateData,
+            });
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    };
     return {
         getAll,
         getOne,
         create,
+        update,
     };
 };
 

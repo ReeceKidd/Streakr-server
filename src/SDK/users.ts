@@ -4,9 +4,19 @@ import { PopulatedUser } from '@streakoid/streakoid-models/lib/Models/PopulatedU
 import RouterCategories from '@streakoid/streakoid-models/lib/Types/RouterCategories';
 import { FormattedUser } from '@streakoid/streakoid-models/lib/Models/FormattedUser';
 import ApiVersions from '../../src/Server/versions';
-import { GetRequest, PostRequest } from './request';
+import { GetRequest, PostRequest, PatchRequest } from './request';
+import { followers } from './followers';
+import { following } from './following';
 
-const users = ({ getRequest, postRequest }: { getRequest: GetRequest; postRequest: PostRequest }) => {
+const users = ({
+    getRequest,
+    postRequest,
+    patchRequest,
+}: {
+    getRequest: GetRequest;
+    postRequest: PostRequest;
+    patchRequest: PatchRequest;
+}) => {
     const create = async ({ username, email }: { username: string; email: string }): Promise<PopulatedCurrentUser> => {
         try {
             return postRequest({ route: `/${ApiVersions.v1}/${RouterCategories.users}`, params: { username, email } });
@@ -66,7 +76,7 @@ const users = ({ getRequest, postRequest }: { getRequest: GetRequest; postReques
 
     const getOne = async (userId: string): Promise<PopulatedUser> => {
         try {
-            return getRequest({ route: `/${ApiVersions.v1}/${ApiVersions.v1}v1}/${RouterCategories.users}/${userId}` });
+            return getRequest({ route: `/${ApiVersions.v1}/${RouterCategories.users}/${userId}` });
         } catch (err) {
             return Promise.reject(err);
         }
@@ -76,6 +86,8 @@ const users = ({ getRequest, postRequest }: { getRequest: GetRequest; postReques
         createTemporary,
         getAll,
         getOne,
+        followers: followers({ getRequest }),
+        following: following({ getRequest, postRequest, patchRequest }),
     };
 };
 

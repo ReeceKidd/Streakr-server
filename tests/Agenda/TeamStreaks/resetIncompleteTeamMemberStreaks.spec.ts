@@ -9,10 +9,10 @@ import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
-import { testSDK, TestSDKFactory } from '../../SDK/testSDK';
 import { Mongoose } from 'mongoose';
-import { getDatabaseURI } from '../../setup/getDatabaseURI';
 import { disconnectDatabase } from '../../setup/disconnectDatabase';
+import { StreakoidSDK } from '../../../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../../../src/SDK/streakoidTestSDKFactory';
 
 jest.setTimeout(120000);
 
@@ -20,11 +20,11 @@ const testName = 'resetIncompleteTeamMemberStreaks';
 
 describe(testName, () => {
     let database: Mongoose;
-    let SDK: TestSDKFactory;
+    let SDK: StreakoidSDK;
     beforeAll(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
-            SDK = testSDK({ databaseURI: getDatabaseURI({ testName }) });
+            SDK = streakoidTestSDKFactory({ testName });
         }
     });
 

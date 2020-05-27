@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import app from '../../src/app';
 import supertest from 'supertest';
-import { getIdToken } from '../setup/getIdToken';
 import SupportedRequestHeaders from '@streakoid/streakoid-models/lib/Types/SupportedRequestHeaders';
+import { getIdToken } from '../../tests/setup/getIdToken';
 
 export const apiTester = ({ databaseURI }: { databaseURI: string }) => {
     const request = supertest(app({ databaseURI }));
@@ -34,7 +34,7 @@ export const apiTester = ({ databaseURI }: { databaseURI: string }) => {
         return response.body;
     };
 
-    const patchRequest = async ({ route, params }: { route: string; params: any }): Promise<any> => {
+    const patchRequest = async ({ route, params }: { route: string; params?: any }): Promise<any> => {
         const idToken = await getIdToken();
         const response = await request
             .patch(route)

@@ -28,7 +28,7 @@ const body = {
 };
 
 describe(`createChallengeBodyValidationMiddleware`, () => {
-    test('check that valid request with all paramaters passes', () => {
+    test('check that valid request with all parameters passes', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));

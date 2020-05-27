@@ -119,7 +119,7 @@ describe('incompleteTeamMemberStreakTaskQueryValidationMiddleware', () => {
 });
 
 describe('getRetrieveIncompleteTeamMemberStreakTasksMiddleware', () => {
-    test('queries with all query paramaters', async () => {
+    test('queries with all query parameters', async () => {
         expect.assertions(3);
 
         const find = jest.fn().mockResolvedValue(true);
@@ -209,7 +209,7 @@ describe('getRetrieveIncompleteTeamMemberStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries withno query paramaters', async () => {
+    test('queries withno query parameters', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));

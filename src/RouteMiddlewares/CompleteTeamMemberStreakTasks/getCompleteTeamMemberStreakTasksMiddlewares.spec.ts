@@ -75,7 +75,7 @@ describe('completeTeamMemberStreakTaskQueryValidationMiddleware', () => {
         expect(next).toBeCalled();
     });
 
-    test('allows all query paramaters at once', () => {
+    test('allows all query parameters at once', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -201,7 +201,7 @@ describe('getRetrieveCompleteTeamMemberStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries with no query paramaters', async () => {
+    test('queries with no query parameters', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));

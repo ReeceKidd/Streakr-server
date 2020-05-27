@@ -62,7 +62,7 @@ const streakTrackingEvents = ({ getRequest, postRequest }: { getRequest: GetRequ
     }): Promise<StreakTrackingEvent> => {
         try {
             return postRequest({
-                route: `${RouterCategories.streakTrackingEvents}`,
+                route: `/${ApiVersions.v1}/${RouterCategories.streakTrackingEvents}`,
                 params: {
                     type,
                     streakId,

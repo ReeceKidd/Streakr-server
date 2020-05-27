@@ -3,13 +3,23 @@ import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import RouterCategories from '@streakoid/streakoid-models/lib/Types/RouterCategories';
 import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
 import ApiVersions from '../../src/Server/versions';
-import { GetRequest, PostRequest } from './request';
+import { GetRequest, PostRequest, PatchRequest } from './request';
+import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
+import { PastStreak } from '@streakoid/streakoid-models/lib/Models/PastStreak';
 
 export enum GetAllChallengeStreaksSortFields {
     currentStreak = 'currentStreak',
 }
 
-const challengeStreaks = ({ getRequest, postRequest }: { getRequest: GetRequest; postRequest: PostRequest }) => {
+const challengeStreaks = ({
+    getRequest,
+    postRequest,
+    patchRequest,
+}: {
+    getRequest: GetRequest;
+    postRequest: PostRequest;
+    patchRequest: PatchRequest;
+}) => {
     const getAll = async ({
         userId,
         challengeId,
@@ -91,10 +101,35 @@ const challengeStreaks = ({ getRequest, postRequest }: { getRequest: GetRequest;
         }
     };
 
+    const update = async ({
+        challengeStreakId,
+        updateData,
+    }: {
+        challengeStreakId: string;
+        updateData?: {
+            status?: StreakStatus;
+            completedToday?: boolean;
+            timezone?: string;
+            active?: boolean;
+            currentStreak?: CurrentStreak;
+            pastStreaks?: PastStreak[];
+        };
+    }): Promise<ChallengeStreak> => {
+        try {
+            return patchRequest({
+                route: `/${ApiVersions.v1}/${RouterCategories.challengeStreaks}/${challengeStreakId}`,
+                params: { ...updateData },
+            });
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    };
+
     return {
         getAll,
         getOne,
         create,
+        update,
     };
 };
 

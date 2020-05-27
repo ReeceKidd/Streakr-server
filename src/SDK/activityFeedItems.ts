@@ -71,7 +71,7 @@ const activityFeedItems = ({ getRequest, postRequest }: { getRequest: GetRequest
             const response = await getRequest({ route: getAllActivityFeedItemsURL });
 
             return {
-                activityFeedItems: response.body,
+                activityFeedItems: response.body || response.data,
                 totalCountOfActivityFeedItems: Number(response.header[SupportedResponseHeaders.TotalCount]),
             };
         } catch (err) {

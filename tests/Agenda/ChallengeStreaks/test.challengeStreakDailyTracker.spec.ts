@@ -5,14 +5,14 @@ import { isTestEnvironment } from '../../setup/isTestEnvironment';
 import { getPayingUser } from '../../setup/getPayingUser';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { tearDownDatabase } from '../../setup/tearDownDatabase';
-import { testSDK, TestSDKFactory } from '../../SDK/testSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
 import { Mongoose } from 'mongoose';
-import { getDatabaseURI } from '../../setup/getDatabaseURI';
 import { disconnectDatabase } from '../../setup/disconnectDatabase';
+import { StreakoidSDK } from '../../../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../../../src/SDK/streakoidTestSDKFactory';
 
 jest.setTimeout(500000);
 
@@ -20,11 +20,11 @@ const testName = 'challengeStreakDailyTracker';
 
 describe(testName, () => {
     let database: Mongoose;
-    let SDK: TestSDKFactory;
+    let SDK: StreakoidSDK;
     beforeAll(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
-            SDK = testSDK({ databaseURI: getDatabaseURI({ testName }) });
+            SDK = streakoidTestSDKFactory({ testName });
         }
     });
 

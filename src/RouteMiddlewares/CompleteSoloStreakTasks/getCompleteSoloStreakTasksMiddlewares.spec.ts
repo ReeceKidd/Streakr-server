@@ -134,7 +134,7 @@ describe('getRetrieveCompleteSoloStreakTasksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries with no query paramaters', async () => {
+    test('queries with no query parameters', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));

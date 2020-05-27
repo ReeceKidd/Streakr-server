@@ -154,7 +154,7 @@ describe('getRetrieveStreakTrackingEventsMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries streakTrackingEvent model and sets response.locals.streakTrackingEvents with no query paramaters', async () => {
+    test('queries streakTrackingEvent model and sets response.locals.streakTrackingEvents with no query parameters', async () => {
         expect.assertions(3);
 
         const find = jest.fn(() => Promise.resolve(true));
