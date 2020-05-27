@@ -156,7 +156,7 @@ export const userSchema = new mongoose.Schema(
         },
         hasCompletedIntroduction: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         onboarding: {
             whyDoYouWantToBuildNewHabitsChoice: { type: String, default: null },
