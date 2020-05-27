@@ -13,15 +13,22 @@ export const apiTester = ({ databaseURI }: { databaseURI: string }) => {
             .get(route)
             .set(SupportedRequestHeaders.Timezone, 'Europe/London')
             .set(SupportedRequestHeaders.Authorization, idToken);
+        if (response.error) {
+            throw response.error;
+        }
         return response.body;
     };
 
     const getRequestActivityFeed = async ({ route }: { route: string }): Promise<any> => {
         const idToken = await getIdToken();
-        return request
+        const response = await request
             .get(route)
             .set(SupportedRequestHeaders.Timezone, 'Europe/London')
             .set(SupportedRequestHeaders.Authorization, idToken);
+        if (response.error) {
+            throw response.error;
+        }
+        return response;
     };
 
     const postRequest = async ({ route, params }: { route: string; params: any }): Promise<any> => {
@@ -31,6 +38,9 @@ export const apiTester = ({ databaseURI }: { databaseURI: string }) => {
             .send(params)
             .set(SupportedRequestHeaders.Timezone, 'Europe/London')
             .set(SupportedRequestHeaders.Authorization, idToken);
+        if (response.error) {
+            throw response.error;
+        }
         return response.body;
     };
 
@@ -41,6 +51,9 @@ export const apiTester = ({ databaseURI }: { databaseURI: string }) => {
             .send(params)
             .set(SupportedRequestHeaders.Timezone, 'Europe/London')
             .set(SupportedRequestHeaders.Authorization, idToken);
+        if (response.error) {
+            throw response.error;
+        }
         return response.body;
     };
 
@@ -50,6 +63,9 @@ export const apiTester = ({ databaseURI }: { databaseURI: string }) => {
             .delete(route)
             .set(SupportedRequestHeaders.Timezone, 'Europe/London')
             .set(SupportedRequestHeaders.Authorization, idToken);
+        if (response.error) {
+            throw response.error;
+        }
         return response.body;
     };
 

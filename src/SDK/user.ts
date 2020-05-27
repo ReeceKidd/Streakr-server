@@ -29,6 +29,7 @@ const user = ({ getRequest, patchRequest }: { getRequest: GetRequest; patchReque
                 token: string;
             };
             hasCompletedTutorial?: boolean;
+            hasCompletedIntroduction?: boolean;
             onboarding?: Onboarding;
             hasCompletedOnboarding?: boolean;
         };
