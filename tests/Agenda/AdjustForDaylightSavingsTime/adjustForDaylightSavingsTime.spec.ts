@@ -7,6 +7,7 @@ import moment = require('moment');
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
 import { AgendaJob } from '@streakoid/streakoid-models/lib/Models/AgendaJob';
 import { Mongoose } from 'mongoose';
+import { disconnectDatabase } from '../../setup/disconnectDatabase';
 
 jest.setTimeout(120000);
 
@@ -14,42 +15,9 @@ const testName = 'adjustForDaylightSavingsTime';
 
 describe(testName, () => {
     let database: Mongoose;
-
-    beforeEach(async () => {
+    beforeAll(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
-            const soloStreakDailyTracker = new agendaJobModel({
-                name: 'soloStreakDailyTracker',
-                data: {
-                    timezone: 'Europe/London',
-                },
-                type: 'normal',
-                priority: 10,
-                nextRunAt: new Date('2019-11-07T23:00:02.888Z'),
-                repeatInterval: '1 day',
-                repeatTimezone: null,
-                lastModifiedBy: null,
-                lockedAt: null,
-                lastRunAt: new Date('2019-11-06T23:00:02.888Z'),
-                lastFinishedAt: new Date('2019-11-06T23:00:03.140Z'),
-            });
-            await soloStreakDailyTracker.save();
-            const teamStreakDailyTracker = new agendaJobModel({
-                name: 'teamStreakDailyTracker',
-                data: {
-                    timezone: 'Europe/London',
-                },
-                type: 'normal',
-                priority: 10,
-                nextRunAt: new Date('2019-11-07T23:00:02.888Z'),
-                repeatInterval: '1 day',
-                repeatTimezone: null,
-                lastModifiedBy: null,
-                lockedAt: null,
-                lastRunAt: new Date('2019-11-06T23:00:02.888Z'),
-                lastFinishedAt: new Date('2019-11-06T23:00:03.140Z'),
-            });
-            await teamStreakDailyTracker.save();
         }
     });
 
@@ -58,12 +26,67 @@ describe(testName, () => {
             await tearDownDatabase({ database });
         }
     });
+
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
     test('if localized run time hour does not equal 0 it means that daylight saving has occurred so next run at time gets adjusted', async () => {
-        expect.assertions(4);
+        expect.assertions(6);
+
+        const soloStreakDailyTracker = new agendaJobModel({
+            name: AgendaJobNames.soloStreakDailyTracker,
+            data: {
+                timezone: 'Europe/London',
+            },
+            type: 'normal',
+            priority: 10,
+            nextRunAt: new Date('2019-11-07T23:00:02.888Z'),
+            repeatInterval: '1 day',
+            repeatTimezone: null,
+            lastModifiedBy: null,
+            lockedAt: null,
+            lastRunAt: new Date('2019-11-06T23:00:02.888Z'),
+            lastFinishedAt: new Date('2019-11-06T23:00:03.140Z'),
+        });
+        await soloStreakDailyTracker.save();
+        const teamStreakDailyTracker = new agendaJobModel({
+            name: AgendaJobNames.teamStreakDailyTracker,
+            data: {
+                timezone: 'Europe/London',
+            },
+            type: 'normal',
+            priority: 10,
+            nextRunAt: new Date('2019-11-07T23:00:02.888Z'),
+            repeatInterval: '1 day',
+            repeatTimezone: null,
+            lastModifiedBy: null,
+            lockedAt: null,
+            lastRunAt: new Date('2019-11-06T23:00:02.888Z'),
+            lastFinishedAt: new Date('2019-11-06T23:00:03.140Z'),
+        });
+        await teamStreakDailyTracker.save();
+        const challengeStreakDailyTracker = new agendaJobModel({
+            name: AgendaJobNames.challengeStreakDailyTracker,
+            data: {
+                timezone: 'Europe/London',
+            },
+            type: 'normal',
+            priority: 10,
+            nextRunAt: new Date('2019-11-07T23:00:02.888Z'),
+            repeatInterval: '1 day',
+            repeatTimezone: null,
+            lastModifiedBy: null,
+            lockedAt: null,
+            lastRunAt: new Date('2019-11-06T23:00:02.888Z'),
+            lastFinishedAt: new Date('2019-11-06T23:00:03.140Z'),
+        });
+        await challengeStreakDailyTracker.save();
 
         const timezone = 'Europe/London';
 
-        await adjustForDaylightSavingsTime(timezone);
+        await adjustForDaylightSavingsTime({ timezone });
 
         const updatedSoloStreakDailyTracker: AgendaJob = await agendaJobModel
             .findOne({ name: AgendaJobNames.teamStreakDailyTracker, 'data.timezone': timezone })
@@ -92,5 +115,19 @@ describe(testName, () => {
 
         expect(updatedTeamStreakDailyTrackerHour).toEqual(23);
         expect(updatedTeamStreakDailyTrackerMinute).toEqual(59);
+
+        const updatedChallengeStreakDailyTracker: AgendaJob = await agendaJobModel
+            .findOne({ name: AgendaJobNames.challengeStreakDailyTracker, 'data.timezone': timezone })
+            .lean();
+
+        const updatedChallengeStreakDailyTrackerHour = moment
+            .tz(new Date(updatedChallengeStreakDailyTracker.nextRunAt), timezone)
+            .hour();
+        const updatedChallengeStreakDailyTrackerMinute = moment
+            .tz(new Date(updatedChallengeStreakDailyTracker.nextRunAt), timezone)
+            .minute();
+
+        expect(updatedChallengeStreakDailyTrackerHour).toEqual(23);
+        expect(updatedChallengeStreakDailyTrackerMinute).toEqual(59);
     });
 });

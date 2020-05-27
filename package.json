@@ -9,7 +9,7 @@
         "dist": "sh ./scripts/dist.sh",
         "dev": "nodemon --exec ts-node -- ./src/server.ts",
         "lint": "eslint **/*.ts --ignore-pattern node_modules/",
-        "unit-tests": "jest --config=./jest.unit.config.js --coverage --runInBand",
+        "unit-tests": "jest --config=./jest.unit.config.js --coverage --forceExit",
         "intergration-tests": "jest --config=./jest.intergration.config.js --forceExit",
         "test": "npm run unit-tests && npm run intergration-tests",
         "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
