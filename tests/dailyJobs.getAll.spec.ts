@@ -1,7 +1,7 @@
 // import { StreakoidFactory } from '../src/streakoid';
 // import { streakoidTest } from './setup/streakoidTest';
 // import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setUpDatabase';
+// import { setUpDatabase } from './setup/setupDatabase';
 // import { tearDownDatabase } from './setup/tearDownDatabase';
 // import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 // import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';

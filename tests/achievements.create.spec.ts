@@ -1,5 +1,5 @@
 import { isTestEnvironment } from './setup/isTestEnvironment';
-import { setupDatabase } from './setup/setUpDatabase';
+import { setupDatabase } from './setup/setupDatabase';
 import { tearDownDatabase } from './setup/tearDownDatabase';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';

@@ -3,7 +3,7 @@
 // import { getPayingUser } from './setup/getPayingUser';
 // import { getFriend } from './setup/getFriend';
 // import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setUpDatabase';
+// import { setUpDatabase } from './setup/setupDatabase';
 // import { tearDownDatabase } from './setup/tearDownDatabase';
 // import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 // import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';

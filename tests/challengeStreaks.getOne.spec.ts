@@ -1,6 +1,6 @@
 import { getPayingUser } from './setup/getPayingUser';
 import { isTestEnvironment } from './setup/isTestEnvironment';
-import { setupDatabase } from './setup/setUpDatabase';
+import { setupDatabase } from './setup/setupDatabase';
 import { tearDownDatabase } from './setup/tearDownDatabase';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import { Mongoose } from 'mongoose';

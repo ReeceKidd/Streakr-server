@@ -2,7 +2,7 @@
 // import { streakoidTest } from './setup/streakoidTest';
 // import { getPayingUser } from './setup/getPayingUser';
 // import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setUpDatabase';
+// import { setUpDatabase } from './setup/setupDatabase';
 // import { tearDownDatabase } from './setup/tearDownDatabase';
 // import { getServiceConfig } from '../getServiceConfig';
 // const username = getServiceConfig().USER;
