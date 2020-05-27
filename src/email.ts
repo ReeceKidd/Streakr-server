@@ -23,7 +23,7 @@ export const sendEmail = async ({
     emailFrom?: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): Promise<any> => {
-    if (NODE_ENV !== 'test') {
+    if (NODE_ENV && NODE_ENV.toLowerCase() !== 'test') {
         const mailOptions = {
             from: emailFrom,
             to: EMAIL_TO,

@@ -545,7 +545,7 @@ export class CustomError extends Error {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(type: ErrorType, err?: Error) {
         super();
-        if (err && getServiceConfig().NODE_ENV !== 'test') {
+        if (err && getServiceConfig().NODE_ENV && getServiceConfig().NODE_ENV.toLowerCase() !== 'test') {
             Sentry.captureException(err);
         }
         const { code, message, httpStatusCode } = this.createCustomErrorData(type);

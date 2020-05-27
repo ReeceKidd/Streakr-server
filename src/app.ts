@@ -18,7 +18,7 @@ const { NODE_ENV } = getServiceConfig();
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export default ({ databaseURI }: { databaseURI: string }) => {
-    if (NODE_ENV !== 'test') {
+    if (NODE_ENV && NODE_ENV.toLowerCase() !== 'test') {
         Sentry.init({
             dsn: 'https://ef376eda094746328e5904569e6ccbe7@o387464.ingest.sentry.io/5222901',
             attachStacktrace: true,
@@ -27,7 +27,7 @@ export default ({ databaseURI }: { databaseURI: string }) => {
 
     const app = express();
 
-    if (NODE_ENV !== 'test') {
+    if (NODE_ENV && NODE_ENV.toLowerCase() !== 'test') {
         app.use(Sentry.Handlers.requestHandler());
     }
 
@@ -54,7 +54,7 @@ export default ({ databaseURI }: { databaseURI: string }) => {
         }
     });
 
-    if (NODE_ENV !== 'test') {
+    if (NODE_ENV && NODE_ENV.toLowerCase() !== 'test') {
         agenda
             .start()
             .then(() => {
