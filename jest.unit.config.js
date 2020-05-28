@@ -1,7 +1,5 @@
 module.exports = {
-    transform: {
-        '^.+\\.ts?$': 'ts-jest',
-    },
+    preset: 'ts-jest',
     coverageThreshold: {
         global: {
             branches: 90,
@@ -10,8 +8,6 @@ module.exports = {
             statements: 90,
         },
     },
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
     testEnvironment: 'node',
     modulePathIgnorePatterns: ['./coverage/*', './jest.config.js', './dist/*', './tests/*'],
-    testMatch: ['**/src/**/*.spec.(ts|js)'],
 };

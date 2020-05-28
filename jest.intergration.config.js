@@ -1,8 +1,5 @@
 module.exports = {
-    transform: {
-        '^.+\\.ts?$': 'ts-jest',
-    },
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+    preset: 'ts-jest',
     testEnvironment: 'node',
     modulePathIgnorePatterns: ['./coverage/*', './jest.config.js', './dist/*'],
     testMatch: ['**/tests/**/*.spec.(ts|js)'],
