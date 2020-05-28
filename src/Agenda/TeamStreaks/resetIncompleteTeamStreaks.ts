@@ -5,10 +5,10 @@ import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStr
 import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/StreakTrackingEventTypes';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
-import { PopulatedTeamStreak } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamStreak';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 
 export const resetIncompleteTeamStreaks = async (
-    incompleteTeamStreaks: PopulatedTeamStreak[],
+    incompleteTeamStreaks: TeamStreak[],
     endDate: string,
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(

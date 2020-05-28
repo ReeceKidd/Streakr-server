@@ -7,6 +7,7 @@ import ApiVersions from '../../src/Server/versions';
 import { teamMembers } from './teamMembers';
 import { PopulatedTeamStreak } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamStreak';
 import { GetRequest, PostRequest, PatchRequest, DeleteRequest } from './request';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 
 export enum GetAllTeamStreaksSortFields {
     currentStreak = 'currentStreak',
@@ -39,7 +40,7 @@ const teamStreaks = ({
         completedToday?: boolean;
         active?: boolean;
         sortField?: GetAllTeamStreaksSortFields;
-    }): Promise<PopulatedTeamStreak[]> => {
+    }): Promise<TeamStreak[]> => {
         try {
             let getAllTeamStreaksURL = `/${ApiVersions.v1}/${RouterCategories.teamStreaks}?`;
             if (creatorId) {
