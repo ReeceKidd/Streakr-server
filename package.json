@@ -9,9 +9,9 @@
         "dist": "sh ./scripts/dist.sh",
         "dev": "nodemon --exec ts-node -- ./src/server.ts",
         "lint": "eslint **/*.ts --ignore-pattern node_modules/",
-        "unit-tests": "jest --config=./jest.unit.config.js --coverage --forceExit",
+        "unit-tests": "jest --config=./jest.unit.config.js --coverage --watch",
         "intergration-tests": "jest --config=./jest.intergration.config.js --forceExit --runInBand",
-        "unit-tests-ci": "jest --config=./jest.unit.config.js --coverage --forceExit --runInBand",
+        "unit-tests-ci": "jest --config=./jest.unit.config.js --forceExit --runInBand",
         "test": "npm run unit-tests && npm run intergration-tests",
         "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
         "preversion": "npm run lint",
@@ -94,8 +94,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "npm run lint&& pretty-quick --staged --verbose",
-            "pre-push": "npm run test"
+            "pre-commit": "npm run lint&& pretty-quick --staged --verbose"
         }
     }
 }

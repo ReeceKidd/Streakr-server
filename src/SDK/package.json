@@ -1,0 +1,72 @@
+{
+    "name": "@streakoid/streakoid-sdk",
+    "version": "1.0.520",
+    "description": "Streakoid SDK",
+    "main": "lib/index.js",
+    "types": "lib",
+    "scripts": {
+        "build": "tsc -p .",
+        "unit-tests": "jest --config=./jest.unit.config.js",
+        "lint": "eslint **/*.ts",
+        "intergration-tests": "jest --config=./jest.intergration.config.js --runInBand --forceExit",
+        "test": "npm run unit-tests && npm run intergration-tests",
+        "prepare": "npm run build",
+        "preversion": "npm run lint",
+        "version": "git add -A src",
+        "postversion": "git push --no-verify && git push --no-verify --tags",
+        "update": "npm version patch && npm publish",
+        "streakoid": "rm -rf node_modules/@streakoid/ && npm i @streakoid/streakoid-models"
+    },
+    "author": "reecekidd",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/dotenv": "^6.1.1",
+        "@types/jest": "^24.0.18",
+        "@types/mongoose": "^5.5.17",
+        "eslint": "^6.5.1",
+        "husky": "^3.0.5",
+        "jest": "^24.9.0",
+        "lint-staged": "^10.0.0-0",
+        "prettier": "^1.18.2",
+        "pretty-quick": "^1.11.1",
+        "ts-jest": "^24.0.2",
+        "tslint": "^5.20.0",
+        "typescript": "^3.6.3"
+    },
+    "dependencies": {
+        "@streakoid/streakoid-models": "^1.0.41",
+        "@types/form-data": "^2.5.0",
+        "@types/lodash": "^4.14.152",
+        "@types/node-fetch": "^2.5.2",
+        "@types/react": "^16.9.9",
+        "@typescript-eslint/eslint-plugin": "^2.3.2",
+        "@typescript-eslint/parser": "^2.3.2",
+        "aws-amplify": "^1.2.2",
+        "axios": "^0.19.0",
+        "dotenv": "^8.2.0",
+        "eslint-config-prettier": "^6.4.0",
+        "eslint-plugin-prettier": "^3.1.1",
+        "lodash": "^4.17.15",
+        "mongoose": "^5.7.5",
+        "node-fetch": "^2.6.0",
+        "react": "^16.10.2",
+        "react-stripe-checkout": "^2.6.3"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm run lint&& pretty-quick --staged --verbose"
+        }
+    },
+    "directories": {
+        "lib": "lib",
+        "test": "tests"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ReeceKidd/Streakoid-sdk.git"
+    },
+    "bugs": {
+        "url": "https://github.com/ReeceKidd/Streakoid-sdk/issues"
+    },
+    "homepage": "https://github.com/ReeceKidd/Streakoid-sdk#readme"
+}
