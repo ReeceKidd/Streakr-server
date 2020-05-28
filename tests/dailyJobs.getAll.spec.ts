@@ -1,123 +1,156 @@
-// import { StreakoidFactory } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
-// import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { setupDatabase } from './setup/setupDatabase';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /complete-solo-streak-tasks', () => {
-//     let streakoid: StreakoidFactory;
-//     const agendaJobId = 'agendaJobId';
-//     const jobName = AgendaJobNames.soloStreakDailyTracker;
-//     const timezone = 'Europe/London';
+const testName = 'GET-daily-jobs';
 
-//     beforeAll(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             streakoid = await streakoidTest();
-//             await streakoid.dailyJobs.create({
-//                 agendaJobId,
-//                 jobName,
-//                 timezone,
-//                 localisedJobCompleteTime: new Date().toString(),
-//                 streakType: StreakTypes.solo,
-//             });
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterAll(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`gets a dailyJob using the agendaJobId query paramter`, async () => {
-//         expect.assertions(9);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         const dailyJobs = await streakoid.dailyJobs.getAll({ agendaJobId });
-//         const dailyJob = dailyJobs[0];
+    test(`gets a dailyJob using the agendaJobId query paramter`, async () => {
+        expect.assertions(9);
 
-//         expect(dailyJob._id).toEqual(expect.any(String));
-//         expect(dailyJob.agendaJobId).toEqual(agendaJobId);
-//         expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
-//         expect(dailyJob.timezone).toEqual('Europe/London');
-//         expect(dailyJob.localisedJobCompleteTime).toEqual(expect.any(String));
-//         expect(dailyJob.streakType).toEqual(StreakTypes.solo);
-//         expect(dailyJob.createdAt).toEqual(expect.any(String));
-//         expect(dailyJob.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(dailyJob).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'agendaJobId',
-//                 'jobName',
-//                 'timezone',
-//                 'localisedJobCompleteTime',
-//                 'streakType',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
-//     });
+        const agendaJobId = 'agendaJobId';
+        const jobName = AgendaJobNames.soloStreakDailyTracker;
+        const timezone = 'Europe/London';
+        await SDK.dailyJobs.create({
+            agendaJobId,
+            jobName,
+            timezone,
+            localisedJobCompleteTime: new Date().toString(),
+            streakType: StreakTypes.solo,
+        });
 
-//     test(`gets a dailyJob using the jobName query paramter`, async () => {
-//         expect.assertions(9);
+        const dailyJobs = await SDK.dailyJobs.getAll({ agendaJobId });
+        const dailyJob = dailyJobs[0];
 
-//         const dailyJobs = await streakoid.dailyJobs.getAll({ jobName });
-//         const dailyJob = dailyJobs[0];
+        expect(dailyJob._id).toEqual(expect.any(String));
+        expect(dailyJob.agendaJobId).toEqual(agendaJobId);
+        expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
+        expect(dailyJob.timezone).toEqual('Europe/London');
+        expect(dailyJob.localisedJobCompleteTime).toEqual(expect.any(String));
+        expect(dailyJob.streakType).toEqual(StreakTypes.solo);
+        expect(dailyJob.createdAt).toEqual(expect.any(String));
+        expect(dailyJob.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(dailyJob).sort()).toEqual(
+            [
+                '_id',
+                'agendaJobId',
+                'jobName',
+                'timezone',
+                'localisedJobCompleteTime',
+                'streakType',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
+    });
 
-//         expect(dailyJob._id).toEqual(expect.any(String));
-//         expect(dailyJob.agendaJobId).toEqual(agendaJobId);
-//         expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
-//         expect(dailyJob.timezone).toEqual('Europe/London');
-//         expect(dailyJob.localisedJobCompleteTime).toEqual(expect.any(String));
-//         expect(dailyJob.streakType).toEqual(StreakTypes.solo);
-//         expect(dailyJob.createdAt).toEqual(expect.any(String));
-//         expect(dailyJob.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(dailyJob).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'agendaJobId',
-//                 'jobName',
-//                 'timezone',
-//                 'localisedJobCompleteTime',
-//                 'streakType',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
-//     });
+    test(`gets a dailyJob using the jobName query paramter`, async () => {
+        expect.assertions(9);
 
-//     test(`gets a dailyJob using the timezone query paramter`, async () => {
-//         expect.assertions(9);
+        const agendaJobId = 'agendaJobId';
+        const jobName = AgendaJobNames.soloStreakDailyTracker;
+        const timezone = 'Europe/London';
+        await SDK.dailyJobs.create({
+            agendaJobId,
+            jobName,
+            timezone,
+            localisedJobCompleteTime: new Date().toString(),
+            streakType: StreakTypes.solo,
+        });
 
-//         const dailyJobs = await streakoid.dailyJobs.getAll({ timezone });
-//         const dailyJob = dailyJobs[0];
+        const dailyJobs = await SDK.dailyJobs.getAll({ jobName });
+        const dailyJob = dailyJobs[0];
 
-//         expect(dailyJob._id).toEqual(expect.any(String));
-//         expect(dailyJob.agendaJobId).toEqual(agendaJobId);
-//         expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
-//         expect(dailyJob.timezone).toEqual('Europe/London');
-//         expect(dailyJob.localisedJobCompleteTime).toEqual(expect.any(String));
-//         expect(dailyJob.streakType).toEqual(StreakTypes.solo);
-//         expect(dailyJob.createdAt).toEqual(expect.any(String));
-//         expect(dailyJob.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(dailyJob).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'agendaJobId',
-//                 'jobName',
-//                 'timezone',
-//                 'localisedJobCompleteTime',
-//                 'streakType',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
-//     });
-// });
+        expect(dailyJob._id).toEqual(expect.any(String));
+        expect(dailyJob.agendaJobId).toEqual(agendaJobId);
+        expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
+        expect(dailyJob.timezone).toEqual('Europe/London');
+        expect(dailyJob.localisedJobCompleteTime).toEqual(expect.any(String));
+        expect(dailyJob.streakType).toEqual(StreakTypes.solo);
+        expect(dailyJob.createdAt).toEqual(expect.any(String));
+        expect(dailyJob.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(dailyJob).sort()).toEqual(
+            [
+                '_id',
+                'agendaJobId',
+                'jobName',
+                'timezone',
+                'localisedJobCompleteTime',
+                'streakType',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
+    });
+
+    test(`gets a dailyJob using the timezone query paramter`, async () => {
+        expect.assertions(9);
+
+        const agendaJobId = 'agendaJobId';
+        const jobName = AgendaJobNames.soloStreakDailyTracker;
+        const timezone = 'Europe/London';
+        await SDK.dailyJobs.create({
+            agendaJobId,
+            jobName,
+            timezone,
+            localisedJobCompleteTime: new Date().toString(),
+            streakType: StreakTypes.solo,
+        });
+
+        const dailyJobs = await SDK.dailyJobs.getAll({ timezone });
+        const dailyJob = dailyJobs[0];
+
+        expect(dailyJob._id).toEqual(expect.any(String));
+        expect(dailyJob.agendaJobId).toEqual(agendaJobId);
+        expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
+        expect(dailyJob.timezone).toEqual('Europe/London');
+        expect(dailyJob.localisedJobCompleteTime).toEqual(expect.any(String));
+        expect(dailyJob.streakType).toEqual(StreakTypes.solo);
+        expect(dailyJob.createdAt).toEqual(expect.any(String));
+        expect(dailyJob.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(dailyJob).sort()).toEqual(
+            [
+                '_id',
+                'agendaJobId',
+                'jobName',
+                'timezone',
+                'localisedJobCompleteTime',
+                'streakType',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
+    });
+});

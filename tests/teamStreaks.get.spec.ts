@@ -1,476 +1,546 @@
-// import { StreakoidFactory, londonTimezone } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import { GetAllTeamStreaksSortFields } from '../src/teamStreaks';
-// import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
-// import { getServiceConfig } from '../getServiceConfig';
+import { getPayingUser } from './setup/getPayingUser';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
+import { GetAllTeamStreaksSortFields } from '../src/SDK/teamStreaks';
 
-// const username = getServiceConfig().USER;
-// const originalImageUrl = getServiceConfig().ORIGINAL_IMAGE_URL;
+jest.setTimeout(120000);
 
-// jest.setTimeout(120000);
+const testName = 'GET-team-streaks';
 
-// describe('GET /complete-solo-streak-tasks', () => {
-//     let streakoid: StreakoidFactory;
-//     let creatorId: string;
-//     let teamStreakId: string;
-//     const streakName = 'Daily Spanish';
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     beforeAll(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             const user = await getPayingUser();
-//             creatorId = user._id;
-//             streakoid = await streakoidTest();
-//             const members = [{ memberId: creatorId }];
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//             const teamStreak = await streakoid.teamStreaks.create({
-//                 creatorId,
-//                 streakName,
-//                 members,
-//             });
-//             teamStreakId = teamStreak._id;
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//             await streakoid.teamStreaks.create({
-//                 creatorId,
-//                 streakName,
-//                 members,
-//             });
+    test(`team streaks can be retrieved with creatorId query paramter`, async () => {
+        expect.assertions(18);
 
-//             await streakoid.teamStreaks.create({
-//                 creatorId,
-//                 streakName,
-//                 members,
-//             });
-//         }
-//     });
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+        const streakName = 'Daily Spanish';
 
-//     afterAll(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+        await SDK.teamStreaks.create({
+            creatorId,
+            streakName,
+            members,
+        });
 
-//     test(`team streaks can be retrieved with creatorId query paramter`, async () => {
-//         expect.assertions(18);
+        const teamStreaks = await SDK.teamStreaks.getAll({ creatorId });
+        expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
 
-//         const teamStreaks = await streakoid.teamStreaks.getAll({ creatorId });
-//         expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
+        const teamStreak = teamStreaks[0];
+        expect(teamStreak.streakName).toEqual(expect.any(String));
+        expect(teamStreak.status).toEqual(StreakStatus.live);
+        expect(teamStreak.creatorId).toBeDefined();
+        expect(teamStreak.timezone).toEqual(expect.any(String));
+        expect(teamStreak.active).toEqual(false);
+        expect(teamStreak.completedToday).toEqual(false);
+        expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
+        expect(teamStreak.pastStreaks.length).toEqual(0);
+        expect(Object.keys(teamStreak).sort()).toEqual(
+            [
+                '_id',
+                'members',
+                'status',
+                'creatorId',
+                'streakName',
+                'timezone',
+                'active',
+                'completedToday',
+                'currentStreak',
+                'pastStreaks',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
-//         const teamStreak = teamStreaks[0];
-//         expect(teamStreak.streakName).toEqual(expect.any(String));
-//         expect(teamStreak.status).toEqual(StreakStatus.live);
-//         expect(teamStreak.creatorId).toBeDefined();
-//         expect(teamStreak.timezone).toEqual(expect.any(String));
-//         expect(teamStreak.active).toEqual(false);
-//         expect(teamStreak.completedToday).toEqual(false);
-//         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
-//         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
-//         expect(teamStreak.pastStreaks.length).toEqual(0);
-//         expect(Object.keys(teamStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'members',
-//                 'status',
-//                 'creatorId',
-//                 'streakName',
-//                 'timezone',
-//                 'active',
-//                 'completedToday',
-//                 'currentStreak',
-//                 'pastStreaks',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+        expect(teamStreak.members.length).toEqual(1);
 
-//         const { members } = teamStreak;
-//         expect(members.length).toEqual(1);
+        const member = teamStreak.members[0];
+        expect(member._id).toBeDefined();
+        expect(member.username).toBeDefined();
+        expect(member.profileImage).toBeDefined();
+        expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
 
-//         const member = members[0];
-//         expect(member._id).toBeDefined();
-//         expect(member.username).toEqual(username);
-//         expect(member.profileImage).toEqual(originalImageUrl);
-//         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
+        const { teamMemberStreak } = member;
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(
+            [
+                '_id',
+                'currentStreak',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                'userId',
+                'teamStreakId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
-//         const { teamMemberStreak } = member;
-//         expect(Object.keys(teamMemberStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'currentStreak',
-//                 'completedToday',
-//                 'active',
-//                 'pastStreaks',
-//                 'userId',
-//                 'teamStreakId',
-//                 'timezone',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+        const { currentStreak } = teamMemberStreak;
+        expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
+    });
 
-//         const { currentStreak } = teamMemberStreak;
-//         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
-//     });
+    test('returns no team streaks when invalid creatorId is used', async () => {
+        expect.assertions(1);
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+        const streakName = 'Daily Spanish';
 
-//     test('returns no team streaks when invalid creatorId is used', async () => {
-//         expect.assertions(1);
-//         const teamStreaks = await streakoid.teamStreaks.getAll({
-//             creatorId: 'InvalidID',
-//         });
-//         expect(teamStreaks.length).toEqual(0);
-//     });
+        await SDK.teamStreaks.create({
+            creatorId,
+            streakName,
+            members,
+        });
 
-//     test(`team streaks can be retrieved with memberId query parameter`, async () => {
-//         expect.assertions(18);
-//         const teamStreaks = await streakoid.teamStreaks.getAll({
-//             memberId: creatorId,
-//         });
-//         expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
-//         const teamStreak = teamStreaks[0];
-//         expect(teamStreak.streakName).toEqual(expect.any(String));
-//         expect(teamStreak.status).toEqual(StreakStatus.live);
-//         expect(teamStreak.creatorId).toBeDefined();
-//         expect(teamStreak.timezone).toEqual(expect.any(String));
-//         expect(teamStreak.active).toEqual(false);
-//         expect(teamStreak.completedToday).toEqual(false);
-//         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
-//         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
-//         expect(teamStreak.pastStreaks.length).toEqual(0);
-//         expect(Object.keys(teamStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'members',
-//                 'status',
-//                 'creatorId',
-//                 'streakName',
-//                 'timezone',
-//                 'active',
-//                 'completedToday',
-//                 'currentStreak',
-//                 'pastStreaks',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+        const teamStreaks = await SDK.teamStreaks.getAll({
+            creatorId: 'InvalidID',
+        });
+        expect(teamStreaks.length).toEqual(0);
+    });
 
-//         const { members } = teamStreak;
-//         expect(members.length).toEqual(1);
+    test(`team streaks can be retrieved with memberId query parameter`, async () => {
+        expect.assertions(18);
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+        const streakName = 'Daily Spanish';
 
-//         const member = members[0];
-//         expect(member._id).toBeDefined();
-//         expect(member.username).toEqual(username);
-//         expect(member.profileImage).toEqual(originalImageUrl);
-//         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
+        await SDK.teamStreaks.create({
+            creatorId,
+            streakName,
+            members,
+        });
 
-//         const { teamMemberStreak } = member;
-//         expect(Object.keys(teamMemberStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'currentStreak',
-//                 'completedToday',
-//                 'active',
-//                 'pastStreaks',
-//                 'userId',
-//                 'teamStreakId',
-//                 'timezone',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+        const teamStreaks = await SDK.teamStreaks.getAll({
+            memberId: creatorId,
+        });
+        expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
+        const teamStreak = teamStreaks[0];
+        expect(teamStreak.streakName).toEqual(expect.any(String));
+        expect(teamStreak.status).toEqual(StreakStatus.live);
+        expect(teamStreak.creatorId).toBeDefined();
+        expect(teamStreak.timezone).toEqual(expect.any(String));
+        expect(teamStreak.active).toEqual(false);
+        expect(teamStreak.completedToday).toEqual(false);
+        expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
+        expect(teamStreak.pastStreaks.length).toEqual(0);
+        expect(Object.keys(teamStreak).sort()).toEqual(
+            [
+                '_id',
+                'members',
+                'status',
+                'creatorId',
+                'streakName',
+                'timezone',
+                'active',
+                'completedToday',
+                'currentStreak',
+                'pastStreaks',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
-//         const { currentStreak } = teamMemberStreak;
-//         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
-//     });
+        expect(teamStreak.members.length).toEqual(1);
 
-//     test('returns no team streaks when invalid memberId is used', async () => {
-//         expect.assertions(1);
-//         const teamStreaks = await streakoid.teamStreaks.getAll({
-//             memberId: 'InvalidID',
-//         });
-//         expect(teamStreaks.length).toEqual(0);
-//     });
+        const member = teamStreak.members[0];
+        expect(member._id).toBeDefined();
+        expect(member.username).toBeDefined();
+        expect(member.profileImage).toBeDefined();
+        expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
 
-//     test(`team streaks can be retreieved with timezone query parameter`, async () => {
-//         expect.assertions(18);
-//         const teamStreaks = await streakoid.teamStreaks.getAll({ timezone: londonTimezone });
+        const { teamMemberStreak } = member;
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(
+            [
+                '_id',
+                'currentStreak',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                'userId',
+                'teamStreakId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
-//         expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
+        const { currentStreak } = teamMemberStreak;
+        expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
+    });
 
-//         const teamStreak = teamStreaks[0];
-//         expect(teamStreak.streakName).toEqual(expect.any(String));
-//         expect(teamStreak.status).toEqual(expect.any(String));
-//         expect(teamStreak.creatorId).toEqual(expect.any(String));
-//         expect(teamStreak.timezone).toEqual(expect.any(String));
-//         expect(teamStreak.active).toEqual(false);
-//         expect(teamStreak.completedToday).toEqual(false);
-//         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
-//         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
-//         expect(teamStreak.pastStreaks.length).toEqual(0);
-//         expect(Object.keys(teamStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'members',
-//                 'status',
-//                 'creatorId',
-//                 'streakName',
-//                 'timezone',
-//                 'active',
-//                 'completedToday',
-//                 'currentStreak',
-//                 'pastStreaks',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+    test('returns no team streaks when invalid memberId is used', async () => {
+        expect.assertions(1);
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+        const streakName = 'Daily Spanish';
 
-//         const { members } = teamStreak;
-//         expect(members.length).toEqual(1);
+        await SDK.teamStreaks.create({
+            creatorId,
+            streakName,
+            members,
+        });
+        const teamStreaks = await SDK.teamStreaks.getAll({
+            memberId: 'InvalidID',
+        });
+        expect(teamStreaks.length).toEqual(0);
+    });
 
-//         const member = members[0];
-//         expect(member._id).toBeDefined();
-//         expect(member.username).toEqual(expect.any(String));
-//         expect(member.profileImage).toEqual(originalImageUrl);
-//         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
+    test(`team streaks can be retreieved with timezone query parameter`, async () => {
+        expect.assertions(18);
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+        const streakName = 'Daily Spanish';
 
-//         const { teamMemberStreak } = member;
-//         expect(Object.keys(teamMemberStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'currentStreak',
-//                 'completedToday',
-//                 'active',
-//                 'pastStreaks',
-//                 'userId',
-//                 'teamStreakId',
-//                 'timezone',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+        await SDK.teamStreaks.create({
+            creatorId,
+            streakName,
+            members,
+        });
+        const teamStreaks = await SDK.teamStreaks.getAll({ timezone: 'Europe/London' });
 
-//         const { currentStreak } = teamMemberStreak;
-//         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
-//     });
+        expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
 
-//     test(`team streaks can be retreieved using sortField query parameter`, async () => {
-//         expect.assertions(18);
-//         const teamStreaks = await streakoid.teamStreaks.getAll({
-//             sortField: GetAllTeamStreaksSortFields.currentStreak,
-//         });
+        const teamStreak = teamStreaks[0];
+        expect(teamStreak.streakName).toEqual(expect.any(String));
+        expect(teamStreak.status).toEqual(expect.any(String));
+        expect(teamStreak.creatorId).toEqual(expect.any(String));
+        expect(teamStreak.timezone).toEqual(expect.any(String));
+        expect(teamStreak.active).toEqual(false);
+        expect(teamStreak.completedToday).toEqual(false);
+        expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
+        expect(teamStreak.pastStreaks.length).toEqual(0);
+        expect(Object.keys(teamStreak).sort()).toEqual(
+            [
+                '_id',
+                'members',
+                'status',
+                'creatorId',
+                'streakName',
+                'timezone',
+                'active',
+                'completedToday',
+                'currentStreak',
+                'pastStreaks',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
-//         expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
+        expect(teamStreak.members.length).toEqual(1);
 
-//         const teamStreak = teamStreaks[0];
-//         expect(teamStreak.streakName).toEqual(expect.any(String));
-//         expect(teamStreak.status).toEqual(expect.any(String));
-//         expect(teamStreak.creatorId).toEqual(expect.any(String));
-//         expect(teamStreak.timezone).toEqual(expect.any(String));
-//         expect(teamStreak.active).toEqual(false);
-//         expect(teamStreak.completedToday).toEqual(false);
-//         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
-//         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
-//         expect(teamStreak.pastStreaks.length).toEqual(0);
-//         expect(Object.keys(teamStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'members',
-//                 'status',
-//                 'creatorId',
-//                 'streakName',
-//                 'timezone',
-//                 'active',
-//                 'completedToday',
-//                 'currentStreak',
-//                 'pastStreaks',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+        const member = teamStreak.members[0];
+        expect(member._id).toBeDefined();
+        expect(member.username).toEqual(expect.any(String));
+        expect(member.profileImage).toBeDefined();
+        expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
 
-//         const { members } = teamStreak;
-//         expect(members.length).toEqual(1);
+        const { teamMemberStreak } = member;
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(
+            [
+                '_id',
+                'currentStreak',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                'userId',
+                'teamStreakId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
-//         const member = members[0];
-//         expect(member._id).toBeDefined();
-//         expect(member.username).toEqual(expect.any(String));
-//         expect(member.profileImage).toEqual(originalImageUrl);
-//         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
+        const { currentStreak } = teamMemberStreak;
+        expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
+    });
 
-//         const { teamMemberStreak } = member;
-//         expect(Object.keys(teamMemberStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'currentStreak',
-//                 'completedToday',
-//                 'active',
-//                 'pastStreaks',
-//                 'userId',
-//                 'teamStreakId',
-//                 'timezone',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+    test(`team streaks can be retreieved using sortField query parameter`, async () => {
+        expect.assertions(18);
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+        const streakName = 'Daily Spanish';
 
-//         const { currentStreak } = teamMemberStreak;
-//         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
-//     });
+        await SDK.teamStreaks.create({
+            creatorId,
+            streakName,
+            members,
+        });
+        const teamStreaks = await SDK.teamStreaks.getAll({
+            sortField: GetAllTeamStreaksSortFields.currentStreak,
+        });
 
-//     test('returns no team streaks when timezone with no team streaks is used', async () => {
-//         expect.assertions(1);
-//         const teamStreaks = await streakoid.teamStreaks.getAll({
-//             timezone: 'Europe/Gambier Islands',
-//         });
-//         expect(teamStreaks.length).toEqual(0);
-//     });
+        expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
 
-//     test(`archived team streaks can be retrieved`, async () => {
-//         expect.assertions(17);
+        const teamStreak = teamStreaks[0];
+        expect(teamStreak.streakName).toEqual(expect.any(String));
+        expect(teamStreak.status).toEqual(expect.any(String));
+        expect(teamStreak.creatorId).toEqual(expect.any(String));
+        expect(teamStreak.timezone).toEqual(expect.any(String));
+        expect(teamStreak.active).toEqual(false);
+        expect(teamStreak.completedToday).toEqual(false);
+        expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
+        expect(teamStreak.pastStreaks.length).toEqual(0);
+        expect(Object.keys(teamStreak).sort()).toEqual(
+            [
+                '_id',
+                'members',
+                'status',
+                'creatorId',
+                'streakName',
+                'timezone',
+                'active',
+                'completedToday',
+                'currentStreak',
+                'pastStreaks',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
-//         await streakoid.teamStreaks.update({
-//             teamStreakId: teamStreakId,
-//             updateData: { status: StreakStatus.archived },
-//         });
+        expect(teamStreak.members.length).toEqual(1);
 
-//         const teamStreaks = await streakoid.teamStreaks.getAll({
-//             status: StreakStatus.archived,
-//         });
-//         const teamStreak = teamStreaks[0];
-//         expect(teamStreak.streakName).toEqual(expect.any(String));
-//         expect(teamStreak.status).toEqual(StreakStatus.archived);
-//         expect(teamStreak.creatorId).toEqual(expect.any(String));
-//         expect(teamStreak.timezone).toEqual(expect.any(String));
-//         expect(teamStreak.active).toEqual(false);
-//         expect(teamStreak.completedToday).toEqual(false);
-//         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
-//         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
-//         expect(teamStreak.pastStreaks.length).toEqual(0);
-//         expect(Object.keys(teamStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'members',
-//                 'status',
-//                 'creatorId',
-//                 'streakName',
-//                 'timezone',
-//                 'active',
-//                 'completedToday',
-//                 'currentStreak',
-//                 'pastStreaks',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+        const member = teamStreak.members[0];
+        expect(member._id).toBeDefined();
+        expect(member.username).toEqual(expect.any(String));
+        expect(member.profileImage).toBeDefined();
+        expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
 
-//         const { members } = teamStreak;
-//         expect(members.length).toEqual(1);
+        const { teamMemberStreak } = member;
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(
+            [
+                '_id',
+                'currentStreak',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                'userId',
+                'teamStreakId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
-//         const member = members[0];
-//         expect(member._id).toBeDefined();
-//         expect(member.username).toEqual(username);
-//         expect(member.profileImage).toEqual(originalImageUrl);
-//         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
+        const { currentStreak } = teamMemberStreak;
+        expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
+    });
 
-//         const { teamMemberStreak } = member;
-//         expect(Object.keys(teamMemberStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'currentStreak',
-//                 'completedToday',
-//                 'active',
-//                 'pastStreaks',
-//                 'userId',
-//                 'teamStreakId',
-//                 'timezone',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+    test('returns no team streaks when timezone with no team streaks is used', async () => {
+        expect.assertions(1);
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+        const streakName = 'Daily Spanish';
 
-//         const { currentStreak } = teamMemberStreak;
-//         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
-//     });
+        await SDK.teamStreaks.create({
+            creatorId,
+            streakName,
+            members,
+        });
+        const teamStreaks = await SDK.teamStreaks.getAll({
+            timezone: 'Europe/Gambier Islands',
+        });
+        expect(teamStreaks.length).toEqual(0);
+    });
 
-//     test(`deleted team streaks can be retrieved`, async () => {
-//         expect.assertions(17);
+    test(`archived team streaks can be retrieved`, async () => {
+        expect.assertions(17);
 
-//         await streakoid.teamStreaks.update({
-//             teamStreakId,
-//             updateData: { status: StreakStatus.deleted },
-//         });
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+        const streakName = 'Daily Spanish';
 
-//         const teamStreaks = await streakoid.teamStreaks.getAll({
-//             status: StreakStatus.deleted,
-//         });
-//         const teamStreak = teamStreaks[0];
-//         expect(teamStreak.streakName).toEqual(expect.any(String));
-//         expect(teamStreak.status).toEqual(StreakStatus.deleted);
-//         expect(teamStreak.creatorId).toEqual(expect.any(String));
-//         expect(teamStreak.timezone).toEqual(expect.any(String));
-//         expect(teamStreak.active).toEqual(false);
-//         expect(teamStreak.completedToday).toEqual(false);
-//         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
-//         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
-//         expect(teamStreak.pastStreaks.length).toEqual(0);
-//         expect(Object.keys(teamStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'members',
-//                 'status',
-//                 'creatorId',
-//                 'streakName',
-//                 'timezone',
-//                 'active',
-//                 'completedToday',
-//                 'currentStreak',
-//                 'pastStreaks',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+        const createdTeamStreak = await SDK.teamStreaks.create({
+            creatorId,
+            streakName,
+            members,
+        });
 
-//         const { members } = teamStreak;
-//         expect(members.length).toEqual(1);
+        await SDK.teamStreaks.update({
+            teamStreakId: createdTeamStreak._id,
+            updateData: { status: StreakStatus.archived },
+        });
 
-//         const member = members[0];
-//         expect(member._id).toBeDefined();
-//         expect(member.username).toEqual(username);
-//         expect(member.profileImage).toEqual(originalImageUrl);
-//         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
+        const teamStreaks = await SDK.teamStreaks.getAll({
+            status: StreakStatus.archived,
+        });
+        const teamStreak = teamStreaks[0];
+        expect(teamStreak.streakName).toEqual(expect.any(String));
+        expect(teamStreak.status).toEqual(StreakStatus.archived);
+        expect(teamStreak.creatorId).toEqual(expect.any(String));
+        expect(teamStreak.timezone).toEqual(expect.any(String));
+        expect(teamStreak.active).toEqual(false);
+        expect(teamStreak.completedToday).toEqual(false);
+        expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
+        expect(teamStreak.pastStreaks.length).toEqual(0);
+        expect(Object.keys(teamStreak).sort()).toEqual(
+            [
+                '_id',
+                'members',
+                'status',
+                'creatorId',
+                'streakName',
+                'timezone',
+                'active',
+                'completedToday',
+                'currentStreak',
+                'pastStreaks',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
 
-//         const { teamMemberStreak } = member;
-//         expect(Object.keys(teamMemberStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'currentStreak',
-//                 'completedToday',
-//                 'active',
-//                 'pastStreaks',
-//                 'userId',
-//                 'teamStreakId',
-//                 'timezone',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
+        expect(teamStreak.members.length).toEqual(1);
 
-//         const { currentStreak } = teamMemberStreak;
-//         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
-//     });
-// });
+        const member = teamStreak.members[0];
+        expect(member._id).toBeDefined();
+        expect(member.username).toBeDefined();
+        expect(member.profileImage).toBeDefined();
+        expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
+
+        const { teamMemberStreak } = member;
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(
+            [
+                '_id',
+                'currentStreak',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                'userId',
+                'teamStreakId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
+
+        const { currentStreak } = teamMemberStreak;
+        expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
+    });
+
+    test(`deleted team streaks can be retrieved`, async () => {
+        expect.assertions(17);
+
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+        const streakName = 'Daily Spanish';
+
+        const createdTeamStreak = await SDK.teamStreaks.create({
+            creatorId,
+            streakName,
+            members,
+        });
+
+        await SDK.teamStreaks.update({
+            teamStreakId: createdTeamStreak._id,
+            updateData: { status: StreakStatus.deleted },
+        });
+
+        const teamStreaks = await SDK.teamStreaks.getAll({
+            status: StreakStatus.deleted,
+        });
+        const teamStreak = teamStreaks[0];
+        expect(teamStreak.streakName).toEqual(expect.any(String));
+        expect(teamStreak.status).toEqual(StreakStatus.deleted);
+        expect(teamStreak.creatorId).toEqual(expect.any(String));
+        expect(teamStreak.timezone).toEqual(expect.any(String));
+        expect(teamStreak.active).toEqual(false);
+        expect(teamStreak.completedToday).toEqual(false);
+        expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
+        expect(teamStreak.pastStreaks.length).toEqual(0);
+        expect(Object.keys(teamStreak).sort()).toEqual(
+            [
+                '_id',
+                'members',
+                'status',
+                'creatorId',
+                'streakName',
+                'timezone',
+                'active',
+                'completedToday',
+                'currentStreak',
+                'pastStreaks',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
+
+        expect(teamStreak.members.length).toEqual(1);
+
+        const member = teamStreak.members[0];
+        expect(member._id).toBeDefined();
+        expect(member.username).toBeDefined();
+        expect(member.profileImage).toBeDefined();
+        expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
+
+        const { teamMemberStreak } = member;
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(
+            [
+                '_id',
+                'currentStreak',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                'userId',
+                'teamStreakId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
+
+        const { currentStreak } = teamMemberStreak;
+        expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
+    });
+});

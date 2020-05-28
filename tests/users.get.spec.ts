@@ -1,306 +1,315 @@
-// import { StreakoidFactory } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { getFriend } from './setup/getFriend';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { getPayingUser } from './setup/getPayingUser';
+import { getFriend } from './setup/getFriend';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /users', () => {
-//     let streakoid: StreakoidFactory;
+const testName = 'GET-users';
 
-//     beforeEach(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             streakoid = await streakoidTest();
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterEach(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`returns all users when no searchTerm is used`, async () => {
-//         expect.assertions(12);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         await getPayingUser();
+    test(`returns all users when no searchTerm is used`, async () => {
+        expect.assertions(12);
 
-//         const users = await streakoid.users.getAll({});
-//         expect(users.length).toEqual(1);
+        await getPayingUser({ testName });
 
-//         const user = users[0];
+        const users = await SDK.users.getAll({});
+        expect(users.length).toEqual(1);
 
-//         expect(user.userType).toEqual(UserTypes.basic);
-//         expect(user.isPayingMember).toEqual(true);
-//         expect(user._id).toEqual(expect.any(String));
-//         expect(user.username).toEqual(expect.any(String));
-//         expect(user.timezone).toEqual(expect.any(String));
-//         expect(user.profileImages).toEqual({
-//             originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-//         });
-//         expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
-//         expect(user.totalStreakCompletes).toEqual(0);
-//         expect(user.createdAt).toEqual(expect.any(String));
-//         expect(user.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(user).sort()).toEqual(
-//             [
-//                 'userType',
-//                 'isPayingMember',
-//                 '_id',
-//                 'username',
-//                 'timezone',
-//                 'profileImages',
-//                 'pushNotification',
-//                 'totalStreakCompletes',
-//                 'createdAt',
-//                 'updatedAt',
-//             ].sort(),
-//         );
-//     });
+        const user = users[0];
 
-//     test(`returns user when full searchTerm is used`, async () => {
-//         expect.assertions(12);
+        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.isPayingMember).toEqual(true);
+        expect(user._id).toEqual(expect.any(String));
+        expect(user.username).toEqual(expect.any(String));
+        expect(user.timezone).toEqual(expect.any(String));
+        expect(user.profileImages).toEqual({
+            originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+        });
+        expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
+        expect(user.totalStreakCompletes).toEqual(0);
+        expect(user.createdAt).toEqual(expect.any(String));
+        expect(user.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(user).sort()).toEqual(
+            [
+                'userType',
+                'isPayingMember',
+                '_id',
+                'username',
+                'timezone',
+                'profileImages',
+                'pushNotification',
+                'totalStreakCompletes',
+                'createdAt',
+                'updatedAt',
+            ].sort(),
+        );
+    });
 
-//         const { username } = await getPayingUser();
+    test(`returns user when full searchTerm is used`, async () => {
+        expect.assertions(12);
 
-//         const users = await streakoid.users.getAll({ searchQuery: username });
-//         expect(users.length).toEqual(1);
+        const { username } = await getPayingUser({ testName });
 
-//         const user = users[0];
+        const users = await SDK.users.getAll({ searchQuery: username });
+        expect(users.length).toEqual(1);
 
-//         expect(user.userType).toEqual(UserTypes.basic);
-//         expect(user.isPayingMember).toEqual(true);
-//         expect(user._id).toEqual(expect.any(String));
-//         expect(user.username).toEqual(expect.any(String));
-//         expect(user.timezone).toEqual(expect.any(String));
-//         expect(user.totalStreakCompletes).toEqual(expect.any(Number));
-//         expect(user.profileImages).toEqual({
-//             originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-//         });
-//         expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
-//         expect(user.createdAt).toEqual(expect.any(String));
-//         expect(user.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(user).sort()).toEqual(
-//             [
-//                 'userType',
-//                 'isPayingMember',
-//                 '_id',
-//                 'username',
-//                 'timezone',
-//                 'profileImages',
-//                 'pushNotification',
-//                 'totalStreakCompletes',
-//                 'createdAt',
-//                 'updatedAt',
-//             ].sort(),
-//         );
-//     });
+        const user = users[0];
 
-//     test('returns user when partial searchTerm is used', async () => {
-//         expect.assertions(12);
+        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.isPayingMember).toEqual(true);
+        expect(user._id).toEqual(expect.any(String));
+        expect(user.username).toEqual(expect.any(String));
+        expect(user.timezone).toEqual(expect.any(String));
+        expect(user.totalStreakCompletes).toEqual(expect.any(Number));
+        expect(user.profileImages).toEqual({
+            originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+        });
+        expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
+        expect(user.createdAt).toEqual(expect.any(String));
+        expect(user.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(user).sort()).toEqual(
+            [
+                'userType',
+                'isPayingMember',
+                '_id',
+                'username',
+                'timezone',
+                'profileImages',
+                'pushNotification',
+                'totalStreakCompletes',
+                'createdAt',
+                'updatedAt',
+            ].sort(),
+        );
+    });
 
-//         const { username } = await getPayingUser();
+    test('returns user when partial searchTerm is used', async () => {
+        expect.assertions(12);
 
-//         const users = await streakoid.users.getAll({ searchQuery: username.slice(0, 1) });
-//         expect(users.length).toEqual(1);
+        const { username } = await getPayingUser({ testName });
 
-//         const user = users[0];
-//         expect(user.userType).toEqual(UserTypes.basic);
-//         expect(user.totalStreakCompletes).toEqual(expect.any(Number));
-//         expect(user.isPayingMember).toEqual(true);
-//         expect(user._id).toEqual(expect.any(String));
-//         expect(user.username).toEqual(expect.any(String));
-//         expect(user.timezone).toEqual(expect.any(String));
-//         expect(user.profileImages).toEqual({
-//             originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-//         });
-//         expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
-//         expect(user.createdAt).toEqual(expect.any(String));
-//         expect(user.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(user).sort()).toEqual(
-//             [
-//                 'userType',
-//                 'isPayingMember',
-//                 '_id',
-//                 'username',
-//                 'timezone',
-//                 'profileImages',
-//                 'totalStreakCompletes',
-//                 'pushNotification',
-//                 'createdAt',
-//                 'updatedAt',
-//             ].sort(),
-//         );
-//     });
+        const users = await SDK.users.getAll({ searchQuery: username && username.slice(0, 1) });
+        expect(users.length).toEqual(1);
 
-//     test('returns exact user when username query paramter is used', async () => {
-//         expect.assertions(12);
+        const user = users[0];
+        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.totalStreakCompletes).toEqual(expect.any(Number));
+        expect(user.isPayingMember).toEqual(true);
+        expect(user._id).toEqual(expect.any(String));
+        expect(user.username).toEqual(expect.any(String));
+        expect(user.timezone).toEqual(expect.any(String));
+        expect(user.profileImages).toEqual({
+            originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+        });
+        expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
+        expect(user.createdAt).toEqual(expect.any(String));
+        expect(user.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(user).sort()).toEqual(
+            [
+                'userType',
+                'isPayingMember',
+                '_id',
+                'username',
+                'timezone',
+                'profileImages',
+                'totalStreakCompletes',
+                'pushNotification',
+                'createdAt',
+                'updatedAt',
+            ].sort(),
+        );
+    });
 
-//         const { username } = await getPayingUser();
+    test('returns exact user when username query paramter is used', async () => {
+        expect.assertions(12);
 
-//         const users = await streakoid.users.getAll({ username });
-//         expect(users.length).toEqual(1);
+        const { username } = await getPayingUser({ testName });
 
-//         const user = users[0];
+        const users = await SDK.users.getAll({ username });
+        expect(users.length).toEqual(1);
 
-//         expect(user.userType).toEqual(UserTypes.basic);
-//         expect(user.isPayingMember).toEqual(true);
-//         expect(user._id).toEqual(expect.any(String));
-//         expect(user.username).toEqual(expect.any(String));
-//         expect(user.timezone).toEqual(expect.any(String));
-//         expect(user.profileImages).toEqual({
-//             originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-//         });
-//         expect(user.totalStreakCompletes).toEqual(expect.any(Number));
-//         expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
-//         expect(user.createdAt).toEqual(expect.any(String));
-//         expect(user.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(user).sort()).toEqual(
-//             [
-//                 'userType',
-//                 'isPayingMember',
-//                 '_id',
-//                 'username',
-//                 'timezone',
-//                 'profileImages',
-//                 'pushNotification',
-//                 'totalStreakCompletes',
-//                 'createdAt',
-//                 'updatedAt',
-//             ].sort(),
-//         );
-//     });
+        const user = users[0];
 
-//     test('returns exact user when email query paramter is used', async () => {
-//         expect.assertions(12);
+        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.isPayingMember).toEqual(true);
+        expect(user._id).toEqual(expect.any(String));
+        expect(user.username).toEqual(expect.any(String));
+        expect(user.timezone).toEqual(expect.any(String));
+        expect(user.profileImages).toEqual({
+            originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+        });
+        expect(user.totalStreakCompletes).toEqual(expect.any(Number));
+        expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
+        expect(user.createdAt).toEqual(expect.any(String));
+        expect(user.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(user).sort()).toEqual(
+            [
+                'userType',
+                'isPayingMember',
+                '_id',
+                'username',
+                'timezone',
+                'profileImages',
+                'pushNotification',
+                'totalStreakCompletes',
+                'createdAt',
+                'updatedAt',
+            ].sort(),
+        );
+    });
 
-//         const { email } = await getPayingUser();
+    test('returns exact user when email query paramter is used', async () => {
+        expect.assertions(12);
 
-//         const users = await streakoid.users.getAll({ email });
-//         expect(users.length).toEqual(1);
+        const { email } = await getPayingUser({ testName });
 
-//         const user = users[0];
-//         expect(user.userType).toEqual(UserTypes.basic);
-//         expect(user.isPayingMember).toEqual(true);
-//         expect(user._id).toEqual(expect.any(String));
-//         expect(user.username).toEqual(expect.any(String));
-//         expect(user.timezone).toEqual(expect.any(String));
-//         expect(user.profileImages).toEqual({
-//             originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-//         });
-//         expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
-//         expect(user.totalStreakCompletes).toEqual(expect.any(Number));
-//         expect(user.createdAt).toEqual(expect.any(String));
-//         expect(user.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(user).sort()).toEqual(
-//             [
-//                 'userType',
-//                 'isPayingMember',
-//                 '_id',
-//                 'username',
-//                 'timezone',
-//                 'profileImages',
-//                 'pushNotification',
-//                 'totalStreakCompletes',
-//                 'createdAt',
-//                 'updatedAt',
-//             ].sort(),
-//         );
-//     });
+        const users = await SDK.users.getAll({ email });
+        expect(users.length).toEqual(1);
 
-//     test(`returns users specified with userIds`, async () => {
-//         expect.assertions(12);
+        const user = users[0];
+        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.isPayingMember).toEqual(true);
+        expect(user._id).toEqual(expect.any(String));
+        expect(user.username).toEqual(expect.any(String));
+        expect(user.timezone).toEqual(expect.any(String));
+        expect(user.profileImages).toEqual({
+            originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+        });
+        expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
+        expect(user.totalStreakCompletes).toEqual(expect.any(Number));
+        expect(user.createdAt).toEqual(expect.any(String));
+        expect(user.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(user).sort()).toEqual(
+            [
+                'userType',
+                'isPayingMember',
+                '_id',
+                'username',
+                'timezone',
+                'profileImages',
+                'pushNotification',
+                'totalStreakCompletes',
+                'createdAt',
+                'updatedAt',
+            ].sort(),
+        );
+    });
 
-//         const payingUser = await getPayingUser();
+    test(`returns users specified with userIds`, async () => {
+        expect.assertions(12);
 
-//         await getFriend();
+        const payingUser = await getPayingUser({ testName });
 
-//         const users = await streakoid.users.getAll({ userIds: [payingUser._id] });
-//         expect(users.length).toEqual(1);
+        await getFriend({ testName });
 
-//         const user = users[0];
+        const users = await SDK.users.getAll({ userIds: [payingUser._id] });
+        expect(users.length).toEqual(1);
 
-//         expect(user.userType).toEqual(UserTypes.basic);
-//         expect(user.isPayingMember).toEqual(true);
-//         expect(user._id).toEqual(expect.any(String));
-//         expect(user.username).toEqual(expect.any(String));
-//         expect(user.timezone).toEqual(expect.any(String));
-//         expect(user.profileImages).toEqual({
-//             originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-//         });
-//         expect(user.totalStreakCompletes).toEqual(expect.any(Number));
-//         expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
-//         expect(user.createdAt).toEqual(expect.any(String));
-//         expect(user.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(user).sort()).toEqual(
-//             [
-//                 'userType',
-//                 'isPayingMember',
-//                 '_id',
-//                 'username',
-//                 'timezone',
-//                 'profileImages',
-//                 'totalStreakCompletes',
-//                 'pushNotification',
-//                 'createdAt',
-//                 'updatedAt',
-//             ].sort(),
-//         );
-//     });
+        const user = users[0];
 
-//     test(`limits to one user when two are available`, async () => {
-//         expect.assertions(1);
+        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.isPayingMember).toEqual(true);
+        expect(user._id).toEqual(expect.any(String));
+        expect(user.username).toEqual(expect.any(String));
+        expect(user.timezone).toEqual(expect.any(String));
+        expect(user.profileImages).toEqual({
+            originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+        });
+        expect(user.totalStreakCompletes).toEqual(expect.any(Number));
+        expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
+        expect(user.createdAt).toEqual(expect.any(String));
+        expect(user.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(user).sort()).toEqual(
+            [
+                'userType',
+                'isPayingMember',
+                '_id',
+                'username',
+                'timezone',
+                'profileImages',
+                'totalStreakCompletes',
+                'pushNotification',
+                'createdAt',
+                'updatedAt',
+            ].sort(),
+        );
+    });
 
-//         await getPayingUser();
+    test(`limits to one user when two are available`, async () => {
+        expect.assertions(1);
 
-//         await getFriend();
+        await getPayingUser({ testName });
 
-//         const users = await streakoid.users.getAll({ limit: 1 });
-//         expect(users.length).toEqual(1);
-//     });
+        await getFriend({ testName });
 
-//     test(`skips to second user when two are available`, async () => {
-//         expect.assertions(12);
+        const users = await SDK.users.getAll({ limit: 1 });
+        expect(users.length).toEqual(1);
+    });
 
-//         await getPayingUser();
+    test(`skips to second user when two are available`, async () => {
+        expect.assertions(11);
 
-//         await getFriend();
+        await getPayingUser({ testName });
 
-//         const users = await streakoid.users.getAll({ skip: 1 });
-//         expect(users.length).toEqual(1);
+        await getFriend({ testName });
 
-//         const user = users[0];
+        const users = await SDK.users.getAll({ skip: 1 });
+        expect(users.length).toEqual(1);
 
-//         expect(user.userType).toEqual(UserTypes.basic);
-//         expect(user.isPayingMember).toEqual(true);
-//         expect(user._id).toEqual(expect.any(String));
-//         expect(user.username).toEqual(expect.any(String));
-//         expect(user.timezone).toEqual(expect.any(String));
-//         expect(user.profileImages).toEqual({
-//             originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-//         });
-//         expect(user.pushNotification).toBeDefined();
-//         expect(user.totalStreakCompletes).toEqual(expect.any(Number));
-//         expect(user.createdAt).toEqual(expect.any(String));
-//         expect(user.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(user).sort()).toEqual(
-//             [
-//                 'userType',
-//                 'isPayingMember',
-//                 '_id',
-//                 'username',
-//                 'timezone',
-//                 'profileImages',
-//                 'pushNotification',
-//                 'totalStreakCompletes',
-//                 'createdAt',
-//                 'updatedAt',
-//             ].sort(),
-//         );
-//     });
-// });
+        const user = users[0];
+
+        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user._id).toEqual(expect.any(String));
+        expect(user.username).toEqual(expect.any(String));
+        expect(user.timezone).toEqual(expect.any(String));
+        expect(user.profileImages).toEqual({
+            originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+        });
+        expect(user.pushNotification).toBeDefined();
+        expect(user.totalStreakCompletes).toEqual(expect.any(Number));
+        expect(user.createdAt).toEqual(expect.any(String));
+        expect(user.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(user).sort()).toEqual(
+            [
+                'userType',
+                'isPayingMember',
+                '_id',
+                'username',
+                'timezone',
+                'profileImages',
+                'pushNotification',
+                'totalStreakCompletes',
+                'createdAt',
+                'updatedAt',
+            ].sort(),
+        );
+    });
+});

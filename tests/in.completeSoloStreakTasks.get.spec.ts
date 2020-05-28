@@ -1,79 +1,89 @@
-// import { StreakoidFactory } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import { Mongoose } from 'mongoose';
+import { disconnectDatabase } from './setup/disconnectDatabase';
+import { getPayingUser } from './setup/getPayingUser';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /complete-solo-streak-tasks', () => {
-//     let streakoid: StreakoidFactory;
-//     let userId: string;
-//     const streakName = 'Daily Spanish';
+const testName = 'GET-incomplete-solo-streak-tasks';
 
-//     beforeAll(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             const user = await getPayingUser();
-//             userId = user._id;
-//             streakoid = await streakoidTest();
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterAll(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`IncompleteSoloStreakTasks can be retrieved`, async () => {
-//         expect.assertions(8);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//         });
+    test(`IncompleteSoloStreakTasks can be retrieved`, async () => {
+        expect.assertions(8);
 
-//         const soloStreakId = soloStreak._id;
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Reading';
 
-//         // Solo streak tasks must be completed before they can be incompleted
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+        });
 
-//         await streakoid.completeSoloStreakTasks.create({
-//             userId,
-//             soloStreakId,
-//         });
+        const soloStreakId = soloStreak._id;
 
-//         await streakoid.incompleteSoloStreakTasks.create({
-//             userId,
-//             soloStreakId,
-//         });
+        // Solo streak tasks must be completed before they can be incompleted
 
-//         const incompleteSoloStreakTasks = await streakoid.incompleteSoloStreakTasks.getAll({
-//             userId,
-//             streakId: soloStreakId,
-//         });
+        await SDK.completeSoloStreakTasks.create({
+            userId,
+            soloStreakId,
+        });
 
-//         const incompleteSoloStreakTask = incompleteSoloStreakTasks[0];
+        await SDK.incompleteSoloStreakTasks.create({
+            userId,
+            soloStreakId,
+        });
 
-//         expect(incompleteSoloStreakTask._id).toEqual(expect.any(String));
-//         expect(incompleteSoloStreakTask.userId).toBeDefined();
-//         expect(incompleteSoloStreakTask.streakId).toEqual(soloStreakId);
-//         expect(incompleteSoloStreakTask.taskIncompleteTime).toEqual(expect.any(String));
-//         expect(incompleteSoloStreakTask.taskIncompleteDay).toEqual(expect.any(String));
-//         expect(incompleteSoloStreakTask.createdAt).toEqual(expect.any(String));
-//         expect(incompleteSoloStreakTask.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(incompleteSoloStreakTask).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'userId',
-//                 'streakId',
-//                 'taskIncompleteTime',
-//                 'taskIncompleteDay',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
-//     });
-// });
+        const incompleteSoloStreakTasks = await SDK.incompleteSoloStreakTasks.getAll({
+            userId,
+            streakId: soloStreakId,
+        });
+
+        const incompleteSoloStreakTask = incompleteSoloStreakTasks[0];
+
+        expect(incompleteSoloStreakTask._id).toEqual(expect.any(String));
+        expect(incompleteSoloStreakTask.userId).toBeDefined();
+        expect(incompleteSoloStreakTask.streakId).toEqual(soloStreakId);
+        expect(incompleteSoloStreakTask.taskIncompleteTime).toEqual(expect.any(String));
+        expect(incompleteSoloStreakTask.taskIncompleteDay).toEqual(expect.any(String));
+        expect(incompleteSoloStreakTask.createdAt).toEqual(expect.any(String));
+        expect(incompleteSoloStreakTask.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(incompleteSoloStreakTask).sort()).toEqual(
+            [
+                '_id',
+                'userId',
+                'streakId',
+                'taskIncompleteTime',
+                'taskIncompleteDay',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
+    });
+});

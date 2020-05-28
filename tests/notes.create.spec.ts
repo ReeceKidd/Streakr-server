@@ -1,131 +1,147 @@
-// import { StreakoidFactory } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import { getFriend } from './setup/getFriend';
-// import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { getPayingUser } from './setup/getPayingUser';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import { getFriend } from './setup/getFriend';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// const streakName = 'Daily Spanish';
-// const streakDescription = 'I must do 30 minutes of Spanish everyday';
-// const numberOfMinutes = 30;
+const testName = 'POST-notes';
 
-// describe('POST /notes', () => {
-//     let streakoid: StreakoidFactory;
-//     let userId: string;
-//     let followerId: string;
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     beforeEach(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             const user = await getPayingUser();
-//             userId = user._id;
-//             streakoid = await streakoidTest();
-//             const follower = await getFriend();
-//             followerId = follower._id;
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     afterEach(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//     test(`creates a note for a solo streak`, async () => {
-//         expect.assertions(6);
+    test(`creates a note for a solo streak`, async () => {
+        expect.assertions(6);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//             numberOfMinutes,
-//         });
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'I must do 30 minutes of Spanish everyday';
+        const numberOfMinutes = 30;
 
-//         const text = 'Finished reading book';
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+            numberOfMinutes,
+        });
 
-//         const note = await streakoid.notes.create({
-//             userId,
-//             subjectId: soloStreak._id,
-//             text,
-//             streakType: StreakTypes.solo,
-//         });
+        const text = 'Finished reading book';
 
-//         expect(note.userId).toBeDefined();
-//         expect(note.subjectId).toEqual(soloStreak._id);
-//         expect(note.text).toEqual(text);
-//         expect(note.createdAt).toEqual(expect.any(String));
-//         expect(note.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(note).sort()).toEqual(
-//             ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
-//         );
-//     });
+        const note = await SDK.notes.create({
+            userId,
+            subjectId: soloStreak._id,
+            text,
+            streakType: StreakTypes.solo,
+        });
 
-//     test(`creates a note for a team streak with one member`, async () => {
-//         expect.assertions(6);
+        expect(note.userId).toBeDefined();
+        expect(note.subjectId).toEqual(soloStreak._id);
+        expect(note.text).toEqual(text);
+        expect(note.createdAt).toEqual(expect.any(String));
+        expect(note.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(note).sort()).toEqual(
+            ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+    });
 
-//         const members = [{ memberId: userId }];
+    test(`creates a note for a team streak with one member`, async () => {
+        expect.assertions(6);
 
-//         const teamStreak = await streakoid.teamStreaks.create({
-//             creatorId: userId,
-//             streakName,
-//             members,
-//         });
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
 
-//         const text = 'Finished reading book';
+        const members = [{ memberId: userId }];
 
-//         const note = await streakoid.notes.create({
-//             userId,
-//             subjectId: teamStreak._id,
-//             text,
-//             streakType: StreakTypes.team,
-//         });
+        const teamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName,
+            members,
+        });
 
-//         expect(note.userId).toBeDefined();
-//         expect(note.subjectId).toEqual(teamStreak._id);
-//         expect(note.text).toEqual(text);
-//         expect(note.createdAt).toEqual(expect.any(String));
-//         expect(note.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(note).sort()).toEqual(
-//             ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
-//         );
-//     });
+        const text = 'Finished reading book';
 
-//     test(`creates a note for a team streak with two members to test push notifications`, async () => {
-//         expect.assertions(6);
+        const note = await SDK.notes.create({
+            userId,
+            subjectId: teamStreak._id,
+            text,
+            streakType: StreakTypes.team,
+        });
 
-//         const members = [{ memberId: userId }];
+        expect(note.userId).toBeDefined();
+        expect(note.subjectId).toEqual(teamStreak._id);
+        expect(note.text).toEqual(text);
+        expect(note.createdAt).toEqual(expect.any(String));
+        expect(note.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(note).sort()).toEqual(
+            ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+    });
 
-//         const teamStreak = await streakoid.teamStreaks.create({
-//             creatorId: userId,
-//             streakName,
-//             members,
-//         });
+    test(`creates a note for a team streak with two members to test push notifications`, async () => {
+        expect.assertions(6);
 
-//         await streakoid.teamStreaks.teamMembers.create({
-//             followerId,
-//             teamStreakId: teamStreak._id,
-//         });
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const follower = await getFriend({ testName });
+        const followerId = follower._id;
+        const streakName = 'Daily Spanish';
 
-//         const text = 'Finished reading book';
+        const members = [{ memberId: userId }];
 
-//         const note = await streakoid.notes.create({
-//             userId,
-//             subjectId: teamStreak._id,
-//             text,
-//             streakType: StreakTypes.team,
-//         });
+        const teamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName,
+            members,
+        });
 
-//         expect(note.userId).toBeDefined();
-//         expect(note.subjectId).toEqual(teamStreak._id);
-//         expect(note.text).toEqual(text);
-//         expect(note.createdAt).toEqual(expect.any(String));
-//         expect(note.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(note).sort()).toEqual(
-//             ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
-//         );
-//     });
-// });
+        await SDK.teamStreaks.teamMembers.create({
+            followerId,
+            teamStreakId: teamStreak._id,
+        });
+
+        const text = 'Finished reading book';
+
+        const note = await SDK.notes.create({
+            userId,
+            subjectId: teamStreak._id,
+            text,
+            streakType: StreakTypes.team,
+        });
+
+        expect(note.userId).toBeDefined();
+        expect(note.subjectId).toEqual(teamStreak._id);
+        expect(note.text).toEqual(text);
+        expect(note.createdAt).toEqual(expect.any(String));
+        expect(note.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(note).sort()).toEqual(
+            ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+    });
+});

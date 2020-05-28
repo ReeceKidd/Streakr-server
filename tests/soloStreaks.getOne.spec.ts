@@ -1,90 +1,100 @@
-// import { StreakoidFactory, londonTimezone } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import { getPayingUser } from './setup/getPayingUser';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { setupDatabase } from './setup/setupDatabase';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /complete-solo-streak-tasks', () => {
-//     let streakoid: StreakoidFactory;
-//     let userId: string;
-//     const streakName = 'Daily Spanish';
-//     const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+const testName = 'GET-solo-streaks-soloStreakId';
 
-//     beforeAll(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             const user = await getPayingUser();
-//             userId = user._id;
-//             streakoid = await streakoidTest();
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterAll(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`solo streak can be retrieved`, async () => {
-//         expect.assertions(14);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         const createdSoloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//         });
+    test(`solo streak can be retrieved`, async () => {
+        expect.assertions(14);
 
-//         const soloStreak = await streakoid.soloStreaks.getOne(createdSoloStreak._id);
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
-//         expect(soloStreak.streakName).toEqual(streakName);
-//         expect(soloStreak.status).toEqual(StreakStatus.live);
-//         expect(soloStreak.streakDescription).toEqual(streakDescription);
-//         expect(soloStreak.userId).toBeDefined();
-//         expect(soloStreak.completedToday).toEqual(false);
-//         expect(soloStreak.active).toEqual(false);
-//         expect(soloStreak.pastStreaks).toEqual([]);
-//         expect(soloStreak.timezone).toEqual(londonTimezone);
-//         expect(soloStreak.currentStreak.numberOfDaysInARow).toEqual(0);
-//         expect(Object.keys(soloStreak.currentStreak)).toEqual(['numberOfDaysInARow']);
-//         expect(soloStreak._id).toEqual(expect.any(String));
-//         expect(soloStreak.createdAt).toEqual(expect.any(String));
-//         expect(soloStreak.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(soloStreak).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'status',
-//                 'currentStreak',
-//                 'completedToday',
-//                 'active',
-//                 'pastStreaks',
-//                 'streakName',
-//                 'streakDescription',
-//                 'userId',
-//                 'timezone',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
-//     });
+        const createdSoloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
 
-//     test(`sends solo streak does not exist error when solo streak doesn't exist`, async () => {
-//         expect.assertions(5);
+        const soloStreak = await SDK.soloStreaks.getOne(createdSoloStreak._id);
 
-//         try {
-//             await streakoid.soloStreaks.getOne('5d54487483233622e43270f9');
-//         } catch (err) {
-//             const { data } = err.response;
-//             const { code, message, httpStatusCode } = data;
-//             expect(err.response.status).toEqual(400);
-//             expect(code).toEqual('400-07');
-//             expect(message).toEqual('Solo streak does not exist.');
-//             expect(httpStatusCode).toEqual(400);
-//             expect(Object.keys(data).sort()).toEqual(['code', 'message', 'httpStatusCode'].sort());
-//         }
-//     });
-// });
+        expect(soloStreak.streakName).toEqual(streakName);
+        expect(soloStreak.status).toEqual(StreakStatus.live);
+        expect(soloStreak.streakDescription).toEqual(streakDescription);
+        expect(soloStreak.userId).toBeDefined();
+        expect(soloStreak.completedToday).toEqual(false);
+        expect(soloStreak.active).toEqual(false);
+        expect(soloStreak.pastStreaks).toEqual([]);
+        expect(soloStreak.timezone).toBeDefined();
+        expect(soloStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(Object.keys(soloStreak.currentStreak)).toEqual(['numberOfDaysInARow']);
+        expect(soloStreak._id).toEqual(expect.any(String));
+        expect(soloStreak.createdAt).toEqual(expect.any(String));
+        expect(soloStreak.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(soloStreak).sort()).toEqual(
+            [
+                '_id',
+                'status',
+                'currentStreak',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                'streakName',
+                'streakDescription',
+                'userId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
+    });
+
+    test(`sends solo streak does not exist error when solo streak doesn't exist`, async () => {
+        expect.assertions(4);
+
+        try {
+            await getPayingUser({ testName });
+            await SDK.soloStreaks.getOne('5d54487483233622e43270f9');
+        } catch (err) {
+            const error = JSON.parse(err.text);
+            const { code, message } = error;
+            expect(err.status).toEqual(400);
+            expect(code).toEqual('400-07');
+            expect(message).toEqual('Solo streak does not exist.');
+            expect(Object.keys(error).sort()).toEqual(['code', 'message', 'httpStatusCode'].sort());
+        }
+    });
+});

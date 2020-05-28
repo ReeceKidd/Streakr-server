@@ -1,120 +1,141 @@
-// import { StreakoidFactory } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { getPayingUser } from './setup/getPayingUser';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { setupDatabase } from './setup/setupDatabase';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// const streakName = 'Daily Spanish';
-// const streakDescription = 'I must do 30 minutes of Spanish everyday';
-// const numberOfMinutes = 30;
+const testName = 'GET-notes';
 
-// describe('GET /notes', () => {
-//     let streakoid: StreakoidFactory;
-//     let userId: string;
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     beforeEach(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             const user = await getPayingUser();
-//             userId = user._id;
-//             streakoid = await streakoidTest();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     afterEach(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//     test(`gets all created notes with no query parameters.`, async () => {
-//         expect.assertions(6);
+    test(`gets all created notes with no query parameters.`, async () => {
+        expect.assertions(6);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//             numberOfMinutes,
-//         });
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'I must do 30 minutes of Spanish everyday';
+        const numberOfMinutes = 30;
 
-//         const noteText = 'Finished reading book';
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+            numberOfMinutes,
+        });
 
-//         await streakoid.notes.create({
-//             userId,
-//             subjectId: soloStreak._id,
-//             text: noteText,
-//             streakType: StreakTypes.solo,
-//         });
+        const noteText = 'Finished reading book';
 
-//         const notes = await streakoid.notes.getAll({});
+        await SDK.notes.create({
+            userId,
+            subjectId: soloStreak._id,
+            text: noteText,
+            streakType: StreakTypes.solo,
+        });
 
-//         const note = notes[0];
+        const notes = await SDK.notes.getAll({});
 
-//         expect(note.userId).toBeDefined();
-//         expect(note.subjectId).toEqual(soloStreak._id);
-//         expect(note.text).toEqual(noteText);
-//         expect(note.createdAt).toEqual(expect.any(String));
-//         expect(note.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(note).sort()).toEqual(
-//             ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
-//         );
-//     });
+        const note = notes[0];
 
-//     test(`gets all created notes with user query paramter.`, async () => {
-//         expect.assertions(6);
+        expect(note.userId).toBeDefined();
+        expect(note.subjectId).toEqual(soloStreak._id);
+        expect(note.text).toEqual(noteText);
+        expect(note.createdAt).toEqual(expect.any(String));
+        expect(note.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(note).sort()).toEqual(
+            ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+    });
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//             numberOfMinutes,
-//         });
+    test(`gets all created notes with user query paramter.`, async () => {
+        expect.assertions(6);
 
-//         const text = 'Finished reading book';
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'I must do 30 minutes of Spanish everyday';
+        const numberOfMinutes = 30;
 
-//         await streakoid.notes.create({ userId, subjectId: soloStreak._id, text, streakType: StreakTypes.solo });
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+            numberOfMinutes,
+        });
 
-//         const notes = await streakoid.notes.getAll({ userId });
-//         const note = notes[0];
+        const text = 'Finished reading book';
 
-//         expect(note.userId).toBeDefined();
-//         expect(note.subjectId).toEqual(soloStreak._id);
-//         expect(note.text).toEqual(text);
-//         expect(note.createdAt).toEqual(expect.any(String));
-//         expect(note.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(note).sort()).toEqual(
-//             ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
-//         );
-//     });
+        await SDK.notes.create({ userId, subjectId: soloStreak._id, text, streakType: StreakTypes.solo });
 
-//     test(`gets all created notes with user query paramter.`, async () => {
-//         expect.assertions(6);
+        const notes = await SDK.notes.getAll({ userId });
+        const note = notes[0];
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//             numberOfMinutes,
-//         });
+        expect(note.userId).toBeDefined();
+        expect(note.subjectId).toEqual(soloStreak._id);
+        expect(note.text).toEqual(text);
+        expect(note.createdAt).toEqual(expect.any(String));
+        expect(note.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(note).sort()).toEqual(
+            ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+    });
 
-//         const text = 'Finished reading book';
+    test(`gets all created notes with user query paramter.`, async () => {
+        expect.assertions(6);
 
-//         await streakoid.notes.create({ userId, subjectId: soloStreak._id, text, streakType: StreakTypes.solo });
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'I must do 30 minutes of Spanish everyday';
+        const numberOfMinutes = 30;
 
-//         const notes = await streakoid.notes.getAll({ subjectId: soloStreak._id });
-//         const note = notes[0];
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+            numberOfMinutes,
+        });
 
-//         expect(note.userId).toBeDefined();
-//         expect(note.subjectId).toEqual(soloStreak._id);
-//         expect(note.text).toEqual(text);
-//         expect(note.createdAt).toEqual(expect.any(String));
-//         expect(note.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(note).sort()).toEqual(
-//             ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
-//         );
-//     });
-// });
+        const text = 'Finished reading book';
+
+        await SDK.notes.create({ userId, subjectId: soloStreak._id, text, streakType: StreakTypes.solo });
+
+        const notes = await SDK.notes.getAll({ subjectId: soloStreak._id });
+        const note = notes[0];
+
+        expect(note.userId).toBeDefined();
+        expect(note.subjectId).toEqual(soloStreak._id);
+        expect(note.text).toEqual(text);
+        expect(note.createdAt).toEqual(expect.any(String));
+        expect(note.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(note).sort()).toEqual(
+            ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+    });
+});

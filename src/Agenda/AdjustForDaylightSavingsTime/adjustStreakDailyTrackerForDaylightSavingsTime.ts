@@ -29,4 +29,5 @@ export const adjustStreakDailyTrackerForDaylightSavingsTime = async ({
             },
         });
     }
+    return true;
 };

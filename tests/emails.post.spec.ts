@@ -1,99 +1,109 @@
-// import { StreakoidFactory } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import { getServiceConfig } from '../getServiceConfig';
-// const username = getServiceConfig().USER;
+import { getPayingUser } from './setup/getPayingUser';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { setupDatabase } from './setup/setupDatabase';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
 
-// jest.setTimeout(120000);
+const username = 'username';
 
-// describe('POST /emails', () => {
-//     let streakoid: StreakoidFactory;
-//     let userId: string;
+jest.setTimeout(120000);
 
-//     beforeAll(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             const user = await getPayingUser();
-//             userId = user._id;
-//             streakoid = await streakoidTest();
-//         }
-//     });
+const testName = 'POST-emails';
 
-//     afterAll(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     test(`creates email with minimum parameters`, async () => {
-//         expect.assertions(8);
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//         const name = 'Jane';
-//         const email = 'jane@gmail.com';
-//         const subject = 'Cancel memership';
-//         const message = 'I need help';
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         const emailDocument = await streakoid.emails.create({
-//             name,
-//             email,
-//             subject,
-//             message,
-//         });
+    test(`creates email with minimum parameters`, async () => {
+        expect.assertions(8);
 
-//         expect(emailDocument._id).toEqual(expect.any(String));
-//         expect(emailDocument.name).toEqual(name);
-//         expect(emailDocument.email).toEqual(email);
-//         expect(emailDocument.subject).toEqual(subject);
-//         expect(emailDocument.message).toEqual(message);
-//         expect(emailDocument.createdAt).toEqual(expect.any(String));
-//         expect(emailDocument.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(emailDocument).sort()).toEqual(
-//             ['_id', 'name', 'email', 'subject', 'message', '__v', 'createdAt', 'updatedAt'].sort(),
-//         );
-//     });
+        const name = 'Jane';
+        const email = 'jane@gmail.com';
+        const subject = 'Cancel memership';
+        const message = 'I need help';
 
-//     test(`creates email with all parameters`, async () => {
-//         expect.assertions(10);
+        const emailDocument = await SDK.emails.create({
+            name,
+            email,
+            subject,
+            message,
+        });
 
-//         const name = 'Jane';
-//         const email = 'jane@gmail.com';
-//         const subject = 'subject';
-//         const message = 'I need help';
+        expect(emailDocument._id).toEqual(expect.any(String));
+        expect(emailDocument.name).toEqual(name);
+        expect(emailDocument.email).toEqual(email);
+        expect(emailDocument.subject).toEqual(subject);
+        expect(emailDocument.message).toEqual(message);
+        expect(emailDocument.createdAt).toEqual(expect.any(String));
+        expect(emailDocument.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(emailDocument).sort()).toEqual(
+            ['_id', 'name', 'email', 'subject', 'message', '__v', 'createdAt', 'updatedAt'].sort(),
+        );
+    });
 
-//         const emailDocument = await streakoid.emails.create({
-//             name,
-//             email,
-//             subject,
-//             message,
-//             userId,
-//             username,
-//         });
+    test(`creates email with all parameters`, async () => {
+        expect.assertions(10);
 
-//         expect(emailDocument._id).toEqual(expect.any(String));
-//         expect(emailDocument.name).toEqual(name);
-//         expect(emailDocument.email).toEqual(email);
-//         expect(emailDocument.subject).toEqual(subject);
-//         expect(emailDocument.message).toEqual(message);
-//         expect(emailDocument.userId).toBeDefined();
-//         expect(emailDocument.username).toEqual(username);
-//         expect(emailDocument.createdAt).toEqual(expect.any(String));
-//         expect(emailDocument.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(emailDocument).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'name',
-//                 'email',
-//                 'subject',
-//                 'message',
-//                 'username',
-//                 'createdAt',
-//                 'updatedAt',
-//                 'userId',
-//                 '__v',
-//             ].sort(),
-//         );
-//     });
-// });
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const name = 'Jane';
+        const email = 'jane@gmail.com';
+        const subject = 'subject';
+        const message = 'I need help';
+
+        const emailDocument = await SDK.emails.create({
+            name,
+            email,
+            subject,
+            message,
+            userId,
+            username,
+        });
+
+        expect(emailDocument._id).toEqual(expect.any(String));
+        expect(emailDocument.name).toEqual(name);
+        expect(emailDocument.email).toEqual(email);
+        expect(emailDocument.subject).toEqual(subject);
+        expect(emailDocument.message).toEqual(message);
+        expect(emailDocument.userId).toBeDefined();
+        expect(emailDocument.username).toEqual(username);
+        expect(emailDocument.createdAt).toEqual(expect.any(String));
+        expect(emailDocument.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(emailDocument).sort()).toEqual(
+            [
+                '_id',
+                'name',
+                'email',
+                'subject',
+                'message',
+                'username',
+                'createdAt',
+                'updatedAt',
+                'userId',
+                '__v',
+            ].sort(),
+        );
+    });
+});

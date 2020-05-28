@@ -12,6 +12,7 @@ const getPayingUser = async ({ testName }: { testName: string }): Promise<UserMo
     const updatedUser = await userModel.findByIdAndUpdate(user._id, {
         $set: {
             membershipInformation: {
+                ...user.membershipInformation,
                 isPayingMember: true,
                 currentMembershipStartDate: new Date(),
             },

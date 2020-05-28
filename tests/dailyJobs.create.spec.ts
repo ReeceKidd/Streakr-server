@@ -1,66 +1,77 @@
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { StreakoidFactory } from '../src/streakoid';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
-// import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { getPayingUser } from './setup/getPayingUser';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /complete-solo-streak-tasks', () => {
-//     let streakoid: StreakoidFactory;
+const testName = 'DAILY-JOBS-create';
 
-//     beforeAll(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             await getPayingUser();
-//             streakoid = await streakoidTest();
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterAll(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`creates a successful soloStreakDailyTrackerJob dailyJob`, async () => {
-//         expect.assertions(9);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         const agendaJobId = 'agendaJobId';
-//         const timezone = 'Europe/London';
-//         const localisedJobCompleteTime = new Date().toString();
+    test(`creates a successful soloStreakDailyTrackerJob dailyJob`, async () => {
+        expect.assertions(9);
 
-//         const dailyJob = await streakoid.dailyJobs.create({
-//             agendaJobId,
-//             jobName: AgendaJobNames.soloStreakDailyTracker,
-//             timezone,
-//             localisedJobCompleteTime,
-//             streakType: StreakTypes.solo,
-//         });
+        await getPayingUser({ testName });
 
-//         expect(dailyJob._id).toEqual(expect.any(String));
-//         expect(dailyJob.agendaJobId).toEqual(agendaJobId);
-//         expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
-//         expect(dailyJob.timezone).toEqual('Europe/London');
-//         expect(dailyJob.localisedJobCompleteTime).toEqual(localisedJobCompleteTime);
-//         expect(dailyJob.streakType).toEqual(StreakTypes.solo);
-//         expect(dailyJob.createdAt).toEqual(expect.any(String));
-//         expect(dailyJob.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(dailyJob).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'agendaJobId',
-//                 'jobName',
-//                 'timezone',
-//                 'localisedJobCompleteTime',
-//                 'streakType',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
-//     });
-// });
+        const agendaJobId = 'agendaJobId';
+        const timezone = 'Europe/London';
+        const localisedJobCompleteTime = new Date().toString();
+
+        const dailyJob = await SDK.dailyJobs.create({
+            agendaJobId,
+            jobName: AgendaJobNames.soloStreakDailyTracker,
+            timezone,
+            localisedJobCompleteTime,
+            streakType: StreakTypes.solo,
+        });
+
+        expect(dailyJob._id).toEqual(expect.any(String));
+        expect(dailyJob.agendaJobId).toEqual(agendaJobId);
+        expect(dailyJob.jobName).toEqual(AgendaJobNames.soloStreakDailyTracker);
+        expect(dailyJob.timezone).toEqual('Europe/London');
+        expect(dailyJob.localisedJobCompleteTime).toEqual(localisedJobCompleteTime);
+        expect(dailyJob.streakType).toEqual(StreakTypes.solo);
+        expect(dailyJob.createdAt).toEqual(expect.any(String));
+        expect(dailyJob.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(dailyJob).sort()).toEqual(
+            [
+                '_id',
+                'agendaJobId',
+                'jobName',
+                'timezone',
+                'localisedJobCompleteTime',
+                'streakType',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
+    });
+});

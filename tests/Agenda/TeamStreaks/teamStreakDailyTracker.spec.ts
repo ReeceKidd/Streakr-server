@@ -42,7 +42,7 @@ describe(testName, () => {
         }
     });
 
-    test('initialises teamStreakDailyTracker job correctly', async () => {
+    test('initializes teamStreakDailyTracker job correctly', async () => {
         expect.assertions(10);
 
         const timezone = 'Europe/London';

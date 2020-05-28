@@ -1,168 +1,179 @@
-// import { StreakoidFactory, londonTimezone } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { getFriend } from './setup/getFriend';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
-// import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
-// import { hasCorrectPopulatedCurrentUserKeys } from './helpers/hasCorrectPopulatedCurrentUserKeys';
+import { getPayingUser } from './setup/getPayingUser';
+import { getFriend } from './setup/getFriend';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { hasCorrectPopulatedCurrentUserKeys } from './helpers/hasCorrectPopulatedCurrentUserKeys';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
+import { londonTimezone } from '../src/SDK/streakoidLocalSDK';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /user', () => {
-//     let streakoid: StreakoidFactory;
+const testName = 'GET-user';
 
-//     beforeEach(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             streakoid = await streakoidTest();
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterEach(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`retrieves current user`, async () => {
-//         expect.assertions(29);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         await getPayingUser();
+    test(`retrieves current user`, async () => {
+        expect.assertions(29);
 
-//         const user = await streakoid.user.getCurrentUser();
+        await getPayingUser({ testName });
 
-//         expect(user._id).toEqual(expect.any(String));
-//         expect(user.email).toBeDefined();
-//         expect(user.username).toEqual(user.username);
-//         expect(user.userType).toEqual(UserTypes.basic);
-//         expect(Object.keys(user.membershipInformation).sort()).toEqual(
-//             ['isPayingMember', 'pastMemberships', 'currentMembershipStartDate'].sort(),
-//         );
-//         expect(user.followers).toEqual([]);
-//         expect(user.following).toEqual([]);
-//         expect(user.totalStreakCompletes).toEqual(0);
-//         expect(user.totalLiveStreaks).toEqual(0);
-//         expect(user.achievements).toEqual([]);
-//         expect(user.membershipInformation.isPayingMember).toEqual(true);
-//         expect(user.membershipInformation.pastMemberships).toEqual([]);
-//         expect(user.membershipInformation.currentMembershipStartDate).toBeDefined();
-//         expect(Object.keys(user.pushNotifications).sort()).toEqual(
-//             ['newFollowerUpdates', 'teamStreakUpdates', 'customStreakReminders', 'achievementUpdates'].sort(),
-//         );
-//         expect(Object.keys(user.pushNotifications.newFollowerUpdates).sort()).toEqual(['enabled']);
-//         expect(user.pushNotifications.newFollowerUpdates.enabled).toEqual(true);
-//         expect(Object.keys(user.pushNotifications.teamStreakUpdates).sort()).toEqual(['enabled']);
-//         expect(user.pushNotifications.teamStreakUpdates.enabled).toEqual(true);
-//         expect(user.pushNotifications.customStreakReminders).toEqual([]);
-//         expect(user.timezone).toEqual(londonTimezone);
-//         expect(user.profileImages).toEqual({
-//             originalImageUrl: expect.any(String),
-//         });
-//         expect(user.pushNotification).toEqual({
-//             deviceType: null,
-//             token: null,
-//             endpointArn: null,
-//         });
-//         expect(user.hasCompletedTutorial).toEqual(false);
-//         expect(user.onboarding.whatBestDescribesYouChoice).toEqual(null);
-//         expect(user.onboarding.whyDoYouWantToBuildNewHabitsChoice).toEqual(null);
-//         expect(user.hasCompletedOnboarding).toEqual(false);
-//         expect(user.createdAt).toEqual(expect.any(String));
-//         expect(user.updatedAt).toEqual(expect.any(String));
-//         expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
-//     });
+        const user = await SDK.user.getCurrentUser();
 
-//     test(`if current user is following a user it returns the a populated following list`, async () => {
-//         expect.assertions(5);
+        expect(user._id).toEqual(expect.any(String));
+        expect(user.email).toBeDefined();
+        expect(user.username).toEqual(user.username);
+        expect(user.userType).toEqual(UserTypes.basic);
+        expect(Object.keys(user.membershipInformation).sort()).toEqual(
+            ['isPayingMember', 'pastMemberships', 'currentMembershipStartDate'].sort(),
+        );
+        expect(user.followers).toEqual([]);
+        expect(user.following).toEqual([]);
+        expect(user.totalStreakCompletes).toEqual(0);
+        expect(user.totalLiveStreaks).toEqual(0);
+        expect(user.achievements).toEqual([]);
+        expect(user.membershipInformation.isPayingMember).toEqual(true);
+        expect(user.membershipInformation.pastMemberships).toEqual([]);
+        expect(user.membershipInformation.currentMembershipStartDate).toBeDefined();
+        expect(Object.keys(user.pushNotifications).sort()).toEqual(
+            ['newFollowerUpdates', 'teamStreakUpdates', 'customStreakReminders', 'achievementUpdates'].sort(),
+        );
+        expect(Object.keys(user.pushNotifications.newFollowerUpdates).sort()).toEqual(['enabled']);
+        expect(user.pushNotifications.newFollowerUpdates.enabled).toEqual(true);
+        expect(Object.keys(user.pushNotifications.teamStreakUpdates).sort()).toEqual(['enabled']);
+        expect(user.pushNotifications.teamStreakUpdates.enabled).toEqual(true);
+        expect(user.pushNotifications.customStreakReminders).toEqual([]);
+        expect(user.timezone).toEqual(londonTimezone);
+        expect(user.profileImages).toEqual({
+            originalImageUrl: expect.any(String),
+        });
+        expect(user.pushNotification).toEqual({
+            deviceType: null,
+            token: null,
+            endpointArn: null,
+        });
+        expect(user.hasCompletedTutorial).toEqual(false);
+        expect(user.onboarding.whatBestDescribesYouChoice).toEqual(null);
+        expect(user.onboarding.whyDoYouWantToBuildNewHabitsChoice).toEqual(null);
+        expect(user.hasCompletedOnboarding).toEqual(false);
+        expect(user.createdAt).toEqual(expect.any(String));
+        expect(user.updatedAt).toEqual(expect.any(String));
+        expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
+    });
 
-//         const createdUser = await getPayingUser();
-//         const userId = createdUser._id;
+    test(`if current user is following a user it returns the a populated following list`, async () => {
+        expect.assertions(5);
 
-//         const friend = await getFriend();
+        const createdUser = await getPayingUser({ testName });
+        const userId = createdUser._id;
 
-//         await streakoid.users.following.followUser({ userId, userToFollowId: friend._id });
+        const friend = await getFriend({ testName });
 
-//         const user = await streakoid.user.getCurrentUser();
+        await SDK.users.following.followUser({ userId, userToFollowId: friend._id });
 
-//         const following = user.following[0];
-//         expect(following.username).toEqual(expect.any(String));
-//         expect(following.userId).toEqual(expect.any(String));
-//         expect(following.profileImage).toEqual(expect.any(String));
-//         expect(Object.keys(following).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
+        const user = await SDK.user.getCurrentUser();
 
-//         expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
-//     });
+        const following = user.following[0];
+        expect(following.username).toEqual(expect.any(String));
+        expect(following.userId).toEqual(expect.any(String));
+        expect(following.profileImage).toEqual(expect.any(String));
+        expect(Object.keys(following).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
 
-//     test(`if current user has a follower a user it returns the a populated follower list`, async () => {
-//         expect.assertions(6);
+        expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
+    });
 
-//         const createdUser = await getPayingUser();
-//         const userId = createdUser._id;
+    test(`if current user has a follower a user it returns the a populated follower list`, async () => {
+        expect.assertions(6);
 
-//         const friend = await getFriend();
+        const createdUser = await getPayingUser({ testName });
+        const userId = createdUser._id;
 
-//         await streakoid.users.following.followUser({ userId: friend._id, userToFollowId: userId });
+        const friend = await getFriend({ testName });
 
-//         const user = await streakoid.user.getCurrentUser();
+        await SDK.users.following.followUser({ userId: friend._id, userToFollowId: userId });
 
-//         expect(user.followers.length).toEqual(1);
+        const user = await SDK.user.getCurrentUser();
 
-//         const follower = user.followers[0];
-//         expect(follower.username).toEqual(expect.any(String));
-//         expect(follower.userId).toEqual(expect.any(String));
-//         expect(follower.profileImage).toEqual(expect.any(String));
-//         expect(Object.keys(follower).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
+        expect(user.followers.length).toEqual(1);
 
-//         expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
-//     });
+        const follower = user.followers[0];
+        expect(follower.username).toEqual(expect.any(String));
+        expect(follower.userId).toEqual(expect.any(String));
+        expect(follower.profileImage).toEqual(expect.any(String));
+        expect(Object.keys(follower).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
 
-//     test(`if current user has an achievement it returns the current user with populated achievements`, async () => {
-//         expect.assertions(6);
+        expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
+    });
 
-//         const createdUser = await getPayingUser();
-//         const userId = createdUser._id;
+    test(`if current user has an achievement it returns the current user with populated achievements`, async () => {
+        expect.assertions(6);
 
-//         const achievementName = '100 Hundred Days';
-//         const achievementDescription = '100 Day solo streak';
-//         await streakoid.achievements.create({
-//             achievementType: AchievementTypes.oneHundredDaySoloStreak,
-//             name: achievementName,
-//             description: achievementDescription,
-//         });
+        const createdUser = await getPayingUser({ testName });
+        const userId = createdUser._id;
 
-//         const soloStreak = await streakoid.soloStreaks.create({ userId, streakName: 'Reading' });
-//         const soloStreakId = soloStreak._id;
+        const achievementName = '100 Hundred Days';
+        const achievementDescription = '100 Day solo streak';
+        await SDK.achievements.create({
+            achievementType: AchievementTypes.oneHundredDaySoloStreak,
+            name: achievementName,
+            description: achievementDescription,
+        });
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 currentStreak: {
-//                     ...soloStreak.currentStreak,
-//                     numberOfDaysInARow: 99,
-//                 },
-//             },
-//         });
+        const soloStreak = await SDK.soloStreaks.create({ userId, streakName: 'Reading' });
+        const soloStreakId = soloStreak._id;
 
-//         await streakoid.completeSoloStreakTasks.create({
-//             userId,
-//             soloStreakId,
-//         });
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                currentStreak: {
+                    ...soloStreak.currentStreak,
+                    numberOfDaysInARow: 99,
+                },
+            },
+        });
 
-//         const user = await streakoid.user.getCurrentUser();
+        await SDK.completeSoloStreakTasks.create({
+            userId,
+            soloStreakId,
+        });
 
-//         expect(user.achievements.length).toEqual(1);
+        const user = await SDK.user.getCurrentUser();
 
-//         const achievement = user.achievements[0];
-//         expect(achievement.achievementType).toEqual(AchievementTypes.oneHundredDaySoloStreak);
-//         expect(achievement.name).toEqual(achievementName);
-//         expect(achievement.description).toEqual(achievementDescription);
-//         expect(Object.keys(achievement).sort()).toEqual(
-//             ['_id', 'achievementType', 'name', 'description', 'createdAt', 'updatedAt', '__v'].sort(),
-//         );
+        expect(user.achievements.length).toEqual(1);
 
-//         expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
-//     });
-// });
+        const achievement = user.achievements[0];
+        expect(achievement.achievementType).toEqual(AchievementTypes.oneHundredDaySoloStreak);
+        expect(achievement.name).toEqual(achievementName);
+        expect(achievement.description).toEqual(achievementDescription);
+        expect(Object.keys(achievement).sort()).toEqual(
+            ['_id', 'achievementType', 'name', 'description', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+
+        expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
+    });
+});

@@ -1,152 +1,167 @@
-// import { StreakoidFactory, londonTimezone } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import { getFriend } from './setup/getFriend';
-// import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { getPayingUser } from './setup/getPayingUser';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import { getFriend } from './setup/getFriend';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /users/:userId', () => {
-//     let streakoid: StreakoidFactory;
-//     let userId: string;
+const testName = 'GET-users-userId';
 
-//     beforeEach(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             const user = await getPayingUser();
-//             userId = user._id;
-//             streakoid = await streakoidTest();
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterEach(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`retrieves user`, async () => {
-//         expect.assertions(13);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         const user = await streakoid.users.getOne(userId);
+    test(`retrieves user`, async () => {
+        expect.assertions(13);
 
-//         expect(user._id).toEqual(expect.any(String));
-//         expect(user.username).toEqual(user.username);
-//         expect(user.userType).toEqual(UserTypes.basic);
-//         expect(user.timezone).toEqual(londonTimezone);
-//         expect(user.followers).toEqual([]);
-//         expect(user.following).toEqual([]);
-//         expect(user.totalStreakCompletes).toEqual(0);
-//         expect(user.totalLiveStreaks).toEqual(0);
-//         expect(user.achievements).toEqual([]);
-//         expect(user.profileImages).toEqual({
-//             originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
-//         });
-//         expect(user.createdAt).toEqual(expect.any(String));
-//         expect(user.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(user).sort()).toEqual(
-//             [
-//                 'userType',
-//                 'isPayingMember',
-//                 '_id',
-//                 'username',
-//                 'timezone',
-//                 'followers',
-//                 'following',
-//                 'totalStreakCompletes',
-//                 'totalLiveStreaks',
-//                 'pushNotificationToken',
-//                 'achievements',
-//                 'profileImages',
-//                 'createdAt',
-//                 'updatedAt',
-//             ].sort(),
-//         );
-//     });
+        const createdUser = await getPayingUser({ testName });
+        const userId = createdUser._id;
 
-//     test(`if user has a following a populated following list is returned`, async () => {
-//         expect.assertions(5);
+        const user = await SDK.users.getOne(userId);
 
-//         const friend = await getFriend();
+        expect(user._id).toEqual(expect.any(String));
+        expect(user.username).toEqual(user.username);
+        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.timezone).toBeDefined();
+        expect(user.followers).toEqual([]);
+        expect(user.following).toEqual([]);
+        expect(user.totalStreakCompletes).toEqual(0);
+        expect(user.totalLiveStreaks).toEqual(0);
+        expect(user.achievements).toEqual([]);
+        expect(user.profileImages).toEqual({
+            originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
+        });
+        expect(user.createdAt).toEqual(expect.any(String));
+        expect(user.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(user).sort()).toEqual(
+            [
+                'userType',
+                'isPayingMember',
+                '_id',
+                'username',
+                'timezone',
+                'followers',
+                'following',
+                'totalStreakCompletes',
+                'totalLiveStreaks',
+                'pushNotificationToken',
+                'achievements',
+                'profileImages',
+                'createdAt',
+                'updatedAt',
+            ].sort(),
+        );
+    });
 
-//         await streakoid.users.following.followUser({ userId, userToFollowId: friend._id });
+    test(`if user has a following a populated following list is returned`, async () => {
+        expect.assertions(5);
+        const createdUser = await getPayingUser({ testName });
+        const userId = createdUser._id;
 
-//         const user = await streakoid.users.getOne(userId);
+        const friend = await getFriend({ testName });
 
-//         const following = user.following[0];
-//         expect(following.username).toEqual(expect.any(String));
-//         expect(following.userId).toEqual(expect.any(String));
-//         expect(following.profileImage).toEqual(expect.any(String));
-//         expect(Object.keys(following).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
+        await SDK.users.following.followUser({ userId, userToFollowId: friend._id });
 
-//         expect(Object.keys(user).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'createdAt',
-//                 'followers',
-//                 'following',
-//                 'totalStreakCompletes',
-//                 'totalLiveStreaks',
-//                 'achievements',
-//                 'isPayingMember',
-//                 'profileImages',
-//                 'pushNotificationToken',
-//                 'timezone',
-//                 'updatedAt',
-//                 'userType',
-//                 'username',
-//             ].sort(),
-//         );
-//     });
+        const user = await SDK.users.getOne(userId);
 
-//     test(`if user has followers a populated followers list is returned`, async () => {
-//         expect.assertions(5);
+        const following = user.following[0];
+        expect(following.username).toEqual(expect.any(String));
+        expect(following.userId).toEqual(expect.any(String));
+        expect(following.profileImage).toEqual(expect.any(String));
+        expect(Object.keys(following).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
 
-//         const friend = await getFriend();
+        expect(Object.keys(user).sort()).toEqual(
+            [
+                '_id',
+                'createdAt',
+                'followers',
+                'following',
+                'totalStreakCompletes',
+                'totalLiveStreaks',
+                'achievements',
+                'isPayingMember',
+                'profileImages',
+                'pushNotificationToken',
+                'timezone',
+                'updatedAt',
+                'userType',
+                'username',
+            ].sort(),
+        );
+    });
 
-//         await streakoid.users.following.followUser({ userId: friend._id, userToFollowId: userId });
+    test(`if user has followers a populated followers list is returned`, async () => {
+        expect.assertions(5);
 
-//         const user = await streakoid.users.getOne(userId);
+        const createdUser = await getPayingUser({ testName });
+        const userId = createdUser._id;
 
-//         const followers = user.followers[0];
-//         expect(followers.username).toEqual(expect.any(String));
-//         expect(followers.userId).toEqual(expect.any(String));
-//         expect(followers.profileImage).toEqual(expect.any(String));
-//         expect(Object.keys(followers).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
+        const friend = await getFriend({ testName });
 
-//         expect(Object.keys(user).sort()).toEqual(
-//             [
-//                 '_id',
-//                 'createdAt',
-//                 'followers',
-//                 'following',
-//                 'totalStreakCompletes',
-//                 'totalLiveStreaks',
-//                 'achievements',
-//                 'isPayingMember',
-//                 'profileImages',
-//                 'pushNotificationToken',
-//                 'timezone',
-//                 'updatedAt',
-//                 'userType',
-//                 'username',
-//             ].sort(),
-//         );
-//     });
+        await SDK.users.following.followUser({ userId: friend._id, userToFollowId: userId });
 
-//     test(`sends string must be 24 characters long error when userId is not valid`, async () => {
-//         expect.assertions(2);
+        const user = await SDK.users.getOne(userId);
 
-//         try {
-//             await streakoid.users.getOne('notLongEnough');
-//         } catch (err) {
-//             expect(err.response.status).toBe(422);
-//             expect(err.response.data.message).toEqual(
-//                 'child "userId" fails because ["userId" length must be 24 characters long]',
-//             );
-//         }
-//     });
-// });
+        const followers = user.followers[0];
+        expect(followers.username).toEqual(expect.any(String));
+        expect(followers.userId).toEqual(expect.any(String));
+        expect(followers.profileImage).toEqual(expect.any(String));
+        expect(Object.keys(followers).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
+
+        expect(Object.keys(user).sort()).toEqual(
+            [
+                '_id',
+                'createdAt',
+                'followers',
+                'following',
+                'totalStreakCompletes',
+                'totalLiveStreaks',
+                'achievements',
+                'isPayingMember',
+                'profileImages',
+                'pushNotificationToken',
+                'timezone',
+                'updatedAt',
+                'userType',
+                'username',
+            ].sort(),
+        );
+    });
+
+    test(`sends string must be 24 characters long error when userId is not valid`, async () => {
+        expect.assertions(2);
+
+        try {
+            await SDK.users.getOne('notLongEnough');
+        } catch (err) {
+            const error = JSON.parse(err.text);
+            const { message } = error;
+            expect(err.status).toBe(422);
+            expect(message).toEqual('child "userId" fails because ["userId" length must be 24 characters long]');
+        }
+    });
+});

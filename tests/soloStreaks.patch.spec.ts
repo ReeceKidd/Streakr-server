@@ -1,500 +1,510 @@
-// import { StreakoidFactory, londonTimezone } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
-// import { CustomSoloStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
-// import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
-// import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { getPayingUser } from './setup/getPayingUser';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import { CustomSoloStreakReminder, CustomStreakReminder } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
+import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('PATCH /solo-streaks', () => {
-//     let streakoid: StreakoidFactory;
+const testName = 'PATCH-solo-streaks';
 
-//     beforeEach(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             streakoid = await streakoidTest();
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterEach(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`that request passes when solo streak is patched with correct keys`, async () => {
-//         expect.assertions(14);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         const user = await getPayingUser();
-//         const userId = user._id;
-//         const streakName = 'Daily Spanish';
-//         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+    test(`that request passes when solo streak is patched with correct keys`, async () => {
+        expect.assertions(14);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//         });
-//         const soloStreakId = soloStreak._id;
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
-//         const updatedName = 'Intermittent fasting';
-//         const updatedDescription = 'Cannot eat till 1pm everyday';
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
 
-//         const updatedSoloStreak = await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 streakName: updatedName,
-//                 streakDescription: updatedDescription,
-//             },
-//         });
+        const updatedName = 'Intermittent fasting';
+        const updatedDescription = 'Cannot eat till 1pm everyday';
 
-//         expect(updatedSoloStreak.streakName).toEqual(updatedName);
-//         expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
-//         expect(updatedSoloStreak.streakDescription).toEqual(updatedDescription);
-//         expect(updatedSoloStreak.userId).toBeDefined();
-//         expect(updatedSoloStreak.completedToday).toEqual(false);
-//         expect(updatedSoloStreak.active).toEqual(false);
-//         expect(updatedSoloStreak.pastStreaks).toEqual([]);
-//         expect(updatedSoloStreak.timezone).toEqual(londonTimezone);
-//         expect(updatedSoloStreak.currentStreak.numberOfDaysInARow).toEqual(0);
-//         expect(Object.keys(updatedSoloStreak.currentStreak)).toEqual(['numberOfDaysInARow']);
-//         expect(updatedSoloStreak._id).toEqual(expect.any(String));
-//         expect(updatedSoloStreak.createdAt).toEqual(expect.any(String));
-//         expect(updatedSoloStreak.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(updatedSoloStreak).sort()).toEqual(
-//             [
-//                 'currentStreak',
-//                 'status',
-//                 'streakDescription',
-//                 'completedToday',
-//                 'active',
-//                 'pastStreaks',
-//                 '_id',
-//                 'streakName',
-//                 'userId',
-//                 'timezone',
-//                 'createdAt',
-//                 'updatedAt',
-//                 '__v',
-//             ].sort(),
-//         );
-//     });
+        const updatedSoloStreak = await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                streakName: updatedName,
+                streakDescription: updatedDescription,
+            },
+        });
 
-//     test(`when solo streak is archived if current user has a customReminder enabled it is disabled`, async () => {
-//         expect.assertions(2);
+        expect(updatedSoloStreak.streakName).toEqual(updatedName);
+        expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
+        expect(updatedSoloStreak.streakDescription).toEqual(updatedDescription);
+        expect(updatedSoloStreak.userId).toBeDefined();
+        expect(updatedSoloStreak.completedToday).toEqual(false);
+        expect(updatedSoloStreak.active).toEqual(false);
+        expect(updatedSoloStreak.pastStreaks).toEqual([]);
+        expect(updatedSoloStreak.timezone).toBeDefined();
+        expect(updatedSoloStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(Object.keys(updatedSoloStreak.currentStreak)).toEqual(['numberOfDaysInARow']);
+        expect(updatedSoloStreak._id).toEqual(expect.any(String));
+        expect(updatedSoloStreak.createdAt).toEqual(expect.any(String));
+        expect(updatedSoloStreak.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(updatedSoloStreak).sort()).toEqual(
+            [
+                'currentStreak',
+                'status',
+                'streakDescription',
+                'completedToday',
+                'active',
+                'pastStreaks',
+                '_id',
+                'streakName',
+                'userId',
+                'timezone',
+                'createdAt',
+                'updatedAt',
+                '__v',
+            ].sort(),
+        );
+    });
 
-//         const user = await getPayingUser();
-//         const userId = user._id;
-//         const streakName = 'Daily Spanish';
-//         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+    test(`when solo streak is archived if current user has a customReminder enabled it is disabled`, async () => {
+        expect.assertions(2);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//         });
-//         const soloStreakId = soloStreak._id;
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
-//         const customSoloStreakReminder: CustomSoloStreakReminder = {
-//             enabled: true,
-//             expoId: 'expoId',
-//             reminderHour: 21,
-//             reminderMinute: 0,
-//             soloStreakId,
-//             streakReminderType: StreakReminderTypes.customSoloStreakReminder,
-//             soloStreakName: soloStreak.streakName,
-//         };
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
 
-//         const customStreakReminders: CustomStreakReminder[] = [customSoloStreakReminder];
+        const customSoloStreakReminder: CustomSoloStreakReminder = {
+            enabled: true,
+            expoId: 'expoId',
+            reminderHour: 21,
+            reminderMinute: 0,
+            soloStreakId,
+            streakReminderType: StreakReminderTypes.customSoloStreakReminder,
+            soloStreakName: soloStreak.streakName,
+        };
 
-//         await streakoid.user.pushNotifications.updatePushNotifications({ customStreakReminders });
+        const customStreakReminders: CustomStreakReminder[] = [customSoloStreakReminder];
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 status: StreakStatus.archived,
-//             },
-//         });
+        await SDK.user.pushNotifications.updatePushNotifications({ customStreakReminders });
 
-//         const updatedUser = await streakoid.user.getCurrentUser();
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                status: StreakStatus.archived,
+            },
+        });
 
-//         const updatedCustomSoloStreakReminder = updatedUser.pushNotifications.customStreakReminders.find(
-//             reminder => reminder.streakReminderType === StreakReminderTypes.customSoloStreakReminder,
-//         );
+        const updatedUser = await SDK.user.getCurrentUser();
 
-//         if (
-//             updatedCustomSoloStreakReminder &&
-//             updatedCustomSoloStreakReminder.streakReminderType === StreakReminderTypes.customSoloStreakReminder
-//         ) {
-//             expect(updatedCustomSoloStreakReminder.enabled).toEqual(false);
-//             expect(Object.keys(updatedCustomSoloStreakReminder).sort()).toEqual(
-//                 [
-//                     'enabled',
-//                     'expoId',
-//                     'reminderHour',
-//                     'reminderMinute',
-//                     'streakReminderType',
-//                     'soloStreakId',
-//                     'soloStreakName',
-//                 ].sort(),
-//             );
-//         }
-//     });
+        const updatedCustomSoloStreakReminder = updatedUser.pushNotifications.customStreakReminders.find(
+            reminder => reminder.streakReminderType === StreakReminderTypes.customSoloStreakReminder,
+        );
 
-//     test(`when solo streak is archived an ArchivedSoloStreakActivityFeedItem is created`, async () => {
-//         expect.assertions(6);
+        if (
+            updatedCustomSoloStreakReminder &&
+            updatedCustomSoloStreakReminder.streakReminderType === StreakReminderTypes.customSoloStreakReminder
+        ) {
+            expect(updatedCustomSoloStreakReminder.enabled).toEqual(false);
+            expect(Object.keys(updatedCustomSoloStreakReminder).sort()).toEqual(
+                [
+                    'enabled',
+                    'expoId',
+                    'reminderHour',
+                    'reminderMinute',
+                    'streakReminderType',
+                    'soloStreakId',
+                    'soloStreakName',
+                ].sort(),
+            );
+        }
+    });
 
-//         const user = await getPayingUser();
-//         const userId = user._id;
-//         const username = user.username;
-//         const userProfileImage = user.profileImages.originalImageUrl;
-//         const streakName = 'Daily Spanish';
-//         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+    test(`when solo streak is archived an ArchivedSoloStreakActivityFeedItem is created`, async () => {
+        expect.assertions(6);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//         });
-//         const soloStreakId = soloStreak._id;
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const username = user.username;
+        const userProfileImage = user.profileImages.originalImageUrl;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 status: StreakStatus.archived,
-//             },
-//         });
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
 
-//         const { activityFeedItems } = await streakoid.activityFeedItems.getAll({
-//             soloStreakId: soloStreak._id,
-//         });
-//         const activityFeedItem = activityFeedItems.find(
-//             item => item.activityFeedItemType === ActivityFeedItemTypes.archivedSoloStreak,
-//         );
-//         if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.archivedSoloStreak) {
-//             expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
-//             expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
-//             expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
-//             expect(activityFeedItem.username).toEqual(username);
-//             expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
-//             expect(Object.keys(activityFeedItem).sort()).toEqual(
-//                 [
-//                     '_id',
-//                     'activityFeedItemType',
-//                     'userId',
-//                     'username',
-//                     'userProfileImage',
-//                     'soloStreakId',
-//                     'soloStreakName',
-//                     'createdAt',
-//                     'updatedAt',
-//                     '__v',
-//                 ].sort(),
-//             );
-//         }
-//     });
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                status: StreakStatus.archived,
+            },
+        });
 
-//     test(`when solo streak is restored an RestoredSoloStreakActivityFeedItem is created`, async () => {
-//         expect.assertions(6);
+        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+            soloStreakId: soloStreak._id,
+        });
+        const activityFeedItem = activityFeedItems.find(
+            item => item.activityFeedItemType === ActivityFeedItemTypes.archivedSoloStreak,
+        );
+        if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.archivedSoloStreak) {
+            expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+            expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
+            expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
+            expect(activityFeedItem.username).toEqual(username);
+            expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
+            expect(Object.keys(activityFeedItem).sort()).toEqual(
+                [
+                    '_id',
+                    'activityFeedItemType',
+                    'userId',
+                    'username',
+                    'userProfileImage',
+                    'soloStreakId',
+                    'soloStreakName',
+                    'createdAt',
+                    'updatedAt',
+                    '__v',
+                ].sort(),
+            );
+        }
+    });
 
-//         const user = await getPayingUser();
-//         const userId = user._id;
-//         const username = user.username;
-//         const userProfileImage = user.profileImages.originalImageUrl;
-//         const streakName = 'Daily Spanish';
-//         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+    test(`when solo streak is restored an RestoredSoloStreakActivityFeedItem is created`, async () => {
+        expect.assertions(6);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//         });
-//         const soloStreakId = soloStreak._id;
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const username = user.username;
+        const userProfileImage = user.profileImages.originalImageUrl;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 status: StreakStatus.archived,
-//             },
-//         });
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 status: StreakStatus.live,
-//             },
-//         });
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                status: StreakStatus.archived,
+            },
+        });
 
-//         const { activityFeedItems } = await streakoid.activityFeedItems.getAll({
-//             soloStreakId: soloStreak._id,
-//         });
-//         const restoredSoloStreakActivityFeedItem = activityFeedItems.find(
-//             item => item.activityFeedItemType === ActivityFeedItemTypes.restoredSoloStreak,
-//         );
-//         if (
-//             restoredSoloStreakActivityFeedItem &&
-//             restoredSoloStreakActivityFeedItem.activityFeedItemType === ActivityFeedItemTypes.restoredSoloStreak
-//         ) {
-//             expect(restoredSoloStreakActivityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
-//             expect(restoredSoloStreakActivityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
-//             expect(restoredSoloStreakActivityFeedItem.userId).toEqual(String(soloStreak.userId));
-//             expect(restoredSoloStreakActivityFeedItem.username).toEqual(username);
-//             expect(restoredSoloStreakActivityFeedItem.userProfileImage).toEqual(userProfileImage);
-//             expect(Object.keys(restoredSoloStreakActivityFeedItem).sort()).toEqual(
-//                 [
-//                     '_id',
-//                     'activityFeedItemType',
-//                     'userId',
-//                     'username',
-//                     'userProfileImage',
-//                     'soloStreakId',
-//                     'soloStreakName',
-//                     'createdAt',
-//                     'updatedAt',
-//                     '__v',
-//                 ].sort(),
-//             );
-//         }
-//     });
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                status: StreakStatus.live,
+            },
+        });
 
-//     test(`when solo streak is deleted an DeletedSoloStreakActivityFeedItem is created`, async () => {
-//         expect.assertions(6);
+        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+            soloStreakId: soloStreak._id,
+        });
+        const restoredSoloStreakActivityFeedItem = activityFeedItems.find(
+            item => item.activityFeedItemType === ActivityFeedItemTypes.restoredSoloStreak,
+        );
+        if (
+            restoredSoloStreakActivityFeedItem &&
+            restoredSoloStreakActivityFeedItem.activityFeedItemType === ActivityFeedItemTypes.restoredSoloStreak
+        ) {
+            expect(restoredSoloStreakActivityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+            expect(restoredSoloStreakActivityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
+            expect(restoredSoloStreakActivityFeedItem.userId).toEqual(String(soloStreak.userId));
+            expect(restoredSoloStreakActivityFeedItem.username).toEqual(username);
+            expect(restoredSoloStreakActivityFeedItem.userProfileImage).toEqual(userProfileImage);
+            expect(Object.keys(restoredSoloStreakActivityFeedItem).sort()).toEqual(
+                [
+                    '_id',
+                    'activityFeedItemType',
+                    'userId',
+                    'username',
+                    'userProfileImage',
+                    'soloStreakId',
+                    'soloStreakName',
+                    'createdAt',
+                    'updatedAt',
+                    '__v',
+                ].sort(),
+            );
+        }
+    });
 
-//         const user = await getPayingUser();
-//         const userId = user._id;
-//         const username = user.username;
-//         const userProfileImage = user.profileImages.originalImageUrl;
-//         const streakName = 'Daily Spanish';
-//         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+    test(`when solo streak is deleted an DeletedSoloStreakActivityFeedItem is created`, async () => {
+        expect.assertions(6);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//         });
-//         const soloStreakId = soloStreak._id;
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const username = user.username;
+        const userProfileImage = user.profileImages.originalImageUrl;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 status: StreakStatus.archived,
-//             },
-//         });
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 status: StreakStatus.deleted,
-//             },
-//         });
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                status: StreakStatus.archived,
+            },
+        });
 
-//         const { activityFeedItems } = await streakoid.activityFeedItems.getAll({
-//             soloStreakId: soloStreak._id,
-//         });
-//         const activityFeedItem = activityFeedItems.find(
-//             item => item.activityFeedItemType === ActivityFeedItemTypes.deletedSoloStreak,
-//         );
-//         if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.deletedSoloStreak) {
-//             expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
-//             expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
-//             expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
-//             expect(activityFeedItem.username).toEqual(username);
-//             expect(activityFeedItem.userProfileImage).toEqual(String(userProfileImage));
-//             expect(Object.keys(activityFeedItem).sort()).toEqual(
-//                 [
-//                     '_id',
-//                     'activityFeedItemType',
-//                     'userId',
-//                     'username',
-//                     'userProfileImage',
-//                     'soloStreakId',
-//                     'soloStreakName',
-//                     'createdAt',
-//                     'updatedAt',
-//                     '__v',
-//                 ].sort(),
-//             );
-//         }
-//     });
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                status: StreakStatus.deleted,
+            },
+        });
 
-//     test(`when solo streak name is edited an EditedSoloStreakNameActivityFeedItem is created`, async () => {
-//         expect.assertions(6);
+        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+            soloStreakId: soloStreak._id,
+        });
+        const activityFeedItem = activityFeedItems.find(
+            item => item.activityFeedItemType === ActivityFeedItemTypes.deletedSoloStreak,
+        );
+        if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.deletedSoloStreak) {
+            expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+            expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
+            expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
+            expect(activityFeedItem.username).toEqual(username);
+            expect(activityFeedItem.userProfileImage).toEqual(String(userProfileImage));
+            expect(Object.keys(activityFeedItem).sort()).toEqual(
+                [
+                    '_id',
+                    'activityFeedItemType',
+                    'userId',
+                    'username',
+                    'userProfileImage',
+                    'soloStreakId',
+                    'soloStreakName',
+                    'createdAt',
+                    'updatedAt',
+                    '__v',
+                ].sort(),
+            );
+        }
+    });
 
-//         const user = await getPayingUser();
-//         const userId = user._id;
-//         const username = user.username;
-//         const userProfileImage = user.profileImages.originalImageUrl;
-//         const streakName = 'Daily Spanish';
-//         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+    test(`when solo streak name is edited an EditedSoloStreakNameActivityFeedItem is created`, async () => {
+        expect.assertions(6);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//         });
-//         const soloStreakId = soloStreak._id;
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const username = user.username;
+        const userProfileImage = user.profileImages.originalImageUrl;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
-//         const newName = 'New name';
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 streakName: newName,
-//             },
-//         });
+        const newName = 'New name';
 
-//         const { activityFeedItems } = await streakoid.activityFeedItems.getAll({
-//             soloStreakId: soloStreak._id,
-//         });
-//         const activityFeedItem = activityFeedItems.find(
-//             item => item.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakName,
-//         );
-//         if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakName) {
-//             expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
-//             expect(activityFeedItem.soloStreakName).toEqual(String(newName));
-//             expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
-//             expect(activityFeedItem.username).toEqual(username);
-//             expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
-//             expect(Object.keys(activityFeedItem).sort()).toEqual(
-//                 [
-//                     '_id',
-//                     'activityFeedItemType',
-//                     'userId',
-//                     'username',
-//                     'userProfileImage',
-//                     'soloStreakId',
-//                     'soloStreakName',
-//                     'createdAt',
-//                     'updatedAt',
-//                     '__v',
-//                 ].sort(),
-//             );
-//         }
-//     });
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                streakName: newName,
+            },
+        });
 
-//     test(`when solo streak description is edited an EditedSoloStreakNameActivityFeedItem is created`, async () => {
-//         expect.assertions(7);
+        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+            soloStreakId: soloStreak._id,
+        });
+        const activityFeedItem = activityFeedItems.find(
+            item => item.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakName,
+        );
+        if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakName) {
+            expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+            expect(activityFeedItem.soloStreakName).toEqual(String(newName));
+            expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
+            expect(activityFeedItem.username).toEqual(username);
+            expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
+            expect(Object.keys(activityFeedItem).sort()).toEqual(
+                [
+                    '_id',
+                    'activityFeedItemType',
+                    'userId',
+                    'username',
+                    'userProfileImage',
+                    'soloStreakId',
+                    'soloStreakName',
+                    'createdAt',
+                    'updatedAt',
+                    '__v',
+                ].sort(),
+            );
+        }
+    });
 
-//         const user = await getPayingUser();
-//         const userId = user._id;
-//         const username = user.username;
-//         const userProfileImage = user.profileImages.originalImageUrl;
-//         const streakName = 'Daily Spanish';
-//         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+    test(`when solo streak description is edited an EditedSoloStreakNameActivityFeedItem is created`, async () => {
+        expect.assertions(7);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//         });
-//         const soloStreakId = soloStreak._id;
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const username = user.username;
+        const userProfileImage = user.profileImages.originalImageUrl;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
-//         const newDescription = 'New description';
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 streakDescription: newDescription,
-//             },
-//         });
+        const newDescription = 'New description';
 
-//         const { activityFeedItems } = await streakoid.activityFeedItems.getAll({
-//             soloStreakId: soloStreak._id,
-//         });
-//         const activityFeedItem = activityFeedItems.find(
-//             item => item.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakDescription,
-//         );
-//         if (
-//             activityFeedItem &&
-//             activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakDescription
-//         ) {
-//             expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
-//             expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
-//             expect(activityFeedItem.soloStreakDescription).toEqual(String(newDescription));
-//             expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
-//             expect(activityFeedItem.username).toEqual(username);
-//             expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
-//             expect(Object.keys(activityFeedItem).sort()).toEqual(
-//                 [
-//                     '_id',
-//                     'activityFeedItemType',
-//                     'userId',
-//                     'username',
-//                     'userProfileImage',
-//                     'soloStreakId',
-//                     'soloStreakName',
-//                     'soloStreakDescription',
-//                     'createdAt',
-//                     'updatedAt',
-//                     '__v',
-//                 ].sort(),
-//             );
-//         }
-//     });
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                streakDescription: newDescription,
+            },
+        });
 
-//     test(`when solo streak is archived the users totalLiveStreakCount decreases by one.`, async () => {
-//         expect.assertions(1);
+        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+            soloStreakId: soloStreak._id,
+        });
+        const activityFeedItem = activityFeedItems.find(
+            item => item.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakDescription,
+        );
+        if (
+            activityFeedItem &&
+            activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakDescription
+        ) {
+            expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+            expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
+            expect(activityFeedItem.soloStreakDescription).toEqual(String(newDescription));
+            expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
+            expect(activityFeedItem.username).toEqual(username);
+            expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
+            expect(Object.keys(activityFeedItem).sort()).toEqual(
+                [
+                    '_id',
+                    'activityFeedItemType',
+                    'userId',
+                    'username',
+                    'userProfileImage',
+                    'soloStreakId',
+                    'soloStreakName',
+                    'soloStreakDescription',
+                    'createdAt',
+                    'updatedAt',
+                    '__v',
+                ].sort(),
+            );
+        }
+    });
 
-//         const user = await getPayingUser();
-//         const userId = user._id;
-//         const streakName = 'Daily Spanish';
-//         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+    test(`when solo streak is archived the users totalLiveStreakCount decreases by one.`, async () => {
+        expect.assertions(1);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//         });
-//         const soloStreakId = soloStreak._id;
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 status: StreakStatus.archived,
-//             },
-//         });
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
 
-//         const updatedUser = await streakoid.users.getOne(userId);
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                status: StreakStatus.archived,
+            },
+        });
 
-//         expect(updatedUser.totalLiveStreaks).toEqual(0);
-//     });
+        const updatedUser = await SDK.users.getOne(userId);
 
-//     test(`when solo streak is restored the users totalLiveStreakCount increases by one.`, async () => {
-//         expect.assertions(1);
+        expect(updatedUser.totalLiveStreaks).toEqual(0);
+    });
 
-//         const user = await getPayingUser();
-//         const userId = user._id;
-//         const streakName = 'Daily Spanish';
-//         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+    test(`when solo streak is restored the users totalLiveStreakCount increases by one.`, async () => {
+        expect.assertions(1);
 
-//         const soloStreak = await streakoid.soloStreaks.create({
-//             userId,
-//             streakName,
-//             streakDescription,
-//         });
-//         const soloStreakId = soloStreak._id;
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 status: StreakStatus.archived,
-//             },
-//         });
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
 
-//         await streakoid.soloStreaks.update({
-//             soloStreakId,
-//             updateData: {
-//                 status: StreakStatus.live,
-//             },
-//         });
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                status: StreakStatus.archived,
+            },
+        });
 
-//         const updatedUser = await streakoid.users.getOne(userId);
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                status: StreakStatus.live,
+            },
+        });
 
-//         expect(updatedUser.totalLiveStreaks).toEqual(1);
-//     });
-// });
+        const updatedUser = await SDK.users.getOne(userId);
+
+        expect(updatedUser.totalLiveStreaks).toEqual(1);
+    });
+});

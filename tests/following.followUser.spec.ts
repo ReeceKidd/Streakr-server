@@ -1,96 +1,106 @@
-// import { StreakoidFactory } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import { getFriend } from './setup/getFriend';
-// import { User } from '@streakoid/streakoid-models/lib/Models/User';
-// import { PopulatedCurrentUser } from '@streakoid/streakoid-models/lib/Models/PopulatedCurrentUser';
-// import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { getPayingUser } from './setup/getPayingUser';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import { getFriend } from './setup/getFriend';
+import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { Mongoose } from 'mongoose';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /users/:userId/users/:userToFollowId', () => {
-//     let streakoid: StreakoidFactory;
-//     let userId: string;
-//     let userToFollowId: string;
-//     let user: User;
-//     let userToFollow: PopulatedCurrentUser;
+const testName = 'GET-users-userId-users-userToUnfollowId';
 
-//     beforeEach(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             user = await getPayingUser();
-//             userId = user._id;
-//             streakoid = await streakoidTest();
-//             userToFollow = await getFriend();
-//             userToFollowId = userToFollow._id;
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterEach(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`can follow another user`, async () => {
-//         expect.assertions(6);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         const following = await streakoid.users.following.followUser({ userId, userToFollowId });
-//         expect(following.length).toEqual(1);
-//         expect(following[0]).toEqual(String(userToFollowId));
+    test(`can follow another user`, async () => {
+        expect.assertions(6);
 
-//         const updatedUserWhoIsFollowing = await streakoid.users.getOne(userId);
-//         expect(updatedUserWhoIsFollowing.followers).toEqual([]);
-//         expect(updatedUserWhoIsFollowing.following).toEqual([
-//             { userId: expect.any(String), username: expect.any(String), profileImage: expect.any(String) },
-//         ]);
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const userToFollow = await getFriend({ testName });
+        const userToFollowId = userToFollow._id;
 
-//         const updatedUserWhoIsBeingFollowed = await streakoid.users.getOne(userToFollowId);
-//         expect(updatedUserWhoIsBeingFollowed.followers).toEqual([
-//             { userId: expect.any(String), username: expect.any(String), profileImage: expect.any(String) },
-//         ]);
-//         expect(updatedUserWhoIsBeingFollowed.following).toEqual([]);
-//     });
+        const following = await SDK.users.following.followUser({ userId, userToFollowId });
+        expect(following.length).toEqual(1);
+        expect(following[0]).toEqual(String(userToFollowId));
 
-//     test(`when another user if followed a FollowedUserActivityFeedItem is created`, async () => {
-//         expect.assertions(7);
+        const updatedUserWhoIsFollowing = await SDK.users.getOne(userId);
+        expect(updatedUserWhoIsFollowing.followers).toEqual([]);
+        expect(updatedUserWhoIsFollowing.following).toEqual([
+            { userId: expect.any(String), username: expect.any(String), profileImage: expect.any(String) },
+        ]);
 
-//         await streakoid.users.following.followUser({ userId, userToFollowId });
+        const updatedUserWhoIsBeingFollowed = await SDK.users.getOne(userToFollowId);
+        expect(updatedUserWhoIsBeingFollowed.followers).toEqual([
+            { userId: expect.any(String), username: expect.any(String), profileImage: expect.any(String) },
+        ]);
+        expect(updatedUserWhoIsBeingFollowed.following).toEqual([]);
+    });
 
-//         const { activityFeedItems } = await streakoid.activityFeedItems.getAll({
-//             activityFeedItemType: ActivityFeedItemTypes.followedUser,
-//         });
-//         const followedUserActivityFeedItem = activityFeedItems.find(
-//             item => item.activityFeedItemType === ActivityFeedItemTypes.followedUser,
-//         );
-//         expect(followedUserActivityFeedItem).toBeDefined();
-//         if (
-//             followedUserActivityFeedItem &&
-//             followedUserActivityFeedItem.activityFeedItemType === ActivityFeedItemTypes.followedUser
-//         ) {
-//             expect(followedUserActivityFeedItem.userId).toEqual(String(user._id));
-//             expect(followedUserActivityFeedItem.username).toEqual(String(user.username));
-//             expect(followedUserActivityFeedItem.userProfileImage).toEqual(String(user.profileImages.originalImageUrl));
-//             expect(followedUserActivityFeedItem.userFollowedId).toEqual(String(userToFollow._id));
-//             expect(followedUserActivityFeedItem.userFollowedUsername).toEqual(String(userToFollow.username));
+    test(`when another user if followed a FollowedUserActivityFeedItem is created`, async () => {
+        expect.assertions(7);
 
-//             expect(Object.keys(followedUserActivityFeedItem).sort()).toEqual(
-//                 [
-//                     '_id',
-//                     'activityFeedItemType',
-//                     'userId',
-//                     'username',
-//                     'userProfileImage',
-//                     'userFollowedId',
-//                     'userFollowedUsername',
-//                     'createdAt',
-//                     'updatedAt',
-//                     '__v',
-//                 ].sort(),
-//             );
-//         }
-//     });
-// });
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const userToFollow = await getFriend({ testName });
+        const userToFollowId = userToFollow._id;
+
+        await SDK.users.following.followUser({ userId, userToFollowId });
+
+        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+            activityFeedItemType: ActivityFeedItemTypes.followedUser,
+        });
+        const followedUserActivityFeedItem = activityFeedItems.find(
+            item => item.activityFeedItemType === ActivityFeedItemTypes.followedUser,
+        );
+        expect(followedUserActivityFeedItem).toBeDefined();
+        if (
+            followedUserActivityFeedItem &&
+            followedUserActivityFeedItem.activityFeedItemType === ActivityFeedItemTypes.followedUser
+        ) {
+            expect(followedUserActivityFeedItem.userId).toEqual(String(user._id));
+            expect(followedUserActivityFeedItem.username).toEqual(String(user.username));
+            expect(followedUserActivityFeedItem.userProfileImage).toEqual(String(user.profileImages.originalImageUrl));
+            expect(followedUserActivityFeedItem.userFollowedId).toEqual(String(userToFollow._id));
+            expect(followedUserActivityFeedItem.userFollowedUsername).toEqual(String(userToFollow.username));
+
+            expect(Object.keys(followedUserActivityFeedItem).sort()).toEqual(
+                [
+                    '_id',
+                    'activityFeedItemType',
+                    'userId',
+                    'username',
+                    'userProfileImage',
+                    'userFollowedId',
+                    'userFollowedUsername',
+                    'createdAt',
+                    'updatedAt',
+                    '__v',
+                ].sort(),
+            );
+        }
+    });
+});

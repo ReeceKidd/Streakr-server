@@ -1,7 +1,7 @@
 import { PopulatedCurrentUser } from '@streakoid/streakoid-models/lib/Models/PopulatedCurrentUser';
 import _ from 'lodash';
 
-export const hasCorrectPopulatedCurrentUserKeys = (user: PopulatedCurrentUser) => {
+export const hasCorrectPopulatedCurrentUserKeys = (user: PopulatedCurrentUser): boolean => {
     return _.isEqual(
         Object.keys(user).sort(),
         [
@@ -18,6 +18,7 @@ export const hasCorrectPopulatedCurrentUserKeys = (user: PopulatedCurrentUser) =
             'profileImages',
             'pushNotification',
             'hasCompletedTutorial',
+            'hasCompletedIntroduction',
             'onboarding',
             'hasCompletedOnboarding',
             'timezone',

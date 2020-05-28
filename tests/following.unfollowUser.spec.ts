@@ -1,48 +1,57 @@
-// import { StreakoidFactory } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import { getFriend } from './setup/getFriend';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { setupDatabase } from './setup/setupDatabase';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
+import { getPayingUser } from './setup/getPayingUser';
+import { getFriend } from './setup/getFriend';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /users/:userId/users/:userToUnfollowId', () => {
-//     let streakoid: StreakoidFactory;
-//     let userId: string;
-//     let userToFollowId: string;
+const testName = 'GET-users-userId-users-userToUnfollowId';
 
-//     beforeAll(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             const user = await getPayingUser();
-//             userId = user._id;
-//             streakoid = await streakoidTest();
-//             const userToFollow = await getFriend();
-//             userToFollowId = userToFollow._id;
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterAll(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`can unfollow another user`, async () => {
-//         expect.assertions(4);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         await streakoid.users.following.followUser({ userId, userToFollowId });
+    test(`can unfollow another user`, async () => {
+        expect.assertions(4);
 
-//         await streakoid.users.following.unfollowUser({ userId, userToUnfollowId: userToFollowId });
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const userToFollow = await getFriend({ testName });
+        const userToFollowId = userToFollow._id;
 
-//         const updatedUserWhoIsFollowing = await streakoid.users.getOne(userId);
-//         expect(updatedUserWhoIsFollowing.followers).toEqual([]);
-//         expect(updatedUserWhoIsFollowing.following).toEqual([]);
+        await SDK.users.following.followUser({ userId, userToFollowId });
 
-//         const updatedUserWhoIsBeingFollowed = await streakoid.users.getOne(userToFollowId);
-//         expect(updatedUserWhoIsBeingFollowed.followers).toEqual([]);
-//         expect(updatedUserWhoIsBeingFollowed.following).toEqual([]);
-//     });
-// });
+        await SDK.users.following.unfollowUser({ userId, userToUnfollowId: userToFollowId });
+
+        const updatedUserWhoIsFollowing = await SDK.users.getOne(userId);
+        expect(updatedUserWhoIsFollowing.followers).toEqual([]);
+        expect(updatedUserWhoIsFollowing.following).toEqual([]);
+
+        const updatedUserWhoIsBeingFollowed = await SDK.users.getOne(userToFollowId);
+        expect(updatedUserWhoIsBeingFollowed.followers).toEqual([]);
+        expect(updatedUserWhoIsBeingFollowed.following).toEqual([]);
+    });
+});

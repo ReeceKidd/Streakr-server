@@ -13,7 +13,7 @@ import { disconnectDatabase } from './setup/disconnectDatabase';
 
 jest.setTimeout(120000);
 
-const testName = 'GET-complete-solo-streak-tasks';
+const testName = 'POST-complete-solo-streak-tasks';
 
 describe(testName, () => {
     let database: Mongoose;
@@ -411,7 +411,7 @@ describe(testName, () => {
             }
         });
 
-        test('when user completes a task a CompletedSoloStreakActivityItem is created', async () => {
+        test('when user  a task a CompletedSoloStreakActivityItem is created', async () => {
             expect.assertions(6);
             const user = await getPayingUser({ testName });
             const userId = user._id;

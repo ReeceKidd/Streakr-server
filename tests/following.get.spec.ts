@@ -1,56 +1,68 @@
-// import { StreakoidFactory } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import { getFriend } from './setup/getFriend';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
+import { getPayingUser } from './setup/getPayingUser';
+import { getFriend } from './setup/getFriend';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /users/:userId/following', () => {
-//     let streakoid: StreakoidFactory;
-//     let userId: string;
-//     let userToFollowId: string;
+const testName = 'GET-users-userId-following';
 
-//     beforeAll(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             const user = await getPayingUser();
-//             userId = user._id;
-//             streakoid = await streakoidTest();
-//             const userToFollow = await getFriend();
-//             userToFollowId = userToFollow._id;
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterAll(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`can get following for a specific user`, async () => {
-//         expect.assertions(2);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         await streakoid.users.following.followUser({ userId, userToFollowId });
+    test(`can get following for a specific user`, async () => {
+        expect.assertions(2);
 
-//         const following = await streakoid.users.following.getAll(userId);
-//         expect(following.length).toEqual(1);
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const userToFollow = await getFriend({ testName });
+        const userToFollowId = userToFollow._id;
 
-//         const followingUser = following[0];
-//         expect(followingUser).toEqual(expect.any(String));
-//     });
+        await SDK.users.following.followUser({ userId, userToFollowId });
 
-//     test(`throws error when user does not exist`, async () => {
-//         expect.assertions(3);
+        const following = await SDK.users.following.getAll(userId);
+        expect(following.length).toEqual(1);
 
-//         try {
-//             await streakoid.users.followers.getAll('5d616c43e1dc592ce8bd487b');
-//         } catch (err) {
-//             expect(err.response.status).toEqual(400);
-//             expect(err.response.data.message).toEqual('User does not exist.');
-//             expect(err.response.data.code).toEqual('400-90');
-//         }
-//     });
-// });
+        const followingUser = following[0];
+        expect(followingUser).toEqual(expect.any(String));
+    });
+
+    test(`throws error when user does not exist`, async () => {
+        expect.assertions(3);
+
+        try {
+            await getPayingUser({ testName });
+            await SDK.users.followers.getAll('5d616c43e1dc592ce8bd487b');
+        } catch (err) {
+            const error = JSON.parse(err.text);
+            const { code, message } = error;
+            expect(err.status).toEqual(400);
+            expect(message).toEqual('User does not exist.');
+            expect(code).toEqual('400-90');
+        }
+    });
+});

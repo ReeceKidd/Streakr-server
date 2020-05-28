@@ -1,48 +1,57 @@
-// import { StreakoidFactory } from '../src/streakoid';
-// import { streakoidTest } from './setup/streakoidTest';
-// import { getPayingUser } from './setup/getPayingUser';
-// import { isTestEnvironment } from './setup/isTestEnvironment';
-// import { setUpDatabase } from './setup/setupDatabase';
-// import { tearDownDatabase } from './setup/tearDownDatabase';
-// import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { isTestEnvironment } from './setup/isTestEnvironment';
+import { setupDatabase } from './setup/setupDatabase';
+import { tearDownDatabase } from './setup/tearDownDatabase';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { Mongoose } from 'mongoose';
+import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { disconnectDatabase } from './setup/disconnectDatabase';
+import { getPayingUser } from './setup/getPayingUser';
 
-// jest.setTimeout(120000);
+jest.setTimeout(120000);
 
-// describe('GET /notes/:noteId', () => {
-//     let streakoid: StreakoidFactory;
-//     let userId: string;
+const testName = 'GET-notes-noteId';
 
-//     beforeAll(async () => {
-//         if (isTestEnvironment()) {
-//             await setUpDatabase();
-//             const user = await getPayingUser();
-//             userId = user._id;
-//             streakoid = await streakoidTest();
-//         }
-//     });
+describe(testName, () => {
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+    beforeAll(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDKFactory({ testName });
+        }
+    });
 
-//     afterAll(async () => {
-//         if (isTestEnvironment()) {
-//             await tearDownDatabase();
-//         }
-//     });
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            await tearDownDatabase({ database });
+        }
+    });
 
-//     test(`get note with noteId`, async () => {
-//         expect.assertions(6);
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
 
-//         const note = await streakoid.notes.create({
-//             userId,
-//             subjectId: '5d0fc0de86821005b0e9de5b',
-//             text: 'Worked on Johnny Cash Hurt',
-//             streakType: StreakTypes.solo,
-//         });
-//         expect(note.userId).toBeDefined();
-//         expect(note.subjectId).toEqual(expect.any(String));
-//         expect(note.text).toEqual(expect.any(String));
-//         expect(note.createdAt).toEqual(expect.any(String));
-//         expect(note.updatedAt).toEqual(expect.any(String));
-//         expect(Object.keys(note).sort()).toEqual(
-//             ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
-//         );
-//     });
-// });
+    test(`get note with noteId`, async () => {
+        expect.assertions(6);
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const note = await SDK.notes.create({
+            userId,
+            subjectId: '5d0fc0de86821005b0e9de5b',
+            text: 'Worked on Johnny Cash Hurt',
+            streakType: StreakTypes.solo,
+        });
+        expect(note.userId).toBeDefined();
+        expect(note.subjectId).toEqual(expect.any(String));
+        expect(note.text).toEqual(expect.any(String));
+        expect(note.createdAt).toEqual(expect.any(String));
+        expect(note.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(note).sort()).toEqual(
+            ['_id', 'userId', 'subjectId', 'text', 'createdAt', 'updatedAt', '__v'].sort(),
+        );
+    });
+});

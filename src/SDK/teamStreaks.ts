@@ -3,7 +3,6 @@ import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import RouterCategories from '@streakoid/streakoid-models/lib/Types/RouterCategories';
 import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
 import { PastStreak } from '@streakoid/streakoid-models/lib/Models/PastStreak';
-import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 import ApiVersions from '../../src/Server/versions';
 import { teamMembers } from './teamMembers';
 import { PopulatedTeamStreak } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamStreak';
@@ -40,7 +39,7 @@ const teamStreaks = ({
         completedToday?: boolean;
         active?: boolean;
         sortField?: GetAllTeamStreaksSortFields;
-    }): Promise<TeamStreak[]> => {
+    }): Promise<PopulatedTeamStreak[]> => {
         try {
             let getAllTeamStreaksURL = `/${ApiVersions.v1}/${RouterCategories.teamStreaks}?`;
             if (creatorId) {
@@ -90,7 +89,7 @@ const teamStreaks = ({
         members: { memberId: string; teamMemberStreakId?: string }[];
         streakDescription?: string;
         numberOfMinutes?: number;
-    }): Promise<TeamStreak> => {
+    }): Promise<PopulatedTeamStreak> => {
         try {
             return postRequest({
                 route: `/${ApiVersions.v1}/${RouterCategories.teamStreaks}`,
