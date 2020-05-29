@@ -10,7 +10,6 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
-import { londonTimezone } from '../src/SDK/streakoidLocalSDK';
 
 jest.setTimeout(120000);
 
@@ -68,7 +67,7 @@ describe(testName, () => {
         expect(Object.keys(user.pushNotifications.teamStreakUpdates).sort()).toEqual(['enabled']);
         expect(user.pushNotifications.teamStreakUpdates.enabled).toEqual(true);
         expect(user.pushNotifications.customStreakReminders).toEqual([]);
-        expect(user.timezone).toEqual(londonTimezone);
+        expect(user.timezone).toEqual('Europe/London');
         expect(user.profileImages).toEqual({
             originalImageUrl: expect.any(String),
         });

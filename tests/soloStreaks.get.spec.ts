@@ -7,7 +7,7 @@ import { disconnectDatabase } from './setup/disconnectDatabase';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
-import { GetAllSoloStreaksSortFields } from '../src/SDK/soloStreaks';
+import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
 
 jest.setTimeout(120000);
 
