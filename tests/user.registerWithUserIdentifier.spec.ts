@@ -10,7 +10,7 @@ import { disconnectDatabase } from './setup/disconnectDatabase';
 
 jest.setTimeout(120000);
 
-const testName = 'POST-users-temporary';
+const testName = 'POST-users-userIdentifier';
 
 describe(testName, () => {
     let database: Mongoose;
@@ -34,12 +34,12 @@ describe(testName, () => {
         }
     });
 
-    test('temporary user can register successfully', async () => {
+    test('user can register with userIdentifier successfully', async () => {
         expect.assertions(31);
 
         const userIdentifier = 'userIdentifier';
 
-        const user = await SDK.users.createTemporary({
+        const user = await SDK.users.createWithIdentifier({
             userIdentifier,
         });
 
@@ -87,8 +87,8 @@ describe(testName, () => {
 
         try {
             const userIdentifier = 'userIdentifier';
-            await SDK.users.createTemporary({ userIdentifier });
-            await SDK.users.createTemporary({ userIdentifier });
+            await SDK.users.createWithIdentifier({ userIdentifier });
+            await SDK.users.createWithIdentifier({ userIdentifier });
         } catch (err) {
             const error = JSON.parse(err.text);
             const { message } = error;
@@ -101,7 +101,7 @@ describe(testName, () => {
         expect.assertions(2);
 
         try {
-            await SDK.users.createTemporary({ userIdentifier: '' });
+            await SDK.users.createWithIdentifier({ userIdentifier: '' });
         } catch (err) {
             const error = JSON.parse(err.text);
             const { message } = error;
