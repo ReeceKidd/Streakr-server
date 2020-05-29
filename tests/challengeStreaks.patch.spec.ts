@@ -249,7 +249,7 @@ describe(testName, () => {
         }, 1000);
     });
 
-    test(`when challenge streak status is archived an ArchivedChallengeStreakActivityFeedItem is created`, async () => {
+    test(`when challenge streak status is archived an ArchivedChallengeStreakActivityFeedItem is created`, async done => {
         expect.assertions(7);
 
         const name = 'Duolingo';
@@ -278,41 +278,44 @@ describe(testName, () => {
             },
         });
 
-        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
-            challengeStreakId: challengeStreak._id,
-        });
-        const activityFeedItem = activityFeedItems.find(
-            item => item.activityFeedItemType === ActivityFeedItemTypes.archivedChallengeStreak,
-        );
-        if (
-            activityFeedItem &&
-            activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.archivedChallengeStreak
-        ) {
-            expect(activityFeedItem.challengeStreakId).toEqual(String(challengeStreak._id));
-            expect(activityFeedItem.challengeId).toEqual(String(challenge._id));
-            expect(activityFeedItem.challengeName).toEqual(String(challenge.name));
-            expect(activityFeedItem.userId).toEqual(String(challengeStreak.userId));
-            expect(activityFeedItem.username).toEqual(username);
-            expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
-            expect(Object.keys(activityFeedItem).sort()).toEqual(
-                [
-                    '_id',
-                    'activityFeedItemType',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'challengeStreakId',
-                    'challengeName',
-                    'challengeId',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
+        setTimeout(async () => {
+            const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+                challengeStreakId: challengeStreak._id,
+            });
+            const activityFeedItem = activityFeedItems.find(
+                item => item.activityFeedItemType === ActivityFeedItemTypes.archivedChallengeStreak,
             );
-        }
+            if (
+                activityFeedItem &&
+                activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.archivedChallengeStreak
+            ) {
+                expect(activityFeedItem.challengeStreakId).toEqual(String(challengeStreak._id));
+                expect(activityFeedItem.challengeId).toEqual(String(challenge._id));
+                expect(activityFeedItem.challengeName).toEqual(String(challenge.name));
+                expect(activityFeedItem.userId).toEqual(String(challengeStreak.userId));
+                expect(activityFeedItem.username).toEqual(username);
+                expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
+                expect(Object.keys(activityFeedItem).sort()).toEqual(
+                    [
+                        '_id',
+                        'activityFeedItemType',
+                        'userId',
+                        'username',
+                        'userProfileImage',
+                        'challengeStreakId',
+                        'challengeName',
+                        'challengeId',
+                        'createdAt',
+                        'updatedAt',
+                        '__v',
+                    ].sort(),
+                );
+            }
+            done();
+        }, 1000);
     });
 
-    test(`when challenge streak status is restored an RestoredChallengeStreakActivityFeedItem is created`, async () => {
+    test(`when challenge streak status is restored an RestoredChallengeStreakActivityFeedItem is created`, async done => {
         expect.assertions(7);
 
         const name = 'Duolingo';
@@ -348,41 +351,44 @@ describe(testName, () => {
             },
         });
 
-        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
-            challengeStreakId: challengeStreak._id,
-        });
-        const activityFeedItem = activityFeedItems.find(
-            item => item.activityFeedItemType === ActivityFeedItemTypes.restoredChallengeStreak,
-        );
-        if (
-            activityFeedItem &&
-            activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.restoredChallengeStreak
-        ) {
-            expect(activityFeedItem.challengeStreakId).toEqual(String(challengeStreak._id));
-            expect(activityFeedItem.challengeId).toEqual(String(challenge._id));
-            expect(activityFeedItem.challengeName).toEqual(String(challenge.name));
-            expect(activityFeedItem.userId).toEqual(String(challengeStreak.userId));
-            expect(activityFeedItem.username).toEqual(username);
-            expect(activityFeedItem.userProfileImage).toEqual(String(userProfileImage));
-            expect(Object.keys(activityFeedItem).sort()).toEqual(
-                [
-                    '_id',
-                    'activityFeedItemType',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'challengeStreakId',
-                    'challengeName',
-                    'challengeId',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
+        setTimeout(async () => {
+            const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+                challengeStreakId: challengeStreak._id,
+            });
+            const activityFeedItem = activityFeedItems.find(
+                item => item.activityFeedItemType === ActivityFeedItemTypes.restoredChallengeStreak,
             );
-        }
+            if (
+                activityFeedItem &&
+                activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.restoredChallengeStreak
+            ) {
+                expect(activityFeedItem.challengeStreakId).toEqual(String(challengeStreak._id));
+                expect(activityFeedItem.challengeId).toEqual(String(challenge._id));
+                expect(activityFeedItem.challengeName).toEqual(String(challenge.name));
+                expect(activityFeedItem.userId).toEqual(String(challengeStreak.userId));
+                expect(activityFeedItem.username).toEqual(username);
+                expect(activityFeedItem.userProfileImage).toEqual(String(userProfileImage));
+                expect(Object.keys(activityFeedItem).sort()).toEqual(
+                    [
+                        '_id',
+                        'activityFeedItemType',
+                        'userId',
+                        'username',
+                        'userProfileImage',
+                        'challengeStreakId',
+                        'challengeName',
+                        'challengeId',
+                        'createdAt',
+                        'updatedAt',
+                        '__v',
+                    ].sort(),
+                );
+            }
+            done();
+        }, 1000);
     });
 
-    test(`when challenge streak status is deleted an DeletedChallengeStreakActivityFeedItem is created`, async () => {
+    test(`when challenge streak status is deleted an DeletedChallengeStreakActivityFeedItem is created`, async done => {
         expect.assertions(7);
 
         const name = 'Duolingo';
@@ -418,41 +424,44 @@ describe(testName, () => {
             },
         });
 
-        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
-            challengeStreakId: challengeStreak._id,
-        });
-        const activityFeedItem = activityFeedItems.find(
-            item => item.activityFeedItemType === ActivityFeedItemTypes.deletedChallengeStreak,
-        );
-        if (
-            activityFeedItem &&
-            activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.deletedChallengeStreak
-        ) {
-            expect(activityFeedItem.challengeStreakId).toEqual(String(challengeStreak._id));
-            expect(activityFeedItem.challengeId).toEqual(String(challenge._id));
-            expect(activityFeedItem.challengeName).toEqual(String(challenge.name));
-            expect(activityFeedItem.userId).toEqual(String(challengeStreak.userId));
-            expect(activityFeedItem.username).toEqual(username);
-            expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
-            expect(Object.keys(activityFeedItem).sort()).toEqual(
-                [
-                    '_id',
-                    'activityFeedItemType',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'challengeStreakId',
-                    'challengeName',
-                    'challengeId',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
+        setTimeout(async () => {
+            const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+                challengeStreakId: challengeStreak._id,
+            });
+            const activityFeedItem = activityFeedItems.find(
+                item => item.activityFeedItemType === ActivityFeedItemTypes.deletedChallengeStreak,
             );
-        }
+            if (
+                activityFeedItem &&
+                activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.deletedChallengeStreak
+            ) {
+                expect(activityFeedItem.challengeStreakId).toEqual(String(challengeStreak._id));
+                expect(activityFeedItem.challengeId).toEqual(String(challenge._id));
+                expect(activityFeedItem.challengeName).toEqual(String(challenge.name));
+                expect(activityFeedItem.userId).toEqual(String(challengeStreak.userId));
+                expect(activityFeedItem.username).toEqual(username);
+                expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
+                expect(Object.keys(activityFeedItem).sort()).toEqual(
+                    [
+                        '_id',
+                        'activityFeedItemType',
+                        'userId',
+                        'username',
+                        'userProfileImage',
+                        'challengeStreakId',
+                        'challengeName',
+                        'challengeId',
+                        'createdAt',
+                        'updatedAt',
+                        '__v',
+                    ].sort(),
+                );
+            }
+            done();
+        }, 1000);
     });
 
-    test(`when challenge streak status is archived the users totalLiveStreaks is decreased by one.`, async () => {
+    test(`when challenge streak status is archived the users totalLiveStreaks is decreased by one.`, async done => {
         expect.assertions(1);
 
         const name = 'Duolingo';
@@ -479,8 +488,11 @@ describe(testName, () => {
             },
         });
 
-        const { totalLiveStreaks } = await SDK.users.getOne(userId);
-        expect(totalLiveStreaks).toEqual(0);
+        setTimeout(async () => {
+            const { totalLiveStreaks } = await SDK.users.getOne(userId);
+            expect(totalLiveStreaks).toEqual(0);
+            done();
+        }, 1000);
     });
 
     test(`when challenge streak is restored the users totalLiveStreaks is increased by one.`, async done => {

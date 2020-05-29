@@ -95,7 +95,7 @@ describe(testName, () => {
         );
     });
 
-    test(`when solo streak is archived if current user has a customReminder enabled it is disabled`, async () => {
+    test(`when solo streak is archived if current user has a customReminder enabled it is disabled`, async done => {
         expect.assertions(2);
 
         const user = await getPayingUser({ testName });
@@ -131,32 +131,35 @@ describe(testName, () => {
             },
         });
 
-        const updatedUser = await SDK.user.getCurrentUser();
+        setTimeout(async () => {
+            const updatedUser = await SDK.user.getCurrentUser();
 
-        const updatedCustomSoloStreakReminder = updatedUser.pushNotifications.customStreakReminders.find(
-            reminder => reminder.streakReminderType === StreakReminderTypes.customSoloStreakReminder,
-        );
-
-        if (
-            updatedCustomSoloStreakReminder &&
-            updatedCustomSoloStreakReminder.streakReminderType === StreakReminderTypes.customSoloStreakReminder
-        ) {
-            expect(updatedCustomSoloStreakReminder.enabled).toEqual(false);
-            expect(Object.keys(updatedCustomSoloStreakReminder).sort()).toEqual(
-                [
-                    'enabled',
-                    'expoId',
-                    'reminderHour',
-                    'reminderMinute',
-                    'streakReminderType',
-                    'soloStreakId',
-                    'soloStreakName',
-                ].sort(),
+            const updatedCustomSoloStreakReminder = updatedUser.pushNotifications.customStreakReminders.find(
+                reminder => reminder.streakReminderType === StreakReminderTypes.customSoloStreakReminder,
             );
-        }
+
+            if (
+                updatedCustomSoloStreakReminder &&
+                updatedCustomSoloStreakReminder.streakReminderType === StreakReminderTypes.customSoloStreakReminder
+            ) {
+                expect(updatedCustomSoloStreakReminder.enabled).toEqual(false);
+                expect(Object.keys(updatedCustomSoloStreakReminder).sort()).toEqual(
+                    [
+                        'enabled',
+                        'expoId',
+                        'reminderHour',
+                        'reminderMinute',
+                        'streakReminderType',
+                        'soloStreakId',
+                        'soloStreakName',
+                    ].sort(),
+                );
+            }
+            done();
+        }, 1000);
     });
 
-    test(`when solo streak is archived an ArchivedSoloStreakActivityFeedItem is created`, async () => {
+    test(`when solo streak is archived an ArchivedSoloStreakActivityFeedItem is created`, async done => {
         expect.assertions(6);
 
         const user = await getPayingUser({ testName });
@@ -180,36 +183,42 @@ describe(testName, () => {
             },
         });
 
-        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
-            soloStreakId: soloStreak._id,
-        });
-        const activityFeedItem = activityFeedItems.find(
-            item => item.activityFeedItemType === ActivityFeedItemTypes.archivedSoloStreak,
-        );
-        if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.archivedSoloStreak) {
-            expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
-            expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
-            expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
-            expect(activityFeedItem.username).toEqual(username);
-            expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
-            expect(Object.keys(activityFeedItem).sort()).toEqual(
-                [
-                    '_id',
-                    'activityFeedItemType',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'soloStreakId',
-                    'soloStreakName',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
+        setTimeout(async () => {
+            const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+                soloStreakId: soloStreak._id,
+            });
+            const activityFeedItem = activityFeedItems.find(
+                item => item.activityFeedItemType === ActivityFeedItemTypes.archivedSoloStreak,
             );
-        }
+            if (
+                activityFeedItem &&
+                activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.archivedSoloStreak
+            ) {
+                expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+                expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
+                expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
+                expect(activityFeedItem.username).toEqual(username);
+                expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
+                expect(Object.keys(activityFeedItem).sort()).toEqual(
+                    [
+                        '_id',
+                        'activityFeedItemType',
+                        'userId',
+                        'username',
+                        'userProfileImage',
+                        'soloStreakId',
+                        'soloStreakName',
+                        'createdAt',
+                        'updatedAt',
+                        '__v',
+                    ].sort(),
+                );
+            }
+            done();
+        }, 1000);
     });
 
-    test(`when solo streak is restored an RestoredSoloStreakActivityFeedItem is created`, async () => {
+    test(`when solo streak is restored an RestoredSoloStreakActivityFeedItem is created`, async done => {
         expect.assertions(6);
 
         const user = await getPayingUser({ testName });
@@ -240,39 +249,42 @@ describe(testName, () => {
             },
         });
 
-        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
-            soloStreakId: soloStreak._id,
-        });
-        const restoredSoloStreakActivityFeedItem = activityFeedItems.find(
-            item => item.activityFeedItemType === ActivityFeedItemTypes.restoredSoloStreak,
-        );
-        if (
-            restoredSoloStreakActivityFeedItem &&
-            restoredSoloStreakActivityFeedItem.activityFeedItemType === ActivityFeedItemTypes.restoredSoloStreak
-        ) {
-            expect(restoredSoloStreakActivityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
-            expect(restoredSoloStreakActivityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
-            expect(restoredSoloStreakActivityFeedItem.userId).toEqual(String(soloStreak.userId));
-            expect(restoredSoloStreakActivityFeedItem.username).toEqual(username);
-            expect(restoredSoloStreakActivityFeedItem.userProfileImage).toEqual(userProfileImage);
-            expect(Object.keys(restoredSoloStreakActivityFeedItem).sort()).toEqual(
-                [
-                    '_id',
-                    'activityFeedItemType',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'soloStreakId',
-                    'soloStreakName',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
+        setTimeout(async () => {
+            const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+                soloStreakId: soloStreak._id,
+            });
+            const restoredSoloStreakActivityFeedItem = activityFeedItems.find(
+                item => item.activityFeedItemType === ActivityFeedItemTypes.restoredSoloStreak,
             );
-        }
+            if (
+                restoredSoloStreakActivityFeedItem &&
+                restoredSoloStreakActivityFeedItem.activityFeedItemType === ActivityFeedItemTypes.restoredSoloStreak
+            ) {
+                expect(restoredSoloStreakActivityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+                expect(restoredSoloStreakActivityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
+                expect(restoredSoloStreakActivityFeedItem.userId).toEqual(String(soloStreak.userId));
+                expect(restoredSoloStreakActivityFeedItem.username).toEqual(username);
+                expect(restoredSoloStreakActivityFeedItem.userProfileImage).toEqual(userProfileImage);
+                expect(Object.keys(restoredSoloStreakActivityFeedItem).sort()).toEqual(
+                    [
+                        '_id',
+                        'activityFeedItemType',
+                        'userId',
+                        'username',
+                        'userProfileImage',
+                        'soloStreakId',
+                        'soloStreakName',
+                        'createdAt',
+                        'updatedAt',
+                        '__v',
+                    ].sort(),
+                );
+            }
+            done();
+        }, 1000);
     });
 
-    test(`when solo streak is deleted an DeletedSoloStreakActivityFeedItem is created`, async () => {
+    test(`when solo streak is deleted an DeletedSoloStreakActivityFeedItem is created`, async done => {
         expect.assertions(6);
 
         const user = await getPayingUser({ testName });
@@ -303,36 +315,39 @@ describe(testName, () => {
             },
         });
 
-        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
-            soloStreakId: soloStreak._id,
-        });
-        const activityFeedItem = activityFeedItems.find(
-            item => item.activityFeedItemType === ActivityFeedItemTypes.deletedSoloStreak,
-        );
-        if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.deletedSoloStreak) {
-            expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
-            expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
-            expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
-            expect(activityFeedItem.username).toEqual(username);
-            expect(activityFeedItem.userProfileImage).toEqual(String(userProfileImage));
-            expect(Object.keys(activityFeedItem).sort()).toEqual(
-                [
-                    '_id',
-                    'activityFeedItemType',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'soloStreakId',
-                    'soloStreakName',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
+        setTimeout(async () => {
+            const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+                soloStreakId: soloStreak._id,
+            });
+            const activityFeedItem = activityFeedItems.find(
+                item => item.activityFeedItemType === ActivityFeedItemTypes.deletedSoloStreak,
             );
-        }
+            if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.deletedSoloStreak) {
+                expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+                expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
+                expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
+                expect(activityFeedItem.username).toEqual(username);
+                expect(activityFeedItem.userProfileImage).toEqual(String(userProfileImage));
+                expect(Object.keys(activityFeedItem).sort()).toEqual(
+                    [
+                        '_id',
+                        'activityFeedItemType',
+                        'userId',
+                        'username',
+                        'userProfileImage',
+                        'soloStreakId',
+                        'soloStreakName',
+                        'createdAt',
+                        'updatedAt',
+                        '__v',
+                    ].sort(),
+                );
+            }
+            done();
+        }, 1000);
     });
 
-    test(`when solo streak name is edited an EditedSoloStreakNameActivityFeedItem is created`, async () => {
+    test(`when solo streak name is edited an EditedSoloStreakNameActivityFeedItem is created`, async done => {
         expect.assertions(6);
 
         const user = await getPayingUser({ testName });
@@ -358,36 +373,42 @@ describe(testName, () => {
             },
         });
 
-        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
-            soloStreakId: soloStreak._id,
-        });
-        const activityFeedItem = activityFeedItems.find(
-            item => item.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakName,
-        );
-        if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakName) {
-            expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
-            expect(activityFeedItem.soloStreakName).toEqual(String(newName));
-            expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
-            expect(activityFeedItem.username).toEqual(username);
-            expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
-            expect(Object.keys(activityFeedItem).sort()).toEqual(
-                [
-                    '_id',
-                    'activityFeedItemType',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'soloStreakId',
-                    'soloStreakName',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
+        setTimeout(async () => {
+            const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+                soloStreakId: soloStreak._id,
+            });
+            const activityFeedItem = activityFeedItems.find(
+                item => item.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakName,
             );
-        }
+            if (
+                activityFeedItem &&
+                activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakName
+            ) {
+                expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+                expect(activityFeedItem.soloStreakName).toEqual(String(newName));
+                expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
+                expect(activityFeedItem.username).toEqual(username);
+                expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
+                expect(Object.keys(activityFeedItem).sort()).toEqual(
+                    [
+                        '_id',
+                        'activityFeedItemType',
+                        'userId',
+                        'username',
+                        'userProfileImage',
+                        'soloStreakId',
+                        'soloStreakName',
+                        'createdAt',
+                        'updatedAt',
+                        '__v',
+                    ].sort(),
+                );
+            }
+            done();
+        }, 1000);
     });
 
-    test(`when solo streak description is edited an EditedSoloStreakNameActivityFeedItem is created`, async () => {
+    test(`when solo streak description is edited an EditedSoloStreakNameActivityFeedItem is created`, async done => {
         expect.assertions(7);
 
         const user = await getPayingUser({ testName });
@@ -413,41 +434,44 @@ describe(testName, () => {
             },
         });
 
-        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
-            soloStreakId: soloStreak._id,
-        });
-        const activityFeedItem = activityFeedItems.find(
-            item => item.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakDescription,
-        );
-        if (
-            activityFeedItem &&
-            activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakDescription
-        ) {
-            expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
-            expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
-            expect(activityFeedItem.soloStreakDescription).toEqual(String(newDescription));
-            expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
-            expect(activityFeedItem.username).toEqual(username);
-            expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
-            expect(Object.keys(activityFeedItem).sort()).toEqual(
-                [
-                    '_id',
-                    'activityFeedItemType',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'soloStreakId',
-                    'soloStreakName',
-                    'soloStreakDescription',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
+        setTimeout(async () => {
+            const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+                soloStreakId: soloStreak._id,
+            });
+            const activityFeedItem = activityFeedItems.find(
+                item => item.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakDescription,
             );
-        }
+            if (
+                activityFeedItem &&
+                activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.editedSoloStreakDescription
+            ) {
+                expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
+                expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
+                expect(activityFeedItem.soloStreakDescription).toEqual(String(newDescription));
+                expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
+                expect(activityFeedItem.username).toEqual(username);
+                expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
+                expect(Object.keys(activityFeedItem).sort()).toEqual(
+                    [
+                        '_id',
+                        'activityFeedItemType',
+                        'userId',
+                        'username',
+                        'userProfileImage',
+                        'soloStreakId',
+                        'soloStreakName',
+                        'soloStreakDescription',
+                        'createdAt',
+                        'updatedAt',
+                        '__v',
+                    ].sort(),
+                );
+            }
+            done();
+        }, 1000);
     });
 
-    test(`when solo streak is archived the users totalLiveStreakCount decreases by one.`, async () => {
+    test(`when solo streak is archived the users totalLiveStreakCount decreases by one.`, async done => {
         expect.assertions(1);
 
         const user = await getPayingUser({ testName });
@@ -469,12 +493,15 @@ describe(testName, () => {
             },
         });
 
-        const updatedUser = await SDK.users.getOne(userId);
+        setTimeout(async () => {
+            const updatedUser = await SDK.users.getOne(userId);
 
-        expect(updatedUser.totalLiveStreaks).toEqual(0);
+            expect(updatedUser.totalLiveStreaks).toEqual(0);
+            done();
+        }, 100);
     });
 
-    test(`when solo streak is restored the users totalLiveStreakCount increases by one.`, async () => {
+    test(`when solo streak is restored the users totalLiveStreakCount increases by one.`, async done => {
         expect.assertions(1);
 
         const user = await getPayingUser({ testName });
@@ -503,8 +530,11 @@ describe(testName, () => {
             },
         });
 
-        const updatedUser = await SDK.users.getOne(userId);
+        setTimeout(async () => {
+            const updatedUser = await SDK.users.getOne(userId);
 
-        expect(updatedUser.totalLiveStreaks).toEqual(1);
+            expect(updatedUser.totalLiveStreaks).toEqual(1);
+            done();
+        }, 1000);
     });
 });
