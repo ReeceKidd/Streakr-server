@@ -4,8 +4,8 @@ import { setupDatabase } from './setup/setupDatabase';
 import { tearDownDatabase } from './setup/tearDownDatabase';
 import { Mongoose } from 'mongoose';
 import { disconnectDatabase } from './setup/disconnectDatabase';
-import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
-import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
+import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 
@@ -19,7 +19,7 @@ describe(testName, () => {
     beforeAll(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
-            SDK = streakoidTestSDKFactory({ testName });
+            SDK = streakoidTestSDK({ testName });
         }
     });
 

@@ -5,9 +5,9 @@ import { getFriend } from './setup/getFriend';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { Mongoose } from 'mongoose';
-import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { disconnectDatabase } from './setup/disconnectDatabase';
-import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { setupDatabase } from './setup/setupDatabase';
 import { getServiceConfig } from '../src/getServiceConfig';
 
@@ -23,7 +23,7 @@ describe(testName, () => {
     beforeAll(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
-            SDK = streakoidTestSDKFactory({ testName });
+            SDK = streakoidTestSDK({ testName });
         }
     });
 

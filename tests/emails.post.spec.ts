@@ -2,9 +2,9 @@ import { getPayingUser } from './setup/getPayingUser';
 import { isTestEnvironment } from './setup/isTestEnvironment';
 import { tearDownDatabase } from './setup/tearDownDatabase';
 import { Mongoose } from 'mongoose';
-import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { setupDatabase } from './setup/setupDatabase';
-import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 
 const username = 'username';
@@ -19,7 +19,7 @@ describe(testName, () => {
     beforeAll(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
-            SDK = streakoidTestSDKFactory({ testName });
+            SDK = streakoidTestSDK({ testName });
         }
     });
 

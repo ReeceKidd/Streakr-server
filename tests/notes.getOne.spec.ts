@@ -3,8 +3,8 @@ import { setupDatabase } from './setup/setupDatabase';
 import { tearDownDatabase } from './setup/tearDownDatabase';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import { Mongoose } from 'mongoose';
-import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
-import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
+import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { getPayingUser } from './setup/getPayingUser';
 
@@ -18,7 +18,7 @@ describe(testName, () => {
     beforeAll(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
-            SDK = streakoidTestSDKFactory({ testName });
+            SDK = streakoidTestSDK({ testName });
         }
     });
 

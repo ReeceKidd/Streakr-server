@@ -11,8 +11,8 @@ import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { Mongoose } from 'mongoose';
 import { disconnectDatabase } from '../../setup/disconnectDatabase';
-import { StreakoidSDK } from '../../../src/SDK/streakoidSDKFactory';
-import { streakoidTestSDKFactory } from '../../../src/SDK/streakoidTestSDKFactory';
+import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
+import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 
 jest.setTimeout(120000);
@@ -25,7 +25,7 @@ describe(testName, () => {
     beforeAll(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
-            SDK = streakoidTestSDKFactory({ testName });
+            SDK = streakoidTestSDK({ testName });
         }
     });
 

@@ -17,7 +17,7 @@
         "preversion": "npm run lint",
         "version": "git push",
         "update": "npm version patch",
-        "streakoid": "rm -rf node_modules/@streakoid/ && npm i @streakoid/streakoid-models"
+        "streakoid": "rm -rf node_modules/@streakoid/ && npm i @streakoid/streakoid-models @streakoid/streakoid-sdk"
     },
     "keywords": [],
     "author": "Reece Kidd",
@@ -25,6 +25,7 @@
     "dependencies": {
         "@sentry/node": "^5.15.5",
         "@streakoid/streakoid-models": "^1.0.41",
+        "@streakoid/streakoid-sdk": "^1.0.528",
         "@types/amazon-cognito-auth-js": "^1.2.1",
         "@types/cors": "^2.8.5",
         "@types/dotenv": "^6.1.1",

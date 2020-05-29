@@ -1,11 +1,11 @@
 import { getServiceConfig } from '../../src/getServiceConfig';
 import { userModel, UserModel } from '../../src/Models/User';
-import { streakoidTestSDKFactory } from '../../src/SDK/streakoidTestSDKFactory';
+import { streakoidTestSDK } from './streakoidTestSDK';
 
 const { COGNITO_USERNAME, COGNITO_EMAIL } = getServiceConfig();
 
 const getPayingUser = async ({ testName }: { testName: string }): Promise<UserModel> => {
-    const user = await streakoidTestSDKFactory({ testName }).users.create({
+    const user = await streakoidTestSDK({ testName }).users.create({
         username: COGNITO_USERNAME,
         email: COGNITO_EMAIL,
     });

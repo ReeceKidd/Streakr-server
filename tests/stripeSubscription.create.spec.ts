@@ -6,9 +6,9 @@ import { setupDatabase } from './setup/setupDatabase';
 import { tearDownDatabase } from './setup/tearDownDatabase';
 import PaymentPlans from '@streakoid/streakoid-models/lib/Types/PaymentPlans';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
-import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
+import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
-import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { getUser } from './setup/getUser';
 
 jest.setTimeout(120000);
@@ -21,7 +21,7 @@ describe(testName, () => {
     beforeAll(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
-            SDK = streakoidTestSDKFactory({ testName });
+            SDK = streakoidTestSDK({ testName });
         }
     });
 

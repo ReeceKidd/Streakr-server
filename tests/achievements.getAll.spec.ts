@@ -3,10 +3,10 @@ import { setupDatabase } from './setup/setupDatabase';
 import { tearDownDatabase } from './setup/tearDownDatabase';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { Mongoose } from 'mongoose';
-import { streakoidTestSDKFactory } from '../src/SDK/streakoidTestSDKFactory';
-import { StreakoidSDK } from '../src/SDK/streakoidSDKFactory';
+import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { getPayingUser } from './setup/getPayingUser';
+import { streakoidTestSDK } from './setup/streakoidTestSDK';
 
 jest.setTimeout(120000);
 
@@ -18,7 +18,7 @@ describe('GET /achievements', () => {
     beforeAll(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
-            SDK = streakoidTestSDKFactory({ testName });
+            SDK = streakoidTestSDK({ testName });
         }
     });
 

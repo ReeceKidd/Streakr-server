@@ -1,11 +1,11 @@
 import { PopulatedCurrentUser } from '@streakoid/streakoid-models/lib/Models/PopulatedCurrentUser';
+import { streakoidTestSDK } from './streakoidTestSDK';
 
-import { streakoidTestSDKFactory } from '../../src/SDK/streakoidTestSDKFactory';
 export const friendUsername = 'friend';
 export const friendEmail = 'friend@gmail.com';
 
 const getFriend = async ({ testName }: { testName: string }): Promise<PopulatedCurrentUser> => {
-    return streakoidTestSDKFactory({ testName }).users.create({
+    return streakoidTestSDK({ testName }).users.create({
         username: friendUsername,
         email: friendEmail,
     });
