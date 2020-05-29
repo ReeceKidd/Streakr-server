@@ -13,6 +13,7 @@ import { Mongoose } from 'mongoose';
 import { disconnectDatabase } from '../../setup/disconnectDatabase';
 import { StreakoidSDK } from '../../../src/SDK/streakoidSDKFactory';
 import { streakoidTestSDKFactory } from '../../../src/SDK/streakoidTestSDKFactory';
+import { teamStreakModel } from '../../../src/Models/TeamStreak';
 
 jest.setTimeout(120000);
 
@@ -82,7 +83,7 @@ describe(testName, () => {
 
         await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks, endDate.toString());
 
-        const incompleteTeamStreaks = await SDK.teamStreaks.getAll({
+        const incompleteTeamStreaks = await teamStreakModel.find({
             completedToday: false,
             active: true,
         });

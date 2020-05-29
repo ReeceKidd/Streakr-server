@@ -1,4 +1,4 @@
-import { streakoidClientFactory } from './streakoidClient';
-import { streakoidFactory } from './streakoid';
+import { streakoidSDKFactory } from './streakoidSDKFactory';
+import { streakoidAxiosClientFactory } from './streakoidAxiosClientFactory';
 
-export { streakoidClientFactory, streakoidFactory };
+export { streakoidAxiosClientFactory, streakoidSDKFactory };
