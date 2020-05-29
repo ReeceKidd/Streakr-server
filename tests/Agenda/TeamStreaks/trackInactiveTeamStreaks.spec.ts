@@ -11,6 +11,7 @@ import { Mongoose } from 'mongoose';
 import { disconnectDatabase } from '../../setup/disconnectDatabase';
 import { StreakoidSDK } from '../../../src/SDK/streakoidSDKFactory';
 import { streakoidTestSDKFactory } from '../../../src/SDK/streakoidTestSDKFactory';
+import { teamStreakModel } from '../../../src/Models/TeamStreak';
 
 jest.setTimeout(120000);
 
@@ -51,7 +52,7 @@ describe(testName, () => {
 
         const teamStreakId = teamStreak._id;
 
-        const inactiveTeamStreaks = await SDK.teamStreaks.getAll({
+        const inactiveTeamStreaks = await teamStreakModel.find({
             completedToday: false,
             active: false,
         });

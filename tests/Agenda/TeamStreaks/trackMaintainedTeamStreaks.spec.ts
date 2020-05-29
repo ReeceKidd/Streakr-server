@@ -11,6 +11,7 @@ import { Mongoose } from 'mongoose';
 import { disconnectDatabase } from '../../setup/disconnectDatabase';
 import { StreakoidSDK } from '../../../src/SDK/streakoidSDKFactory';
 import { streakoidTestSDKFactory } from '../../../src/SDK/streakoidTestSDKFactory';
+import { teamStreakModel } from '../../../src/Models/TeamStreak';
 
 jest.setTimeout(120000);
 
@@ -76,7 +77,7 @@ describe(testName, () => {
             ['_id', 'teamStreakId', 'taskCompleteTime', 'taskCompleteDay', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        const maintainedTeamStreaks = await SDK.teamStreaks.getAll({
+        const maintainedTeamStreaks = await teamStreakModel.find({
             completedToday: true,
         });
 
