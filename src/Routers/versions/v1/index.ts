@@ -51,6 +51,8 @@ v1Router.use(`/${RouterCategories.streakTrackingEvents}`, streakTrackingEventRou
 v1Router.use(`/${RouterCategories.users}`, usersRouter);
 v1Router.use(`/${RouterCategories.activityFeedItems}`, activityFeedItemsRouter);
 v1Router.use(`/${RouterCategories.streakRecommendations}`, streakRecommendationsRouter);
+v1Router.use(`/${RouterCategories.challenges}`, challengesRouter);
+v1Router.use(`/${RouterCategories.challengeStreaks}`, challengeStreaksRouter);
 
 // Routes containing authentication
 v1Router.use(`/${RouterCategories.achievements}`, achievementsRouter);
@@ -69,8 +71,6 @@ v1Router.use(`/${RouterCategories.completeChallengeStreakTasks}`, completeChalle
 v1Router.use(`/${RouterCategories.incompleteChallengeStreakTasks}`, incompleteChallengeStreakTasksRouter);
 v1Router.use(`/${RouterCategories.incompleteTeamMemberStreakTasks}`, incompleteTeamMemberStreakTasksRouter);
 v1Router.use(`/${RouterCategories.profileImages}`, profilePictureRouter);
-v1Router.use(`/${RouterCategories.challenges}`, challengesRouter);
-v1Router.use(`/${RouterCategories.challengeStreaks}`, challengeStreaksRouter);
 v1Router.use(`/${RouterCategories.notes}`, notesRouter);
 v1Router.use(`/${RouterCategories.databaseStats}`, databaseStatsRouter);
 
