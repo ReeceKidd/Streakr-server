@@ -8,7 +8,8 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { PopulatedCurrentUser } from '@streakoid/streakoid-models/lib/Models/PopulatedCurrentUser';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
-import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { generateRandomUsername } from '../../helpers/generateRandomUsername';
+import { createUser } from '../../helpers/createUser';
 
 const registerValidationSchema = {
     userIdentifier: Joi.string().required(),
@@ -46,27 +47,38 @@ export const getDoesUserIdentifierExistMiddleware = (userModel: Model<UserModel>
 
 export const doesUserIdentifierExistMiddleware = getDoesUserIdentifierExistMiddleware(userModel);
 
-export const getSaveTemporaryUserToDatabaseMiddleware = (user: Model<UserModel>) => async (
+export const getGenerateRandomUsernameMiddleware = (getRandomUsername: typeof generateRandomUsername) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        response.locals.randomUsername = getRandomUsername();
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.GenerateRandomUsernameMiddleware, err));
+    }
+};
+
+export const generateRandomUsernameMiddleware = getGenerateRandomUsernameMiddleware(generateRandomUsername);
+
+export const getSaveTemporaryUserToDatabaseMiddleware = (createUserFunction: typeof createUser) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
         const { userIdentifier } = request.body;
-        const { timezone } = response.locals;
-        const newUser = new user({
-            userIdentifier,
-            userType: UserTypes.unregistered,
-            timezone,
-        });
-        response.locals.savedUser = await newUser.save();
+        const { timezone, randomUsername } = response.locals;
+
+        response.locals.savedUser = await createUserFunction({ userIdentifier, timezone, username: randomUsername });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.SaveTemporaryUserToDatabaseMiddleware, err));
     }
 };
 
-export const saveTemporaryUserToDatabaseMiddleware = getSaveTemporaryUserToDatabaseMiddleware(userModel);
+export const saveTemporaryUserToDatabaseMiddleware = getSaveTemporaryUserToDatabaseMiddleware(createUser);
 
 export const formatTemporaryUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -114,9 +126,10 @@ export const sendFormattedTemporaryUserMiddleware = (
     }
 };
 
-export const registerTemporaryUserMiddlewares = [
+export const registerWithUserIdentifierMiddlewares = [
     temporaryUserRegistrationValidationMiddleware,
     doesUserIdentifierExistMiddleware,
+    generateRandomUsernameMiddleware,
     saveTemporaryUserToDatabaseMiddleware,
     formatTemporaryUserMiddleware,
     sendFormattedTemporaryUserMiddleware,

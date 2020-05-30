@@ -17,7 +17,7 @@ export const userSchema = new mongoose.Schema(
             unique: true,
             trim: true,
             index: true,
-            default: null,
+            required: true,
         },
         name: {
             type: String,

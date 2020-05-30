@@ -30,8 +30,8 @@ import { incompleteChallengeStreakTasksRouter } from './incompleteChallengeStrea
 import { notesRouter } from './notesRouter';
 import { databaseStatsRouter } from './databaseStatsRouter';
 import { achievementsRouter } from './achievementRouter';
-import { registerTemporaryUserMiddlewares } from '../../../RouteMiddlewares/User/registerTemporaryUserMiddleware';
-//import { registerTemporaryUserMiddlewares } from '../../../RouteMiddlewares/User/registerTemporaryUserMiddleware';
+import { registerWithUserIdentifierMiddlewares } from '../../../RouteMiddlewares/User/registerWithUserIdentifierMiddlewares';
+//import { registerWithUserIdentifierMiddlewares } from '../../../RouteMiddlewares/User/registerTemporaryUserMiddleware';
 //import { updateDatabaseMiddlewares } from '../../../../src/RouteMiddlewares/updateDatabaseMiddlewares';
 
 const v1Router = Router();
@@ -42,7 +42,7 @@ v1Router.use(...timezoneMiddlewares);
 
 //Registration API gateway
 v1Router.post(`/${RouterCategories.users}`, ...registerUserMiddlewares);
-v1Router.post(`/${RouterCategories.users}/temporary`, ...registerTemporaryUserMiddlewares);
+v1Router.post(`/${RouterCategories.users}/temporary`, ...registerWithUserIdentifierMiddlewares);
 
 // Unauthenticated routes
 v1Router.use(`/${RouterCategories.emails}`, emailRouter);

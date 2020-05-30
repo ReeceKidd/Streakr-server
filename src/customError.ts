@@ -532,6 +532,7 @@ export enum ErrorType {
     PatchCurrentUserUsernameAlreadyExists,
     PatchCurrentUserDoesUserEmailExistMiddleware,
     PatchCurrentUserDoesUsernameAlreadyExistMiddleware,
+    GenerateRandomUsernameMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -4329,6 +4330,13 @@ export class CustomError extends Error {
             case ErrorType.PatchCurrentUserDoesUsernameAlreadyExistMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-444`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GenerateRandomUsernameMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-445`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

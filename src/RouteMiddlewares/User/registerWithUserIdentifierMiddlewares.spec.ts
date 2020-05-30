@@ -9,12 +9,14 @@ import {
     getSaveTemporaryUserToDatabaseMiddleware,
     formatTemporaryUserMiddleware,
     sendFormattedTemporaryUserMiddleware,
-    registerTemporaryUserMiddlewares,
+    registerWithUserIdentifierMiddlewares,
     doesUserIdentifierExistMiddleware,
     getDoesUserIdentifierExistMiddleware,
-} from './registerTemporaryUserMiddleware';
+    generateRandomUsernameMiddleware,
+    getGenerateRandomUsernameMiddleware,
+} from './registerWithUserIdentifierMiddlewares';
 
-describe(`registerTemporaryUserMiddlewares`, () => {
+describe(`registerWithUserIdentifierMiddlewares`, () => {
     describe(`temporaryUserRegistrationValidationMiddleware`, () => {
         const userIdentifier = 'userIdentifier';
 
@@ -108,35 +110,60 @@ describe(`registerTemporaryUserMiddlewares`, () => {
         });
     });
 
+    describe(`generateRandomUsernameMiddleware`, () => {
+        test('calls next() if user does not exist', async () => {
+            expect.assertions(2);
+            const userIdentifier = 'userIdentifier';
+            const generateRandomUsername = jest.fn(() => Promise.resolve(false));
+            const request: any = { body: { userIdentifier } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getGenerateRandomUsernameMiddleware(generateRandomUsername as any);
+
+            await middleware(request, response, next);
+
+            expect(generateRandomUsername).toBeCalledWith();
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with GenerateRandomUsernameMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getGenerateRandomUsernameMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.GenerateRandomUsernameMiddleware, expect.any(Error)));
+        });
+    });
+
     describe(`saveTemporaryUserToDatabaseMiddleware`, () => {
         test('sets response.locals.savedUser', async () => {
             expect.assertions(2);
             const userIdentifier = 'userIdentifier';
-            const save = jest.fn(() => {
+            const createUser = jest.fn(() => {
                 return Promise.resolve(true);
             });
-            class User {
-                userIdentifier: string;
 
-                constructor({ userIdentifier }: any) {
-                    this.userIdentifier = userIdentifier;
-                }
-
-                save() {
-                    return save();
-                }
-            }
+            const timezone = 'Europe/London';
+            const randomUsername = 'username';
             const response: any = {
-                locals: {},
+                locals: { timezone, randomUsername },
             };
             const request: any = { body: { userIdentifier } };
             const next = jest.fn();
-            const middleware = getSaveTemporaryUserToDatabaseMiddleware(User as any);
+            const middleware = getSaveTemporaryUserToDatabaseMiddleware(createUser as any);
 
             await middleware(request, response, next);
 
+            expect(createUser).toBeCalledWith({
+                userIdentifier,
+                timezone,
+                username: randomUsername,
+            });
             expect(response.locals.savedUser).toBeDefined();
-            expect(save).toBeCalledWith();
         });
 
         test('calls next with SaveUserToDatabaseMiddleware error on middleware failure', () => {
@@ -237,13 +264,14 @@ describe(`registerTemporaryUserMiddlewares`, () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(6);
+        expect.assertions(7);
 
-        expect(registerTemporaryUserMiddlewares.length).toEqual(5);
-        expect(registerTemporaryUserMiddlewares[0]).toBe(temporaryUserRegistrationValidationMiddleware);
-        expect(registerTemporaryUserMiddlewares[1]).toBe(doesUserIdentifierExistMiddleware);
-        expect(registerTemporaryUserMiddlewares[2]).toBe(saveTemporaryUserToDatabaseMiddleware);
-        expect(registerTemporaryUserMiddlewares[3]).toBe(formatTemporaryUserMiddleware);
-        expect(registerTemporaryUserMiddlewares[4]).toBe(sendFormattedTemporaryUserMiddleware);
+        expect(registerWithUserIdentifierMiddlewares.length).toEqual(6);
+        expect(registerWithUserIdentifierMiddlewares[0]).toBe(temporaryUserRegistrationValidationMiddleware);
+        expect(registerWithUserIdentifierMiddlewares[1]).toBe(doesUserIdentifierExistMiddleware);
+        expect(registerWithUserIdentifierMiddlewares[2]).toBe(generateRandomUsernameMiddleware);
+        expect(registerWithUserIdentifierMiddlewares[3]).toBe(saveTemporaryUserToDatabaseMiddleware);
+        expect(registerWithUserIdentifierMiddlewares[4]).toBe(formatTemporaryUserMiddleware);
+        expect(registerWithUserIdentifierMiddlewares[5]).toBe(sendFormattedTemporaryUserMiddleware);
     });
 });
