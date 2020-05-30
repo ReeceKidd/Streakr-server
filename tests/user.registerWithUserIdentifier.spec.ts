@@ -35,7 +35,7 @@ describe(testName, () => {
     });
 
     test('user can register with userIdentifier successfully', async () => {
-        expect.assertions(31);
+        expect.assertions(30);
 
         const userIdentifier = 'userIdentifier';
 
@@ -74,7 +74,6 @@ describe(testName, () => {
         });
         expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
         expect(user.hasCompletedTutorial).toEqual(false);
-        expect(user.onboarding.whatBestDescribesYouChoice).toEqual(null);
         expect(user.onboarding.whyDoYouWantToBuildNewHabitsChoice).toEqual(null);
         expect(user.hasCompletedOnboarding).toEqual(false);
         expect(user.createdAt).toEqual(expect.any(String));

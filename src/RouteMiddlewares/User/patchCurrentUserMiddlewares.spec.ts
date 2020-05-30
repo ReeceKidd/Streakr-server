@@ -31,7 +31,6 @@ import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchi
 import { getServiceConfig } from '../../../src/getServiceConfig';
 import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
-import WhatBestDescribesYouTypes from '@streakoid/streakoid-models/lib/Types/WhatBestDescribesYouTypes';
 import { Onboarding } from '@streakoid/streakoid-models/lib/Models/Onboarding';
 import { getMockUser } from '../../testHelpers/getMockUser';
 
@@ -60,7 +59,6 @@ describe('patchCurrentUserMiddlewares', () => {
             hasCompletedIntroduction: true,
             hasCompletedTutorial: true,
             onboarding: {
-                whatBestDescribesYouChoice: WhatBestDescribesYouTypes.competitor,
                 whyDoYouWantToBuildNewHabitsChoice: WhyDoYouWantToBuildNewHabitsTypes.education,
             },
             hasCompletedOnboarding: true,

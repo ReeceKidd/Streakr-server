@@ -84,7 +84,7 @@ describe(testName, () => {
     });
 
     test(`that request passes when updatedUser is patched with correct keys`, async () => {
-        expect.assertions(31);
+        expect.assertions(30);
 
         const user = await getPayingUser({ testName });
 
@@ -127,7 +127,6 @@ describe(testName, () => {
             endpointArn: null,
         });
         expect(user.hasCompletedTutorial).toEqual(false);
-        expect(user.onboarding.whatBestDescribesYouChoice).toEqual(null);
         expect(user.onboarding.whyDoYouWantToBuildNewHabitsChoice).toEqual(null);
         expect(user.hasCompletedOnboarding).toEqual(false);
         expect(updatedUser.createdAt).toEqual(expect.any(String));

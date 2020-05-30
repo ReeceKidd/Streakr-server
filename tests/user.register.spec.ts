@@ -38,7 +38,7 @@ describe(testName, () => {
     });
 
     test('user can register successfully and account create activity feed item is generated', async () => {
-        expect.assertions(31);
+        expect.assertions(30);
 
         const username = getServiceConfig().COGNITO_USERNAME;
         const email = getServiceConfig().COGNITO_EMAIL;
@@ -79,7 +79,6 @@ describe(testName, () => {
         });
         expect(user.pushNotification).toEqual({ deviceType: null, token: null, endpointArn: null });
         expect(user.hasCompletedTutorial).toEqual(false);
-        expect(user.onboarding.whatBestDescribesYouChoice).toEqual(null);
         expect(user.onboarding.whyDoYouWantToBuildNewHabitsChoice).toEqual(null);
         expect(user.hasCompletedOnboarding).toEqual(false);
         expect(user.createdAt).toEqual(expect.any(String));

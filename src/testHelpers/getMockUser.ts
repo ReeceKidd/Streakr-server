@@ -54,7 +54,6 @@ export const getMockUser = (): User => ({
     hasCompletedTutorial: false,
     onboarding: {
         whyDoYouWantToBuildNewHabitsChoice: WhyDoYouWantToBuildNewHabitsTypes.education,
-        whatBestDescribesYouChoice: WhatBestDescribesYouTypes.competitor,
     },
     hasCompletedOnboarding: false,
     stripe: {

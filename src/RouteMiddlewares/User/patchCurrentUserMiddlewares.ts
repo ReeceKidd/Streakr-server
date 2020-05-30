@@ -25,10 +25,8 @@ const patchCurrentUserValidationSchema = {
         token: Joi.string(),
         deviceType: Joi.string(),
     },
-
     hasCompletedTutorial: Joi.boolean(),
     onboarding: {
-        whatBestDescribesYouChoice: Joi.string(),
         whyDoYouWantToBuildNewHabitsChoice: Joi.string(),
     },
     hasCompletedOnboarding: Joi.boolean(),

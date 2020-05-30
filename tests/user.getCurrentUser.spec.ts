@@ -38,7 +38,7 @@ describe(testName, () => {
     });
 
     test(`retrieves current user`, async () => {
-        expect.assertions(29);
+        expect.assertions(28);
 
         await getPayingUser({ testName });
 
@@ -77,7 +77,6 @@ describe(testName, () => {
             endpointArn: null,
         });
         expect(user.hasCompletedTutorial).toEqual(false);
-        expect(user.onboarding.whatBestDescribesYouChoice).toEqual(null);
         expect(user.onboarding.whyDoYouWantToBuildNewHabitsChoice).toEqual(null);
         expect(user.hasCompletedOnboarding).toEqual(false);
         expect(user.createdAt).toEqual(expect.any(String));
