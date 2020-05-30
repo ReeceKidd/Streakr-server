@@ -1,7 +1,6 @@
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
-import WhatBestDescribesYouTypes from '@streakoid/streakoid-models/lib/Types/WhatBestDescribesYouTypes';
 import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
