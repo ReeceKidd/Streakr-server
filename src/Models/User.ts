@@ -53,7 +53,7 @@ export const userSchema = new mongoose.Schema(
         },
         userType: {
             type: String,
-            enum: [UserTypes.basic, UserTypes.admin, UserTypes.unregistered],
+            enum: [UserTypes.basic, UserTypes.admin, UserTypes.generic],
             default: UserTypes.basic,
         },
         timezone: {
