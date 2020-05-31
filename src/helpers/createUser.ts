@@ -15,7 +15,7 @@ export const createUser = ({
 }): Promise<User> => {
     const newUser = new userModel({
         userIdentifier,
-        userType: UserTypes.generic,
+        userType: UserTypes.temporary,
         timezone,
         username,
         temporaryPassword,
