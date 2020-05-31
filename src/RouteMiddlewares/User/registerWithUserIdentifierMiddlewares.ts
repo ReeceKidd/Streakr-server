@@ -6,10 +6,12 @@ import { userModel, UserModel } from '../../Models/User';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { PopulatedCurrentUser } from '@streakoid/streakoid-models/lib/Models/PopulatedCurrentUser';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { generateRandomUsername } from '../../helpers/generateRandomUsername';
 import { createUser } from '../../helpers/createUser';
+import { generateTemporaryPassword } from '../../helpers/generateTemporaryPassword';
+import { awsCognitoSignup } from '../../helpers/awsCognitoSignup';
+import { getPopulatedCurrentUser } from '../../formatters/getPopulatedCurrentUser';
 
 const registerValidationSchema = {
     userIdentifier: Joi.string().required(),
@@ -62,6 +64,37 @@ export const getGenerateRandomUsernameMiddleware = (getRandomUsername: typeof ge
 
 export const generateRandomUsernameMiddleware = getGenerateRandomUsernameMiddleware(generateRandomUsername);
 
+export const getGenerateTemporaryPasswordMiddleware = (
+    getTemporaryPassword: typeof generateTemporaryPassword,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        response.locals.temporaryPassword = getTemporaryPassword();
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.GenerateTemporaryPasswordMiddleware, err));
+    }
+};
+
+export const generateTemporaryPasswordMiddleware = getGenerateTemporaryPasswordMiddleware(generateTemporaryPassword);
+
+export const getAwsCognitoSignUpMiddleware = (signUp: typeof awsCognitoSignup) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { randomUsername, temporaryPassword } = response.locals;
+
+        await signUp({ username: randomUsername, password: temporaryPassword });
+
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.AwsCognitoSignUpMiddleware, err));
+    }
+};
+
+export const awsCognitoSignUpMiddleware = getAwsCognitoSignUpMiddleware(awsCognitoSignup);
+
 export const getSaveTemporaryUserToDatabaseMiddleware = (createUserFunction: typeof createUser) => async (
     request: Request,
     response: Response,
@@ -69,9 +102,14 @@ export const getSaveTemporaryUserToDatabaseMiddleware = (createUserFunction: typ
 ): Promise<void> => {
     try {
         const { userIdentifier } = request.body;
-        const { timezone, randomUsername } = response.locals;
+        const { timezone, randomUsername, temporaryPassword } = response.locals;
 
-        response.locals.savedUser = await createUserFunction({ userIdentifier, timezone, username: randomUsername });
+        response.locals.savedUser = await createUserFunction({
+            userIdentifier,
+            timezone,
+            username: randomUsername,
+            temporaryPassword,
+        });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.SaveTemporaryUserToDatabaseMiddleware, err));
@@ -80,37 +118,26 @@ export const getSaveTemporaryUserToDatabaseMiddleware = (createUserFunction: typ
 
 export const saveTemporaryUserToDatabaseMiddleware = getSaveTemporaryUserToDatabaseMiddleware(createUser);
 
-export const formatTemporaryUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const getFormatTemporaryUserMiddleware = (getPopulatedCurrentUserFunction: typeof getPopulatedCurrentUser) => (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
         const user: User = response.locals.savedUser;
-        const formattedUser: PopulatedCurrentUser = {
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            membershipInformation: user.membershipInformation,
-            userType: user.userType,
-            timezone: user.timezone,
-            totalStreakCompletes: Number(user.totalStreakCompletes),
-            totalLiveStreaks: Number(user.totalLiveStreaks),
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-            pushNotification: user.pushNotification,
-            pushNotifications: user.pushNotifications,
-            profileImages: user.profileImages,
-            hasCompletedTutorial: user.hasCompletedTutorial,
-            hasCompletedIntroduction: user.hasCompletedIntroduction,
-            onboarding: user.onboarding,
-            hasCompletedOnboarding: user.hasCompletedOnboarding,
-            followers: [],
+        response.locals.formattedUser = getPopulatedCurrentUserFunction({
+            user,
             following: [],
+            followers: [],
             achievements: [],
-        };
-        response.locals.user = formattedUser;
+        });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.RegisterTemporaryUserFormatUserMiddleware, err));
     }
 };
+
+export const formatTemporaryUserMiddleware = getFormatTemporaryUserMiddleware(getPopulatedCurrentUser);
 
 export const sendFormattedTemporaryUserMiddleware = (
     request: Request,
@@ -118,8 +145,8 @@ export const sendFormattedTemporaryUserMiddleware = (
     next: NextFunction,
 ): void => {
     try {
-        const { user } = response.locals;
-        response.status(ResponseCodes.created).send(user);
+        const { formattedUser } = response.locals;
+        response.status(ResponseCodes.created).send(formattedUser);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedTemporaryUserMiddleware, err));
@@ -130,6 +157,8 @@ export const registerWithUserIdentifierMiddlewares = [
     temporaryUserRegistrationValidationMiddleware,
     doesUserIdentifierExistMiddleware,
     generateRandomUsernameMiddleware,
+    generateTemporaryPasswordMiddleware,
+    awsCognitoSignUpMiddleware,
     saveTemporaryUserToDatabaseMiddleware,
     formatTemporaryUserMiddleware,
     sendFormattedTemporaryUserMiddleware,

@@ -24,6 +24,7 @@ import {
     doesUsernameExistMiddleware,
     getDoesUserEmailExistMiddleware,
     getDoesUsernameExistMiddleware,
+    getFormatUserMiddleware,
 } from './patchCurrentUserMiddlewares';
 
 import { populateCurrentUserAchievementsMiddleware } from './getCurrentUser';
@@ -33,6 +34,8 @@ import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/li
 import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
 import { Onboarding } from '@streakoid/streakoid-models/lib/Models/Onboarding';
 import { getMockUser } from '../../testHelpers/getMockUser';
+import { BasicUser } from '@streakoid/streakoid-models/lib/Models/BasicUser';
+import { DatabaseAchievementType } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 
 describe('patchCurrentUserMiddlewares', () => {
     describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
@@ -579,37 +582,26 @@ describe('patchCurrentUserMiddlewares', () => {
         test('populates response.locals.user with a formattedUser', () => {
             expect.assertions(2);
             const request: any = {};
+            const following: BasicUser[] = [];
+            const followers: BasicUser[] = [];
+            const achievements: DatabaseAchievementType[] = [];
             const updatedUser = getMockUser();
-            const response: any = { locals: { updatedUser } };
+            const response: any = { locals: { updatedUser, following, followers, achievements } };
             const next = jest.fn();
 
-            formatUserMiddleware(request, response, next);
+            const getPopulatedCurrentUserFunction = jest.fn();
 
+            const middleware = getFormatUserMiddleware(getPopulatedCurrentUserFunction);
+
+            middleware(request, response, next);
+
+            expect(getPopulatedCurrentUserFunction).toBeCalledWith({
+                user: updatedUser,
+                following,
+                followers,
+                achievements,
+            });
             expect(next).toBeCalled();
-            expect(Object.keys(response.locals.formattedUser).sort()).toEqual(
-                [
-                    '_id',
-                    'email',
-                    'username',
-                    'membershipInformation',
-                    'userType',
-                    'followers',
-                    'following',
-                    'totalStreakCompletes',
-                    'totalLiveStreaks',
-                    'timezone',
-                    'createdAt',
-                    'updatedAt',
-                    'pushNotifications',
-                    'pushNotification',
-                    'hasCompletedIntroduction',
-                    'hasCompletedTutorial',
-                    'onboarding',
-                    'hasCompletedOnboarding',
-                    'profileImages',
-                    'achievements',
-                ].sort(),
-            );
         });
 
         test('calls next with GetCurrentUserFormatUserMiddleware error on middleware failure', () => {
@@ -618,10 +610,12 @@ describe('patchCurrentUserMiddlewares', () => {
             const request: any = {};
             const next = jest.fn();
 
-            formatUserMiddleware(request, response, next);
+            const middleware = getFormatUserMiddleware({} as any);
+
+            middleware(request, response, next);
 
             expect(next).toBeCalledWith(
-                new CustomError(ErrorType.GetCurrentUserFormatUserMiddleware, expect.any(Error)),
+                new CustomError(ErrorType.PatchCurrentUserFormatUserMiddleware, expect.any(Error)),
             );
         });
     });

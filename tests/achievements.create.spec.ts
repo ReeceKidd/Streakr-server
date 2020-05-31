@@ -36,6 +36,7 @@ describe(testName, () => {
 
     test(`${AchievementTypes.oneHundredDaySoloStreak} achievement can be created`, async () => {
         expect.assertions(4);
+
         await getPayingUser({ testName });
         const name = '100 Day Solo Streak';
         const description = 'Get a 100 Day Solo Streak';

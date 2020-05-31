@@ -19,6 +19,10 @@ export const userSchema = new mongoose.Schema(
             index: true,
             required: true,
         },
+        temporaryPassword: {
+            type: String,
+            default: null,
+        },
         name: {
             type: String,
             default: null,

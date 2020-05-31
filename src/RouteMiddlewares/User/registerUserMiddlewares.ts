@@ -7,10 +7,10 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
-import { PopulatedCurrentUser } from '@streakoid/streakoid-models/lib/Models/PopulatedCurrentUser';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { getPopulatedCurrentUser } from '../../formatters/getPopulatedCurrentUser';
 
 const registerValidationSchema = {
     username: Joi.string().required(),
@@ -103,42 +103,31 @@ export const getSaveUserToDatabaseMiddleware = (user: Model<UserModel>) => async
 
 export const saveUserToDatabaseMiddleware = getSaveUserToDatabaseMiddleware(userModel);
 
-export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const getFormatUserMiddleware = (getPopulatedCurrentUserFunction: typeof getPopulatedCurrentUser) => (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
         const user: User = response.locals.savedUser;
-        const formattedUser: PopulatedCurrentUser = {
-            _id: user._id,
-            email: user.email,
-            username: user.username,
-            membershipInformation: user.membershipInformation,
-            userType: user.userType,
-            timezone: user.timezone,
-            totalStreakCompletes: Number(user.totalStreakCompletes),
-            totalLiveStreaks: Number(user.totalLiveStreaks),
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-            pushNotification: user.pushNotification,
-            pushNotifications: user.pushNotifications,
-            profileImages: user.profileImages,
-            hasCompletedTutorial: user.hasCompletedTutorial,
-            hasCompletedIntroduction: user.hasCompletedIntroduction,
-            onboarding: user.onboarding,
-            hasCompletedOnboarding: user.hasCompletedOnboarding,
-            followers: [],
+        response.locals.formattedUser = getPopulatedCurrentUserFunction({
+            user,
             following: [],
+            followers: [],
             achievements: [],
-        };
-        response.locals.user = formattedUser;
+        });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.RegisterUserFormatUserMiddleware, err));
     }
 };
 
+export const formatUserMiddleware = getFormatUserMiddleware(getPopulatedCurrentUser);
+
 export const sendFormattedUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { user } = response.locals;
-        response.status(ResponseCodes.created).send(user);
+        const { formattedUser } = response.locals;
+        response.status(ResponseCodes.created).send(formattedUser);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedUserMiddleware, err));

@@ -3,7 +3,7 @@ import { setupDatabase } from './setup/setupDatabase';
 import { tearDownDatabase } from './setup/tearDownDatabase';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
-import { hasCorrectPopulatedCurrentUserKeys } from './helpers/hasCorrectPopulatedCurrentUserKeys';
+import { hasCorrectPopulatedCurrentUserKeys } from '../src/testHelpers/hasCorrectPopulatedCurrentUserKeys';
 import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
@@ -84,39 +84,6 @@ describe(testName, () => {
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
         expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
-    });
-
-    test('when user registers a CreateAccountActivityFeedItem is created', async () => {
-        expect.assertions(4);
-
-        const user = await SDK.users.create({
-            username: 'new-username',
-            email: 'google@gmail.com',
-        });
-
-        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
-            activityFeedItemType: ActivityFeedItemTypes.createdAccount,
-        });
-        const activityFeedItem = activityFeedItems.find(
-            item => item.activityFeedItemType === ActivityFeedItemTypes.createdAccount,
-        );
-        if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.createdAccount) {
-            expect(activityFeedItem.userId).toEqual(String(user._id));
-            expect(activityFeedItem.username).toEqual(String(user.username));
-            expect(activityFeedItem.userProfileImage).toEqual(String(user.profileImages.originalImageUrl));
-            expect(Object.keys(activityFeedItem).sort()).toEqual(
-                [
-                    '_id',
-                    'activityFeedItemType',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
-        }
     });
 
     test('fails because username is missing from request', async () => {

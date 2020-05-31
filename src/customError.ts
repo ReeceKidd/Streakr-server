@@ -533,6 +533,8 @@ export enum ErrorType {
     PatchCurrentUserDoesUserEmailExistMiddleware,
     PatchCurrentUserDoesUsernameAlreadyExistMiddleware,
     GenerateRandomUsernameMiddleware,
+    GenerateTemporaryPasswordMiddleware,
+    AwsCognitoSignUpMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -546,6 +548,10 @@ export class CustomError extends Error {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(type: ErrorType, err?: Error) {
         super();
+        if (err && getServiceConfig().NODE_ENV === 'test' && getServiceConfig().SHOW_ERROR_DETAILS) {
+            console.log(this.createCustomErrorData(type));
+            console.log(err);
+        }
         if (err && getServiceConfig().NODE_ENV && getServiceConfig().NODE_ENV.toLowerCase() !== 'test') {
             Sentry.captureException(err);
         }
@@ -4337,6 +4343,20 @@ export class CustomError extends Error {
             case ErrorType.GenerateRandomUsernameMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-445`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GenerateTemporaryPasswordMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-446`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.AwsCognitoSignUpMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-447`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

@@ -7,7 +7,7 @@ import { AchievementModel, achievementModel } from '../../../src/Models/Achievem
 import { DatabaseAchievementType } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { BasicUser } from '@streakoid/streakoid-models/lib/Models/BasicUser';
-import { PopulatedCurrentUser } from '@streakoid/streakoid-models/lib/Models/PopulatedCurrentUser';
+import { getPopulatedCurrentUser } from '../../formatters/getPopulatedCurrentUser';
 
 export const getPopulateCurrentUserFollowingMiddleware = (userModel: Model<UserModel>) => async (
     request: Request,
@@ -90,40 +90,24 @@ export const getPopulateCurrentUserAchievementsMiddleware = (achievementModel: M
 
 export const populateCurrentUserAchievementsMiddleware = getPopulateCurrentUserAchievementsMiddleware(achievementModel);
 
-export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const getFormatUserMiddleware = (getPopulatedCurrentUserFunction: typeof getPopulatedCurrentUser) => (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
         const user: User = response.locals.user;
         const followers: BasicUser[] = response.locals.followers;
         const following: BasicUser[] = response.locals.following;
         const achievements: DatabaseAchievementType[] = response.locals.achievements;
-        const formattedUser: PopulatedCurrentUser = {
-            _id: user._id,
-            email: user.email,
-            username: user.username,
-            membershipInformation: user.membershipInformation,
-            userType: user.userType,
-            followers,
-            following,
-            totalStreakCompletes: Number(user.totalStreakCompletes),
-            totalLiveStreaks: Number(user.totalLiveStreaks),
-            timezone: user.timezone,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-            pushNotification: user.pushNotification,
-            pushNotifications: user.pushNotifications,
-            profileImages: user.profileImages,
-            hasCompletedTutorial: user.hasCompletedTutorial,
-            hasCompletedIntroduction: user.hasCompletedIntroduction,
-            onboarding: user.onboarding,
-            hasCompletedOnboarding: user.hasCompletedOnboarding,
-            achievements,
-        };
-        response.locals.formattedUser = formattedUser;
+        response.locals.formattedUser = getPopulatedCurrentUserFunction({ user, following, followers, achievements });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.GetCurrentUserFormatUserMiddleware, err));
     }
 };
+
+export const formatUserMiddleware = getFormatUserMiddleware(getPopulatedCurrentUser);
 
 export const sendCurrentUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {

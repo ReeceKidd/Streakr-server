@@ -14,6 +14,11 @@ import {
     getDoesUserIdentifierExistMiddleware,
     generateRandomUsernameMiddleware,
     getGenerateRandomUsernameMiddleware,
+    getGenerateTemporaryPasswordMiddleware,
+    generateTemporaryPasswordMiddleware,
+    getFormatTemporaryUserMiddleware,
+    awsCognitoSignUpMiddleware,
+    getAwsCognitoSignUpMiddleware,
 } from './registerWithUserIdentifierMiddlewares';
 
 describe(`registerWithUserIdentifierMiddlewares`, () => {
@@ -111,8 +116,8 @@ describe(`registerWithUserIdentifierMiddlewares`, () => {
     });
 
     describe(`generateRandomUsernameMiddleware`, () => {
-        test('calls next() if user does not exist', async () => {
-            expect.assertions(2);
+        test('calls generateRandomUsername and stores it on response.locals.randomUsername', async () => {
+            expect.assertions(3);
             const userIdentifier = 'userIdentifier';
             const generateRandomUsername = jest.fn(() => Promise.resolve(false));
             const request: any = { body: { userIdentifier } };
@@ -123,6 +128,7 @@ describe(`registerWithUserIdentifierMiddlewares`, () => {
             await middleware(request, response, next);
 
             expect(generateRandomUsername).toBeCalledWith();
+            expect(response.locals.randomUsername).toBeDefined();
             expect(next).toBeCalledWith();
         });
 
@@ -136,6 +142,69 @@ describe(`registerWithUserIdentifierMiddlewares`, () => {
             await middleware(request, response, next);
 
             expect(next).toBeCalledWith(new CustomError(ErrorType.GenerateRandomUsernameMiddleware, expect.any(Error)));
+        });
+    });
+
+    describe(`generateTemporaryPasswordMiddleware`, () => {
+        test('calls getTemporaryPassword and stores it on response.locals.temporaryPassword', async () => {
+            expect.assertions(3);
+            const userIdentifier = 'userIdentifier';
+            const getTemporaryPassword = jest.fn(() => Promise.resolve(false));
+            const request: any = { body: { userIdentifier } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getGenerateTemporaryPasswordMiddleware(getTemporaryPassword as any);
+
+            await middleware(request, response, next);
+
+            expect(getTemporaryPassword).toBeCalledWith();
+            expect(response.locals.temporaryPassword).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with GenerateRandomUsernameMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getGenerateTemporaryPasswordMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.GenerateTemporaryPasswordMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe(`awsCognitoSignUpMiddleware`, () => {
+        test('calls signUp functions', async () => {
+            expect.assertions(2);
+            const userIdentifier = 'userIdentifier';
+            const awsCognitoSignUp = jest.fn(() => Promise.resolve(false));
+            const request: any = { body: { userIdentifier } };
+            const randomUsername = 'username';
+            const temporaryPassword = '123456';
+            const response: any = { locals: { randomUsername, temporaryPassword } };
+            const next = jest.fn();
+            const middleware = getAwsCognitoSignUpMiddleware(awsCognitoSignUp as any);
+
+            await middleware(request, response, next);
+
+            expect(awsCognitoSignUp).toBeCalledWith({ username: randomUsername, password: temporaryPassword });
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with AwsCognitoSignUpMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getAwsCognitoSignUpMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.AwsCognitoSignUpMiddleware, expect.any(Error)));
         });
     });
 
@@ -179,67 +248,59 @@ describe(`registerWithUserIdentifierMiddlewares`, () => {
         });
     });
 
-    describe('formatTemporaryUserMiddleware', () => {
-        test('populates response.locals.user with a formattedUser', () => {
-            expect.assertions(2);
+    describe('formatUserMiddleware', () => {
+        test('populates response.locals.formattedUser with a formattedUser', () => {
+            expect.assertions(3);
             const request: any = {};
+
             const savedUser = getMockUser();
-            const response: any = { locals: { savedUser } };
+            const response: any = { locals: { savedUser, following: [], followers: [], achievements: [] } };
             const next = jest.fn();
 
-            formatTemporaryUserMiddleware(request, response, next);
+            const getPopulatedCurrentUserFunction = jest.fn(() => true);
 
+            const middleware = getFormatTemporaryUserMiddleware(getPopulatedCurrentUserFunction as any);
+
+            middleware(request, response, next);
+
+            expect(getPopulatedCurrentUserFunction).toBeCalledWith({
+                user: savedUser,
+                following: [],
+                followers: [],
+                achievements: [],
+            });
+            expect(response.locals.formattedUser).toBeDefined();
             expect(next).toBeCalled();
-            expect(Object.keys(response.locals.user).sort()).toEqual(
-                [
-                    '_id',
-                    'email',
-                    'username',
-                    'membershipInformation',
-                    'userType',
-                    'followers',
-                    'following',
-                    'timezone',
-                    'createdAt',
-                    'updatedAt',
-                    'pushNotification',
-                    'pushNotifications',
-                    'hasCompletedTutorial',
-                    'hasCompletedIntroduction',
-                    'onboarding',
-                    'hasCompletedOnboarding',
-                    'profileImages',
-                    'achievements',
-                    'totalStreakCompletes',
-                    'totalLiveStreaks',
-                ].sort(),
-            );
         });
 
-        test('calls next with RegisterUserFormatUserMiddleware error on middleware failure', () => {
+        test('calls next with GetCurrentUserFormatUserMiddleware error on middleware failure', () => {
             expect.assertions(1);
             const response: any = {};
             const request: any = {};
             const next = jest.fn();
 
-            formatTemporaryUserMiddleware(request, response, next);
+            const middleware = getFormatTemporaryUserMiddleware({} as any);
 
-            expect(next).toBeCalledWith(new CustomError(ErrorType.RegisterUserFormatUserMiddleware, expect.any(Error)));
+            middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.GetCurrentUserFormatUserMiddleware, expect.any(Error)),
+            );
         });
     });
 
     describe(`sendFormattedUserMiddleware`, () => {
-        test('sends savedUser in request', () => {
+        test('sends formattedUser in request', () => {
             expect.assertions(3);
             const mockUsername = 'abc';
             const mockEmail = 'email@gmail.com';
-            const user = {
+            const formattedUser = {
                 username: mockUsername,
                 email: mockEmail,
             };
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
-            const response: any = { locals: { user }, status };
+            const response: any = { locals: { formattedUser }, status };
             const request: any = {};
             const next = jest.fn();
 
@@ -247,7 +308,7 @@ describe(`registerWithUserIdentifierMiddlewares`, () => {
 
             expect(next).toBeCalled();
             expect(status).toBeCalledWith(ResponseCodes.created);
-            expect(send).toBeCalledWith(user);
+            expect(send).toBeCalledWith(formattedUser);
         });
 
         test('calls next with SendFormattedUserMiddleware error on middleware failure', () => {
@@ -264,14 +325,16 @@ describe(`registerWithUserIdentifierMiddlewares`, () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(7);
+        expect.assertions(9);
 
-        expect(registerWithUserIdentifierMiddlewares.length).toEqual(6);
+        expect(registerWithUserIdentifierMiddlewares.length).toEqual(8);
         expect(registerWithUserIdentifierMiddlewares[0]).toBe(temporaryUserRegistrationValidationMiddleware);
         expect(registerWithUserIdentifierMiddlewares[1]).toBe(doesUserIdentifierExistMiddleware);
         expect(registerWithUserIdentifierMiddlewares[2]).toBe(generateRandomUsernameMiddleware);
-        expect(registerWithUserIdentifierMiddlewares[3]).toBe(saveTemporaryUserToDatabaseMiddleware);
-        expect(registerWithUserIdentifierMiddlewares[4]).toBe(formatTemporaryUserMiddleware);
-        expect(registerWithUserIdentifierMiddlewares[5]).toBe(sendFormattedTemporaryUserMiddleware);
+        expect(registerWithUserIdentifierMiddlewares[3]).toBe(generateTemporaryPasswordMiddleware);
+        expect(registerWithUserIdentifierMiddlewares[4]).toBe(awsCognitoSignUpMiddleware);
+        expect(registerWithUserIdentifierMiddlewares[5]).toBe(saveTemporaryUserToDatabaseMiddleware);
+        expect(registerWithUserIdentifierMiddlewares[6]).toBe(formatTemporaryUserMiddleware);
+        expect(registerWithUserIdentifierMiddlewares[7]).toBe(sendFormattedTemporaryUserMiddleware);
     });
 });

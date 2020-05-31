@@ -26,6 +26,7 @@ export interface AppConfigHttp {
     IOS_SNS_PLATFORM_APPLICATION_ARN: string;
     SNS_TOPIC_ARN: string;
     DEFAULT_USER_PROFILE_IMAGE_URL: string;
+    SHOW_ERROR_DETAILS: string;
 }
 
 export type AppConfig = AppConfigHttp;
@@ -57,6 +58,7 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         IOS_SNS_PLATFORM_APPLICATION_ARN,
         SNS_TOPIC_ARN,
         DEFAULT_USER_PROFILE_IMAGE_URL,
+        SHOW_ERROR_DETAILS,
     } = environment;
 
     if (!NODE_ENV) throw new Error('NODE_ENV is not provided.');
@@ -175,5 +177,6 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         IOS_SNS_PLATFORM_APPLICATION_ARN,
         SNS_TOPIC_ARN,
         DEFAULT_USER_PROFILE_IMAGE_URL,
+        SHOW_ERROR_DETAILS,
     } as AppConfigHttp;
 };

@@ -9,6 +9,7 @@ import {
     getPopulateCurrentUserFollowersMiddleware,
     populateCurrentUserAchievementsMiddleware,
     getPopulateCurrentUserAchievementsMiddleware,
+    getFormatUserMiddleware,
 } from './getCurrentUser';
 import { CustomError } from '../../customError';
 import { ErrorType } from '../../customError';
@@ -148,36 +149,22 @@ describe('getCurrentUserMiddlewares', () => {
             const request: any = {};
 
             const user = getMockUser();
-            const response: any = { locals: { user } };
+            const response: any = { locals: { user, following: [], followers: [], achievements: [] } };
             const next = jest.fn();
 
-            formatUserMiddleware(request, response, next);
+            const getPopulatedCurrentUserFunction = jest.fn();
 
+            const middleware = getFormatUserMiddleware(getPopulatedCurrentUserFunction);
+
+            middleware(request, response, next);
+
+            expect(getPopulatedCurrentUserFunction).toBeCalledWith({
+                user,
+                following: [],
+                followers: [],
+                achievements: [],
+            });
             expect(next).toBeCalled();
-            expect(Object.keys(response.locals.formattedUser).sort()).toEqual(
-                [
-                    '_id',
-                    'email',
-                    'username',
-                    'membershipInformation',
-                    'userType',
-                    'followers',
-                    'following',
-                    'totalStreakCompletes',
-                    'totalLiveStreaks',
-                    'timezone',
-                    'createdAt',
-                    'updatedAt',
-                    'pushNotification',
-                    'pushNotifications',
-                    'hasCompletedIntroduction',
-                    'hasCompletedTutorial',
-                    'onboarding',
-                    'hasCompletedOnboarding',
-                    'profileImages',
-                    'achievements',
-                ].sort(),
-            );
         });
 
         test('calls next with GetCurrentUserFormatUserMiddleware error on middleware failure', () => {
@@ -186,7 +173,9 @@ describe('getCurrentUserMiddlewares', () => {
             const request: any = {};
             const next = jest.fn();
 
-            formatUserMiddleware(request, response, next);
+            const middleware = getFormatUserMiddleware({} as any);
+
+            middleware(request, response, next);
 
             expect(next).toBeCalledWith(
                 new CustomError(ErrorType.GetCurrentUserFormatUserMiddleware, expect.any(Error)),

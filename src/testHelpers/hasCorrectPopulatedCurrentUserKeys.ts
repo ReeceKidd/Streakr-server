@@ -8,6 +8,7 @@ export const hasCorrectPopulatedCurrentUserKeys = (user: PopulatedCurrentUser): 
             '_id',
             'createdAt',
             'email',
+            'temporaryPassword',
             'followers',
             'following',
             'totalStreakCompletes',

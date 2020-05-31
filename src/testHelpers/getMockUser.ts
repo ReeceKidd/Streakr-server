@@ -14,6 +14,7 @@ export const getMockUser = (): User => ({
         pastMemberships: [],
     },
     email: 'test@test.com',
+    temporaryPassword: '12345',
     createdAt: 'Jan 1st',
     updatedAt: 'Jan 1st',
     timezone: 'Europe/London',

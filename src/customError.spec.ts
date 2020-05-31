@@ -5748,4 +5748,26 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to GenerateTemporaryPasswordMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.GenerateTemporaryPasswordMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-446`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to AwsCognitoSignUpMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.AwsCognitoSignUpMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-447`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

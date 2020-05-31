@@ -6,16 +6,19 @@ export const createUser = ({
     userIdentifier,
     timezone,
     username,
+    temporaryPassword,
 }: {
     userIdentifier: string;
     timezone: string;
     username: string;
+    temporaryPassword: string;
 }): Promise<User> => {
     const newUser = new userModel({
         userIdentifier,
         userType: UserTypes.unregistered,
         timezone,
         username,
+        temporaryPassword,
     });
     return newUser.save();
 };
