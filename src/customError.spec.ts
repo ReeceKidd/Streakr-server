@@ -1036,6 +1036,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to AuthenticatedUserNotFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.AuthenticatedUserNotFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-104`);
+        expect(message).toBe('Authenticated user not found.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 

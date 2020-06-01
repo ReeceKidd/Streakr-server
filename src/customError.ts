@@ -535,6 +535,7 @@ export enum ErrorType {
     GenerateRandomUsernameMiddleware,
     GenerateTemporaryPasswordMiddleware,
     AwsCognitoSignUpMiddleware,
+    AuthenticatedUserNotFound,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -554,7 +555,6 @@ export class CustomError extends Error {
 
         if (err && getServiceConfig().NODE_ENV && getServiceConfig().NODE_ENV.toLowerCase() !== 'test') {
             Sentry.captureException(err);
-            Sentry.captureEvent(this.createCustomErrorData(type));
         }
         const { code, message, httpStatusCode } = this.createCustomErrorData(type);
         this.code = code;
@@ -1316,6 +1316,14 @@ export class CustomError extends Error {
             case ErrorType.PatchCurrentUserUsernameAlreadyExists: {
                 return {
                     code: `${ResponseCodes.badRequest}-103`,
+                    message: 'Username already exists.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.AuthenticatedUserNotFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-104`,
                     message: 'Username already exists.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };

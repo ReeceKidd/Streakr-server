@@ -99,10 +99,15 @@ export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserMode
 ): Promise<void> => {
     try {
         const { user } = response.locals;
-        const keysToUpdate = {
-            ...request.body,
-            username: request.body.username && request.body.username.toLowerCase(),
-        };
+        const keysToUpdate = request.body.username
+            ? {
+                  ...request.body,
+                  username: request.body.username.toLowerCase(),
+              }
+            : { ...request.body };
+        if (!user) {
+            throw new CustomError(ErrorType.AuthenticatedUserNotFound);
+        }
         const updatedUser = await userModel.findByIdAndUpdate(user._id, { ...keysToUpdate }, { new: true }).lean();
         if (!updatedUser) {
             throw new CustomError(ErrorType.UpdateCurrentUserNotFound);
