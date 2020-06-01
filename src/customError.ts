@@ -1324,7 +1324,7 @@ export class CustomError extends Error {
             case ErrorType.AuthenticatedUserNotFound: {
                 return {
                     code: `${ResponseCodes.badRequest}-104`,
-                    message: 'Username already exists.',
+                    message: 'Authenticated user not found.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
