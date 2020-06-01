@@ -2,7 +2,7 @@ import { isTestEnvironment } from './setup/isTestEnvironment';
 import { setupDatabase } from './setup/setupDatabase';
 import { tearDownDatabase } from './setup/tearDownDatabase';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
-import { hasCorrectPopulatedCurrentUserKeys } from '../src/testHelpers/hasCorrectPopulatedCurrentUserKeys';
+import { correctPopulatedCurrentUserKeys } from '../src/testHelpers/correctPopulatedCurrentUserKeys';
 import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
@@ -78,7 +78,7 @@ describe(testName, () => {
         expect(user.hasCompletedOnboarding).toEqual(false);
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
+        expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
     });
 
     test('fails because userIdentifier already exists', async () => {

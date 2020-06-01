@@ -12,8 +12,6 @@ import {
     setUsernameToLowercaseMiddleware,
     getSaveUserToDatabaseMiddleware,
     formatUserMiddleware,
-    createdAccountActivityFeedItemMiddleware,
-    getCreatedAccountActivityFeedItemMiddleware,
     getFormatUserMiddleware,
 } from './registerUserMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
@@ -402,45 +400,11 @@ describe(`sendFormattedUserMiddleware`, () => {
     });
 });
 
-describe(`createdAccountActivityFeedItemMiddleware`, () => {
-    test('creates a new completedSoloStreakActivity', async () => {
-        expect.assertions(2);
-        const user = { _id: '_id' };
-        const createActivityFeedItem = jest.fn().mockResolvedValue(true);
-
-        const response: any = { locals: { user } };
-        const request: any = {};
-        const next = jest.fn();
-
-        const middleware = getCreatedAccountActivityFeedItemMiddleware(createActivityFeedItem as any);
-
-        await middleware(request, response, next);
-
-        expect(createActivityFeedItem).toBeCalled();
-        expect(next).not.toBeCalled();
-    });
-
-    test('calls next with CreatedAccountActivityFeedItemMiddleware error on middleware failure', () => {
-        expect.assertions(1);
-
-        const response: any = {};
-        const request: any = {};
-        const next = jest.fn();
-        const middleware = getCreatedAccountActivityFeedItemMiddleware({} as any);
-
-        middleware(request, response, next);
-
-        expect(next).toBeCalledWith(
-            new CustomError(ErrorType.CreatedAccountActivityFeedItemMiddleware, expect.any(Error)),
-        );
-    });
-});
-
 describe(`registerUserMiddlewares`, () => {
     test('are defined in the correct order', () => {
-        expect.assertions(9);
+        expect.assertions(8);
 
-        expect(registerUserMiddlewares.length).toEqual(8);
+        expect(registerUserMiddlewares.length).toEqual(7);
         expect(registerUserMiddlewares[0]).toBe(userRegistrationValidationMiddleware);
         expect(registerUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware);
         expect(registerUserMiddlewares[2]).toBe(setUsernameToLowercaseMiddleware);
@@ -448,6 +412,5 @@ describe(`registerUserMiddlewares`, () => {
         expect(registerUserMiddlewares[4]).toBe(saveUserToDatabaseMiddleware);
         expect(registerUserMiddlewares[5]).toBe(formatUserMiddleware);
         expect(registerUserMiddlewares[6]).toBe(sendFormattedUserMiddleware);
-        expect(registerUserMiddlewares[7]).toBe(createdAccountActivityFeedItemMiddleware);
     });
 });

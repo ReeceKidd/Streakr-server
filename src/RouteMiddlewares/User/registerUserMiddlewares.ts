@@ -6,10 +6,7 @@ import { userModel, UserModel } from '../../Models/User';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
-import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
-import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { getPopulatedCurrentUser } from '../../formatters/getPopulatedCurrentUser';
 
 const registerValidationSchema = {
@@ -134,27 +131,6 @@ export const sendFormattedUserMiddleware = (request: Request, response: Response
     }
 };
 
-export const getCreatedAccountActivityFeedItemMiddleware = (
-    createActivityFeedItemFunction: typeof createActivityFeedItem,
-) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-    try {
-        const user: User = response.locals.user;
-        const createdAccountActivityFeedItem: ActivityFeedItemType = {
-            activityFeedItemType: ActivityFeedItemTypes.createdAccount,
-            userId: user._id,
-            username: user.username,
-            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
-        };
-        await createActivityFeedItemFunction(createdAccountActivityFeedItem);
-    } catch (err) {
-        next(new CustomError(ErrorType.CreatedAccountActivityFeedItemMiddleware, err));
-    }
-};
-
-export const createdAccountActivityFeedItemMiddleware = getCreatedAccountActivityFeedItemMiddleware(
-    createActivityFeedItem,
-);
-
 export const registerUserMiddlewares = [
     userRegistrationValidationMiddleware,
     doesUserEmailExistMiddleware,
@@ -163,5 +139,4 @@ export const registerUserMiddlewares = [
     saveUserToDatabaseMiddleware,
     formatUserMiddleware,
     sendFormattedUserMiddleware,
-    createdAccountActivityFeedItemMiddleware,
 ];

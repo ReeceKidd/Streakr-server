@@ -548,12 +548,13 @@ export class CustomError extends Error {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(type: ErrorType, err?: Error) {
         super();
-        if (err && getServiceConfig().NODE_ENV === 'test' && getServiceConfig().SHOW_ERROR_DETAILS) {
-            console.log(this.createCustomErrorData(type));
-            console.log(err);
-        }
+
+        // console.log(this.createCustomErrorData(type));
+        // console.log(err);
+
         if (err && getServiceConfig().NODE_ENV && getServiceConfig().NODE_ENV.toLowerCase() !== 'test') {
             Sentry.captureException(err);
+            Sentry.captureEvent(this.createCustomErrorData(type));
         }
         const { code, message, httpStatusCode } = this.createCustomErrorData(type);
         this.code = code;

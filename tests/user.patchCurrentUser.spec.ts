@@ -7,29 +7,14 @@ import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 
-const updatedEmail = 'email@gmail.com';
-const updatedUsername = 'updated';
-const updatedName = 'Tom Smith';
-const updatedTimezone = 'Europe/Paris';
-const updatedPushNotificationToken = 'push-notification-token';
-
-const updatedHasCompletedIntroduction = true;
-const updateData = {
-    email: updatedEmail,
-    username: updatedUsername,
-    name: updatedName,
-    timezone: updatedTimezone,
-    pushNotificationToken: updatedPushNotificationToken,
-    hasCompletedIntroduction: updatedHasCompletedIntroduction,
-};
-
 import AWS from 'aws-sdk';
-import { hasCorrectPopulatedCurrentUserKeys } from '../src/testHelpers/hasCorrectPopulatedCurrentUserKeys';
+import { correctPopulatedCurrentUserKeys } from '../src/testHelpers/correctPopulatedCurrentUserKeys';
 import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { getServiceConfig } from '../src/getServiceConfig';
+import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
 
 const credentials = new AWS.Credentials({
     accessKeyId: getServiceConfig().AWS_ACCESS_KEY_ID,
@@ -83,18 +68,35 @@ describe(testName, () => {
         }
     });
 
-    test(`that request passes when updatedUser is patched with correct keys`, async () => {
-        expect.assertions(30);
+    test(`that all available keys can be patched except push notification token as it is handled via a separate test`, async () => {
+        expect.assertions(32);
 
-        const user = await getPayingUser({ testName });
+        await getPayingUser({ testName });
+
+        const updatedEmail = 'email@gmail.com';
+        const updatedUsername = 'updated';
+        const updatedName = 'Tom Smith';
+        const updatedTimezone = 'Europe/Paris';
 
         const updatedUser = await SDK.user.updateCurrentUser({
-            updateData,
+            updateData: {
+                email: updatedEmail,
+                username: updatedUsername,
+                name: updatedName,
+                timezone: updatedTimezone,
+                hasCompletedIntroduction: true,
+                hasCompletedOnboarding: true,
+                hasCompletedTutorial: true,
+                onboarding: {
+                    whyDoYouWantToBuildNewHabitsChoice: WhyDoYouWantToBuildNewHabitsTypes.health,
+                },
+            },
         });
 
         expect(updatedUser._id).toEqual(expect.any(String));
         expect(updatedUser.email).toEqual(updatedEmail);
         expect(updatedUser.username).toEqual(updatedUsername);
+        expect(updatedUser.name).toEqual(updatedName);
         expect(updatedUser.userType).toEqual(UserTypes.basic);
         expect(Object.keys(updatedUser.membershipInformation).sort()).toEqual(
             ['isPayingMember', 'pastMemberships', 'currentMembershipStartDate'].sort(),
@@ -126,12 +128,15 @@ describe(testName, () => {
             token: null,
             endpointArn: null,
         });
-        expect(user.hasCompletedTutorial).toEqual(false);
-        expect(user.onboarding.whyDoYouWantToBuildNewHabitsChoice).toEqual(null);
-        expect(user.hasCompletedOnboarding).toEqual(false);
+        expect(updatedUser.hasCompletedTutorial).toEqual(true);
+        expect(updatedUser.hasCompletedOnboarding).toEqual(true);
+        expect(updatedUser.hasCompletedIntroduction).toEqual(true);
+        expect(updatedUser.onboarding.whyDoYouWantToBuildNewHabitsChoice).toEqual(
+            WhyDoYouWantToBuildNewHabitsTypes.health,
+        );
         expect(updatedUser.createdAt).toEqual(expect.any(String));
         expect(updatedUser.updatedAt).toEqual(expect.any(String));
-        expect(hasCorrectPopulatedCurrentUserKeys(updatedUser)).toEqual(true);
+        expect(Object.keys(updatedUser).sort()).toEqual(correctPopulatedCurrentUserKeys);
     });
 
     test(`if current user updates push notification information on an android device their endpointArn should be defined and pushNotificationToken should be updated.`, async () => {
@@ -156,7 +161,7 @@ describe(testName, () => {
             endpointArn: expect.any(String),
         });
 
-        expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
+        expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
 
         await deleteEndpointAfterTest({
             userId: user._id,
@@ -186,7 +191,7 @@ describe(testName, () => {
             endpointArn: expect.any(String),
         });
 
-        expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
+        expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
 
         await deleteEndpointAfterTest({
             userId: user._id,
@@ -204,6 +209,10 @@ describe(testName, () => {
 
         await SDK.users.following.followUser({ userId, userToFollowId: friend._id });
 
+        const updateData = {
+            hasCompletedIntroduction: true,
+        };
+
         const user = await SDK.user.updateCurrentUser({ updateData });
 
         expect(user.following.length).toEqual(1);
@@ -215,7 +224,7 @@ describe(testName, () => {
         expect(following.profileImage).toEqual(expect.any(String));
         expect(Object.keys(following).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
 
-        expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
+        expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
     });
 
     test(`if current user has a follower a user it returns the a populated follower list after an update.`, async () => {
@@ -228,7 +237,7 @@ describe(testName, () => {
 
         await SDK.users.following.followUser({ userId: friend._id, userToFollowId: userId });
 
-        const user = await SDK.user.updateCurrentUser({ updateData });
+        const user = await SDK.user.updateCurrentUser({ updateData: { timezone: 'Europe/France' } });
 
         expect(user.followers.length).toEqual(1);
 
@@ -238,7 +247,7 @@ describe(testName, () => {
         expect(follower.profileImage).toEqual(expect.any(String));
         expect(Object.keys(follower).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
 
-        expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
+        expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
     });
 
     test(`if current user has an achievement it returns the current user with populated achievements after an update`, async () => {
@@ -273,7 +282,7 @@ describe(testName, () => {
             soloStreakId,
         });
 
-        const user = await SDK.user.updateCurrentUser({ updateData });
+        const user = await SDK.user.updateCurrentUser({ updateData: { timezone: 'Europe/France' } });
 
         expect(user.achievements.length).toEqual(1);
 
@@ -285,7 +294,7 @@ describe(testName, () => {
             ['_id', 'achievementType', 'name', 'description', 'createdAt', 'updatedAt', '__v'].sort(),
         );
 
-        expect(hasCorrectPopulatedCurrentUserKeys(user)).toEqual(true);
+        expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
     });
 
     test('fails because email already exists', async () => {
