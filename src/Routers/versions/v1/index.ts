@@ -23,14 +23,12 @@ import { activityFeedItemsRouter } from './activityFeedItemsRouter';
 
 //import { hasUserPaidMembershipMiddleware } from '../../../../src/SharedMiddleware/hasUserPaidMembershipMiddleware';
 import { userRouter } from './userRouter';
-import { registerUserMiddlewares } from '../../../../src/RouteMiddlewares/User/registerUserMiddlewares';
 import { challengeStreaksRouter } from './challengeStreakRouter';
 import { completeChallengeStreakTasksRouter } from './completeChallengeStreakTaskRouter';
 import { incompleteChallengeStreakTasksRouter } from './incompleteChallengeStreakTaskRouter';
 import { notesRouter } from './notesRouter';
 import { databaseStatsRouter } from './databaseStatsRouter';
 import { achievementsRouter } from './achievementRouter';
-import { registerWithUserIdentifierMiddlewares } from '../../../RouteMiddlewares/User/registerWithUserIdentifierMiddlewares';
 //import { registerWithUserIdentifierMiddlewares } from '../../../RouteMiddlewares/User/registerTemporaryUserMiddleware';
 //import { updateDatabaseMiddlewares } from '../../../../src/RouteMiddlewares/updateDatabaseMiddlewares';
 
@@ -39,10 +37,6 @@ const v1Router = Router();
 //v1Router.post('/update', ...updateDatabaseMiddlewares);
 
 v1Router.use(...timezoneMiddlewares);
-
-//Registration API gateway
-v1Router.post(`/${RouterCategories.users}`, ...registerUserMiddlewares);
-v1Router.post(`/${RouterCategories.users}/temporary`, ...registerWithUserIdentifierMiddlewares);
 
 // Unauthenticated routes
 v1Router.use(`/${RouterCategories.emails}`, emailRouter);

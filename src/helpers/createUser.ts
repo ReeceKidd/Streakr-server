@@ -18,6 +18,7 @@ export const createUser = ({
         userType: UserTypes.temporary,
         timezone,
         username,
+        cognitoUsername: username,
         temporaryPassword,
     });
     return newUser.save();

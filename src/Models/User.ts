@@ -15,9 +15,16 @@ export const userSchema = new mongoose.Schema(
         username: {
             type: String,
             unique: true,
-            trim: true,
-            index: true,
             required: true,
+            index: true,
+            trim: true,
+        },
+        cognitoUsername: {
+            type: String,
+            required: true,
+            index: true,
+            unique: true,
+            trim: true,
         },
         temporaryPassword: {
             type: String,

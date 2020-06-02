@@ -10,7 +10,7 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { generateRandomUsername } from '../../helpers/generateRandomUsername';
 import { createUser } from '../../helpers/createUser';
 import { generateTemporaryPassword } from '../../helpers/generateTemporaryPassword';
-import { awsCognitoSignup } from '../../helpers/awsCognitoSignup';
+import { awsCognito } from '../../helpers/awsCognito';
 import { getPopulatedCurrentUser } from '../../formatters/getPopulatedCurrentUser';
 
 const registerValidationSchema = {
@@ -77,7 +77,7 @@ export const getGenerateTemporaryPasswordMiddleware = (
 
 export const generateTemporaryPasswordMiddleware = getGenerateTemporaryPasswordMiddleware(generateTemporaryPassword);
 
-export const getAwsCognitoSignUpMiddleware = (signUp: typeof awsCognitoSignup) => async (
+export const getAwsCognitoSignUpMiddleware = (signUp: typeof awsCognito.signUp) => async (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -93,7 +93,7 @@ export const getAwsCognitoSignUpMiddleware = (signUp: typeof awsCognitoSignup) =
     }
 };
 
-export const awsCognitoSignUpMiddleware = getAwsCognitoSignUpMiddleware(awsCognitoSignup);
+export const awsCognitoSignUpMiddleware = getAwsCognitoSignUpMiddleware(awsCognito.signUp);
 
 export const getSaveTemporaryUserToDatabaseMiddleware = (createUserFunction: typeof createUser) => async (
     request: Request,

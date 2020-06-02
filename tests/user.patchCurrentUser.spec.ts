@@ -93,11 +93,13 @@ describe(testName, () => {
             },
         });
 
+        console.log(updatedUser.username);
+
         expect(updatedUser._id).toEqual(expect.any(String));
         expect(updatedUser.email).toEqual(updatedEmail);
         expect(updatedUser.username).toEqual(updatedUsername);
         expect(updatedUser.name).toEqual(updatedName);
-        expect(updatedUser.userType).toEqual(UserTypes.basic);
+        expect(updatedUser.userType).toEqual(UserTypes.temporary);
         expect(Object.keys(updatedUser.membershipInformation).sort()).toEqual(
             ['isPayingMember', 'pastMemberships', 'currentMembershipStartDate'].sort(),
         );

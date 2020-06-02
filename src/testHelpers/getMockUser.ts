@@ -7,6 +7,7 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 export const getMockUser = (): User => ({
     _id: '_id',
     username: 'username',
+    cognitoUsername: 'username',
     userIdentifier: 'userIdentifier',
     membershipInformation: {
         isPayingMember: true,

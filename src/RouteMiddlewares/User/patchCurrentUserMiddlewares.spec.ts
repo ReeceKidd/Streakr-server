@@ -25,6 +25,8 @@ import {
     getDoesUserEmailExistMiddleware,
     getDoesUsernameExistMiddleware,
     getFormatUserMiddleware,
+    updateAwsCognitoEmailMiddleware,
+    getUpdateAwsCognitoEmailMiddleware,
 } from './patchCurrentUserMiddlewares';
 
 import { populateCurrentUserAchievementsMiddleware } from './getCurrentUser';
@@ -178,6 +180,54 @@ describe('patchCurrentUserMiddlewares', () => {
         });
     });
 
+    describe(`updateAwsCognitoEmailMiddleware`, () => {
+        test('if email is included in request.body it calls the awsCognito.updateEmail function', async () => {
+            expect.assertions(2);
+            const user = getMockUser();
+            const email = 'person@gmail.com';
+            const updateEmail = jest.fn(() => Promise.resolve(false));
+
+            const request: any = { body: { email } };
+            const response: any = { locals: { user } };
+            const next = jest.fn();
+            const middleware = getUpdateAwsCognitoEmailMiddleware(updateEmail as any);
+
+            await middleware(request, response, next);
+
+            expect(updateEmail).toBeCalledWith({ email, username: user.username });
+            expect(next).toBeCalledWith();
+        });
+
+        test('if email is not included in request.body middleware just calls next', async () => {
+            expect.assertions(2);
+            const user = getMockUser();
+            const updateEmail = jest.fn(() => Promise.resolve(false));
+
+            const request: any = { body: {} };
+            const response: any = { locals: { user } };
+            const next = jest.fn();
+            const middleware = getUpdateAwsCognitoEmailMiddleware(updateEmail as any);
+
+            await middleware(request, response, next);
+
+            expect(updateEmail).not.toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with UpdateAwsCognitoEmailMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getUpdateAwsCognitoEmailMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.UpdateAwsCognitoEmailMiddleware, expect.any(Error)));
+        });
+    });
+
     describe(`doesUsernameExistMiddleware`, () => {
         test('calls next() when username does not exist', async () => {
             const username = 'username';
@@ -193,7 +243,9 @@ describe('patchCurrentUserMiddlewares', () => {
 
             await middleware(request, response, next);
 
-            expect(findOne).toBeCalledWith({ username });
+            expect(findOne).toBeCalledWith({
+                $or: [{ username: username.toLowerCase() }, { cognitoUsername: username.toLowerCase() }],
+            });
             expect(next).toBeCalledWith();
         });
 
@@ -211,7 +263,9 @@ describe('patchCurrentUserMiddlewares', () => {
 
             await middleware(request, response, next);
 
-            expect(findOne).toBeCalledWith({ username });
+            expect(findOne).toBeCalledWith({
+                $or: [{ username: username.toLowerCase() }, { cognitoUsername: username.toLowerCase() }],
+            });
             expect(next).toBeCalledWith(
                 new CustomError(ErrorType.PatchCurrentUserUsernameAlreadyExists, expect.any(Error)),
             );
@@ -655,19 +709,20 @@ describe('patchCurrentUserMiddlewares', () => {
         });
     });
     test('are defined in the correct order', () => {
-        expect.assertions(12);
+        expect.assertions(13);
 
-        expect(patchCurrentUserMiddlewares.length).toBe(11);
+        expect(patchCurrentUserMiddlewares.length).toBe(12);
         expect(patchCurrentUserMiddlewares[0]).toBe(patchCurrentUserRequestBodyValidationMiddleware);
         expect(patchCurrentUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware);
-        expect(patchCurrentUserMiddlewares[2]).toBe(doesUsernameExistMiddleware);
-        expect(patchCurrentUserMiddlewares[3]).toBe(patchCurrentUserMiddleware);
-        expect(patchCurrentUserMiddlewares[4]).toBe(createPlatformEndpointMiddleware);
-        expect(patchCurrentUserMiddlewares[5]).toBe(updateUserPushNotificationInformationMiddleware);
-        expect(patchCurrentUserMiddlewares[6]).toBe(populateCurrentUserFollowingMiddleware);
-        expect(patchCurrentUserMiddlewares[7]).toBe(populateCurrentUserFollowersMiddleware);
-        expect(patchCurrentUserMiddlewares[8]).toBe(populateCurrentUserAchievementsMiddleware);
-        expect(patchCurrentUserMiddlewares[9]).toBe(formatUserMiddleware);
-        expect(patchCurrentUserMiddlewares[10]).toBe(sendUpdatedCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[2]).toBe(updateAwsCognitoEmailMiddleware);
+        expect(patchCurrentUserMiddlewares[3]).toBe(doesUsernameExistMiddleware);
+        expect(patchCurrentUserMiddlewares[4]).toBe(patchCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[5]).toBe(createPlatformEndpointMiddleware);
+        expect(patchCurrentUserMiddlewares[6]).toBe(updateUserPushNotificationInformationMiddleware);
+        expect(patchCurrentUserMiddlewares[7]).toBe(populateCurrentUserFollowingMiddleware);
+        expect(patchCurrentUserMiddlewares[8]).toBe(populateCurrentUserFollowersMiddleware);
+        expect(patchCurrentUserMiddlewares[9]).toBe(populateCurrentUserAchievementsMiddleware);
+        expect(patchCurrentUserMiddlewares[10]).toBe(formatUserMiddleware);
+        expect(patchCurrentUserMiddlewares[11]).toBe(sendUpdatedCurrentUserMiddleware);
     });
 });

@@ -5781,4 +5781,26 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to UpdateAwsCognitoEmailMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.UpdateAwsCognitoEmailMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-448`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to UpdateAwsCognitoUsernameMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.UpdateAwsCognitoUsernameMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-449`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

@@ -536,6 +536,8 @@ export enum ErrorType {
     GenerateTemporaryPasswordMiddleware,
     AwsCognitoSignUpMiddleware,
     AuthenticatedUserNotFound,
+    UpdateAwsCognitoEmailMiddleware,
+    UpdateAwsCognitoUsernameMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -4366,6 +4368,20 @@ export class CustomError extends Error {
             case ErrorType.AwsCognitoSignUpMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-447`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.UpdateAwsCognitoEmailMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-448`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.UpdateAwsCognitoUsernameMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-449`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

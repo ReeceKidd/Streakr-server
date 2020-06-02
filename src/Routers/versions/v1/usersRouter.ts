@@ -7,6 +7,8 @@ import { getFollowersMiddlewares } from '../../../../src/RouteMiddlewares/Users/
 import { followUserMiddlewares } from '../../../../src/RouteMiddlewares/Users/Following/followUserMiddlewares';
 import { unfollowUserMiddlewares } from '../../../../src/RouteMiddlewares/Users/Following/unfollowUserMiddlewares';
 import { getFollowingMiddlewares } from '../../../../src/RouteMiddlewares/Users/Following/getFollowingMiddlewares';
+import { registerUserMiddlewares } from '../../../RouteMiddlewares/User/registerUserMiddlewares';
+import { registerWithUserIdentifierMiddlewares } from '../../../RouteMiddlewares/User/registerWithUserIdentifierMiddlewares';
 
 export const userId = 'userId';
 export const userToUnfollowId = 'userToUnfollowId';
@@ -16,6 +18,10 @@ const usersRouter = Router();
 usersRouter.get('/', ...getAllUsersMiddlewares);
 
 usersRouter.get(`/:${userId}`, ...getUserMiddlewares);
+
+usersRouter.post(`/`, ...registerUserMiddlewares);
+
+usersRouter.post(`/temporary`, ...registerWithUserIdentifierMiddlewares);
 
 // Following routes
 
