@@ -50,7 +50,7 @@ describe(testName, () => {
         expect(user._id).toEqual(expect.any(String));
         expect(user.email).toBeDefined();
         expect(user.username).toEqual(username);
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(Object.keys(user.membershipInformation).sort()).toEqual(
             ['isPayingMember', 'pastMemberships', 'currentMembershipStartDate'].sort(),
         );

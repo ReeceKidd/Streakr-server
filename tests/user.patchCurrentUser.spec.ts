@@ -93,8 +93,6 @@ describe(testName, () => {
             },
         });
 
-        console.log(updatedUser.username);
-
         expect(updatedUser._id).toEqual(expect.any(String));
         expect(updatedUser.email).toEqual(updatedEmail);
         expect(updatedUser.username).toEqual(updatedUsername);

@@ -90,6 +90,7 @@ export const getSaveUserToDatabaseMiddleware = (user: Model<UserModel>) => async
             username: lowerCaseUsername,
             email,
             timezone,
+            cognitoUsername: lowerCaseUsername,
         });
         response.locals.savedUser = await newUser.save();
         next();

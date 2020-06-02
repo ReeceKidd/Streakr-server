@@ -235,7 +235,7 @@ describe(`registerWithUserIdentifierMiddlewares`, () => {
             expect(response.locals.savedUser).toBeDefined();
         });
 
-        test('calls next with SaveUserToDatabaseMiddleware error on middleware failure', () => {
+        test('calls next with SaveTemporaryUserToDatabaseMiddleware error on middleware failure', () => {
             const response: any = {};
             const request: any = {};
             const next = jest.fn();
@@ -244,7 +244,9 @@ describe(`registerWithUserIdentifierMiddlewares`, () => {
             middleware(request, response, next);
 
             expect.assertions(1);
-            expect(next).toBeCalledWith(new CustomError(ErrorType.SaveUserToDatabaseMiddleware, expect.any(Error)));
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.SaveTemporaryUserToDatabaseMiddleware, expect.any(Error)),
+            );
         });
     });
 

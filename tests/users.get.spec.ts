@@ -45,7 +45,7 @@ describe(testName, () => {
 
         const user = users[0];
 
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(user.isPayingMember).toEqual(true);
         expect(user._id).toEqual(expect.any(String));
         expect(user.username).toEqual(expect.any(String));
@@ -83,7 +83,7 @@ describe(testName, () => {
 
         const user = users[0];
 
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(user.isPayingMember).toEqual(true);
         expect(user._id).toEqual(expect.any(String));
         expect(user.username).toEqual(expect.any(String));
@@ -120,7 +120,7 @@ describe(testName, () => {
         expect(users.length).toEqual(1);
 
         const user = users[0];
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(user.totalStreakCompletes).toEqual(expect.any(Number));
         expect(user.isPayingMember).toEqual(true);
         expect(user._id).toEqual(expect.any(String));
@@ -158,7 +158,7 @@ describe(testName, () => {
 
         const user = users[0];
 
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(user.isPayingMember).toEqual(true);
         expect(user._id).toEqual(expect.any(String));
         expect(user.username).toEqual(expect.any(String));
@@ -195,7 +195,7 @@ describe(testName, () => {
         expect(users.length).toEqual(1);
 
         const user = users[0];
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(user.isPayingMember).toEqual(true);
         expect(user._id).toEqual(expect.any(String));
         expect(user.username).toEqual(expect.any(String));
@@ -235,7 +235,7 @@ describe(testName, () => {
 
         const user = users[0];
 
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(user.isPayingMember).toEqual(true);
         expect(user._id).toEqual(expect.any(String));
         expect(user.username).toEqual(expect.any(String));
@@ -286,7 +286,7 @@ describe(testName, () => {
 
         const user = users[0];
 
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(user._id).toEqual(expect.any(String));
         expect(user.username).toEqual(expect.any(String));
         expect(user.timezone).toEqual(expect.any(String));

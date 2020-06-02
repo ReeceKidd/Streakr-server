@@ -45,7 +45,7 @@ describe(testName, () => {
 
         expect(user._id).toEqual(expect.any(String));
         expect(user.username).toEqual(user.username);
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(user.timezone).toBeDefined();
         expect(user.followers).toEqual([]);
         expect(user.following).toEqual([]);

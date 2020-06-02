@@ -55,7 +55,7 @@ describe(testName, () => {
             userId: createdUser._id,
             paymentPlan: PaymentPlans.Monthly,
         });
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(user._id).toEqual(expect.any(String));
         expect(user.username).toEqual(user.username);
         expect(user.timezone).toBeDefined();
@@ -112,7 +112,7 @@ describe(testName, () => {
             userId,
             paymentPlan: PaymentPlans.Annually,
         });
-        expect(user.userType).toEqual(UserTypes.basic);
+        expect(user.userType).toEqual(UserTypes.temporary);
         expect(user._id).toEqual(expect.any(String));
         expect(user.timezone).toBeDefined();
         expect(user.profileImages).toEqual({
