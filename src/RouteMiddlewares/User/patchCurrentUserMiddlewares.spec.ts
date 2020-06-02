@@ -25,8 +25,6 @@ import {
     getDoesUserEmailExistMiddleware,
     getDoesUsernameExistMiddleware,
     getFormatUserMiddleware,
-    updateAwsCognitoEmailMiddleware,
-    getUpdateAwsCognitoEmailMiddleware,
 } from './patchCurrentUserMiddlewares';
 
 import { populateCurrentUserAchievementsMiddleware } from './getCurrentUser';
@@ -177,54 +175,6 @@ describe('patchCurrentUserMiddlewares', () => {
             expect(next).toBeCalledWith(
                 new CustomError(ErrorType.PatchCurrentUserDoesUserEmailExistMiddleware, expect.any(Error)),
             );
-        });
-    });
-
-    describe(`updateAwsCognitoEmailMiddleware`, () => {
-        test('if email is included in request.body it calls the awsCognito.updateEmail function', async () => {
-            expect.assertions(2);
-            const user = getMockUser();
-            const email = 'person@gmail.com';
-            const updateEmail = jest.fn(() => Promise.resolve(false));
-
-            const request: any = { body: { email } };
-            const response: any = { locals: { user } };
-            const next = jest.fn();
-            const middleware = getUpdateAwsCognitoEmailMiddleware(updateEmail as any);
-
-            await middleware(request, response, next);
-
-            expect(updateEmail).toBeCalledWith({ email, username: user.username });
-            expect(next).toBeCalledWith();
-        });
-
-        test('if email is not included in request.body middleware just calls next', async () => {
-            expect.assertions(2);
-            const user = getMockUser();
-            const updateEmail = jest.fn(() => Promise.resolve(false));
-
-            const request: any = { body: {} };
-            const response: any = { locals: { user } };
-            const next = jest.fn();
-            const middleware = getUpdateAwsCognitoEmailMiddleware(updateEmail as any);
-
-            await middleware(request, response, next);
-
-            expect(updateEmail).not.toBeCalled();
-            expect(next).toBeCalledWith();
-        });
-
-        test('calls next with UpdateAwsCognitoEmailMiddleware error on middleware failure', async () => {
-            expect.assertions(1);
-
-            const request: any = {};
-            const response: any = {};
-            const next = jest.fn();
-            const middleware = getUpdateAwsCognitoEmailMiddleware({} as any);
-
-            await middleware(request, response, next);
-
-            expect(next).toBeCalledWith(new CustomError(ErrorType.UpdateAwsCognitoEmailMiddleware, expect.any(Error)));
         });
     });
 
@@ -714,7 +664,6 @@ describe('patchCurrentUserMiddlewares', () => {
         expect(patchCurrentUserMiddlewares.length).toBe(12);
         expect(patchCurrentUserMiddlewares[0]).toBe(patchCurrentUserRequestBodyValidationMiddleware);
         expect(patchCurrentUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware);
-        expect(patchCurrentUserMiddlewares[2]).toBe(updateAwsCognitoEmailMiddleware);
         expect(patchCurrentUserMiddlewares[3]).toBe(doesUsernameExistMiddleware);
         expect(patchCurrentUserMiddlewares[4]).toBe(patchCurrentUserMiddleware);
         expect(patchCurrentUserMiddlewares[5]).toBe(createPlatformEndpointMiddleware);

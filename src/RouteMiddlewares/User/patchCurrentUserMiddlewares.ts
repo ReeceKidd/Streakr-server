@@ -15,7 +15,6 @@ import { SNS } from '../../../src/sns';
 import { getServiceConfig } from '../../../src/getServiceConfig';
 import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import { getPopulatedCurrentUser } from '../../formatters/getPopulatedCurrentUser';
-import { awsCognito } from '../../helpers/awsCognito';
 
 const patchCurrentUserValidationSchema = {
     email: Joi.string().email(),
@@ -69,26 +68,6 @@ export const getDoesUserEmailExistMiddleware = (userModel: mongoose.Model<UserMo
 
 export const doesUserEmailExistMiddleware = getDoesUserEmailExistMiddleware(userModel);
 
-export const getUpdateAwsCognitoEmailMiddleware = (updateEmail: typeof awsCognito.updateEmail) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const user: User = response.locals.user;
-        const { email } = request.body;
-        if (email) {
-            await updateEmail({ email, username: user.username });
-        }
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.UpdateAwsCognitoEmailMiddleware, err));
-    }
-};
-
-export const updateAwsCognitoEmailMiddleware = getUpdateAwsCognitoEmailMiddleware(awsCognito.updateEmail);
-
 export const getDoesUsernameExistMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
@@ -114,26 +93,6 @@ export const getDoesUsernameExistMiddleware = (userModel: mongoose.Model<UserMod
 };
 
 export const doesUsernameExistMiddleware = getDoesUsernameExistMiddleware(userModel);
-
-export const getUpdateAwsCognitoUsernameMiddleware = (updateUsername: typeof awsCognito.updateUsername) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const user: User = response.locals.user;
-        const { username } = request.body;
-        if (username) {
-            await updateUsername({ oldUsername: user.username, newUsername: username });
-        }
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.UpdateAwsCognitoUsernameMiddleware, err));
-    }
-};
-
-export const updateAwsCognitoUsernameMiddleware = getUpdateAwsCognitoEmailMiddleware(awsCognito.updateEmail);
 
 export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
@@ -347,7 +306,6 @@ export const sendUpdatedCurrentUserMiddleware = (request: Request, response: Res
 export const patchCurrentUserMiddlewares = [
     patchCurrentUserRequestBodyValidationMiddleware,
     doesUserEmailExistMiddleware,
-    updateAwsCognitoEmailMiddleware,
     doesUsernameExistMiddleware,
     patchCurrentUserMiddleware,
     createPlatformEndpointMiddleware,
