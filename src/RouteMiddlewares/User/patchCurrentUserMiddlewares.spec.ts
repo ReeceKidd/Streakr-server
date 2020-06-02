@@ -659,19 +659,19 @@ describe('patchCurrentUserMiddlewares', () => {
         });
     });
     test('are defined in the correct order', () => {
-        expect.assertions(13);
+        expect.assertions(12);
 
-        expect(patchCurrentUserMiddlewares.length).toBe(12);
+        expect(patchCurrentUserMiddlewares.length).toBe(11);
         expect(patchCurrentUserMiddlewares[0]).toBe(patchCurrentUserRequestBodyValidationMiddleware);
         expect(patchCurrentUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware);
-        expect(patchCurrentUserMiddlewares[3]).toBe(doesUsernameExistMiddleware);
-        expect(patchCurrentUserMiddlewares[4]).toBe(patchCurrentUserMiddleware);
-        expect(patchCurrentUserMiddlewares[5]).toBe(createPlatformEndpointMiddleware);
-        expect(patchCurrentUserMiddlewares[6]).toBe(updateUserPushNotificationInformationMiddleware);
-        expect(patchCurrentUserMiddlewares[7]).toBe(populateCurrentUserFollowingMiddleware);
-        expect(patchCurrentUserMiddlewares[8]).toBe(populateCurrentUserFollowersMiddleware);
-        expect(patchCurrentUserMiddlewares[9]).toBe(populateCurrentUserAchievementsMiddleware);
-        expect(patchCurrentUserMiddlewares[10]).toBe(formatUserMiddleware);
-        expect(patchCurrentUserMiddlewares[11]).toBe(sendUpdatedCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[2]).toBe(doesUsernameExistMiddleware);
+        expect(patchCurrentUserMiddlewares[3]).toBe(patchCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[4]).toBe(createPlatformEndpointMiddleware);
+        expect(patchCurrentUserMiddlewares[5]).toBe(updateUserPushNotificationInformationMiddleware);
+        expect(patchCurrentUserMiddlewares[6]).toBe(populateCurrentUserFollowingMiddleware);
+        expect(patchCurrentUserMiddlewares[7]).toBe(populateCurrentUserFollowersMiddleware);
+        expect(patchCurrentUserMiddlewares[8]).toBe(populateCurrentUserAchievementsMiddleware);
+        expect(patchCurrentUserMiddlewares[9]).toBe(formatUserMiddleware);
+        expect(patchCurrentUserMiddlewares[10]).toBe(sendUpdatedCurrentUserMiddleware);
     });
 });
