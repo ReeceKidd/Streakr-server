@@ -36,6 +36,7 @@ import { Onboarding } from '@streakoid/streakoid-models/lib/Models/Onboarding';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { BasicUser } from '@streakoid/streakoid-models/lib/Models/BasicUser';
 import { DatabaseAchievementType } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
 describe('patchCurrentUserMiddlewares', () => {
     describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
@@ -51,10 +52,11 @@ describe('patchCurrentUserMiddlewares', () => {
             hasCompletedTutorial: boolean;
             onboarding: Onboarding;
             hasCompletedOnboarding: boolean;
+            userType: UserTypes.basic;
         } = {
             email: 'email@gmail.com',
             timezone: 'Europe/London',
-            pushNotificationToken: 'pusnNotificationToken',
+            pushNotificationToken: 'pushNotificationToken',
             pushNotification: {
                 token: 'notificationToken',
                 deviceType: PushNotificationSupportedDeviceTypes.android,
@@ -65,6 +67,7 @@ describe('patchCurrentUserMiddlewares', () => {
                 whyDoYouWantToBuildNewHabitsChoice: WhyDoYouWantToBuildNewHabitsTypes.education,
             },
             hasCompletedOnboarding: true,
+            userType: UserTypes.basic,
         };
         test('allows request with all possible params to pass', () => {
             expect.assertions(1);
@@ -121,6 +124,27 @@ describe('patchCurrentUserMiddlewares', () => {
             expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
             expect(send).toBeCalledWith({
                 message: 'child "timezone" fails because ["timezone" must be a string]',
+            });
+            expect(next).not.toBeCalled();
+        });
+
+        test('sends correct response when userType is not equal to basic', () => {
+            expect.assertions(3);
+            const send = jest.fn();
+            const status = jest.fn(() => ({ send }));
+            const request: any = {
+                body: { userType: UserTypes.admin },
+            };
+            const response: any = {
+                status,
+            };
+            const next = jest.fn();
+
+            patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
+
+            expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
+            expect(send).toBeCalledWith({
+                message: 'child "userType" fails because ["userType" must be one of [basic]]',
             });
             expect(next).not.toBeCalled();
         });

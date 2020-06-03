@@ -326,4 +326,17 @@ describe(testName, () => {
             expect(message).toEqual(`Username already exists.`);
         }
     });
+
+    test('fails because userType can not be set to admin via this route', async () => {
+        expect.assertions(2);
+        try {
+            await getPayingUser({ testName });
+            await SDK.user.updateCurrentUser({ updateData: { userType: UserTypes.admin } });
+        } catch (err) {
+            const error = JSON.parse(err.text);
+            const { message } = error;
+            expect(err.status).toEqual(422);
+            expect(message).toEqual('child "userType" fails because ["userType" must be one of [basic]]');
+        }
+    });
 });

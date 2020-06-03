@@ -15,6 +15,7 @@ import { SNS } from '../../../src/sns';
 import { getServiceConfig } from '../../../src/getServiceConfig';
 import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import { getPopulatedCurrentUser } from '../../formatters/getPopulatedCurrentUser';
+import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 
 const patchCurrentUserValidationSchema = {
     email: Joi.string().email(),
@@ -30,6 +31,7 @@ const patchCurrentUserValidationSchema = {
         whyDoYouWantToBuildNewHabitsChoice: Joi.string(),
     },
     hasCompletedOnboarding: Joi.boolean(),
+    userType: Joi.string().valid([UserTypes.basic]),
     pushNotificationToken: Joi.string(), // Legacy support,
     hasCompletedIntroduction: Joi.boolean(), // Legacy support
 };
