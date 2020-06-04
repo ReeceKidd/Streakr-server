@@ -52,6 +52,7 @@ describe('patchCurrentUserMiddlewares', () => {
                 token: string;
                 deviceType: string;
             };
+            hasProfileImageBeenCustomized: boolean;
             hasCompletedIntroduction: boolean;
             hasCompletedTutorial: boolean;
             onboarding: Onboarding;
@@ -69,6 +70,7 @@ describe('patchCurrentUserMiddlewares', () => {
                 token: 'notificationToken',
                 deviceType: PushNotificationSupportedDeviceTypes.android,
             },
+            hasProfileImageBeenCustomized: true,
             hasCompletedIntroduction: true,
             hasCompletedTutorial: true,
             onboarding: {

@@ -28,6 +28,7 @@ const patchCurrentUserValidationSchema = {
         token: Joi.string(),
         deviceType: Joi.string(),
     },
+    hasProfileImageBeenCustomized: Joi.boolean(),
     hasCompletedTutorial: Joi.boolean(),
     onboarding: {
         whyDoYouWantToBuildNewHabitsChoice: Joi.string(),

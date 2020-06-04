@@ -28,6 +28,7 @@ export const getMockUser = (): User => ({
     profileImages: {
         originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
     },
+    hasProfileImageBeenCustomized: false,
     pushNotification: {
         token: 'token',
         endpointArn: 'endpointArn',

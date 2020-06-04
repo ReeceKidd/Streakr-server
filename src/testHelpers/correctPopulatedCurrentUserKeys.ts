@@ -14,6 +14,7 @@ export const correctPopulatedCurrentUserKeys = [
     'membershipInformation',
     'pushNotifications',
     'profileImages',
+    'hasProfileImageBeenCustomized',
     'pushNotification',
     'hasCompletedTutorial',
     'hasCompletedIntroduction',

@@ -72,7 +72,7 @@ describe(testName, () => {
     });
 
     test(`that all available keys can be patched except push notification token as it is handled via a separate test`, async () => {
-        expect.assertions(34);
+        expect.assertions(35);
 
         await getPayingUser({ testName });
 
@@ -91,6 +91,7 @@ describe(testName, () => {
                 hasUsernameBeenCustomized: true,
                 timezone: updatedTimezone,
                 hasCompletedIntroduction: true,
+                hasProfileImageBeenCustomized: true,
                 hasCompletedOnboarding: true,
                 hasCompletedTutorial: true,
                 onboarding: {
@@ -136,6 +137,7 @@ describe(testName, () => {
             token: null,
             endpointArn: null,
         });
+        expect(updatedUser.hasProfileImageBeenCustomized).toEqual(true);
         expect(updatedUser.hasCompletedTutorial).toEqual(true);
         expect(updatedUser.hasCompletedOnboarding).toEqual(true);
         expect(updatedUser.hasCompletedIntroduction).toEqual(true);

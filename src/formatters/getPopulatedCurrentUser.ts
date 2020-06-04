@@ -29,6 +29,7 @@ export const getPopulatedCurrentUser = ({
         updatedAt: user.updatedAt,
         pushNotification: user.pushNotification,
         pushNotifications: user.pushNotifications,
+        hasProfileImageBeenCustomized: user.hasProfileImageBeenCustomized,
         profileImages: user.profileImages,
         hasCompletedTutorial: user.hasCompletedTutorial,
         hasCompletedIntroduction: user.hasCompletedIntroduction,

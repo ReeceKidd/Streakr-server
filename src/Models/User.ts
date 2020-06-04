@@ -80,6 +80,10 @@ export const userSchema = new mongoose.Schema(
                 originalImageUrl,
             },
         },
+        hasProfileImageBeenCustomized: {
+            type: Boolean,
+            default: false,
+        },
         followers: {
             type: Array,
             default: [],
