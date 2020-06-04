@@ -30,9 +30,17 @@ export const userSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
-        name: {
+        firstName: {
             type: String,
             default: null,
+        },
+        lastName: {
+            type: String,
+            default: null,
+        },
+        hasUsernameBeenCustomized: {
+            type: Boolean,
+            default: false,
         },
         userIdentifier: {
             type: String,

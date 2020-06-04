@@ -28,14 +28,17 @@ const deleteEndpointAfterTest = async ({ userId, platformArn }: { userId: string
     const endpoints = await SNS.listEndpointsByPlatformApplication({
         PlatformApplicationArn: platformArn,
     }).promise();
+
     const userEndpoint =
         endpoints &&
         endpoints.Endpoints &&
-        endpoints.Endpoints.find(
-            endpoint => ((endpoint && endpoint.Attributes && endpoint.Attributes.CustomUserData) || '') === userId,
-        );
+        endpoints.Endpoints.find(endpoint => {
+            const customUserData = endpoint && endpoint.Attributes && endpoint.Attributes.CustomUserData;
+            return String(customUserData) === String(userId);
+        });
 
     const endpointToDelete = (userEndpoint && userEndpoint.EndpointArn) || '';
+
     if (endpointToDelete) {
         return SNS.deleteEndpoint({ EndpointArn: endpointToDelete }).promise();
     }
@@ -69,20 +72,23 @@ describe(testName, () => {
     });
 
     test(`that all available keys can be patched except push notification token as it is handled via a separate test`, async () => {
-        expect.assertions(32);
+        expect.assertions(34);
 
         await getPayingUser({ testName });
 
         const updatedEmail = 'email@gmail.com';
         const updatedUsername = 'updated';
-        const updatedName = 'Tom Smith';
+        const updatedFirstName = 'Tom';
+        const updatedLastName = 'Smith';
         const updatedTimezone = 'Europe/Paris';
 
         const updatedUser = await SDK.user.updateCurrentUser({
             updateData: {
                 email: updatedEmail,
                 username: updatedUsername,
-                name: updatedName,
+                firstName: updatedFirstName,
+                lastName: updatedLastName,
+                hasUsernameBeenCustomized: true,
                 timezone: updatedTimezone,
                 hasCompletedIntroduction: true,
                 hasCompletedOnboarding: true,
@@ -96,7 +102,9 @@ describe(testName, () => {
         expect(updatedUser._id).toEqual(expect.any(String));
         expect(updatedUser.email).toEqual(updatedEmail);
         expect(updatedUser.username).toEqual(updatedUsername);
-        expect(updatedUser.name).toEqual(updatedName);
+        expect(updatedUser.firstName).toEqual(updatedFirstName);
+        expect(updatedUser.lastName).toEqual(updatedLastName);
+        expect(updatedUser.hasUsernameBeenCustomized).toEqual(true);
         expect(updatedUser.userType).toEqual(UserTypes.temporary);
         expect(Object.keys(updatedUser.membershipInformation).sort()).toEqual(
             ['isPayingMember', 'pastMemberships', 'currentMembershipStartDate'].sort(),
@@ -137,66 +145,6 @@ describe(testName, () => {
         expect(updatedUser.createdAt).toEqual(expect.any(String));
         expect(updatedUser.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedUser).sort()).toEqual(correctPopulatedCurrentUserKeys);
-    });
-
-    test(`if current user updates push notification information on an android device their endpointArn should be defined and pushNotificationToken should be updated.`, async () => {
-        expect.assertions(2);
-
-        await getPayingUser({ testName });
-
-        const token = 'token';
-
-        const user = await SDK.user.updateCurrentUser({
-            updateData: {
-                pushNotification: {
-                    token,
-                    deviceType: PushNotificationSupportedDeviceTypes.android,
-                },
-            },
-        });
-
-        expect(user.pushNotification).toEqual({
-            deviceType: PushNotificationSupportedDeviceTypes.android,
-            token,
-            endpointArn: expect.any(String),
-        });
-
-        expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
-
-        await deleteEndpointAfterTest({
-            userId: user._id,
-            platformArn: 'arn:aws:sns:eu-west-1:932661412733:app/GCM/Firebase',
-        });
-    });
-
-    test(`if current user updates push notification information on an ios device their endpointArn should be defined and pushNotificationToken should be updated.`, async () => {
-        expect.assertions(2);
-
-        await getPayingUser({ testName });
-
-        const token = '740f4707 bebcf74f 9b7c25d4 8e335894 5f6aa01d a5ddb387 462c7eaf 61bb78ad';
-
-        const user = await SDK.user.updateCurrentUser({
-            updateData: {
-                pushNotification: {
-                    token,
-                    deviceType: PushNotificationSupportedDeviceTypes.ios,
-                },
-            },
-        });
-
-        expect(user.pushNotification).toEqual({
-            token,
-            deviceType: PushNotificationSupportedDeviceTypes.ios,
-            endpointArn: expect.any(String),
-        });
-
-        expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
-
-        await deleteEndpointAfterTest({
-            userId: user._id,
-            platformArn: 'arn:aws:sns:eu-west-1:932661412733:app/APNS/IOS',
-        });
     });
 
     test(`if current user is following a user it returns the a populated following list`, async () => {
@@ -338,5 +286,116 @@ describe(testName, () => {
             expect(err.status).toEqual(422);
             expect(message).toEqual('child "userType" fails because ["userType" must be one of [basic]]');
         }
+    });
+});
+
+describe('android push notification SNS update', () => {
+    let userId: string;
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+
+    beforeEach(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDK({ testName });
+            const user = await getPayingUser({ testName });
+            userId = user._id;
+        }
+    });
+
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            const androidPlatformArn = 'arn:aws:sns:eu-west-1:932661412733:app/GCM/Firebase';
+            await deleteEndpointAfterTest({
+                userId,
+                platformArn: androidPlatformArn,
+            });
+
+            await tearDownDatabase({ database });
+        }
+    });
+
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
+
+    test(`if current user updates push notification information on an android device their endpointArn should be defined and pushNotificationToken should be updated.`, async () => {
+        expect.assertions(2);
+
+        const token = 'token';
+
+        const user = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    token,
+                    deviceType: PushNotificationSupportedDeviceTypes.android,
+                },
+            },
+        });
+
+        expect(user.pushNotification).toEqual({
+            deviceType: PushNotificationSupportedDeviceTypes.android,
+            token,
+            endpointArn: expect.any(String),
+        });
+
+        expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
+    });
+});
+
+describe('ios push notification token SNS update', () => {
+    let userId: string;
+    let database: Mongoose;
+    let SDK: StreakoidSDK;
+
+    beforeEach(async () => {
+        if (isTestEnvironment()) {
+            database = await setupDatabase({ testName });
+            SDK = streakoidTestSDK({ testName });
+            const user = await getPayingUser({ testName });
+            userId = user._id;
+        }
+    });
+
+    afterEach(async () => {
+        if (isTestEnvironment()) {
+            const iosPlatformArn = 'arn:aws:sns:eu-west-1:932661412733:app/APNS/IOS';
+            await deleteEndpointAfterTest({
+                userId,
+                platformArn: iosPlatformArn,
+            });
+            await tearDownDatabase({ database });
+        }
+    });
+
+    afterAll(async () => {
+        if (isTestEnvironment()) {
+            await disconnectDatabase({ database });
+        }
+    });
+
+    test(`if current user updates push notification information on an ios device their endpointArn should be defined and pushNotificationToken should be updated.`, async () => {
+        expect.assertions(2);
+
+        const token = '740f4707 bebcf74f 9b7c25d4 8e335894 5f6aa01d a5ddb387 462c7eaf 61bb78ad';
+
+        const user = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    token,
+                    deviceType: PushNotificationSupportedDeviceTypes.ios,
+                },
+            },
+        });
+
+        expect(user.pushNotification).toEqual({
+            token,
+            deviceType: PushNotificationSupportedDeviceTypes.ios,
+            endpointArn: expect.any(String),
+        });
+
+        expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
     });
 });

@@ -8,6 +8,7 @@ export const getMockUser = (): User => ({
     _id: '_id',
     username: 'username',
     cognitoUsername: 'username',
+    hasUsernameBeenCustomized: false,
     userIdentifier: 'userIdentifier',
     membershipInformation: {
         isPayingMember: true,

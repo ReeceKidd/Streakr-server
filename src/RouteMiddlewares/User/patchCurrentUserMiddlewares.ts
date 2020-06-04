@@ -20,7 +20,9 @@ import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 const patchCurrentUserValidationSchema = {
     email: Joi.string().email(),
     username: Joi.string(),
-    name: Joi.string(),
+    firstName: Joi.string(),
+    lastName: Joi.string(),
+    hasUsernameBeenCustomized: Joi.boolean(),
     timezone: Joi.string(),
     pushNotification: {
         token: Joi.string(),

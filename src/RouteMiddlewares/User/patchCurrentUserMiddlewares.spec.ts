@@ -42,6 +42,10 @@ describe('patchCurrentUserMiddlewares', () => {
     describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
         const values: {
             email: string;
+            username: string;
+            firstName: string;
+            lastName: string;
+            hasUsernameBeenCustomized: boolean;
             timezone: string;
             pushNotificationToken: string;
             pushNotification: {
@@ -55,6 +59,10 @@ describe('patchCurrentUserMiddlewares', () => {
             userType: UserTypes.basic;
         } = {
             email: 'email@gmail.com',
+            username: 'username',
+            firstName: 'Bob',
+            lastName: 'Smith',
+            hasUsernameBeenCustomized: true,
             timezone: 'Europe/London',
             pushNotificationToken: 'pushNotificationToken',
             pushNotification: {
