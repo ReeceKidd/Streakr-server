@@ -2,10 +2,6 @@
 
 // import { CustomError, ErrorType } from '../customError';
 // import { userModel } from '../../src/Models/User';
-// // import { soloStreakModel } from '../../src/Models/SoloStreak';
-// // import { challengeStreakModel } from '../../src/Models/ChallengeStreak';
-// // import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
-// // import { teamMemberStreakModel } from '../../src/Models/TeamMemberStreak';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -16,7 +12,7 @@
 //         const users = await userModel.find({});
 //         await Promise.all(
 //             users.map(async user => {
-//                 await userModel.findByIdAndUpdate(user._id, { $set: { endpointArn: null } });
+//                 await userModel.findByIdAndUpdate(user._id, { $set: { cognitoUsername: user.username } });
 //             }),
 //         );
 //         response.send('success');

@@ -57,7 +57,7 @@ export const getRetrieveUserMiddleware = (userModel: Model<UserModel>) => async 
         if (!username) {
             throw new CustomError(ErrorType.AuthInvalidTokenNoCognitoUsername);
         }
-        const user = await userModel.findOne({ username }).lean();
+        const user = await userModel.findOne({ cognitoUsername: username }).lean();
         if (!user) {
             throw new CustomError(ErrorType.AuthUserDoesNotExist);
         }

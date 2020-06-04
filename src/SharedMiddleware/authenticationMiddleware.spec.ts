@@ -123,7 +123,7 @@ describe('retrieveUserMiddleware', () => {
         await middleware(request, response, next);
 
         expect(response.locals.user).toBeDefined();
-        expect(findOne).toBeCalledWith({ username });
+        expect(findOne).toBeCalledWith({ cognitoUsername: username });
         expect(lean).toBeCalledWith();
         expect(next).toBeCalledWith();
     });
