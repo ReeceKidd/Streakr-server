@@ -89,7 +89,6 @@ export const getPopulateUserFollowingMiddleware = (userModel: mongoose.Model<Use
         const following = await Promise.all(
             user.following.map(async followingId => {
                 const populatedFollowing: UserModel | null = await userModel.findById(followingId).lean();
-                console.log(populatedFollowing);
                 if (populatedFollowing) {
                     const basicUser: BasicUser = {
                         userId: followingId,
