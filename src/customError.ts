@@ -538,6 +538,8 @@ export enum ErrorType {
     AuthenticatedUserNotFound,
     UpdateAwsCognitoEmailMiddleware,
     UpdateAwsCognitoUsernameMiddleware,
+    PreventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware,
+    TeamMemberIsAlreadyInTeamStreak,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1327,6 +1329,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-104`,
                     message: 'Authenticated user not found.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.TeamMemberIsAlreadyInTeamStreak: {
+                return {
+                    code: `${ResponseCodes.badRequest}-105`,
+                    message: 'Team member is already in team streak.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4382,6 +4392,13 @@ export class CustomError extends Error {
             case ErrorType.UpdateAwsCognitoUsernameMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-449`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.PreventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-450`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

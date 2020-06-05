@@ -1047,6 +1047,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to TeamMemberIsAlreadyInTeamStreak`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.TeamMemberIsAlreadyInTeamStreak);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-105`);
+        expect(message).toBe('Team member is already in team streak.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -5800,6 +5811,17 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-449`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to PreventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.PreventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-450`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

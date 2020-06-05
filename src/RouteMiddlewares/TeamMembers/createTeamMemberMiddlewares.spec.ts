@@ -16,7 +16,9 @@ import {
     getFollowerExistsMiddleware,
     followerExistsMiddleware,
     addFollowerToTeamStreakMiddleware,
+    preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware,
 } from './createTeamMemberMiddlewares';
+import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 
 describe(`createTeamMemberParamsValidationMiddleware`, () => {
     const teamStreakId = 'abcdefg';
@@ -216,6 +218,53 @@ describe('teamStreakExistsMiddleware', () => {
     });
 });
 
+describe('preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware', () => {
+    test('if followerId is not already in the teamStreak members it calls next()', async () => {
+        expect.assertions(1);
+        const followerId = 'followerId';
+        const request: any = {
+            body: { followerId },
+        };
+        const teamStreak = getMockTeamStreak({ creatorId: 'creatorId' });
+        const response: any = { locals: { teamStreak } };
+        const next = jest.fn();
+
+        await preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith();
+    });
+
+    test('if followerId is already in the team streak it calls next() with TeamMemberIsAlreadyInTeamStreak.', async () => {
+        expect.assertions(1);
+        const followerId = 'followerId';
+        const request: any = {
+            body: { followerId },
+        };
+        const teamStreak = getMockTeamStreak({ creatorId: followerId });
+        const response: any = { locals: { teamStreak } };
+        const next = jest.fn();
+
+        await preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.TeamMemberIsAlreadyInTeamStreak));
+    });
+
+    test('throws PreventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        await preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(
+                ErrorType.PreventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware,
+                expect.any(Error),
+            ),
+        );
+    });
+});
+
 describe(`createTeamMemberStreakMiddleware`, () => {
     test('sets response.locals.teamMemberStreak', async () => {
         expect.assertions(2);
@@ -380,16 +429,17 @@ describe(`createJoinedTeamStreakActivityFeedItemMiddleware`, () => {
 
 describe(`createTeamMemberMiddlewares`, () => {
     test('are defined in the correct order', async () => {
-        expect.assertions(9);
+        expect.assertions(10);
 
-        expect(createTeamMemberMiddlewares.length).toEqual(8);
+        expect(createTeamMemberMiddlewares.length).toEqual(9);
         expect(createTeamMemberMiddlewares[0]).toBe(createTeamMemberParamsValidationMiddleware);
         expect(createTeamMemberMiddlewares[1]).toBe(createTeamMemberBodyValidationMiddleware);
         expect(createTeamMemberMiddlewares[2]).toBe(followerExistsMiddleware);
         expect(createTeamMemberMiddlewares[3]).toBe(teamStreakExistsMiddleware);
-        expect(createTeamMemberMiddlewares[4]).toBe(createTeamMemberStreakMiddleware);
-        expect(createTeamMemberMiddlewares[5]).toBe(addFollowerToTeamStreakMiddleware);
-        expect(createTeamMemberMiddlewares[6]).toBe(sendCreateTeamMemberResponseMiddleware);
-        expect(createTeamMemberMiddlewares[7]).toBe(createJoinedTeamStreakActivityFeedItemMiddleware);
+        expect(createTeamMemberMiddlewares[4]).toBe(preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware);
+        expect(createTeamMemberMiddlewares[5]).toBe(createTeamMemberStreakMiddleware);
+        expect(createTeamMemberMiddlewares[6]).toBe(addFollowerToTeamStreakMiddleware);
+        expect(createTeamMemberMiddlewares[7]).toBe(sendCreateTeamMemberResponseMiddleware);
+        expect(createTeamMemberMiddlewares[8]).toBe(createJoinedTeamStreakActivityFeedItemMiddleware);
     });
 });

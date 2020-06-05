@@ -100,6 +100,27 @@ export const getTeamStreakExistsMiddleware = (teamStreakModel: mongoose.Model<Te
 
 export const teamStreakExistsMiddleware = getTeamStreakExistsMiddleware(teamStreakModel);
 
+export const preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware = async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        const { followerId } = request.body;
+        const teamMemberIsAlreadyInTeamStreak = teamStreak.members.find(
+            member => String(member.memberId) === String(followerId),
+        );
+        if (teamMemberIsAlreadyInTeamStreak) {
+            throw new CustomError(ErrorType.TeamMemberIsAlreadyInTeamStreak);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.PreventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware, err));
+    }
+};
+
 export const getCreateTeamMemberStreakMiddleware = (teamMemberStreak: mongoose.Model<TeamMemberStreakModel>) => async (
     request: Request,
     response: Response,
@@ -191,6 +212,7 @@ export const createTeamMemberMiddlewares = [
     createTeamMemberBodyValidationMiddleware,
     followerExistsMiddleware,
     teamStreakExistsMiddleware,
+    preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware,
     createTeamMemberStreakMiddleware,
     addFollowerToTeamStreakMiddleware,
     sendCreateTeamMemberResponseMiddleware,

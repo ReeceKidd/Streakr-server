@@ -217,4 +217,39 @@ describe(testName, () => {
             );
         }
     });
+
+    test(`follower can not join a team streak they are already apart off`, async () => {
+        expect.assertions(2);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const follower = await getFriend({ testName });
+        const followerId = follower._id;
+        const streakName = 'Daily Spanish';
+
+        const members = [{ memberId: userId }];
+
+        const teamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName,
+            members,
+        });
+
+        await SDK.teamStreaks.teamMembers.create({
+            followerId,
+            teamStreakId: teamStreak._id,
+        });
+
+        try {
+            await SDK.teamStreaks.teamMembers.create({
+                followerId,
+                teamStreakId: teamStreak._id,
+            });
+        } catch (err) {
+            const error = JSON.parse(err.text);
+            const { message } = error;
+            expect(err.status).toEqual(400);
+            expect(message).toEqual(`Team member is already in team streak.`);
+        }
+    });
 });
