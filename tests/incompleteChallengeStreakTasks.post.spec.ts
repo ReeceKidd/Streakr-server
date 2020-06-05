@@ -274,7 +274,7 @@ describe(testName, () => {
         expect(updatedUser.totalStreakCompletes).toEqual(0);
     });
 
-    test('when user incompletes a task a IncompletedChallengeStreakActivityItem is created', async () => {
+    test('when user incompletes a task a IncompletedChallengeStreakActivityItem is created', async done => {
         expect.assertions(7);
 
         const user = await getPayingUser({ testName });
@@ -301,42 +301,45 @@ describe(testName, () => {
             challengeStreakId: challengeStreak._id,
         });
 
-        const { activityFeedItems } = await SDK.activityFeedItems.getAll({
-            activityFeedItemType: ActivityFeedItemTypes.incompletedChallengeStreak,
-        });
-        const incompletedChallengeStreakTaskActivityFeedItem = activityFeedItems.find(
-            item => item.activityFeedItemType === ActivityFeedItemTypes.incompletedChallengeStreak,
-        );
-        if (
-            incompletedChallengeStreakTaskActivityFeedItem &&
-            incompletedChallengeStreakTaskActivityFeedItem.activityFeedItemType ===
-                ActivityFeedItemTypes.incompletedChallengeStreak
-        ) {
-            expect(incompletedChallengeStreakTaskActivityFeedItem.challengeStreakId).toEqual(
-                String(challengeStreak._id),
+        setTimeout(async () => {
+            const { activityFeedItems } = await SDK.activityFeedItems.getAll({
+                activityFeedItemType: ActivityFeedItemTypes.incompletedChallengeStreak,
+            });
+            const incompletedChallengeStreakTaskActivityFeedItem = activityFeedItems.find(
+                item => item.activityFeedItemType === ActivityFeedItemTypes.incompletedChallengeStreak,
             );
-            expect(incompletedChallengeStreakTaskActivityFeedItem.challengeId).toEqual(String(challenge._id));
-            expect(incompletedChallengeStreakTaskActivityFeedItem.challengeName).toEqual(String(challenge.name));
-            expect(incompletedChallengeStreakTaskActivityFeedItem.userId).toEqual(String(userId));
-            expect(incompletedChallengeStreakTaskActivityFeedItem.username).toEqual(user.username);
-            expect(incompletedChallengeStreakTaskActivityFeedItem.userProfileImage).toEqual(
-                user.profileImages.originalImageUrl,
-            );
-            expect(Object.keys(incompletedChallengeStreakTaskActivityFeedItem).sort()).toEqual(
-                [
-                    '_id',
-                    'activityFeedItemType',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'challengeStreakId',
-                    'challengeId',
-                    'challengeName',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
-        }
+            if (
+                incompletedChallengeStreakTaskActivityFeedItem &&
+                incompletedChallengeStreakTaskActivityFeedItem.activityFeedItemType ===
+                    ActivityFeedItemTypes.incompletedChallengeStreak
+            ) {
+                expect(incompletedChallengeStreakTaskActivityFeedItem.challengeStreakId).toEqual(
+                    String(challengeStreak._id),
+                );
+                expect(incompletedChallengeStreakTaskActivityFeedItem.challengeId).toEqual(String(challenge._id));
+                expect(incompletedChallengeStreakTaskActivityFeedItem.challengeName).toEqual(String(challenge.name));
+                expect(incompletedChallengeStreakTaskActivityFeedItem.userId).toEqual(String(userId));
+                expect(incompletedChallengeStreakTaskActivityFeedItem.username).toEqual(user.username);
+                expect(incompletedChallengeStreakTaskActivityFeedItem.userProfileImage).toEqual(
+                    user.profileImages.originalImageUrl,
+                );
+                expect(Object.keys(incompletedChallengeStreakTaskActivityFeedItem).sort()).toEqual(
+                    [
+                        '_id',
+                        'activityFeedItemType',
+                        'userId',
+                        'username',
+                        'userProfileImage',
+                        'challengeStreakId',
+                        'challengeId',
+                        'challengeName',
+                        'createdAt',
+                        'updatedAt',
+                        '__v',
+                    ].sort(),
+                );
+            }
+            done();
+        }, 1000);
     });
 });
