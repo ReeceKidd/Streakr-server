@@ -55,7 +55,9 @@ export const resetIncompleteTeamMemberStreaks = async (
                 userProfileImage: (user && user.profileImages && user.profileImages.originalImageUrl) || '',
                 teamStreakId: (teamStreak && teamStreak._id) || '',
                 teamStreakName: (teamStreak && teamStreak.streakName) || '',
-                numberOfDaysLost: pastStreak.numberOfDaysInARow,
+                numberOfDaysLost:
+                    (teamStreak && teamStreak.currentStreak && teamStreak.currentStreak.numberOfDaysInARow) ||
+                    pastStreak.numberOfDaysInARow,
             };
 
             await createActivityFeedItem(lostTeamStreakActivityFeedItem);

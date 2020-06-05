@@ -166,7 +166,7 @@ describe(testName, () => {
             expect(lostTeamMemberStreakItem.userProfileImage).toEqual(String(userProfileImage));
             expect(lostTeamMemberStreakItem.teamStreakId).toEqual(String(teamStreak._id));
             expect(lostTeamMemberStreakItem.teamStreakName).toEqual(String(teamStreak.streakName));
-            expect(lostTeamMemberStreakItem.numberOfDaysLost).toEqual(expect.any(Number));
+            expect(lostTeamMemberStreakItem.numberOfDaysLost).toEqual(1);
             expect(Object.keys(lostTeamMemberStreakItem).sort()).toEqual(
                 [
                     '_id',

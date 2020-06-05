@@ -65,7 +65,7 @@ describe('resetIncompleteSoloStreaks', () => {
             userProfileImage: user.profileImages.originalImageUrl,
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
-            numberOfDaysLost: teamMemberStreak.currentStreak.numberOfDaysInARow,
+            numberOfDaysLost: teamStreak.currentStreak.numberOfDaysInARow,
         });
 
         expect(createStreakTrackingEvent).toBeCalledWith({
