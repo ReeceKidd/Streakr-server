@@ -63,12 +63,13 @@ export const getPopulateUserFollowersMiddleware = (userModel: mongoose.Model<Use
                         username: populatedFollower.username,
                         profileImage: populatedFollower.profileImages.originalImageUrl,
                     };
+
                     return basicUser;
                 }
                 return null;
             }),
         );
-        response.locals.followers = followers.map(user => user !== null);
+        response.locals.followers = followers.filter(user => user !== null);
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -88,6 +89,7 @@ export const getPopulateUserFollowingMiddleware = (userModel: mongoose.Model<Use
         const following = await Promise.all(
             user.following.map(async followingId => {
                 const populatedFollowing: UserModel | null = await userModel.findById(followingId).lean();
+                console.log(populatedFollowing);
                 if (populatedFollowing) {
                     const basicUser: BasicUser = {
                         userId: followingId,
@@ -99,7 +101,7 @@ export const getPopulateUserFollowingMiddleware = (userModel: mongoose.Model<Use
                 return null;
             }),
         );
-        response.locals.following = following.map(user => user !== null);
+        response.locals.following = following.filter(user => user !== null);
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);

@@ -30,7 +30,7 @@ export const getPopulateCurrentUserFollowingMiddleware = (userModel: Model<UserM
                 return null;
             }),
         );
-        response.locals.following = following.map(user => user !== null);
+        response.locals.following = following.filter(user => user !== null);
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -61,7 +61,7 @@ export const getPopulateCurrentUserFollowersMiddleware = (userModel: Model<UserM
                 return null;
             }),
         );
-        response.locals.followers = followers.map(user => user !== null);
+        response.locals.followers = followers.filter(user => user !== null);
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);

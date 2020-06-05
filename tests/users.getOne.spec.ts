@@ -8,6 +8,7 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { userModel } from '../src/Models/User';
 
 jest.setTimeout(120000);
 
@@ -114,6 +115,23 @@ describe(testName, () => {
         );
     });
 
+    test(`if user is following another user who no longer exists the non existent user is not returned in the users following array`, async () => {
+        expect.assertions(1);
+
+        const createdUser = await getPayingUser({ testName });
+        const userId = createdUser._id;
+
+        const friend = await getFriend({ testName });
+
+        await SDK.users.following.followUser({ userId, userToFollowId: friend._id });
+
+        await userModel.deleteOne({ _id: friend._id });
+
+        const user = await SDK.users.getOne(userId);
+
+        expect(user.following.length).toEqual(0);
+    });
+
     test(`if user has followers a populated followers list is returned`, async () => {
         expect.assertions(5);
 
@@ -150,6 +168,23 @@ describe(testName, () => {
                 'username',
             ].sort(),
         );
+    });
+
+    test(`if user has a follower who no longer exists the follower is not returned in the users followers array`, async () => {
+        expect.assertions(1);
+
+        const createdUser = await getPayingUser({ testName });
+        const userId = createdUser._id;
+
+        const friend = await getFriend({ testName });
+
+        await SDK.users.following.followUser({ userId, userToFollowId: friend._id });
+
+        await userModel.deleteOne({ _id: userId });
+
+        const user = await SDK.users.getOne(friend._id);
+
+        expect(user.followers.length).toEqual(0);
     });
 
     test(`sends string must be 24 characters long error when userId is not valid`, async () => {

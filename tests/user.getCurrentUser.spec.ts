@@ -10,6 +10,7 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { userModel } from '../src/Models/User';
 
 jest.setTimeout(120000);
 
@@ -105,6 +106,23 @@ describe(testName, () => {
         expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
     });
 
+    test(`if current user is following another user who no longer exists the non existent user is not returned in the users following array`, async () => {
+        expect.assertions(1);
+
+        const createdUser = await getPayingUser({ testName });
+        const userId = createdUser._id;
+
+        const friend = await getFriend({ testName });
+
+        await SDK.users.following.followUser({ userId, userToFollowId: friend._id });
+
+        await userModel.deleteOne({ _id: friend._id });
+
+        const user = await SDK.user.getCurrentUser();
+
+        expect(user.following.length).toEqual(0);
+    });
+
     test(`if current user has a follower a user it returns the a populated follower list`, async () => {
         expect.assertions(6);
 
@@ -126,6 +144,23 @@ describe(testName, () => {
         expect(Object.keys(follower).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
 
         expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
+    });
+
+    test(`if current user has a follower who no longer exists the follower is not returned in the users followers array`, async () => {
+        expect.assertions(1);
+
+        const createdUser = await getPayingUser({ testName });
+        const userId = createdUser._id;
+
+        const friend = await getFriend({ testName });
+
+        await SDK.users.following.followUser({ userId: friend._id, userToFollowId: userId });
+
+        await userModel.deleteOne({ _id: friend._id });
+
+        const user = await SDK.user.getCurrentUser();
+
+        expect(user.followers.length).toEqual(0);
     });
 
     test(`if current user has an achievement it returns the current user with populated achievements`, async () => {
