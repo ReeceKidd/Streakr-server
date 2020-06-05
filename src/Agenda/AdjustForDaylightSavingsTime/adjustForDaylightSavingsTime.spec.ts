@@ -1,41 +1,46 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-jest.mock('moment', () => ({
+const endDate = new Date();
+const endOf = jest.fn(() => ({
+    toDate: jest.fn(() => endDate),
+}));
+jest.mock('moment-timezone', () => ({
     tz: jest.fn(() => ({
-        endOf: jest.fn(() => new Date()),
+        isSame: jest.fn(() => false),
+        endOf,
     })),
 }));
 
-jest.mock('./adjustStreakDailyTrackerForDaylightSavingsTime', () => ({
-    __esModule: true,
-    adjustStreakDailyTrackerForDaylightSavingsTime: jest.fn().mockResolvedValue(true),
-}));
-
 import { adjustForDaylightSavingsTime } from './adjustForDaylightSavingsTime';
-import { adjustStreakDailyTrackerForDaylightSavingsTime } from './adjustStreakDailyTrackerForDaylightSavingsTime';
 import AgendaJobNames from '@streakoid/streakoid-models/lib/Types/AgendaJobNames';
+import { agendaJobModel } from '../../Models/AgendaJob';
+import moment from 'moment-timezone';
+import { AgendaTimeRanges } from '../agenda';
 
 describe('adjustForDaylightSavingsTime', () => {
-    afterEach(() => {
-        jest.resetAllMocks();
-    });
-
-    test('adjusts the timezone for soloStreakDailyTracker, teamStreakDailyTracker and challengeStreakDailyTracker to match daylight savings time', async () => {
-        expect.assertions(3);
+    test('finds the correct streakDailyTracker job and then updates the nextRunAt time to be the new end of day time according to daylight savings.', async () => {
+        expect.assertions(7);
         const timezone = 'Europe/London';
+
+        agendaJobModel.findOne = jest.fn().mockResolvedValue({ _id: '_id', nextRunAt: new Date() }) as any;
+        agendaJobModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
 
         await adjustForDaylightSavingsTime({ timezone });
 
-        expect(adjustStreakDailyTrackerForDaylightSavingsTime).toBeCalledWith({
-            timezone,
-            agendaJobName: AgendaJobNames.soloStreakDailyTracker,
+        expect(agendaJobModel.findOne).toBeCalledWith({
+            name: AgendaJobNames.soloStreakDailyTracker,
+            'data.timezone': timezone,
         });
-        expect(adjustStreakDailyTrackerForDaylightSavingsTime).toBeCalledWith({
-            timezone,
-            agendaJobName: AgendaJobNames.teamStreakDailyTracker,
+        expect(agendaJobModel.findOne).toBeCalledWith({
+            name: AgendaJobNames.teamStreakDailyTracker,
+            'data.timezone': timezone,
         });
-        expect(adjustStreakDailyTrackerForDaylightSavingsTime).toBeCalledWith({
-            timezone,
-            agendaJobName: AgendaJobNames.challengeStreakDailyTracker,
+        expect(agendaJobModel.findOne).toBeCalledWith({
+            name: AgendaJobNames.challengeStreakDailyTracker,
+            'data.timezone': timezone,
         });
+        expect(moment.tz).toBeCalledWith(timezone);
+        expect(moment.tz().endOf).toBeCalledWith(AgendaTimeRanges.day);
+        expect(agendaJobModel.findByIdAndUpdate).toBeCalledTimes(3);
+        expect(agendaJobModel.findByIdAndUpdate).toBeCalledWith('_id', { $set: { nextRunAt: endDate } });
     });
 });
