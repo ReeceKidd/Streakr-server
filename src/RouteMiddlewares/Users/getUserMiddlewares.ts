@@ -56,13 +56,16 @@ export const getPopulateUserFollowersMiddleware = (userModel: mongoose.Model<Use
         const user: User = response.locals.user;
         const followers = await Promise.all(
             user.followers.map(async followerId => {
-                const populatedFollower: UserModel = await userModel.findById(followerId).lean();
-                const basicUser: BasicUser = {
-                    userId: followerId,
-                    username: populatedFollower.username,
-                    profileImage: populatedFollower.profileImages.originalImageUrl,
-                };
-                return basicUser;
+                const populatedFollower: UserModel | null = await userModel.findById(followerId).lean();
+                if (populatedFollower) {
+                    const basicUser: BasicUser = {
+                        userId: followerId,
+                        username: populatedFollower.username,
+                        profileImage: populatedFollower.profileImages.originalImageUrl,
+                    };
+                    return basicUser;
+                }
+                return null;
             }),
         );
         response.locals.followers = followers.map(user => user !== null);
@@ -84,13 +87,16 @@ export const getPopulateUserFollowingMiddleware = (userModel: mongoose.Model<Use
         const user: User = response.locals.user;
         const following = await Promise.all(
             user.following.map(async followingId => {
-                const populatedFollowing: UserModel = await userModel.findById(followingId).lean();
-                const basicUser: BasicUser = {
-                    userId: followingId,
-                    username: populatedFollowing && populatedFollowing.username,
-                    profileImage: populatedFollowing && populatedFollowing.profileImages.originalImageUrl,
-                };
-                return basicUser;
+                const populatedFollowing: UserModel | null = await userModel.findById(followingId).lean();
+                if (populatedFollowing) {
+                    const basicUser: BasicUser = {
+                        userId: followingId,
+                        username: populatedFollowing && populatedFollowing.username,
+                        profileImage: populatedFollowing && populatedFollowing.profileImages.originalImageUrl,
+                    };
+                    return basicUser;
+                }
+                return null;
             }),
         );
         response.locals.following = following.map(user => user !== null);
