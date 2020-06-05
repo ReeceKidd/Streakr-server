@@ -65,7 +65,7 @@ export const getPopulateUserFollowersMiddleware = (userModel: mongoose.Model<Use
                 return basicUser;
             }),
         );
-        response.locals.followers = followers;
+        response.locals.followers = followers.map(user => user !== null);
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -93,7 +93,7 @@ export const getPopulateUserFollowingMiddleware = (userModel: mongoose.Model<Use
                 return basicUser;
             }),
         );
-        response.locals.following = following;
+        response.locals.following = following.map(user => user !== null);
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
