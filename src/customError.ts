@@ -303,7 +303,7 @@ export enum ErrorType {
     InvalidImageFormat,
     ManipulateProfilePictureMiddleware,
     NoImageInRequest,
-    GetSingleImageUploadMiddleware,
+    IsImageInRequestMiddleware,
     S3UploadAvatarImage,
     S3UploadOriginalImage,
     DefineProfilePictures,
@@ -3031,7 +3031,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.GetSingleImageUploadMiddleware:
+            case ErrorType.IsImageInRequestMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-241`,
                     message: internalServerMessage,

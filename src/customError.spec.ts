@@ -3637,10 +3637,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to GetSingleImageUploadMiddleware`, () => {
+    test(`creates correct error when type is set to IsImageInRequestMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.GetSingleImageUploadMiddleware);
+        const customError = new CustomError(ErrorType.IsImageInRequestMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-241`);

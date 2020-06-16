@@ -1,7 +1,5 @@
 import aws from 'aws-sdk';
 import { Request, Response } from 'express';
-import multer from 'multer';
-import util from 'util';
 
 import { getServiceConfig } from '../../getServiceConfig';
 import { NextFunction } from 'connect';
@@ -20,33 +18,23 @@ aws.config.update({
 
 const s3 = new aws.S3();
 
-const upload = multer();
-
-const singleImageUpload = upload.single('image');
-const promiseSingleImageUpload = util.promisify(singleImageUpload);
-
 const original = 'original';
 
-export const getSingleImageUploadMiddleware = (singleImageUpload: Function) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const isImageInRequestMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        await singleImageUpload(request, response);
-        const image = request.file;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const image = (request as any).file;
         if (!image) {
             throw new CustomError(ErrorType.NoImageInRequest);
         }
         response.locals.image = image;
         next();
     } catch (err) {
+        console.log(err);
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.GetSingleImageUploadMiddleware, err));
+        else next(new CustomError(ErrorType.IsImageInRequestMiddleware, err));
     }
 };
-
-export const singleImageUploadMiddleware = getSingleImageUploadMiddleware(promiseSingleImageUpload);
 
 export const imageTypeValidationMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
@@ -155,7 +143,7 @@ export const sendProfilePicturesMiddleware = (request: Request, response: Respon
 };
 
 const createProfilePictureMiddlewares = [
-    singleImageUploadMiddleware,
+    isImageInRequestMiddleware,
     imageTypeValidationMiddleware,
     s3UploadOriginalImageMiddleware,
     retrieveVersionedObjectMiddleware,

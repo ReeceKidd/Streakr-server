@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-    getSingleImageUploadMiddleware,
+    isImageInRequestMiddleware,
     imageTypeValidationMiddleware,
     getS3UploadOriginalImageMiddleware,
     defineProfilePictureUrlsMiddleware,
     getSetUserProfilePicturesMiddlewares,
     sendProfilePicturesMiddleware,
     createProfilePictureMiddlewares,
-    singleImageUploadMiddleware,
     setUserProfilePicturesMiddleware,
     s3UploadOriginalImageMiddleware,
     retrieveVersionedObjectMiddleware,
@@ -19,8 +18,8 @@ import { getServiceConfig } from '../../../src/getServiceConfig';
 
 const { PROFILE_PICTURES_BUCKET } = getServiceConfig();
 
-describe(`singleImageUploadMiddleware`, () => {
-    test('populates request.file, sets response.locals.image and calls next', async () => {
+describe(`isImageInRequestMiddleware`, () => {
+    test('sets response.locals.image and calls next', async () => {
         expect.assertions(2);
         const file = 'file';
         const request: any = {
@@ -31,10 +30,7 @@ describe(`singleImageUploadMiddleware`, () => {
         };
         const next = jest.fn();
 
-        const singleImageUpload = jest.fn().mockResolvedValue(true);
-
-        const middleware = getSingleImageUploadMiddleware(singleImageUpload);
-        await middleware(request, response, next);
+        isImageInRequestMiddleware(request, response, next);
 
         expect(response.locals.image).toBeDefined();
         expect(next).toBeCalled();
@@ -48,25 +44,21 @@ describe(`singleImageUploadMiddleware`, () => {
         };
         const next = jest.fn();
 
-        const singleImageUpload = jest.fn().mockResolvedValue(true);
-
-        const middleware = getSingleImageUploadMiddleware(singleImageUpload);
-        await middleware(request, response, next);
+        await isImageInRequestMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.NoImageInRequest));
     });
 
-    test('calls next with GetSingleImageUploadMiddleware  error on middleware failure', async () => {
+    test('calls next with IsImageInRequestMiddleware  error on middleware failure', async () => {
         expect.assertions(1);
 
-        const request: any = {};
+        const request: any = { file: {} };
         const response: any = {};
         const next = jest.fn();
 
-        const middleware = getSingleImageUploadMiddleware({} as any);
-        await middleware(request, response, next);
+        await isImageInRequestMiddleware(request, response, next);
 
-        expect(next).toBeCalledWith(new CustomError(ErrorType.GetSingleImageUploadMiddleware, expect.any(Error)));
+        expect(next).toBeCalledWith(new CustomError(ErrorType.IsImageInRequestMiddleware, expect.any(Error)));
     });
 });
 
@@ -338,7 +330,7 @@ describe('createProfilePictureMiddlewares', () => {
         expect.assertions(8);
 
         expect(createProfilePictureMiddlewares.length).toEqual(7);
-        expect(createProfilePictureMiddlewares[0]).toEqual(singleImageUploadMiddleware);
+        expect(createProfilePictureMiddlewares[0]).toEqual(isImageInRequestMiddleware);
         expect(createProfilePictureMiddlewares[1]).toEqual(imageTypeValidationMiddleware);
         expect(createProfilePictureMiddlewares[2]).toEqual(s3UploadOriginalImageMiddleware);
         expect(createProfilePictureMiddlewares[3]).toEqual(retrieveVersionedObjectMiddleware);
