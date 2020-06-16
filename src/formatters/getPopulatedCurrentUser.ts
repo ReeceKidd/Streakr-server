@@ -19,6 +19,7 @@ export const getPopulatedCurrentUser = ({
         email: user.email,
         temporaryPassword: user.temporaryPassword,
         username: user.username,
+        cognitoUsername: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
         hasUsernameBeenCustomized: user.hasUsernameBeenCustomized,

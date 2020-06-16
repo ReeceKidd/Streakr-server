@@ -30,11 +30,11 @@ import { notesRouter } from './notesRouter';
 import { databaseStatsRouter } from './databaseStatsRouter';
 import { achievementsRouter } from './achievementRouter';
 //import { registerWithUserIdentifierMiddlewares } from '../../../RouteMiddlewares/User/registerTemporaryUserMiddleware';
-//import { updateDatabaseMiddlewares } from '../../../../src/RouteMiddlewares/updateDatabaseMiddlewares';
+// import { updateDatabaseMiddlewares } from '../../../../src/RouteMiddlewares/updateDatabaseMiddlewares';
 
 const v1Router = Router();
 
-//v1Router.post('/update', ...updateDatabaseMiddlewares);
+// v1Router.post('/update', ...updateDatabaseMiddlewares);
 
 v1Router.use(...timezoneMiddlewares);
 

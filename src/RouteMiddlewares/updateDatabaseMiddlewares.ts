@@ -12,7 +12,14 @@
 //         const users = await userModel.find({});
 //         await Promise.all(
 //             users.map(async user => {
-//                 await userModel.findByIdAndUpdate(user._id, { $set: { cognitoUsername: user.username } });
+//                 await userModel.findByIdAndUpdate(user._id, {
+//                     $set: {
+//                         onboarding: { whyDoYouWantToBuildNewHabitsChoice: null },
+//                         hasUsernameBeenCustomized: true,
+//                         hasCompletedOnboarding: true,
+//                         hasUsernameBeenCustomize: null,
+//                     },
+//                 });
 //             }),
 //         );
 //         response.send('success');

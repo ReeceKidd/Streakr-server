@@ -32,7 +32,7 @@ export const agenda = new Agenda({
 agenda.on('fail', async (err: Error, job) => {
     try {
         const message = `
-        Envirionment: ${NODE_ENV}
+        Environment: ${NODE_ENV}
         Ran job: ${job.attrs.name} for timezone: ${job.attrs.data.timezone},
       At ${new Date()}
       Failure reason: ${err.message}
