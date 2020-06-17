@@ -24,4 +24,5 @@ export const correctPopulatedCurrentUserKeys = [
     'updatedAt',
     'userType',
     'username',
+    'cognitoUsername',
 ].sort();
