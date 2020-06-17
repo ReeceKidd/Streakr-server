@@ -58,6 +58,8 @@ describe('patchCurrentUserMiddlewares', () => {
             onboarding: Onboarding;
             hasCompletedOnboarding: boolean;
             userType: UserTypes.basic;
+            hasVerifiedEmail: boolean;
+            hasCustomPassword: boolean;
         } = {
             email: 'email@gmail.com',
             username: 'username',
@@ -78,6 +80,8 @@ describe('patchCurrentUserMiddlewares', () => {
             },
             hasCompletedOnboarding: true,
             userType: UserTypes.basic,
+            hasVerifiedEmail: true,
+            hasCustomPassword: true,
         };
         test('allows request with all possible params to pass', () => {
             expect.assertions(1);

@@ -187,6 +187,14 @@ export const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        hasVerifiedEmail: {
+            type: Boolean,
+            default: false,
+        },
+        hasCustomPassword: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

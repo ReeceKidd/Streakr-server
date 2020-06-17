@@ -30,7 +30,6 @@ export const isImageInRequestMiddleware = (request: Request, response: Response,
         response.locals.image = image;
         next();
     } catch (err) {
-        console.log(err);
         if (err instanceof CustomError) next(err);
         else next(new CustomError(ErrorType.IsImageInRequestMiddleware, err));
     }

@@ -35,6 +35,8 @@ const patchCurrentUserValidationSchema = {
     },
     hasCompletedOnboarding: Joi.boolean(),
     userType: Joi.string().valid([UserTypes.basic]),
+    hasVerifiedEmail: Joi.boolean(),
+    hasCustomPassword: Joi.boolean(),
     pushNotificationToken: Joi.string(), // Legacy support,
     hasCompletedIntroduction: Joi.boolean(), // Legacy support
 };

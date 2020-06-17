@@ -19,10 +19,11 @@ export const correctPopulatedCurrentUserKeys = [
     'hasCompletedTutorial',
     'hasCompletedIntroduction',
     'hasCompletedOnboarding',
+    'hasVerifiedEmail',
+    'hasCustomPassword',
     'onboarding',
     'timezone',
     'updatedAt',
     'userType',
     'username',
-    'cognitoUsername',
 ].sort();
