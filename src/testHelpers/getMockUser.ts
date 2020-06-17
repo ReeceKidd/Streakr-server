@@ -55,6 +55,8 @@ export const getMockUser = (): User => ({
     },
     hasCompletedIntroduction: true,
     hasCompletedTutorial: false,
+    hasVerifiedEmail: true,
+    hasCustomPassword: true,
     onboarding: {
         whyDoYouWantToBuildNewHabitsChoice: WhyDoYouWantToBuildNewHabitsTypes.education,
     },
