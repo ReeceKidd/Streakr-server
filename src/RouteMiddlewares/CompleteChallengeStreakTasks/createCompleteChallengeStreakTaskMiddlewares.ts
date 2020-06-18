@@ -189,11 +189,15 @@ export const getIncreaseNumberOfDaysInARowForChallengeStreakMiddleware = (
     try {
         const { challengeStreakId } = request.body;
         const updatedChallengeStreak = await challengeStreakModel
-            .findByIdAndUpdate(challengeStreakId, {
-                completedToday: true,
-                $inc: { 'currentStreak.numberOfDaysInARow': 1 },
-                active: true,
-            })
+            .findByIdAndUpdate(
+                challengeStreakId,
+                {
+                    completedToday: true,
+                    $inc: { 'currentStreak.numberOfDaysInARow': 1 },
+                    active: true,
+                },
+                { new: true },
+            )
             .lean();
         response.locals.challengeStreak = updatedChallengeStreak;
         next();

@@ -495,11 +495,15 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
 
             await middleware(request, response, next);
 
-            expect(findByIdAndUpdate).toBeCalledWith(challengeStreakId, {
-                completedToday: true,
-                $inc: { 'currentStreak.numberOfDaysInARow': 1 },
-                active: true,
-            });
+            expect(findByIdAndUpdate).toBeCalledWith(
+                challengeStreakId,
+                {
+                    completedToday: true,
+                    $inc: { 'currentStreak.numberOfDaysInARow': 1 },
+                    active: true,
+                },
+                { new: true },
+            );
             expect(lean).toBeCalled();
             expect(response.locals.challengeStreak).toBeDefined();
             expect(next).toBeCalledWith();
