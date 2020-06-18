@@ -10,7 +10,7 @@ export const initializeAchievements = async () => {
         const oneHundredDaySoloStreakAchievement = new achievementModel({
             achievementType: AchievementTypes.oneHundredDaySoloStreak,
             name: 'One Hundred Day Solo Streak',
-            description: 'One Hundred Day Solo Streak',
+            description: 'Complete a solo streak for one hundred days',
         });
         await oneHundredDaySoloStreakAchievement.save();
         console.log(`Created ${AchievementTypes.oneHundredDaySoloStreak}`);
@@ -23,7 +23,7 @@ export const initializeAchievements = async () => {
         const oneHundredDayChallengeStreakAchievement = new achievementModel({
             achievementType: AchievementTypes.oneHundredDayChallengeStreak,
             name: 'One Hundred Day Challenge Streak',
-            description: 'One Hundred Day Challenge Streak',
+            description: 'Complete a challenge streak for one hundred days',
         });
         await oneHundredDayChallengeStreakAchievement.save();
         console.log(`Created ${AchievementTypes.oneHundredDayChallengeStreak}`);

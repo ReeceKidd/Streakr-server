@@ -71,6 +71,7 @@ export default ({ databaseURI }: { databaseURI: string }) => {
     //initialiseAdjustForDaylightSavingsJobs();
     //initializeCompleteStreakReminderJobs();
     //initialiseChallengeStreakTimezoneCheckerJobs();
+    //initializeAchievements();
 
     app.use(`/${ApiVersions.v1}`, v1Router);
 
