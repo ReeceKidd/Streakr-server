@@ -26,9 +26,13 @@ import {
     getRetrieveChallengeMiddleware,
     getIncreaseTotalStreakCompletesForUserMiddleware,
     increaseTotalStreakCompletesForUserMiddleware,
+    unlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
+    getUnlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
 } from './createCompleteChallengeStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 
 describe('createCompleteChallengeStreakTaskMiddlewares', () => {
     describe(`completeChallengeStreakTaskBodyValidationMiddleware`, () => {
@@ -566,6 +570,141 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
         });
     });
 
+    describe(`unlockOneHundredDayChallengeStreakAchievementForUserMiddleware`, () => {
+        test('if challenge streak current number of days equals 100 and user has not got the OneHundredDayChallengeStreakAchievement it adds to their achievements', async () => {
+            expect.assertions(4);
+            const user = { _id: '_id', achievements: [{ achievementType: 'Other achievement' }] };
+            const challengeStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 100 } };
+
+            const response: any = { locals: { user, challengeStreak } };
+            const request: any = {};
+            const next = jest.fn();
+
+            const achievementId = 'achievementId';
+            const achievementType = AchievementTypes.oneHundredDayChallengeStreak;
+
+            const oneHundredSayChallengeStreakAchievement: UserAchievement = {
+                _id: achievementId,
+                achievementType,
+            };
+            const achievement = {
+                findOne: jest.fn().mockResolvedValue(oneHundredSayChallengeStreakAchievement),
+            };
+            const userModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            };
+
+            const middleware = getUnlockOneHundredDayChallengeStreakAchievementForUserMiddleware(
+                userModel as any,
+                achievement as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(achievement.findOne).toBeCalledWith({
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+            });
+            expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+                $addToSet: { achievements: oneHundredSayChallengeStreakAchievement },
+            });
+            expect(response.locals.oneHundredDayChallengeStreakAchievement).toBeDefined();
+            expect(next).toBeCalled();
+        });
+
+        test('if challenge streak current number of days does not equal 100 middleware ends', async () => {
+            expect.assertions(4);
+            const user = { _id: '_id', achievements: [{ achievementType: 'Other achievement' }] };
+            const challengeStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 99 } };
+
+            const response: any = { locals: { user, challengeStreak } };
+            const request: any = {};
+            const next = jest.fn();
+
+            const achievementId = 'achievementId';
+            const achievementType = AchievementTypes.oneHundredDayChallengeStreak;
+
+            const oneHundredSayChallengeStreakAchievement: UserAchievement = {
+                _id: achievementId,
+                achievementType,
+            };
+            const achievement = {
+                findOne: jest.fn().mockResolvedValue(oneHundredSayChallengeStreakAchievement),
+            };
+            const userModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            };
+
+            const middleware = getUnlockOneHundredDayChallengeStreakAchievementForUserMiddleware(
+                userModel as any,
+                achievement as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(achievement.findOne).not.toBeCalled();
+            expect(userModel.findByIdAndUpdate).not.toBeCalled();
+            expect(response.locals.achievementUnlocked).toBeUndefined();
+            expect(next).toBeCalled();
+        });
+
+        test('if challenge streak current number of days equals 100 but user already has achievement middleware ends', async () => {
+            expect.assertions(4);
+            const user = {
+                _id: '_id',
+                achievements: [{ achievementType: AchievementTypes.oneHundredDayChallengeStreak }],
+            };
+            const challengeStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 100 } };
+
+            const response: any = { locals: { user, challengeStreak } };
+            const request: any = {};
+            const next = jest.fn();
+
+            const achievementId = 'achievementId';
+            const achievementType = AchievementTypes.oneHundredDayChallengeStreak;
+
+            const oneHundredSayChallengeStreakAchievement: UserAchievement = {
+                _id: achievementId,
+                achievementType,
+            };
+            const achievement = {
+                findOne: jest.fn().mockResolvedValue(oneHundredSayChallengeStreakAchievement),
+            };
+            const userModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            };
+
+            const middleware = getUnlockOneHundredDayChallengeStreakAchievementForUserMiddleware(
+                userModel as any,
+                achievement as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(achievement.findOne).not.toBeCalled();
+            expect(userModel.findByIdAndUpdate).not.toBeCalled();
+            expect(response.locals.achievementUnlocked).toBeUndefined();
+            expect(next).toBeCalled();
+        });
+
+        test('calls next with UnlockOneHundredDayChallengeStreakAchievementForUserMiddleware error on middleware failure', () => {
+            expect.assertions(1);
+
+            const response: any = {};
+            const request: any = {};
+            const next = jest.fn();
+            const middleware = getUnlockOneHundredDayChallengeStreakAchievementForUserMiddleware({} as any, {} as any);
+
+            middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.UnlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
     describe('sendTaskCompleteResponseMiddleware', () => {
         test('sends completeChallengeStreakTask response', () => {
             expect.assertions(3);
@@ -707,9 +846,9 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
     });
 
     test('are defined in the correct order', async () => {
-        expect.assertions(14);
+        expect.assertions(15);
 
-        expect(createCompleteChallengeStreakTaskMiddlewares.length).toEqual(13);
+        expect(createCompleteChallengeStreakTaskMiddlewares.length).toEqual(14);
         expect(createCompleteChallengeStreakTaskMiddlewares[0]).toBe(
             completeChallengeStreakTaskBodyValidationMiddleware,
         );
@@ -726,9 +865,12 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
             increaseNumberOfDaysInARowForChallengeStreakMiddleware,
         );
         expect(createCompleteChallengeStreakTaskMiddlewares[9]).toBe(increaseTotalStreakCompletesForUserMiddleware);
-        expect(createCompleteChallengeStreakTaskMiddlewares[10]).toBe(sendTaskCompleteResponseMiddleware);
-        expect(createCompleteChallengeStreakTaskMiddlewares[11]).toBe(retrieveChallengeMiddleware);
-        expect(createCompleteChallengeStreakTaskMiddlewares[12]).toBe(
+        expect(createCompleteChallengeStreakTaskMiddlewares[10]).toBe(
+            unlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
+        );
+        expect(createCompleteChallengeStreakTaskMiddlewares[11]).toBe(sendTaskCompleteResponseMiddleware);
+        expect(createCompleteChallengeStreakTaskMiddlewares[12]).toBe(retrieveChallengeMiddleware);
+        expect(createCompleteChallengeStreakTaskMiddlewares[13]).toBe(
             createCompleteChallengeStreakActivityFeedItemMiddleware,
         );
     });

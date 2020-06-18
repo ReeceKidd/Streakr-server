@@ -8,6 +8,8 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { OneHundredDayChallengeStreakAchievement } from '@streakoid/streakoid-models/lib/Models/Achievement';
 
 jest.setTimeout(120000);
 
@@ -514,6 +516,167 @@ describe(testName, () => {
                     ].sort(),
                 );
             }
+        });
+
+        test('when user completes a task on the 100th day and they do not already have the OneHundredDayChallengeStreak achievement they unlock the OneHundredDayChallengeStreak achievement ', async () => {
+            expect.assertions(8);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+
+            const achievementToCreate: OneHundredDayChallengeStreakAchievement = {
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+                name: '100 Hundred Days',
+                description: '100 Day challenge streak',
+            };
+            await SDK.achievements.create(achievementToCreate);
+            const name = 'Duolingo';
+            const description = 'Everyday I must complete a duolingo lesson';
+            const icon = 'duolingo';
+            const { challenge } = await SDK.challenges.create({ name, description, icon });
+            const challengeId = challenge._id;
+
+            const challengeStreak = await SDK.challengeStreaks.create({
+                userId,
+                challengeId,
+            });
+            const challengeStreakId = challengeStreak._id;
+
+            await SDK.challengeStreaks.update({
+                challengeStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...challengeStreak.currentStreak,
+                        numberOfDaysInARow: 99,
+                    },
+                },
+            });
+
+            await SDK.completeChallengeStreakTasks.create({
+                userId,
+                challengeStreakId,
+            });
+
+            const updatedUser = await SDK.users.getOne(userId);
+            expect(updatedUser.achievements.length).toEqual(1);
+            const oneHundredDayChallengeStreakAchievement = updatedUser.achievements[0];
+            expect(oneHundredDayChallengeStreakAchievement.achievementType).toEqual(
+                AchievementTypes.oneHundredDayChallengeStreak,
+            );
+            expect(oneHundredDayChallengeStreakAchievement.name).toEqual(achievementToCreate.name);
+            expect(oneHundredDayChallengeStreakAchievement.description).toEqual(achievementToCreate.description);
+            expect(oneHundredDayChallengeStreakAchievement._id).toEqual(expect.any(String));
+            expect(oneHundredDayChallengeStreakAchievement.createdAt).toEqual(expect.any(String));
+            expect(oneHundredDayChallengeStreakAchievement.updatedAt).toEqual(expect.any(String));
+            expect(Object.keys(oneHundredDayChallengeStreakAchievement).sort()).toEqual(
+                ['__v', 'createdAt', 'updatedAt', 'achievementType', '_id', 'description', 'name'].sort(),
+            );
+        });
+
+        test('when user completes a task on the 100th day but they already have the OneHundredDayChallengeStreak achievement nothing happens', async () => {
+            expect.assertions(8);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+
+            const achievementToCreate: OneHundredDayChallengeStreakAchievement = {
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+                name: '100 Hundred Days',
+                description: '100 Day challenge streak',
+            };
+            await SDK.achievements.create(achievementToCreate);
+
+            const name = 'Duolingo';
+            const description = 'Everyday I must complete a duolingo lesson';
+            const icon = 'duolingo';
+            const { challenge } = await SDK.challenges.create({ name, description, icon });
+            const challengeId = challenge._id;
+
+            const challengeStreak = await SDK.challengeStreaks.create({
+                userId,
+                challengeId,
+            });
+            const challengeStreakId = challengeStreak._id;
+
+            await SDK.challengeStreaks.update({
+                challengeStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...challengeStreak.currentStreak,
+                        numberOfDaysInARow: 99,
+                    },
+                },
+            });
+
+            await SDK.completeChallengeStreakTasks.create({
+                userId,
+                challengeStreakId,
+            });
+
+            await SDK.incompleteChallengeStreakTasks.create({ userId, challengeStreakId });
+
+            await SDK.completeChallengeStreakTasks.create({
+                userId,
+                challengeStreakId,
+            });
+
+            const updatedUser = await SDK.users.getOne(userId);
+            expect(updatedUser.achievements.length).toEqual(1);
+            const oneHundredDayChallengeStreakAchievement = updatedUser.achievements[0];
+            expect(oneHundredDayChallengeStreakAchievement.achievementType).toEqual(
+                AchievementTypes.oneHundredDayChallengeStreak,
+            );
+            expect(oneHundredDayChallengeStreakAchievement.name).toEqual(achievementToCreate.name);
+            expect(oneHundredDayChallengeStreakAchievement.description).toEqual(achievementToCreate.description);
+            expect(oneHundredDayChallengeStreakAchievement._id).toEqual(expect.any(String));
+            expect(oneHundredDayChallengeStreakAchievement.createdAt).toEqual(expect.any(String));
+            expect(oneHundredDayChallengeStreakAchievement.updatedAt).toEqual(expect.any(String));
+            expect(Object.keys(oneHundredDayChallengeStreakAchievement).sort()).toEqual(
+                ['__v', 'createdAt', 'updatedAt', 'achievementType', '_id', 'description', 'name'].sort(),
+            );
+        });
+
+        test('if currentStreak number of days does not equal 100 no OneHundredDayChallengeStreak us unlocked.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+
+            await SDK.achievements.create({
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+                name: '100 Hundred Days',
+                description: '100 Day challenge streak',
+            });
+
+            const name = 'Duolingo';
+            const description = 'Everyday I must complete a duolingo lesson';
+            const icon = 'duolingo';
+            const { challenge } = await SDK.challenges.create({ name, description, icon });
+            const challengeId = challenge._id;
+
+            const challengeStreak = await SDK.challengeStreaks.create({
+                userId,
+                challengeId,
+            });
+            const challengeStreakId = challengeStreak._id;
+
+            await SDK.challengeStreaks.update({
+                challengeStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...challengeStreak.currentStreak,
+                        numberOfDaysInARow: 70,
+                    },
+                },
+            });
+
+            await SDK.completeChallengeStreakTasks.create({
+                userId,
+                challengeStreakId,
+            });
+
+            const updatedUser = await SDK.users.getOne(userId);
+            expect(updatedUser.achievements.length).toEqual(0);
         });
     });
 });

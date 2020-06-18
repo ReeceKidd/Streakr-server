@@ -20,6 +20,9 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { AchievementModel, achievementModel } from '../../Models/Achievement';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 
 export const completeChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -232,6 +235,48 @@ export const increaseTotalStreakCompletesForUserMiddleware = getIncreaseTotalStr
     userModel,
 );
 
+export const getUnlockOneHundredDayChallengeStreakAchievementForUserMiddleware = (
+    user: mongoose.Model<UserModel>,
+    achievement: mongoose.Model<AchievementModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const currentUser: User = response.locals.user;
+        const currentUserHas100DayChallengeStreakAchievement = currentUser.achievements.find(
+            achievementObject => achievementObject.achievementType === AchievementTypes.oneHundredDayChallengeStreak,
+        );
+        const oneHundredDays = 100;
+        if (
+            challengeStreak.currentStreak.numberOfDaysInARow === oneHundredDays &&
+            !currentUserHas100DayChallengeStreakAchievement
+        ) {
+            const oneHundredDayChallengeStreakAchievement = await achievement.findOne({
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+            });
+            if (!oneHundredDayChallengeStreakAchievement) {
+                throw new CustomError(ErrorType.OneHundredDayChallengeStreakAchievementDoesNotExist);
+            }
+            const oneHundredDayChallengeStreakUserAchievement: UserAchievement = {
+                _id: oneHundredDayChallengeStreakAchievement._id,
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+            };
+            await user.findByIdAndUpdate(currentUser._id, {
+                $addToSet: { achievements: oneHundredDayChallengeStreakUserAchievement },
+            });
+            response.locals.oneHundredDayChallengeStreakAchievement = oneHundredDayChallengeStreakAchievement;
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.UnlockOneHundredDayChallengeStreakAchievementForUserMiddleware, err));
+    }
+};
+
+export const unlockOneHundredDayChallengeStreakAchievementForUserMiddleware = getUnlockOneHundredDayChallengeStreakAchievementForUserMiddleware(
+    userModel,
+    achievementModel,
+);
+
 export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
     response: Response,
@@ -307,6 +352,7 @@ export const createCompleteChallengeStreakTaskMiddlewares = [
     saveTaskCompleteMiddleware,
     increaseNumberOfDaysInARowForChallengeStreakMiddleware,
     increaseTotalStreakCompletesForUserMiddleware,
+    unlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
     sendTaskCompleteResponseMiddleware,
     retrieveChallengeMiddleware,
     createCompleteChallengeStreakActivityFeedItemMiddleware,

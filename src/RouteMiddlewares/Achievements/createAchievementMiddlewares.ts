@@ -4,8 +4,9 @@ import * as Joi from 'joi';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { achievementModel } from '../../../src/Models/Achievement';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { achievementModel, AchievementModel } from '../../Models/Achievement';
+import { Model } from 'mongoose';
 
 const createAchievementBodyValidationSchema = {
     achievementType: Joi.string()
@@ -27,7 +28,7 @@ export const createAchievementBodyValidationMiddleware = (
     );
 };
 
-export const getSaveAchievementToDatabaseMiddleware = (achievement: typeof achievementModel) => async (
+export const getSaveAchievementToDatabaseMiddleware = (achievement: Model<AchievementModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,

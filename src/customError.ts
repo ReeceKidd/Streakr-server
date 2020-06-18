@@ -540,6 +540,8 @@ export enum ErrorType {
     UpdateAwsCognitoUsernameMiddleware,
     PreventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware,
     TeamMemberIsAlreadyInTeamStreak,
+    OneHundredDayChallengeStreakAchievementDoesNotExist,
+    UnlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1337,6 +1339,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-105`,
                     message: 'Team member is already in team streak.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.OneHundredDayChallengeStreakAchievementDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-106`,
+                    message: 'One hundred day challenge streak achievement does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4399,6 +4409,13 @@ export class CustomError extends Error {
             case ErrorType.PreventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-450`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.UnlockOneHundredDayChallengeStreakAchievementForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-451`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

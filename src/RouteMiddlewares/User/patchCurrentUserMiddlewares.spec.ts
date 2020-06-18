@@ -199,7 +199,6 @@ describe('patchCurrentUserMiddlewares', () => {
 
             expect(next).toBeCalledWith(new CustomError(ErrorType.PatchCurrentUserEmailAlreadyExists));
         });
-
         test('calls next with PatchCurrentUserDoesUserEmailExistMiddleware error on middleware failure', async () => {
             expect.assertions(1);
 
