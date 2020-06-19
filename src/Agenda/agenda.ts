@@ -82,7 +82,7 @@ agenda.define(AgendaJobNames.challengeStreakDailyTracker, { priority: 'high' }, 
 agenda.define(AgendaJobNames.adjustForDaylightSavingsTime, async (job, done) => {
     try {
         const { timezone } = job.attrs.data;
-        await adjustForDaylightSavingsTime(timezone);
+        await adjustForDaylightSavingsTime({ timezone });
         done();
     } catch (err) {
         done(err);
