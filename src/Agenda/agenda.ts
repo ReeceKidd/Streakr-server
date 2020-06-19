@@ -48,7 +48,7 @@ agenda.on('fail', async (err: Error, job) => {
 
 agenda.define(AgendaJobNames.soloStreakDailyTracker, { priority: 'high' }, async (job, done) => {
     try {
-        const { timezone } = job.attrs.data;
+        const timezone = job.attrs.data.timezone as string;
 
         await manageDailySoloStreaks({ agendaJobId: String(job.attrs._id), timezone });
         done();
@@ -59,7 +59,7 @@ agenda.define(AgendaJobNames.soloStreakDailyTracker, { priority: 'high' }, async
 
 agenda.define(AgendaJobNames.teamStreakDailyTracker, { priority: 'high' }, async (job, done) => {
     try {
-        const { timezone } = job.attrs.data;
+        const timezone = job.attrs.data.timezone as string;
 
         await manageDailyTeamStreaks({ agendaJobId: String(job.attrs._id), timezone });
         done();
@@ -70,7 +70,7 @@ agenda.define(AgendaJobNames.teamStreakDailyTracker, { priority: 'high' }, async
 
 agenda.define(AgendaJobNames.challengeStreakDailyTracker, { priority: 'high' }, async (job, done) => {
     try {
-        const { timezone } = job.attrs.data;
+        const timezone = job.attrs.data.timezone as string;
 
         await manageDailyChallengeStreaks({ agendaJobId: String(job.attrs._id), timezone });
         done();
@@ -81,7 +81,7 @@ agenda.define(AgendaJobNames.challengeStreakDailyTracker, { priority: 'high' }, 
 
 agenda.define(AgendaJobNames.adjustForDaylightSavingsTime, async (job, done) => {
     try {
-        const { timezone } = job.attrs.data;
+        const timezone = job.attrs.data.timezone as string;
         await adjustForDaylightSavingsTime({ timezone });
         done();
     } catch (err) {
