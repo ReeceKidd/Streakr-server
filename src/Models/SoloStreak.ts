@@ -59,6 +59,9 @@ export const soloStreakSchema = new mongoose.Schema(
             type: Array,
             default: [],
         },
+        userDefinedIndex: {
+            type: Number,
+        },
     },
     {
         timestamps: true,
