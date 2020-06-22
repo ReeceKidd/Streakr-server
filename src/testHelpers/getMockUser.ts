@@ -66,7 +66,5 @@ export const getMockUser = (): User => ({
         subscription: 'sub_1',
     },
     achievements: [],
-    soloStreaksOrder: [],
-    challengeStreaksOrder: [],
     teamStreaksOrder: [],
 });

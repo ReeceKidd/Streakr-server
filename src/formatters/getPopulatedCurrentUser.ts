@@ -37,8 +37,6 @@ export const getPopulatedCurrentUser = ({
         hasCustomPassword: user.hasCustomPassword,
         hasVerifiedEmail: user.hasVerifiedEmail,
         onboarding: user.onboarding,
-        soloStreaksOrder: user.soloStreaksOrder,
-        challengeStreaksOrder: user.challengeStreaksOrder,
         teamStreaksOrder: user.teamStreaksOrder,
         totalStreakCompletes: Number(user.totalStreakCompletes),
         totalLiveStreaks: Number(user.totalLiveStreaks),

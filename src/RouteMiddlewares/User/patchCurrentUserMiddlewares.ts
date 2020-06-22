@@ -37,8 +37,6 @@ const patchCurrentUserValidationSchema = {
     userType: Joi.string().valid([UserTypes.basic]),
     hasVerifiedEmail: Joi.boolean(),
     hasCustomPassword: Joi.boolean(),
-    soloStreaksOrder: Joi.array().items(Joi.string()),
-    challengeStreaksOrder: Joi.array().items(Joi.string()),
     teamStreaksOrder: Joi.array().items(Joi.string()),
     pushNotificationToken: Joi.string(), // Legacy support,
     hasCompletedIntroduction: Joi.boolean(), // Legacy support

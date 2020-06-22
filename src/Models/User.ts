@@ -195,14 +195,6 @@ export const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        soloStreaksOrder: {
-            type: Array,
-            default: [],
-        },
-        challengeStreaksOrder: {
-            type: Array,
-            default: [],
-        },
         teamStreaksOrder: {
             type: Array,
             default: [],

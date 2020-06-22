@@ -21,8 +21,6 @@ export const correctPopulatedCurrentUserKeys = [
     'hasCompletedOnboarding',
     'hasVerifiedEmail',
     'hasCustomPassword',
-    'soloStreaksOrder',
-    'challengeStreaksOrder',
     'teamStreaksOrder',
     'onboarding',
     'timezone',

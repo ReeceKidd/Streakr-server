@@ -60,8 +60,6 @@ describe('patchCurrentUserMiddlewares', () => {
             userType: UserTypes.basic;
             hasVerifiedEmail: boolean;
             hasCustomPassword: boolean;
-            soloStreaksOrder: string[];
-            challengeStreaksOrder: string[];
             teamStreaksOrder: string[];
         } = {
             email: 'email@gmail.com',
@@ -85,8 +83,6 @@ describe('patchCurrentUserMiddlewares', () => {
             userType: UserTypes.basic,
             hasVerifiedEmail: true,
             hasCustomPassword: true,
-            soloStreaksOrder: ['1234'],
-            challengeStreaksOrder: ['abcd'],
             teamStreaksOrder: ['a1b2'],
         };
         test('allows request with all possible params to pass', () => {
