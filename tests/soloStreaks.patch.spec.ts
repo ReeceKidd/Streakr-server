@@ -38,12 +38,13 @@ describe(testName, () => {
     });
 
     test(`that request passes when solo streak is patched with correct keys`, async () => {
-        expect.assertions(14);
+        expect.assertions(15);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
         const streakName = 'Daily Spanish';
         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+        const userDefinedIndex = 1;
 
         const soloStreak = await SDK.soloStreaks.create({
             userId,
@@ -60,6 +61,7 @@ describe(testName, () => {
             updateData: {
                 streakName: updatedName,
                 streakDescription: updatedDescription,
+                userDefinedIndex,
             },
         });
 
@@ -76,6 +78,7 @@ describe(testName, () => {
         expect(updatedSoloStreak._id).toEqual(expect.any(String));
         expect(updatedSoloStreak.createdAt).toEqual(expect.any(String));
         expect(updatedSoloStreak.updatedAt).toEqual(expect.any(String));
+        expect(updatedSoloStreak.userDefinedIndex).toEqual(userDefinedIndex);
         expect(Object.keys(updatedSoloStreak).sort()).toEqual(
             [
                 'currentStreak',
@@ -90,6 +93,7 @@ describe(testName, () => {
                 'timezone',
                 'createdAt',
                 'updatedAt',
+                'userDefinedIndex',
                 '__v',
             ].sort(),
         );
