@@ -41,7 +41,7 @@ describe(testName, () => {
     });
 
     test(`that request passes when challenge streak is patched with correct keys`, async () => {
-        expect.assertions(16);
+        expect.assertions(17);
 
         const name = 'Duolingo';
         const description = 'Everyday I must complete a duolingo lesson';
@@ -63,11 +63,13 @@ describe(testName, () => {
         const challengeStreakId = challengeStreak._id;
 
         const updatedTimezone = 'Europe/Paris';
+        const userDefinedIndex = 10;
 
         const updatedChallengeStreak = await SDK.challengeStreaks.update({
             challengeStreakId,
             updateData: {
                 timezone: updatedTimezone,
+                userDefinedIndex,
             },
         });
 
@@ -81,6 +83,7 @@ describe(testName, () => {
         expect(updatedChallengeStreak.active).toEqual(false);
         expect(updatedChallengeStreak.pastStreaks).toEqual([]);
         expect(updatedChallengeStreak.timezone).toEqual(updatedTimezone);
+        expect(updatedChallengeStreak.userDefinedIndex).toEqual(userDefinedIndex);
         expect(updatedChallengeStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(updatedChallengeStreak.currentStreak)).toEqual(['numberOfDaysInARow']);
         expect(updatedChallengeStreak._id).toEqual(expect.any(String));
@@ -100,6 +103,7 @@ describe(testName, () => {
                 'challengeId',
                 'challengeName',
                 'timezone',
+                'userDefinedIndex',
                 'createdAt',
                 'updatedAt',
                 '__v',
