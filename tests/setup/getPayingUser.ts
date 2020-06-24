@@ -17,7 +17,6 @@ const getPayingUser = async ({ testName }: { testName: string }): Promise<UserMo
                 currentMembershipStartDate: new Date(),
             },
             timezone: 'Europe/London',
-            pushNotificationToken: 'pushNotification',
         },
     });
     if (!updatedUser) {

@@ -23,7 +23,8 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
-import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
+import { sendPushNotification as sendPushNotificationImport } from '../../../src/helpers/sendPushNotification';
+import { SNS } from '../../sns';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -449,11 +450,29 @@ export const getRetrieveTeamMembersMiddleware = (userModel: mongoose.Model<UserM
 
 export const retrieveTeamMembersMiddleware = getRetrieveTeamMembersMiddleware(userModel);
 
-export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (sendPush: typeof sendPushNotification) => async (
+export const sendCompleteTeamMemberStreakTaskResponseMiddleware = (
     request: Request,
     response: Response,
     next: NextFunction,
-): Promise<void> => {
+): void => {
+    try {
+        const { completeTeamMemberStreakTask } = response.locals;
+        response.status(ResponseCodes.created).send(completeTeamMemberStreakTask);
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.SendCompleteTeamMemberStreakTaskResponseMiddleware, err));
+    }
+};
+
+export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = ({
+    sendPushNotification,
+    userModel,
+    snsDeleteEndpoint,
+}: {
+    sendPushNotification: typeof sendPushNotificationImport;
+    userModel: mongoose.Model<UserModel>;
+    snsDeleteEndpoint: typeof SNS.deleteEndpoint;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const teamStreak: TeamStreak = response.locals.teamStreak;
@@ -483,7 +502,15 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (sendPush:
                     teamMemberTeamStreakUpdatesEnabled &&
                     String(teamMember._id) !== String(user._id)
                 ) {
-                    return sendPush({ title, body, data, deviceType, endpointArn });
+                    try {
+                        await sendPushNotification({ title, body, data, deviceType, endpointArn });
+                        return teamMember;
+                    } catch (err) {
+                        await userModel.findByIdAndUpdate(teamMember._id, {
+                            $set: { 'pushNotification.endpointArn': null },
+                        });
+                        return snsDeleteEndpoint({ EndpointArn: endpointArn }).promise();
+                    }
                 }
             }),
         );
@@ -494,22 +521,12 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = (sendPush:
 };
 
 export const notifiyTeamMembersThatUserHasCompletedTaskMiddleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(
-    sendPushNotification,
+    {
+        sendPushNotification: sendPushNotificationImport,
+        userModel,
+        snsDeleteEndpoint: SNS.deleteEndpoint,
+    },
 );
-
-export const sendCompleteTeamMemberStreakTaskResponseMiddleware = (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): void => {
-    try {
-        const { completeTeamMemberStreakTask } = response.locals;
-        response.status(ResponseCodes.created).send(completeTeamMemberStreakTask);
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.SendCompleteTeamMemberStreakTaskResponseMiddleware, err));
-    }
-};
 
 export const getCreateCompleteTeamMemberStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
@@ -555,7 +572,7 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     saveCompleteTeamStreakMiddleware,
     teamStreakMaintainedMiddleware,
     retrieveTeamMembersMiddleware,
-    notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
     sendCompleteTeamMemberStreakTaskResponseMiddleware,
+    notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
     createCompleteTeamMemberStreakActivityFeedItemMiddleware,
 ];

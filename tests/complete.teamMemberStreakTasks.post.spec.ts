@@ -15,7 +15,7 @@ const originalImageUrl = getServiceConfig().DEFAULT_USER_PROFILE_IMAGE_URL;
 
 jest.setTimeout(120000);
 
-const testName = 'GET-complete-team-member-streak-task';
+const testName = 'POST-complete-team-member-streak-task';
 
 describe(testName, () => {
     let database: Mongoose;
