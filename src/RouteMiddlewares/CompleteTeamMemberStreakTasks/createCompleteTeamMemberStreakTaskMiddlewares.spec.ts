@@ -1368,7 +1368,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
 
             expect(sendPushNotification).toBeCalled();
             expect(findByIdAndUpdate).toBeCalledWith(teamMember._id, {
-                $set: { 'pushNotification.endpointArn': null },
+                $set: { pushNotification: { token: null, endpointArn: null, deviceType: null } },
             });
             expect(snsDeleteEndpoint).toBeCalledWith({ EndpointArn: teamMember.pushNotification.endpointArn });
             expect(next).toBeCalledWith();

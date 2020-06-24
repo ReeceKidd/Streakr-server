@@ -507,7 +507,7 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = ({
                         return teamMember;
                     } catch (err) {
                         await userModel.findByIdAndUpdate(teamMember._id, {
-                            $set: { 'pushNotification.endpointArn': null },
+                            $set: { pushNotification: { token: null, endpointArn: null, deviceType: null } },
                         });
                         return snsDeleteEndpoint({ EndpointArn: endpointArn }).promise();
                     }
