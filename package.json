@@ -9,7 +9,7 @@
         "dist": "sh ./scripts/dist.sh",
         "dev": "nodemon --exec ts-node -- ./src/server.ts",
         "lint": "eslint **/*.ts --ignore-pattern node_modules/",
-        "unit-tests": "jest --config=./jest.unit.config.js --coverage --forceExit",
+        "unit-tests": "jest --config=./jest.unit.config.js --coverage --detectOpenHandles",
         "intergration-tests": "jest --config=./jest.intergration.config.js --forceExit --runInBand",
         "unit-tests-ci": "jest --config=./jest.unit.config.js --forceExit --runInBand",
         "intergration-tests-ci": "jest --config=./jest.intergration.config.js --forceExit --runInBand",
