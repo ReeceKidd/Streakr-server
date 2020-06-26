@@ -1,7 +1,6 @@
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
-import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 export const getMockUser = (): User => ({
@@ -30,9 +29,10 @@ export const getMockUser = (): User => ({
     },
     hasProfileImageBeenCustomized: false,
     pushNotification: {
-        token: 'token',
-        endpointArn: 'endpointArn',
-        deviceType: PushNotificationSupportedDeviceTypes.android,
+        androidToken: 'token',
+        iosToken: 'iosToken',
+        androidEndpointArn: 'androidEndpointArn',
+        iosEndpointArn: 'iosEndpointArn',
     },
     pushNotifications: {
         completeAllStreaksReminder: {

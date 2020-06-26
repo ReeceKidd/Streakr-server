@@ -27,6 +27,8 @@ export interface AppConfigHttp {
     SNS_TOPIC_ARN: string;
     DEFAULT_USER_PROFILE_IMAGE_URL: string;
     SHOW_ERROR_DETAILS: string;
+    ANDROID_TOKEN: string;
+    IOS_TOKEN: string;
 }
 
 export type AppConfig = AppConfigHttp;
@@ -59,6 +61,8 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         SNS_TOPIC_ARN,
         DEFAULT_USER_PROFILE_IMAGE_URL,
         SHOW_ERROR_DETAILS,
+        ANDROID_TOKEN,
+        IOS_TOKEN,
     } = environment;
 
     if (!NODE_ENV) throw new Error('NODE_ENV is not provided.');
@@ -151,6 +155,14 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         throw new Error('DEFAULT_USER_PROFILE_IMAGE_URL is not provided.');
     }
 
+    if (!ANDROID_TOKEN) {
+        throw new Error('ANDROID_TOKEN is not provided.');
+    }
+
+    if (!IOS_TOKEN) {
+        throw new Error('IOS_TOKEN is not provided.');
+    }
+
     return {
         NODE_ENV,
         PORT,
@@ -178,5 +190,7 @@ export const getServiceConfig = (environment: NodeJS.ProcessEnv = process.env): 
         SNS_TOPIC_ARN,
         DEFAULT_USER_PROFILE_IMAGE_URL,
         SHOW_ERROR_DETAILS,
+        ANDROID_TOKEN,
+        IOS_TOKEN,
     } as AppConfigHttp;
 };

@@ -542,6 +542,13 @@ export enum ErrorType {
     TeamMemberIsAlreadyInTeamStreak,
     OneHundredDayChallengeStreakAchievementDoesNotExist,
     UnlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
+    RemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+    RemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+    CreateAndroidPlatformEndpointMiddleware,
+    CreateIosPlatformEndpointMiddleware,
+    CreateAndroidPlatformEndpointFailure,
+    CreateIosPlatformEndpointFailure,
+    SendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1347,6 +1354,22 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-106`,
                     message: 'One hundred day challenge streak achievement does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateAndroidPlatformEndpointFailure: {
+                return {
+                    code: `${ResponseCodes.badRequest}-107`,
+                    message: 'Error with android token.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CreateIosPlatformEndpointFailure: {
+                return {
+                    code: `${ResponseCodes.badRequest}-108`,
+                    message: 'Error with ios token.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4416,6 +4439,41 @@ export class CustomError extends Error {
             case ErrorType.UnlockOneHundredDayChallengeStreakAchievementForUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-451`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-452`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-453`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateAndroidPlatformEndpointMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-454`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateIosPlatformEndpointMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-455`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-456`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

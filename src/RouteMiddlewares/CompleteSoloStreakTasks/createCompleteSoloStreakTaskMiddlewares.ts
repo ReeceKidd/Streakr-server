@@ -22,6 +22,7 @@ import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/Act
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
+import { EndpointDisabledError } from '../../sns';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -337,11 +338,11 @@ export const getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMi
         const oneHundredDaySoloStreakAchievement: OneHundredDaySoloStreakDatabaseAchievement =
             response.locals.oneHundredDaySoloStreakAchievement;
         const { pushNotification, pushNotifications } = user;
-        const deviceType = pushNotification && pushNotification.deviceType;
-        const endpointArn = pushNotification && pushNotification.endpointArn;
+        const androidEndpointArn = pushNotification.androidEndpointArn;
+        const iosEndpointArn = pushNotification.iosEndpointArn;
         const achievementUpdatesEnabled =
             pushNotifications && pushNotifications.achievementUpdates && pushNotifications.achievementUpdates.enabled;
-        if (oneHundredDaySoloStreakAchievement && deviceType && endpointArn && achievementUpdatesEnabled) {
+        if (oneHundredDaySoloStreakAchievement && (androidEndpointArn || iosEndpointArn) && achievementUpdatesEnabled) {
             const title = `Unlocked ${oneHundredDaySoloStreakAchievement.name}`;
             const body = `You unlocked an achievement for: ${oneHundredDaySoloStreakAchievement.description}`;
             const data: UnlockedAchievementPushNotification = {
@@ -350,7 +351,20 @@ export const getSendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMi
                 title,
                 body,
             };
-            sendPush({ title, body, data, endpointArn, deviceType });
+            try {
+                await sendPush({
+                    title,
+                    body,
+                    data,
+                    androidEndpointArn,
+                    iosEndpointArn,
+                    userId: user._id,
+                });
+            } catch (err) {
+                if (err.code !== EndpointDisabledError) {
+                    throw err;
+                }
+            }
         }
     } catch (err) {
         next(new CustomError(ErrorType.SendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddleware, err));

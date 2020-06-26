@@ -28,11 +28,15 @@ import {
     increaseTotalStreakCompletesForUserMiddleware,
     unlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
     getUnlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
+    getSendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
+    sendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
 } from './createCompleteChallengeStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
+import { getMockUser } from '../../testHelpers/getMockUser';
+import { OneHundredDayChallengeStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 
 describe('createCompleteChallengeStreakTaskMiddlewares', () => {
     describe(`completeChallengeStreakTaskBodyValidationMiddleware`, () => {
@@ -709,6 +713,81 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
         });
     });
 
+    describe(`sendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware`, () => {
+        test('if oneHundedDayChallengeStreakAchievement is not defined just call next', async () => {
+            expect.assertions(1);
+
+            const user = getMockUser();
+
+            const response: any = {
+                locals: {
+                    user,
+                },
+            };
+            const request: any = { body: {} };
+
+            const next = jest.fn();
+
+            const middleware = getSendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware(
+                {} as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalled();
+        });
+
+        test('if oneHundredDayChallengeStreakAchievement is defined, user has an androidEndpointArn or iosEndpointArn and achievement updates are enabled it sends an unlocked achievement push notification', async () => {
+            expect.assertions(2);
+            const oneHundredDayChallengeStreakAchievement: OneHundredDayChallengeStreakDatabaseAchievement = {
+                _id: '_id',
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+                createdAt: 'createdAt',
+                description: 'Completed 100 days',
+                name: '100 Days',
+                updatedAt: 'updatedAt',
+            };
+            const user = getMockUser();
+
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    user,
+                    oneHundredDayChallengeStreakAchievement,
+                },
+            };
+            const next = jest.fn();
+
+            const middleware = getSendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware(
+                sendPushNotification as any,
+            );
+            await middleware(request, response, next);
+            expect(sendPushNotification).toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with SendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware error on middleware failure', () => {
+            expect.assertions(1);
+
+            const response: any = {};
+            const request: any = {};
+            const next = jest.fn();
+            const middleware = getSendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware(
+                {} as any,
+            );
+
+            middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.SendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
     describe('sendTaskCompleteResponseMiddleware', () => {
         test('sends completeChallengeStreakTask response', () => {
             expect.assertions(3);
@@ -850,9 +929,9 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
     });
 
     test('are defined in the correct order', async () => {
-        expect.assertions(15);
+        expect.assertions(16);
 
-        expect(createCompleteChallengeStreakTaskMiddlewares.length).toEqual(14);
+        expect(createCompleteChallengeStreakTaskMiddlewares.length).toEqual(15);
         expect(createCompleteChallengeStreakTaskMiddlewares[0]).toBe(
             completeChallengeStreakTaskBodyValidationMiddleware,
         );
@@ -872,9 +951,12 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
         expect(createCompleteChallengeStreakTaskMiddlewares[10]).toBe(
             unlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
         );
-        expect(createCompleteChallengeStreakTaskMiddlewares[11]).toBe(sendTaskCompleteResponseMiddleware);
-        expect(createCompleteChallengeStreakTaskMiddlewares[12]).toBe(retrieveChallengeMiddleware);
-        expect(createCompleteChallengeStreakTaskMiddlewares[13]).toBe(
+        expect(createCompleteChallengeStreakTaskMiddlewares[11]).toBe(
+            sendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
+        );
+        expect(createCompleteChallengeStreakTaskMiddlewares[12]).toBe(sendTaskCompleteResponseMiddleware);
+        expect(createCompleteChallengeStreakTaskMiddlewares[13]).toBe(retrieveChallengeMiddleware);
+        expect(createCompleteChallengeStreakTaskMiddlewares[14]).toBe(
             createCompleteChallengeStreakActivityFeedItemMiddleware,
         );
     });

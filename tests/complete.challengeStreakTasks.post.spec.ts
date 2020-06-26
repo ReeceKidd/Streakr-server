@@ -10,10 +10,13 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { OneHundredDayChallengeStreakAchievement } from '@streakoid/streakoid-models/lib/Models/Achievement';
+import { SNS } from '../src/sns';
+import { deleteSnsEndpoint } from './helpers/deleteSnsEndpoint';
+import { getServiceConfig } from '../src/getServiceConfig';
 
 jest.setTimeout(120000);
 
-const testName = 'GET-complete-challenge-streak-tasks';
+const testName = 'POST-complete-challenge-streak-tasks';
 
 describe(testName, () => {
     let database: Mongoose;
@@ -677,6 +680,264 @@ describe(testName, () => {
 
             const updatedUser = await SDK.users.getOne(userId);
             expect(updatedUser.achievements.length).toEqual(0);
+        });
+    });
+
+    describe('Android - Send one hundred day challenge streak achievement unlocked push notification middleware.', () => {
+        let database: Mongoose;
+        let SDK: StreakoidSDK;
+        let androidEndpointArn: string | null | undefined;
+
+        beforeEach(async () => {
+            if (isTestEnvironment()) {
+                database = await setupDatabase({ testName });
+                SDK = streakoidTestSDK({ testName });
+            }
+        });
+
+        afterEach(async () => {
+            if (isTestEnvironment()) {
+                if (androidEndpointArn) {
+                    await deleteSnsEndpoint({
+                        endpointArn: androidEndpointArn,
+                    });
+                }
+
+                await tearDownDatabase({ database });
+            }
+        });
+
+        afterAll(async () => {
+            if (isTestEnvironment()) {
+                await disconnectDatabase({ database });
+            }
+        });
+
+        test('sends one hundred day challenge streak achievement push notification when user unlocks the achievement. ', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        androidToken: getServiceConfig().ANDROID_TOKEN,
+                    },
+                },
+            });
+
+            androidEndpointArn = updatedUser.pushNotification.androidEndpointArn;
+
+            const achievementToCreate: OneHundredDayChallengeStreakAchievement = {
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+                name: '100 Hundred Days',
+                description: '100 Day challenge streak',
+            };
+            await SDK.achievements.create(achievementToCreate);
+            const name = 'Duolingo';
+            const description = 'Everyday I must complete a duolingo lesson';
+            const icon = 'duolingo';
+            const { challenge } = await SDK.challenges.create({ name, description, icon });
+            const challengeStreak = await SDK.challengeStreaks.create({ userId: user._id, challengeId: challenge._id });
+            const challengeStreakId = challengeStreak._id;
+
+            await SDK.challengeStreaks.update({
+                challengeStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...challengeStreak.currentStreak,
+                        numberOfDaysInARow: 99,
+                    },
+                },
+            });
+
+            const result = await SDK.completeChallengeStreakTasks.create({
+                userId: user._id,
+                challengeStreakId,
+            });
+            expect(result).toBeDefined();
+        });
+
+        test('if sendPushNotification fails with an EndpointDisabled error the middleware continues as normal.', async () => {
+            expect.assertions(1);
+
+            await getPayingUser({ testName });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        androidToken: getServiceConfig().ANDROID_TOKEN,
+                    },
+                },
+            });
+
+            await SNS.setEndpointAttributes({
+                EndpointArn: updatedUser.pushNotification.androidEndpointArn || '',
+                Attributes: { Enabled: 'false' },
+            }).promise();
+
+            androidEndpointArn = updatedUser.pushNotification.androidEndpointArn;
+
+            const achievementToCreate: OneHundredDayChallengeStreakAchievement = {
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+                name: '100 Hundred Days',
+                description: '100 Day challenge streak',
+            };
+            await SDK.achievements.create(achievementToCreate);
+            const name = 'Duolingo';
+            const description = 'Everyday I must complete a duolingo lesson';
+            const icon = 'duolingo';
+            const { challenge } = await SDK.challenges.create({ name, description, icon });
+            const challengeStreak = await SDK.challengeStreaks.create({
+                userId: updatedUser._id,
+                challengeId: challenge._id,
+            });
+            const challengeStreakId = challengeStreak._id;
+
+            await SDK.challengeStreaks.update({
+                challengeStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...challengeStreak.currentStreak,
+                        numberOfDaysInARow: 99,
+                    },
+                },
+            });
+
+            const result = await SDK.completeChallengeStreakTasks.create({
+                userId: updatedUser._id,
+                challengeStreakId,
+            });
+            expect(result).toBeDefined();
+        });
+    });
+
+    describe('Ios - Send one hundred day challenge streak achievement unlocked push notification middleware.', () => {
+        let database: Mongoose;
+        let SDK: StreakoidSDK;
+        let iosEndpointArn: string | null | undefined;
+
+        beforeEach(async () => {
+            if (isTestEnvironment()) {
+                database = await setupDatabase({ testName });
+                SDK = streakoidTestSDK({ testName });
+            }
+        });
+
+        afterEach(async () => {
+            if (isTestEnvironment()) {
+                if (iosEndpointArn) {
+                    await deleteSnsEndpoint({
+                        endpointArn: iosEndpointArn,
+                    });
+                }
+
+                await tearDownDatabase({ database });
+            }
+        });
+
+        afterAll(async () => {
+            if (isTestEnvironment()) {
+                await disconnectDatabase({ database });
+            }
+        });
+
+        test('sends one hundred day challenge streak achievement push notification when user unlocks the achievement. ', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        iosToken: getServiceConfig().IOS_TOKEN,
+                    },
+                },
+            });
+
+            iosEndpointArn = updatedUser.pushNotification.iosEndpointArn;
+
+            const achievementToCreate: OneHundredDayChallengeStreakAchievement = {
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+                name: '100 Hundred Days',
+                description: '100 Day challenge streak',
+            };
+            await SDK.achievements.create(achievementToCreate);
+            const name = 'Duolingo';
+            const description = 'Everyday I must complete a duolingo lesson';
+            const icon = 'duolingo';
+            const { challenge } = await SDK.challenges.create({ name, description, icon });
+            const challengeStreak = await SDK.challengeStreaks.create({ userId: user._id, challengeId: challenge._id });
+            const challengeStreakId = challengeStreak._id;
+
+            await SDK.challengeStreaks.update({
+                challengeStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...challengeStreak.currentStreak,
+                        numberOfDaysInARow: 99,
+                    },
+                },
+            });
+
+            const result = await SDK.completeChallengeStreakTasks.create({
+                userId: user._id,
+                challengeStreakId,
+            });
+            expect(result).toBeDefined();
+        });
+
+        test('if sendPushNotification fails with an EndpointDisabled error the middleware continues as normal.', async () => {
+            expect.assertions(1);
+
+            await getPayingUser({ testName });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        iosToken: getServiceConfig().IOS_TOKEN,
+                    },
+                },
+            });
+
+            await SNS.setEndpointAttributes({
+                EndpointArn: updatedUser.pushNotification.iosEndpointArn || '',
+                Attributes: { Enabled: 'false' },
+            }).promise();
+
+            iosEndpointArn = updatedUser.pushNotification.iosEndpointArn;
+
+            const achievementToCreate: OneHundredDayChallengeStreakAchievement = {
+                achievementType: AchievementTypes.oneHundredDayChallengeStreak,
+                name: '100 Hundred Days',
+                description: '100 Day challenge streak',
+            };
+            await SDK.achievements.create(achievementToCreate);
+            const name = 'Duolingo';
+            const description = 'Everyday I must complete a duolingo lesson';
+            const icon = 'duolingo';
+            const { challenge } = await SDK.challenges.create({ name, description, icon });
+            const challengeStreak = await SDK.challengeStreaks.create({
+                userId: updatedUser._id,
+                challengeId: challenge._id,
+            });
+            const challengeStreakId = challengeStreak._id;
+
+            await SDK.challengeStreaks.update({
+                challengeStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...challengeStreak.currentStreak,
+                        numberOfDaysInARow: 99,
+                    },
+                },
+            });
+
+            const result = await SDK.completeChallengeStreakTasks.create({
+                userId: updatedUser._id,
+                challengeStreakId,
+            });
+            expect(result).toBeDefined();
         });
     });
 });

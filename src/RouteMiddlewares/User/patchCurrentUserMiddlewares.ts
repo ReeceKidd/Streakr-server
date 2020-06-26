@@ -13,9 +13,9 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { BasicUser } from '@streakoid/streakoid-models/lib/Models/BasicUser';
 import { SNS } from '../../../src/sns';
 import { getServiceConfig } from '../../../src/getServiceConfig';
-import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import { getPopulatedCurrentUser } from '../../formatters/getPopulatedCurrentUser';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { deleteSnsEndpoint, getSnsEndpoint } from '../../../tests/helpers/deleteSnsEndpoint';
 
 const patchCurrentUserValidationSchema = {
     email: Joi.string().email(),
@@ -25,6 +25,9 @@ const patchCurrentUserValidationSchema = {
     hasUsernameBeenCustomized: Joi.boolean(),
     timezone: Joi.string(),
     pushNotification: {
+        androidToken: Joi.string(),
+        iosToken: Joi.string(),
+        //Legacy
         token: Joi.string(),
         deviceType: Joi.string(),
     },
@@ -102,27 +105,198 @@ export const getDoesUsernameExistMiddleware = (userModel: mongoose.Model<UserMod
 
 export const doesUsernameExistMiddleware = getDoesUsernameExistMiddleware(userModel);
 
+export const getRemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware = ({
+    userModel,
+    getEndpoint,
+    deleteEndpoint,
+}: {
+    userModel: mongoose.Model<UserModel>;
+    getEndpoint: typeof getSnsEndpoint;
+    deleteEndpoint: typeof deleteSnsEndpoint;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const { pushNotification } = request.body;
+        const androidToken = pushNotification && pushNotification.androidToken;
+        const androidEndpointArn = user.pushNotification.androidEndpointArn;
+        if (androidToken && androidEndpointArn) {
+            const endpoint = await getEndpoint({ endpointArn: androidEndpointArn });
+            if (endpoint) {
+                await deleteEndpoint({ endpointArn: androidEndpointArn });
+            }
+            response.locals.user = await userModel.findByIdAndUpdate(
+                user._id,
+                {
+                    $set: { pushNotification: { androidEndpointArn: null } },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.RemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware, err));
+    }
+};
+
+export const removeOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware = getRemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware(
+    { userModel, getEndpoint: getSnsEndpoint, deleteEndpoint: deleteSnsEndpoint },
+);
+
+export const getRemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware = ({
+    userModel,
+    getEndpoint,
+    deleteEndpoint,
+}: {
+    userModel: mongoose.Model<UserModel>;
+    getEndpoint: typeof getSnsEndpoint;
+    deleteEndpoint: typeof deleteSnsEndpoint;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const { pushNotification } = request.body;
+        const iosToken = pushNotification && pushNotification.iosToken;
+        const iosEndpointArn = user.pushNotification.iosEndpointArn;
+        if (iosToken && iosEndpointArn) {
+            const endpoint = await getEndpoint({ endpointArn: iosEndpointArn });
+            if (endpoint) {
+                await deleteEndpoint({ endpointArn: iosEndpointArn });
+            }
+            response.locals.user = await userModel.findByIdAndUpdate(
+                user._id,
+                {
+                    $set: { pushNotification: { iosEndpointArn: null } },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.RemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware, err));
+    }
+};
+
+export const removeOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware = getRemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware(
+    { userModel, getEndpoint: getSnsEndpoint, deleteEndpoint: deleteSnsEndpoint },
+);
+
+export const getCreateAndroidPlatformEndpointMiddleware = ({
+    userModel,
+    sns,
+}: {
+    userModel: mongoose.Model<UserModel>;
+    sns: typeof SNS;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const { pushNotification } = request.body;
+        if (pushNotification) {
+            const { androidToken } = request.body.pushNotification;
+            if (androidToken) {
+                try {
+                    const { EndpointArn } = await sns
+                        .createPlatformEndpoint({
+                            PlatformApplicationArn: getServiceConfig().ANDROID_SNS_PLATFORM_APPLICATION_ARN,
+                            Token: androidToken,
+                            CustomUserData: String(user._id),
+                        })
+                        .promise();
+                    response.locals.user = await userModel
+                        .findByIdAndUpdate(
+                            user._id,
+                            {
+                                $set: {
+                                    pushNotification: {
+                                        ...pushNotification,
+                                        androidEndpointArn: EndpointArn,
+                                        androidToken,
+                                    },
+                                },
+                            },
+                            { new: true },
+                        )
+                        .lean();
+                } catch (err) {
+                    throw new CustomError(ErrorType.CreateAndroidPlatformEndpointFailure);
+                }
+            }
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.CreateAndroidPlatformEndpointMiddleware, err));
+    }
+};
+
+export const createAndroidPlatformEndpointMiddleware = getCreateAndroidPlatformEndpointMiddleware({
+    sns: SNS,
+    userModel,
+});
+
+export const getCreateIosPlatformEndpointMiddleware = ({
+    userModel,
+    sns,
+}: {
+    userModel: mongoose.Model<UserModel>;
+    sns: typeof SNS;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const { pushNotification } = request.body;
+        if (pushNotification) {
+            const { iosToken } = pushNotification;
+            if (iosToken) {
+                try {
+                    const { EndpointArn } = await sns
+                        .createPlatformEndpoint({
+                            PlatformApplicationArn: getServiceConfig().IOS_SNS_PLATFORM_APPLICATION_ARN,
+                            Token: iosToken,
+                            CustomUserData: String(user._id),
+                        })
+                        .promise();
+                    response.locals.user = await userModel
+                        .findByIdAndUpdate(
+                            user._id,
+                            {
+                                $set: {
+                                    pushNotification: { ...pushNotification, iosEndpointArn: EndpointArn, iosToken },
+                                },
+                            },
+                            { new: true },
+                        )
+                        .lean();
+                } catch (err) {
+                    throw new CustomError(ErrorType.CreateIosPlatformEndpointFailure);
+                }
+            }
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.CreateIosPlatformEndpointMiddleware, err));
+    }
+};
+
+export const createIosPlatformEndpointMiddleware = getCreateIosPlatformEndpointMiddleware({ sns: SNS, userModel });
+
 export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { user } = response.locals;
-        const keysToUpdate = request.body.username
-            ? {
-                  ...request.body,
-                  username: request.body.username.toLowerCase(),
-              }
-            : { ...request.body };
-        if (!user) {
-            throw new CustomError(ErrorType.AuthenticatedUserNotFound);
-        }
+        const user: User = response.locals.user;
+        const keysToUpdate = {
+            ...request.body,
+            pushNotification: user.pushNotification,
+            username: request.body.username ? request.body.username.toLowerCase() : user && user.username,
+        };
         const updatedUser = await userModel.findByIdAndUpdate(user._id, { ...keysToUpdate }, { new: true }).lean();
         if (!updatedUser) {
             throw new CustomError(ErrorType.UpdateCurrentUserNotFound);
         }
-        response.locals.updatedUser = updatedUser;
+        response.locals.user = updatedUser;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
@@ -132,83 +306,13 @@ export const getPatchCurrentUserMiddleware = (userModel: mongoose.Model<UserMode
 
 export const patchCurrentUserMiddleware = getPatchCurrentUserMiddleware(userModel);
 
-export const getCreatePlatformEndpointMiddleware = (sns: typeof SNS) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const user: User = response.locals.updatedUser;
-        const { pushNotification } = request.body;
-        if (pushNotification) {
-            const { token, deviceType } = request.body.pushNotification;
-            if (deviceType === PushNotificationSupportedDeviceTypes.android) {
-                const { EndpointArn } = await sns
-                    .createPlatformEndpoint({
-                        PlatformApplicationArn: getServiceConfig().ANDROID_SNS_PLATFORM_APPLICATION_ARN,
-                        Token: token,
-                        CustomUserData: String(user._id),
-                    })
-                    .promise();
-                response.locals.endpointArn = EndpointArn;
-            } else if (deviceType === PushNotificationSupportedDeviceTypes.ios) {
-                const { EndpointArn } = await sns
-                    .createPlatformEndpoint({
-                        PlatformApplicationArn: getServiceConfig().IOS_SNS_PLATFORM_APPLICATION_ARN,
-                        Token: token,
-                        CustomUserData: String(user._id),
-                    })
-                    .promise();
-                response.locals.endpointArn = EndpointArn;
-            } else {
-                throw new CustomError(ErrorType.UnsupportedDeviceType);
-            }
-        }
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreatePlatformEndpointMiddleware, err));
-    }
-};
-
-export const createPlatformEndpointMiddleware = getCreatePlatformEndpointMiddleware(SNS);
-
-export const getUpdateUserPushNotificationInformationMiddleware = (userModel: mongoose.Model<UserModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const { endpointArn } = response.locals;
-        if (endpointArn) {
-            const { pushNotification } = request.body;
-            const { token, deviceType } = pushNotification;
-            const user: User = response.locals.updatedUser;
-            response.locals.updatedUser = await userModel
-                .findByIdAndUpdate(
-                    user._id,
-                    { $set: { pushNotification: { endpointArn, token, deviceType } } },
-                    { new: true },
-                )
-                .lean();
-        }
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.UpdateUserPushNotificationInformationMiddleware, err));
-    }
-};
-
-export const updateUserPushNotificationInformationMiddleware = getUpdateUserPushNotificationInformationMiddleware(
-    userModel,
-);
-
 export const getPopulateCurrentUserFollowingMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const updatedUser: User = response.locals.updatedUser;
+        const updatedUser: User = response.locals.user;
         const following = await Promise.all(
             updatedUser.following.map(async followingId => {
                 const populatedFollowing: UserModel = await userModel.findById(followingId).lean();
@@ -236,7 +340,7 @@ export const getPopulateCurrentUserFollowersMiddleware = (userModel: mongoose.Mo
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const updatedUser: User = response.locals.updatedUser;
+        const updatedUser: User = response.locals.user;
         const followers = await Promise.all(
             updatedUser.followers.map(async followerId => {
                 const populatedFollower: UserModel = await userModel.findById(followerId).lean();
@@ -265,10 +369,7 @@ export const getPopulatePatchCurrentUserAchievementsMiddleware = (
         const user: User = response.locals.user;
         const achievements: DatabaseAchievementType[] = await Promise.all(
             user.achievements.map(async achievement => {
-                const populatedAchievement: DatabaseAchievementType = await achievementModel
-                    .findById(achievement._id)
-                    .lean();
-                return populatedAchievement;
+                return achievementModel.findById(achievement._id).lean();
             }),
         );
         response.locals.achievements = achievements;
@@ -289,7 +390,7 @@ export const getFormatUserMiddleware = (getPopulatedCurrentUserFunction: typeof 
     next: NextFunction,
 ): void => {
     try {
-        const user: User = response.locals.updatedUser;
+        const user: User = response.locals.user;
         const following: BasicUser[] = response.locals.following;
         const followers: BasicUser[] = response.locals.followers;
         const achievements: DatabaseAchievementType[] = response.locals.achievements;
@@ -315,9 +416,11 @@ export const patchCurrentUserMiddlewares = [
     patchCurrentUserRequestBodyValidationMiddleware,
     doesUserEmailExistMiddleware,
     doesUsernameExistMiddleware,
+    removeOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+    removeOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+    createAndroidPlatformEndpointMiddleware,
+    createIosPlatformEndpointMiddleware,
     patchCurrentUserMiddleware,
-    createPlatformEndpointMiddleware,
-    updateUserPushNotificationInformationMiddleware,
     populateCurrentUserFollowingMiddleware,
     populateCurrentUserFollowersMiddleware,
     populateCurrentUserAchievementsMiddleware,

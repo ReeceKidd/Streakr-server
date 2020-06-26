@@ -1069,6 +1069,28 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to CreateAndroidPlatformEndpointFailure`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateAndroidPlatformEndpointFailure);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-107`);
+        expect(message).toBe('Error with android token.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to CreateIosPlatformEndpointFailure`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIosPlatformEndpointFailure);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-108`);
+        expect(message).toBe('Error with ios token.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -5844,6 +5866,65 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-451`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(
+            ErrorType.RemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+        );
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-452`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-453`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateAndroidPlatformEndpointMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateAndroidPlatformEndpointMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-454`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateIosPlatformEndpointMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateIosPlatformEndpointMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-455`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(
+            ErrorType.SendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
+        );
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-456`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

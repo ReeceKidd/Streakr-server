@@ -26,6 +26,7 @@ import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNot
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
+import { EndpointDisabledError } from '../../sns';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -466,19 +467,31 @@ export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (
         await Promise.all(
             teamMembers.map(async teamMember => {
                 const { pushNotification, pushNotifications } = teamMember;
-                const deviceType = pushNotification && pushNotification.deviceType;
-                const endpointArn = pushNotification && pushNotification.endpointArn;
+                const androidEndpointArn = pushNotification.androidEndpointArn;
+                const iosEndpointArn = pushNotification.iosEndpointArn;
                 const teamStreakUpdatesEnabled =
                     pushNotifications &&
                     pushNotifications.teamStreakUpdates &&
                     pushNotifications.teamStreakUpdates.enabled;
                 if (
-                    deviceType &&
-                    endpointArn &&
+                    (androidEndpointArn || iosEndpointArn) &&
                     teamStreakUpdatesEnabled &&
                     String(teamMember._id) !== String(user._id)
                 ) {
-                    sendPush({ title, body, data, deviceType, endpointArn });
+                    try {
+                        await sendPush({
+                            title,
+                            body,
+                            data,
+                            androidEndpointArn,
+                            iosEndpointArn,
+                            userId: teamMember._id,
+                        });
+                    } catch (err) {
+                        if (err.code !== EndpointDisabledError) {
+                            throw err;
+                        }
+                    }
                 }
             }),
         );

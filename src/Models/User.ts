@@ -111,17 +111,33 @@ export const userSchema = new mongoose.Schema(
             },
         },
         pushNotification: {
+            androidToken: {
+                type: String,
+                default: null,
+            },
+            iosToken: {
+                type: String,
+                default: null,
+            },
+            androidEndpointArn: {
+                type: String,
+                default: null,
+            },
+            iosEndpointArn: {
+                type: String,
+                default: null,
+            },
+            //Legacy
             token: {
                 type: String,
-                default: null,
             },
+            //Legacy
             endpointArn: {
                 type: String,
-                default: null,
             },
+            //Legacy
             deviceType: {
                 type: String,
-                default: null,
             },
         },
         pushNotifications: {

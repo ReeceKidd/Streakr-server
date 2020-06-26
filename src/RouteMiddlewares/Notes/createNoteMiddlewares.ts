@@ -16,6 +16,7 @@ import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { EndpointDisabledError } from '../../sns';
 
 const createNoteBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -90,19 +91,31 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
                         return;
                     }
                     const { pushNotification, pushNotifications } = populatedMember;
-                    const deviceType = pushNotification && pushNotification.deviceType;
-                    const endpointArn = pushNotification && pushNotification.endpointArn;
+                    const androidEndpointArn = pushNotification.androidEndpointArn;
+                    const iosEndpointArn = pushNotification.iosEndpointArn;
                     const teamStreakUpdatesEnabled =
                         pushNotifications &&
                         pushNotifications.teamStreakUpdates &&
                         pushNotifications.teamStreakUpdates.enabled;
                     if (
-                        deviceType &&
-                        endpointArn &&
+                        (androidEndpointArn || iosEndpointArn) &&
                         teamStreakUpdatesEnabled &&
                         String(populatedMember._id) !== String(userWhoCreatedNote._id)
                     ) {
-                        return sendPush({ title, body, data, endpointArn, deviceType });
+                        try {
+                            return sendPush({
+                                title,
+                                body,
+                                data,
+                                androidEndpointArn,
+                                iosEndpointArn,
+                                userId: teamMember.memberId,
+                            });
+                        } catch (err) {
+                            if (err.code !== EndpointDisabledError) {
+                                throw err;
+                            }
+                        }
                     }
                 }),
             );

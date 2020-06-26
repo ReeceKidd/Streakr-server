@@ -23,6 +23,11 @@ import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/Activit
 import { AchievementModel, achievementModel } from '../../Models/Achievement';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
+import { UnlockedAchievementPushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
+import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
+import { OneHundredDayChallengeStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
+import { sendPushNotification } from '../../helpers/sendPushNotification';
+import { EndpointDisabledError } from '../../sns';
 
 export const completeChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -281,6 +286,61 @@ export const unlockOneHundredDayChallengeStreakAchievementForUserMiddleware = ge
     achievementModel,
 );
 
+export const getSendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware = (
+    sendPush: typeof sendPushNotification,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const oneHundredDayChallengeStreakAchievement: OneHundredDayChallengeStreakDatabaseAchievement =
+            response.locals.oneHundredDayChallengeStreakAchievement;
+        const { pushNotification, pushNotifications } = user;
+        const androidEndpointArn = pushNotification.androidEndpointArn;
+        const iosEndpointArn = pushNotification.iosEndpointArn;
+        const achievementUpdatesEnabled =
+            pushNotifications && pushNotifications.achievementUpdates && pushNotifications.achievementUpdates.enabled;
+        if (
+            oneHundredDayChallengeStreakAchievement &&
+            (androidEndpointArn || iosEndpointArn) &&
+            achievementUpdatesEnabled
+        ) {
+            const title = `Unlocked ${oneHundredDayChallengeStreakAchievement.name}`;
+            const body = `You unlocked an achievement for: ${oneHundredDayChallengeStreakAchievement.description}`;
+            const data: UnlockedAchievementPushNotification = {
+                pushNotificationType: PushNotificationTypes.unlockedAchievement,
+                achievementId: oneHundredDayChallengeStreakAchievement._id,
+                title,
+                body,
+            };
+            try {
+                await sendPush({
+                    title,
+                    body,
+                    data,
+                    androidEndpointArn,
+                    iosEndpointArn,
+                    userId: user._id,
+                });
+            } catch (err) {
+                if (err.code !== EndpointDisabledError) {
+                    throw err;
+                }
+            }
+        }
+        next();
+    } catch (err) {
+        next(
+            new CustomError(
+                ErrorType.SendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
+                err,
+            ),
+        );
+    }
+};
+
+export const sendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware = getSendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware(
+    sendPushNotification,
+);
+
 export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
     response: Response,
@@ -357,6 +417,7 @@ export const createCompleteChallengeStreakTaskMiddlewares = [
     increaseNumberOfDaysInARowForChallengeStreakMiddleware,
     increaseTotalStreakCompletesForUserMiddleware,
     unlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
+    sendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
     sendTaskCompleteResponseMiddleware,
     retrieveChallengeMiddleware,
     createCompleteChallengeStreakActivityFeedItemMiddleware,

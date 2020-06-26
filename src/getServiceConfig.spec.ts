@@ -26,6 +26,8 @@ describe('getServiceConfig', () => {
         IOS_SNS_PLATFORM_APPLICATION_ARN: 'ANDROID_SNS_PLATFORM_APPLICATION_ARN',
         SNS_TOPIC_ARN: 'SNS_TOPIC_ARN',
         DEFAULT_USER_PROFILE_IMAGE_URL: 'DEFAULT_USER_PROFILE_IMAGE_URL',
+        ANDROID_TOKEN: 'ANDROID_TOKEN',
+        IOS_TOKEN: 'IOS_TOKEN',
     };
 
     test('that correct error is thrown when NODE_ENV is not provided', () => {
@@ -361,6 +363,34 @@ describe('getServiceConfig', () => {
             getServiceConfig(environment);
         } catch (err) {
             expect(err.message).toEqual('DEFAULT_USER_PROFILE_IMAGE_URL is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when ANDROID_TOKEN is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            ANDROID_TOKEN: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('ANDROID_TOKEN is not provided.');
+        }
+    });
+
+    test('that correct error is thrown when IOS_TOKEN is not provided.', () => {
+        expect.assertions(1);
+        const environment = {
+            ...environmentMock,
+            IOS_TOKEN: undefined,
+        };
+
+        try {
+            getServiceConfig(environment);
+        } catch (err) {
+            expect(err.message).toEqual('IOS_TOKEN is not provided.');
         }
     });
 });

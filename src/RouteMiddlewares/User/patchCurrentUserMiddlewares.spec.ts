@@ -16,20 +16,23 @@ import {
     getPopulateCurrentUserFollowersMiddleware,
     patchCurrentUserRequestBodyValidationMiddleware,
     getPopulatePatchCurrentUserAchievementsMiddleware,
-    createPlatformEndpointMiddleware,
-    updateUserPushNotificationInformationMiddleware,
-    getCreatePlatformEndpointMiddleware,
-    getUpdateUserPushNotificationInformationMiddleware,
     doesUserEmailExistMiddleware,
     doesUsernameExistMiddleware,
     getDoesUserEmailExistMiddleware,
     getDoesUsernameExistMiddleware,
     getFormatUserMiddleware,
+    removeOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+    removeOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+    createAndroidPlatformEndpointMiddleware,
+    createIosPlatformEndpointMiddleware,
+    getRemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+    getRemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+    getCreateAndroidPlatformEndpointMiddleware,
+    getCreateIosPlatformEndpointMiddleware,
 } from './patchCurrentUserMiddlewares';
 
 import { populateCurrentUserAchievementsMiddleware } from './getCurrentUser';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
-import { getServiceConfig } from '../../../src/getServiceConfig';
 import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
 import { Onboarding } from '@streakoid/streakoid-models/lib/Models/Onboarding';
@@ -37,6 +40,7 @@ import { getMockUser } from '../../testHelpers/getMockUser';
 import { BasicUser } from '@streakoid/streakoid-models/lib/Models/BasicUser';
 import { DatabaseAchievementType } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
+import { getServiceConfig } from '../../getServiceConfig';
 
 describe('patchCurrentUserMiddlewares', () => {
     describe('patchCurrentUserRequestBodyValidationMiddleware', () => {
@@ -275,8 +279,244 @@ describe('patchCurrentUserMiddlewares', () => {
         });
     });
 
+    describe('removeOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware', () => {
+        test('removes android endpoint when user sends an androidToken and an androidEndpointArn in the request.body.', async () => {
+            expect.assertions(5);
+            const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+            const userModel = {
+                findByIdAndUpdate,
+            } as any;
+            const androidToken = 'token';
+            const pushNotification = {
+                androidToken,
+            };
+            const request: any = { body: { pushNotification } };
+            const androidEndpointArn = 'androidEndpointArn';
+            const user = { _id: '_id', pushNotification: { androidEndpointArn } };
+            const response: any = { locals: { user } };
+            const next = jest.fn();
+            const getEndpoint = jest.fn().mockResolvedValue(true) as any;
+            const deleteEndpoint = jest.fn().mockResolvedValue(true) as any;
+            const middleware = getRemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware({
+                userModel,
+                getEndpoint,
+                deleteEndpoint,
+            });
+
+            await middleware(request, response, next);
+
+            expect(getEndpoint).toBeCalledWith({ endpointArn: androidEndpointArn });
+            expect(deleteEndpoint).toBeCalledWith({
+                endpointArn: androidEndpointArn,
+            });
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                user._id,
+                {
+                    $set: { pushNotification: { androidEndpointArn: null } },
+                },
+                { new: true },
+            );
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws RemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getRemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.RemoveOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
+    describe('removeOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware', () => {
+        test('removes ios endpoint when user sends an iosToken and an iosEndpointArn in the request.body.', async () => {
+            expect.assertions(5);
+            const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+            const userModel = {
+                findByIdAndUpdate,
+            } as any;
+            const iosToken = 'token';
+            const pushNotification = {
+                iosToken,
+            };
+            const request: any = { body: { pushNotification } };
+            const iosEndpointArn = 'iosEndpointArn';
+            const user = { _id: '_id', pushNotification: { iosEndpointArn } };
+            const response: any = { locals: { user } };
+            const next = jest.fn();
+            const getEndpoint = jest.fn().mockResolvedValue(true) as any;
+            const deleteEndpoint = jest.fn().mockResolvedValue(true) as any;
+            const middleware = getRemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware({
+                userModel,
+                getEndpoint,
+                deleteEndpoint,
+            });
+
+            await middleware(request, response, next);
+
+            expect(getEndpoint).toBeCalledWith({ endpointArn: iosEndpointArn });
+            expect(deleteEndpoint).toBeCalledWith({
+                endpointArn: iosEndpointArn,
+            });
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                user._id,
+                {
+                    $set: { pushNotification: { iosEndpointArn: null } },
+                },
+                { new: true },
+            );
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws RemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getRemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.RemoveOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
+    describe('createAndroidPlatformEndpointMiddleware', () => {
+        test('creates android platform endpoint when request.body.pushNotification contains an android token.', async () => {
+            expect.assertions(5);
+            const androidToken = 'androidToken';
+            const pushNotification = {
+                androidToken,
+            };
+            const request: any = { body: { pushNotification } };
+            const user = { _id: '_id' };
+            const response: any = { locals: { user } };
+            const next = jest.fn();
+            const EndpointArn = '12345';
+            const promise = jest.fn().mockResolvedValue({ EndpointArn });
+            const createPlatformEndpoint = jest.fn(() => ({ promise }));
+            const sns = {
+                createPlatformEndpoint,
+            } as any;
+            const lean = jest.fn().mockResolvedValue(true);
+            const findByIdAndUpdate = jest.fn(() => ({ lean }));
+            const userModel = {
+                findByIdAndUpdate,
+            } as any;
+            const middleware = getCreateAndroidPlatformEndpointMiddleware({ sns, userModel });
+
+            await middleware(request, response, next);
+
+            expect(createPlatformEndpoint).toBeCalledWith({
+                PlatformApplicationArn: getServiceConfig().ANDROID_SNS_PLATFORM_APPLICATION_ARN,
+                Token: androidToken,
+                CustomUserData: user._id,
+            });
+            expect(promise).toBeCalledWith();
+            expect(findByIdAndUpdate).toBeCalledWith(
+                user._id,
+                {
+                    $set: { pushNotification: { androidEndpointArn: EndpointArn, androidToken } },
+                },
+                { new: true },
+            );
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws CreateAndroidPlatformEndpointMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getCreateAndroidPlatformEndpointMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.CreateAndroidPlatformEndpointMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('createIosPlatformEndpointMiddleware', () => {
+        test('creates ios platform endpoint when deviceType is android and user does not have an endpointArn defined.', async () => {
+            expect.assertions(5);
+            const iosToken = 'androidToken';
+            const pushNotification = {
+                iosToken,
+            };
+            const request: any = { body: { pushNotification } };
+            const user = { _id: '_id' };
+            const response: any = { locals: { user } };
+            const next = jest.fn();
+            const EndpointArn = '12345';
+            const promise = jest.fn().mockResolvedValue({ EndpointArn });
+            const createPlatformEndpoint = jest.fn(() => ({ promise }));
+            const sns = {
+                createPlatformEndpoint,
+            } as any;
+            const lean = jest.fn().mockResolvedValue(true);
+            const findByIdAndUpdate = jest.fn(() => ({ lean }));
+            const userModel = {
+                findByIdAndUpdate,
+            } as any;
+            const middleware = getCreateIosPlatformEndpointMiddleware({ sns, userModel });
+
+            await middleware(request, response, next);
+
+            expect(createPlatformEndpoint).toBeCalledWith({
+                PlatformApplicationArn: getServiceConfig().IOS_SNS_PLATFORM_APPLICATION_ARN,
+                Token: iosToken,
+                CustomUserData: user._id,
+            });
+            expect(promise).toBeCalledWith();
+            expect(findByIdAndUpdate).toBeCalledWith(
+                user._id,
+                {
+                    $set: { pushNotification: { iosEndpointArn: EndpointArn, iosToken } },
+                },
+                { new: true },
+            );
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws CreateIosPlatformEndpointMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getCreateIosPlatformEndpointMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.CreateIosPlatformEndpointMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
     describe('patchCurrentUserMiddleware', () => {
-        test('sets response.locals.updatedUser', async () => {
+        test('sets response.locals.user', async () => {
             expect.assertions(3);
             const user = {
                 _id: '_id',
@@ -299,7 +539,7 @@ describe('patchCurrentUserMiddlewares', () => {
             await middleware(request, response, next);
 
             expect(findByIdAndUpdate).toBeCalledWith(user._id, { timezone }, { new: true });
-            expect(response.locals.updatedUser).toBeDefined();
+            expect(response.locals.user).toBeDefined();
             expect(next).toBeCalledWith();
         });
 
@@ -341,169 +581,14 @@ describe('patchCurrentUserMiddlewares', () => {
         });
     });
 
-    describe('createPlatformEndpointMiddleware', () => {
-        test('creates android platform endpoint when deviceType is android and user does not have an endpointArn defined.', async () => {
-            expect.assertions(4);
-            const promise = jest.fn().mockResolvedValue({ EndpointArn: true });
-            const createPlatformEndpoint = jest.fn(() => ({ promise }));
-            const sns = {
-                createPlatformEndpoint,
-            };
-            const token = 'token';
-            const deviceType = PushNotificationSupportedDeviceTypes.android;
-            const pushNotification = {
-                token,
-                deviceType,
-            };
-            const request: any = { body: { pushNotification } };
-            const response: any = { locals: { updatedUser: { _id: '_id' } } };
-            const next = jest.fn();
-            const middleware = getCreatePlatformEndpointMiddleware(sns as any);
-
-            await middleware(request, response, next);
-
-            expect(createPlatformEndpoint).toBeCalledWith({
-                Token: token,
-                PlatformApplicationArn: getServiceConfig().ANDROID_SNS_PLATFORM_APPLICATION_ARN,
-                CustomUserData: response.locals.updatedUser._id,
-            });
-            expect(promise).toBeCalledWith();
-            expect(response.locals.endpointArn).toBeDefined();
-            expect(next).toBeCalledWith();
-        });
-
-        test('creates ios platform endpoint when deviceType is ios and user does not have an endpointArn defined.', async () => {
-            expect.assertions(4);
-            const promise = jest.fn().mockResolvedValue({ EndpointArn: true });
-            const createPlatformEndpoint = jest.fn(() => ({ promise }));
-            const sns = {
-                createPlatformEndpoint,
-            };
-            const token = 'token';
-            const deviceType = PushNotificationSupportedDeviceTypes.ios;
-            const pushNotification = {
-                token,
-                deviceType,
-            };
-            const request: any = { body: { pushNotification } };
-            const response: any = { locals: { updatedUser: { _id: '_id' } } };
-            const next = jest.fn();
-            const middleware = getCreatePlatformEndpointMiddleware(sns as any);
-
-            await middleware(request, response, next);
-
-            expect(createPlatformEndpoint).toBeCalledWith({
-                Token: token,
-                PlatformApplicationArn: getServiceConfig().IOS_SNS_PLATFORM_APPLICATION_ARN,
-                CustomUserData: response.locals.updatedUser._id,
-            });
-            expect(promise).toBeCalledWith();
-            expect(response.locals.endpointArn).toBeDefined();
-            expect(next).toBeCalledWith();
-        });
-
-        test('throws UnsupportedDeviceType error when device is unsupported and user does not have an endpointArn defined.', async () => {
-            expect.assertions(1);
-            const promise = jest.fn().mockResolvedValue({ EndpointArn: true });
-            const createPlatformEndpoint = jest.fn(() => ({ promise }));
-            const sns = {
-                createPlatformEndpoint,
-            };
-            const token = 'token';
-            const deviceType = 'unsupported';
-            const pushNotification = {
-                token,
-                deviceType,
-            };
-            const request: any = { body: { pushNotification } };
-            const response: any = { locals: { updatedUser: { _id: '_id' } } };
-            const next = jest.fn();
-            const middleware = getCreatePlatformEndpointMiddleware(sns as any);
-
-            await middleware(request, response, next);
-
-            expect(next).toBeCalledWith(new CustomError(ErrorType.UnsupportedDeviceType));
-        });
-
-        test('throws CreatePlatformEndpointMiddleware error on middleware failure', async () => {
-            expect.assertions(1);
-            const request: any = {};
-            const response: any = {};
-            const next = jest.fn();
-            const middleware = getCreatePlatformEndpointMiddleware({} as any);
-
-            await middleware(request, response, next);
-
-            expect(next).toBeCalledWith(new CustomError(ErrorType.CreatePlatformEndpointMiddleware, expect.any(Error)));
-        });
-    });
-
-    describe('updateUserPushNotificationInformationMiddleware', () => {
-        test('if response.locals.endpointArn is defined update the users endpointArn and token', async () => {
-            expect.assertions(3);
-            const endpointArn = 'endpointArn';
-            const pushNotification = {
-                token: 'token',
-                deviceType: PushNotificationSupportedDeviceTypes.android,
-            };
-            const request: any = {
-                body: {
-                    pushNotification,
-                },
-            };
-            const updatedUser = {
-                _id: '_id',
-            };
-            const response: any = { locals: { updatedUser, endpointArn } };
-            const next = jest.fn();
-            const lean = jest.fn().mockResolvedValue(true);
-            const findByIdAndUpdate = jest.fn(() => ({ lean }));
-            const userModel = {
-                findByIdAndUpdate,
-            };
-            const middleware = getUpdateUserPushNotificationInformationMiddleware(userModel as any);
-
-            await middleware(request, response, next);
-
-            expect(findByIdAndUpdate).toBeCalledWith(
-                updatedUser._id,
-                {
-                    $set: {
-                        pushNotification: {
-                            endpointArn,
-                            deviceType: pushNotification.deviceType,
-                            token: pushNotification.token,
-                        },
-                    },
-                },
-                { new: true },
-            );
-            expect(response.locals.updatedUser).toBeDefined();
-            expect(next).toBeCalledWith();
-        });
-
-        test('calls next with UpdateUserPushNotificationInformationMiddleware on middleware failure', async () => {
-            expect.assertions(1);
-            const request: any = {};
-            const response: any = {};
-            const next = jest.fn();
-
-            const middleware = getUpdateUserPushNotificationInformationMiddleware({} as any);
-
-            await middleware(request, response, next);
-
-            expect(next).toBeCalledWith(new CustomError(ErrorType.UpdateUserPushNotificationInformationMiddleware));
-        });
-    });
-
     describe('populateCurrentUserFollowingMiddleware', () => {
-        test('populates updatedUser following', async () => {
+        test('populates userfollowing', async () => {
             expect.assertions(3);
             const request: any = {};
-            const updatedUser = {
+            const user = {
                 following: ['userId'],
             };
-            const response: any = { locals: { updatedUser } };
+            const response: any = { locals: { user } };
             const next = jest.fn();
 
             const lean = jest.fn().mockResolvedValue([{ username: 'username' }]);
@@ -516,7 +601,7 @@ describe('patchCurrentUserMiddlewares', () => {
             const middleware = getPopulateCurrentUserFollowingMiddleware(userModel as any);
             await middleware(request, response, next);
 
-            expect(findById).toBeCalledWith(updatedUser.following[0]);
+            expect(findById).toBeCalledWith(user.following[0]);
             expect(lean).toBeCalled();
             expect(next).toBeCalled();
         });
@@ -537,13 +622,13 @@ describe('patchCurrentUserMiddlewares', () => {
     });
 
     describe('populateCurrentUserFollowersMiddleware', () => {
-        test('populates updatedUser following', async () => {
+        test('populates users following', async () => {
             expect.assertions(3);
             const request: any = {};
-            const updatedUser = {
+            const user = {
                 followers: ['userId'],
             };
-            const response: any = { locals: { updatedUser } };
+            const response: any = { locals: { user } };
             const next = jest.fn();
 
             const lean = jest.fn().mockResolvedValue([{ username: 'username' }]);
@@ -556,7 +641,7 @@ describe('patchCurrentUserMiddlewares', () => {
             const middleware = getPopulateCurrentUserFollowersMiddleware(userModel as any);
             await middleware(request, response, next);
 
-            expect(findById).toBeCalledWith(updatedUser.followers[0]);
+            expect(findById).toBeCalledWith(user.followers[0]);
             expect(lean).toBeCalled();
             expect(next).toBeCalled();
         });
@@ -628,8 +713,8 @@ describe('patchCurrentUserMiddlewares', () => {
             const following: BasicUser[] = [];
             const followers: BasicUser[] = [];
             const achievements: DatabaseAchievementType[] = [];
-            const updatedUser = getMockUser();
-            const response: any = { locals: { updatedUser, following, followers, achievements } };
+            const user = getMockUser();
+            const response: any = { locals: { user, following, followers, achievements } };
             const next = jest.fn();
 
             const getPopulatedCurrentUserFunction = jest.fn();
@@ -639,7 +724,7 @@ describe('patchCurrentUserMiddlewares', () => {
             middleware(request, response, next);
 
             expect(getPopulatedCurrentUserFunction).toBeCalledWith({
-                user: updatedUser,
+                user,
                 following,
                 followers,
                 achievements,
@@ -698,19 +783,21 @@ describe('patchCurrentUserMiddlewares', () => {
         });
     });
     test('are defined in the correct order', () => {
-        expect.assertions(12);
+        expect.assertions(14);
 
-        expect(patchCurrentUserMiddlewares.length).toBe(11);
+        expect(patchCurrentUserMiddlewares.length).toBe(13);
         expect(patchCurrentUserMiddlewares[0]).toBe(patchCurrentUserRequestBodyValidationMiddleware);
         expect(patchCurrentUserMiddlewares[1]).toBe(doesUserEmailExistMiddleware);
         expect(patchCurrentUserMiddlewares[2]).toBe(doesUsernameExistMiddleware);
-        expect(patchCurrentUserMiddlewares[3]).toBe(patchCurrentUserMiddleware);
-        expect(patchCurrentUserMiddlewares[4]).toBe(createPlatformEndpointMiddleware);
-        expect(patchCurrentUserMiddlewares[5]).toBe(updateUserPushNotificationInformationMiddleware);
-        expect(patchCurrentUserMiddlewares[6]).toBe(populateCurrentUserFollowingMiddleware);
-        expect(patchCurrentUserMiddlewares[7]).toBe(populateCurrentUserFollowersMiddleware);
-        expect(patchCurrentUserMiddlewares[8]).toBe(populateCurrentUserAchievementsMiddleware);
-        expect(patchCurrentUserMiddlewares[9]).toBe(formatUserMiddleware);
-        expect(patchCurrentUserMiddlewares[10]).toBe(sendUpdatedCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[3]).toBe(removeOldAndroidEndpointArnWhenPushNotificationIsUpdatedMiddleware);
+        expect(patchCurrentUserMiddlewares[4]).toBe(removeOldIosEndpointArnWhenPushNotificationIsUpdatedMiddleware);
+        expect(patchCurrentUserMiddlewares[5]).toBe(createAndroidPlatformEndpointMiddleware);
+        expect(patchCurrentUserMiddlewares[6]).toBe(createIosPlatformEndpointMiddleware);
+        expect(patchCurrentUserMiddlewares[7]).toBe(patchCurrentUserMiddleware);
+        expect(patchCurrentUserMiddlewares[8]).toBe(populateCurrentUserFollowingMiddleware);
+        expect(patchCurrentUserMiddlewares[9]).toBe(populateCurrentUserFollowersMiddleware);
+        expect(patchCurrentUserMiddlewares[10]).toBe(populateCurrentUserAchievementsMiddleware);
+        expect(patchCurrentUserMiddlewares[11]).toBe(formatUserMiddleware);
+        expect(patchCurrentUserMiddlewares[12]).toBe(sendUpdatedCurrentUserMiddleware);
     });
 });

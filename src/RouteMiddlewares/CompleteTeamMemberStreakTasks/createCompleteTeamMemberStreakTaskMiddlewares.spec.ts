@@ -1180,6 +1180,116 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
         });
     });
 
+    describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
+        test('sends push notification to team members if they have teamStreakUpdates notifications enabled, a devicType and an endpointArn', async () => {
+            expect.assertions(2);
+            const user = {
+                _id: 'userId',
+                username: 'username',
+            };
+            const teamStreak = {
+                streakName: 'Daily Spanish',
+            };
+            const teamMember = getMockUser();
+            const teamMembers = [teamMember];
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    user,
+                    teamStreak,
+                    teamMembers,
+                },
+            };
+            const next = jest.fn();
+
+            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware({
+                sendPushNotification,
+            });
+            await middleware(request, response, next);
+            expect(sendPushNotification).toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('does not send notification if team member does not have teamStreakUpdates push notifications enabled', async () => {
+            expect.assertions(2);
+
+            const user = {
+                _id: '_id',
+                username: 'username',
+            };
+            const teamStreak = {
+                streakName: 'Daily Spanish',
+            };
+            const teamMember = getMockUser();
+            const teamMembers = [teamMember];
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    user,
+                    teamStreak,
+                    teamMembers,
+                },
+            };
+            const next = jest.fn();
+
+            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware({
+                sendPushNotification,
+            });
+            await middleware(request, response, next);
+
+            expect(sendPushNotification).not.toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('does not send notification to user that completed the task', async () => {
+            expect.assertions(2);
+
+            const user = {
+                _id: '_id',
+                username: 'username',
+            };
+            const teamStreak = {
+                streakName: 'Daily Spanish',
+            };
+            const teamMember = getMockUser();
+            const teamMembers = [teamMember];
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    user,
+                    teamStreak,
+                    teamMembers,
+                },
+            };
+            const next = jest.fn();
+
+            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware({
+                sendPushNotification,
+            });
+            await middleware(request, response, next);
+
+            expect(sendPushNotification).not.toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with NotifyTeamMembersThatUserHasCompletedTaskMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+
+            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware({} as any);
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.NotifyTeamMembersThatUserHasCompletedTaskMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
     describe('sendCompleteTeamMemberStreakTaskResponseMiddleware', () => {
         test('sends completeTeamMemberStreakTask response', () => {
             expect.assertions(3);
@@ -1220,171 +1330,6 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
 
             expect(next).toBeCalledWith(
                 new CustomError(ErrorType.SendTaskCompleteResponseMiddleware, expect.any(Error)),
-            );
-        });
-    });
-
-    describe(`notifyTeamMembersThatUserHasCompletedTaskMiddleware`, () => {
-        test('sends push notification to team members if they have teamStreakUpdates notifications enabled, a devicType and an endpointArn', async () => {
-            expect.assertions(2);
-            const user = {
-                _id: 'userId',
-                username: 'username',
-            };
-            const teamStreak = {
-                streakName: 'Daily Spanish',
-            };
-            const teamMember = getMockUser();
-            const teamMembers = [teamMember];
-            const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
-            const userModel = { findByIdAndUpdate } as any;
-            const sendPushNotification = jest.fn().mockResolvedValue(true);
-            const snsDeleteEndpoint = jest.fn().mockResolvedValue(true) as any;
-            const request: any = {};
-            const response: any = {
-                locals: {
-                    user,
-                    teamStreak,
-                    teamMembers,
-                },
-            };
-            const next = jest.fn();
-
-            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware({
-                sendPushNotification,
-                userModel,
-                snsDeleteEndpoint,
-            });
-            await middleware(request, response, next);
-            expect(sendPushNotification).toBeCalled();
-            expect(next).toBeCalledWith();
-        });
-
-        test('does not send notification if team member does not have teamStreakUpdates push notifications enabled', async () => {
-            expect.assertions(2);
-
-            const user = {
-                _id: '_id',
-                username: 'username',
-            };
-            const teamStreak = {
-                streakName: 'Daily Spanish',
-            };
-            const teamMember = getMockUser();
-            const teamMembers = [teamMember];
-            const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
-            const userModel = { findByIdAndUpdate } as any;
-            const sendPushNotification = jest.fn().mockResolvedValue(true);
-            const snsDeleteEndpoint = jest.fn().mockResolvedValue(true) as any;
-            const request: any = {};
-            const response: any = {
-                locals: {
-                    user,
-                    teamStreak,
-                    teamMembers,
-                },
-            };
-            const next = jest.fn();
-
-            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware({
-                sendPushNotification,
-                userModel,
-                snsDeleteEndpoint,
-            });
-            await middleware(request, response, next);
-
-            expect(sendPushNotification).not.toBeCalled();
-            expect(next).toBeCalledWith();
-        });
-
-        test('does not send notification to user that completed the task', async () => {
-            expect.assertions(2);
-
-            const user = {
-                _id: '_id',
-                username: 'username',
-            };
-            const teamStreak = {
-                streakName: 'Daily Spanish',
-            };
-            const teamMember = getMockUser();
-            const teamMembers = [teamMember];
-            const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
-            const userModel = { findByIdAndUpdate } as any;
-            const sendPushNotification = jest.fn().mockResolvedValue(true);
-            const snsDeleteEndpoint = jest.fn().mockResolvedValue(true) as any;
-            const request: any = {};
-            const response: any = {
-                locals: {
-                    user,
-                    teamStreak,
-                    teamMembers,
-                },
-            };
-            const next = jest.fn();
-
-            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware({
-                sendPushNotification,
-                userModel,
-                snsDeleteEndpoint,
-            });
-            await middleware(request, response, next);
-
-            expect(sendPushNotification).not.toBeCalled();
-            expect(next).toBeCalledWith();
-        });
-
-        test('if sendPushNotification fails for an endpoint it deletes that endpoint and sets the user endpointArn to null', async () => {
-            expect.assertions(4);
-            const user = {
-                _id: 'userId',
-                username: 'username',
-            };
-            const teamStreak = {
-                streakName: 'Daily Spanish',
-            };
-            const teamMember = getMockUser();
-            const teamMembers = [teamMember];
-            const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
-            const userModel = { findByIdAndUpdate } as any;
-            const sendPushNotification = jest.fn().mockRejectedValue('Error');
-            const snsDeleteEndpoint = jest.fn(() => ({ promise: jest.fn().mockResolvedValue(true) })) as any;
-            const request: any = {};
-            const response: any = {
-                locals: {
-                    user,
-                    teamStreak,
-                    teamMembers,
-                },
-            };
-            const next = jest.fn();
-
-            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware({
-                sendPushNotification,
-                userModel,
-                snsDeleteEndpoint,
-            });
-            await middleware(request, response, next);
-
-            expect(sendPushNotification).toBeCalled();
-            expect(findByIdAndUpdate).toBeCalledWith(teamMember._id, {
-                $set: { pushNotification: { token: null, endpointArn: null, deviceType: null } },
-            });
-            expect(snsDeleteEndpoint).toBeCalledWith({ EndpointArn: teamMember.pushNotification.endpointArn });
-            expect(next).toBeCalledWith();
-        });
-
-        test('calls next with NotifyTeamMembersThatUserHasCompletedTaskMiddleware error on middleware failure', async () => {
-            expect.assertions(1);
-            const request: any = {};
-            const response: any = {};
-            const next = jest.fn();
-
-            const middleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware({} as any);
-            await middleware(request, response, next);
-
-            expect(next).toBeCalledWith(
-                new CustomError(ErrorType.NotifyTeamMembersThatUserHasCompletedTaskMiddleware, expect.any(Error)),
             );
         });
     });
@@ -1454,10 +1399,10 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
         expect(createCompleteTeamMemberStreakTaskMiddlewares[17]).toBe(teamStreakMaintainedMiddleware);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[18]).toBe(retrieveTeamMembersMiddleware);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[19]).toBe(
-            sendCompleteTeamMemberStreakTaskResponseMiddleware,
+            notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
         );
         expect(createCompleteTeamMemberStreakTaskMiddlewares[20]).toBe(
-            notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
+            sendCompleteTeamMemberStreakTaskResponseMiddleware,
         );
         expect(createCompleteTeamMemberStreakTaskMiddlewares[21]).toBe(
             createCompleteTeamMemberStreakActivityFeedItemMiddleware,

@@ -5,9 +5,7 @@ import { tearDownDatabase } from './setup/tearDownDatabase';
 import { getFriend } from './setup/getFriend';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
-import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 
-import AWS from 'aws-sdk';
 import { correctPopulatedCurrentUserKeys } from '../src/testHelpers/correctPopulatedCurrentUserKeys';
 import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
@@ -15,35 +13,8 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { getServiceConfig } from '../src/getServiceConfig';
 import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
-
-const credentials = new AWS.Credentials({
-    accessKeyId: getServiceConfig().AWS_ACCESS_KEY_ID,
-    secretAccessKey: getServiceConfig().AWS_SECRET_ACCESS_KEY,
-});
-AWS.config.update({ credentials, region: getServiceConfig().AWS_REGION });
-export const SNS = new AWS.SNS({});
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const deleteEndpointAfterTest = async ({ userId, platformArn }: { userId: string; platformArn: string }) => {
-    const endpoints = await SNS.listEndpointsByPlatformApplication({
-        PlatformApplicationArn: platformArn,
-    }).promise();
-
-    const userEndpoint =
-        endpoints &&
-        endpoints.Endpoints &&
-        endpoints.Endpoints.find(endpoint => {
-            const customUserData = endpoint && endpoint.Attributes && endpoint.Attributes.CustomUserData;
-            return String(customUserData) === String(userId);
-        });
-
-    const endpointToDelete = (userEndpoint && userEndpoint.EndpointArn) || '';
-
-    if (endpointToDelete) {
-        return SNS.deleteEndpoint({ EndpointArn: endpointToDelete }).promise();
-    }
-    return null;
-};
+import { deleteSnsEndpoint } from './helpers/deleteSnsEndpoint';
+import { userModel } from '../src/Models/User';
 
 jest.setTimeout(120000);
 
@@ -133,9 +104,10 @@ describe(testName, () => {
             originalImageUrl: 'https://streakoid-profile-pictures.s3-eu-west-1.amazonaws.com/steve.jpg',
         });
         expect(updatedUser.pushNotification).toEqual({
-            deviceType: null,
-            token: null,
-            endpointArn: null,
+            androidToken: null,
+            androidEndpointArn: null,
+            iosToken: null,
+            iosEndpointArn: null,
         });
         expect(updatedUser.hasProfileImageBeenCustomized).toEqual(true);
         expect(updatedUser.hasCompletedTutorial).toEqual(true);
@@ -291,27 +263,31 @@ describe(testName, () => {
     });
 });
 
-describe('android push notification SNS update', () => {
-    let userId: string;
+describe('Android Push notification update', () => {
     let database: Mongoose;
     let SDK: StreakoidSDK;
+    let androidEndpointArn: string | null | undefined;
+    let secondAndroidEndpointArn: string | null | undefined;
 
     beforeEach(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
             SDK = streakoidTestSDK({ testName });
-            const user = await getPayingUser({ testName });
-            userId = user._id;
         }
     });
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            const androidPlatformArn = 'arn:aws:sns:eu-west-1:932661412733:app/GCM/Firebase';
-            await deleteEndpointAfterTest({
-                userId,
-                platformArn: androidPlatformArn,
-            });
+            if (androidEndpointArn) {
+                await deleteSnsEndpoint({
+                    endpointArn: androidEndpointArn,
+                });
+            }
+            if (secondAndroidEndpointArn) {
+                await deleteSnsEndpoint({
+                    endpointArn: secondAndroidEndpointArn,
+                });
+            }
 
             await tearDownDatabase({ database });
         }
@@ -326,48 +302,150 @@ describe('android push notification SNS update', () => {
     test(`if current user updates push notification information on an android device their endpointArn should be defined and pushNotificationToken should be updated.`, async () => {
         expect.assertions(2);
 
-        const token = 'token';
+        const androidToken = 'token123';
+
+        await getPayingUser({ testName });
 
         const user = await SDK.user.updateCurrentUser({
             updateData: {
                 pushNotification: {
-                    token,
-                    deviceType: PushNotificationSupportedDeviceTypes.android,
+                    androidToken,
                 },
             },
         });
 
+        androidEndpointArn = user.pushNotification.androidEndpointArn;
+
         expect(user.pushNotification).toEqual({
-            deviceType: PushNotificationSupportedDeviceTypes.android,
-            token,
-            endpointArn: expect.any(String),
+            androidToken,
+            androidEndpointArn: expect.any(String),
         });
 
         expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
     });
+
+    test(`if androidEndpointARN is already defined for user delete old endpoint before creating a new one.`, async () => {
+        expect.assertions(2);
+
+        await getPayingUser({ testName });
+
+        const androidToken = 'token123';
+
+        const updatedUser = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    androidToken,
+                },
+            },
+        });
+
+        androidEndpointArn =
+            updatedUser && updatedUser.pushNotification && updatedUser.pushNotification.androidEndpointArn;
+
+        const userWithDefaultAndroidPushNotification = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    androidToken,
+                },
+            },
+        });
+
+        expect(userWithDefaultAndroidPushNotification.pushNotification).toEqual({
+            androidToken,
+            androidEndpointArn: expect.any(String),
+        });
+
+        expect(Object.keys(userWithDefaultAndroidPushNotification).sort()).toEqual(correctPopulatedCurrentUserKeys);
+    });
+
+    test(`if androidEndpointARN does not exist patches user without error.`, async () => {
+        expect.assertions(2);
+
+        const user = await getPayingUser({ testName });
+
+        const androidToken = 'token123';
+
+        await userModel.findByIdAndUpdate(user._id, { $set: { 'pushNotification.androidEndpointArn': 'invalid' } });
+
+        const userWithDefaultAndroidPushNotification = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    androidToken,
+                },
+            },
+        });
+
+        androidEndpointArn = userWithDefaultAndroidPushNotification.pushNotification.androidEndpointArn;
+
+        expect(userWithDefaultAndroidPushNotification.pushNotification).toEqual({
+            androidToken,
+            androidEndpointArn: expect.any(String),
+        });
+
+        expect(Object.keys(userWithDefaultAndroidPushNotification).sort()).toEqual(correctPopulatedCurrentUserKeys);
+    });
+
+    test(`allow user to change their android token when they already have one.`, async () => {
+        expect.assertions(3);
+
+        await getPayingUser({ testName });
+
+        const androidToken = 'token123';
+
+        const user = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    androidToken,
+                },
+            },
+        });
+
+        androidEndpointArn = user.pushNotification.androidEndpointArn;
+
+        const newAndroidToken = 'tokenABCD';
+
+        const updatedUser = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    androidToken: newAndroidToken,
+                },
+            },
+        });
+
+        secondAndroidEndpointArn = updatedUser.pushNotification.androidEndpointArn;
+
+        expect(updatedUser.pushNotification.androidToken).toEqual(newAndroidToken);
+        expect(updatedUser.pushNotification.androidEndpointArn).toBeDefined();
+        expect(Object.keys(updatedUser).sort()).toEqual(correctPopulatedCurrentUserKeys);
+    });
 });
 
-describe('ios push notification token SNS update', () => {
-    let userId: string;
+describe('Ios Push notification update', () => {
     let database: Mongoose;
     let SDK: StreakoidSDK;
+    let iosEndpointArn: string | null | undefined;
+    let secondIosEndpointArn: string | null | undefined;
 
     beforeEach(async () => {
         if (isTestEnvironment()) {
             database = await setupDatabase({ testName });
             SDK = streakoidTestSDK({ testName });
-            const user = await getPayingUser({ testName });
-            userId = user._id;
         }
     });
 
     afterEach(async () => {
         if (isTestEnvironment()) {
-            const iosPlatformArn = 'arn:aws:sns:eu-west-1:932661412733:app/APNS/IOS';
-            await deleteEndpointAfterTest({
-                userId,
-                platformArn: iosPlatformArn,
-            });
+            if (iosEndpointArn) {
+                await deleteSnsEndpoint({
+                    endpointArn: iosEndpointArn,
+                });
+            }
+            if (secondIosEndpointArn) {
+                await deleteSnsEndpoint({
+                    endpointArn: secondIosEndpointArn,
+                });
+            }
+
             await tearDownDatabase({ database });
         }
     });
@@ -381,23 +459,113 @@ describe('ios push notification token SNS update', () => {
     test(`if current user updates push notification information on an ios device their endpointArn should be defined and pushNotificationToken should be updated.`, async () => {
         expect.assertions(2);
 
-        const token = '740f4707 bebcf74f 9b7c25d4 8e335894 5f6aa01d a5ddb387 462c7eaf 61bb78ad';
+        await getPayingUser({ testName });
 
         const user = await SDK.user.updateCurrentUser({
             updateData: {
                 pushNotification: {
-                    token,
-                    deviceType: PushNotificationSupportedDeviceTypes.ios,
+                    iosToken: getServiceConfig().IOS_TOKEN,
                 },
             },
         });
 
+        iosEndpointArn = user.pushNotification.iosEndpointArn;
+
         expect(user.pushNotification).toEqual({
-            token,
-            deviceType: PushNotificationSupportedDeviceTypes.ios,
-            endpointArn: expect.any(String),
+            iosToken: getServiceConfig().IOS_TOKEN,
+            iosEndpointArn: expect.any(String),
         });
 
         expect(Object.keys(user).sort()).toEqual(correctPopulatedCurrentUserKeys);
+    });
+
+    test(`if iosEndpointARN is already defined for user delete old endpoint before creating a new one.`, async () => {
+        expect.assertions(2);
+
+        await getPayingUser({ testName });
+
+        const updatedUser = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    iosToken: getServiceConfig().IOS_TOKEN,
+                },
+            },
+        });
+
+        iosEndpointArn = updatedUser && updatedUser.pushNotification && updatedUser.pushNotification.iosEndpointArn;
+
+        const userWithDefaultAndroidPushNotification = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    iosToken: getServiceConfig().IOS_TOKEN,
+                },
+            },
+        });
+
+        expect(userWithDefaultAndroidPushNotification.pushNotification).toEqual({
+            iosToken: getServiceConfig().IOS_TOKEN,
+            iosEndpointArn: expect.any(String),
+        });
+
+        expect(Object.keys(userWithDefaultAndroidPushNotification).sort()).toEqual(correctPopulatedCurrentUserKeys);
+    });
+
+    test(`if iosEndpointARN is not valid it throws a CreateIosPlatformEndpointFailure error.`, async () => {
+        expect.assertions(2);
+
+        const user = await getPayingUser({ testName });
+
+        const iosToken = 'token123';
+
+        await userModel.findByIdAndUpdate(user._id, { $set: { 'pushNotification.iosEndpointArn': 'invalid' } });
+
+        try {
+            await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        iosToken,
+                    },
+                },
+            });
+        } catch (err) {
+            const error = JSON.parse(err.text);
+            const { message } = error;
+            expect(err.status).toEqual(400);
+            expect(message).toEqual(`Error with ios token.`);
+        }
+    });
+
+    test(`allow user to change their ios token when they already have one.`, async () => {
+        expect.assertions(3);
+
+        await getPayingUser({ testName });
+
+        const iosToken = getServiceConfig().IOS_TOKEN;
+
+        const user = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    iosToken,
+                },
+            },
+        });
+
+        iosEndpointArn = user.pushNotification.iosEndpointArn;
+
+        const newIosToken = '740f4707 bebcf74f 9b7c25d4 8e335894 5f6aa01d a5ddb387 462c7eaf 61bb78ae';
+
+        const updatedUser = await SDK.user.updateCurrentUser({
+            updateData: {
+                pushNotification: {
+                    iosToken: newIosToken,
+                },
+            },
+        });
+
+        secondIosEndpointArn = updatedUser.pushNotification.iosEndpointArn;
+
+        expect(updatedUser.pushNotification.iosToken).toEqual(newIosToken);
+        expect(updatedUser.pushNotification.iosEndpointArn).toBeDefined();
+        expect(Object.keys(updatedUser).sort()).toEqual(correctPopulatedCurrentUserKeys);
     });
 });

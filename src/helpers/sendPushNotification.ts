@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SNS } from '../../src/sns';
-import PushNotificationSupportedDeviceTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationSupportedDeviceTypes';
 import { PushNotificationType } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
+import { userModel } from '../Models/User';
 
 const buildAPSPayloadString = ({ body, data }: { body: string; data: PushNotificationType }): string => {
     return JSON.stringify({
@@ -30,25 +30,28 @@ const buildFCMPayloadString = ({
     });
 };
 
-export const sendPushNotification = ({
-    endpointArn,
-    deviceType,
+export const sendSNSPushNotification = async ({
     title,
     body,
     data,
+    androidEndpointArn,
+    iosEndpointArn,
 }: {
-    endpointArn: string;
-    deviceType: PushNotificationSupportedDeviceTypes;
     title: string;
     body: string;
     data: PushNotificationType;
+    androidEndpointArn?: string;
+    iosEndpointArn?: string;
 }): Promise<unknown> => {
+    if (!androidEndpointArn && !iosEndpointArn) {
+        throw new Error('Either androidEndpointArn or iosEndpointArn must be defined');
+    }
     let payloadKey,
         payload = '';
-    if (deviceType === PushNotificationSupportedDeviceTypes.ios) {
+    if (iosEndpointArn) {
         payloadKey = 'APNS';
         payload = buildAPSPayloadString({ body, data });
-    } else if (deviceType === PushNotificationSupportedDeviceTypes.android) {
+    } else if (androidEndpointArn) {
         payloadKey = 'GCM';
         payload = buildFCMPayloadString({ title, body, data });
     } else {
@@ -59,10 +62,57 @@ export const sendPushNotification = ({
         [payloadKey]: payload,
     };
 
+    if (androidEndpointArn) {
+        const snsParams = {
+            Message: JSON.stringify(snsMessage),
+            TargetArn: androidEndpointArn,
+            MessageStructure: 'json',
+        };
+
+        return SNS.publish(snsParams).promise();
+    }
+
     const snsParams = {
         Message: JSON.stringify(snsMessage),
-        TargetArn: endpointArn,
+        TargetArn: iosEndpointArn,
         MessageStructure: 'json',
     };
+
     return SNS.publish(snsParams).promise();
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const sendPushNotification = async ({
+    title,
+    body,
+    data,
+    userId,
+    androidEndpointArn,
+    iosEndpointArn,
+}: {
+    title: string;
+    body: string;
+    data: PushNotificationType;
+    userId: string;
+    androidEndpointArn?: string;
+    iosEndpointArn?: string;
+}) => {
+    try {
+        const result = await sendSNSPushNotification({ title, body, data, androidEndpointArn, iosEndpointArn });
+        return result;
+    } catch (err) {
+        if (err.code == 'EndpointDisabled') {
+            if (androidEndpointArn) {
+                await userModel.findByIdAndUpdate(userId, {
+                    $set: { pushNotification: { androidEndpointArn: null, androidToken: null } },
+                });
+            }
+            if (iosEndpointArn) {
+                await userModel.findByIdAndUpdate(userId, {
+                    $set: { pushNotification: { iosEndpointArn: null, iosToken: null } },
+                });
+            }
+        }
+        throw err;
+    }
 };

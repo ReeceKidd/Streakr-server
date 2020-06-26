@@ -24,7 +24,7 @@ import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNot
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { sendPushNotification as sendPushNotificationImport } from '../../../src/helpers/sendPushNotification';
-import { SNS } from '../../sns';
+import { EndpointDisabledError } from '../../sns';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -450,28 +450,10 @@ export const getRetrieveTeamMembersMiddleware = (userModel: mongoose.Model<UserM
 
 export const retrieveTeamMembersMiddleware = getRetrieveTeamMembersMiddleware(userModel);
 
-export const sendCompleteTeamMemberStreakTaskResponseMiddleware = (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): void => {
-    try {
-        const { completeTeamMemberStreakTask } = response.locals;
-        response.status(ResponseCodes.created).send(completeTeamMemberStreakTask);
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.SendCompleteTeamMemberStreakTaskResponseMiddleware, err));
-    }
-};
-
 export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = ({
     sendPushNotification,
-    userModel,
-    snsDeleteEndpoint,
 }: {
     sendPushNotification: typeof sendPushNotificationImport;
-    userModel: mongoose.Model<UserModel>;
-    snsDeleteEndpoint: typeof SNS.deleteEndpoint;
 }) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
@@ -490,26 +472,31 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = ({
         await Promise.all(
             teamMembers.map(async teamMember => {
                 const { pushNotification, pushNotifications } = teamMember;
-                const deviceType = pushNotification && pushNotification.deviceType;
-                const endpointArn = pushNotification && pushNotification.endpointArn;
+                const androidEndpointArn = pushNotification.androidEndpointArn;
+                const iosEndpointArn = pushNotification.iosEndpointArn;
                 const teamMemberTeamStreakUpdatesEnabled =
                     pushNotifications &&
                     pushNotifications.teamStreakUpdates &&
                     pushNotifications.teamStreakUpdates.enabled;
                 if (
-                    deviceType &&
-                    endpointArn &&
+                    (androidEndpointArn || iosEndpointArn) &&
                     teamMemberTeamStreakUpdatesEnabled &&
                     String(teamMember._id) !== String(user._id)
                 ) {
                     try {
-                        await sendPushNotification({ title, body, data, deviceType, endpointArn });
+                        await sendPushNotification({
+                            title,
+                            body,
+                            data,
+                            androidEndpointArn,
+                            iosEndpointArn,
+                            userId: teamMember._id,
+                        });
                         return teamMember;
                     } catch (err) {
-                        await userModel.findByIdAndUpdate(teamMember._id, {
-                            $set: { pushNotification: { token: null, endpointArn: null, deviceType: null } },
-                        });
-                        return snsDeleteEndpoint({ EndpointArn: endpointArn }).promise();
+                        if (err.code !== EndpointDisabledError) {
+                            throw err;
+                        }
                     }
                 }
             }),
@@ -523,10 +510,22 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = ({
 export const notifiyTeamMembersThatUserHasCompletedTaskMiddleware = getNotifyTeamMembersThatUserHasCompletedTaskMiddleware(
     {
         sendPushNotification: sendPushNotificationImport,
-        userModel,
-        snsDeleteEndpoint: SNS.deleteEndpoint,
     },
 );
+
+export const sendCompleteTeamMemberStreakTaskResponseMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const { completeTeamMemberStreakTask } = response.locals;
+        response.status(ResponseCodes.created).send(completeTeamMemberStreakTask);
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.SendCompleteTeamMemberStreakTaskResponseMiddleware, err));
+    }
+};
 
 export const getCreateCompleteTeamMemberStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
@@ -572,7 +571,7 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     saveCompleteTeamStreakMiddleware,
     teamStreakMaintainedMiddleware,
     retrieveTeamMembersMiddleware,
-    sendCompleteTeamMemberStreakTaskResponseMiddleware,
     notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
+    sendCompleteTeamMemberStreakTaskResponseMiddleware,
     createCompleteTeamMemberStreakActivityFeedItemMiddleware,
 ];

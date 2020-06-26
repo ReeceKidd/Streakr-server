@@ -12,6 +12,7 @@ import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/Act
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 import { sendPushNotification } from '../../../helpers/sendPushNotification';
+import { EndpointDisabledError } from '../../../sns';
 
 const followUserParamsValidationSchema = {
     userId: Joi.string()
@@ -215,12 +216,25 @@ export const getSendNewFollowerRequestNotificationMiddleware = (sendPush: typeof
             body,
         };
         const { pushNotification, pushNotifications } = userToFollow;
-        const deviceType = pushNotification && pushNotification.deviceType;
-        const endpointArn = pushNotification && pushNotification.endpointArn;
+        const androidEndpointArn = pushNotification.androidEndpointArn;
+        const iosEndpointArn = pushNotification.iosEndpointArn;
         const newFollowerUpdatesEnabled =
             pushNotifications && pushNotifications.newFollowerUpdates && pushNotifications.newFollowerUpdates;
-        if (deviceType && endpointArn && newFollowerUpdatesEnabled) {
-            sendPush({ title, body, data, deviceType, endpointArn });
+        if ((androidEndpointArn || iosEndpointArn) && newFollowerUpdatesEnabled.enabled) {
+            try {
+                await sendPush({
+                    title,
+                    body,
+                    data,
+                    androidEndpointArn,
+                    iosEndpointArn,
+                    userId: user._id,
+                });
+            } catch (err) {
+                if (err.code !== EndpointDisabledError) {
+                    throw err;
+                }
+            }
         }
     } catch (err) {
         next(new CustomError(ErrorType.SendNewFollowerRequestNotificationMiddleware, err));

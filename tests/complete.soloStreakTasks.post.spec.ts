@@ -10,6 +10,9 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { SNS } from '../src/sns';
+import { deleteSnsEndpoint } from './helpers/deleteSnsEndpoint';
+import { getServiceConfig } from '../src/getServiceConfig';
 
 jest.setTimeout(120000);
 
@@ -587,6 +590,242 @@ describe(testName, () => {
 
             const updatedUser = await SDK.users.getOne(userId);
             expect(updatedUser.achievements.length).toEqual(0);
+        });
+    });
+
+    describe('Android - Send one hundred day solo streak achievement unlocked push notification middleware.', () => {
+        let database: Mongoose;
+        let SDK: StreakoidSDK;
+        let androidEndpointArn: string | null | undefined;
+
+        beforeEach(async () => {
+            if (isTestEnvironment()) {
+                database = await setupDatabase({ testName });
+                SDK = streakoidTestSDK({ testName });
+            }
+        });
+
+        afterEach(async () => {
+            if (isTestEnvironment()) {
+                if (androidEndpointArn) {
+                    await deleteSnsEndpoint({
+                        endpointArn: androidEndpointArn,
+                    });
+                }
+
+                await tearDownDatabase({ database });
+            }
+        });
+
+        afterAll(async () => {
+            if (isTestEnvironment()) {
+                await disconnectDatabase({ database });
+            }
+        });
+
+        test('sends one hundred day solo streak achievement push notification when user unlocks the achievement. ', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        androidToken: getServiceConfig().ANDROID_TOKEN,
+                    },
+                },
+            });
+
+            androidEndpointArn = updatedUser.pushNotification.androidEndpointArn;
+
+            const achievementToCreate: OneHundredDaySoloStreakAchievement = {
+                achievementType: AchievementTypes.oneHundredDaySoloStreak,
+                name: '100 Hundred Days',
+                description: '100 Day solo streak',
+            };
+            await SDK.achievements.create(achievementToCreate);
+            const soloStreak = await SDK.soloStreaks.create({ userId: user._id, streakName: 'Reading' });
+            const soloStreakId = soloStreak._id;
+
+            await SDK.soloStreaks.update({
+                soloStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...soloStreak.currentStreak,
+                        numberOfDaysInARow: 99,
+                    },
+                },
+            });
+
+            const result = await SDK.completeSoloStreakTasks.create({
+                userId: user._id,
+                soloStreakId,
+            });
+            expect(result).toBeDefined();
+        });
+
+        test('if sendPushNotification fails with an EndpointDisabled error the middleware continues as normal.', async () => {
+            expect.assertions(1);
+
+            await getPayingUser({ testName });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        androidToken: getServiceConfig().ANDROID_TOKEN,
+                    },
+                },
+            });
+
+            await SNS.setEndpointAttributes({
+                EndpointArn: updatedUser.pushNotification.androidEndpointArn || '',
+                Attributes: { Enabled: 'false' },
+            }).promise();
+
+            androidEndpointArn = updatedUser.pushNotification.androidEndpointArn;
+
+            const achievementToCreate: OneHundredDaySoloStreakAchievement = {
+                achievementType: AchievementTypes.oneHundredDaySoloStreak,
+                name: '100 Hundred Days',
+                description: '100 Day solo streak',
+            };
+            await SDK.achievements.create(achievementToCreate);
+            const soloStreak = await SDK.soloStreaks.create({ userId: updatedUser._id, streakName: 'Reading' });
+            const soloStreakId = soloStreak._id;
+
+            await SDK.soloStreaks.update({
+                soloStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...soloStreak.currentStreak,
+                        numberOfDaysInARow: 99,
+                    },
+                },
+            });
+
+            const result = await SDK.completeSoloStreakTasks.create({
+                userId: updatedUser._id,
+                soloStreakId,
+            });
+            expect(result).toBeDefined();
+        });
+    });
+
+    describe('Ios - Send one hundred day solo streak achievement unlocked push notification middleware.', () => {
+        let database: Mongoose;
+        let SDK: StreakoidSDK;
+        let iosEndpointArn: string | null | undefined;
+
+        beforeEach(async () => {
+            if (isTestEnvironment()) {
+                database = await setupDatabase({ testName });
+                SDK = streakoidTestSDK({ testName });
+            }
+        });
+
+        afterEach(async () => {
+            if (isTestEnvironment()) {
+                if (iosEndpointArn) {
+                    await deleteSnsEndpoint({
+                        endpointArn: iosEndpointArn,
+                    });
+                }
+
+                await tearDownDatabase({ database });
+            }
+        });
+
+        afterAll(async () => {
+            if (isTestEnvironment()) {
+                await disconnectDatabase({ database });
+            }
+        });
+
+        test('sends one hundred day solo streak achievement push notification when user unlocks the achievement. ', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        iosToken: getServiceConfig().IOS_TOKEN,
+                    },
+                },
+            });
+
+            iosEndpointArn = updatedUser.pushNotification.iosEndpointArn;
+
+            const achievementToCreate: OneHundredDaySoloStreakAchievement = {
+                achievementType: AchievementTypes.oneHundredDaySoloStreak,
+                name: '100 Hundred Days',
+                description: '100 Day solo streak',
+            };
+            await SDK.achievements.create(achievementToCreate);
+            const soloStreak = await SDK.soloStreaks.create({ userId: user._id, streakName: 'Reading' });
+            const soloStreakId = soloStreak._id;
+
+            await SDK.soloStreaks.update({
+                soloStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...soloStreak.currentStreak,
+                        numberOfDaysInARow: 99,
+                    },
+                },
+            });
+
+            const result = await SDK.completeSoloStreakTasks.create({
+                userId: user._id,
+                soloStreakId,
+            });
+            expect(result).toBeDefined();
+        });
+
+        test('if sendPushNotification fails with an EndpointDisabled error the middleware continues as normal.', async () => {
+            expect.assertions(1);
+
+            await getPayingUser({ testName });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        iosToken: getServiceConfig().IOS_TOKEN,
+                    },
+                },
+            });
+
+            await SNS.setEndpointAttributes({
+                EndpointArn: updatedUser.pushNotification.iosEndpointArn || '',
+                Attributes: { Enabled: 'false' },
+            }).promise();
+
+            iosEndpointArn = updatedUser.pushNotification.iosEndpointArn;
+
+            const achievementToCreate: OneHundredDaySoloStreakAchievement = {
+                achievementType: AchievementTypes.oneHundredDaySoloStreak,
+                name: '100 Hundred Days',
+                description: '100 Day solo streak',
+            };
+            await SDK.achievements.create(achievementToCreate);
+            const soloStreak = await SDK.soloStreaks.create({ userId: updatedUser._id, streakName: 'Reading' });
+            const soloStreakId = soloStreak._id;
+
+            await SDK.soloStreaks.update({
+                soloStreakId,
+                updateData: {
+                    currentStreak: {
+                        ...soloStreak.currentStreak,
+                        numberOfDaysInARow: 99,
+                    },
+                },
+            });
+
+            const result = await SDK.completeSoloStreakTasks.create({
+                userId: updatedUser._id,
+                soloStreakId,
+            });
+            expect(result).toBeDefined();
         });
     });
 });

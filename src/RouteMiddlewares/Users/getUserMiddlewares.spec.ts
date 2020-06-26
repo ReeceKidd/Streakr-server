@@ -304,7 +304,6 @@ describe('formatUserMiddleware', () => {
                 'updatedAt',
                 'profileImages',
                 'achievements',
-                'pushNotificationToken',
             ].sort(),
         );
     });
