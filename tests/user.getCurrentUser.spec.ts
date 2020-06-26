@@ -73,9 +73,10 @@ describe(testName, () => {
             originalImageUrl: expect.any(String),
         });
         expect(user.pushNotification).toEqual({
-            deviceType: null,
-            token: null,
-            endpointArn: null,
+            androidToken: null,
+            androidEndpointArn: null,
+            iosToken: null,
+            iosEndpointArn: null,
         });
         expect(user.hasCompletedTutorial).toEqual(false);
         expect(user.onboarding.whyDoYouWantToBuildNewHabitsChoice).toEqual(null);
