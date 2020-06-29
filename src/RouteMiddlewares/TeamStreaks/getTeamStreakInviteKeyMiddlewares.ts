@@ -67,7 +67,6 @@ export const keepInviteLinkIfUserIsApartOfTeamStreakMiddleware = (
 export const sendTeamStreakInviteKeyMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { inviteKey } = response.locals;
-        console.log(inviteKey);
         response.status(ResponseCodes.success).send({ inviteKey });
     } catch (err) {
         next(new CustomError(ErrorType.SendTeamStreakInviteKeyMiddleware, err));
