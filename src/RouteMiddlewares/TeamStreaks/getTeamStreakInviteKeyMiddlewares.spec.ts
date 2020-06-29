@@ -195,7 +195,7 @@ describe('sendTeamStreakInviteKeyMiddleware', () => {
 
         expect(next).not.toBeCalled();
         expect(status).toBeCalledWith(ResponseCodes.success);
-        expect(send).toBeCalledWith(inviteKey);
+        expect(send).toBeCalledWith({ inviteKey });
     });
 
     test('calls next with SendTeamStreakMiddleware error on middleware failure', async () => {
