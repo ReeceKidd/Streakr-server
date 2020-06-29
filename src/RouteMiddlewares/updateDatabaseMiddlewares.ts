@@ -2,6 +2,7 @@
 
 // import { CustomError, ErrorType } from '../customError';
 // import { userModel } from '../../src/Models/User';
+// import { teamStreakModel } from '../Models/TeamStreak';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -9,10 +10,10 @@
 //     next: NextFunction,
 // ): Promise<void> => {
 //     try {
-//         const users = await userModel.find({});
+//         const teamStreaks = await teamStreakModel.find({});
 //         await Promise.all(
-//             users.map(async user => {
-//                 await userModel.findByIdAndUpdate(user._id, {
+//             teamStreaks.map(async teamStreak => {
+//                 await teamStreak.findByIdAndUpdate(teamStreak._id, {
 //                     $set: {
 //                         pushNotification: {
 //                             androidToken: null,

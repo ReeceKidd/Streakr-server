@@ -555,6 +555,7 @@ export enum ErrorType {
     SendTeamStreakInviteKeyMiddleware,
     GetTeamStreakInviteNoTeamStreakFound,
     FormatTeamStreakMiddleware,
+    FormatTeamStreaksMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -4520,6 +4521,13 @@ export class CustomError extends Error {
             case ErrorType.FormatTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-461`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FormatTeamStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-462`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

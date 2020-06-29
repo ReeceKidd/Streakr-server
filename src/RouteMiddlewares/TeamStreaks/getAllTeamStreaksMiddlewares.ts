@@ -137,6 +137,16 @@ export const retrieveTeamStreaksMembersInformationMiddleware = getRetrieveTeamSt
     teamMemberStreakModel,
 );
 
+export const formatTeamStreaksMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const teamStreaks: TeamStreak[] = response.locals.teamStreaks;
+        response.locals.teamStreaks = teamStreaks.map(teamStreak => ({ ...teamStreak, inviteKey: undefined }));
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.FormatTeamStreaksMiddleware, err));
+    }
+};
+
 export const sendTeamStreaksMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { teamStreaks } = response.locals;
@@ -150,5 +160,6 @@ export const getAllTeamStreaksMiddlewares = [
     getTeamStreaksQueryValidationMiddleware,
     findTeamStreaksMiddleware,
     retrieveTeamStreaksMembersInformationMiddleware,
+    formatTeamStreaksMiddleware,
     sendTeamStreaksMiddleware,
 ];
