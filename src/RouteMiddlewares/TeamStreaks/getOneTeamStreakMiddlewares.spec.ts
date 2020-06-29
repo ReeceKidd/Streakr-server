@@ -5,14 +5,15 @@ import {
     getRetrieveTeamStreakMiddleware,
     sendTeamStreakMiddleware,
     getTeamStreakParamsValidationMiddleware,
-    getSendTeamStreakMiddleware,
     retrieveTeamStreakMembersInformationMiddleware,
     getRetrieveTeamStreakMembersInformationMiddleware,
     retrieveTeamStreakCreatorInformationMiddleware,
     getRetrieveTeamStreakCreatorInformationMiddleware,
+    formatTeamStreakMiddleware,
 } from './getOneTeamStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { ErrorType, CustomError } from '../../customError';
+import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 
 describe(`getTeamStreakParamsValidationMiddleware`, () => {
     const teamStreakId = '12345678';
@@ -227,6 +228,33 @@ describe('retrieveTeamStreakCreatorInformation', () => {
     });
 });
 
+describe('formatTeamStreakMiddleware', () => {
+    test('sets response.locals.teamStreak to a formatted team streak', () => {
+        expect.assertions(3);
+        const teamStreak = getMockTeamStreak({ creatorId: 'creatorId' });
+        const request: any = {};
+        const response: any = { locals: { teamStreak } };
+        const next = jest.fn();
+
+        formatTeamStreakMiddleware(request, response, next);
+
+        expect(response.locals.teamStreak).toBeDefined();
+        expect(response.locals.teamStreak.inviteKey).toBeUndefined();
+        expect(next).toBeCalled();
+    });
+
+    test('calls next with FormatTeamStreakMiddleware error on middleware failure', () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+
+        formatTeamStreakMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.FormatTeamStreakMiddleware, expect.any(Error)));
+    });
+});
+
 describe('sendTeamStreakMiddleware', () => {
     test('sends teamStreak', () => {
         expect.assertions(3);
@@ -236,28 +264,21 @@ describe('sendTeamStreakMiddleware', () => {
         const request: any = {};
         const response: any = { locals: { teamStreak }, status };
         const next = jest.fn();
-        const resourceCreatedCode = 401;
-        const middleware = getSendTeamStreakMiddleware(resourceCreatedCode);
 
-        middleware(request, response, next);
+        sendTeamStreakMiddleware(request, response, next);
 
         expect(next).not.toBeCalled();
-        expect(status).toBeCalledWith(resourceCreatedCode);
+        expect(status).toBeCalledWith(ResponseCodes.created);
         expect(send).toBeCalledWith(teamStreak);
     });
 
-    test('calls next with SendTeamStreakMiddleware error on middleware failure', async () => {
+    test('calls next with SendTeamStreakMiddleware error on middleware failure', () => {
         expect.assertions(1);
         const request: any = {};
-        const error = 'error';
-        const send = jest.fn(() => Promise.reject(error));
-        const status = jest.fn(() => ({ send }));
-        const response: any = { status };
+        const response: any = {};
         const next = jest.fn();
-        const resourceCreatedResponseCode = 401;
-        const middleware = getSendTeamStreakMiddleware(resourceCreatedResponseCode);
 
-        await middleware(request, response, next);
+        sendTeamStreakMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SendTeamStreakMiddleware, expect.any(Error)));
     });
@@ -265,13 +286,14 @@ describe('sendTeamStreakMiddleware', () => {
 
 describe('getTeamStreakMiddlewares', () => {
     test('that getTeamStreakMiddlewares are defined in the correct order', () => {
-        expect.assertions(6);
+        expect.assertions(7);
 
-        expect(getOneTeamStreakMiddlewares.length).toEqual(5);
+        expect(getOneTeamStreakMiddlewares.length).toEqual(6);
         expect(getOneTeamStreakMiddlewares[0]).toEqual(getTeamStreakParamsValidationMiddleware);
         expect(getOneTeamStreakMiddlewares[1]).toEqual(retrieveTeamStreakMiddleware);
         expect(getOneTeamStreakMiddlewares[2]).toEqual(retrieveTeamStreakMembersInformationMiddleware);
         expect(getOneTeamStreakMiddlewares[3]).toEqual(retrieveTeamStreakCreatorInformationMiddleware);
-        expect(getOneTeamStreakMiddlewares[4]).toEqual(sendTeamStreakMiddleware);
+        expect(getOneTeamStreakMiddlewares[4]).toEqual(formatTeamStreakMiddleware);
+        expect(getOneTeamStreakMiddlewares[5]).toEqual(sendTeamStreakMiddleware);
     });
 });

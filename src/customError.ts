@@ -549,6 +549,12 @@ export enum ErrorType {
     CreateAndroidPlatformEndpointFailure,
     CreateIosPlatformEndpointFailure,
     SendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
+    AddInviteKeyToTeamStreakMiddleware,
+    KeepInviteLinkIfUserIsApartOfTeamStreak,
+    GetTeamStreakInviteRetrieveTeamStreakMiddleware,
+    SendTeamStreakInviteKeyMiddleware,
+    GetTeamStreakInviteNoTeamStreakFound,
+    FormatTeamStreakMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -562,9 +568,6 @@ export class CustomError extends Error {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(type: ErrorType, err?: Error) {
         super();
-
-        // console.log(this.createCustomErrorData(type));
-        // console.log(err);
 
         if (err && getServiceConfig().NODE_ENV && getServiceConfig().NODE_ENV.toLowerCase() !== 'test') {
             Sentry.captureException(err);
@@ -1370,6 +1373,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-108`,
                     message: 'Error with ios token.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.GetTeamStreakInviteNoTeamStreakFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-109`,
+                    message: 'Team streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4474,6 +4485,41 @@ export class CustomError extends Error {
             case ErrorType.SendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-456`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.AddInviteKeyToTeamStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-457`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.KeepInviteLinkIfUserIsApartOfTeamStreak:
+                return {
+                    code: `${ResponseCodes.warning}-458`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetTeamStreakInviteRetrieveTeamStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-459`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendTeamStreakInviteKeyMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-460`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FormatTeamStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-461`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

@@ -18,6 +18,7 @@ export const getMockTeamStreak = ({ creatorId }: { creatorId: string }): TeamStr
     pastStreaks: [],
     creatorId: creatorId,
     timezone: 'Europe/London',
+    inviteKey: '123456',
     createdAt: new Date().toString(),
     updatedAt: new Date().toString(),
 });

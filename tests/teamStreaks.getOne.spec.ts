@@ -35,7 +35,7 @@ describe(testName, () => {
     });
 
     test(`team streak can be retrieved with populated member information`, async () => {
-        expect.assertions(19);
+        expect.assertions(20);
 
         const user = await getPayingUser({ testName });
         const creatorId = user._id;
@@ -79,6 +79,7 @@ describe(testName, () => {
         expect(teamStreak.creatorId).toBeDefined();
         expect(teamStreak.timezone).toBeDefined();
         expect(teamStreak.active).toEqual(false);
+        expect(teamStreak.inviteKey).toBeUndefined();
         expect(teamStreak.completedToday).toEqual(false);
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());

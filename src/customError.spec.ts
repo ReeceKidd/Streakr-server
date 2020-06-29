@@ -1091,6 +1091,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to GetTeamStreakInviteNoTeamStreakFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.GetTeamStreakInviteNoTeamStreakFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-109`);
+        expect(message).toBe('Team streak does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -5925,6 +5936,61 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-456`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to AddInviteKeyToTeamStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.AddInviteKeyToTeamStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-457`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to KeepInviteLinkIfUserIsApartOfTeamStreak`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.KeepInviteLinkIfUserIsApartOfTeamStreak);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-458`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to GetTeamStreakInviteRetrieveTeamStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.GetTeamStreakInviteRetrieveTeamStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-459`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendTeamStreakInviteKeyMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendTeamStreakInviteKeyMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-460`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to FormatTeamStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FormatTeamStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-461`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

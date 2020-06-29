@@ -38,6 +38,9 @@ export const teamStreakSchema = new mongoose.Schema(
             type: Array,
             default: [],
         },
+        inviteKey: {
+            type: String,
+        },
         streakDescription: {
             type: String,
         },

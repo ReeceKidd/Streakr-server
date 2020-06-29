@@ -6,25 +6,27 @@ import { createTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStrea
 import { patchTeamStreakMiddlewares } from '../../../RouteMiddlewares/TeamStreaks/patchTeamStreakMiddlewares';
 import { createTeamMemberMiddlewares } from '../../../RouteMiddlewares/TeamMembers/createTeamMemberMiddlewares';
 import { authenticationMiddlewares } from '../../../../src/SharedMiddleware/authenticationMiddlewares';
+import { getTeamStreakInviteKeyMiddlewares } from '../../../RouteMiddlewares/TeamStreaks/getTeamStreakInviteKeyMiddlewares';
+import TeamStreakRouterCategories from '@streakoid/streakoid-models/lib/Types/TeamStreakRouterCategories';
 
 export const teamStreakId = 'teamStreakId';
 
 export const memberId = 'memberId';
 
 const teamStreaksRouter = Router();
-
-export enum TeamStreakRouteCategories {
-    members = 'members',
-}
-
 teamStreaksRouter.get(`/`, ...getAllTeamStreaksMiddlewares);
 
 teamStreaksRouter.get(`/:${teamStreakId}`, ...getOneTeamStreakMiddlewares);
 
 teamStreaksRouter.use(...authenticationMiddlewares);
 
+teamStreaksRouter.get(
+    `/:${teamStreakId}/${TeamStreakRouterCategories.inviteKey}`,
+    ...getTeamStreakInviteKeyMiddlewares,
+);
+
 teamStreaksRouter.delete(
-    `/:${teamStreakId}/${TeamStreakRouteCategories.members}/:${memberId}`,
+    `/:${teamStreakId}/${TeamStreakRouterCategories.members}/:${memberId}`,
     ...deleteTeamMemberMiddlewares,
 );
 
@@ -32,6 +34,6 @@ teamStreaksRouter.post(`/`, ...createTeamStreakMiddlewares);
 
 teamStreaksRouter.patch(`/:${teamStreakId}`, ...patchTeamStreakMiddlewares);
 
-teamStreaksRouter.post(`/:${teamStreakId}/${TeamStreakRouteCategories.members}`, ...createTeamMemberMiddlewares);
+teamStreaksRouter.post(`/:${teamStreakId}/${TeamStreakRouterCategories.members}`, ...createTeamMemberMiddlewares);
 
 export { teamStreaksRouter };

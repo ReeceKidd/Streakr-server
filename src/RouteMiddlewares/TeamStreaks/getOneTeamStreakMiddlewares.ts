@@ -104,25 +104,33 @@ export const retrieveTeamStreakCreatorInformationMiddleware = getRetrieveTeamStr
     userModel,
 );
 
-export const getSendTeamStreakMiddleware = (resourceCreatedResponseCode: number) => (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): void => {
+export const formatTeamStreakMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { teamStreak } = response.locals;
-        response.status(resourceCreatedResponseCode).send(teamStreak);
+        response.locals.teamStreak = {
+            ...teamStreak,
+            inviteKey: undefined,
+        };
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.FormatTeamStreakMiddleware, err));
+    }
+};
+
+export const sendTeamStreakMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const { teamStreak } = response.locals;
+        response.status(ResponseCodes.created).send(teamStreak);
     } catch (err) {
         next(new CustomError(ErrorType.SendTeamStreakMiddleware, err));
     }
 };
-
-export const sendTeamStreakMiddleware = getSendTeamStreakMiddleware(ResponseCodes.success);
 
 export const getOneTeamStreakMiddlewares = [
     getTeamStreakParamsValidationMiddleware,
     retrieveTeamStreakMiddleware,
     retrieveTeamStreakMembersInformationMiddleware,
     retrieveTeamStreakCreatorInformationMiddleware,
+    formatTeamStreakMiddleware,
     sendTeamStreakMiddleware,
 ];
