@@ -73,6 +73,31 @@ export const getCreateTeamStreakMiddleware = (teamStreak: mongoose.Model<TeamStr
 
 export const createTeamStreakMiddleware = getCreateTeamStreakMiddleware(teamStreakModel);
 
+export const getAddInviteKeyToTeamStreakMiddleware = ({
+    generatedInviteKey,
+    teamStreakModel,
+}: {
+    generatedInviteKey: string;
+    teamStreakModel: mongoose.Model<TeamStreakModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const newTeamStreak: PopulatedTeamStreak = response.locals.newTeamStreak;
+        response.locals.newTeamStreak = await teamStreakModel.findByIdAndUpdate(
+            newTeamStreak._id,
+            { $set: { inviteKey: generatedInviteKey } },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.AddInviteKeyToTeamStreakMiddleware, err));
+    }
+};
+
+export const addInviteKeyToTeamStreakMiddleware = getAddInviteKeyToTeamStreakMiddleware({
+    generatedInviteKey: shortid.generate(),
+    teamStreakModel,
+});
+
 export const getCreateTeamMemberStreaksMiddleware = (
     userModel: mongoose.Model<UserModel>,
     teamMemberStreak: mongoose.Model<TeamMemberStreakModel>,
@@ -213,31 +238,6 @@ export const increaseTeamStreakMembersTotalLiveStreaksByOneMiddleware = getIncre
     userModel,
 );
 
-export const getAddInviteKeyToTeamStreakMiddleware = ({
-    generatedInviteKey,
-    teamStreakModel,
-}: {
-    generatedInviteKey: string;
-    teamStreakModel: mongoose.Model<TeamStreakModel>;
-}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-    try {
-        const newTeamStreak: PopulatedTeamStreak = response.locals.newTeamStreak;
-        response.locals.newTeamStreak = await teamStreakModel.findByIdAndUpdate(
-            newTeamStreak._id,
-            { $set: { inviteKey: generatedInviteKey } },
-            { new: true },
-        );
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.AddInviteKeyToTeamStreakMiddleware, err));
-    }
-};
-
-export const addInviteKeyToTeamStreakMiddleware = getAddInviteKeyToTeamStreakMiddleware({
-    generatedInviteKey: shortid.generate(),
-    teamStreakModel,
-});
-
 export const getCreateTeamStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -275,12 +275,12 @@ export const sendTeamStreakMiddleware = (request: Request, response: Response, n
 export const createTeamStreakMiddlewares = [
     createTeamStreakBodyValidationMiddleware,
     createTeamStreakMiddleware,
+    addInviteKeyToTeamStreakMiddleware,
     createTeamMemberStreaksMiddleware,
     updateTeamStreakMembersArrayMiddleware,
     populateTeamStreakMembersInformationMiddleware,
     retrieveCreatedTeamStreakCreatorInformationMiddleware,
     increaseTeamStreakMembersTotalLiveStreaksByOneMiddleware,
-    addInviteKeyToTeamStreakMiddleware,
     createdTeamStreakActivityFeedItemMiddleware,
     sendTeamStreakMiddleware,
 ];

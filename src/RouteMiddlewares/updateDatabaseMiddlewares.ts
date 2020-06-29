@@ -1,8 +1,8 @@
 // import { Request, Response, NextFunction } from 'express';
 
 // import { CustomError, ErrorType } from '../customError';
-// import { userModel } from '../../src/Models/User';
 // import { teamStreakModel } from '../Models/TeamStreak';
+// import shortid from 'shortid';
 
 // export const updateDatabaseMiddleware = async (
 //     request: Request,
@@ -13,14 +13,9 @@
 //         const teamStreaks = await teamStreakModel.find({});
 //         await Promise.all(
 //             teamStreaks.map(async teamStreak => {
-//                 await teamStreak.findByIdAndUpdate(teamStreak._id, {
+//                 await teamStreakModel.findByIdAndUpdate(teamStreak._id, {
 //                     $set: {
-//                         pushNotification: {
-//                             androidToken: null,
-//                             iosToken: null,
-//                             androidEndpointArn: null,
-//                             iosEndpointArn: null,
-//                         },
+//                         inviteKey: shortid.generate(),
 //                     },
 //                 });
 //             }),

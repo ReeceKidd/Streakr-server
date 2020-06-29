@@ -37,7 +37,7 @@ describe(testName, () => {
     });
 
     test(`that request passes when team streak is patched with correct keys`, async () => {
-        expect.assertions(15);
+        expect.assertions(16);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -83,6 +83,7 @@ describe(testName, () => {
         expect(teamStreak.timezone).toEqual(expect.any(String));
         expect(teamStreak.active).toEqual(false);
         expect(teamStreak.completedToday).toEqual(false);
+        expect(teamStreak.inviteKey).toEqual(expect.any(String));
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(numberOfDaysInARow);
         expect(teamStreak.currentStreak.startDate).toEqual(expect.any(String));
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['startDate', 'numberOfDaysInARow'].sort());
@@ -99,6 +100,7 @@ describe(testName, () => {
                 'timezone',
                 'active',
                 'completedToday',
+                'inviteKey',
                 'currentStreak',
                 'pastStreaks',
                 'createdAt',

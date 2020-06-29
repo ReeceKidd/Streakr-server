@@ -300,6 +300,51 @@ describe(`createTeamStreakMiddlewares`, () => {
         });
     });
 
+    describe(`addInviteKeyToTeamStreakMiddleware`, () => {
+        test('updates team streak models inviteKey to equal the generated invite key.', async () => {
+            expect.assertions(2);
+            const newTeamStreak = getMockTeamStreak({ creatorId: 'creatorId' });
+
+            const generatedInviteKey = '123456';
+
+            const teamStreakModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            } as any;
+
+            const response: any = { locals: { newTeamStreak } };
+            const request: any = {};
+            const next = jest.fn();
+
+            const middleware = getAddInviteKeyToTeamStreakMiddleware({ generatedInviteKey, teamStreakModel });
+
+            await middleware(request, response, next);
+
+            expect(teamStreakModel.findByIdAndUpdate).toBeCalledWith(
+                newTeamStreak._id,
+                {
+                    $set: { inviteKey: generatedInviteKey },
+                },
+                { new: true },
+            );
+            expect(next).toBeCalled();
+        });
+
+        test('calls next with AddInviteKeyToTeamStreakMiddleware error on middleware failure', () => {
+            expect.assertions(1);
+
+            const response: any = {};
+            const request: any = {};
+            const next = jest.fn();
+            const middleware = getAddInviteKeyToTeamStreakMiddleware({} as any);
+
+            middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.AddInviteKeyToTeamStreakMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
     describe(`createTeamMemberStreaksMiddleware`, () => {
         test('for each member create a new team member streak and return the memberId and the teamMemberStreakId', async () => {
             expect.assertions(3);
@@ -646,51 +691,6 @@ describe(`createTeamStreakMiddlewares`, () => {
         });
     });
 
-    describe(`addInviteKeyToTeamStreakMiddleware`, () => {
-        test('updates team streak models inviteKey to equal the generated invite key.', async () => {
-            expect.assertions(2);
-            const newTeamStreak = getMockTeamStreak({ creatorId: 'creatorId' });
-
-            const generatedInviteKey = '123456';
-
-            const teamStreakModel = {
-                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
-            } as any;
-
-            const response: any = { locals: { newTeamStreak } };
-            const request: any = {};
-            const next = jest.fn();
-
-            const middleware = getAddInviteKeyToTeamStreakMiddleware({ generatedInviteKey, teamStreakModel });
-
-            await middleware(request, response, next);
-
-            expect(teamStreakModel.findByIdAndUpdate).toBeCalledWith(
-                newTeamStreak._id,
-                {
-                    $set: { inviteKey: generatedInviteKey },
-                },
-                { new: true },
-            );
-            expect(next).toBeCalled();
-        });
-
-        test('calls next with AddInviteKeyToTeamStreakMiddleware error on middleware failure', () => {
-            expect.assertions(1);
-
-            const response: any = {};
-            const request: any = {};
-            const next = jest.fn();
-            const middleware = getAddInviteKeyToTeamStreakMiddleware({} as any);
-
-            middleware(request, response, next);
-
-            expect(next).toBeCalledWith(
-                new CustomError(ErrorType.AddInviteKeyToTeamStreakMiddleware, expect.any(Error)),
-            );
-        });
-    });
-
     describe(`createTeamStreakActivityFeedItemMiddleware`, () => {
         test('creates a new createTeamStreakActivity', async () => {
             expect.assertions(2);
@@ -771,12 +771,12 @@ describe(`createTeamStreakMiddlewares`, () => {
         expect(createTeamStreakMiddlewares.length).toEqual(10);
         expect(createTeamStreakMiddlewares[0]).toBe(createTeamStreakBodyValidationMiddleware);
         expect(createTeamStreakMiddlewares[1]).toBe(createTeamStreakMiddleware);
-        expect(createTeamStreakMiddlewares[2]).toBe(createTeamMemberStreaksMiddleware);
-        expect(createTeamStreakMiddlewares[3]).toBe(updateTeamStreakMembersArrayMiddleware);
-        expect(createTeamStreakMiddlewares[4]).toBe(populateTeamStreakMembersInformationMiddleware);
-        expect(createTeamStreakMiddlewares[5]).toBe(retrieveCreatedTeamStreakCreatorInformationMiddleware);
-        expect(createTeamStreakMiddlewares[6]).toBe(increaseTeamStreakMembersTotalLiveStreaksByOneMiddleware);
-        expect(createTeamStreakMiddlewares[7]).toBe(addInviteKeyToTeamStreakMiddleware);
+        expect(createTeamStreakMiddlewares[2]).toBe(addInviteKeyToTeamStreakMiddleware);
+        expect(createTeamStreakMiddlewares[3]).toBe(createTeamMemberStreaksMiddleware);
+        expect(createTeamStreakMiddlewares[4]).toBe(updateTeamStreakMembersArrayMiddleware);
+        expect(createTeamStreakMiddlewares[5]).toBe(populateTeamStreakMembersInformationMiddleware);
+        expect(createTeamStreakMiddlewares[6]).toBe(retrieveCreatedTeamStreakCreatorInformationMiddleware);
+        expect(createTeamStreakMiddlewares[7]).toBe(increaseTeamStreakMembersTotalLiveStreaksByOneMiddleware);
         expect(createTeamStreakMiddlewares[8]).toBe(createdTeamStreakActivityFeedItemMiddleware);
         expect(createTeamStreakMiddlewares[9]).toBe(sendTeamStreakMiddleware);
     });
