@@ -46,7 +46,7 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { getMockUser } from '../../testHelpers/getMockUser';
 
-const teamMember = getMockUser();
+const teamMember = getMockUser({ _id: 'abc' });
 
 describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
     describe(`incompleteTeamMemberStreakTaskBodyValidationMiddleware`, () => {

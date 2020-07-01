@@ -21,6 +21,8 @@ export const getPopulatedCurrentUser = ({
         username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
+        coins: user.coins,
+        oidXp: user.oidXp,
         hasUsernameBeenCustomized: user.hasUsernameBeenCustomized,
         membershipInformation: user.membershipInformation,
         userType: user.userType,

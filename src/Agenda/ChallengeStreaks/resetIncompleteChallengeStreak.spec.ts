@@ -27,7 +27,7 @@ describe('resetIncompleteChallengeStreaks', () => {
     test('that incomplete challenge streaks default current streak is reset and old streak is pushed to past streaks and lost streak activity is recorded', async () => {
         expect.assertions(5);
         challengeStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
-        userModel.findById = jest.fn().mockResolvedValue(getMockUser()) as any;
+        userModel.findById = jest.fn().mockResolvedValue(getMockUser({ _id: 'abc' })) as any;
         const challengeId = 'challengeId';
         const challengeName = 'reading';
         challengeModel.findById = jest.fn().mockResolvedValue({ _id: challengeId, name: challengeName }) as any;
@@ -37,7 +37,7 @@ describe('resetIncompleteChallengeStreaks', () => {
             startDate: undefined,
             numberOfDaysInARow: 0,
         };
-        const userId = getMockUser()._id;
+        const userId = getMockUser({ _id: 'abc' })._id;
         const incompleteChallengeStreaks = [
             {
                 _id,
@@ -72,8 +72,8 @@ describe('resetIncompleteChallengeStreaks', () => {
         expect(createActivityFeedItem).toBeCalledWith({
             activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
             userId,
-            username: getMockUser().username,
-            userProfileImage: getMockUser().profileImages.originalImageUrl,
+            username: getMockUser({ _id: 'abc' }).username,
+            userProfileImage: getMockUser({ _id: 'abc' }).profileImages.originalImageUrl,
             challengeStreakId: _id,
             challengeId,
             challengeName,

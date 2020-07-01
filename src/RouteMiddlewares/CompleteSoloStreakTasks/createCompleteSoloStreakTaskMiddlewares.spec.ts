@@ -818,7 +818,7 @@ describe(`sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddlewa
     test('if oneHundedDaySoloStreakAchievement is not defined just call next', async () => {
         expect.assertions(1);
 
-        const user = getMockUser();
+        const user = getMockUser({ _id: 'abc' });
 
         const response: any = {
             locals: {
@@ -846,7 +846,7 @@ describe(`sendOneHundredDaySoloStreakAchievementUnlockedPushNotificationMiddlewa
             name: '100 Days',
             updatedAt: 'updatedAt',
         };
-        const user = getMockUser();
+        const user = getMockUser({ _id: 'abc' });
 
         const sendPushNotification = jest.fn().mockResolvedValue(true);
         const request: any = {};

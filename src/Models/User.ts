@@ -38,6 +38,14 @@ export const userSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        coins: {
+            type: Number,
+            default: 0,
+        },
+        oidXp: {
+            type: Number,
+            default: 0,
+        },
         hasUsernameBeenCustomized: {
             type: Boolean,
             default: false,

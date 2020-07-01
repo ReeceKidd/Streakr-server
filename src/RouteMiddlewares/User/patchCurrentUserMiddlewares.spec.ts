@@ -713,7 +713,7 @@ describe('patchCurrentUserMiddlewares', () => {
             const following: BasicUser[] = [];
             const followers: BasicUser[] = [];
             const achievements: DatabaseAchievementType[] = [];
-            const user = getMockUser();
+            const user = getMockUser({ _id: 'abc' });
             const response: any = { locals: { user, following, followers, achievements } };
             const next = jest.fn();
 

@@ -10,6 +10,8 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { SNS } from '../src/sns';
+import { deleteSnsEndpoint } from './helpers/deleteSnsEndpoint';
 
 jest.setTimeout(120000);
 
@@ -37,14 +39,14 @@ describe(testName, () => {
         }
     });
 
-    test(`adds follower to team streak`, async () => {
+    test(`adds new team member to team streak`, async () => {
         expect.assertions(45);
 
         const originalImageUrl = getServiceConfig().DEFAULT_USER_PROFILE_IMAGE_URL;
         const user = await getPayingUser({ testName });
         const userId = user._id;
-        const follower = await getFriend({ testName });
-        const followerId = follower._id;
+        const friend = await getFriend({ testName });
+        const friendId = friend._id;
         const streakName = 'Daily Spanish';
 
         const members = [{ memberId: userId }];
@@ -56,7 +58,7 @@ describe(testName, () => {
         });
 
         const teamMember = await SDK.teamStreaks.teamMembers.create({
-            followerId,
+            userId: friendId,
             teamStreakId: originalTeamStreak._id,
         });
 
@@ -132,24 +134,24 @@ describe(testName, () => {
             ].sort(),
         );
 
-        const followerMember = teamStreak.members[1];
-        expect(followerMember._id).toBeDefined();
-        expect(followerMember.username).toEqual(expect.any(String));
-        expect(followerMember.profileImage).toEqual(originalImageUrl);
-        expect(Object.keys(followerMember).sort()).toEqual(
+        const friendMember = teamStreak.members[1];
+        expect(friendMember._id).toBeDefined();
+        expect(friendMember.username).toEqual(expect.any(String));
+        expect(friendMember.profileImage).toEqual(originalImageUrl);
+        expect(Object.keys(friendMember).sort()).toEqual(
             ['_id', 'username', 'profileImage', 'teamMemberStreak'].sort(),
         );
 
-        expect(followerMember.teamMemberStreak._id).toEqual(expect.any(String));
-        expect(followerMember.teamMemberStreak.completedToday).toEqual(false);
-        expect(followerMember.teamMemberStreak.active).toEqual(false);
-        expect(followerMember.teamMemberStreak.pastStreaks).toEqual([]);
-        expect(followerMember.teamMemberStreak.userId).toBeDefined();
-        expect(followerMember.teamMemberStreak.teamStreakId).toEqual(teamStreak._id);
-        expect(followerMember.teamMemberStreak.timezone).toBeDefined();
-        expect(followerMember.teamMemberStreak.createdAt).toEqual(expect.any(String));
-        expect(followerMember.teamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(followerMember.teamMemberStreak).sort()).toEqual(
+        expect(friendMember.teamMemberStreak._id).toEqual(expect.any(String));
+        expect(friendMember.teamMemberStreak.completedToday).toEqual(false);
+        expect(friendMember.teamMemberStreak.active).toEqual(false);
+        expect(friendMember.teamMemberStreak.pastStreaks).toEqual([]);
+        expect(friendMember.teamMemberStreak.userId).toBeDefined();
+        expect(friendMember.teamMemberStreak.teamStreakId).toEqual(teamStreak._id);
+        expect(friendMember.teamMemberStreak.timezone).toBeDefined();
+        expect(friendMember.teamMemberStreak.createdAt).toEqual(expect.any(String));
+        expect(friendMember.teamMemberStreak.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(friendMember.teamMemberStreak).sort()).toEqual(
             [
                 '_id',
                 'currentStreak',
@@ -166,14 +168,14 @@ describe(testName, () => {
         );
     });
 
-    test(`when a follower joins a team streak it creates a JoinedTeamStreakActivityFeedItem`, async () => {
+    test(`when a friend joins a team streak it creates a JoinedTeamStreakActivityFeedItem`, async () => {
         expect.assertions(6);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
         const userProfileImage = user.profileImages.originalImageUrl;
-        const follower = await getFriend({ testName });
-        const followerId = follower._id;
+        const friend = await getFriend({ testName });
+        const friendId = friend._id;
         const streakName = 'Daily Spanish';
 
         const members = [{ memberId: userId }];
@@ -185,7 +187,7 @@ describe(testName, () => {
         });
 
         await SDK.teamStreaks.teamMembers.create({
-            followerId,
+            userId: friendId,
             teamStreakId: teamStreak._id,
         });
 
@@ -218,13 +220,13 @@ describe(testName, () => {
         }
     });
 
-    test(`follower can not join a team streak they are already apart off`, async () => {
+    test(`friend can not join a team streak they are already apart off`, async () => {
         expect.assertions(2);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
-        const follower = await getFriend({ testName });
-        const followerId = follower._id;
+        const friend = await getFriend({ testName });
+        const friendId = friend._id;
         const streakName = 'Daily Spanish';
 
         const members = [{ memberId: userId }];
@@ -236,13 +238,13 @@ describe(testName, () => {
         });
 
         await SDK.teamStreaks.teamMembers.create({
-            followerId,
+            userId: friendId,
             teamStreakId: teamStreak._id,
         });
 
         try {
             await SDK.teamStreaks.teamMembers.create({
-                followerId,
+                userId,
                 teamStreakId: teamStreak._id,
             });
         } catch (err) {
@@ -251,5 +253,216 @@ describe(testName, () => {
             expect(err.status).toEqual(400);
             expect(message).toEqual(`Team member is already in team streak.`);
         }
+    });
+
+    describe('Android - Joined team streak push notification', () => {
+        let database: Mongoose;
+        let SDK: StreakoidSDK;
+        let androidEndpointArn: string | null | undefined;
+
+        beforeEach(async () => {
+            if (isTestEnvironment()) {
+                database = await setupDatabase({ testName });
+                SDK = streakoidTestSDK({ testName });
+            }
+        });
+
+        afterEach(async () => {
+            if (isTestEnvironment()) {
+                if (androidEndpointArn) {
+                    await deleteSnsEndpoint({
+                        endpointArn: androidEndpointArn,
+                    });
+                }
+
+                await tearDownDatabase({ database });
+            }
+        });
+
+        afterAll(async () => {
+            if (isTestEnvironment()) {
+                await disconnectDatabase({ database });
+            }
+        });
+
+        test('when new team member joins it sends a push notification to existing team members.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+            const friend = await getFriend({ testName });
+            const friendId = friend._id;
+            const streakName = 'Daily Spanish';
+
+            const members = [{ memberId: userId }];
+
+            const originalTeamStreak = await SDK.teamStreaks.create({
+                creatorId: userId,
+                streakName,
+                members,
+            });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        androidToken: getServiceConfig().ANDROID_TOKEN,
+                    },
+                },
+            });
+
+            androidEndpointArn = updatedUser.pushNotification.androidEndpointArn;
+
+            const result = await SDK.teamStreaks.teamMembers.create({
+                userId: friendId,
+                teamStreakId: originalTeamStreak._id,
+            });
+
+            expect(result).toBeDefined();
+        });
+
+        test('if sendPushNotification fails with an EndpointDisabled error the middleware continues as normal.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+            const friend = await getFriend({ testName });
+            const friendId = friend._id;
+            const streakName = 'Daily Spanish';
+
+            const members = [{ memberId: userId }];
+
+            const originalTeamStreak = await SDK.teamStreaks.create({
+                creatorId: userId,
+                streakName,
+                members,
+            });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        androidToken: getServiceConfig().ANDROID_TOKEN,
+                    },
+                },
+            });
+
+            await SNS.setEndpointAttributes({
+                EndpointArn: updatedUser.pushNotification.androidEndpointArn || '',
+                Attributes: { Enabled: 'false' },
+            }).promise();
+
+            androidEndpointArn = updatedUser.pushNotification.androidEndpointArn;
+
+            const result = await SDK.teamStreaks.teamMembers.create({
+                userId: friendId,
+                teamStreakId: originalTeamStreak._id,
+            });
+
+            expect(result).toBeDefined();
+        });
+    });
+
+    describe('Ios - Joined team streak push notification', () => {
+        let database: Mongoose;
+        let SDK: StreakoidSDK;
+        let iosEndpointArn: string | null | undefined;
+
+        beforeEach(async () => {
+            if (isTestEnvironment()) {
+                database = await setupDatabase({ testName });
+                SDK = streakoidTestSDK({ testName });
+            }
+        });
+
+        afterEach(async () => {
+            if (isTestEnvironment()) {
+                if (iosEndpointArn) {
+                    await deleteSnsEndpoint({
+                        endpointArn: iosEndpointArn,
+                    });
+                }
+
+                await tearDownDatabase({ database });
+            }
+        });
+
+        afterAll(async () => {
+            if (isTestEnvironment()) {
+                await disconnectDatabase({ database });
+            }
+        });
+
+        test('when new team member joins it sends a push notification to existing team members.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+            const friend = await getFriend({ testName });
+            const friendId = friend._id;
+            const streakName = 'Daily Spanish';
+
+            const members = [{ memberId: userId }];
+
+            const originalTeamStreak = await SDK.teamStreaks.create({
+                creatorId: userId,
+                streakName,
+                members,
+            });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        iosToken: getServiceConfig().IOS_TOKEN,
+                    },
+                },
+            });
+
+            iosEndpointArn = updatedUser.pushNotification.iosEndpointArn;
+
+            const result = await SDK.teamStreaks.teamMembers.create({
+                userId: friendId,
+                teamStreakId: originalTeamStreak._id,
+            });
+            expect(result).toBeDefined();
+        });
+
+        test('if sendPushNotification fails with an EndpointDisabled error the middleware continues as normal.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+            const friend = await getFriend({ testName });
+            const friendId = friend._id;
+            const streakName = 'Daily Spanish';
+
+            const members = [{ memberId: userId }];
+
+            const originalTeamStreak = await SDK.teamStreaks.create({
+                creatorId: userId,
+                streakName,
+                members,
+            });
+
+            const updatedUser = await SDK.user.updateCurrentUser({
+                updateData: {
+                    pushNotification: {
+                        iosToken: getServiceConfig().IOS_TOKEN,
+                    },
+                },
+            });
+
+            await SNS.setEndpointAttributes({
+                EndpointArn: updatedUser.pushNotification.iosEndpointArn || '',
+                Attributes: { Enabled: 'false' },
+            }).promise();
+
+            iosEndpointArn = updatedUser.pushNotification.iosEndpointArn;
+
+            const result = await SDK.teamStreaks.teamMembers.create({
+                userId: friendId,
+                teamStreakId: originalTeamStreak._id,
+            });
+
+            expect(result).toBeDefined();
+        });
     });
 });

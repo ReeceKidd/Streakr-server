@@ -247,6 +247,50 @@ export const increaseTotalStreakCompletesForUserMiddleware = getIncreaseTotalStr
     userModel,
 );
 
+export const getIncreaseCoinsForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        response.locals.user = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $inc: { coins: 1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CompleteSoloStreakTaskIncreaseCoinsForUserMiddleware, err));
+    }
+};
+
+export const increaseCoinsForUserMiddleware = getIncreaseCoinsForUserMiddleware(userModel);
+
+export const getIncreaseOidXpForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { userId } = request.body;
+        response.locals.user = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $inc: { oidXp: 1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CompleteSoloStreakTaskIncreaseOidXpForUserMiddleware, err));
+    }
+};
+
+export const increaseOidXpForUserMiddleware = getIncreaseOidXpForUserMiddleware(userModel);
+
 export const getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware = (
     user: mongoose.Model<UserModel>,
     achievement: mongoose.Model<AchievementModel>,

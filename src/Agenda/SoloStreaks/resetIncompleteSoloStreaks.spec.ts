@@ -26,14 +26,14 @@ describe('resetIncompleteSoloStreaks', () => {
     test('that incomplete solo streaks default current streak is reset and old streak is pushed to past streaks and lost streak activity is recorded', async () => {
         expect.assertions(4);
         soloStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
-        userModel.findById = jest.fn().mockResolvedValue(getMockUser()) as any;
+        userModel.findById = jest.fn().mockResolvedValue(getMockUser({ _id: 'abc' })) as any;
         const _id = '1234';
         const endDate = new Date().toString();
         const currentStreak = {
             startDate: undefined,
             numberOfDaysInARow: 0,
         };
-        const userId = getMockUser()._id;
+        const userId = getMockUser({ _id: 'abc' })._id;
         const incompleteSoloStreaks = [
             {
                 _id,
@@ -65,8 +65,8 @@ describe('resetIncompleteSoloStreaks', () => {
         expect(createActivityFeedItem).toBeCalledWith({
             activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
             userId,
-            username: getMockUser().username,
-            userProfileImage: getMockUser().profileImages.originalImageUrl,
+            username: getMockUser({ _id: 'abc' }).username,
+            userProfileImage: getMockUser({ _id: 'abc' }).profileImages.originalImageUrl,
             soloStreakId: _id,
             soloStreakName: incompleteSoloStreaks[0].streakName,
             numberOfDaysLost: currentStreak.numberOfDaysInARow,

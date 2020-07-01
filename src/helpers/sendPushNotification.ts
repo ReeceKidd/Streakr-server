@@ -84,21 +84,21 @@ export const sendSNSPushNotification = async ({
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const sendPushNotification = async ({
     title,
-    body,
     data,
     userId,
+    body,
     androidEndpointArn,
     iosEndpointArn,
 }: {
     title: string;
-    body: string;
     data: PushNotificationType;
     userId: string;
+    body: string;
     androidEndpointArn?: string;
     iosEndpointArn?: string;
 }) => {
     try {
-        const result = await sendSNSPushNotification({ title, body, data, androidEndpointArn, iosEndpointArn });
+        const result = await sendSNSPushNotification({ title, data, body, androidEndpointArn, iosEndpointArn });
         return result;
     } catch (err) {
         if (err.code == 'EndpointDisabled') {

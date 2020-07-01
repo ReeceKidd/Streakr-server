@@ -148,7 +148,7 @@ describe('getCurrentUserMiddlewares', () => {
             expect.assertions(2);
             const request: any = {};
 
-            const user = getMockUser();
+            const user = getMockUser({ _id: 'abc' });
             const response: any = { locals: { user, following: [], followers: [], achievements: [] } };
             const next = jest.fn();
 

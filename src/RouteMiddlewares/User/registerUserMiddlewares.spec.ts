@@ -331,7 +331,7 @@ describe('formatUserMiddleware', () => {
         expect.assertions(3);
         const request: any = {};
 
-        const savedUser = getMockUser();
+        const savedUser = getMockUser({ _id: 'abc' });
         const response: any = { locals: { savedUser, following: [], followers: [], achievements: [] } };
         const next = jest.fn();
 

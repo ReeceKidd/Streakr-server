@@ -387,10 +387,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
-    test(`creates correct error when type is set to CreateTeamMemberFollowerDoesNotExist`, () => {
+    test(`creates correct error when type is set to CreateTeamMemberUserDoesNotExist`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateTeamMemberFollowerDoesNotExist);
+        const customError = new CustomError(ErrorType.CreateTeamMemberUserDoesNotExist);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-39`);
@@ -2709,10 +2709,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateTeamMemberFollowerExistsMiddleware`, () => {
+    test(`creates correct error when type is set to CreateTeamMemberUserExistsMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateTeamMemberFollowerExistsMiddleware);
+        const customError = new CustomError(ErrorType.CreateTeamMemberUserExistsMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-139`);
@@ -2753,10 +2753,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to AddFollowerToTeamStreakMiddleware`, () => {
+    test(`creates correct error when type is set to AddUserToTeamStreakMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.AddFollowerToTeamStreakMiddleware);
+        const customError = new CustomError(ErrorType.AddUserToTeamStreakMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-143`);
@@ -6013,6 +6013,50 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-463`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateTeamStreakFormatTeamStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateTeamStreakFormatTeamStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-463`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CompleteSoloStreakTaskIncreaseCoinsForUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CompleteSoloStreakTaskIncreaseCoinsForUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-464`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CompleteSoloStreakTaskIncreaseOidXpForUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CompleteSoloStreakTaskIncreaseOidXpForUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-465`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to NotifyOtherTeamMembersAboutNewTeamMemberMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.NotifyOtherTeamMembersAboutNewTeamMemberMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-466`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

@@ -43,8 +43,8 @@ describe(testName, () => {
         const streakName = 'Daily Spanish';
         const userId = user._id;
 
-        const follower = await getFriend({ testName });
-        const followerId = follower._id;
+        const friend = await getFriend({ testName });
+        const friendId = friend._id;
 
         const members = [{ memberId: userId }];
 
@@ -55,13 +55,13 @@ describe(testName, () => {
         });
 
         await SDK.teamStreaks.teamMembers.create({
-            followerId,
+            userId: friendId,
             teamStreakId: originalTeamStreak._id,
         });
 
         await SDK.teamStreaks.teamMembers.deleteOne({
             teamStreakId: originalTeamStreak._id,
-            memberId: followerId,
+            memberId: friendId,
         });
 
         const teamStreak = await SDK.teamStreaks.getOne(originalTeamStreak._id);

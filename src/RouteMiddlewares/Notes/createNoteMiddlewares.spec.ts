@@ -236,7 +236,7 @@ describe(`notifyTeamMembersThatUserHasAddedANoteMiddleware`, () => {
             _id: 'userId',
             username: 'username',
         };
-        const populatedMember = getMockUser();
+        const populatedMember = getMockUser({ _id: 'abc' });
         const teamStreak = {
             streakName: 'Daily Spanish',
             members: [populatedMember],

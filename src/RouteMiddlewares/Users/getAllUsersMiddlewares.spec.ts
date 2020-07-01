@@ -391,7 +391,7 @@ describe('formatUsersMiddleware', () => {
     test('formats each user in response.locals.users', () => {
         expect.assertions(3);
         const request: any = {};
-        const user = getMockUser();
+        const user = getMockUser({ _id: 'abc' });
         const users = [user];
         const response: any = { locals: { users } };
         const next = jest.fn();

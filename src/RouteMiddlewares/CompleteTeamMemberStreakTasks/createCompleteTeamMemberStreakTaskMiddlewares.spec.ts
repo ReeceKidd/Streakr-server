@@ -1190,7 +1190,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
-            const teamMember = getMockUser();
+            const teamMember = getMockUser({ _id: 'abc' });
             const teamMembers = [teamMember];
             const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
@@ -1221,7 +1221,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
-            const teamMember = getMockUser();
+            const teamMember = getMockUser({ _id: 'abc' });
             const teamMembers = [teamMember];
             const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
@@ -1253,7 +1253,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
-            const teamMember = getMockUser();
+            const teamMember = getMockUser({ _id: 'abc' });
             const teamMembers = [teamMember];
             const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};

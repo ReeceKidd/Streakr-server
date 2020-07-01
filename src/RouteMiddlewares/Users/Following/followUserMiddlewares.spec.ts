@@ -459,8 +459,8 @@ describe('followUserMiddlewares', () => {
         test('sends new follower request notification to userToFollow if user to follow has a pushNotificationToken and newFollowerUpdates.pushNotification enabled.', async () => {
             expect.assertions(2);
 
-            const user = getMockUser();
-            const userToFollow = getMockUser();
+            const user = getMockUser({ _id: 'abc' });
+            const userToFollow = getMockUser({ _id: 'abc' });
             const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
             const response: any = {

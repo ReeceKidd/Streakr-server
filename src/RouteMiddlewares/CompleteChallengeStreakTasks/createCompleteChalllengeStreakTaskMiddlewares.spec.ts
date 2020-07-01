@@ -717,7 +717,7 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
         test('if oneHundedDayChallengeStreakAchievement is not defined just call next', async () => {
             expect.assertions(1);
 
-            const user = getMockUser();
+            const user = getMockUser({ _id: 'abc' });
 
             const response: any = {
                 locals: {
@@ -747,7 +747,7 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
                 name: '100 Days',
                 updatedAt: 'updatedAt',
             };
-            const user = getMockUser();
+            const user = getMockUser({ _id: 'abc' });
 
             const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};

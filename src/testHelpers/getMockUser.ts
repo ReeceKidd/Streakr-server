@@ -3,8 +3,8 @@ import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakRem
 import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
-export const getMockUser = (): User => ({
-    _id: '_id',
+export const getMockUser = ({ _id }: { _id: string }): User => ({
+    _id,
     username: 'username',
     cognitoUsername: 'username',
     hasUsernameBeenCustomized: false,
@@ -16,6 +16,8 @@ export const getMockUser = (): User => ({
     },
     email: 'test@test.com',
     temporaryPassword: '12345',
+    oidXp: 0,
+    coins: 0,
     createdAt: 'Jan 1st',
     updatedAt: 'Jan 1st',
     timezone: 'Europe/London',

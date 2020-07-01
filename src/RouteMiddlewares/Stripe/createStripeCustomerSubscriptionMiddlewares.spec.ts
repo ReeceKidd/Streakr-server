@@ -781,7 +781,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         test('populates response.locals.user with a formattedUser', () => {
             expect.assertions(3);
             const request: any = {};
-            const user = getMockUser();
+            const user = getMockUser({ _id: 'abc' });
             const response: any = { locals: { user } };
             const next = jest.fn();
 

@@ -17,6 +17,10 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { sendPushNotification } from '../../helpers/sendPushNotification';
+import { JoinedTeamStreakPushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
+import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
+import { EndpointDisabledError } from '../../sns';
 
 export const createTeamMemberParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -35,7 +39,9 @@ export const createTeamMemberParamsValidationMiddleware = (
 };
 
 export const createTeamMemberBodyValidationSchema = {
-    followerId: Joi.string().required(),
+    userId: Joi.string(),
+    //Legacy
+    teamMemberId: Joi.string(),
 };
 
 export const createTeamMemberBodyValidationMiddleware = (
@@ -50,30 +56,30 @@ export const createTeamMemberBodyValidationMiddleware = (
     );
 };
 
-export const getFollowerExistsMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getUserExistsMiddleware = (userModel: mongoose.Model<UserModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { followerId } = request.body;
-        const follower = await userModel
+        const { userId } = request.body;
+        const newTeamMember = await userModel
             .findOne({
-                _id: followerId,
+                _id: userId,
             })
             .lean();
-        if (!follower) {
-            throw new CustomError(ErrorType.CreateTeamMemberFollowerDoesNotExist);
+        if (!newTeamMember) {
+            throw new CustomError(ErrorType.CreateTeamMemberUserDoesNotExist);
         }
-        response.locals.follower = follower;
+        response.locals.newTeamMember = newTeamMember;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateTeamMemberFollowerExistsMiddleware, err));
+        else next(new CustomError(ErrorType.CreateTeamMemberUserExistsMiddleware, err));
     }
 };
 
-export const followerExistsMiddleware = getFollowerExistsMiddleware(userModel);
+export const userExistsMiddleware = getUserExistsMiddleware(userModel);
 
 export const getTeamStreakExistsMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
@@ -100,16 +106,16 @@ export const getTeamStreakExistsMiddleware = (teamStreakModel: mongoose.Model<Te
 
 export const teamStreakExistsMiddleware = getTeamStreakExistsMiddleware(teamStreakModel);
 
-export const preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware = async (
+export const preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware = (
     request: Request,
     response: Response,
     next: NextFunction,
-): Promise<void> => {
+): void => {
     try {
         const teamStreak: TeamStreak = response.locals.teamStreak;
-        const { followerId } = request.body;
+        const newTeamMember: User = response.locals.newTeamMember;
         const teamMemberIsAlreadyInTeamStreak = teamStreak.members.find(
-            member => String(member.memberId) === String(followerId),
+            member => String(member.memberId) === String(newTeamMember._id),
         );
         if (teamMemberIsAlreadyInTeamStreak) {
             throw new CustomError(ErrorType.TeamMemberIsAlreadyInTeamStreak);
@@ -129,9 +135,9 @@ export const getCreateTeamMemberStreakMiddleware = (teamMemberStreak: mongoose.M
     try {
         const { timezone } = response.locals;
         const { teamStreakId } = request.params;
-        const { followerId } = request.body;
+        const { userId } = request.body;
         response.locals.teamMemberStreak = await new teamMemberStreak({
-            userId: followerId,
+            userId: userId,
             teamStreakId,
             timezone,
         }).save();
@@ -143,17 +149,17 @@ export const getCreateTeamMemberStreakMiddleware = (teamMemberStreak: mongoose.M
 
 export const createTeamMemberStreakMiddleware = getCreateTeamMemberStreakMiddleware(teamMemberStreakModel);
 
-export const getAddFollowerToTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+export const getAddUserToTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
         const { teamStreakId } = request.params;
-        const { followerId } = request.body;
+        const { userId } = request.body;
         const { teamMemberStreak } = response.locals;
         const teamMember: TeamMember = {
-            memberId: followerId,
+            memberId: userId,
             teamMemberStreakId: teamMemberStreak._id,
         };
 
@@ -163,11 +169,11 @@ export const getAddFollowerToTeamStreakMiddleware = (teamStreakModel: mongoose.M
         response.locals.teamMember = teamMember;
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.AddFollowerToTeamStreakMiddleware, err));
+        next(new CustomError(ErrorType.AddUserToTeamStreakMiddleware, err));
     }
 };
 
-export const addFollowerToTeamStreakMiddleware = getAddFollowerToTeamStreakMiddleware(teamStreakModel);
+export const addUserToTeamStreakMiddleware = getAddUserToTeamStreakMiddleware(teamStreakModel);
 
 export const sendCreateTeamMemberResponseMiddleware = (
     request: Request,
@@ -182,6 +188,69 @@ export const sendCreateTeamMemberResponseMiddleware = (
         next(new CustomError(ErrorType.SendCreateTeamMemberResponseMiddleware, err));
     }
 };
+
+export const getNotifyOtherTeamMembersAboutNewTeamMemberMiddleware = (
+    sendPush: typeof sendPushNotification,
+    userModel: mongoose.Model<UserModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const newTeamMember: User = response.locals.newTeamMember;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        const title = 'New team member';
+        const body = `${newTeamMember.username} joined team streak: ${teamStreak.streakName}`;
+        const data: JoinedTeamStreakPushNotification = {
+            pushNotificationType: PushNotificationTypes.joinedTeamStreak,
+            teamStreakId: teamStreak._id,
+            teamStreakName: teamStreak.streakName,
+            userId: newTeamMember._id,
+            username: newTeamMember.username,
+            title,
+        };
+        await Promise.all(
+            teamStreak.members.map(async teamMember => {
+                const populatedMember: User | null = await userModel.findById(teamMember.memberId);
+                if (!populatedMember) {
+                    return;
+                }
+                const { pushNotification, pushNotifications } = populatedMember;
+                const androidEndpointArn = pushNotification.androidEndpointArn;
+                const iosEndpointArn = pushNotification.iosEndpointArn;
+                const teamStreakUpdatesEnabled =
+                    pushNotifications &&
+                    pushNotifications.teamStreakUpdates &&
+                    pushNotifications.teamStreakUpdates.enabled;
+                if (
+                    (androidEndpointArn || iosEndpointArn) &&
+                    teamStreakUpdatesEnabled &&
+                    String(populatedMember._id) !== String(newTeamMember._id)
+                ) {
+                    try {
+                        return sendPush({
+                            title,
+                            data,
+                            body,
+                            androidEndpointArn,
+                            iosEndpointArn,
+                            userId: teamMember.memberId,
+                        });
+                    } catch (err) {
+                        if (err.code !== EndpointDisabledError) {
+                            throw err;
+                        }
+                    }
+                }
+            }),
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.NotifyOtherTeamMembersAboutNewTeamMemberMiddleware, err));
+    }
+};
+
+export const notifiyOtherTeamMembersAboutNewTeamMemberMiddleware = getNotifyOtherTeamMembersAboutNewTeamMemberMiddleware(
+    sendPushNotification,
+    userModel,
+);
 
 export const getCreateJoinedTeamStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
@@ -210,11 +279,12 @@ export const createJoinedTeamStreakActivityFeedItemMiddleware = getCreateJoinedT
 export const createTeamMemberMiddlewares = [
     createTeamMemberParamsValidationMiddleware,
     createTeamMemberBodyValidationMiddleware,
-    followerExistsMiddleware,
+    userExistsMiddleware,
     teamStreakExistsMiddleware,
     preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware,
     createTeamMemberStreakMiddleware,
-    addFollowerToTeamStreakMiddleware,
+    addUserToTeamStreakMiddleware,
     sendCreateTeamMemberResponseMiddleware,
+    notifiyOtherTeamMembersAboutNewTeamMemberMiddleware,
     createJoinedTeamStreakActivityFeedItemMiddleware,
 ];

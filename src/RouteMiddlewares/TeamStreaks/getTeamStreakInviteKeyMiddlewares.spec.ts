@@ -138,7 +138,7 @@ describe('keepInviteLinkIfUserIsApartOfTeamStreakMiddleware', () => {
     test('keeps invite link on team streak if user is apart of the team streak.', async () => {
         expect.assertions(2);
 
-        const user = getMockUser();
+        const user = getMockUser({ _id: 'abc' });
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
 
         const request: any = {};
@@ -154,7 +154,7 @@ describe('keepInviteLinkIfUserIsApartOfTeamStreakMiddleware', () => {
     test('if current user is not apart of the team streak they do not receive an invite link.', async () => {
         expect.assertions(2);
 
-        const user = getMockUser();
+        const user = getMockUser({ _id: 'abc' });
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
         const request: any = {};
         const response: any = { locals: { teamStreak: { ...teamStreak, members: [] }, user } };

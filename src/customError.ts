@@ -177,13 +177,13 @@ export enum ErrorType {
     PatchTeamStreakMiddleware,
     SendUpdatedTeamStreakMiddleware,
     UpdatedTeamStreakNotFound,
-    CreateTeamMemberFollowerExistsMiddleware,
+    CreateTeamMemberUserExistsMiddleware,
     CreateTeamMemberTeamStreakExistsMiddleware,
     SendCreateTeamMemberResponseMiddleware,
-    CreateTeamMemberFollowerDoesNotExist,
+    CreateTeamMemberUserDoesNotExist,
     CreateTeamMemberTeamStreakDoesNotExist,
     CreateTeamMemberCreateTeamMemberStreakMiddleware,
-    AddFollowerToTeamStreakMiddleware,
+    AddUserToTeamStreakMiddleware,
     DeleteTeamMemberRetrieveTeamStreakMiddleware,
     RetrieveTeamMemberMiddleware,
     DeleteTeamMemberMiddleware,
@@ -557,6 +557,9 @@ export enum ErrorType {
     FormatTeamStreakMiddleware,
     FormatTeamStreaksMiddleware,
     CreateTeamStreakFormatTeamStreakMiddleware,
+    CompleteSoloStreakTaskIncreaseCoinsForUserMiddleware,
+    CompleteSoloStreakTaskIncreaseOidXpForUserMiddleware,
+    NotifyOtherTeamMembersAboutNewTeamMemberMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -867,7 +870,7 @@ export class CustomError extends Error {
                 };
             }
 
-            case ErrorType.CreateTeamMemberFollowerDoesNotExist: {
+            case ErrorType.CreateTeamMemberUserDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-39`,
                     message: 'Friend does not exist.',
@@ -2454,7 +2457,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateTeamMemberFollowerExistsMiddleware:
+            case ErrorType.CreateTeamMemberUserExistsMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-139`,
                     message: internalServerMessage,
@@ -2482,7 +2485,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.AddFollowerToTeamStreakMiddleware:
+            case ErrorType.AddUserToTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-143`,
                     message: internalServerMessage,
@@ -4536,6 +4539,27 @@ export class CustomError extends Error {
             case ErrorType.CreateTeamStreakFormatTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-463`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CompleteSoloStreakTaskIncreaseCoinsForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-464`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CompleteSoloStreakTaskIncreaseOidXpForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-465`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.NotifyOtherTeamMembersAboutNewTeamMemberMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-466`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
