@@ -4,6 +4,8 @@ export const correctPopulatedCurrentUserKeys = [
     'email',
     'firstName',
     'lastName',
+    'coins',
+    'oidXp',
     'hasUsernameBeenCustomized',
     'temporaryPassword',
     'followers',
