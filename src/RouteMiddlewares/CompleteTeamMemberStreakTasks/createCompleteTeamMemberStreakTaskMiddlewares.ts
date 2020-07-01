@@ -459,6 +459,7 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = ({
         const user: User = response.locals.user;
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamMembers: UserModel[] = response.locals.teamMembers;
+        console.log('teamMembers', teamMembers);
 
         const title = `${teamStreak.streakName} update`;
         const body = `${user.username} has completed ${teamStreak.streakName}`;

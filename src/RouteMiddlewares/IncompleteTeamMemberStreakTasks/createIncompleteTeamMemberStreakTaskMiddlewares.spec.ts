@@ -45,6 +45,7 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { getMockUser } from '../../testHelpers/getMockUser';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 const teamMember = getMockUser({ _id: 'abc' });
 
@@ -1198,7 +1199,7 @@ describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
-
+            const teamMember = getMockUser({ _id: 'abc' });
             const teamMembers = [teamMember];
 
             const sendPushNotification = jest.fn().mockResolvedValue(true);
@@ -1229,6 +1230,11 @@ describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
+            const mockUser = getMockUser({ _id: 'abc' });
+            const teamMember: User = {
+                ...mockUser,
+                pushNotifications: { ...mockUser.pushNotifications, teamStreakUpdates: { enabled: false } },
+            };
             const teamMembers = [teamMember];
 
             const sendPushNotification = jest.fn().mockResolvedValue(true);
@@ -1252,14 +1258,11 @@ describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
         test('does not send notification to user who incompleted the task', async () => {
             expect.assertions(2);
 
-            const user = {
-                _id: '_id',
-                username: 'username',
-            };
+            const user = getMockUser({ _id: '_id' });
             const teamStreak = {
                 streakName: 'Daily Spanish',
             };
-            const teamMembers = [teamMember];
+            const teamMembers = [user];
             const sendPushNotification = jest.fn().mockResolvedValue(true);
             const request: any = {};
             const response: any = {
