@@ -394,7 +394,7 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`400-39`);
-        expect(message).toBe('Friend does not exist.');
+        expect(message).toBe('New team member does not exist.');
         expect(httpStatusCode).toBe(400);
     });
 

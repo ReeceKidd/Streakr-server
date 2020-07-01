@@ -873,7 +873,7 @@ export class CustomError extends Error {
             case ErrorType.CreateTeamMemberUserDoesNotExist: {
                 return {
                     code: `${ResponseCodes.badRequest}-39`,
-                    message: 'Friend does not exist.',
+                    message: 'New team member does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
