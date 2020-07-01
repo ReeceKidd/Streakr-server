@@ -109,8 +109,8 @@ describe(testName, () => {
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
-        const follower = await getFriend({ testName });
-        const followerId = follower._id;
+        const friend = await getFriend({ testName });
+        const friendId = friend._id;
         const streakName = 'Daily Spanish';
 
         const members = [{ memberId: userId }];
@@ -122,7 +122,7 @@ describe(testName, () => {
         });
 
         await SDK.teamStreaks.teamMembers.create({
-            followerId,
+            userId: friendId,
             teamStreakId: teamStreak._id,
         });
 
