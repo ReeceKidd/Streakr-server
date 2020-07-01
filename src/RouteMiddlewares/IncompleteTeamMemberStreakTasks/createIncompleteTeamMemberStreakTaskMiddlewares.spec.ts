@@ -47,8 +47,6 @@ import { CustomError, ErrorType } from '../../customError';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
-const teamMember = getMockUser({ _id: 'abc' });
-
 describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
     describe(`incompleteTeamMemberStreakTaskBodyValidationMiddleware`, () => {
         const userId = 'userId';
