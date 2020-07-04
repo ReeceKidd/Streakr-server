@@ -12,6 +12,10 @@ import { setupDatabase } from './setup/setupDatabase';
 import { getServiceConfig } from '../src/getServiceConfig';
 import { deleteSnsEndpoint } from './helpers/deleteSnsEndpoint';
 import { SNS } from '../src/sns';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { coinValues } from '../src/helpers/coinValues';
+import { oidXpValues } from '../src/helpers/oidXpValues';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 
 const originalImageUrl = getServiceConfig().DEFAULT_USER_PROFILE_IMAGE_URL;
 
@@ -114,6 +118,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -208,6 +213,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -289,6 +295,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -328,6 +335,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -456,6 +464,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -495,6 +504,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -621,6 +631,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -652,6 +663,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -798,6 +810,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -829,6 +842,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -971,6 +985,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -1060,6 +1075,96 @@ describe(testName, () => {
 
         const updatedUser = await SDK.users.getOne(userId);
         expect(updatedUser.totalStreakCompletes).toEqual(1);
+    });
+
+    test('when team member completes a team member streak the team member streak totalTimesTracked increases by one.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const members = [{ memberId: userId }];
+
+        const teamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName: 'Daily Spanish',
+            members,
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId: teamStreak._id,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+
+        await SDK.completeTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        const updatedTeamMemberStreak = await SDK.teamMemberStreaks.getOne(teamMemberStreak._id);
+        expect(updatedTeamMemberStreak.totalTimesTracked).toEqual(1);
+    });
+
+    test('when team member completes a team member streak the user is credited with coins.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const members = [{ memberId: userId }];
+
+        const teamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName: 'Daily Spanish',
+            members,
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId: teamStreak._id,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+
+        await SDK.completeTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.coins).toEqual(coinValues[CoinSourcesTypes.teamMemberStreakComplete]);
+    });
+
+    test('when team member completes a team member streak the user is credited with oidXp.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const members = [{ memberId: userId }];
+
+        const teamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName: 'Daily Spanish',
+            members,
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId: teamStreak._id,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+
+        await SDK.completeTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.oidXp).toEqual(oidXpValues[OidXpSourcesTypes.teamMemberStreakComplete]);
     });
 
     test('when team member completes a task a CompletedTeamMemberStreakActivityFeedItem is created', async () => {

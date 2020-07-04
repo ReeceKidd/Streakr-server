@@ -15,6 +15,14 @@ import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { SoloStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { coinValues } from '../../helpers/coinValues';
+import { SoloStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { oidXpValues } from '../../helpers/oidXpValues';
+import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
+import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
 
 export const incompleteSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -254,6 +262,78 @@ export const decreaseTotalStreakCompletesForUserMiddleware = getDecreaseTotalStr
     userModel,
 );
 
+export const getDecreaseTotalTimesTrackedForSoloStreakMiddleware = (soloStreak: typeof soloStreakModel) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { soloStreakId } = request.body;
+        response.locals.soloStreak = await soloStreak.findByIdAndUpdate(
+            soloStreakId,
+            {
+                $inc: { totalTimesTracked: -1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.DecreaseTotalTimesTrackedForSoloStreakMiddleware, err));
+    }
+};
+
+export const decreaseTotalTimesTrackedForSoloStreakMiddleware = getDecreaseTotalTimesTrackedForSoloStreakMiddleware(
+    soloStreakModel,
+);
+
+export const getChargeCoinsToUserForIncompletingSoloStreakMiddleware = (
+    chargeUserCoins: typeof CoinTransactionHelpers.chargeUsersCoins,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { userId, soloStreakId } = request.body;
+        const source: SoloStreakCompleteCoinSource = {
+            coinSourceType: CoinSourcesTypes.soloStreakComplete,
+            soloStreakId,
+        };
+        response.locals.user = await chargeUserCoins({
+            userId,
+            source,
+            coins: coinValues[CoinSourcesTypes.soloStreakComplete],
+        });
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.ChargeCoinsToUserForIncompletingSoloStreakMiddleware, err));
+    }
+};
+
+export const chargeCoinsToUserForIncompletingSoloStreakMiddleware = getChargeCoinsToUserForIncompletingSoloStreakMiddleware(
+    CoinTransactionHelpers.chargeUsersCoins,
+);
+
+export const getChargeOidXpToUserForIncompletingSoloStreakMiddleware = (
+    chargeUserOidXp: typeof OidXpTransactionHelpers.chargeUserOidXp,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { userId, soloStreakId } = request.body;
+        const source: SoloStreakCompleteOidXpSource = {
+            oidXpSourceType: OidXpSourcesTypes.soloStreakComplete,
+            soloStreakId,
+        };
+        response.locals.user = await chargeUserOidXp({
+            userId,
+            source,
+            oidXp: oidXpValues[OidXpSourcesTypes.soloStreakComplete],
+        });
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.ChargeOidXpToUserForIncompletingSoloStreakMiddleware, err));
+    }
+};
+
+export const chargeOidXpToUserForIncompletingSoloStreakMiddleware = getChargeOidXpToUserForIncompletingSoloStreakMiddleware(
+    OidXpTransactionHelpers.chargeUserOidXp,
+);
+
 export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
     request: Request,
     response: Response,
@@ -306,6 +386,9 @@ export const createIncompleteSoloStreakTaskMiddlewares = [
     saveTaskIncompleteMiddleware,
     incompleteSoloStreakMiddleware,
     decreaseTotalStreakCompletesForUserMiddleware,
+    decreaseTotalTimesTrackedForSoloStreakMiddleware,
+    chargeCoinsToUserForIncompletingSoloStreakMiddleware,
+    chargeOidXpToUserForIncompletingSoloStreakMiddleware,
     sendTaskIncompleteResponseMiddleware,
     createIncompleteSoloStreakActivitFeedItemMiddleware,
 ];

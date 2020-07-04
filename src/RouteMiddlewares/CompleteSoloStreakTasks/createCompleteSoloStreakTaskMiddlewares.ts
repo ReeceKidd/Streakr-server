@@ -23,6 +23,14 @@ import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/Activit
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
 import { EndpointDisabledError } from '../../sns';
+import { SoloStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
+import { SoloStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { coinValues } from '../../helpers/coinValues';
+import { oidXpValues } from '../../helpers/oidXpValues';
+import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
+import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -247,49 +255,77 @@ export const increaseTotalStreakCompletesForUserMiddleware = getIncreaseTotalStr
     userModel,
 );
 
-export const getIncreaseCoinsForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+export const getIncreaseTotalTimesTrackedForSoloStreakMiddleware = (soloStreak: typeof soloStreakModel) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { userId } = request.body;
-        response.locals.user = await userModel.findByIdAndUpdate(
-            userId,
+        const { soloStreakId } = request.body;
+        response.locals.soloStreak = await soloStreak.findByIdAndUpdate(
+            soloStreakId,
             {
-                $inc: { coins: 1 },
+                $inc: { totalTimesTracked: 1 },
             },
             { new: true },
         );
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.CompleteSoloStreakTaskIncreaseCoinsForUserMiddleware, err));
+        next(new CustomError(ErrorType.IncreaseTotalTimesTrackedForSoloStreakMiddleware, err));
     }
 };
 
-export const increaseCoinsForUserMiddleware = getIncreaseCoinsForUserMiddleware(userModel);
+export const increaseTotalTimesTrackedForSoloStreakMiddleware = getIncreaseTotalTimesTrackedForSoloStreakMiddleware(
+    soloStreakModel,
+);
 
-export const getIncreaseOidXpForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const getCreditCoinsToUserForCompletingSoloStreakMiddleware = (
+    creditUserCoins: typeof CoinTransactionHelpers.creditUsersCoins,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId } = request.body;
-        response.locals.user = await userModel.findByIdAndUpdate(
+        const { userId, soloStreakId } = request.body;
+        const source: SoloStreakCompleteCoinSource = {
+            coinSourceType: CoinSourcesTypes.soloStreakComplete,
+            soloStreakId,
+        };
+        response.locals.user = await creditUserCoins({
             userId,
-            {
-                $inc: { oidXp: 1 },
-            },
-            { new: true },
-        );
+            source,
+            coins: coinValues[CoinSourcesTypes.soloStreakComplete],
+        });
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.CompleteSoloStreakTaskIncreaseOidXpForUserMiddleware, err));
+        next(new CustomError(ErrorType.CreditCoinsToUserForCompletingSoloStreakMiddleware, err));
     }
 };
 
-export const increaseOidXpForUserMiddleware = getIncreaseOidXpForUserMiddleware(userModel);
+export const creditCoinsToUserForCompletingSoloStreakMiddleware = getCreditCoinsToUserForCompletingSoloStreakMiddleware(
+    CoinTransactionHelpers.creditUsersCoins,
+);
+
+export const getCreditOidXpToUserForCompletingSoloStreakMiddleware = (
+    creditUserOidXp: typeof OidXpTransactionHelpers.creditUserOidXp,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { userId, soloStreakId } = request.body;
+        const source: SoloStreakCompleteOidXpSource = {
+            oidXpSourceType: OidXpSourcesTypes.soloStreakComplete,
+            soloStreakId,
+        };
+        response.locals.user = await creditUserOidXp({
+            userId,
+            oidXp: oidXpValues[OidXpSourcesTypes.soloStreakComplete],
+            source,
+        });
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreditOidXpToUserForCompletingSoloStreakMiddleware, err));
+    }
+};
+
+export const creditOidXpToUserForCompletingSoloStreakMiddleware = getCreditOidXpToUserForCompletingSoloStreakMiddleware(
+    OidXpTransactionHelpers.creditUserOidXp,
+);
 
 export const getUnlockOneHundredDaySoloStreakAchievementForUserMiddleware = (
     user: mongoose.Model<UserModel>,
@@ -431,6 +467,9 @@ export const createCompleteSoloStreakTaskMiddlewares = [
     saveTaskCompleteMiddleware,
     increaseNumberOfDaysInARowForSoloStreakMiddleware,
     increaseTotalStreakCompletesForUserMiddleware,
+    increaseTotalTimesTrackedForSoloStreakMiddleware,
+    creditCoinsToUserForCompletingSoloStreakMiddleware,
+    creditOidXpToUserForCompletingSoloStreakMiddleware,
     unlockOneHundredDaySoloStreakAchievementForUserMiddleware,
     sendTaskCompleteResponseMiddleware,
     createCompleteSoloStreakActivityFeedItemMiddleware,

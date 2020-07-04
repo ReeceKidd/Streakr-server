@@ -110,6 +110,7 @@ describe(testName, () => {
                 'challengeId',
                 'challengeName',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -206,6 +207,7 @@ describe(testName, () => {
                 'challengeId',
                 'challengeName',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -243,7 +245,7 @@ describe(testName, () => {
         }
     });
 
-    test('when user incompletes a challenge streak their totalStreakCompletes is decreased by one', async () => {
+    test('when user incompletes a challenge streak the users totalStreakCompletes is decreased by one', async () => {
         expect.assertions(1);
 
         const user = await getPayingUser({ testName });
@@ -272,6 +274,99 @@ describe(testName, () => {
 
         const updatedUser = await SDK.users.getOne(userId);
         expect(updatedUser.totalStreakCompletes).toEqual(0);
+    });
+
+    test('when user incompletes a challenge streak the challenge streaks totalTimesTracked is decreased by one', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+        const { challenge } = await SDK.challenges.create({ name, description, icon });
+        const challengeId = challenge._id;
+
+        const challengeStreak = await SDK.challengeStreaks.create({
+            userId,
+            challengeId,
+        });
+
+        await SDK.completeChallengeStreakTasks.create({
+            userId,
+            challengeStreakId: challengeStreak._id,
+        });
+
+        await SDK.incompleteChallengeStreakTasks.create({
+            userId,
+            challengeStreakId: challengeStreak._id,
+        });
+
+        const updatedChallengeStreak = await SDK.challengeStreaks.getOne({ challengeStreakId: challengeStreak._id });
+        expect(updatedChallengeStreak.totalTimesTracked).toEqual(0);
+    });
+
+    test('when user incompletes a challenge streak they are charged coins', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+        const { challenge } = await SDK.challenges.create({ name, description, icon });
+        const challengeId = challenge._id;
+
+        const challengeStreak = await SDK.challengeStreaks.create({
+            userId,
+            challengeId,
+        });
+
+        await SDK.completeChallengeStreakTasks.create({
+            userId,
+            challengeStreakId: challengeStreak._id,
+        });
+
+        await SDK.incompleteChallengeStreakTasks.create({
+            userId,
+            challengeStreakId: challengeStreak._id,
+        });
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.coins).toEqual(0);
+    });
+
+    test('when user incompletes a challenge streak they are charged oidXp', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+        const { challenge } = await SDK.challenges.create({ name, description, icon });
+        const challengeId = challenge._id;
+
+        const challengeStreak = await SDK.challengeStreaks.create({
+            userId,
+            challengeId,
+        });
+
+        await SDK.completeChallengeStreakTasks.create({
+            userId,
+            challengeStreakId: challengeStreak._id,
+        });
+
+        await SDK.incompleteChallengeStreakTasks.create({
+            userId,
+            challengeStreakId: challengeStreak._id,
+        });
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.oidXp).toEqual(0);
     });
 
     test('when user incompletes a task a IncompletedChallengeStreakActivityItem is created', async done => {

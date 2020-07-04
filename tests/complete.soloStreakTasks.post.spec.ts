@@ -13,6 +13,10 @@ import { disconnectDatabase } from './setup/disconnectDatabase';
 import { SNS } from '../src/sns';
 import { deleteSnsEndpoint } from './helpers/deleteSnsEndpoint';
 import { getServiceConfig } from '../src/getServiceConfig';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { coinValues } from '../src/helpers/coinValues';
+import { oidXpValues } from '../src/helpers/oidXpValues';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 
 jest.setTimeout(120000);
 
@@ -103,6 +107,7 @@ describe(testName, () => {
                     'streakDescription',
                     'userId',
                     'timezone',
+                    'totalTimesTracked',
                     'createdAt',
                     'updatedAt',
                     '__v',
@@ -187,6 +192,7 @@ describe(testName, () => {
                     'streakDescription',
                     'userId',
                     'timezone',
+                    'totalTimesTracked',
                     'createdAt',
                     'updatedAt',
                     '__v',
@@ -268,6 +274,7 @@ describe(testName, () => {
                     'streakDescription',
                     'userId',
                     'timezone',
+                    'totalTimesTracked',
                     'createdAt',
                     'updatedAt',
                     '__v',
@@ -362,6 +369,7 @@ describe(testName, () => {
                     'streakDescription',
                     'userId',
                     'timezone',
+                    'totalTimesTracked',
                     'createdAt',
                     'updatedAt',
                     '__v',
@@ -385,6 +393,60 @@ describe(testName, () => {
 
             const updatedUser = await SDK.users.getOne(userId);
             expect(updatedUser.totalStreakCompletes).toEqual(1);
+        });
+
+        test('when a user completes a task the solo streaks total times tracked increases by one.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+
+            const soloStreak = await SDK.soloStreaks.create({ userId, streakName: 'Reading' });
+            const soloStreakId = soloStreak._id;
+
+            await SDK.completeSoloStreakTasks.create({
+                userId,
+                soloStreakId,
+            });
+
+            const updatedSoloStreak = await SDK.soloStreaks.getOne(soloStreak._id);
+            expect(updatedSoloStreak.totalTimesTracked).toEqual(1);
+        });
+
+        test('when a user completes a solo streak task they are credited with coins.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+
+            const soloStreak = await SDK.soloStreaks.create({ userId, streakName: 'Reading' });
+            const soloStreakId = soloStreak._id;
+
+            await SDK.completeSoloStreakTasks.create({
+                userId,
+                soloStreakId,
+            });
+
+            const updatedUser = await SDK.user.getCurrentUser();
+            expect(updatedUser.coins).toEqual(coinValues[CoinSourcesTypes.soloStreakComplete]);
+        });
+
+        test('when a user completes a solo streak task they are credited with oidXp.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+
+            const soloStreak = await SDK.soloStreaks.create({ userId, streakName: 'Reading' });
+            const soloStreakId = soloStreak._id;
+
+            await SDK.completeSoloStreakTasks.create({
+                userId,
+                soloStreakId,
+            });
+
+            const updatedUser = await SDK.user.getCurrentUser();
+            expect(updatedUser.oidXp).toEqual(oidXpValues[OidXpSourcesTypes.soloStreakComplete]);
         });
 
         test('user cannot complete the same solo streak task in the same day', async () => {

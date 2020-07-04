@@ -27,6 +27,14 @@ import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/Act
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
 import { EndpointDisabledError } from '../../sns';
+import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
+import { TeamMemberStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { coinValues } from '../../helpers/coinValues';
+import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
+import { TeamMemberStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { oidXpValues } from '../../helpers/oidXpValues';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -283,6 +291,82 @@ export const getDecreaseTotalStreakCompletesForUserMiddleware = (userModel: mong
 
 export const decreaseTotalStreakCompletesForUserMiddleware = getDecreaseTotalStreakCompletesForUserMiddleware(
     userModel,
+);
+
+export const getDecreaseTotalTimesTrackedForTeamMemberStreakMiddleware = (
+    teamMemberStreak: typeof teamMemberStreakModel,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { teamMemberStreakId } = request.body;
+        response.locals.teamMemberStreak = await teamMemberStreak.findByIdAndUpdate(
+            teamMemberStreakId,
+            {
+                $inc: { totalTimesTracked: -1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.DecreaseTotalTimesTrackedForTeamMemberStreakMiddleware, err));
+    }
+};
+
+export const decreaseTotalTimesTrackedForTeamMemberStreakMiddleware = getDecreaseTotalTimesTrackedForTeamMemberStreakMiddleware(
+    teamMemberStreakModel,
+);
+
+export const getChargeCoinsToUserForIncompletingTeamMemberStreakMiddleware = (
+    chargeUserCoins: typeof CoinTransactionHelpers.chargeUsersCoins,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { userId, teamMemberStreakId } = request.body;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        const source: TeamMemberStreakCompleteCoinSource = {
+            coinSourceType: CoinSourcesTypes.teamMemberStreakComplete,
+            teamMemberStreakId,
+            teamStreakId: teamStreak._id,
+            teamStreakName: teamStreak.streakName,
+        };
+        response.locals.user = await chargeUserCoins({
+            userId,
+            source,
+            coins: coinValues[CoinSourcesTypes.teamMemberStreakComplete],
+        });
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.ChargeCoinsToUserForIncompletingTeamMemberStreakMiddleware, err));
+    }
+};
+
+export const chargeCoinsToUserForIncompletingTeamMemberStreakMiddleware = getChargeCoinsToUserForIncompletingTeamMemberStreakMiddleware(
+    CoinTransactionHelpers.chargeUsersCoins,
+);
+
+export const getChargeOidXpToUserForIncompletingTeamMemberStreakMiddleware = (
+    chargeUserOidXp: typeof OidXpTransactionHelpers.chargeUserOidXp,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { userId, teamMemberStreakId } = request.body;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        const source: TeamMemberStreakCompleteOidXpSource = {
+            oidXpSourceType: OidXpSourcesTypes.teamMemberStreakComplete,
+            teamMemberStreakId,
+            teamStreakId: teamStreak._id,
+            teamStreakName: teamStreak.streakName,
+        };
+        response.locals.user = await chargeUserOidXp({
+            userId,
+            source,
+            oidXp: oidXpValues[OidXpSourcesTypes.teamMemberStreakComplete],
+        });
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.ChargeOidXpToUserForIncompletingTeamMemberStreakMiddleware, err));
+    }
+};
+
+export const chargeOidXpToUserForIncompletingTeamMemberStreakMiddleware = getChargeOidXpToUserForIncompletingTeamMemberStreakMiddleware(
+    OidXpTransactionHelpers.chargeUserOidXp,
 );
 
 export const getResetTeamStreakStartDateMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
@@ -559,6 +643,9 @@ export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     saveTaskIncompleteMiddleware,
     incompleteTeamMemberStreakMiddleware,
     decreaseTotalStreakCompletesForUserMiddleware,
+    decreaseTotalTimesTrackedForTeamMemberStreakMiddleware,
+    chargeCoinsToUserForIncompletingTeamMemberStreakMiddleware,
+    chargeOidXpToUserForIncompletingTeamMemberStreakMiddleware,
     resetTeamStreakStartDateMiddleware,
     incompleteTeamStreakMiddleware,
     hasAtLeastOneTeamMemberCompletedTheirTaskMiddleware,

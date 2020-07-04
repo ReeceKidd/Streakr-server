@@ -25,9 +25,18 @@ import {
     createIncompleteSoloStreakActivitFeedItemMiddleware,
     getDecreaseTotalStreakCompletesForUserMiddleware,
     decreaseTotalStreakCompletesForUserMiddleware,
+    getDecreaseTotalTimesTrackedForSoloStreakMiddleware,
+    getChargeCoinsToUserForIncompletingSoloStreakMiddleware,
+    getChargeOidXpToUserForIncompletingSoloStreakMiddleware,
+    decreaseTotalTimesTrackedForSoloStreakMiddleware,
+    chargeCoinsToUserForIncompletingSoloStreakMiddleware,
+    chargeOidXpToUserForIncompletingSoloStreakMiddleware,
 } from './createIncompleteSoloStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { coinValues } from '../../helpers/coinValues';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 
 describe('createIncompleteSoloStreakTaskMiddlewares', () => {
     describe(`incompleteSoloStreakTaskBodyValidationMiddleware`, () => {
@@ -645,6 +654,121 @@ describe('createIncompleteSoloStreakTaskMiddlewares', () => {
         });
     });
 
+    describe('decreaseTotalTimesTrackedForSoloStreakMiddleware', () => {
+        test('decreases totalTimesTracked for solo streak by one and calls next', async () => {
+            expect.assertions(3);
+            const soloStreakId = '123abc';
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const soloStreakModel = {
+                findByIdAndUpdate,
+            };
+            const request: any = { body: { soloStreakId } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getDecreaseTotalTimesTrackedForSoloStreakMiddleware(soloStreakModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                soloStreakId,
+                {
+                    $inc: { totalTimesTracked: -1 },
+                },
+                { new: true },
+            );
+            expect(response.locals.soloStreak).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws DecreaseTotalTimesTrackedForSoloStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getDecreaseTotalTimesTrackedForSoloStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.DecreaseTotalTimesTrackedForSoloStreakMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('chargeCoinsToUserForCompletingSoloStreakMiddleware', () => {
+        test('charges user account with coins for completing solo streaks', async () => {
+            expect.assertions(3);
+            const soloStreakId = '123abc';
+            const userId = 'userId';
+            const createCoinTransaction = jest.fn(() => Promise.resolve(true));
+            const request: any = { body: { soloStreakId, userId } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getChargeCoinsToUserForIncompletingSoloStreakMiddleware(createCoinTransaction as any);
+
+            await middleware(request, response, next);
+
+            expect(createCoinTransaction).toBeCalledWith({
+                userId,
+                source: { coinSourceType: CoinSourcesTypes.soloStreakComplete, soloStreakId },
+                coins: coinValues[CoinSourcesTypes.soloStreakComplete],
+            });
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws ChargeCoinsToUserForIncompletingSoloStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getChargeCoinsToUserForIncompletingSoloStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.ChargeCoinsToUserForIncompletingSoloStreakMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('chargeOidXpToUserForCompletingSoloStreakMiddleware', () => {
+        test('charges user account with xp for completing solo streaks', async () => {
+            expect.assertions(3);
+            const soloStreakId = '123abc';
+            const userId = 'userId';
+            const createOidXpTransaction = jest.fn(() => Promise.resolve(true));
+            const request: any = { body: { soloStreakId, userId } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getChargeOidXpToUserForIncompletingSoloStreakMiddleware(createOidXpTransaction as any);
+
+            await middleware(request, response, next);
+
+            expect(createOidXpTransaction).toBeCalledWith({
+                userId,
+                source: { oidXpSourceType: OidXpSourcesTypes.soloStreakComplete, soloStreakId },
+                oidXp: coinValues[OidXpSourcesTypes.soloStreakComplete],
+            });
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws ChargeOidXpToUserForIncompletingSoloStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getChargeOidXpToUserForIncompletingSoloStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.ChargeOidXpToUserForIncompletingSoloStreakMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
     describe('sendTaskIncompleteResponseMiddleware', () => {
         test('sends incompleteSoloStreakTask response', () => {
             expect.assertions(3);
@@ -727,9 +851,9 @@ describe('createIncompleteSoloStreakTaskMiddlewares', () => {
     });
 
     test('are defined in the correct order', async () => {
-        expect.assertions(14);
+        expect.assertions(17);
 
-        expect(createIncompleteSoloStreakTaskMiddlewares.length).toEqual(13);
+        expect(createIncompleteSoloStreakTaskMiddlewares.length).toEqual(16);
         expect(createIncompleteSoloStreakTaskMiddlewares[0]).toBe(incompleteSoloStreakTaskBodyValidationMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[1]).toBe(soloStreakExistsMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[2]).toBe(ensureSoloStreakTaskHasBeenCompletedTodayMiddleware);
@@ -741,7 +865,14 @@ describe('createIncompleteSoloStreakTaskMiddlewares', () => {
         expect(createIncompleteSoloStreakTaskMiddlewares[8]).toBe(saveTaskIncompleteMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[9]).toBe(incompleteSoloStreakMiddleware);
         expect(createIncompleteSoloStreakTaskMiddlewares[10]).toBe(decreaseTotalStreakCompletesForUserMiddleware);
-        expect(createIncompleteSoloStreakTaskMiddlewares[11]).toBe(sendTaskIncompleteResponseMiddleware);
-        expect(createIncompleteSoloStreakTaskMiddlewares[12]).toBe(createIncompleteSoloStreakActivitFeedItemMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[11]).toBe(decreaseTotalTimesTrackedForSoloStreakMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[12]).toBe(
+            chargeCoinsToUserForIncompletingSoloStreakMiddleware,
+        );
+        expect(createIncompleteSoloStreakTaskMiddlewares[13]).toBe(
+            chargeOidXpToUserForIncompletingSoloStreakMiddleware,
+        );
+        expect(createIncompleteSoloStreakTaskMiddlewares[14]).toBe(sendTaskIncompleteResponseMiddleware);
+        expect(createIncompleteSoloStreakTaskMiddlewares[15]).toBe(createIncompleteSoloStreakActivitFeedItemMiddleware);
     });
 });

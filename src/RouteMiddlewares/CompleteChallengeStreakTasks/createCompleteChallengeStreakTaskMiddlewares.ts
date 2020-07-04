@@ -28,6 +28,14 @@ import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNot
 import { OneHundredDayChallengeStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 import { sendPushNotification } from '../../helpers/sendPushNotification';
 import { EndpointDisabledError } from '../../sns';
+import { ChallengeStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { coinValues } from '../../helpers/coinValues';
+import { ChallengeStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { oidXpValues } from '../../helpers/oidXpValues';
+import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
+import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
 
 export const completeChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -244,6 +252,104 @@ export const increaseTotalStreakCompletesForUserMiddleware = getIncreaseTotalStr
     userModel,
 );
 
+export const getIncreaseTotalTimesTrackedForChallengeStreakMiddleware = (
+    challengeStreak: typeof challengeStreakModel,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { challengeStreakId } = request.body;
+        response.locals.challengeStreak = await challengeStreak.findByIdAndUpdate(
+            challengeStreakId,
+            {
+                $inc: { totalTimesTracked: 1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.IncreaseTotalTimesTrackedForChallengeStreakMiddleware, err));
+    }
+};
+
+export const increaseTotalTimesTrackedForChallengeStreakMiddleware = getIncreaseTotalTimesTrackedForChallengeStreakMiddleware(
+    challengeStreakModel,
+);
+
+export const getRetrieveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const challenge = await challengeModel.findOne({ _id: challengeStreak.challengeId }).lean();
+        if (!challenge) {
+            throw new CustomError(ErrorType.CreateCompleteChallengeStreakTaskChallengeDoesNotExist);
+        }
+        response.locals.challenge = challenge;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetrieveChallengeMiddleware, err));
+    }
+};
+
+export const retrieveChallengeMiddleware = getRetrieveChallengeMiddleware(challengeModel);
+
+export const getCreditCoinsToUserForCompletingChallengeStreakMiddleware = (
+    creditUsersCoins: typeof CoinTransactionHelpers.creditUsersCoins,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { userId, challengeStreakId } = request.body;
+        const challenge: Challenge = response.locals.challenge;
+        const source: ChallengeStreakCompleteCoinSource = {
+            coinSourceType: CoinSourcesTypes.challengeStreakComplete,
+            challengeStreakId,
+            challengeId: challenge._id,
+            challengeName: challenge.name,
+        };
+        const coins = coinValues[CoinSourcesTypes.challengeStreakComplete];
+        response.locals.user = await creditUsersCoins({
+            userId,
+            source,
+            coins,
+        });
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreditCoinsToUserForCompletingChallengeStreakMiddleware, err));
+    }
+};
+
+export const creditCoinsToUserForCompletingChallengeStreakMiddleware = getCreditCoinsToUserForCompletingChallengeStreakMiddleware(
+    CoinTransactionHelpers.creditUsersCoins,
+);
+
+export const getCreditOidXpToUserForCompletingChallengeStreakMiddleware = (
+    creditUserOidXp: typeof OidXpTransactionHelpers.creditUserOidXp,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { userId, challengeStreakId } = request.body;
+        const challenge: Challenge = response.locals.challenge;
+        const source: ChallengeStreakCompleteOidXpSource = {
+            oidXpSourceType: OidXpSourcesTypes.challengeStreakComplete,
+            challengeStreakId,
+            challengeId: challenge._id,
+            challengeName: challenge.name,
+        };
+        response.locals.user = await creditUserOidXp({
+            userId,
+            oidXp: oidXpValues[OidXpSourcesTypes.challengeStreakComplete],
+            source,
+        });
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.CreditOidXpToUserForCompletingChallengeStreakMiddleware, err));
+    }
+};
+
+export const creditOidXpToUserForCompletingChallengeStreakMiddleware = getCreditOidXpToUserForCompletingChallengeStreakMiddleware(
+    OidXpTransactionHelpers.creditUserOidXp,
+);
+
 export const getUnlockOneHundredDayChallengeStreakAchievementForUserMiddleware = (
     user: mongoose.Model<UserModel>,
     achievement: mongoose.Model<AchievementModel>,
@@ -357,27 +463,6 @@ export const getSendTaskCompleteResponseMiddleware = (resourceCreatedResponseCod
 
 export const sendTaskCompleteResponseMiddleware = getSendTaskCompleteResponseMiddleware(ResponseCodes.created);
 
-export const getRetrieveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
-        const challenge = await challengeModel.findOne({ _id: challengeStreak.challengeId }).lean();
-        if (!challenge) {
-            throw new CustomError(ErrorType.CreateCompleteChallengeStreakTaskChallengeDoesNotExist);
-        }
-        response.locals.challenge = challenge;
-        next();
-    } catch (err) {
-        if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.CreateCompleteChallengeStreakTaskRetrieveChallengeMiddleware, err));
-    }
-};
-
-export const retrieveChallengeMiddleware = getRetrieveChallengeMiddleware(challengeModel);
-
 export const getCreateCompleteChallengeStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -416,9 +501,12 @@ export const createCompleteChallengeStreakTaskMiddlewares = [
     saveTaskCompleteMiddleware,
     increaseNumberOfDaysInARowForChallengeStreakMiddleware,
     increaseTotalStreakCompletesForUserMiddleware,
+    increaseTotalTimesTrackedForChallengeStreakMiddleware,
+    retrieveChallengeMiddleware,
+    creditCoinsToUserForCompletingChallengeStreakMiddleware,
+    creditOidXpToUserForCompletingChallengeStreakMiddleware,
     unlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
     sendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
     sendTaskCompleteResponseMiddleware,
-    retrieveChallengeMiddleware,
     createCompleteChallengeStreakActivityFeedItemMiddleware,
 ];

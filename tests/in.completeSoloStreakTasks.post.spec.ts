@@ -109,6 +109,7 @@ describe(testName, () => {
                     'streakDescription',
                     'userId',
                     'timezone',
+                    'totalTimesTracked',
                     'createdAt',
                     'updatedAt',
                     '__v',
@@ -195,6 +196,7 @@ describe(testName, () => {
                     'streakDescription',
                     'userId',
                     'timezone',
+                    'totalTimesTracked',
                     'createdAt',
                     'updatedAt',
                     '__v',
@@ -226,7 +228,7 @@ describe(testName, () => {
             }
         });
 
-        test('when user incomplete,s there totalStreakCompletes decreases by one', async () => {
+        test('when user incompletes a streak the users totalStreakCompletes decreases by one', async () => {
             expect.assertions(1);
 
             const user = await getPayingUser({ testName });
@@ -248,6 +250,78 @@ describe(testName, () => {
 
             const updatedUser = await SDK.users.getOne(userId);
             expect(updatedUser.totalStreakCompletes).toEqual(0);
+        });
+
+        test('when user incompletes a streak the solo streaks totalStreakCompletes decreases by one', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+            const streakName = 'Reading';
+
+            const soloStreak = await SDK.soloStreaks.create({ userId, streakName });
+            const soloStreakId = soloStreak._id;
+
+            await SDK.completeSoloStreakTasks.create({
+                userId,
+                soloStreakId,
+            });
+
+            await SDK.incompleteSoloStreakTasks.create({
+                userId,
+                soloStreakId,
+            });
+
+            const updatedSoloStreak = await SDK.soloStreaks.getOne(soloStreakId);
+            expect(updatedSoloStreak.totalTimesTracked).toEqual(0);
+        });
+
+        test('when user incompletes a streak they are charged coins', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+            const streakName = 'Reading';
+
+            const soloStreak = await SDK.soloStreaks.create({ userId, streakName });
+            const soloStreakId = soloStreak._id;
+
+            await SDK.completeSoloStreakTasks.create({
+                userId,
+                soloStreakId,
+            });
+
+            await SDK.incompleteSoloStreakTasks.create({
+                userId,
+                soloStreakId,
+            });
+
+            const updatedUser = await SDK.user.getCurrentUser();
+            expect(updatedUser.coins).toEqual(0);
+        });
+
+        test('when user incompletes a streak they are charged oidXp', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+            const streakName = 'Reading';
+
+            const soloStreak = await SDK.soloStreaks.create({ userId, streakName });
+            const soloStreakId = soloStreak._id;
+
+            await SDK.completeSoloStreakTasks.create({
+                userId,
+                soloStreakId,
+            });
+
+            await SDK.incompleteSoloStreakTasks.create({
+                userId,
+                soloStreakId,
+            });
+
+            const updatedUser = await SDK.user.getCurrentUser();
+            expect(updatedUser.oidXp).toEqual(0);
         });
 
         test('when user incompletes a streak a IncompletedSoloStreakActivityItem is created', async () => {

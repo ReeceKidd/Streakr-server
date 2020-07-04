@@ -63,6 +63,10 @@ export const challengeStreakSchema = new mongoose.Schema(
         userDefinedIndex: {
             type: Number,
         },
+        totalTimesTracked: {
+            type: Number,
+            default: 0,
+        },
     },
     {
         timestamps: true,

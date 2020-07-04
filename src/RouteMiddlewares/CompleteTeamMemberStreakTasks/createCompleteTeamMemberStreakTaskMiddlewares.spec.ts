@@ -41,11 +41,22 @@ import {
     createCompleteTeamMemberStreakActivityFeedItemMiddleware,
     getIncreaseTotalStreakCompletesForUserMiddleware,
     increaseTotalStreakCompletesForUserMiddleware,
+    getIncreaseTotalTimesTrackedForTeamMemberStreakMiddleware,
+    getCreditCoinsToUserForCompletingTeamMemberStreakMiddleware,
+    getCreditOidXpToUserForCompletingTeamMemberStreakMiddleware,
+    creditCoinsToUserForCompletingTeamMemberStreakMiddleware,
+    creditOidXpToUserForCompletingTeamMemberStreakMiddleware,
+    increaseTotalTimesTrackedForTeamMemberStreakMiddleware,
 } from './createCompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { coinValues } from '../../helpers/coinValues';
+import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
+import { oidXpValues } from '../../helpers/oidXpValues';
 
 describe('completeTeamMemberStreakTaskMiddlewares', () => {
     describe(`completeTeamMemberStreakTaskBodyValidationMiddleware`, () => {
@@ -633,6 +644,137 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
                     ErrorType.CompleteTeamMemberStreakTaskIncreaseTotalStreakCompletesForUserMiddleware,
                     expect.any(Error),
                 ),
+            );
+        });
+    });
+
+    describe('increaseTotalTimesTrackedForTeamMemberStreakMiddleware', () => {
+        test('increments totalTimesTracked for teamMember streak by one and calls next', async () => {
+            expect.assertions(3);
+            const teamMemberStreakId = '123abc';
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const teamMemberStreakModel = {
+                findByIdAndUpdate,
+            };
+            const request: any = { body: { teamMemberStreakId } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getIncreaseTotalTimesTrackedForTeamMemberStreakMiddleware(teamMemberStreakModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                teamMemberStreakId,
+                {
+                    $inc: { totalTimesTracked: 1 },
+                },
+                { new: true },
+            );
+            expect(response.locals.teamMemberStreak).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws IncreaseTotalTimesTrackedForTeamMemberStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getIncreaseTotalTimesTrackedForTeamMemberStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.IncreaseTotalTimesTrackedForTeamMemberStreakMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('creditCoinsToUserForCompletingTeamMemberStreakMiddleware', () => {
+        test('credits user account with coins for completing teamMember streaks', async () => {
+            expect.assertions(3);
+            const teamMemberStreakId = '123abc';
+            const userId = 'userId';
+            const teamStreak = getMockTeamStreak({ creatorId: userId });
+            const createCoinTransaction = jest.fn(() => Promise.resolve(true));
+            const request: any = { body: { teamMemberStreakId, userId } };
+            const response: any = { locals: { teamStreak } };
+            const next = jest.fn();
+            const middleware = getCreditCoinsToUserForCompletingTeamMemberStreakMiddleware(
+                createCoinTransaction as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(createCoinTransaction).toBeCalledWith({
+                userId,
+                source: {
+                    coinSourceType: CoinSourcesTypes.teamMemberStreakComplete,
+                    teamMemberStreakId,
+                    teamStreakId: teamStreak._id,
+                    teamStreakName: teamStreak.streakName,
+                },
+                coins: coinValues[CoinSourcesTypes.teamMemberStreakComplete],
+            });
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws CreditCoinsToUserForCompletingTeamMemberStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getCreditCoinsToUserForCompletingTeamMemberStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.CreditCoinsToUserForCompletingTeamMemberStreakMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('creditOidXpToUserForCompletingTeamMemberStreakMiddleware', () => {
+        test('credits user account with xp for completing teamMember streaks', async () => {
+            expect.assertions(3);
+            const teamMemberStreakId = '123abc';
+            const userId = 'userId';
+            const teamStreak = getMockTeamStreak({ creatorId: userId });
+            const createOidXpTransaction = jest.fn(() => Promise.resolve(true));
+            const request: any = { body: { teamMemberStreakId, userId } };
+            const response: any = { locals: { teamStreak } };
+            const next = jest.fn();
+            const middleware = getCreditOidXpToUserForCompletingTeamMemberStreakMiddleware(
+                createOidXpTransaction as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(createOidXpTransaction).toBeCalledWith({
+                userId,
+                source: {
+                    oidXpSourceType: OidXpSourcesTypes.teamMemberStreakComplete,
+                    teamMemberStreakId,
+                    teamStreakId: teamStreak._id,
+                    teamStreakName: teamStreak.streakName,
+                },
+                oidXp: oidXpValues[OidXpSourcesTypes.teamMemberStreakComplete],
+            });
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws CreditOidXpToUserForCompletingTeamMemberStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getCreditOidXpToUserForCompletingTeamMemberStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.CreditOidXpToUserForCompletingTeamMemberStreakMiddleware, expect.any(Error)),
             );
         });
     });
@@ -1373,9 +1515,9 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
     });
 
     test('are defined in the correct order', async () => {
-        expect.assertions(23);
+        expect.assertions(26);
 
-        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(22);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(25);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[0]).toBe(
             completeTeamMemberStreakTaskBodyValidationMiddleware,
         );
@@ -1391,21 +1533,30 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
         expect(createCompleteTeamMemberStreakTaskMiddlewares[8]).toBe(createCompleteTeamMemberStreakTaskMiddleware);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[9]).toBe(teamMemberStreakMaintainedMiddleware);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[10]).toBe(increaseTotalStreakCompletesForUserMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[11]).toBe(setTeamStreakToActiveMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[12]).toBe(haveAllTeamMembersCompletedTasksMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[13]).toBe(setTeamStreakStartDateMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[14]).toBe(setDayTeamStreakWasCompletedMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[15]).toBe(createCompleteTeamStreakDefinitionMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[16]).toBe(saveCompleteTeamStreakMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[17]).toBe(teamStreakMaintainedMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[18]).toBe(retrieveTeamMembersMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[19]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[11]).toBe(
+            increaseTotalTimesTrackedForTeamMemberStreakMiddleware,
+        );
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[12]).toBe(
+            creditCoinsToUserForCompletingTeamMemberStreakMiddleware,
+        );
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[13]).toBe(
+            creditOidXpToUserForCompletingTeamMemberStreakMiddleware,
+        );
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[14]).toBe(setTeamStreakToActiveMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[15]).toBe(haveAllTeamMembersCompletedTasksMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[16]).toBe(setTeamStreakStartDateMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[17]).toBe(setDayTeamStreakWasCompletedMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[18]).toBe(createCompleteTeamStreakDefinitionMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[19]).toBe(saveCompleteTeamStreakMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[20]).toBe(teamStreakMaintainedMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[21]).toBe(retrieveTeamMembersMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[22]).toBe(
             notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[20]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[23]).toBe(
             sendCompleteTeamMemberStreakTaskResponseMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[21]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[24]).toBe(
             createCompleteTeamMemberStreakActivityFeedItemMiddleware,
         );
     });

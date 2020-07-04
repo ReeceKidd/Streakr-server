@@ -13,6 +13,10 @@ import { OneHundredDayChallengeStreakAchievement } from '@streakoid/streakoid-mo
 import { SNS } from '../src/sns';
 import { deleteSnsEndpoint } from './helpers/deleteSnsEndpoint';
 import { getServiceConfig } from '../src/getServiceConfig';
+import { coinValues } from '../src/helpers/coinValues';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { oidXpValues } from '../src/helpers/oidXpValues';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 
 jest.setTimeout(120000);
 
@@ -110,6 +114,7 @@ describe(testName, () => {
                     'challengeId',
                     'challengeName',
                     'timezone',
+                    'totalTimesTracked',
                     'createdAt',
                     'updatedAt',
                     '__v',
@@ -203,6 +208,7 @@ describe(testName, () => {
                     'challengeId',
                     'challengeName',
                     'timezone',
+                    'totalTimesTracked',
                     'createdAt',
                     'updatedAt',
                     '__v',
@@ -293,6 +299,7 @@ describe(testName, () => {
                     'challengeId',
                     'challengeName',
                     'timezone',
+                    'totalTimesTracked',
                     'createdAt',
                     'updatedAt',
                     '__v',
@@ -397,6 +404,7 @@ describe(testName, () => {
                     'challengeId',
                     'challengeName',
                     'timezone',
+                    'totalTimesTracked',
                     'createdAt',
                     'updatedAt',
                     '__v',
@@ -460,6 +468,75 @@ describe(testName, () => {
 
             const updatedUser = await SDK.users.getOne(userId);
             expect(updatedUser.totalStreakCompletes).toEqual(1);
+        });
+
+        test('when a user completes a challenge streak the challenge streaks total times tracked increases by one.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+
+            const name = 'Duolingo';
+            const description = 'Everyday I must complete a duolingo lesson';
+            const icon = 'duolingo';
+            const { challenge } = await SDK.challenges.create({ name, description, icon });
+            const challengeId = challenge._id;
+            const challengeStreak = await SDK.challengeStreaks.create({ userId, challengeId });
+            const challengeStreakId = challengeStreak._id;
+
+            await SDK.completeChallengeStreakTasks.create({
+                userId,
+                challengeStreakId,
+            });
+
+            const updatedChallengeStreak = await SDK.challengeStreaks.getOne({ challengeStreakId });
+            expect(updatedChallengeStreak.totalTimesTracked).toEqual(1);
+        });
+
+        test('when a user completes a challenge streak they are credited with coins.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+
+            const name = 'Duolingo';
+            const description = 'Everyday I must complete a duolingo lesson';
+            const icon = 'duolingo';
+            const { challenge } = await SDK.challenges.create({ name, description, icon });
+            const challengeId = challenge._id;
+            const challengeStreak = await SDK.challengeStreaks.create({ userId, challengeId });
+            const challengeStreakId = challengeStreak._id;
+
+            await SDK.completeChallengeStreakTasks.create({
+                userId,
+                challengeStreakId,
+            });
+
+            const updatedUser = await SDK.user.getCurrentUser();
+            expect(updatedUser.coins).toEqual(coinValues[CoinSourcesTypes.challengeStreakComplete]);
+        });
+
+        test('when a user completes a challenge streak they are credited with oidXp.', async () => {
+            expect.assertions(1);
+
+            const user = await getPayingUser({ testName });
+            const userId = user._id;
+
+            const name = 'Duolingo';
+            const description = 'Everyday I must complete a duolingo lesson';
+            const icon = 'duolingo';
+            const { challenge } = await SDK.challenges.create({ name, description, icon });
+            const challengeId = challenge._id;
+            const challengeStreak = await SDK.challengeStreaks.create({ userId, challengeId });
+            const challengeStreakId = challengeStreak._id;
+
+            await SDK.completeChallengeStreakTasks.create({
+                userId,
+                challengeStreakId,
+            });
+
+            const updatedUser = await SDK.user.getCurrentUser();
+            expect(updatedUser.oidXp).toEqual(oidXpValues[OidXpSourcesTypes.challengeStreakComplete]);
         });
 
         test('when user completes a task a CompletedChallengeStreakActivityItem is created', async () => {

@@ -30,6 +30,12 @@ import {
     getUnlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
     getSendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
     sendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
+    increaseTotalTimesTrackedForChallengeStreakMiddleware,
+    creditCoinsToUserForCompletingChallengeStreakMiddleware,
+    creditOidXpToUserForCompletingChallengeStreakMiddleware,
+    getIncreaseTotalTimesTrackedForChallengeStreakMiddleware,
+    getCreditCoinsToUserForCompletingChallengeStreakMiddleware,
+    getCreditOidXpToUserForCompletingChallengeStreakMiddleware,
 } from './createCompleteChallengeStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -37,6 +43,9 @@ import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementT
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { OneHundredDayChallengeStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { coinValues } from '../../helpers/coinValues';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 
 describe('createCompleteChallengeStreakTaskMiddlewares', () => {
     describe(`completeChallengeStreakTaskBodyValidationMiddleware`, () => {
@@ -578,6 +587,189 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
         });
     });
 
+    describe('increaseTotalTimesTrackedForChallengeStreakMiddleware', () => {
+        test('increments totalTimesTracked for challenge streak by one and calls next', async () => {
+            expect.assertions(3);
+            const challengeStreakId = '123abc';
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const challengeStreakModel = {
+                findByIdAndUpdate,
+            };
+            const request: any = { body: { challengeStreakId } };
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const middleware = getIncreaseTotalTimesTrackedForChallengeStreakMiddleware(challengeStreakModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                challengeStreakId,
+                {
+                    $inc: { totalTimesTracked: 1 },
+                },
+                { new: true },
+            );
+            expect(response.locals.challengeStreak).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws IncreaseTotalTimesTrackedForChallengeStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getIncreaseTotalTimesTrackedForChallengeStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.IncreaseTotalTimesTrackedForChallengeStreakMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('retrieveChallengeMiddleware', () => {
+        test('sets response.locals.challenge and calls next()', async () => {
+            expect.assertions(4);
+            const lean = jest.fn(() => true);
+            const findOne = jest.fn(() => ({ lean }));
+            const challengeModel = { findOne };
+            const request: any = {};
+            const response: any = { locals: { challengeStreak: { _id: '_id', challengeId: 'challengeId' } } };
+            const next = jest.fn();
+            const middleware = getRetrieveChallengeMiddleware(challengeModel as any);
+
+            await middleware(request, response, next);
+
+            expect(response.locals.challenge).toBeDefined();
+            expect(findOne).toBeCalledWith({ _id: response.locals.challengeStreak.challengeId });
+            expect(lean).toBeCalledWith();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws CreateCompleteChallengeStreakTaskUserDoesNotExist when user does not exist', async () => {
+            expect.assertions(1);
+            const lean = jest.fn(() => false);
+            const findOne = jest.fn(() => ({ lean }));
+            const challengeModel = { findOne };
+            const request: any = {};
+            const response: any = { locals: { challengeStreak: { _id: '_id' } } };
+            const next = jest.fn();
+            const middleware = getRetrieveChallengeMiddleware(challengeModel as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.CreateCompleteChallengeStreakTaskChallengeDoesNotExist),
+            );
+        });
+
+        test('throws RetrieveChallengeMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getRetrieveChallengeMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.CreateCompleteChallengeStreakTaskRetrieveChallengeMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
+    describe('creditCoinsToUserForCompletingChallengeStreakMiddleware', () => {
+        test('credits user account with coins for completing challenge streaks', async () => {
+            expect.assertions(3);
+            const challengeStreakId = '123abc';
+            const userId = 'userId';
+            const challenge = { _id: '_id', name: 'reading' };
+            const createCoinTransaction = jest.fn(() => Promise.resolve(true));
+            const request: any = { body: { challengeStreakId, userId } };
+            const response: any = { locals: { challenge } };
+            const next = jest.fn();
+            const middleware = getCreditCoinsToUserForCompletingChallengeStreakMiddleware(createCoinTransaction as any);
+
+            await middleware(request, response, next);
+
+            expect(createCoinTransaction).toBeCalledWith({
+                userId,
+                source: {
+                    coinSourceType: CoinSourcesTypes.challengeStreakComplete,
+                    challengeStreakId,
+                    challengeId: challenge._id,
+                    challengeName: challenge.name,
+                },
+                coins: coinValues[CoinSourcesTypes.challengeStreakComplete],
+            });
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws CreditCoinsToUserForCompletingChallengeStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getCreditCoinsToUserForCompletingChallengeStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.CreditCoinsToUserForCompletingChallengeStreakMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('creditOidXpToUserForCompletingChallengeStreakMiddleware', () => {
+        test('credits user account with xp for completing challenge streaks', async () => {
+            expect.assertions(3);
+            const challengeStreakId = '123abc';
+            const userId = 'userId';
+            const challenge = { _id: '_id', name: 'reading' };
+            const createOidXpTransaction = jest.fn(() => Promise.resolve(true));
+            const request: any = { body: { challengeStreakId, userId } };
+            const response: any = { locals: { challenge } };
+            const next = jest.fn();
+            const middleware = getCreditOidXpToUserForCompletingChallengeStreakMiddleware(
+                createOidXpTransaction as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(createOidXpTransaction).toBeCalledWith({
+                userId,
+                source: {
+                    oidXpSourceType: OidXpSourcesTypes.challengeStreakComplete,
+                    challengeStreakId,
+                    challengeId: challenge._id,
+                    challengeName: challenge.name,
+                },
+                oidXp: coinValues[OidXpSourcesTypes.challengeStreakComplete],
+            });
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws CreditOidXpToUserForCompletingChallengeStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getCreditOidXpToUserForCompletingChallengeStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.CreditOidXpToUserForCompletingChallengeStreakMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
     describe(`unlockOneHundredDayChallengeStreakAchievementForUserMiddleware`, () => {
         test('if challenge streak current number of days equals 100 and user has not got the OneHundredDayChallengeStreakAchievement it adds to their achievements', async () => {
             expect.assertions(4);
@@ -837,60 +1029,6 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
         });
     });
 
-    describe('retrieveChallengeMiddleware', () => {
-        test('sets response.locals.challenge and calls next()', async () => {
-            expect.assertions(4);
-            const lean = jest.fn(() => true);
-            const findOne = jest.fn(() => ({ lean }));
-            const challengeModel = { findOne };
-            const request: any = {};
-            const response: any = { locals: { challengeStreak: { _id: '_id', challengeId: 'challengeId' } } };
-            const next = jest.fn();
-            const middleware = getRetrieveChallengeMiddleware(challengeModel as any);
-
-            await middleware(request, response, next);
-
-            expect(response.locals.challenge).toBeDefined();
-            expect(findOne).toBeCalledWith({ _id: response.locals.challengeStreak.challengeId });
-            expect(lean).toBeCalledWith();
-            expect(next).toBeCalledWith();
-        });
-
-        test('throws CreateCompleteChallengeStreakTaskUserDoesNotExist when user does not exist', async () => {
-            expect.assertions(1);
-            const lean = jest.fn(() => false);
-            const findOne = jest.fn(() => ({ lean }));
-            const challengeModel = { findOne };
-            const request: any = {};
-            const response: any = { locals: { challengeStreak: { _id: '_id' } } };
-            const next = jest.fn();
-            const middleware = getRetrieveChallengeMiddleware(challengeModel as any);
-
-            await middleware(request, response, next);
-
-            expect(next).toBeCalledWith(
-                new CustomError(ErrorType.CreateCompleteChallengeStreakTaskChallengeDoesNotExist),
-            );
-        });
-
-        test('throws RetrieveChallengeMiddleware error on middleware failure', async () => {
-            expect.assertions(1);
-            const request: any = {};
-            const response: any = {};
-            const next = jest.fn();
-            const middleware = getRetrieveChallengeMiddleware({} as any);
-
-            await middleware(request, response, next);
-
-            expect(next).toBeCalledWith(
-                new CustomError(
-                    ErrorType.CreateCompleteChallengeStreakTaskRetrieveChallengeMiddleware,
-                    expect.any(Error),
-                ),
-            );
-        });
-    });
-
     describe(`createCompleteChallengeStreakActivitFeedItemMiddleware`, () => {
         test('creates a new completedChallengeStreakActivity', async () => {
             expect.assertions(2);
@@ -929,9 +1067,9 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
     });
 
     test('are defined in the correct order', async () => {
-        expect.assertions(16);
+        expect.assertions(19);
 
-        expect(createCompleteChallengeStreakTaskMiddlewares.length).toEqual(15);
+        expect(createCompleteChallengeStreakTaskMiddlewares.length).toEqual(18);
         expect(createCompleteChallengeStreakTaskMiddlewares[0]).toBe(
             completeChallengeStreakTaskBodyValidationMiddleware,
         );
@@ -949,14 +1087,24 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
         );
         expect(createCompleteChallengeStreakTaskMiddlewares[9]).toBe(increaseTotalStreakCompletesForUserMiddleware);
         expect(createCompleteChallengeStreakTaskMiddlewares[10]).toBe(
+            increaseTotalTimesTrackedForChallengeStreakMiddleware,
+        );
+        expect(createCompleteChallengeStreakTaskMiddlewares[11]).toBe(retrieveChallengeMiddleware);
+        expect(createCompleteChallengeStreakTaskMiddlewares[12]).toBe(
+            creditCoinsToUserForCompletingChallengeStreakMiddleware,
+        );
+        expect(createCompleteChallengeStreakTaskMiddlewares[13]).toBe(
+            creditOidXpToUserForCompletingChallengeStreakMiddleware,
+        );
+        expect(createCompleteChallengeStreakTaskMiddlewares[14]).toBe(
             unlockOneHundredDayChallengeStreakAchievementForUserMiddleware,
         );
-        expect(createCompleteChallengeStreakTaskMiddlewares[11]).toBe(
+        expect(createCompleteChallengeStreakTaskMiddlewares[15]).toBe(
             sendOneHundredDayChallengeStreakAchievementUnlockedPushNotificationMiddleware,
         );
-        expect(createCompleteChallengeStreakTaskMiddlewares[12]).toBe(sendTaskCompleteResponseMiddleware);
-        expect(createCompleteChallengeStreakTaskMiddlewares[13]).toBe(retrieveChallengeMiddleware);
-        expect(createCompleteChallengeStreakTaskMiddlewares[14]).toBe(
+        expect(createCompleteChallengeStreakTaskMiddlewares[16]).toBe(sendTaskCompleteResponseMiddleware);
+
+        expect(createCompleteChallengeStreakTaskMiddlewares[17]).toBe(
             createCompleteChallengeStreakActivityFeedItemMiddleware,
         );
     });

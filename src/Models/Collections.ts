@@ -25,4 +25,6 @@ export enum Collections {
     Notes = 'Notes',
     ActivityFeedItems = 'ActivityFeedItems',
     Achievements = 'Achievements',
+    CoinTransactions = 'CoinTransactions',
+    OidXpTransactions = 'OidXpTransactions',
 }

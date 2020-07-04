@@ -19,6 +19,7 @@ export const getMockTeamMemberStreak = ({
     completedToday: false,
     active: false,
     pastStreaks: [],
+    totalTimesTracked: 0,
     userId,
     timezone: 'Europe/London',
     createdAt: new Date().toString(),

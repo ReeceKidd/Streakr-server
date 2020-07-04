@@ -23,4 +23,6 @@ export enum Models {
     Note = 'Note',
     ActivityFeedItem = 'ActivityFeedItem',
     Achievements = 'Achievements',
+    CoinTransaction = 'CoinTransaction',
+    OidXpTransaction = 'OidXpTransaction',
 }

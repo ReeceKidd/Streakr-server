@@ -20,6 +20,14 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { ChallengeStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
+import { coinValues } from '../../helpers/coinValues';
+import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
+import { ChallengeStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { oidXpValues } from '../../helpers/oidXpValues';
 
 export const incompleteChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -240,22 +248,6 @@ export const decreaseTotalStreakCompletesForUserMiddleware = getDecreaseTotalStr
     userModel,
 );
 
-export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): void => {
-    try {
-        const { incompleteChallengeStreakTask } = response.locals;
-        response.status(resourceCreatedResponseCode).send(incompleteChallengeStreakTask);
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.SendChallengeTaskIncompleteResponseMiddleware, err));
-    }
-};
-
-export const sendTaskIncompleteResponseMiddleware = getSendTaskIncompleteResponseMiddleware(ResponseCodes.created);
-
 export const getRetrieveChallengeMiddleware = (challengeModel: mongoose.Model<ChallengeModel>) => async (
     request: Request,
     response: Response,
@@ -276,6 +268,100 @@ export const getRetrieveChallengeMiddleware = (challengeModel: mongoose.Model<Ch
 };
 
 export const retrieveChallengeMiddleware = getRetrieveChallengeMiddleware(challengeModel);
+
+export const getDecreaseTotalTimesTrackedForChallengeStreakMiddleware = (
+    challengeStreak: typeof challengeStreakModel,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { challengeStreakId } = request.body;
+        response.locals.challengeStreak = await challengeStreak.findByIdAndUpdate(
+            challengeStreakId,
+            {
+                $inc: { totalTimesTracked: -1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.DecreaseTotalTimesTrackedForChallengeStreakMiddleware, err));
+    }
+};
+
+export const decreaseTotalTimesTrackedForChallengeStreakMiddleware = getDecreaseTotalTimesTrackedForChallengeStreakMiddleware(
+    challengeStreakModel,
+);
+
+export const getChargeCoinsToUserForIncompletingChallengeStreakMiddleware = (
+    chargeUserCoins: typeof CoinTransactionHelpers.chargeUsersCoins,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { userId, challengeStreakId } = request.body;
+        const challenge: Challenge = response.locals.challenge;
+        const source: ChallengeStreakCompleteCoinSource = {
+            coinSourceType: CoinSourcesTypes.challengeStreakComplete,
+            challengeId: challenge._id,
+            challengeName: challenge.name,
+            challengeStreakId,
+        };
+        const coins = coinValues[CoinSourcesTypes.challengeStreakComplete];
+        response.locals.user = await chargeUserCoins({
+            userId,
+            source,
+            coins,
+        });
+        console.log('User', response.locals.user);
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.ChargeCoinsToUserForIncompletingChallengeStreakMiddleware, err));
+    }
+};
+
+export const chargeCoinsToUserForIncompletingChallengeStreakMiddleware = getChargeCoinsToUserForIncompletingChallengeStreakMiddleware(
+    CoinTransactionHelpers.chargeUsersCoins,
+);
+
+export const getChargeOidXpToUserForIncompletingChallengeStreakMiddleware = (
+    chargeUserOidXp: typeof OidXpTransactionHelpers.chargeUserOidXp,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { userId, challengeStreakId } = request.body;
+        const challenge: Challenge = response.locals.challenge;
+        const source: ChallengeStreakCompleteOidXpSource = {
+            oidXpSourceType: OidXpSourcesTypes.challengeStreakComplete,
+            challengeId: challenge._id,
+            challengeName: challenge.name,
+            challengeStreakId,
+        };
+        response.locals.user = await chargeUserOidXp({
+            userId,
+            source,
+            oidXp: oidXpValues[OidXpSourcesTypes.challengeStreakComplete],
+        });
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.ChargeOidXpToUserForIncompletingChallengeStreakMiddleware, err));
+    }
+};
+
+export const chargeOidXpToUserForIncompletingChallengeStreakMiddleware = getChargeOidXpToUserForIncompletingChallengeStreakMiddleware(
+    OidXpTransactionHelpers.chargeUserOidXp,
+);
+
+export const getSendTaskIncompleteResponseMiddleware = (resourceCreatedResponseCode: number) => (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const { incompleteChallengeStreakTask } = response.locals;
+        response.status(resourceCreatedResponseCode).send(incompleteChallengeStreakTask);
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.SendChallengeTaskIncompleteResponseMiddleware, err));
+    }
+};
+
+export const sendTaskIncompleteResponseMiddleware = getSendTaskIncompleteResponseMiddleware(ResponseCodes.created);
 
 export const getCreateIncompleteChallengeStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
@@ -314,7 +400,10 @@ export const createIncompleteChallengeStreakTaskMiddlewares = [
     saveTaskIncompleteMiddleware,
     incompleteChallengeStreakMiddleware,
     decreaseTotalStreakCompletesForUserMiddleware,
-    sendTaskIncompleteResponseMiddleware,
     retrieveChallengeMiddleware,
+    decreaseTotalTimesTrackedForChallengeStreakMiddleware,
+    chargeCoinsToUserForIncompletingChallengeStreakMiddleware,
+    chargeOidXpToUserForIncompletingChallengeStreakMiddleware,
+    sendTaskIncompleteResponseMiddleware,
     createIncompleteChallengeStreakActivityFeedItemMiddleware,
 ];

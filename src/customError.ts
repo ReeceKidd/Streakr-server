@@ -557,9 +557,25 @@ export enum ErrorType {
     FormatTeamStreakMiddleware,
     FormatTeamStreaksMiddleware,
     CreateTeamStreakFormatTeamStreakMiddleware,
-    CompleteSoloStreakTaskIncreaseCoinsForUserMiddleware,
-    CompleteSoloStreakTaskIncreaseOidXpForUserMiddleware,
+    CreditCoinsToUserForCompletingSoloStreakMiddleware,
+    CreditOidXpToUserForCompletingSoloStreakMiddleware,
     NotifyOtherTeamMembersAboutNewTeamMemberMiddleware,
+    IncreaseTotalTimesTrackedForSoloStreakMiddleware,
+    DecreaseTotalTimesTrackedForSoloStreakMiddleware,
+    ChargeCoinsToUserForIncompletingSoloStreakMiddleware,
+    ChargeOidXpToUserForIncompletingSoloStreakMiddleware,
+    IncreaseTotalTimesTrackedForChallengeStreakMiddleware,
+    CreditCoinsToUserForCompletingChallengeStreakMiddleware,
+    CreditOidXpToUserForCompletingChallengeStreakMiddleware,
+    DecreaseTotalTimesTrackedForChallengeStreakMiddleware,
+    ChargeCoinsToUserForIncompletingChallengeStreakMiddleware,
+    ChargeOidXpToUserForIncompletingChallengeStreakMiddleware,
+    IncreaseTotalTimesTrackedForTeamMemberStreakMiddleware,
+    CreditCoinsToUserForCompletingTeamMemberStreakMiddleware,
+    CreditOidXpToUserForCompletingTeamMemberStreakMiddleware,
+    DecreaseTotalTimesTrackedForTeamMemberStreakMiddleware,
+    ChargeCoinsToUserForIncompletingTeamMemberStreakMiddleware,
+    ChargeOidXpToUserForIncompletingTeamMemberStreakMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -4543,14 +4559,14 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CompleteSoloStreakTaskIncreaseCoinsForUserMiddleware:
+            case ErrorType.CreditCoinsToUserForCompletingSoloStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-464`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CompleteSoloStreakTaskIncreaseOidXpForUserMiddleware:
+            case ErrorType.CreditOidXpToUserForCompletingSoloStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-465`,
                     message: internalServerMessage,
@@ -4560,6 +4576,118 @@ export class CustomError extends Error {
             case ErrorType.NotifyOtherTeamMembersAboutNewTeamMemberMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-466`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseTotalTimesTrackedForSoloStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-467`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DecreaseTotalTimesTrackedForSoloStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-468`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChargeCoinsToUserForIncompletingSoloStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-469`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChargeOidXpToUserForIncompletingSoloStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-470`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseTotalTimesTrackedForChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-471`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreditCoinsToUserForCompletingChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-472`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreditOidXpToUserForCompletingChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-473`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DecreaseTotalTimesTrackedForChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-474`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChargeCoinsToUserForIncompletingChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-475`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChargeOidXpToUserForIncompletingChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-476`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseTotalTimesTrackedForTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-477`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreditCoinsToUserForCompletingTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-478`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreditOidXpToUserForCompletingTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-479`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DecreaseTotalTimesTrackedForTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-480`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChargeCoinsToUserForIncompletingTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-481`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChargeOidXpToUserForIncompletingTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-481`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

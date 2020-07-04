@@ -120,6 +120,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -169,6 +170,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -304,6 +306,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -353,6 +356,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -513,6 +517,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -562,6 +567,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -716,6 +722,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -765,6 +772,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -890,6 +898,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -955,6 +964,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -1004,6 +1014,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -1160,6 +1171,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -1179,6 +1191,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -1269,6 +1282,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -1318,6 +1332,7 @@ describe(testName, () => {
                 'userId',
                 'teamStreakId',
                 'timezone',
+                'totalTimesTracked',
                 'createdAt',
                 'updatedAt',
                 '__v',
@@ -1359,7 +1374,7 @@ describe(testName, () => {
         expect(Object.keys(creator).sort()).toEqual(['_id', 'username'].sort());
     });
 
-    test('when team member incompletes a task thier totalStreakCompletes is decreased by one.', async () => {
+    test('when team member incompletes a task the users totalStreakCompletes is decreased by one.', async () => {
         expect.assertions(1);
 
         const user = await getPayingUser({ testName });
@@ -1395,6 +1410,120 @@ describe(testName, () => {
 
         const updatedUser = await SDK.users.getOne(userId);
         expect(updatedUser.totalStreakCompletes).toEqual(0);
+    });
+
+    test('when team member incompletes a task the team streaks totalTimesTracked is decreased by one.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const members = [{ memberId: userId }];
+
+        const streakName = 'Daily Spanish';
+
+        const teamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName,
+            members,
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId: teamStreak._id,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+
+        await SDK.completeTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        await SDK.incompleteTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        const updatedTeamMemberStreak = await SDK.teamMemberStreaks.getOne(teamMemberStreak._id);
+        expect(updatedTeamMemberStreak.totalTimesTracked).toEqual(0);
+    });
+
+    test('when team member incompletes a task the user is charged coins.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const members = [{ memberId: userId }];
+
+        const streakName = 'Daily Spanish';
+
+        const teamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName,
+            members,
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId: teamStreak._id,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+
+        await SDK.completeTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        await SDK.incompleteTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.coins).toEqual(0);
+    });
+
+    test('when team member incompletes a task the user is charged oidXp.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const members = [{ memberId: userId }];
+
+        const streakName = 'Daily Spanish';
+
+        const teamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName,
+            members,
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId: teamStreak._id,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+
+        await SDK.completeTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        await SDK.incompleteTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.oidXp).toEqual(0);
     });
 
     test('when team member completes a task a CompletedTeamMemberStreakActivityFeedItem is created', async () => {
