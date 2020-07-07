@@ -576,6 +576,22 @@ export enum ErrorType {
     DecreaseTotalTimesTrackedForTeamMemberStreakMiddleware,
     ChargeCoinsToUserForIncompletingTeamMemberStreakMiddleware,
     ChargeOidXpToUserForIncompletingTeamMemberStreakMiddleware,
+    RetreiveChallengeStreakToRecoverMiddleware,
+    ReplaceChallengeStreakCurrentStreakWithLostStreak,
+    SendRecoveredChallengeStreakMiddleware,
+    RecoverChallengeStreakChallengeStreakNotFound,
+    RecoverChallengeStreakChallengeNoLostStreak,
+    RetreiveSoloStreakToRecoverMiddleware,
+    ReplaceSoloStreakCurrentStreakWithLostStreak,
+    SendRecoveredSoloStreakMiddleware,
+    CreateRecoveredChallengeStreakActivityFeedItemMiddleware,
+    CreateRecoveredChallengeStreakTrackingEventMiddleware,
+    CreateRecoveredSoloStreakActivityFeedItemMiddleware,
+    CreateRecoveredSoloStreakTrackingEventMiddleware,
+    RecoverSoloStreakSoloNoLostStreak,
+    RecoverSoloStreakSoloStreakNotFound,
+    CreateACompleteChallengeStreakTaskForPreviousDayMiddleware,
+    CreateACompleteSoloStreakTaskForPreviousDayMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1402,6 +1418,38 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-109`,
                     message: 'Team streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverChallengeStreakChallengeStreakNotFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-110`,
+                    message: 'Challenge streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverChallengeStreakChallengeNoLostStreak: {
+                return {
+                    code: `${ResponseCodes.badRequest}-111`,
+                    message: 'Challenge streak has no past streaks.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverSoloStreakSoloNoLostStreak: {
+                return {
+                    code: `${ResponseCodes.badRequest}-112`,
+                    message: 'Solo streak has no past streaks.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverSoloStreakSoloStreakNotFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-113`,
+                    message: 'Solo streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4687,7 +4735,91 @@ export class CustomError extends Error {
 
             case ErrorType.ChargeOidXpToUserForIncompletingTeamMemberStreakMiddleware:
                 return {
-                    code: `${ResponseCodes.warning}-481`,
+                    code: `${ResponseCodes.warning}-482`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RetreiveChallengeStreakToRecoverMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-483`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ReplaceChallengeStreakCurrentStreakWithLostStreak:
+                return {
+                    code: `${ResponseCodes.warning}-484`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendRecoveredChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-485`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RetreiveSoloStreakToRecoverMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-486`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ReplaceSoloStreakCurrentStreakWithLostStreak:
+                return {
+                    code: `${ResponseCodes.warning}-487`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendRecoveredSoloStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-488`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRecoveredChallengeStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-489`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRecoveredChallengeStreakTrackingEventMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-490`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRecoveredSoloStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-491`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRecoveredSoloStreakTrackingEventMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-492`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateACompleteChallengeStreakTaskForPreviousDayMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-493`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateACompleteSoloStreakTaskForPreviousDayMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-494`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

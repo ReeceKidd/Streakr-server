@@ -8,6 +8,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreaks';
+import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -76,25 +77,7 @@ describe(testName, () => {
         expect(challengeStreak.timezone).toEqual('Europe/London');
         expect(challengeStreak.createdAt).toEqual(expect.any(String));
         expect(challengeStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(challengeStreak).sort()).toEqual(
-            [
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(challengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
     test('incomplete challenge streaks can be retrieved', async () => {
@@ -141,25 +124,7 @@ describe(testName, () => {
         const challengeStreak = challengeStreaks[0];
 
         expect(challengeStreak.completedToday).toEqual(false);
-        expect(Object.keys(challengeStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(challengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
     test('completed challenge streaks can be retrieved', async () => {
@@ -192,25 +157,7 @@ describe(testName, () => {
         });
 
         expect(updatedChallengeStreak.completedToday).toEqual(true);
-        expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-            [
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
     test('archived challenge streaks can be retrieved', async () => {
@@ -244,25 +191,7 @@ describe(testName, () => {
         const updatedChallengeStreak = challengeStreaks[0];
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.archived);
-        expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-            [
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
     test('deleted challenge streaks can be retrieved', async () => {
@@ -297,25 +226,7 @@ describe(testName, () => {
         const updatedChallengeStreak = challengeStreaks[0];
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.deleted);
-        expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-            [
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
     test('challenge streaks can be retrieved with a sort field', async () => {
@@ -345,24 +256,6 @@ describe(testName, () => {
 
         const challengeStreak = challengeStreaks[0];
 
-        expect(Object.keys(challengeStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(challengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 });

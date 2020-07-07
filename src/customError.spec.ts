@@ -1102,6 +1102,50 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to RecoverChallengeStreakChallengeStreakNotFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverChallengeStreakChallengeStreakNotFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-110`);
+        expect(message).toBe('Challenge streak does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to RecoverChallengeStreakChallengeNoLostStreak`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverChallengeStreakChallengeNoLostStreak);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-111`);
+        expect(message).toBe('Challenge streak has no past streaks.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to RecoverSoloStreakSoloNoLostStreak`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverSoloStreakSoloNoLostStreak);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-112`);
+        expect(message).toBe('Solo streak has no past streaks.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to RecoverSoloStreakSoloStreakNotFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverSoloStreakSoloStreakNotFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-113`);
+        expect(message).toBe('Solo streak does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -6233,6 +6277,138 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-482`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RetreiveChallengeStreakToRecoverMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RetreiveChallengeStreakToRecoverMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-483`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to ReplaceChallengeStreakCurrentStreakWithLostStreak`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ReplaceChallengeStreakCurrentStreakWithLostStreak);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-484`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendRecoveredChallengeStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendRecoveredChallengeStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-485`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RetreiveSoloStreakToRecoverMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RetreiveSoloStreakToRecoverMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-486`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to ReplaceSoloStreakCurrentStreakWithLostStreak`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ReplaceSoloStreakCurrentStreakWithLostStreak);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-487`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendRecoveredSoloStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendRecoveredSoloStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-488`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRecoveredChallengeStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRecoveredChallengeStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-489`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRecoveredChallengeStreakTrackingEventMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRecoveredChallengeStreakTrackingEventMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-490`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRecoveredSoloStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRecoveredSoloStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-491`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRecoveredSoloStreakTrackingEventMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRecoveredSoloStreakTrackingEventMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-492`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateACompleteChallengeStreakTaskForPreviousDayMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateACompleteChallengeStreakTaskForPreviousDayMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-493`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateACompleteSoloStreakTaskForPreviousDayMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateACompleteSoloStreakTaskForPreviousDayMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-494`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

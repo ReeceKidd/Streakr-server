@@ -9,6 +9,8 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { correctTeamStreakKeys } from '../src/testHelpers/correctTeamStreakKeys';
+import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -89,24 +91,7 @@ describe(testName, () => {
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['startDate', 'numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
         expect(Object.keys(teamStreak).sort()).toEqual(
-            [
-                '_id',
-                'members',
-                'status',
-                'creatorId',
-                'streakName',
-                'streakDescription',
-                'numberOfMinutes',
-                'timezone',
-                'active',
-                'completedToday',
-                'inviteKey',
-                'currentStreak',
-                'pastStreaks',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
+            [...correctTeamStreakKeys, 'inviteKey', 'numberOfMinutes', 'streakDescription'].sort(),
         );
 
         expect(teamStreak.members.length).toEqual(1);

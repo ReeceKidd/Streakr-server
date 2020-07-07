@@ -8,6 +8,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -67,24 +68,7 @@ describe(testName, () => {
         expect(pastStreaks).toEqual([]);
         expect(createdAt).toBeDefined();
         expect(updatedAt).toBeDefined();
-        expect(Object.keys(soloStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'streakName',
-                'streakDescription',
-                'userId',
-                'timezone',
-                'numberOfMinutes',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(soloStreak).sort()).toEqual([...correctSoloStreakKeys, 'numberOfMinutes'].sort());
     });
 
     test(`creates solo streak without a description or number of minutes`, async () => {
@@ -126,23 +110,7 @@ describe(testName, () => {
         expect(pastStreaks).toEqual([]);
         expect(createdAt).toBeDefined();
         expect(updatedAt).toBeDefined();
-        expect(Object.keys(soloStreak).sort()).toEqual(
-            [
-                'status',
-                'currentStreak',
-                'streakDescription',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'streakName',
-                'userId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
     test(`when a soloStreak is created the users live streak count is increased by one.`, async () => {

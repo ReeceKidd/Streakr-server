@@ -6,6 +6,7 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -66,21 +67,7 @@ describe(testName, () => {
         expect(teamMemberStreak.timezone).toBeDefined();
         expect(teamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(teamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(teamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
     });
 
     test(`sends team member streak does not exist error when team member streak doesn't exist`, async () => {

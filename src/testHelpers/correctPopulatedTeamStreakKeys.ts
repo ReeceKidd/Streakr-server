@@ -1,0 +1,17 @@
+export const correctPopulatedTeamStreakKeys = [
+    '_id',
+    'status',
+    'currentStreak',
+    'completedToday',
+    'active',
+    'pastStreaks',
+    'streakName',
+    'timezone',
+    'creator',
+    'creatorId',
+    'members',
+    'createdAt',
+    'updatedAt',
+    'inviteKey',
+    '__v',
+].sort();

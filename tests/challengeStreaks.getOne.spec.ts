@@ -7,6 +7,7 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -71,25 +72,7 @@ describe(testName, () => {
         expect(challengeStreak._id).toEqual(expect.any(String));
         expect(challengeStreak.createdAt).toEqual(expect.any(String));
         expect(challengeStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(challengeStreak).sort()).toEqual(
-            [
-                '_id',
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(challengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
     test(`sends challenge streak does not exist error when challenge streak doesn't exist`, async () => {

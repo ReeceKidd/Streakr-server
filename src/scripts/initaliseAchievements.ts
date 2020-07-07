@@ -13,7 +13,6 @@ export const initializeAchievements = async () => {
             description: 'Complete a solo streak for one hundred days',
         });
         await oneHundredDaySoloStreakAchievement.save();
-        console.log(`Created ${AchievementTypes.oneHundredDaySoloStreak}`);
     }
 
     const doesOneHundredDayChallengeStreakAchievementExist = await achievementModel.findOne({
@@ -26,6 +25,5 @@ export const initializeAchievements = async () => {
             description: 'Complete a challenge streak for one hundred days',
         });
         await oneHundredDayChallengeStreakAchievement.save();
-        console.log(`Created ${AchievementTypes.oneHundredDayChallengeStreak}`);
     }
 };

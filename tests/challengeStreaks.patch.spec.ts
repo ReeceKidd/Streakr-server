@@ -13,6 +13,7 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -90,24 +91,7 @@ describe(testName, () => {
         expect(updatedChallengeStreak.createdAt).toEqual(expect.any(String));
         expect(updatedChallengeStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'userDefinedIndex',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
+            [...correctChallengeStreakKeys, 'userDefinedIndex'].sort(),
         );
     });
 
@@ -137,28 +121,13 @@ describe(testName, () => {
             challengeStreakId,
             updateData: {
                 status: StreakStatus.deleted,
+                userDefinedIndex: 1,
             },
         });
 
         expect(updatedChallengeStreak.status).toEqual(StreakStatus.deleted);
         expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
+            [...correctChallengeStreakKeys, 'userDefinedIndex'].sort(),
         );
 
         const updatedChallenge = await SDK.challenges.getOne({ challengeId: updatedChallengeStreak.challengeId });

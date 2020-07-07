@@ -10,6 +10,7 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -79,24 +80,7 @@ describe(testName, () => {
         expect(updatedSoloStreak.createdAt).toEqual(expect.any(String));
         expect(updatedSoloStreak.updatedAt).toEqual(expect.any(String));
         expect(updatedSoloStreak.userDefinedIndex).toEqual(userDefinedIndex);
-        expect(Object.keys(updatedSoloStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'streakDescription',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'streakName',
-                'userId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                'userDefinedIndex',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedSoloStreak).sort()).toEqual([...correctSoloStreakKeys, 'userDefinedIndex'].sort());
     });
 
     test(`when solo streak is archived if current user has a customReminder enabled it is disabled`, async done => {

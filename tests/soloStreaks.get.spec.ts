@@ -8,6 +8,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
+import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -68,23 +69,7 @@ describe(testName, () => {
         expect(soloStreak.timezone).toBeDefined();
         expect(soloStreak.createdAt).toEqual(expect.any(String));
         expect(soloStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(soloStreak).sort()).toEqual(
-            [
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'streakName',
-                'streakDescription',
-                'userId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
     test('incomplete solo streaks can be retrieved', async () => {
@@ -142,23 +127,7 @@ describe(testName, () => {
         expect(soloStreak.timezone).toEqual(expect.any(String));
         expect(soloStreak.createdAt).toEqual(expect.any(String));
         expect(soloStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(soloStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'streakName',
-                'streakDescription',
-                'userId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
     test('completed solo streaks can be retrieved', async () => {
@@ -208,23 +177,7 @@ describe(testName, () => {
         expect(soloStreak.timezone).toEqual(expect.any(String));
         expect(soloStreak.createdAt).toEqual(expect.any(String));
         expect(soloStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(soloStreak).sort()).toEqual(
-            [
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'streakName',
-                'streakDescription',
-                'userId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
     test('archived solo streaks can be retrieved', async () => {
@@ -265,23 +218,7 @@ describe(testName, () => {
         expect(soloStreak.timezone).toEqual(expect.any(String));
         expect(soloStreak.createdAt).toEqual(expect.any(String));
         expect(soloStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(soloStreak).sort()).toEqual(
-            [
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'streakName',
-                'streakDescription',
-                'userId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
     test('deleted solo streaks can be retrieved', async () => {
@@ -322,23 +259,7 @@ describe(testName, () => {
         expect(soloStreak.timezone).toEqual(expect.any(String));
         expect(soloStreak.createdAt).toEqual(expect.any(String));
         expect(soloStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(soloStreak).sort()).toEqual(
-            [
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'streakName',
-                'streakDescription',
-                'userId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
     test(`solo streaks can be retrieved using sortField query parameter`, async () => {
@@ -361,22 +282,6 @@ describe(testName, () => {
 
         const soloStreak = soloStreaks[0];
 
-        expect(Object.keys(soloStreak).sort()).toEqual(
-            [
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'streakName',
-                'streakDescription',
-                'userId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 });

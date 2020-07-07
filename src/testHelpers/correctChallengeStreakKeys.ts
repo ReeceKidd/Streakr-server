@@ -1,0 +1,18 @@
+export const correctChallengeStreakKeys = [
+    '_id',
+    'status',
+    'currentStreak',
+    'completedToday',
+    'active',
+    'pastStreaks',
+    'userId',
+    'username',
+    'userProfileImage',
+    'challengeId',
+    'challengeName',
+    'totalTimesTracked',
+    'timezone',
+    'createdAt',
+    'updatedAt',
+    '__v',
+].sort();

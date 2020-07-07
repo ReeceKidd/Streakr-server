@@ -1,0 +1,15 @@
+export const correctTeamStreakKeys = [
+    '_id',
+    'status',
+    'currentStreak',
+    'completedToday',
+    'active',
+    'pastStreaks',
+    'streakName',
+    'timezone',
+    'creatorId',
+    'members',
+    'createdAt',
+    'updatedAt',
+    '__v',
+].sort();

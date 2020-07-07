@@ -9,6 +9,7 @@ import { Mongoose } from 'mongoose';
 import { disconnectDatabase } from '../../setup/disconnectDatabase';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
+import { correctTeamMemberStreakKeys } from '../../../src/testHelpers/correctTeamMemberStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -75,21 +76,7 @@ describe(testName, () => {
         expect(teamMemberStreak.timezone).toEqual(`Europe/London`);
         expect(teamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(teamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(teamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamMemberStreakId,

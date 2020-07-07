@@ -6,6 +6,7 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -75,21 +76,7 @@ describe(testName, () => {
         expect(timezone).toBeDefined();
         expect(createdAt).toEqual(expect.any(String));
         expect(updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(teamMemberStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
     });
 
     test(`increases team member totalLiveStreaks by one when team member streak is created.`, async () => {

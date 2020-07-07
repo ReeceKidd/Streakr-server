@@ -8,6 +8,7 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -71,25 +72,7 @@ describe(testName, () => {
         expect(challengeStreak.pastStreaks).toEqual([]);
         expect(challengeStreak.createdAt).toBeDefined();
         expect(challengeStreak.updatedAt).toBeDefined();
-        expect(Object.keys(challengeStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(challengeStreak).sort()).toEqual(correctChallengeStreakKeys);
 
         const updatedChallenge = await SDK.challenges.getOne({ challengeId });
 

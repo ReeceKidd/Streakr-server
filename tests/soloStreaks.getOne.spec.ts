@@ -7,6 +7,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { setupDatabase } from './setup/setupDatabase';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -63,23 +64,7 @@ describe(testName, () => {
         expect(soloStreak._id).toEqual(expect.any(String));
         expect(soloStreak.createdAt).toEqual(expect.any(String));
         expect(soloStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(soloStreak).sort()).toEqual(
-            [
-                '_id',
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'streakName',
-                'streakDescription',
-                'userId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
     test(`sends solo streak does not exist error when solo streak doesn't exist`, async () => {

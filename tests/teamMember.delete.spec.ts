@@ -8,6 +8,9 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { setupDatabase } from './setup/setupDatabase';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { correctTeamStreakKeys } from '../src/testHelpers/correctTeamStreakKeys';
+import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
+import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -75,24 +78,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(teamStreak).sort()).toEqual(
-            [
-                '_id',
-                'members',
-                'status',
-                'creatorId',
-                'creator',
-                'streakName',
-                'timezone',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamStreak).sort()).toEqual([...correctTeamStreakKeys, 'creator'].sort());
 
         const { creator } = teamStreak;
         expect(creator._id).toBeDefined();
@@ -116,18 +102,6 @@ describe(testName, () => {
         expect(member.teamMemberStreak.timezone).toBeDefined();
         expect(member.teamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(member.teamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(member.teamMemberStreak)).toEqual([
-            '_id',
-            'currentStreak',
-            'completedToday',
-            'active',
-            'pastStreaks',
-            'userId',
-            'teamStreakId',
-            'timezone',
-            'createdAt',
-            'updatedAt',
-            '__v',
-        ]);
+        expect(Object.keys(member.teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
     });
 });

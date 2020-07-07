@@ -309,7 +309,6 @@ export const getChargeCoinsToUserForIncompletingChallengeStreakMiddleware = (
             source,
             coins,
         });
-        console.log('User', response.locals.user);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.ChargeCoinsToUserForIncompletingChallengeStreakMiddleware, err));

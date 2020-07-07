@@ -8,6 +8,8 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { GetAllTeamStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamStreaks';
+import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
+import { correctTeamStreakKeys } from '../src/testHelpers/correctTeamStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -62,23 +64,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(teamStreak).sort()).toEqual(
-            [
-                '_id',
-                'members',
-                'status',
-                'creatorId',
-                'streakName',
-                'timezone',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamStreak).sort()).toEqual(correctTeamStreakKeys);
 
         expect(teamStreak.members.length).toEqual(1);
 
@@ -89,21 +75,7 @@ describe(testName, () => {
         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
 
         const { teamMemberStreak } = member;
-        expect(Object.keys(teamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const { currentStreak } = teamMemberStreak;
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
@@ -155,23 +127,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(teamStreak).sort()).toEqual(
-            [
-                '_id',
-                'members',
-                'status',
-                'creatorId',
-                'streakName',
-                'timezone',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamStreak).sort()).toEqual(correctTeamStreakKeys);
 
         expect(teamStreak.members.length).toEqual(1);
 
@@ -182,21 +138,7 @@ describe(testName, () => {
         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
 
         const { teamMemberStreak } = member;
-        expect(Object.keys(teamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const { currentStreak } = teamMemberStreak;
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
@@ -246,23 +188,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(teamStreak).sort()).toEqual(
-            [
-                '_id',
-                'members',
-                'status',
-                'creatorId',
-                'streakName',
-                'timezone',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamStreak).sort()).toEqual(correctTeamStreakKeys);
 
         expect(teamStreak.members.length).toEqual(1);
 
@@ -273,21 +199,7 @@ describe(testName, () => {
         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
 
         const { teamMemberStreak } = member;
-        expect(Object.keys(teamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const { currentStreak } = teamMemberStreak;
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
@@ -321,23 +233,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(teamStreak).sort()).toEqual(
-            [
-                '_id',
-                'members',
-                'status',
-                'creatorId',
-                'streakName',
-                'timezone',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamStreak).sort()).toEqual(correctTeamStreakKeys);
 
         expect(teamStreak.members.length).toEqual(1);
 
@@ -348,21 +244,7 @@ describe(testName, () => {
         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
 
         const { teamMemberStreak } = member;
-        expect(Object.keys(teamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const { currentStreak } = teamMemberStreak;
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
@@ -418,23 +300,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(teamStreak).sort()).toEqual(
-            [
-                '_id',
-                'members',
-                'status',
-                'creatorId',
-                'streakName',
-                'timezone',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamStreak).sort()).toEqual(correctTeamStreakKeys);
 
         expect(teamStreak.members.length).toEqual(1);
 
@@ -445,21 +311,7 @@ describe(testName, () => {
         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
 
         const { teamMemberStreak } = member;
-        expect(Object.keys(teamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const { currentStreak } = teamMemberStreak;
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
@@ -497,23 +349,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(teamStreak).sort()).toEqual(
-            [
-                '_id',
-                'members',
-                'status',
-                'creatorId',
-                'streakName',
-                'timezone',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamStreak).sort()).toEqual(correctTeamStreakKeys);
 
         expect(teamStreak.members.length).toEqual(1);
 
@@ -524,21 +360,7 @@ describe(testName, () => {
         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
 
         const { teamMemberStreak } = member;
-        expect(Object.keys(teamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const { currentStreak } = teamMemberStreak;
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);

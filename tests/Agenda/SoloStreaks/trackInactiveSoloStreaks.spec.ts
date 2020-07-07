@@ -10,6 +10,7 @@ import { Mongoose } from 'mongoose';
 import { disconnectDatabase } from '../../setup/disconnectDatabase';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
+import { correctSoloStreakKeys } from '../../../src/testHelpers/correctSoloStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -71,23 +72,7 @@ describe(testName, () => {
         expect(updatedSoloStreak._id).toEqual(expect.any(String));
         expect(updatedSoloStreak.createdAt).toEqual(expect.any(String));
         expect(updatedSoloStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(updatedSoloStreak).sort()).toEqual(
-            [
-                '_id',
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'streakName',
-                'streakDescription',
-                'userId',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
 
         const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
