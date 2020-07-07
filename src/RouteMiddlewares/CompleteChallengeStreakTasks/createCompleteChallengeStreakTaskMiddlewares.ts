@@ -425,6 +425,7 @@ export const getSendOneHundredDayChallengeStreakAchievementUnlockedPushNotificat
                     androidEndpointArn,
                     iosEndpointArn,
                     userId: user._id,
+                    pushNotificationType: PushNotificationTypes.unlockedAchievement,
                 });
             } catch (err) {
                 if (err.code !== EndpointDisabledError) {

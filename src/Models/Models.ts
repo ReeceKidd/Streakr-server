@@ -25,4 +25,5 @@ export enum Models {
     Achievements = 'Achievements',
     CoinTransaction = 'CoinTransaction',
     OidXpTransaction = 'OidXpTransaction',
+    PushNotificationRecord = 'PushNotificationRecord',
 }

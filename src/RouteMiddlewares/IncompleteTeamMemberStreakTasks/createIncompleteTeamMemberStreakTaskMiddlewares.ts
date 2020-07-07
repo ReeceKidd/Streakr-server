@@ -516,6 +516,7 @@ export const getNotifyTeamMembersThatUserHasIncompletedTaskMiddleware = (
                             androidEndpointArn,
                             iosEndpointArn,
                             userId: teamMember._id,
+                            pushNotificationType: PushNotificationTypes.incompletedTeamStreakUpdate,
                         });
                     } catch (err) {
                         if (err.code !== EndpointDisabledError) {

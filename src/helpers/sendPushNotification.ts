@@ -2,6 +2,9 @@
 import { SNS } from '../../src/sns';
 import { PushNotificationType } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
 import { userModel } from '../Models/User';
+import { PushNotificationRecord } from '@streakoid/streakoid-models/lib/Models/PushNotificationRecord';
+import { pushNotificationRecordModel } from '../Models/PushNotificationRecord';
+import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 
 const buildAPSPayloadString = ({ body, data }: { body: string; data: PushNotificationType }): string => {
     return JSON.stringify({
@@ -87,6 +90,7 @@ export const sendPushNotification = async ({
     data,
     userId,
     body,
+    pushNotificationType,
     androidEndpointArn,
     iosEndpointArn,
 }: {
@@ -94,12 +98,22 @@ export const sendPushNotification = async ({
     data: PushNotificationType;
     userId: string;
     body: string;
+    pushNotificationType: PushNotificationTypes;
     androidEndpointArn?: string;
     iosEndpointArn?: string;
-}) => {
+}): Promise<PushNotificationRecord> => {
     try {
-        const result = await sendSNSPushNotification({ title, data, body, androidEndpointArn, iosEndpointArn });
-        return result;
+        await sendSNSPushNotification({ title, data, body, androidEndpointArn, iosEndpointArn });
+        const pushNotificationRecord = new pushNotificationRecordModel({
+            userId,
+            pushNotificationType,
+            title,
+            body,
+            data,
+            androidEndpointArn,
+            iosEndpointArn,
+        });
+        return pushNotificationRecord.save();
     } catch (err) {
         if (err.code == 'EndpointDisabled') {
             if (androidEndpointArn) {

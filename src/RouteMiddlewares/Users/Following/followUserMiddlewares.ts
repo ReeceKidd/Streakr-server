@@ -229,6 +229,7 @@ export const getSendNewFollowerRequestNotificationMiddleware = (sendPush: typeof
                     androidEndpointArn,
                     iosEndpointArn,
                     userId: user._id,
+                    pushNotificationType: PushNotificationTypes.newFollower,
                 });
             } catch (err) {
                 if (err.code !== EndpointDisabledError) {

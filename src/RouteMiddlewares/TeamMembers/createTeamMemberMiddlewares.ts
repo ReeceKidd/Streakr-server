@@ -232,6 +232,7 @@ export const getNotifyOtherTeamMembersAboutNewTeamMemberMiddleware = (
                             androidEndpointArn,
                             iosEndpointArn,
                             userId: teamMember.memberId,
+                            pushNotificationType: PushNotificationTypes.joinedTeamStreak,
                         });
                     } catch (err) {
                         if (err.code !== EndpointDisabledError) {

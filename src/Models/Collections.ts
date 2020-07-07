@@ -27,4 +27,5 @@ export enum Collections {
     Achievements = 'Achievements',
     CoinTransactions = 'CoinTransactions',
     OidXpTransactions = 'OidXpTransactions',
+    PushNotificationRecords = 'PushNotificationRecords',
 }

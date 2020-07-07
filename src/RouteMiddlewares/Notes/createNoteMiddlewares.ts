@@ -110,6 +110,7 @@ export const getNotifyTeamMembersThatUserHasAddedANoteMiddleware = (
                                 androidEndpointArn,
                                 iosEndpointArn,
                                 userId: teamMember.memberId,
+                                pushNotificationType: PushNotificationTypes.addedNoteToTeamStreak,
                             });
                         } catch (err) {
                             if (err.code !== EndpointDisabledError) {

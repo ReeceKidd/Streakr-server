@@ -575,6 +575,7 @@ export const getNotifyTeamMembersThatUserHasCompletedTaskMiddleware = ({
                             androidEndpointArn,
                             iosEndpointArn,
                             userId: teamMember._id,
+                            pushNotificationType: PushNotificationTypes.completedTeamStreakUpdate,
                         });
                         return teamMember;
                     } catch (err) {

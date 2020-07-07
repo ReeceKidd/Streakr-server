@@ -55,7 +55,7 @@ describe(testName, () => {
     });
 
     test('sends android push notification via SNS if everything is correct.', async () => {
-        expect.assertions(1);
+        expect.assertions(5);
         const user = await getPayingUser({ testName });
 
         const friend = await getFriend({ testName });
@@ -89,8 +89,19 @@ describe(testName, () => {
                 body,
             };
 
-            const result = await sendPushNotification({ title, body, data, userId: user._id, androidEndpointArn });
-            expect(result).toBeDefined();
+            const result = await sendPushNotification({
+                title,
+                body,
+                data,
+                pushNotificationType: PushNotificationTypes.completedTeamStreakUpdate,
+                userId: user._id,
+                androidEndpointArn,
+            });
+            expect(result.userId).toEqual(String(user._id));
+            expect(result.pushNotificationType).toEqual(PushNotificationTypes.completedTeamStreakUpdate);
+            expect(result.title).toEqual(title);
+            expect(result.body).toEqual(body);
+            expect(result.androidEndpointArn).toEqual(androidEndpointArn);
         }
     });
 
@@ -135,7 +146,14 @@ describe(testName, () => {
             };
 
             try {
-                await sendPushNotification({ title, body, data, userId: user._id, androidEndpointArn });
+                await sendPushNotification({
+                    title,
+                    body,
+                    data,
+                    userId: user._id,
+                    androidEndpointArn,
+                    pushNotificationType: PushNotificationTypes.completedTeamStreakUpdate,
+                });
             } catch (err) {
                 expect(err.code).toEqual('EndpointDisabled');
                 const userResult = await userModel.findById(updatedUser._id);
@@ -180,7 +198,14 @@ describe(testName, () => {
                 body,
             };
 
-            const result = await sendPushNotification({ title, body, data, userId: user._id, iosEndpointArn });
+            const result = await sendPushNotification({
+                title,
+                body,
+                data,
+                userId: user._id,
+                iosEndpointArn,
+                pushNotificationType: PushNotificationTypes.completedTeamStreakUpdate,
+            });
             expect(result).toBeDefined();
         }
     });
@@ -226,7 +251,14 @@ describe(testName, () => {
             };
 
             try {
-                await sendPushNotification({ title, body, data, userId: user._id, iosEndpointArn });
+                await sendPushNotification({
+                    title,
+                    body,
+                    data,
+                    userId: user._id,
+                    iosEndpointArn,
+                    pushNotificationType: PushNotificationTypes.completedTeamStreakUpdate,
+                });
             } catch (err) {
                 expect(err.code).toEqual('EndpointDisabled');
                 const userResult = await userModel.findById(updatedUser._id);
