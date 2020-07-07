@@ -201,7 +201,6 @@ export const getIncompleteChallengeStreakMiddleware = (
                 {
                     completedToday: false,
                     $inc: { 'currentStreak.numberOfDaysInARow': -1 },
-                    active: false,
                 },
             );
         } else {
@@ -210,6 +209,7 @@ export const getIncompleteChallengeStreakMiddleware = (
                 {
                     completedToday: false,
                     'currentStreak.numberOfDaysInARow': 0,
+                    'currentStreak.startDate': null,
                     active: false,
                 },
             );

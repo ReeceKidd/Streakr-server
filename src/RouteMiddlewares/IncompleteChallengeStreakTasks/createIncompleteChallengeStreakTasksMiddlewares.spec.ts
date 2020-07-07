@@ -474,7 +474,7 @@ describe('createIncompleteChallengeStreakTaskMiddlewares', () => {
     });
 
     describe('incompleteChallengeStreakMiddleware', () => {
-        test('if number of days in a row of current streak is not equal to 0 it updates streak completedToday, descrements number of days by one, sets active to false and calls next', async () => {
+        test('if number of days in a row of current streak is not equal to 0 it updates streak completedToday, descrements number of days by one, and calls next', async () => {
             expect.assertions(2);
             const challengeStreakId = '123abc';
             const challengeStreak = {
@@ -499,19 +499,18 @@ describe('createIncompleteChallengeStreakTaskMiddlewares', () => {
                 {
                     completedToday: false,
                     $inc: { 'currentStreak.numberOfDaysInARow': -1 },
-                    active: false,
                 },
             );
             expect(next).toBeCalledWith();
         });
 
-        test('if number of days in a row of current streak is equal to 0 it updates streak completedToday, set currentStreak.numberOfDays in a row to 0, sets active to false and calls next', async () => {
+        test('if number of days in a row of current streak is equal to 0 it updates streak completedToday, set currentStreak to default values, sets active to false and calls next', async () => {
             expect.assertions(2);
             const challengeStreakId = '123abc';
             const challengeStreak = {
                 _id: challengeStreakId,
                 currentStreak: {
-                    numberOfDaysInARow: 1,
+                    numberOfDaysInARow: 0,
                 },
             };
             const updateOne = jest.fn(() => Promise.resolve(true));
@@ -529,7 +528,8 @@ describe('createIncompleteChallengeStreakTaskMiddlewares', () => {
                 { _id: challengeStreakId },
                 {
                     completedToday: false,
-                    $inc: { 'currentStreak.numberOfDaysInARow': -1 },
+                    'currentStreak.numberOfDaysInARow': 0,
+                    'currentStreak.startDate': null,
                     active: false,
                 },
             );

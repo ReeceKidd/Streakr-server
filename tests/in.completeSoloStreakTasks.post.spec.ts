@@ -44,8 +44,8 @@ describe(testName, () => {
     });
 
     describe('POST /v1/incomplete-solo-streak-tasks', () => {
-        test('user can incomplete a solo streak task and the solo streak tasks start date gets reset if it is the first day of the streak', async () => {
-            expect.assertions(21);
+        test('that when user incompletes a solo streak on the first day of the streak the streak, completed today is set to false, active is set to false and the currentStreak is set to the default values.', async () => {
+            expect.assertions(18);
 
             const user = await getPayingUser({ testName });
             const userId = user._id;
@@ -94,7 +94,6 @@ describe(testName, () => {
             expect(updatedSoloStreak.streakName).toEqual(streakName);
             expect(updatedSoloStreak.status).toEqual(StreakStatus.live);
             expect(updatedSoloStreak.userId).toBeDefined();
-            expect(updatedSoloStreak._id).toBeDefined();
             expect(Object.keys(updatedSoloStreak.currentStreak).sort()).toEqual(
                 ['startDate', 'numberOfDaysInARow'].sort(),
             );
@@ -103,8 +102,6 @@ describe(testName, () => {
             expect(updatedSoloStreak.completedToday).toEqual(false);
             expect(updatedSoloStreak.active).toEqual(false);
             expect(updatedSoloStreak.pastStreaks).toEqual([]);
-            expect(updatedSoloStreak.createdAt).toBeDefined();
-            expect(updatedSoloStreak.updatedAt).toBeDefined();
             expect(Object.keys(updatedSoloStreak).sort()).toEqual(
                 [
                     'currentStreak',
@@ -125,7 +122,7 @@ describe(testName, () => {
             );
         });
 
-        test('user can incomplete a solo streak task after the first day of the streak', async () => {
+        test('that when user incompletes a solo streak task after the first day of the streak completed today will be set to false and the current streak number of days is decreased by one.', async () => {
             expect.assertions(21);
 
             const user = await getPayingUser({ testName });
@@ -188,7 +185,7 @@ describe(testName, () => {
             expect(updatedSoloStreak.currentStreak.startDate).toEqual(expect.any(String));
             expect(updatedSoloStreak.currentStreak.numberOfDaysInARow).toEqual(numberOfDaysInARow);
             expect(updatedSoloStreak.completedToday).toEqual(false);
-            expect(updatedSoloStreak.active).toEqual(false);
+            expect(updatedSoloStreak.active).toEqual(true);
             expect(updatedSoloStreak.pastStreaks).toEqual([]);
             expect(updatedSoloStreak.createdAt).toBeDefined();
             expect(updatedSoloStreak.updatedAt).toBeDefined();

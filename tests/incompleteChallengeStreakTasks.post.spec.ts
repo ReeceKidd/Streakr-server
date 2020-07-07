@@ -43,7 +43,7 @@ describe(testName, () => {
         }
     });
 
-    test('user can incomplete a challenge streak task and the challenge streak tasks start date gets reset if it is the first day of the streak', async () => {
+    test('that when user incompletes a challenge streak on the first day of the streak, completedToday is set to false, currentStreak is set to default values and active is set to false.', async () => {
         expect.assertions(20);
 
         const user = await getPayingUser({ testName });
@@ -126,7 +126,7 @@ describe(testName, () => {
         );
     });
 
-    test('user can incomplete a challenge streak task after the first day of the streak', async () => {
+    test('that when users incompletes a challenge streak task after the first day of the streak completedToday is set to false and the current streak number of days in a row is decreased by one.', async () => {
         expect.assertions(20);
 
         const user = await getPayingUser({ testName });
@@ -197,7 +197,7 @@ describe(testName, () => {
         expect(updatedChallengeStreak.currentStreak.startDate).toEqual(expect.any(String));
         expect(updatedChallengeStreak.currentStreak.numberOfDaysInARow).toEqual(numberOfDaysInARow);
         expect(updatedChallengeStreak.completedToday).toEqual(false);
-        expect(updatedChallengeStreak.active).toEqual(false);
+        expect(updatedChallengeStreak.active).toEqual(true);
         expect(updatedChallengeStreak.pastStreaks).toEqual([]);
         expect(updatedChallengeStreak.createdAt).toBeDefined();
         expect(updatedChallengeStreak.updatedAt).toBeDefined();

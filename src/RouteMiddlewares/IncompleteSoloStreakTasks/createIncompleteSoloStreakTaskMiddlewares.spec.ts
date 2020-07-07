@@ -533,7 +533,7 @@ describe('createIncompleteSoloStreakTaskMiddlewares', () => {
     });
 
     describe('incompleteSoloStreakMiddleware', () => {
-        test('if number of days in a row of current streak is not equal to 0 it updates streak completedToday, descrements number of days by one, sets active to false and calls next', async () => {
+        test('if number of days in a row of current streak is not equal to 0 it updates streak completedToday, descrements number of days by one and calls next', async () => {
             expect.assertions(2);
             const soloStreakId = '123abc';
             const soloStreak = {
@@ -558,7 +558,6 @@ describe('createIncompleteSoloStreakTaskMiddlewares', () => {
                 {
                     completedToday: false,
                     $inc: { 'currentStreak.numberOfDaysInARow': -1 },
-                    active: false,
                 },
             );
             expect(next).toBeCalledWith();
@@ -570,7 +569,7 @@ describe('createIncompleteSoloStreakTaskMiddlewares', () => {
             const soloStreak = {
                 _id: soloStreakId,
                 currentStreak: {
-                    numberOfDaysInARow: 1,
+                    numberOfDaysInARow: 0,
                 },
             };
             const updateOne = jest.fn(() => Promise.resolve(true));
@@ -588,7 +587,8 @@ describe('createIncompleteSoloStreakTaskMiddlewares', () => {
                 { _id: soloStreakId },
                 {
                     completedToday: false,
-                    $inc: { 'currentStreak.numberOfDaysInARow': -1 },
+                    'currentStreak.numberOfDaysInARow': 0,
+                    'currentStreak.startDate': null,
                     active: false,
                 },
             );

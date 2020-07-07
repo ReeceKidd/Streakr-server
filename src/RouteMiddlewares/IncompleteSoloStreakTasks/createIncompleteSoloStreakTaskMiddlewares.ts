@@ -217,7 +217,6 @@ export const getIncompleteSoloStreakMiddleware = (soloStreakModel: mongoose.Mode
                 {
                     completedToday: false,
                     $inc: { 'currentStreak.numberOfDaysInARow': -1 },
-                    active: false,
                 },
             );
         } else {
@@ -226,6 +225,7 @@ export const getIncompleteSoloStreakMiddleware = (soloStreakModel: mongoose.Mode
                 {
                     completedToday: false,
                     'currentStreak.numberOfDaysInARow': 0,
+                    'currentStreak.startDate': null,
                     active: false,
                 },
             );

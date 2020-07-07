@@ -44,7 +44,7 @@ describe(testName, () => {
             await disconnectDatabase({ database });
         }
     });
-    test('lone user can incomplete a team member streak task for the first day of a streak.', async () => {
+    test('when lone user incompletes a team member streak task for the first day of a streak, completedToday is set to false, currentStreak is set to the default values and active is set to false.', async () => {
         expect.assertions(50);
 
         const user = await getPayingUser({ testName });
@@ -186,7 +186,7 @@ describe(testName, () => {
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
         expect(updatedTeamStreak.creatorId).toBeDefined();
         expect(updatedTeamStreak.timezone).toBeDefined();
-        expect(updatedTeamStreak.active).toEqual(false);
+        expect(updatedTeamStreak.active).toEqual(true);
         expect(updatedTeamStreak.completedToday).toEqual(false);
         expect(updatedTeamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(updatedTeamStreak.currentStreak.startDate).toBeUndefined();
@@ -217,7 +217,7 @@ describe(testName, () => {
         expect(Object.keys(creator).sort()).toEqual(['_id', 'username'].sort());
     });
 
-    test('lone user can incomplete a team member streak task after the first day of the streak', async () => {
+    test('that when lone user incompletes a team member streak task after the first day of the streak, completedToday is set to false and the numberOfDaysInARow is decreased by one.', async () => {
         expect.assertions(50);
 
         const user = await getPayingUser({ testName });
@@ -294,7 +294,7 @@ describe(testName, () => {
         expect(teamMemberStreak.currentStreak.startDate).toEqual(expect.any(String));
         expect(Object.keys(teamMemberStreak.currentStreak).sort()).toEqual(['startDate', 'numberOfDaysInARow'].sort());
         expect(teamMemberStreak.completedToday).toEqual(false);
-        expect(teamMemberStreak.active).toEqual(false);
+        expect(teamMemberStreak.active).toEqual(true);
         expect(teamMemberStreak.pastStreaks).toEqual([]);
         expect(teamMemberStreak.userId).toEqual(expect.any(String));
         expect(teamMemberStreak.teamStreakId).toEqual(expect.any(String));
@@ -372,7 +372,7 @@ describe(testName, () => {
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
         expect(updatedTeamStreak.creatorId).toBeDefined();
         expect(updatedTeamStreak.timezone).toBeDefined();
-        expect(updatedTeamStreak.active).toEqual(false);
+        expect(updatedTeamStreak.active).toEqual(true);
         expect(updatedTeamStreak.completedToday).toEqual(false);
         expect(updatedTeamStreak.currentStreak.numberOfDaysInARow).toEqual(numberOfDaysInARow);
         expect(updatedTeamStreak.currentStreak.startDate).toBeDefined();
@@ -434,7 +434,7 @@ describe(testName, () => {
         }
     });
 
-    test('if both team members have completed their tasks for a new streak and one team member incompletes their own streak the team streak and that users streak gets reset.', async () => {
+    test('if both team members have completed their tasks for a new streak when one team member incompletes their own streak the team streak and that users streak gets reset.', async () => {
         expect.assertions(50);
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -710,7 +710,7 @@ describe(testName, () => {
         expect(teamMemberStreak.currentStreak.startDate).toEqual(expect.any(String));
         expect(Object.keys(teamMemberStreak.currentStreak).sort()).toEqual(['startDate', 'numberOfDaysInARow'].sort());
         expect(teamMemberStreak.completedToday).toEqual(false);
-        expect(teamMemberStreak.active).toEqual(false);
+        expect(teamMemberStreak.active).toEqual(true);
         expect(teamMemberStreak.pastStreaks).toEqual([]);
         expect(teamMemberStreak.userId).toEqual(expect.any(String));
         expect(teamMemberStreak.teamStreakId).toEqual(expect.any(String));
@@ -1030,7 +1030,7 @@ describe(testName, () => {
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
         expect(updatedTeamStreak.creatorId).toBeDefined();
         expect(updatedTeamStreak.timezone).toBeDefined();
-        expect(updatedTeamStreak.active).toEqual(false);
+        expect(updatedTeamStreak.active).toEqual(true);
         expect(updatedTeamStreak.completedToday).toEqual(false);
         expect(updatedTeamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(updatedTeamStreak.currentStreak.startDate).toBeUndefined();
@@ -1159,7 +1159,7 @@ describe(testName, () => {
         expect(teamMemberStreak.currentStreak.startDate).toEqual(expect.any(String));
         expect(Object.keys(teamMemberStreak.currentStreak).sort()).toEqual(['startDate', 'numberOfDaysInARow'].sort());
         expect(teamMemberStreak.completedToday).toEqual(false);
-        expect(teamMemberStreak.active).toEqual(false);
+        expect(teamMemberStreak.active).toEqual(true);
         expect(teamMemberStreak.pastStreaks).toEqual([]);
         expect(teamMemberStreak.userId).toEqual(expect.any(String));
         expect(teamMemberStreak.teamStreakId).toEqual(expect.any(String));
@@ -1270,7 +1270,7 @@ describe(testName, () => {
             ['startDate', 'numberOfDaysInARow'].sort(),
         );
         expect(updatedFriendTeamMemberStreak.completedToday).toEqual(false);
-        expect(updatedFriendTeamMemberStreak.active).toEqual(false);
+        expect(updatedFriendTeamMemberStreak.active).toEqual(true);
         expect(updatedFriendTeamMemberStreak.pastStreaks).toEqual([]);
         expect(updatedFriendTeamMemberStreak.userId).toEqual(expect.any(String));
         expect(updatedFriendTeamMemberStreak.teamStreakId).toEqual(expect.any(String));
@@ -1348,7 +1348,7 @@ describe(testName, () => {
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
         expect(updatedTeamStreak.creatorId).toBeDefined();
         expect(updatedTeamStreak.timezone).toBeDefined();
-        expect(updatedTeamStreak.active).toEqual(false);
+        expect(updatedTeamStreak.active).toEqual(true);
         expect(updatedTeamStreak.completedToday).toEqual(false);
         expect(updatedTeamStreak.currentStreak.numberOfDaysInARow).toEqual(numberOfDaysInARow);
         expect(updatedTeamStreak.currentStreak.startDate).toEqual(expect.any(String));
