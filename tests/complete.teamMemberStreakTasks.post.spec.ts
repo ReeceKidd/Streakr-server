@@ -14,6 +14,10 @@ import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSour
 import { coinValues } from '../src/helpers/coinValues';
 import { oidXpValues } from '../src/helpers/oidXpValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { coinTransactionModel } from '../src/Models/CoinTransaction';
+import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
+import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
+import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTransactionTypes';
 
 const originalImageUrl = getServiceConfig().DEFAULT_USER_PROFILE_IMAGE_URL;
 
@@ -1106,7 +1110,7 @@ describe(testName, () => {
     });
 
     test('when team member completes a team member streak the user is credited with coins.', async () => {
-        expect.assertions(1);
+        expect.assertions(4);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -1133,10 +1137,17 @@ describe(testName, () => {
 
         const updatedUser = await SDK.user.getCurrentUser();
         expect(updatedUser.coins).toEqual(coinValues[CoinSourcesTypes.teamMemberStreakComplete]);
+
+        const coinReceipt = await coinTransactionModel.findOne({ userId });
+        if (coinReceipt) {
+            expect(coinReceipt.userId).toEqual(String(userId));
+            expect(coinReceipt.transactionType).toEqual(CoinTransactionTypes.credit);
+            expect(coinReceipt.coins).toEqual(coinValues[CoinSourcesTypes.teamMemberStreakComplete]);
+        }
     });
 
     test('when team member completes a team member streak the user is credited with oidXp.', async () => {
-        expect.assertions(1);
+        expect.assertions(4);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -1163,6 +1174,13 @@ describe(testName, () => {
 
         const updatedUser = await SDK.user.getCurrentUser();
         expect(updatedUser.oidXp).toEqual(oidXpValues[OidXpSourcesTypes.teamMemberStreakComplete]);
+
+        const oidXpReceipt = await oidXpTransactionModel.findOne({ userId });
+        if (oidXpReceipt) {
+            expect(oidXpReceipt.userId).toEqual(String(userId));
+            expect(oidXpReceipt.transactionType).toEqual(OidXpTransactionTypes.credit);
+            expect(oidXpReceipt.oidXp).toEqual(coinValues[OidXpSourcesTypes.teamMemberStreakComplete]);
+        }
     });
 
     test('when team member completes a task a CompletedTeamMemberStreakActivityFeedItem is created', async () => {

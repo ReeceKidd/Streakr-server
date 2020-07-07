@@ -14,6 +14,10 @@ import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSour
 import { coinValues } from '../src/helpers/coinValues';
 import { oidXpValues } from '../src/helpers/oidXpValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { coinTransactionModel } from '../src/Models/CoinTransaction';
+import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
+import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
+import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTransactionTypes';
 
 jest.setTimeout(120000);
 
@@ -411,7 +415,7 @@ describe(testName, () => {
         });
 
         test('when a user completes a solo streak task they are credited with coins.', async () => {
-            expect.assertions(1);
+            expect.assertions(4);
 
             const user = await getPayingUser({ testName });
             const userId = user._id;
@@ -426,10 +430,17 @@ describe(testName, () => {
 
             const updatedUser = await SDK.user.getCurrentUser();
             expect(updatedUser.coins).toEqual(coinValues[CoinSourcesTypes.soloStreakComplete]);
+
+            const coinReceipt = await coinTransactionModel.findOne({ userId });
+            if (coinReceipt) {
+                expect(coinReceipt.userId).toEqual(String(userId));
+                expect(coinReceipt.transactionType).toEqual(CoinTransactionTypes.credit);
+                expect(coinReceipt.coins).toEqual(coinValues[CoinSourcesTypes.soloStreakComplete]);
+            }
         });
 
         test('when a user completes a solo streak task they are credited with oidXp.', async () => {
-            expect.assertions(1);
+            expect.assertions(4);
 
             const user = await getPayingUser({ testName });
             const userId = user._id;
@@ -444,6 +455,13 @@ describe(testName, () => {
 
             const updatedUser = await SDK.user.getCurrentUser();
             expect(updatedUser.oidXp).toEqual(oidXpValues[OidXpSourcesTypes.soloStreakComplete]);
+
+            const oidXpReceipt = await oidXpTransactionModel.findOne({ userId });
+            if (oidXpReceipt) {
+                expect(oidXpReceipt.userId).toEqual(String(userId));
+                expect(oidXpReceipt.transactionType).toEqual(OidXpTransactionTypes.credit);
+                expect(oidXpReceipt.oidXp).toEqual(coinValues[OidXpSourcesTypes.soloStreakComplete]);
+            }
         });
 
         test('user cannot complete the same solo streak task in the same day', async () => {
@@ -473,7 +491,7 @@ describe(testName, () => {
             }
         });
 
-        test('when user  a task a CompletedSoloStreakActivityItem is created', async () => {
+        test('when user completes a task a CompletedSoloStreakActivityItem is created', async () => {
             expect.assertions(6);
             const user = await getPayingUser({ testName });
             const userId = user._id;

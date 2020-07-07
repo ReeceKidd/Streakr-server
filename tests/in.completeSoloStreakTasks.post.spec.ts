@@ -8,6 +8,14 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { coinTransactionModel } from '../src/Models/CoinTransaction';
+import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
+import { coinValues } from '../src/helpers/coinValues';
+import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
+import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTransactionTypes';
+import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { oidXpValues } from '../src/helpers/oidXpValues';
 
 jest.setTimeout(120000);
 
@@ -277,7 +285,7 @@ describe(testName, () => {
         });
 
         test('when user incompletes a streak they are charged coins', async () => {
-            expect.assertions(1);
+            expect.assertions(4);
 
             const user = await getPayingUser({ testName });
             const userId = user._id;
@@ -298,10 +306,20 @@ describe(testName, () => {
 
             const updatedUser = await SDK.user.getCurrentUser();
             expect(updatedUser.coins).toEqual(0);
+
+            const coinReceipt = await coinTransactionModel.findOne({
+                userId,
+                transactionType: CoinTransactionTypes.charge,
+            });
+            if (coinReceipt) {
+                expect(coinReceipt.userId).toEqual(String(userId));
+                expect(coinReceipt.transactionType).toEqual(CoinTransactionTypes.charge);
+                expect(coinReceipt.coins).toEqual(coinValues[CoinSourcesTypes.soloStreakComplete]);
+            }
         });
 
         test('when user incompletes a streak they are charged oidXp', async () => {
-            expect.assertions(1);
+            expect.assertions(4);
 
             const user = await getPayingUser({ testName });
             const userId = user._id;
@@ -322,6 +340,16 @@ describe(testName, () => {
 
             const updatedUser = await SDK.user.getCurrentUser();
             expect(updatedUser.oidXp).toEqual(0);
+
+            const oidXpReceipt = await oidXpTransactionModel.findOne({
+                userId,
+                transactionType: OidXpTransactionTypes.charge,
+            });
+            if (oidXpReceipt) {
+                expect(oidXpReceipt.userId).toEqual(String(userId));
+                expect(oidXpReceipt.transactionType).toEqual(OidXpTransactionTypes.charge);
+                expect(oidXpReceipt.oidXp).toEqual(oidXpValues[OidXpSourcesTypes.soloStreakComplete]);
+            }
         });
 
         test('when user incompletes a streak a IncompletedSoloStreakActivityItem is created', async () => {
