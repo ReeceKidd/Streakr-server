@@ -10,7 +10,6 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctTeamStreakKeys } from '../src/testHelpers/correctTeamStreakKeys';
-import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
 
 jest.setTimeout(120000);
 
