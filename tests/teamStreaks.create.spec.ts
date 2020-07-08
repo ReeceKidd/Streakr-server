@@ -10,7 +10,7 @@ import { setupDatabase } from './setup/setupDatabase';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
-import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
+import { correctCurrentUserPopulatedTeamStreakKeys } from '../src/testHelpers/correctCurrentUserPopulatedTeamStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -80,7 +80,7 @@ describe(testName, () => {
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
         expect(Object.keys(teamStreak).sort()).toEqual(
-            [...correctPopulatedTeamStreakKeys, 'numberOfMinutes', 'streakDescription'].sort(),
+            [...correctCurrentUserPopulatedTeamStreakKeys, 'numberOfMinutes', 'streakDescription'].sort(),
         );
 
         const { creator } = teamStreak;
@@ -124,7 +124,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(teamStreak).sort()).toEqual(correctPopulatedTeamStreakKeys);
+        expect(Object.keys(teamStreak).sort()).toEqual(correctCurrentUserPopulatedTeamStreakKeys);
 
         const { creator } = teamStreak;
         expect(creator._id).toBeDefined();
@@ -175,7 +175,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(teamStreak).sort()).toEqual(correctPopulatedTeamStreakKeys);
+        expect(Object.keys(teamStreak).sort()).toEqual(correctCurrentUserPopulatedTeamStreakKeys);
 
         const { creator } = teamStreak;
         expect(creator._id).toBeDefined();

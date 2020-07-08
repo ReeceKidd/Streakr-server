@@ -12,6 +12,7 @@ import { disconnectDatabase } from '../../setup/disconnectDatabase';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
+import { correctPopulatedTeamStreakKeys } from '../../../src/testHelpers/correctPopulatedTeamStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -87,24 +88,7 @@ describe(testName, () => {
         expect(Object.keys(member).sort()).toEqual(['_id', 'teamMemberStreak', 'profileImage', 'username'].sort());
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(updatedTeamStreak).sort()).toEqual(
-            [
-                '_id',
-                'status',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'streakName',
-                'timezone',
-                'creator',
-                'creatorId',
-                'members',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedTeamStreak).sort()).toEqual(correctPopulatedTeamStreakKeys);
 
         const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamStreakId,

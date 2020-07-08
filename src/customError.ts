@@ -592,6 +592,8 @@ export enum ErrorType {
     RecoverSoloStreakSoloStreakNotFound,
     CreateACompleteChallengeStreakTaskForPreviousDayMiddleware,
     CreateACompleteSoloStreakTaskForPreviousDayMiddleware,
+    IncreaseTotalTimesTrackedForTeamStreakMiddleware,
+    DecreaseTotalTimesTrackedForTeamStreakMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -4820,6 +4822,20 @@ export class CustomError extends Error {
             case ErrorType.CreateACompleteSoloStreakTaskForPreviousDayMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-494`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseTotalTimesTrackedForTeamStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-495`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DecreaseTotalTimesTrackedForTeamStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-496`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

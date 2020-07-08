@@ -1,4 +1,4 @@
-export const correctTeamStreakKeys = [
+export const correctCurrentUserPopulatedTeamStreakKeys = [
     '_id',
     'status',
     'currentStreak',
@@ -6,11 +6,13 @@ export const correctTeamStreakKeys = [
     'active',
     'pastStreaks',
     'streakName',
-    'totalTimesTracked',
     'timezone',
+    'creator',
     'creatorId',
     'members',
     'createdAt',
     'updatedAt',
+    'totalTimesTracked',
+    'inviteKey',
     '__v',
 ].sort();

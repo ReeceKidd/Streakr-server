@@ -294,11 +294,11 @@ export const decreaseTotalStreakCompletesForUserMiddleware = getDecreaseTotalStr
 );
 
 export const getDecreaseTotalTimesTrackedForTeamMemberStreakMiddleware = (
-    teamMemberStreak: typeof teamMemberStreakModel,
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { teamMemberStreakId } = request.body;
-        response.locals.teamMemberStreak = await teamMemberStreak.findByIdAndUpdate(
+        response.locals.teamMemberStreak = await teamMemberStreakModel.findByIdAndUpdate(
             teamMemberStreakId,
             {
                 $inc: { totalTimesTracked: -1 },
@@ -313,6 +313,28 @@ export const getDecreaseTotalTimesTrackedForTeamMemberStreakMiddleware = (
 
 export const decreaseTotalTimesTrackedForTeamMemberStreakMiddleware = getDecreaseTotalTimesTrackedForTeamMemberStreakMiddleware(
     teamMemberStreakModel,
+);
+
+export const getDecreaseTotalTimesTrackedForTeamStreakMiddleware = (
+    teamStreakModel: mongoose.Model<TeamStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        response.locals.teamStreak = await teamStreakModel.findByIdAndUpdate(
+            teamStreak._id,
+            {
+                $inc: { totalTimesTracked: -1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.DecreaseTotalTimesTrackedForTeamStreakMiddleware, err));
+    }
+};
+
+export const decreaseTotalTimesTrackedForTeamStreakMiddleware = getDecreaseTotalTimesTrackedForTeamStreakMiddleware(
+    teamStreakModel,
 );
 
 export const getChargeCoinsToUserForIncompletingTeamMemberStreakMiddleware = (
@@ -591,6 +613,7 @@ export const createIncompleteTeamMemberStreakTaskMiddlewares = [
     incompleteTeamMemberStreakMiddleware,
     decreaseTotalStreakCompletesForUserMiddleware,
     decreaseTotalTimesTrackedForTeamMemberStreakMiddleware,
+    decreaseTotalTimesTrackedForTeamStreakMiddleware,
     chargeCoinsToUserForIncompletingTeamMemberStreakMiddleware,
     chargeOidXpToUserForIncompletingTeamMemberStreakMiddleware,
     resetTeamStreakStartDateMiddleware,

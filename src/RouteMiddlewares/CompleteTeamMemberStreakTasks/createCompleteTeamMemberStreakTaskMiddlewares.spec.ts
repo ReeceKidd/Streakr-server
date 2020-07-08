@@ -47,6 +47,8 @@ import {
     creditCoinsToUserForCompletingTeamMemberStreakMiddleware,
     creditOidXpToUserForCompletingTeamMemberStreakMiddleware,
     increaseTotalTimesTrackedForTeamMemberStreakMiddleware,
+    getIncreaseTotalTimesTrackedForTeamStreakMiddleware,
+    increaseTotalTimesTrackedForTeamStreakMiddleware,
 } from './createCompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -685,6 +687,49 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
 
             expect(next).toBeCalledWith(
                 new CustomError(ErrorType.IncreaseTotalTimesTrackedForTeamMemberStreakMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('increaseTotalTimesTrackedForTeamStreakMiddleware', () => {
+        test('increments totalTimesTracked for team streak by one and calls next', async () => {
+            expect.assertions(3);
+            const userId = 'userId';
+            const user = getMockUser({ _id: userId });
+            const teamStreak = getMockTeamStreak({ creatorId: user._id });
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const teamMemberStreakModel = {
+                findByIdAndUpdate,
+            };
+            const request: any = {};
+            const response: any = { locals: { teamStreak } };
+            const next = jest.fn();
+            const middleware = getIncreaseTotalTimesTrackedForTeamStreakMiddleware(teamMemberStreakModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                teamStreak._id,
+                {
+                    $inc: { totalTimesTracked: 1 },
+                },
+                { new: true },
+            );
+            expect(response.locals.teamStreak).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws IncreaseTotalTimesTrackedForTeamStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getIncreaseTotalTimesTrackedForTeamStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.IncreaseTotalTimesTrackedForTeamStreakMiddleware, expect.any(Error)),
             );
         });
     });
@@ -1515,9 +1560,9 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
     });
 
     test('are defined in the correct order', async () => {
-        expect.assertions(26);
+        expect.assertions(27);
 
-        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(25);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(26);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[0]).toBe(
             completeTeamMemberStreakTaskBodyValidationMiddleware,
         );
@@ -1537,26 +1582,29 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             increaseTotalTimesTrackedForTeamMemberStreakMiddleware,
         );
         expect(createCompleteTeamMemberStreakTaskMiddlewares[12]).toBe(
-            creditCoinsToUserForCompletingTeamMemberStreakMiddleware,
+            increaseTotalTimesTrackedForTeamStreakMiddleware,
         );
         expect(createCompleteTeamMemberStreakTaskMiddlewares[13]).toBe(
+            creditCoinsToUserForCompletingTeamMemberStreakMiddleware,
+        );
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[14]).toBe(
             creditOidXpToUserForCompletingTeamMemberStreakMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[14]).toBe(setTeamStreakToActiveMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[15]).toBe(haveAllTeamMembersCompletedTasksMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[16]).toBe(setTeamStreakStartDateMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[17]).toBe(setDayTeamStreakWasCompletedMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[18]).toBe(createCompleteTeamStreakDefinitionMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[19]).toBe(saveCompleteTeamStreakMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[20]).toBe(teamStreakMaintainedMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[21]).toBe(retrieveTeamMembersMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[22]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[15]).toBe(setTeamStreakToActiveMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[16]).toBe(haveAllTeamMembersCompletedTasksMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[17]).toBe(setTeamStreakStartDateMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[18]).toBe(setDayTeamStreakWasCompletedMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[19]).toBe(createCompleteTeamStreakDefinitionMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[20]).toBe(saveCompleteTeamStreakMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[21]).toBe(teamStreakMaintainedMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[22]).toBe(retrieveTeamMembersMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[23]).toBe(
             notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[23]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[24]).toBe(
             sendCompleteTeamMemberStreakTaskResponseMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[24]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[25]).toBe(
             createCompleteTeamMemberStreakActivityFeedItemMiddleware,
         );
     });

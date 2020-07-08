@@ -47,6 +47,10 @@ export const teamStreakSchema = new mongoose.Schema(
         numberOfMinutes: {
             type: Number,
         },
+        totalTimesTracked: {
+            type: Number,
+            default: 0,
+        },
         members: {
             type: Array,
             default: [],

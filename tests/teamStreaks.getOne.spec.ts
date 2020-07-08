@@ -8,7 +8,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
-import { correctTeamStreakKeys } from '../src/testHelpers/correctTeamStreakKeys';
+import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -72,7 +72,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(teamStreak).sort()).toEqual([...correctTeamStreakKeys, 'creator'].sort());
+        expect(Object.keys(teamStreak).sort()).toEqual(correctPopulatedTeamStreakKeys);
 
         const { creator } = teamStreak;
         expect(creator._id).toBeDefined();

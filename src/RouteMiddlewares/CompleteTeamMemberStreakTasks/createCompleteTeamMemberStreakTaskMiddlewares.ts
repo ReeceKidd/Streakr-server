@@ -292,6 +292,28 @@ export const increaseTotalTimesTrackedForTeamMemberStreakMiddleware = getIncreas
     teamMemberStreakModel,
 );
 
+export const getIncreaseTotalTimesTrackedForTeamStreakMiddleware = (
+    teamStreakModel: mongoose.Model<TeamStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        response.locals.teamStreak = await teamStreakModel.findByIdAndUpdate(
+            teamStreak._id,
+            {
+                $inc: { totalTimesTracked: 1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.IncreaseTotalTimesTrackedForTeamStreakMiddleware, err));
+    }
+};
+
+export const increaseTotalTimesTrackedForTeamStreakMiddleware = getIncreaseTotalTimesTrackedForTeamStreakMiddleware(
+    teamStreakModel,
+);
+
 export const getCreditCoinsToUserForCompletingTeamMemberStreakMiddleware = (
     creditUserCoins: typeof CoinTransactionHelpers.creditUsersCoins,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -649,6 +671,7 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     teamMemberStreakMaintainedMiddleware,
     increaseTotalStreakCompletesForUserMiddleware,
     increaseTotalTimesTrackedForTeamMemberStreakMiddleware,
+    increaseTotalTimesTrackedForTeamStreakMiddleware,
     creditCoinsToUserForCompletingTeamMemberStreakMiddleware,
     creditOidXpToUserForCompletingTeamMemberStreakMiddleware,
     setTeamStreakToActiveMiddleware,

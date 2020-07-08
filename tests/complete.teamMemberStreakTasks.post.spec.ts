@@ -18,6 +18,7 @@ import { coinTransactionModel } from '../src/Models/CoinTransaction';
 import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
 import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
 import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTransactionTypes';
+import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
 
 const originalImageUrl = getServiceConfig().DEFAULT_USER_PROFILE_IMAGE_URL;
 
@@ -354,24 +355,7 @@ describe(testName, () => {
         expect(updatedTeamStreak.currentStreak.startDate).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow', 'startDate'].sort());
         expect(updatedTeamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(updatedTeamStreak).sort()).toEqual(
-            [
-                '_id',
-                'status',
-                'members',
-                'creatorId',
-                'streakName',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-                'creator',
-            ].sort(),
-        );
+        expect(Object.keys(updatedTeamStreak).sort()).toEqual(correctPopulatedTeamStreakKeys);
 
         const { creator } = updatedTeamStreak;
         expect(creator._id).toBeDefined();
@@ -523,24 +507,7 @@ describe(testName, () => {
         expect(updatedTeamStreak.currentStreak.startDate).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow', 'startDate'].sort());
         expect(updatedTeamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(updatedTeamStreak).sort()).toEqual(
-            [
-                '_id',
-                'status',
-                'members',
-                'creatorId',
-                'streakName',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-                'creator',
-            ].sort(),
-        );
+        expect(Object.keys(updatedTeamStreak).sort()).toEqual(correctPopulatedTeamStreakKeys);
 
         const { creator } = updatedTeamStreak;
         expect(creator._id).toBeDefined();
@@ -689,25 +656,7 @@ describe(testName, () => {
         expect(unaffectedTeamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(unaffectedTeamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(unaffectedTeamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(unaffectedTeamStreak).sort()).toEqual(
-            [
-                '_id',
-                'status',
-                'members',
-                'creatorId',
-                'streakName',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-                'creator',
-            ].sort(),
-        );
-
+        expect(Object.keys(unaffectedTeamStreak).sort()).toEqual(correctPopulatedTeamStreakKeys);
         const { creator } = unaffectedTeamStreak;
         expect(creator._id).toBeDefined();
         expect(creator.username).toEqual(user.username);
@@ -871,24 +820,7 @@ describe(testName, () => {
             ['numberOfDaysInARow', 'startDate'].sort(),
         );
         expect(unaffectedTeamStreak.pastStreaks.length).toEqual(0);
-        expect(Object.keys(unaffectedTeamStreak).sort()).toEqual(
-            [
-                '_id',
-                'status',
-                'members',
-                'creatorId',
-                'streakName',
-                'active',
-                'completedToday',
-                'currentStreak',
-                'pastStreaks',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                '__v',
-                'creator',
-            ].sort(),
-        );
+        expect(Object.keys(unaffectedTeamStreak).sort()).toEqual(correctPopulatedTeamStreakKeys);
 
         const { creator } = unaffectedTeamStreak;
         expect(creator._id).toBeDefined();
@@ -1107,6 +1039,36 @@ describe(testName, () => {
 
         const updatedTeamMemberStreak = await SDK.teamMemberStreaks.getOne(teamMemberStreak._id);
         expect(updatedTeamMemberStreak.totalTimesTracked).toEqual(1);
+    });
+
+    test('when team member completes a team member streak the team streak totalTimesTracked increases by one.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const members = [{ memberId: userId }];
+
+        const teamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName: 'Daily Spanish',
+            members,
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId: teamStreak._id,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+
+        await SDK.completeTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        const updatedTeamStreak = await SDK.teamStreaks.getOne(teamStreak._id);
+        expect(updatedTeamStreak.totalTimesTracked).toEqual(1);
     });
 
     test('when team member completes a team member streak the user is credited with coins.', async () => {
