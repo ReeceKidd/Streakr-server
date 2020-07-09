@@ -147,6 +147,8 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             isPayingMember: user.membershipInformation.isPayingMember,
             userType: user.userType,
             timezone: user.timezone,
+            oidXp: user.oidXp,
+            coins: user.coins,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             profileImages: user.profileImages,

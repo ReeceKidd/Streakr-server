@@ -9,6 +9,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { userModel } from '../src/Models/User';
+import { correctUserKeys } from '../src/testHelpers/correctUserKeys';
 
 jest.setTimeout(120000);
 
@@ -58,23 +59,7 @@ describe(testName, () => {
         });
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                'userType',
-                'isPayingMember',
-                '_id',
-                'username',
-                'timezone',
-                'followers',
-                'following',
-                'totalStreakCompletes',
-                'totalLiveStreaks',
-                'achievements',
-                'profileImages',
-                'createdAt',
-                'updatedAt',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctUserKeys);
     });
 
     test(`if user has a following a populated following list is returned`, async () => {
@@ -94,23 +79,7 @@ describe(testName, () => {
         expect(following.profileImage).toEqual(expect.any(String));
         expect(Object.keys(following).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
 
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                '_id',
-                'createdAt',
-                'followers',
-                'following',
-                'totalStreakCompletes',
-                'totalLiveStreaks',
-                'achievements',
-                'isPayingMember',
-                'profileImages',
-                'timezone',
-                'updatedAt',
-                'userType',
-                'username',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctUserKeys);
     });
 
     test(`if user is following another user who no longer exists the non existent user is not returned in the users following array`, async () => {
@@ -148,23 +117,7 @@ describe(testName, () => {
         expect(followers.profileImage).toEqual(expect.any(String));
         expect(Object.keys(followers).sort()).toEqual(['userId', 'username', 'profileImage'].sort());
 
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                '_id',
-                'createdAt',
-                'followers',
-                'following',
-                'totalStreakCompletes',
-                'totalLiveStreaks',
-                'achievements',
-                'isPayingMember',
-                'profileImages',
-                'timezone',
-                'updatedAt',
-                'userType',
-                'username',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctUserKeys);
     });
 
     test(`if user has a follower who no longer exists the follower is not returned in the users followers array`, async () => {

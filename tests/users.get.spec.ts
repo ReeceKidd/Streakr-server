@@ -112,6 +112,8 @@ describe(testName, () => {
                 '_id',
                 'username',
                 'timezone',
+                'coins',
+                'oidXp',
                 'profileImages',
                 'pushNotification',
                 'totalStreakCompletes',

@@ -300,6 +300,8 @@ describe('formatUserMiddleware', () => {
                 'following',
                 'totalStreakCompletes',
                 'totalLiveStreaks',
+                'coins',
+                'oidXp',
                 'createdAt',
                 'updatedAt',
                 'profileImages',

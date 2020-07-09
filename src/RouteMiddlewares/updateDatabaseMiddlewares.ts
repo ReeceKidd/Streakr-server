@@ -1,54 +1,27 @@
-// import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
-// import { CustomError, ErrorType } from '../customError';
-// import { userModel } from '../Models/User';
-// import { soloStreakModel } from '../Models/SoloStreak';
-// import { challengeStreakModel } from '../Models/ChallengeStreak';
-// import { oidXpValues } from '../helpers/oidXpValues';
-// import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
-// import { teamMemberStreakModel } from '../Models/TeamMemberStreak';
+import { teamMemberStreakModel } from '../Models/TeamMemberStreak';
+import { teamStreakModel } from '../Models/TeamStreak';
 
-// export const updateDatabaseMiddleware = async (
-//     request: Request,
-//     response: Response,
-//     next: NextFunction,
-// ): Promise<void> => {
-//     try {
-//         const users = await userModel.find({});
-//         await Promise.all(
-//             users.map(async user => {
-//                 const soloStreaks = await soloStreakModel.find({ userId: user._id });
+export const updateDatabaseMiddleware = async (request: Request, response: Response): Promise<void> => {
+    const teamStreaks = await teamStreakModel.find({});
+    await Promise.all(
+        teamStreaks.map(async teamStreak => {
+            let totalTimesTracked = 0;
+            await Promise.all(
+                teamStreak.members.map(async member => {
+                    const teamMemberStreak = await teamMemberStreakModel.findById(member.teamMemberStreakId);
+                    if (teamMemberStreak) {
+                        totalTimesTracked += teamMemberStreak.totalTimesTracked;
+                    }
+                    return member;
+                }),
+            );
+            console.log('Total times tracked', totalTimesTracked);
+            return teamStreakModel.findByIdAndUpdate(teamStreak._id, { $set: { totalTimesTracked } });
+        }),
+    );
+    response.send('Success');
+};
 
-//                 let soloStreakOidXp = 0;
-//                 const soloStreakOidXpValue = oidXpValues[OidXpSourcesTypes.soloStreakComplete];
-//                 soloStreaks.map(soloStreak => {
-//                     soloStreakOidXp += soloStreak.totalTimesTracked * soloStreakOidXpValue;
-//                 });
-
-//                 const challengeStreaks = await challengeStreakModel.find({ userId: user._id });
-//                 let challengeStreakOidXp = 0;
-//                 const challengeStreakOidXpValue = oidXpValues[OidXpSourcesTypes.challengeStreakComplete];
-//                 challengeStreaks.map(challengeStreak => {
-//                     challengeStreakOidXp += challengeStreak.totalTimesTracked * challengeStreakOidXpValue;
-//                 });
-
-//                 const teamMemberStreaks = await teamMemberStreakModel.find({ userId: user._id });
-//                 let teamMemberStreakOidXp = 0;
-//                 const teamMemberStreakOidXpValue = oidXpValues[OidXpSourcesTypes.teamMemberStreakComplete];
-//                 teamMemberStreaks.map(teamMemberStreak => {
-//                     teamMemberStreakOidXp += teamMemberStreak.totalTimesTracked * teamMemberStreakOidXpValue;
-//                 });
-
-//                 const totalOidXp = soloStreakOidXp + challengeStreakOidXp + teamMemberStreakOidXp;
-
-//                 await userModel.findByIdAndUpdate(user._id, { $set: { oidXp: totalOidXp } });
-//             }),
-//         );
-//         response.send('success');
-//     } catch (err) {
-//         if (err instanceof CustomError) next(err);
-//         else next(new CustomError(ErrorType.GetRetrieveUserMiddleware, err));
-//     }
-// };
-
-// export const updateDatabaseMiddlewares = [updateDatabaseMiddleware];
+export const updateDatabaseMiddlewares = [updateDatabaseMiddleware];
