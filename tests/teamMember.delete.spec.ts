@@ -10,6 +10,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
 import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
+import { teamStreakModel } from '../src/Models/TeamStreak';
 
 jest.setTimeout(120000);
 
@@ -102,5 +103,46 @@ describe(testName, () => {
         expect(member.teamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(member.teamMemberStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(member.teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
+    });
+
+    test(`throws error if a user who is not a member of the team streak tries to delete someone.`, async () => {
+        expect.assertions(2);
+
+        const user = await getPayingUser({ testName });
+
+        const streakName = 'Daily Spanish';
+        const userId = user._id;
+
+        const friend = await getFriend({ testName });
+        const friendId = friend._id;
+
+        const members = [{ memberId: userId }];
+
+        const originalTeamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName,
+            members,
+        });
+
+        await SDK.teamStreaks.teamMembers.create({
+            userId: friendId,
+            teamStreakId: originalTeamStreak._id,
+        });
+
+        await teamStreakModel.findByIdAndUpdate(originalTeamStreak._id, {
+            $set: { members: originalTeamStreak.members.filter(member => member._id !== user._id) },
+        });
+
+        try {
+            await SDK.teamStreaks.teamMembers.deleteOne({
+                teamStreakId: originalTeamStreak._id,
+                memberId: friendId,
+            });
+        } catch (err) {
+            const error = JSON.parse(err.text);
+            const { message } = error;
+            expect(err.status).toEqual(400);
+            expect(message).toEqual('Cannot delete team member user is not apart of team streak.');
+        }
     });
 });

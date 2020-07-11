@@ -8,9 +8,12 @@ import {
     getDeleteTeamMemberMiddleware,
     getRetrieveTeamStreakMiddleware,
     retrieveTeamStreakMiddleware,
+    checkCurrentUserIsPartOfTeamStreakMiddleware,
 } from './deleteTeamMemberMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { getMockUser } from '../../testHelpers/getMockUser';
+import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 
 describe('teamMemberParamsValidationMiddleware', () => {
     const teamStreakId = 'teamStreakId';
@@ -166,6 +169,50 @@ describe('retrieveTeamStreakMiddleware', () => {
     });
 });
 
+describe('checkCurrentUserIsPartOfTeamStreakMiddleware', () => {
+    test('that if user is a member of the team streak it calls next()', async () => {
+        expect.assertions(1);
+        const userId = 'userId';
+        const user = getMockUser({ _id: userId });
+        const teamStreak = getMockTeamStreak({ creatorId: userId });
+        const request: any = {};
+        const response: any = { locals: { user, teamStreak } };
+        const next = jest.fn();
+
+        checkCurrentUserIsPartOfTeamStreakMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws CannotDeleteTeamMemberUserIsNotApartOfTeamStreak error when team streak does not exist', async () => {
+        expect.assertions(1);
+        const userId = 'userId';
+        const user = getMockUser({ _id: userId });
+        const teamStreak = getMockTeamStreak({ creatorId: 'randomId' });
+        const request: any = {};
+        const response: any = { locals: { user, teamStreak } };
+        const next = jest.fn();
+
+        checkCurrentUserIsPartOfTeamStreakMiddleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.CannotDeleteTeamMemberUserIsNotApartOfTeamStreak));
+    });
+
+    test('throws CheckCurrentUserIsPartOfTeamStreakMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getRetrieveTeamStreakMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.CheckCurrentUserIsPartOfTeamStreakMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe('retrieveTeamMemberMiddleware', () => {
     test('sets response.locals.member and calls next()', async () => {
         expect.assertions(2);
@@ -275,13 +322,14 @@ describe('sendTeamMemberDeletedResponseMiddleware', () => {
 
 describe('deleteTeamMemberMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(6);
+        expect.assertions(7);
 
-        expect(deleteTeamMemberMiddlewares.length).toEqual(5);
+        expect(deleteTeamMemberMiddlewares.length).toEqual(6);
         expect(deleteTeamMemberMiddlewares[0]).toEqual(teamMemberParamsValidationMiddleware);
         expect(deleteTeamMemberMiddlewares[1]).toEqual(retrieveTeamStreakMiddleware);
-        expect(deleteTeamMemberMiddlewares[2]).toEqual(retrieveTeamMemberMiddleware);
-        expect(deleteTeamMemberMiddlewares[3]).toEqual(deleteTeamMemberMiddleware);
-        expect(deleteTeamMemberMiddlewares[4]).toEqual(sendTeamMemberDeletedResponseMiddleware);
+        expect(deleteTeamMemberMiddlewares[2]).toEqual(checkCurrentUserIsPartOfTeamStreakMiddleware),
+            expect(deleteTeamMemberMiddlewares[3]).toEqual(retrieveTeamMemberMiddleware);
+        expect(deleteTeamMemberMiddlewares[4]).toEqual(deleteTeamMemberMiddleware);
+        expect(deleteTeamMemberMiddlewares[5]).toEqual(sendTeamMemberDeletedResponseMiddleware);
     });
 });

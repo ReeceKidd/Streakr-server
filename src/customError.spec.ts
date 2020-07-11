@@ -1146,6 +1146,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to CannotDeleteTeamMemberUserIsNotApartOfTeamStreak`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CannotDeleteTeamMemberUserIsNotApartOfTeamStreak);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-114`);
+        expect(message).toBe('Cannot delete team member user is not apart of team streak.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -6431,6 +6442,17 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-496`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CheckCurrentUserIsPartOfTeamStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CheckCurrentUserIsPartOfTeamStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-497`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });

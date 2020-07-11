@@ -594,6 +594,8 @@ export enum ErrorType {
     CreateACompleteSoloStreakTaskForPreviousDayMiddleware,
     IncreaseTotalTimesTrackedForTeamStreakMiddleware,
     DecreaseTotalTimesTrackedForTeamStreakMiddleware,
+    CannotDeleteTeamMemberUserIsNotApartOfTeamStreak,
+    CheckCurrentUserIsPartOfTeamStreakMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1452,6 +1454,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-113`,
                     message: 'Solo streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.CannotDeleteTeamMemberUserIsNotApartOfTeamStreak: {
+                return {
+                    code: `${ResponseCodes.badRequest}-114`,
+                    message: 'Cannot delete team member user is not apart of team streak.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4836,6 +4846,13 @@ export class CustomError extends Error {
             case ErrorType.DecreaseTotalTimesTrackedForTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-496`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CheckCurrentUserIsPartOfTeamStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-497`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

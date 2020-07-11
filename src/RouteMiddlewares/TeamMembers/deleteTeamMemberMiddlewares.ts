@@ -7,6 +7,8 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 const teamMemberParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -23,6 +25,25 @@ export const teamMemberParamsValidationMiddleware = (
         teamMemberParamsValidationSchema,
         getValidationErrorMessageSenderMiddleware(request, response, next),
     );
+};
+
+export const checkCurrentUserIsPartOfTeamStreakMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
+    try {
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        const user: User = response.locals.user;
+        const currentUserIsApartOfTeamStreak = Boolean(teamStreak.members.find(member => member.memberId === user._id));
+        if (!currentUserIsApartOfTeamStreak) {
+            throw new CustomError(ErrorType.CannotDeleteTeamMemberUserIsNotApartOfTeamStreak);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.CheckCurrentUserIsPartOfTeamStreakMiddleware, err));
+    }
 };
 
 export const getRetrieveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
@@ -105,6 +126,7 @@ export const sendTeamMemberDeletedResponseMiddleware = (
 export const deleteTeamMemberMiddlewares = [
     teamMemberParamsValidationMiddleware,
     retrieveTeamStreakMiddleware,
+    checkCurrentUserIsPartOfTeamStreakMiddleware,
     retrieveTeamMemberMiddleware,
     deleteTeamMemberMiddleware,
     sendTeamMemberDeletedResponseMiddleware,
