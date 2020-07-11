@@ -35,7 +35,10 @@ export const checkCurrentUserIsPartOfTeamStreakMiddleware = (
     try {
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const user: User = response.locals.user;
-        const currentUserIsApartOfTeamStreak = Boolean(teamStreak.members.find(member => member.memberId === user._id));
+        const currentUserIsApartOfTeamStreak = Boolean(
+            teamStreak.members.find(member => String(member.memberId) === String(user._id)),
+        );
+        console;
         if (!currentUserIsApartOfTeamStreak) {
             throw new CustomError(ErrorType.CannotDeleteTeamMemberUserIsNotApartOfTeamStreak);
         }
