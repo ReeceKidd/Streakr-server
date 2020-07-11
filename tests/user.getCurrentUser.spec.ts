@@ -124,7 +124,7 @@ describe(testName, () => {
         expect(user.following.length).toEqual(0);
     });
 
-    test(`if current user has a follower a user it returns the a populated follower list`, async () => {
+    test(`if current user has a follower it returns the a populated follower list`, async () => {
         expect.assertions(6);
 
         const createdUser = await getPayingUser({ testName });

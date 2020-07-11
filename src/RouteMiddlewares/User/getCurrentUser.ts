@@ -47,21 +47,21 @@ export const getPopulateCurrentUserFollowersMiddleware = (userModel: Model<UserM
 ): Promise<void> => {
     try {
         const user: User = response.locals.user;
-        const followers = await Promise.all(
-            user.followers.map(async followerId => {
-                const populatedFollower: UserModel | null = await userModel.findById(followerId).lean();
-                if (populatedFollower) {
-                    const basicUser: BasicUser = {
-                        userId: followerId,
-                        username: populatedFollower.username,
-                        profileImage: populatedFollower.profileImages.originalImageUrl,
-                    };
-                    return basicUser;
-                }
-                return null;
-            }),
-        );
-        response.locals.followers = followers.filter(user => user !== null);
+        const sortedFollowers: UserModel[] = await userModel
+            .find({ _id: user.followers.map(follower => follower) })
+            .sort({ totalStreakCompletes: 1 })
+            .lean();
+        const formattedFollowers = sortedFollowers
+            .filter(user => user !== null)
+            .map(user => {
+                const basicUser: BasicUser = {
+                    profileImage: user.profileImages.originalImageUrl,
+                    userId: user._id,
+                    username: user.username,
+                };
+                return basicUser;
+            });
+        response.locals.followers = formattedFollowers;
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);

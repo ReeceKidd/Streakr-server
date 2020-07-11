@@ -60,25 +60,28 @@ describe('getCurrentUserMiddlewares', () => {
 
     describe('populateCurrentUserFollowersMiddleware', () => {
         test('populates user following', async () => {
-            expect.assertions(3);
+            expect.assertions(4);
             const request: any = {};
+            const followers = ['userId'];
             const user = {
-                followers: ['userId'],
+                followers,
             };
             const response: any = { locals: { user } };
             const next = jest.fn();
 
-            const lean = jest.fn().mockResolvedValue([{ username: 'username' }]);
-            const findById = jest.fn(() => ({ lean }));
+            const lean = jest.fn().mockResolvedValue([getMockUser({ _id: 'id' })]);
+            const sort = jest.fn(() => ({ lean }));
+            const find = jest.fn(() => ({ sort }));
 
             const userModel = {
-                findById,
+                find,
             };
 
             const middleware = getPopulateCurrentUserFollowersMiddleware(userModel as any);
             await middleware(request, response, next);
 
-            expect(findById).toBeCalledWith(user.followers[0]);
+            expect(find).toBeCalledWith({ _id: followers });
+            expect(sort).toBeCalledWith({ totalStreakCompletes: 1 });
             expect(lean).toBeCalled();
             expect(next).toBeCalled();
         });
