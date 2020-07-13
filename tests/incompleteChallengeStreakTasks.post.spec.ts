@@ -14,8 +14,8 @@ import { oidXpValues } from '../src/helpers/oidXpValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
 import { coinTransactionModel } from '../src/Models/CoinTransaction';
-import { coinValues } from '../src/helpers/creditValues';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
+import { coinChargeValues } from '../src/helpers/coinChargeValues';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 
 jest.setTimeout(120000);
 
@@ -351,7 +351,7 @@ describe(testName, () => {
         if (coinReceipt) {
             expect(coinReceipt.userId).toEqual(String(userId));
             expect(coinReceipt.transactionType).toEqual(CoinTransactionTypes.charge);
-            expect(coinReceipt.coins).toEqual(coinValues[CoinSourcesTypes.challengeStreakComplete]);
+            expect(coinReceipt.coins).toEqual(coinChargeValues[CoinCharges.incompleteChallengeStreak]);
         }
     });
 

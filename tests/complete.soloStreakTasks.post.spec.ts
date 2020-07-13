@@ -10,14 +10,14 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../src/helpers/creditValues';
 import { oidXpValues } from '../src/helpers/oidXpValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { coinTransactionModel } from '../src/Models/CoinTransaction';
 import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
 import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
 import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTransactionTypes';
+import { coinCreditValues } from '../src/helpers/coinCreditValues';
+import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 
 jest.setTimeout(120000);
 
@@ -429,13 +429,13 @@ describe(testName, () => {
             });
 
             const updatedUser = await SDK.user.getCurrentUser();
-            expect(updatedUser.coins).toEqual(coinValues[CoinSourcesTypes.soloStreakComplete]);
+            expect(updatedUser.coins).toEqual(coinCreditValues[CoinCredits.completeSoloStreak]);
 
             const coinReceipt = await coinTransactionModel.findOne({ userId });
             if (coinReceipt) {
                 expect(coinReceipt.userId).toEqual(String(userId));
                 expect(coinReceipt.transactionType).toEqual(CoinTransactionTypes.credit);
-                expect(coinReceipt.coins).toEqual(coinValues[CoinSourcesTypes.soloStreakComplete]);
+                expect(coinReceipt.coins).toEqual(coinCreditValues[CoinCredits.completeSoloStreak]);
             }
         });
 
@@ -460,7 +460,7 @@ describe(testName, () => {
             if (oidXpReceipt) {
                 expect(oidXpReceipt.userId).toEqual(String(userId));
                 expect(oidXpReceipt.transactionType).toEqual(OidXpTransactionTypes.credit);
-                expect(oidXpReceipt.oidXp).toEqual(coinValues[OidXpSourcesTypes.soloStreakComplete]);
+                expect(oidXpReceipt.oidXp).toEqual(coinCreditValues[CoinCredits.completeSoloStreak]);
             }
         });
 

@@ -10,15 +10,14 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { OneHundredDayChallengeStreakAchievement } from '@streakoid/streakoid-models/lib/Models/Achievement';
-import { coinValues } from '../src/helpers/creditValues';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
 import { oidXpValues } from '../src/helpers/oidXpValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { coinTransactionModel } from '../src/Models/CoinTransaction';
 import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
 import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTransactionTypes';
 import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
-
+import { coinCreditValues } from '../src/helpers/coinCreditValues';
+import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 jest.setTimeout(120000);
 
 const testName = 'POST-complete-challenge-streak-tasks';
@@ -514,13 +513,13 @@ describe(testName, () => {
             });
 
             const updatedUser = await SDK.user.getCurrentUser();
-            expect(updatedUser.coins).toEqual(coinValues[CoinSourcesTypes.challengeStreakComplete]);
+            expect(updatedUser.coins).toEqual(coinCreditValues[CoinCredits.completeChallengeStreak]);
 
             const coinReceipt = await coinTransactionModel.findOne({ userId });
             if (coinReceipt) {
                 expect(coinReceipt.userId).toEqual(String(userId));
                 expect(coinReceipt.transactionType).toEqual(CoinTransactionTypes.credit);
-                expect(coinReceipt.coins).toEqual(coinValues[CoinSourcesTypes.challengeStreakComplete]);
+                expect(coinReceipt.coins).toEqual(coinCreditValues[CoinCredits.completeChallengeStreak]);
             }
         });
 
@@ -550,7 +549,7 @@ describe(testName, () => {
             if (oidXpReceipt) {
                 expect(oidXpReceipt.userId).toEqual(String(userId));
                 expect(oidXpReceipt.transactionType).toEqual(OidXpTransactionTypes.credit);
-                expect(oidXpReceipt.oidXp).toEqual(coinValues[OidXpSourcesTypes.challengeStreakComplete]);
+                expect(oidXpReceipt.oidXp).toEqual(coinCreditValues[CoinCredits.completeChallengeStreak]);
             }
         });
 

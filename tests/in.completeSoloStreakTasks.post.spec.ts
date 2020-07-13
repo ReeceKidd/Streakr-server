@@ -10,12 +10,12 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { coinTransactionModel } from '../src/Models/CoinTransaction';
 import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
-import { coinValues } from '../src/helpers/creditValues';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
 import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
 import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTransactionTypes';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { oidXpValues } from '../src/helpers/oidXpValues';
+import { coinChargeValues } from '../src/helpers/coinChargeValues';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 
 jest.setTimeout(120000);
 
@@ -311,7 +311,7 @@ describe(testName, () => {
             if (coinReceipt) {
                 expect(coinReceipt.userId).toEqual(String(userId));
                 expect(coinReceipt.transactionType).toEqual(CoinTransactionTypes.charge);
-                expect(coinReceipt.coins).toEqual(coinValues[CoinSourcesTypes.soloStreakComplete]);
+                expect(coinReceipt.coins).toEqual(coinChargeValues[CoinCharges.incompleteSoloStreak]);
             }
         });
 

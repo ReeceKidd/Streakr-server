@@ -10,8 +10,6 @@ import { disconnectDatabase } from './setup/disconnectDatabase';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { setupDatabase } from './setup/setupDatabase';
 import { getServiceConfig } from '../src/getServiceConfig';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../src/helpers/creditValues';
 import { oidXpValues } from '../src/helpers/oidXpValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { coinTransactionModel } from '../src/Models/CoinTransaction';
@@ -19,6 +17,8 @@ import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTran
 import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
 import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTransactionTypes';
 import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
+import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
+import { coinCreditValues } from '../src/helpers/coinCreditValues';
 
 const originalImageUrl = getServiceConfig().DEFAULT_USER_PROFILE_IMAGE_URL;
 
@@ -1098,13 +1098,13 @@ describe(testName, () => {
         });
 
         const updatedUser = await SDK.user.getCurrentUser();
-        expect(updatedUser.coins).toEqual(coinValues[CoinSourcesTypes.teamMemberStreakComplete]);
+        expect(updatedUser.coins).toEqual(coinCreditValues[CoinCredits.completeTeamMemberStreak]);
 
         const coinReceipt = await coinTransactionModel.findOne({ userId });
         if (coinReceipt) {
             expect(coinReceipt.userId).toEqual(String(userId));
             expect(coinReceipt.transactionType).toEqual(CoinTransactionTypes.credit);
-            expect(coinReceipt.coins).toEqual(coinValues[CoinSourcesTypes.teamMemberStreakComplete]);
+            expect(coinReceipt.coins).toEqual(coinCreditValues[CoinCredits.completeTeamMemberStreak]);
         }
     });
 
@@ -1141,7 +1141,7 @@ describe(testName, () => {
         if (oidXpReceipt) {
             expect(oidXpReceipt.userId).toEqual(String(userId));
             expect(oidXpReceipt.transactionType).toEqual(OidXpTransactionTypes.credit);
-            expect(oidXpReceipt.oidXp).toEqual(coinValues[OidXpSourcesTypes.teamMemberStreakComplete]);
+            expect(oidXpReceipt.oidXp).toEqual(coinCreditValues[CoinCredits.completeTeamMemberStreak]);
         }
     });
 
