@@ -12,6 +12,8 @@ import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/Stre
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import moment from 'moment-timezone';
 import { userModel } from '../src/Models/User';
+import { coinChargeValues } from '../src/helpers/coinChargeValues';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 
 jest.setTimeout(120000);
 
@@ -366,6 +368,63 @@ describe(testName, () => {
         expect(Object.keys(recoveredChallengeStreakTrackingEvent).sort()).toEqual(
             ['_id', 'streakId', 'streakType', 'type', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
+    });
+
+    test('that user is charged coins to recover a challenge streak.', async () => {
+        expect.assertions(1);
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const coins = 2000;
+        await userModel.findByIdAndUpdate(userId, {
+            $set: { coins },
+        });
+
+        const challengeStreak = await SDK.challengeStreaks.create({
+            userId,
+            challengeId: challenge._id,
+        });
+        const challengeStreakId = challengeStreak._id;
+
+        const startDate = new Date().toISOString();
+        const numberOfDaysInARow = 11;
+        const lostStreak = {
+            endDate: new Date().toString(),
+            startDate,
+            numberOfDaysInARow,
+        };
+
+        await SDK.challengeStreaks.update({
+            challengeStreakId,
+            updateData: {
+                currentStreak: {
+                    startDate: new Date().toISOString(),
+                    numberOfDaysInARow: 0,
+                },
+                status: StreakStatus.live,
+                completedToday: false,
+                active: false,
+                pastStreaks: [
+                    { startDate: new Date().toString(), endDate: new Date().toString(), numberOfDaysInARow: 0 },
+                    lostStreak,
+                ],
+            },
+        });
+
+        await SDK.challengeStreaks.recover({ challengeStreakId });
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.coins).toEqual(coins - coinChargeValues[CoinCharges.recoverChallengeStreak]);
     });
 
     test('when user does not have enough coins to recover the challenge streak a RecoverChallengeStreakUserDoesNotHaveEnoughCoins is thrown.', async () => {

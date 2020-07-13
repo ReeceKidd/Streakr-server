@@ -12,6 +12,8 @@ import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import moment from 'moment-timezone';
 import { userModel } from '../src/Models/User';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { coinChargeValues } from '../src/helpers/coinChargeValues';
 
 jest.setTimeout(120000);
 
@@ -330,6 +332,56 @@ describe(testName, () => {
         expect(Object.keys(recoveredSoloStreakTrackingEvent).sort()).toEqual(
             ['_id', 'streakId', 'streakType', 'type', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
+    });
+
+    test('that user is charged coins to recover a solo streak.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const coins = 2000;
+        await userModel.findByIdAndUpdate(userId, {
+            $set: { coins },
+        });
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
+
+        const startDate = new Date().toISOString();
+        const numberOfDaysInARow = 11;
+        const lostStreak = {
+            endDate: new Date().toString(),
+            startDate,
+            numberOfDaysInARow,
+        };
+
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                currentStreak: {
+                    startDate: new Date().toISOString(),
+                    numberOfDaysInARow: 0,
+                },
+                status: StreakStatus.live,
+                completedToday: false,
+                active: false,
+                pastStreaks: [
+                    { startDate: new Date().toString(), endDate: new Date().toString(), numberOfDaysInARow: 0 },
+                    lostStreak,
+                ],
+            },
+        });
+
+        await SDK.soloStreaks.recover({ soloStreakId });
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.coins).toEqual(coins - coinChargeValues[CoinCharges.recoverSoloStreak]);
     });
 
     test('when user does not have enough coins to recover the solo streak a RecoverSoloStreakUserDoesNotHaveEnoughCoins error is thrown.', async () => {
