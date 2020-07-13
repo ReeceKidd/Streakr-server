@@ -15,14 +15,14 @@ import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
-import { SoloStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../../helpers/coinValues';
 import { SoloStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { oidXpValues } from '../../helpers/oidXpValues';
 import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
 import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
+import { coinChargeValues } from '../../helpers/coinChargeValues';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { IncompleteSoloStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
 
 export const incompleteSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -291,14 +291,15 @@ export const getChargeCoinsToUserForIncompletingSoloStreakMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { userId, soloStreakId } = request.body;
-        const source: SoloStreakCompleteCoinSource = {
-            coinSourceType: CoinSourcesTypes.soloStreakComplete,
+        const coinChargeType: IncompleteSoloStreakCharge = {
+            coinChargeType: CoinCharges.incompleteSoloStreak,
             soloStreakId,
         };
+        const coinsToCharge = coinChargeValues[CoinCharges.incompleteSoloStreak];
         response.locals.user = await chargeUserCoins({
             userId,
-            source,
-            coins: coinValues[CoinSourcesTypes.soloStreakComplete],
+            coinChargeType,
+            coinsToCharge,
         });
         next();
     } catch (err) {

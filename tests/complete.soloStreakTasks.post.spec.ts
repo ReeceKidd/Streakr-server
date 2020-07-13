@@ -11,7 +11,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../src/helpers/coinValues';
+import { coinValues } from '../src/helpers/creditValues';
 import { oidXpValues } from '../src/helpers/oidXpValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { coinTransactionModel } from '../src/Models/CoinTransaction';

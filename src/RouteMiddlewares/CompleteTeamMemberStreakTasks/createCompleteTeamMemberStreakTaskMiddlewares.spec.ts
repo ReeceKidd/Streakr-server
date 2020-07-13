@@ -54,11 +54,12 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
-import { coinValues } from '../../helpers/coinValues';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 import { oidXpValues } from '../../helpers/oidXpValues';
+import { coinCreditValues } from '../../helpers/coinCreditValues';
+import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
+import { CompleteTeamMemberStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
 
 describe('completeTeamMemberStreakTaskMiddlewares', () => {
     describe(`completeTeamMemberStreakTaskBodyValidationMiddleware`, () => {
@@ -750,15 +751,18 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
 
             await middleware(request, response, next);
 
+            const coinCreditType: CompleteTeamMemberStreakCredit = {
+                coinCreditType: CoinCredits.completeTeamMemberStreak,
+                teamMemberStreakId,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+            };
+            const coins = coinCreditValues[CoinCredits.completeTeamMemberStreak];
+
             expect(createCoinTransaction).toBeCalledWith({
                 userId,
-                source: {
-                    coinSourceType: CoinSourcesTypes.teamMemberStreakComplete,
-                    teamMemberStreakId,
-                    teamStreakId: teamStreak._id,
-                    teamStreakName: teamStreak.streakName,
-                },
-                coins: coinValues[CoinSourcesTypes.teamMemberStreakComplete],
+                coinCreditType,
+                coins,
             });
             expect(response.locals.user).toBeDefined();
             expect(next).toBeCalledWith();

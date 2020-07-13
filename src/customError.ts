@@ -596,6 +596,10 @@ export enum ErrorType {
     DecreaseTotalTimesTrackedForTeamStreakMiddleware,
     CannotDeleteTeamMemberUserIsNotApartOfTeamStreak,
     CheckCurrentUserIsPartOfTeamStreakMiddleware,
+    ChargeUserCoinsToRecoverChallengeStreakMiddleware,
+    RecoverChallengeStreakUserDoesNotHaveEnoughCoins,
+    ChargeUserCoinsToRecoverSoloStreakMiddleware,
+    RecoverSoloStreakUserDoesNotHaveEnoughCoins,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1462,6 +1466,22 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-114`,
                     message: 'Cannot delete team member user is not apart of team streak.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverChallengeStreakUserDoesNotHaveEnoughCoins: {
+                return {
+                    code: `${ResponseCodes.badRequest}-115`,
+                    message: 'User does not have enough coins to recover challenge streak.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverSoloStreakUserDoesNotHaveEnoughCoins: {
+                return {
+                    code: `${ResponseCodes.badRequest}-116`,
+                    message: 'User does not have enough coins to recover solo streak.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4853,6 +4873,20 @@ export class CustomError extends Error {
             case ErrorType.CheckCurrentUserIsPartOfTeamStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-497`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChargeUserCoinsToRecoverChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-498`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChargeUserCoinsToRecoverSoloStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-499`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

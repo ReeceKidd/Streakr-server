@@ -16,12 +16,17 @@ import {
     getRetreiveChallengeStreakToRecoverMiddleware,
     createACompleteChallengeStreakTaskForPreviousDayMiddleware,
     getCreateACompleteChallengeStreakTaskForPreviousDayMiddleware,
+    chargeUserCoinsToRecoverChallengeStreakMiddleware,
+    getChargeUserCoinsToRecoverChallengeStreakMiddleware,
 } from './recoverChallengeStreakMiddlewares';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { getMockChallengeStreak } from '../../testHelpers/getMockChallengeStreak';
 import { getMockChallenge } from '../../testHelpers/getMockChallenge';
 import { PastStreak } from '@streakoid/streakoid-models/lib/Models/PastStreak';
 import moment from 'moment-timezone';
+import { coinChargeValues } from '../../helpers/coinChargeValues';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { RecoverChallengeStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
 
 describe('recoverChallengeStreakMiddlewares', () => {
     describe('challengeStreakParamsValidationMiddleware', () => {
@@ -118,6 +123,68 @@ describe('recoverChallengeStreakMiddlewares', () => {
 
             expect(next).toBeCalledWith(
                 new CustomError(ErrorType.RetreiveChallengeStreakToRecoverMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('chargeUserCoinsToRecoverChallengeStreakMiddleware', () => {
+        test('charges user with enough coins to recover challenge streak and calls next()', async () => {
+            expect.assertions(3);
+            const user = { ...getMockUser({ _id: '_id' }), coins: 100000 };
+            const challenge = getMockChallenge();
+            const challengeStreak = getMockChallengeStreak({ user, challenge });
+
+            const request: any = {};
+            const response: any = { locals: { user, challengeStreak } };
+            const next = jest.fn();
+
+            const chargeUserCoins = jest.fn().mockResolvedValue(user);
+            const middleware = getChargeUserCoinsToRecoverChallengeStreakMiddleware(chargeUserCoins);
+
+            await middleware(request, response, next);
+
+            const coinsToCharge = coinChargeValues[CoinCharges.recoverChallengeStreak];
+            const coinChargeType: RecoverChallengeStreakCharge = {
+                coinChargeType: CoinCharges.recoverChallengeStreak,
+                challengeStreakId: challengeStreak._id,
+                challengeId: challengeStreak.challengeId,
+                challengeName: challengeStreak.challengeName,
+            };
+
+            expect(chargeUserCoins).toBeCalledWith({ userId: user._id, coinsToCharge, coinChargeType });
+            expect(response.locals.challengeStreak).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws RecoverChallengeStreakUserDoesNotHaveEnoughCoins error when user does not have enough coins', async () => {
+            expect.assertions(1);
+            const user = getMockUser({ _id: '_id' });
+            const challenge = getMockChallenge();
+            const challengeStreak = getMockChallengeStreak({ user, challenge });
+
+            const request: any = {};
+            const response: any = { locals: { user, challengeStreak } };
+            const next = jest.fn();
+
+            const chargeUserCoins = jest.fn().mockResolvedValue(user);
+            const middleware = getChargeUserCoinsToRecoverChallengeStreakMiddleware(chargeUserCoins);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.RecoverChallengeStreakUserDoesNotHaveEnoughCoins));
+        });
+
+        test('throws ChargeUserCoinsToRecoverChallengeStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getChargeUserCoinsToRecoverChallengeStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.ChargeUserCoinsToRecoverChallengeStreakMiddleware, expect.any(Error)),
             );
         });
     });
@@ -366,15 +433,16 @@ describe('recoverChallengeStreakMiddlewares', () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(8);
+        expect.assertions(9);
 
-        expect(recoverChallengeStreakMiddlewares.length).toBe(7);
+        expect(recoverChallengeStreakMiddlewares.length).toBe(8);
         expect(recoverChallengeStreakMiddlewares[0]).toBe(challengeStreakParamsValidationMiddleware);
         expect(recoverChallengeStreakMiddlewares[1]).toBe(retreiveChallengeStreakToRecoverMiddleware);
-        expect(recoverChallengeStreakMiddlewares[2]).toBe(replaceChallengeStreakCurrentStreakWithLostStreakMiddleware);
-        expect(recoverChallengeStreakMiddlewares[3]).toBe(createACompleteChallengeStreakTaskForPreviousDayMiddleware);
-        expect(recoverChallengeStreakMiddlewares[4]).toBe(createRecoveredChallengeStreakActivityFeedItemMiddleware);
-        expect(recoverChallengeStreakMiddlewares[5]).toBe(createRecoveredChallengeStreakTrackingEventMiddleware);
-        expect(recoverChallengeStreakMiddlewares[6]).toBe(sendRecoveredChallengeStreakMiddleware);
+        expect(recoverChallengeStreakMiddlewares[2]).toBe(chargeUserCoinsToRecoverChallengeStreakMiddleware);
+        expect(recoverChallengeStreakMiddlewares[3]).toBe(replaceChallengeStreakCurrentStreakWithLostStreakMiddleware);
+        expect(recoverChallengeStreakMiddlewares[4]).toBe(createACompleteChallengeStreakTaskForPreviousDayMiddleware);
+        expect(recoverChallengeStreakMiddlewares[5]).toBe(createRecoveredChallengeStreakActivityFeedItemMiddleware);
+        expect(recoverChallengeStreakMiddlewares[6]).toBe(createRecoveredChallengeStreakTrackingEventMiddleware);
+        expect(recoverChallengeStreakMiddlewares[7]).toBe(sendRecoveredChallengeStreakMiddleware);
     });
 });

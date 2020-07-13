@@ -17,6 +17,10 @@ import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/Stre
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import { CompleteSoloStreakTaskModel, completeSoloStreakTaskModel } from '../../Models/CompleteSoloStreakTask';
 import { MomentHelpers } from '../../helpers/momentHelpers';
+import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { coinChargeValues } from '../../helpers/coinChargeValues';
+import { RecoverSoloStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
 
 const soloStreakParamsValidationSchema = {
     soloStreakId: Joi.string().required(),
@@ -54,6 +58,32 @@ export const getRetreiveSoloStreakToRecoverMiddleware = (soloStreakModel: mongoo
 };
 
 export const retreiveSoloStreakToRecoverMiddleware = getRetreiveSoloStreakToRecoverMiddleware(soloStreakModel);
+
+export const getChargeUserCoinsToRecoverSoloStreakMiddleware = (
+    chargeUserCoins: typeof CoinTransactionHelpers.chargeUsersCoins,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        const coinsToCharge = coinChargeValues[CoinCharges.recoverSoloStreak];
+        if (user.coins < coinsToCharge) {
+            throw new CustomError(ErrorType.RecoverSoloStreakUserDoesNotHaveEnoughCoins);
+        }
+        const coinChargeType: RecoverSoloStreakCharge = {
+            coinChargeType: CoinCharges.recoverSoloStreak,
+            soloStreakId: soloStreak._id,
+        };
+        response.locals.user = await chargeUserCoins({ userId: user._id, coinsToCharge, coinChargeType });
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.ChargeUserCoinsToRecoverSoloStreakMiddleware, err));
+    }
+};
+
+export const chargeUserCoinsToRecoverSoloStreakMiddleware = getChargeUserCoinsToRecoverSoloStreakMiddleware(
+    CoinTransactionHelpers.chargeUsersCoins,
+);
 
 export const getReplaceSoloStreakCurrentStreakWithLostStreak = (
     soloStreakModel: mongoose.Model<SoloStreakModel>,
@@ -177,6 +207,7 @@ export const sendRecoveredSoloStreakMiddleware = (request: Request, response: Re
 export const recoverSoloStreakMiddlewares = [
     soloStreakParamsValidationMiddleware,
     retreiveSoloStreakToRecoverMiddleware,
+    chargeUserCoinsToRecoverSoloStreakMiddleware,
     replaceSoloStreakCurrentStreakWithLostStreakMiddleware,
     createACompleteSoloStreakTaskForPreviousDayMiddleware,
     createRecoveredSoloStreakActivityFeedItemMiddleware,

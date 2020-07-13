@@ -26,13 +26,13 @@ import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/Activit
 import { sendPushNotification as sendPushNotificationImport } from '../../../src/helpers/sendPushNotification';
 import { EndpointDisabledError } from '../../sns';
 import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
-import { TeamMemberStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../../helpers/coinValues';
 import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
 import { TeamMemberStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { oidXpValues } from '../../helpers/oidXpValues';
+import { coinCreditValues } from '../../helpers/coinCreditValues';
+import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
+import { CompleteTeamMemberStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -320,16 +320,17 @@ export const getCreditCoinsToUserForCompletingTeamMemberStreakMiddleware = (
     try {
         const { userId, teamMemberStreakId } = request.body;
         const teamStreak: TeamStreak = response.locals.teamStreak;
-        const source: TeamMemberStreakCompleteCoinSource = {
-            coinSourceType: CoinSourcesTypes.teamMemberStreakComplete,
+        const coinCreditType: CompleteTeamMemberStreakCredit = {
+            coinCreditType: CoinCredits.completeTeamMemberStreak,
             teamMemberStreakId,
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
         };
+        const coins = coinCreditValues[CoinCredits.completeTeamMemberStreak];
         response.locals.user = await creditUserCoins({
             userId,
-            source,
-            coins: coinValues[CoinSourcesTypes.teamMemberStreakComplete],
+            coinCreditType,
+            coins,
         });
         next();
     } catch (err) {

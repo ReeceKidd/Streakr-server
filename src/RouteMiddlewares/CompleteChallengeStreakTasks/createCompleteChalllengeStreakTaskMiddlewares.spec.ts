@@ -43,9 +43,11 @@ import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementT
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { OneHundredDayChallengeStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../../helpers/coinValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { coinCreditValues } from '../../helpers/coinCreditValues';
+import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
+import { CompleteChallengeStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
+import { oidXpValues } from '../../helpers/oidXpValues';
 
 describe('createCompleteChallengeStreakTaskMiddlewares', () => {
     describe(`completeChallengeStreakTaskBodyValidationMiddleware`, () => {
@@ -696,15 +698,17 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
 
             await middleware(request, response, next);
 
+            const coinCreditType: CompleteChallengeStreakCredit = {
+                coinCreditType: CoinCredits.completeChallengeStreak,
+                challengeStreakId,
+                challengeId: challenge._id,
+                challengeName: challenge.name,
+            };
+            const coins = coinCreditValues[CoinCredits.completeChallengeStreak];
             expect(createCoinTransaction).toBeCalledWith({
                 userId,
-                source: {
-                    coinSourceType: CoinSourcesTypes.challengeStreakComplete,
-                    challengeStreakId,
-                    challengeId: challenge._id,
-                    challengeName: challenge.name,
-                },
-                coins: coinValues[CoinSourcesTypes.challengeStreakComplete],
+                coinCreditType,
+                coins,
             });
             expect(response.locals.user).toBeDefined();
             expect(next).toBeCalledWith();
@@ -749,7 +753,7 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
                     challengeId: challenge._id,
                     challengeName: challenge.name,
                 },
-                oidXp: coinValues[OidXpSourcesTypes.challengeStreakComplete],
+                oidXp: oidXpValues[OidXpSourcesTypes.challengeStreakComplete],
             });
             expect(response.locals.user).toBeDefined();
             expect(next).toBeCalledWith();

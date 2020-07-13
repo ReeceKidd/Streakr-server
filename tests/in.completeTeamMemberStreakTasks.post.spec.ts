@@ -12,7 +12,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { coinTransactionModel } from '../src/Models/CoinTransaction';
 import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
-import { coinValues } from '../src/helpers/coinValues';
+import { coinValues } from '../src/helpers/creditValues';
 import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
 import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
 import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTransactionTypes';

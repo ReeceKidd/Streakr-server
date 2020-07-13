@@ -35,10 +35,11 @@ import {
 } from './createIncompleteChallengeStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../../helpers/coinValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { oidXpValues } from '../../helpers/oidXpValues';
+import { IncompleteChallengeStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { coinChargeValues } from '../../helpers/coinChargeValues';
 
 describe('createIncompleteChallengeStreakTaskMiddlewares', () => {
     describe(`incompleteChallengeStreakTaskBodyValidationMiddleware`, () => {
@@ -708,15 +709,18 @@ describe('createIncompleteChallengeStreakTaskMiddlewares', () => {
 
             await middleware(request, response, next);
 
+            const coinChargeType: IncompleteChallengeStreakCharge = {
+                coinChargeType: CoinCharges.incompleteChallengeStreak,
+                challengeId: challenge._id,
+                challengeName: challenge.name,
+                challengeStreakId,
+            };
+            const coinsToCharge = coinChargeValues[CoinCharges.incompleteChallengeStreak];
+
             expect(createCoinTransaction).toBeCalledWith({
                 userId,
-                source: {
-                    coinSourceType: CoinSourcesTypes.challengeStreakComplete,
-                    challengeStreakId,
-                    challengeId: challenge._id,
-                    challengeName: challenge.name,
-                },
-                coins: coinValues[CoinSourcesTypes.challengeStreakComplete],
+                coinChargeType,
+                coinsToCharge,
             });
             expect(response.locals.user).toBeDefined();
             expect(next).toBeCalledWith();

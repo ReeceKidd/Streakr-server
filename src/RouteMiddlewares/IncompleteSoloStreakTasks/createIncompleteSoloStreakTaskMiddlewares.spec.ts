@@ -34,9 +34,11 @@ import {
 } from './createIncompleteSoloStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../../helpers/coinValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { IncompleteSoloStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { coinChargeValues } from '../../helpers/coinChargeValues';
+import { oidXpValues } from '../../helpers/oidXpValues';
 
 describe('createIncompleteSoloStreakTaskMiddlewares', () => {
     describe(`incompleteSoloStreakTaskBodyValidationMiddleware`, () => {
@@ -708,10 +710,16 @@ describe('createIncompleteSoloStreakTaskMiddlewares', () => {
 
             await middleware(request, response, next);
 
+            const coinChargeType: IncompleteSoloStreakCharge = {
+                coinChargeType: CoinCharges.incompleteSoloStreak,
+                soloStreakId,
+            };
+            const coinsToCharge = coinChargeValues[CoinCharges.incompleteSoloStreak];
+
             expect(createCoinTransaction).toBeCalledWith({
                 userId,
-                source: { coinSourceType: CoinSourcesTypes.soloStreakComplete, soloStreakId },
-                coins: coinValues[CoinSourcesTypes.soloStreakComplete],
+                coinChargeType,
+                coinsToCharge,
             });
             expect(response.locals.user).toBeDefined();
             expect(next).toBeCalledWith();
@@ -748,7 +756,7 @@ describe('createIncompleteSoloStreakTaskMiddlewares', () => {
             expect(createOidXpTransaction).toBeCalledWith({
                 userId,
                 source: { oidXpSourceType: OidXpSourcesTypes.soloStreakComplete, soloStreakId },
-                oidXp: coinValues[OidXpSourcesTypes.soloStreakComplete],
+                oidXp: oidXpValues[OidXpSourcesTypes.soloStreakComplete],
             });
             expect(response.locals.user).toBeDefined();
             expect(next).toBeCalledWith();

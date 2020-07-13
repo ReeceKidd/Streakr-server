@@ -28,13 +28,13 @@ import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/Activit
 import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
 import { EndpointDisabledError } from '../../sns';
 import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
-import { TeamMemberStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../../helpers/coinValues';
 import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
 import { TeamMemberStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { oidXpValues } from '../../helpers/oidXpValues';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { coinChargeValues } from '../../helpers/coinChargeValues';
+import { IncompleteTeamMemberStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
 
 export const incompleteTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -343,16 +343,17 @@ export const getChargeCoinsToUserForIncompletingTeamMemberStreakMiddleware = (
     try {
         const { userId, teamMemberStreakId } = request.body;
         const teamStreak: TeamStreak = response.locals.teamStreak;
-        const source: TeamMemberStreakCompleteCoinSource = {
-            coinSourceType: CoinSourcesTypes.teamMemberStreakComplete,
+        const coinChargeType: IncompleteTeamMemberStreakCharge = {
+            coinChargeType: CoinCharges.incompleteTeamMemberStreak,
             teamMemberStreakId,
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
         };
+        const coinsToCharge = coinChargeValues[CoinCharges.incompleteTeamMemberStreak];
         response.locals.user = await chargeUserCoins({
             userId,
-            source,
-            coins: coinValues[CoinSourcesTypes.teamMemberStreakComplete],
+            coinChargeType,
+            coinsToCharge,
         });
         next();
     } catch (err) {

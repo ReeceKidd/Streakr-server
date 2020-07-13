@@ -42,9 +42,11 @@ import { OneHundredDaySoloStreakDatabaseAchievement } from '@streakoid/streakoid
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { getMockUser } from '../../testHelpers/getMockUser';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../../helpers/coinValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
+import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
+import { coinCreditValues } from '../../helpers/coinCreditValues';
+import { CompleteSoloStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
+import { oidXpValues } from '../../helpers/oidXpValues';
 
 describe(`completeSoloStreakTaskBodyValidationMiddleware`, () => {
     const userId = 'userId';
@@ -670,11 +672,15 @@ describe('creditCoinsToUserForCompletingSoloStreakMiddleware', () => {
         const middleware = getCreditCoinsToUserForCompletingSoloStreakMiddleware(createCoinTransaction as any);
 
         await middleware(request, response, next);
-
+        const coinCreditType: CompleteSoloStreakCredit = {
+            coinCreditType: CoinCredits.completeSoloStreak,
+            soloStreakId,
+        };
+        const coins = coinCreditValues[CoinCredits.completeSoloStreak];
         expect(createCoinTransaction).toBeCalledWith({
             userId,
-            source: { coinSourceType: CoinSourcesTypes.soloStreakComplete, soloStreakId },
-            coins: coinValues[CoinSourcesTypes.soloStreakComplete],
+            coinCreditType,
+            coins,
         });
         expect(response.locals.user).toBeDefined();
         expect(next).toBeCalledWith();
@@ -711,7 +717,7 @@ describe('creditOidXpToUserForCompletingSoloStreakMiddleware', () => {
         expect(createOidXpTransaction).toBeCalledWith({
             userId,
             source: { oidXpSourceType: OidXpSourcesTypes.soloStreakComplete, soloStreakId },
-            oidXp: coinValues[OidXpSourcesTypes.soloStreakComplete],
+            oidXp: oidXpValues[OidXpSourcesTypes.soloStreakComplete],
         });
         expect(response.locals.user).toBeDefined();
         expect(next).toBeCalledWith();

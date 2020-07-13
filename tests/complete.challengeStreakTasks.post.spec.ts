@@ -10,7 +10,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { OneHundredDayChallengeStreakAchievement } from '@streakoid/streakoid-models/lib/Models/Achievement';
-import { coinValues } from '../src/helpers/coinValues';
+import { coinValues } from '../src/helpers/creditValues';
 import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
 import { oidXpValues } from '../src/helpers/oidXpValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';

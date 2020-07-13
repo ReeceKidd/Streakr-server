@@ -21,13 +21,13 @@ import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { ChallengeStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
-import { coinValues } from '../../helpers/coinValues';
+import { coinChargeValues } from '../../helpers/coinChargeValues';
 import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
 import { ChallengeStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { oidXpValues } from '../../helpers/oidXpValues';
+import { IncompleteChallengeStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 
 export const incompleteChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -297,17 +297,17 @@ export const getChargeCoinsToUserForIncompletingChallengeStreakMiddleware = (
     try {
         const { userId, challengeStreakId } = request.body;
         const challenge: Challenge = response.locals.challenge;
-        const source: ChallengeStreakCompleteCoinSource = {
-            coinSourceType: CoinSourcesTypes.challengeStreakComplete,
+        const coinChargeType: IncompleteChallengeStreakCharge = {
+            coinChargeType: CoinCharges.incompleteChallengeStreak,
             challengeId: challenge._id,
             challengeName: challenge.name,
             challengeStreakId,
         };
-        const coins = coinValues[CoinSourcesTypes.challengeStreakComplete];
+        const coinsToCharge = coinChargeValues[CoinCharges.incompleteChallengeStreak];
         response.locals.user = await chargeUserCoins({
             userId,
-            source,
-            coins,
+            coinChargeType,
+            coinsToCharge,
         });
         next();
     } catch (err) {

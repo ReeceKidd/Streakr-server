@@ -1,24 +1,29 @@
 import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
 import { coinTransactionModel } from '../Models/CoinTransaction';
-import { CoinSources } from '@streakoid/streakoid-models/lib/Models/CoinSources';
 import { userModel } from '../Models/User';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { CoinChargeTypes } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
+import { CoinCreditTypes } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
 
 const chargeUsersCoins = async ({
     userId,
-    coins,
-    source,
+    coinsToCharge,
+    coinChargeType,
 }: {
     userId: string;
-    coins: number;
-    source: CoinSources;
+    coinsToCharge: number;
+    coinChargeType: CoinChargeTypes;
 }): Promise<User | null> => {
-    const userWithCoinChanges = await userModel.findByIdAndUpdate(userId, { $inc: { coins: -coins } }, { new: true });
+    const userWithCoinChanges = await userModel.findByIdAndUpdate(
+        userId,
+        { $inc: { coins: -coinsToCharge } },
+        { new: true },
+    );
     const newCoinTransaction = new coinTransactionModel({
         userId,
-        coins,
+        coins: coinsToCharge,
         transactionType: CoinTransactionTypes.charge,
-        source,
+        coinChargeType,
     });
     await newCoinTransaction.save();
     return userWithCoinChanges;
@@ -27,18 +32,18 @@ const chargeUsersCoins = async ({
 const creditUsersCoins = async ({
     userId,
     coins,
-    source,
+    coinCreditType,
 }: {
     userId: string;
     coins: number;
-    source: CoinSources;
+    coinCreditType: CoinCreditTypes;
 }): Promise<User | null> => {
     const userWithCoinChanges = await userModel.findByIdAndUpdate(userId, { $inc: { coins } }, { new: true });
     const newCoinTransaction = new coinTransactionModel({
         userId,
         coins,
         transactionType: CoinTransactionTypes.credit,
-        source,
+        coinCreditType,
     });
     await newCoinTransaction.save();
     return userWithCoinChanges;

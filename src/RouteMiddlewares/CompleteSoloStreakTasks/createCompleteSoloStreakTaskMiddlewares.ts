@@ -24,13 +24,13 @@ import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNot
 import { sendPushNotification } from '../../../src/helpers/sendPushNotification';
 import { EndpointDisabledError } from '../../sns';
 import { SoloStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
-import { SoloStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../../helpers/coinValues';
 import { oidXpValues } from '../../helpers/oidXpValues';
 import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
 import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
+import { CompleteSoloStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
+import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
+import { coinCreditValues } from '../../helpers/coinCreditValues';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -284,14 +284,15 @@ export const getCreditCoinsToUserForCompletingSoloStreakMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { userId, soloStreakId } = request.body;
-        const source: SoloStreakCompleteCoinSource = {
-            coinSourceType: CoinSourcesTypes.soloStreakComplete,
+        const coinCreditType: CompleteSoloStreakCredit = {
+            coinCreditType: CoinCredits.completeSoloStreak,
             soloStreakId,
         };
+        const coins = coinCreditValues[CoinCredits.completeSoloStreak];
         response.locals.user = await creditUserCoins({
             userId,
-            source,
-            coins: coinValues[CoinSourcesTypes.soloStreakComplete],
+            coinCreditType,
+            coins,
         });
         next();
     } catch (err) {

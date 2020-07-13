@@ -28,14 +28,14 @@ import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNot
 import { OneHundredDayChallengeStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 import { sendPushNotification } from '../../helpers/sendPushNotification';
 import { EndpointDisabledError } from '../../sns';
-import { ChallengeStreakCompleteCoinSource } from '@streakoid/streakoid-models/lib/Models/CoinSources';
-import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
-import { coinValues } from '../../helpers/coinValues';
 import { ChallengeStreakCompleteOidXpSource } from '@streakoid/streakoid-models/lib/Models/OidXpSources';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import { oidXpValues } from '../../helpers/oidXpValues';
 import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
 import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
+import { coinCreditValues } from '../../helpers/coinCreditValues';
+import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
+import { CompleteChallengeStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
 
 export const completeChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -301,16 +301,16 @@ export const getCreditCoinsToUserForCompletingChallengeStreakMiddleware = (
     try {
         const { userId, challengeStreakId } = request.body;
         const challenge: Challenge = response.locals.challenge;
-        const source: ChallengeStreakCompleteCoinSource = {
-            coinSourceType: CoinSourcesTypes.challengeStreakComplete,
+        const coinCreditType: CompleteChallengeStreakCredit = {
+            coinCreditType: CoinCredits.completeChallengeStreak,
             challengeStreakId,
             challengeId: challenge._id,
             challengeName: challenge.name,
         };
-        const coins = coinValues[CoinSourcesTypes.challengeStreakComplete];
+        const coins = coinCreditValues[CoinCredits.completeChallengeStreak];
         response.locals.user = await creditUsersCoins({
             userId,
-            source,
+            coinCreditType,
             coins,
         });
         next();

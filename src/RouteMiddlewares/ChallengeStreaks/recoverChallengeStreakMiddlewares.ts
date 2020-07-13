@@ -20,6 +20,10 @@ import {
     CompleteChallengeStreakTaskModel,
 } from '../../Models/CompleteChallengeStreakTask';
 import { MomentHelpers } from '../../helpers/momentHelpers';
+import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
+import { coinChargeValues } from '../../helpers/coinChargeValues';
+import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { RecoverChallengeStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
 
 const challengeStreakParamsValidationSchema = {
     challengeStreakId: Joi.string().required(),
@@ -56,6 +60,34 @@ export const getRetreiveChallengeStreakToRecoverMiddleware = (
 
 export const retreiveChallengeStreakToRecoverMiddleware = getRetreiveChallengeStreakToRecoverMiddleware(
     challengeStreakModel,
+);
+
+export const getChargeUserCoinsToRecoverChallengeStreakMiddleware = (
+    chargeUserCoins: typeof CoinTransactionHelpers.chargeUsersCoins,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const coinsToCharge = coinChargeValues[CoinCharges.recoverChallengeStreak];
+        if (user.coins < coinsToCharge) {
+            throw new CustomError(ErrorType.RecoverChallengeStreakUserDoesNotHaveEnoughCoins);
+        }
+        const coinChargeType: RecoverChallengeStreakCharge = {
+            coinChargeType: CoinCharges.recoverChallengeStreak,
+            challengeStreakId: challengeStreak._id,
+            challengeId: challengeStreak.challengeId,
+            challengeName: challengeStreak.challengeName,
+        };
+        response.locals.user = await chargeUserCoins({ userId: user._id, coinsToCharge, coinChargeType });
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.ChargeUserCoinsToRecoverChallengeStreakMiddleware, err));
+    }
+};
+
+export const chargeUserCoinsToRecoverChallengeStreakMiddleware = getChargeUserCoinsToRecoverChallengeStreakMiddleware(
+    CoinTransactionHelpers.chargeUsersCoins,
 );
 
 export const getReplaceChallengeStreakCurrentStreakWithLostStreak = (
@@ -186,6 +218,7 @@ export const sendRecoveredChallengeStreakMiddleware = (
 export const recoverChallengeStreakMiddlewares = [
     challengeStreakParamsValidationMiddleware,
     retreiveChallengeStreakToRecoverMiddleware,
+    chargeUserCoinsToRecoverChallengeStreakMiddleware,
     replaceChallengeStreakCurrentStreakWithLostStreakMiddleware,
     createACompleteChallengeStreakTaskForPreviousDayMiddleware,
     createRecoveredChallengeStreakActivityFeedItemMiddleware,

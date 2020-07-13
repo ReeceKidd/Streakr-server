@@ -14,7 +14,7 @@ import { oidXpValues } from '../src/helpers/oidXpValues';
 import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSourcesTypes';
 import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTransactionTypes';
 import { coinTransactionModel } from '../src/Models/CoinTransaction';
-import { coinValues } from '../src/helpers/coinValues';
+import { coinValues } from '../src/helpers/creditValues';
 import { CoinSourcesTypes } from '@streakoid/streakoid-models/lib/Types/CoinSourcesTypes';
 
 jest.setTimeout(120000);

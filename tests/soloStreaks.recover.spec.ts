@@ -11,6 +11,7 @@ import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/Stre
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import moment from 'moment-timezone';
+import { userModel } from '../src/Models/User';
 
 jest.setTimeout(120000);
 
@@ -43,6 +44,9 @@ describe(testName, () => {
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
+        await userModel.findByIdAndUpdate(userId, {
+            $set: { coins: 1000000 },
+        });
         const streakName = 'Daily Spanish';
         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
@@ -119,6 +123,9 @@ describe(testName, () => {
         expect.assertions(9);
         const user = await getPayingUser({ testName });
         const userId = user._id;
+        await userModel.findByIdAndUpdate(userId, {
+            $set: { coins: 1000000 },
+        });
         const streakName = 'Daily Spanish';
         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
@@ -195,6 +202,9 @@ describe(testName, () => {
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
+        await userModel.findByIdAndUpdate(userId, {
+            $set: { coins: 1000000 },
+        });
         const streakName = 'Daily Spanish';
         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
@@ -266,6 +276,9 @@ describe(testName, () => {
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
+        await userModel.findByIdAndUpdate(userId, {
+            $set: { coins: 1000000 },
+        });
         const streakName = 'Daily Spanish';
         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
 
@@ -317,5 +330,57 @@ describe(testName, () => {
         expect(Object.keys(recoveredSoloStreakTrackingEvent).sort()).toEqual(
             ['_id', 'streakId', 'streakType', 'type', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
+    });
+
+    test('when user does not have enough coins to recover the solo streak a RecoverSoloStreakUserDoesNotHaveEnoughCoins error is thrown.', async () => {
+        expect.assertions(3);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
+
+        const startDate = new Date().toISOString();
+        const numberOfDaysInARow = 11;
+        const lostStreak = {
+            endDate: new Date().toString(),
+            startDate,
+            numberOfDaysInARow,
+        };
+
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                currentStreak: {
+                    startDate: new Date().toISOString(),
+                    numberOfDaysInARow: 0,
+                },
+                status: StreakStatus.live,
+                completedToday: false,
+                active: false,
+                pastStreaks: [
+                    { startDate: new Date().toString(), endDate: new Date().toString(), numberOfDaysInARow: 0 },
+                    lostStreak,
+                ],
+            },
+        });
+
+        try {
+            await SDK.soloStreaks.recover({ soloStreakId });
+        } catch (err) {
+            const error = JSON.parse(err.text);
+            const { code, message } = error;
+            expect(err.status).toEqual(400);
+            expect(code).toEqual('400-116');
+            expect(message).toEqual(`User does not have enough coins to recover solo streak.`);
+        }
     });
 });

@@ -11,10 +11,6 @@ export const coinTransactionSchema = new mongoose.Schema(
             required: true,
             type: String,
         },
-        source: {
-            required: true,
-            type: Object,
-        },
         userId: {
             required: true,
             type: String,
@@ -22,6 +18,12 @@ export const coinTransactionSchema = new mongoose.Schema(
         coins: {
             required: true,
             type: Number,
+        },
+        coinCreditType: {
+            type: Object,
+        },
+        coinChargeType: {
+            type: Object,
         },
     },
     {

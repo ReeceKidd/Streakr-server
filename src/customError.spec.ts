@@ -1157,6 +1157,28 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to RecoverChallengeStreakUserDoesNotHaveEnoughCoins`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverChallengeStreakUserDoesNotHaveEnoughCoins);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-115`);
+        expect(message).toBe('User does not have enough coins to recover challenge streak.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to RecoverSoloStreakUserDoesNotHaveEnoughCoins`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverSoloStreakUserDoesNotHaveEnoughCoins);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-116`);
+        expect(message).toBe('User does not have enough coins to recover solo streak.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -6453,6 +6475,28 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-497`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to ChargeUserCoinsToRecoverChallengeStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ChargeUserCoinsToRecoverChallengeStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-498`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to ChargeUserCoinsToRecoverSoloStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ChargeUserCoinsToRecoverSoloStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-499`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
