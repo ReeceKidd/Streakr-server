@@ -1,27 +1,33 @@
-import { Request, Response } from 'express';
+// import { Request, Response } from 'express';
 
-import { teamMemberStreakModel } from '../Models/TeamMemberStreak';
-import { teamStreakModel } from '../Models/TeamStreak';
+// import { challengeStreakModel } from '../Models/ChallengeStreak';
 
-export const updateDatabaseMiddleware = async (request: Request, response: Response): Promise<void> => {
-    const teamStreaks = await teamStreakModel.find({});
-    await Promise.all(
-        teamStreaks.map(async teamStreak => {
-            let totalTimesTracked = 0;
-            await Promise.all(
-                teamStreak.members.map(async member => {
-                    const teamMemberStreak = await teamMemberStreakModel.findById(member.teamMemberStreakId);
-                    if (teamMemberStreak) {
-                        totalTimesTracked += teamMemberStreak.totalTimesTracked;
-                    }
-                    return member;
-                }),
-            );
-            console.log('Total times tracked', totalTimesTracked);
-            return teamStreakModel.findByIdAndUpdate(teamStreak._id, { $set: { totalTimesTracked } });
-        }),
-    );
-    response.send('Success');
-};
+// export const updateDatabaseMiddleware = async (request: Request, response: Response): Promise<void> => {
+//     const challengeStreak = await challengeStreakModel.findById('5f0d941beb2b272daafcf511');
+//     const numberOfDaysInARow = 11;
+//     const lostStreak = {
+//         endDate: new Date().toString(),
+//         startDate: new Date().toString(),
+//         numberOfDaysInARow,
+//     };
+//     if (challengeStreak) {
+//         await challengeStreakModel.findByIdAndUpdate(challengeStreak._id, {
+//             $set: {
+//                 currentStreak: {
+//                     startDate: new Date().toISOString(),
+//                     numberOfDaysInARow: 0,
+//                 },
+//                 completedToday: false,
+//                 active: false,
+//                 pastStreaks: [
+//                     { startDate: new Date().toString(), endDate: new Date().toString(), numberOfDaysInARow: 0 },
+//                     lostStreak,
+//                 ],
+//             },
+//         });
+//     }
 
-export const updateDatabaseMiddlewares = [updateDatabaseMiddleware];
+//     response.send('Success');
+// };
+
+// export const updateDatabaseMiddlewares = [updateDatabaseMiddleware];
