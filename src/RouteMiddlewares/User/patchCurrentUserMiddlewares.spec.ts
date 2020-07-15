@@ -168,40 +168,6 @@ describe('patchCurrentUserMiddlewares', () => {
             });
             expect(next).not.toBeCalled();
         });
-
-        test('allows pushNotification.androidToken to be null', () => {
-            expect.assertions(1);
-            const send = jest.fn();
-            const status = jest.fn(() => ({ send }));
-            const request: any = {
-                body: { ...values, pushNotification: { androidToken: null } },
-            };
-            const response: any = {
-                status,
-            };
-            const next = jest.fn();
-
-            patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
-
-            expect(next).toBeCalled();
-        });
-
-        test('allows pushNotification.iosToken to be null', () => {
-            expect.assertions(1);
-            const send = jest.fn();
-            const status = jest.fn(() => ({ send }));
-            const request: any = {
-                body: { ...values, pushNotification: { iosToken: null } },
-            };
-            const response: any = {
-                status,
-            };
-            const next = jest.fn();
-
-            patchCurrentUserRequestBodyValidationMiddleware(request, response, next);
-
-            expect(next).toBeCalled();
-        });
     });
 
     describe(`doesUserEmailExistMiddleware`, () => {

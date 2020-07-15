@@ -25,8 +25,8 @@ const patchCurrentUserValidationSchema = {
     hasUsernameBeenCustomized: Joi.boolean(),
     timezone: Joi.string(),
     pushNotification: {
-        androidToken: Joi.string().allow(null),
-        iosToken: Joi.string().allow(null),
+        androidToken: Joi.string(),
+        iosToken: Joi.string(),
         //Legacy
         token: Joi.string(),
         deviceType: Joi.string(),
@@ -208,7 +208,7 @@ export const getCreateAndroidPlatformEndpointMiddleware = ({
                             {
                                 $set: {
                                     pushNotification: {
-                                        ...pushNotification,
+                                        ...user.pushNotification,
                                         androidEndpointArn: EndpointArn,
                                         androidToken,
                                     },
@@ -260,7 +260,11 @@ export const getCreateIosPlatformEndpointMiddleware = ({
                             user._id,
                             {
                                 $set: {
-                                    pushNotification: { ...pushNotification, iosEndpointArn: EndpointArn, iosToken },
+                                    pushNotification: {
+                                        ...user.pushNotification,
+                                        iosEndpointArn: EndpointArn,
+                                        iosToken,
+                                    },
                                 },
                             },
                             { new: true },

@@ -40,7 +40,7 @@ describe(testName, () => {
         }
     });
 
-    test(`that all available keys can be patched except push notification token as it is handled via a separate test`, async () => {
+    test(`that all available keys can be patched except push notification token`, async () => {
         expect.assertions(35);
 
         await getPayingUser({ testName });
