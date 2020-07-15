@@ -25,8 +25,8 @@ const patchCurrentUserValidationSchema = {
     hasUsernameBeenCustomized: Joi.boolean(),
     timezone: Joi.string(),
     pushNotification: {
-        androidToken: Joi.string(),
-        iosToken: Joi.string(),
+        androidToken: Joi.string().allow(null),
+        iosToken: Joi.string().allow(null),
         //Legacy
         token: Joi.string(),
         deviceType: Joi.string(),
