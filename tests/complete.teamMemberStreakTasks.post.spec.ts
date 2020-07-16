@@ -19,6 +19,7 @@ import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTr
 import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 import { coinCreditValues } from '../src/helpers/coinCreditValues';
+import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
 
 const originalImageUrl = getServiceConfig().DEFAULT_USER_PROFILE_IMAGE_URL;
 
@@ -111,22 +112,7 @@ describe(testName, () => {
         expect(updatedTeamMemberStreak.timezone).toEqual(expect.any(String));
         expect(updatedTeamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(updatedTeamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedTeamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
     });
 
     test('user can complete a team member streak task with an existing current streak', async () => {
@@ -206,22 +192,7 @@ describe(testName, () => {
         expect(updatedTeamMemberStreak.timezone).toEqual(expect.any(String));
         expect(updatedTeamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(updatedTeamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedTeamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
     });
 
     test('if lone team member has completed their task the new team streak gets updated.', async () => {
@@ -288,22 +259,7 @@ describe(testName, () => {
         expect(updatedTeamMemberStreak.timezone).toEqual(expect.any(String));
         expect(updatedTeamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(updatedTeamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedTeamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const completeTeamStreaks = await SDK.completeTeamStreaks.getAll({
             teamStreakId: teamStreakWithOneMember._id,
@@ -328,22 +284,7 @@ describe(testName, () => {
         expect(member.username).toEqual(user.username);
         expect(member.profileImage).toEqual(originalImageUrl);
         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
-        expect(Object.keys(updatedTeamStreak.members[0].teamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedTeamStreak.members[0].teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         expect(updatedTeamStreak.streakName).toEqual(teamStreakWithOneMember.streakName);
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -440,22 +381,7 @@ describe(testName, () => {
         expect(updatedTeamMemberStreak.timezone).toEqual(expect.any(String));
         expect(updatedTeamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(updatedTeamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedTeamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const completeTeamStreaks = await SDK.completeTeamStreaks.getAll({
             teamStreakId: teamStreakWithCurrentStreak._id,
@@ -480,22 +406,7 @@ describe(testName, () => {
         expect(member.username).toEqual(user.username);
         expect(member.profileImage).toEqual(originalImageUrl);
         expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
-        expect(Object.keys(updatedTeamStreak.members[0].teamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedTeamStreak.members[0].teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         expect(updatedTeamStreak.streakName).toEqual(expect.any(String));
         expect(updatedTeamStreak.status).toEqual(StreakStatus.live);
@@ -590,22 +501,7 @@ describe(testName, () => {
         expect(updatedUserTeamMemberStreak.timezone).toEqual(expect.any(String));
         expect(updatedUserTeamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(updatedUserTeamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(updatedUserTeamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedUserTeamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const unaffectedFriendTeamMemberStreak = await SDK.teamMemberStreaks.getOne(friendTeamMemberStreakId);
 
@@ -622,22 +518,7 @@ describe(testName, () => {
         expect(unaffectedFriendTeamMemberStreak.timezone).toEqual(expect.any(String));
         expect(unaffectedFriendTeamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(unaffectedFriendTeamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(unaffectedFriendTeamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(unaffectedFriendTeamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const completeTeamStreaks = await SDK.completeTeamStreaks.getAll({
             teamStreakId: teamStreakWithTwoMembers._id,
@@ -751,22 +632,7 @@ describe(testName, () => {
         expect(updatedUserTeamMemberStreak.timezone).toEqual(expect.any(String));
         expect(updatedUserTeamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(updatedUserTeamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(updatedUserTeamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedUserTeamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const unaffectedFriendTeamMemberStreak = await SDK.teamMemberStreaks.getOne(friendTeamMemberStreakId);
 
@@ -783,22 +649,7 @@ describe(testName, () => {
         expect(unaffectedFriendTeamMemberStreak.timezone).toEqual(expect.any(String));
         expect(unaffectedFriendTeamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(unaffectedFriendTeamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(unaffectedFriendTeamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(unaffectedFriendTeamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const completeTeamStreaks = await SDK.completeTeamStreaks.getAll({
             teamStreakId: teamStreakWithCurrentStreak._id,
@@ -909,22 +760,7 @@ describe(testName, () => {
         expect(updatedReadingTeamMemberStreak.timezone).toEqual(expect.any(String));
         expect(updatedReadingTeamMemberStreak.createdAt).toEqual(expect.any(String));
         expect(updatedReadingTeamMemberStreak.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(updatedReadingTeamMemberStreak).sort()).toEqual(
-            [
-                '_id',
-                'currentStreak',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                'userId',
-                'teamStreakId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedReadingTeamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
 
         const updatedYogaTeamMemberStreak = await SDK.teamMemberStreaks.getOne(yogTeamMemberStreakId);
 

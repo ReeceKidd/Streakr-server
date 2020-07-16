@@ -14,6 +14,7 @@ import moment from 'moment-timezone';
 import { userModel } from '../src/Models/User';
 import { coinChargeValues } from '../src/helpers/coinChargeValues';
 import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -108,26 +109,7 @@ describe(testName, () => {
         expect(recoveredChallengeStreak.active).toEqual(true);
         expect(recoveredChallengeStreak.completedToday).toEqual(false);
 
-        expect(Object.keys(recoveredChallengeStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(recoveredChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
     test('when challenge streak is recovered a completed chalenge streak task is created for the previous day', async () => {

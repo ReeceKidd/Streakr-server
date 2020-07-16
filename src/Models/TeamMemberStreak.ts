@@ -51,6 +51,30 @@ export const teamMemberStreakSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        longestTeamMemberStreak: {
+            teamMemberStreakId: {
+                type: String,
+                default: null,
+            },
+            teamStreakId: {
+                type: String,
+                default: null,
+            },
+            teamStreakName: {
+                type: String,
+                default: null,
+            },
+            numberOfDays: {
+                type: Number,
+                default: 0,
+            },
+            startDate: {
+                type: Date,
+            },
+            endDate: {
+                type: Date,
+            },
+        },
     },
     {
         timestamps: true,

@@ -67,6 +67,30 @@ export const challengeStreakSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        longestChallengeStreak: {
+            challengeStreakId: {
+                type: String,
+                default: null,
+            },
+            challengeId: {
+                type: String,
+                default: null,
+            },
+            challengeName: {
+                type: String,
+                default: null,
+            },
+            startDate: {
+                type: Date,
+            },
+            numberOfDays: {
+                type: Number,
+                default: 0,
+            },
+            endDate: {
+                type: Date,
+            },
+        },
     },
     {
         timestamps: true,

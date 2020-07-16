@@ -13,6 +13,7 @@ export const correctCurrentUserPopulatedTeamStreakKeys = [
     'createdAt',
     'updatedAt',
     'totalTimesTracked',
+    'longestTeamStreak',
     'inviteKey',
     '__v',
 ].sort();

@@ -18,6 +18,7 @@ import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
 import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTransactionTypes';
 import { coinCreditValues } from '../src/helpers/coinCreditValues';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
+import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -96,24 +97,7 @@ describe(testName, () => {
             expect(updatedSoloStreak.pastStreaks).toEqual([]);
             expect(updatedSoloStreak.createdAt).toBeDefined();
             expect(updatedSoloStreak.updatedAt).toBeDefined();
-            expect(Object.keys(updatedSoloStreak).sort()).toEqual(
-                [
-                    'currentStreak',
-                    'status',
-                    'completedToday',
-                    'active',
-                    'pastStreaks',
-                    '_id',
-                    'streakName',
-                    'streakDescription',
-                    'userId',
-                    'timezone',
-                    'totalTimesTracked',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
+            expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
         });
 
         test('user can complete a solo streak task with an existing current streak', async () => {
@@ -181,24 +165,7 @@ describe(testName, () => {
             expect(updatedSoloStreak.pastStreaks).toEqual([]);
             expect(updatedSoloStreak.createdAt).toBeDefined();
             expect(updatedSoloStreak.updatedAt).toBeDefined();
-            expect(Object.keys(updatedSoloStreak).sort()).toEqual(
-                [
-                    'currentStreak',
-                    'status',
-                    'completedToday',
-                    'active',
-                    'pastStreaks',
-                    '_id',
-                    'streakName',
-                    'streakDescription',
-                    'userId',
-                    'timezone',
-                    'totalTimesTracked',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
+            expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
         });
 
         test('user can complete, incomplete and complete a solo streak with a new current streak', async () => {
@@ -263,24 +230,7 @@ describe(testName, () => {
             expect(updatedSoloStreak.pastStreaks).toEqual([]);
             expect(updatedSoloStreak.createdAt).toBeDefined();
             expect(updatedSoloStreak.updatedAt).toBeDefined();
-            expect(Object.keys(updatedSoloStreak).sort()).toEqual(
-                [
-                    'currentStreak',
-                    'status',
-                    'completedToday',
-                    'active',
-                    'pastStreaks',
-                    '_id',
-                    'streakName',
-                    'streakDescription',
-                    'userId',
-                    'timezone',
-                    'totalTimesTracked',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
+            expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
         });
 
         test('user can complete, incomplete and complete a solo streak with an existing current streak', async () => {
@@ -358,24 +308,7 @@ describe(testName, () => {
             expect(updatedSoloStreak.pastStreaks).toEqual([]);
             expect(updatedSoloStreak.createdAt).toBeDefined();
             expect(updatedSoloStreak.updatedAt).toBeDefined();
-            expect(Object.keys(updatedSoloStreak).sort()).toEqual(
-                [
-                    'currentStreak',
-                    'status',
-                    'completedToday',
-                    'active',
-                    'pastStreaks',
-                    '_id',
-                    'streakName',
-                    'streakDescription',
-                    'userId',
-                    'timezone',
-                    'totalTimesTracked',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
+            expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
         });
 
         test('when a user completes a task their totalStreakCompletes increases by one.', async () => {

@@ -16,6 +16,7 @@ import CoinTransactionTypes from '@streakoid/streakoid-models/lib/Types/CoinTran
 import { coinTransactionModel } from '../src/Models/CoinTransaction';
 import { coinChargeValues } from '../src/helpers/coinChargeValues';
 import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -104,26 +105,7 @@ describe(testName, () => {
         expect(updatedChallengeStreak.pastStreaks).toEqual([]);
         expect(updatedChallengeStreak.createdAt).toBeDefined();
         expect(updatedChallengeStreak.updatedAt).toBeDefined();
-        expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
     test('that when users incompletes a challenge streak task after the first day of the streak completedToday is set to false and the current streak number of days in a row is decreased by one.', async () => {
@@ -201,26 +183,7 @@ describe(testName, () => {
         expect(updatedChallengeStreak.pastStreaks).toEqual([]);
         expect(updatedChallengeStreak.createdAt).toBeDefined();
         expect(updatedChallengeStreak.updatedAt).toBeDefined();
-        expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'userId',
-                'username',
-                'userProfileImage',
-                'challengeId',
-                'challengeName',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
     test('user cannot incomplete a challenge streak task that has not been completed', async () => {

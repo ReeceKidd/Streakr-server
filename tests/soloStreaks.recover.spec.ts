@@ -14,6 +14,7 @@ import moment from 'moment-timezone';
 import { userModel } from '../src/Models/User';
 import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 import { coinChargeValues } from '../src/helpers/coinChargeValues';
+import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -101,24 +102,7 @@ describe(testName, () => {
         expect(recoveredSoloStreak.active).toEqual(true);
         expect(recoveredSoloStreak.completedToday).toEqual(false);
 
-        expect(Object.keys(recoveredSoloStreak).sort()).toEqual(
-            [
-                'currentStreak',
-                'status',
-                'streakDescription',
-                'completedToday',
-                'active',
-                'pastStreaks',
-                '_id',
-                'streakName',
-                'userId',
-                'timezone',
-                'totalTimesTracked',
-                'createdAt',
-                'updatedAt',
-                '__v',
-            ].sort(),
-        );
+        expect(Object.keys(recoveredSoloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
     test('when solo streak is recovered a completed solo streak task is created for the previous day', async () => {

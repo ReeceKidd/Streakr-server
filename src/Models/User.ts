@@ -4,6 +4,7 @@ import { Models } from './Models';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import { getServiceConfig } from '../../src/getServiceConfig';
+
 const { DEFAULT_USER_PROFILE_IMAGE_URL } = getServiceConfig();
 
 export type UserModel = User & mongoose.Document;
@@ -222,6 +223,98 @@ export const userSchema = new mongoose.Schema(
         teamStreaksOrder: {
             type: Array,
             default: [],
+        },
+        longestSoloStreak: {
+            soloStreakId: {
+                type: String,
+                default: null,
+            },
+            soloStreakName: {
+                type: String,
+                default: null,
+            },
+            numberOfDays: {
+                type: Number,
+                default: 0,
+            },
+            startDate: {
+                type: Date,
+            },
+            endDate: {
+                type: Date,
+            },
+        },
+        longestChallengeStreak: {
+            challengeStreakId: {
+                type: String,
+                default: null,
+            },
+            challengeId: {
+                type: String,
+                default: null,
+            },
+            challengeName: {
+                type: String,
+                default: null,
+            },
+            numberOfDays: {
+                type: Number,
+                default: 0,
+            },
+            startDate: {
+                type: Date,
+            },
+            endDate: {
+                type: Date,
+            },
+        },
+        longestTeamMemberStreak: {
+            teamMemberStreakId: {
+                type: String,
+                default: null,
+            },
+            teamStreakId: {
+                type: String,
+                default: null,
+            },
+            teamStreakName: {
+                type: String,
+                default: null,
+            },
+            numberOfDays: {
+                type: Number,
+                default: 0,
+            },
+            startDate: {
+                type: Date,
+            },
+            endDate: {
+                type: Date,
+            },
+        },
+        longestTeamStreak: {
+            teamStreakId: {
+                type: String,
+                default: null,
+            },
+            teamStreakName: {
+                type: String,
+                default: null,
+            },
+            members: {
+                type: Array,
+                default: [],
+            },
+            numberOfDays: {
+                type: Number,
+                default: 0,
+            },
+            startDate: {
+                type: Date,
+            },
+            endDate: {
+                type: Date,
+            },
         },
     },
     {

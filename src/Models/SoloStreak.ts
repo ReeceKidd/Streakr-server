@@ -66,6 +66,26 @@ export const soloStreakSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        longestSoloStreak: {
+            soloStreakId: {
+                type: String,
+                default: null,
+            },
+            soloStreakName: {
+                type: String,
+                default: null,
+            },
+            numberOfDays: {
+                type: Number,
+                default: 0,
+            },
+            startDate: {
+                type: Date,
+            },
+            endDate: {
+                type: Date,
+            },
+        },
     },
     {
         timestamps: true,

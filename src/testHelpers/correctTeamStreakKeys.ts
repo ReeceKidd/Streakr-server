@@ -7,6 +7,7 @@ export const correctTeamStreakKeys = [
     'pastStreaks',
     'streakName',
     'totalTimesTracked',
+    'longestTeamStreak',
     'timezone',
     'creatorId',
     'members',

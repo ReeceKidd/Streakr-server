@@ -22,7 +22,14 @@ export const getMockChallengeStreak = ({ challenge, user }: { challenge: Challen
     active: false,
     pastStreaks: [],
     totalTimesTracked: 0,
-
+    longestChallengeStreak: {
+        challengeId: 'challengeId',
+        challengeName: 'Writing',
+        challengeStreakId: 'challengeStreakId',
+        numberOfDays: 20,
+        startDate: new Date(),
+        endDate: new Date(),
+    },
     timezone: 'Europe/London',
     createdAt: new Date().toString(),
     updatedAt: new Date().toString(),

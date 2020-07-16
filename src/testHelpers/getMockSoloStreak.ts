@@ -17,6 +17,13 @@ export const getMockSoloStreak = ({ userId }: { userId: string }): SoloStreak =>
     active: false,
     pastStreaks: [],
     totalTimesTracked: 0,
+    longestSoloStreak: {
+        soloStreakId: 'soloStreakId',
+        soloStreakName: 'Reading',
+        numberOfDays: 20,
+        startDate: new Date(),
+        endDate: new Date(),
+    },
     timezone: 'Europe/London',
     createdAt: new Date().toString(),
     updatedAt: new Date().toString(),

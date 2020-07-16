@@ -16,6 +16,7 @@ import { OidXpSourcesTypes } from '@streakoid/streakoid-models/lib/Types/OidXpSo
 import { oidXpValues } from '../src/helpers/oidXpValues';
 import { coinChargeValues } from '../src/helpers/coinChargeValues';
 import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
+import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
 
 jest.setTimeout(120000);
 
@@ -102,24 +103,7 @@ describe(testName, () => {
             expect(updatedSoloStreak.completedToday).toEqual(false);
             expect(updatedSoloStreak.active).toEqual(false);
             expect(updatedSoloStreak.pastStreaks).toEqual([]);
-            expect(Object.keys(updatedSoloStreak).sort()).toEqual(
-                [
-                    'currentStreak',
-                    'status',
-                    'completedToday',
-                    'active',
-                    'pastStreaks',
-                    '_id',
-                    'streakName',
-                    'streakDescription',
-                    'userId',
-                    'timezone',
-                    'totalTimesTracked',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
+            expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
         });
 
         test('that when user incompletes a solo streak task after the first day of the streak completed today will be set to false and the current streak number of days is decreased by one.', async () => {
@@ -189,24 +173,7 @@ describe(testName, () => {
             expect(updatedSoloStreak.pastStreaks).toEqual([]);
             expect(updatedSoloStreak.createdAt).toBeDefined();
             expect(updatedSoloStreak.updatedAt).toBeDefined();
-            expect(Object.keys(updatedSoloStreak).sort()).toEqual(
-                [
-                    'currentStreak',
-                    'status',
-                    'completedToday',
-                    'active',
-                    'pastStreaks',
-                    '_id',
-                    'streakName',
-                    'streakDescription',
-                    'userId',
-                    'timezone',
-                    'totalTimesTracked',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
+            expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
         });
 
         test('user cannot incomplete a solo streak task that has not been completed', async () => {

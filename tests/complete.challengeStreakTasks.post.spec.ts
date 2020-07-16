@@ -18,6 +18,7 @@ import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTr
 import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
 import { coinCreditValues } from '../src/helpers/coinCreditValues';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
+import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
 jest.setTimeout(120000);
 
 const testName = 'POST-complete-challenge-streak-tasks';
@@ -100,26 +101,7 @@ describe(testName, () => {
             expect(updatedChallengeStreak.pastStreaks).toEqual([]);
             expect(updatedChallengeStreak.createdAt).toBeDefined();
             expect(updatedChallengeStreak.updatedAt).toBeDefined();
-            expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-                [
-                    'currentStreak',
-                    'status',
-                    'completedToday',
-                    'active',
-                    'pastStreaks',
-                    '_id',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'challengeId',
-                    'challengeName',
-                    'timezone',
-                    'totalTimesTracked',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
+            expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
         });
 
         test('user can complete a challenge streak task with an existing current streak', async () => {
@@ -194,26 +176,7 @@ describe(testName, () => {
             expect(updatedChallengeStreak.pastStreaks).toEqual([]);
             expect(updatedChallengeStreak.createdAt).toBeDefined();
             expect(updatedChallengeStreak.updatedAt).toBeDefined();
-            expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-                [
-                    'currentStreak',
-                    'status',
-                    'completedToday',
-                    'active',
-                    'pastStreaks',
-                    '_id',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'challengeId',
-                    'challengeName',
-                    'timezone',
-                    'totalTimesTracked',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
+            expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
         });
 
         test('user can complete, incomplete and recomplete a challenge streak with a new current streak', async () => {
@@ -285,26 +248,7 @@ describe(testName, () => {
             expect(updatedChallengeStreak.pastStreaks).toEqual([]);
             expect(updatedChallengeStreak.createdAt).toBeDefined();
             expect(updatedChallengeStreak.updatedAt).toBeDefined();
-            expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-                [
-                    'currentStreak',
-                    'status',
-                    'completedToday',
-                    'active',
-                    'pastStreaks',
-                    '_id',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'challengeId',
-                    'challengeName',
-                    'timezone',
-                    'totalTimesTracked',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
+            expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
         });
 
         test('user can complete, incomplete and recomplete a challenge streak with an existing current streak', async () => {
@@ -390,26 +334,7 @@ describe(testName, () => {
             expect(updatedChallengeStreak.pastStreaks).toEqual([]);
             expect(updatedChallengeStreak.createdAt).toBeDefined();
             expect(updatedChallengeStreak.updatedAt).toBeDefined();
-            expect(Object.keys(updatedChallengeStreak).sort()).toEqual(
-                [
-                    'currentStreak',
-                    'status',
-                    'completedToday',
-                    'active',
-                    'pastStreaks',
-                    '_id',
-                    'userId',
-                    'username',
-                    'userProfileImage',
-                    'challengeId',
-                    'challengeName',
-                    'timezone',
-                    'totalTimesTracked',
-                    'createdAt',
-                    'updatedAt',
-                    '__v',
-                ].sort(),
-            );
+            expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
         });
 
         test('user cannot complete the same challenge streak task in the same day', async () => {
