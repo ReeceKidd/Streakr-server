@@ -36,6 +36,7 @@ import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
 import { coinCreditValues } from '../../helpers/coinCreditValues';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 import { CompleteChallengeStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
+import { LongestChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestChallengeStreak';
 
 export const completeChallengeStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -295,6 +296,77 @@ export const getRetrieveChallengeMiddleware = (challengeModel: mongoose.Model<Ch
 
 export const retrieveChallengeMiddleware = getRetrieveChallengeMiddleware(challengeModel);
 
+export const getIncreaseLongestChallengeStreakForUserMiddleware = ({
+    userModel,
+}: {
+    userModel: mongoose.Model<UserModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const challenge: Challenge = response.locals.challenge;
+        if (user.longestChallengeStreak.numberOfDays < challengeStreak.currentStreak.numberOfDaysInARow) {
+            const longestChallengeStreak: LongestChallengeStreak = {
+                challengeStreakId: challengeStreak._id,
+                challengeName: challenge.name,
+                challengeId: challenge._id,
+                numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(challengeStreak.createdAt),
+            };
+            response.locals.user = await userModel.findByIdAndUpdate(
+                user._id,
+                {
+                    $set: { longestChallengeStreak },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.IncreaseLongestChallengeStreakForUserMiddleware, err));
+    }
+};
+
+export const increaseLongestChallengeStreakForUserMiddleware = getIncreaseLongestChallengeStreakForUserMiddleware({
+    userModel,
+});
+
+export const getIncreaseLongestChallengeStreakForChallengeStreakMiddleware = ({
+    challengeStreakModel,
+}: {
+    challengeStreakModel: mongoose.Model<ChallengeStreakModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const challenge: Challenge = response.locals.challenge;
+        if (challengeStreak.longestChallengeStreak.numberOfDays < challengeStreak.currentStreak.numberOfDaysInARow) {
+            const longestChallengeStreak: LongestChallengeStreak = {
+                challengeStreakId: challengeStreak._id,
+                challengeName: challenge.name,
+                challengeId: challenge._id,
+                numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(challengeStreak.createdAt),
+            };
+            response.locals.challengeStreak = await challengeStreakModel.findByIdAndUpdate(
+                challengeStreak._id,
+                {
+                    $set: { longestChallengeStreak },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.IncreaseLongestChallengeStreakForChallengeStreakMiddleware, err));
+    }
+};
+
+export const increaseLongestChallengeStreakForChallengeStreakMiddleware = getIncreaseLongestChallengeStreakForChallengeStreakMiddleware(
+    {
+        challengeStreakModel,
+    },
+);
+
 export const getCreditCoinsToUserForCompletingChallengeStreakMiddleware = (
     creditUsersCoins: typeof CoinTransactionHelpers.creditUsersCoins,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -504,6 +576,8 @@ export const createCompleteChallengeStreakTaskMiddlewares = [
     increaseTotalStreakCompletesForUserMiddleware,
     increaseTotalTimesTrackedForChallengeStreakMiddleware,
     retrieveChallengeMiddleware,
+    increaseLongestChallengeStreakForUserMiddleware,
+    increaseLongestChallengeStreakForChallengeStreakMiddleware,
     creditCoinsToUserForCompletingChallengeStreakMiddleware,
     creditOidXpToUserForCompletingChallengeStreakMiddleware,
     unlockOneHundredDayChallengeStreakAchievementForUserMiddleware,

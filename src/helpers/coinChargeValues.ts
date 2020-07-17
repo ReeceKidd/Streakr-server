@@ -8,4 +8,5 @@ export const coinChargeValues = {
     [CoinCharges.incompleteTeamMemberStreak]: coinCreditValues[CoinCredits.completeTeamMemberStreak],
     [CoinCharges.recoverSoloStreak]: 1000,
     [CoinCharges.recoverChallengeStreak]: 1000,
+    [CoinCharges.recoverTeamMemberStreak]: 1000,
 };

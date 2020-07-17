@@ -600,6 +600,27 @@ export enum ErrorType {
     RecoverChallengeStreakUserDoesNotHaveEnoughCoins,
     ChargeUserCoinsToRecoverSoloStreakMiddleware,
     RecoverSoloStreakUserDoesNotHaveEnoughCoins,
+    IncreaseLongestSoloStreakForUserMiddleware,
+    IncreaseLongestSoloStreakForSoloStreakMiddleware,
+    IncreaseLongestChallengeStreakForUserMiddleware,
+    IncreaseLongestChallengeStreakForChallengeStreakMiddleware,
+    RetreiveTeamMemberStreakToRecoverMiddleware,
+    RetrieveTeamStreakToRecoverMiddleware,
+    ChargeUserCoinsToRecoverTeamMemberStreakMiddleware,
+    ReplaceTeamMemberStreakCurrentStreakWithLostStreak,
+    ShouldTeamStreakBeRestoredMiddleware,
+    RecoverTeamStreakMiddleware,
+    CreateACompleteTeamMemberStreakTaskForPreviousDayMiddleware,
+    CreateRecoveredTeamMemberStreakActivityFeedItemMiddleware,
+    CreateRecoveredTeamMemberStreakTrackingEventMiddleware,
+    SendRecoveredTeamMemberStreakMiddleware,
+    RecoverTeamMemberStreakTeamMemberStreakNotFound,
+    RecoverTeamMemberStreakTeamStreakNotFound,
+    RecoverTeamMemberStreakUserDoesNotHaveEnoughCoins,
+    RecoverTeamMemberStreakNoLostStreak,
+    RecoverTeamStreakNoLostStreak,
+    CreateRecoveredTeamStreakActivityFeedItemMiddleware,
+    CreateRecoveredTeamStreakTrackingEventMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1482,6 +1503,46 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-116`,
                     message: 'User does not have enough coins to recover solo streak.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverTeamMemberStreakTeamMemberStreakNotFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-117`,
+                    message: 'Team member streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverTeamMemberStreakTeamStreakNotFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-118`,
+                    message: 'Team streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverTeamMemberStreakUserDoesNotHaveEnoughCoins: {
+                return {
+                    code: `${ResponseCodes.badRequest}-119`,
+                    message: 'User does not have enough coins to recover team member streak.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverTeamMemberStreakNoLostStreak: {
+                return {
+                    code: `${ResponseCodes.badRequest}-120`,
+                    message: 'Team member streak has no past streaks.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverTeamStreakNoLostStreak: {
+                return {
+                    code: `${ResponseCodes.badRequest}-121`,
+                    message: 'Team streak has no past streaks.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -4887,6 +4948,118 @@ export class CustomError extends Error {
             case ErrorType.ChargeUserCoinsToRecoverSoloStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-499`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseLongestSoloStreakForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-500`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseLongestSoloStreakForSoloStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-501`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseLongestChallengeStreakForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-502`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseLongestChallengeStreakForChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-503`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RetreiveTeamMemberStreakToRecoverMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-504`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RetrieveTeamStreakToRecoverMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-505`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ChargeUserCoinsToRecoverTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-506`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ReplaceTeamMemberStreakCurrentStreakWithLostStreak:
+                return {
+                    code: `${ResponseCodes.warning}-507`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ShouldTeamStreakBeRestoredMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-508`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverTeamStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-509`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateACompleteTeamMemberStreakTaskForPreviousDayMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-510`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRecoveredTeamMemberStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-511`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRecoveredTeamMemberStreakTrackingEventMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-512`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendRecoveredTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-513`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRecoveredTeamStreakActivityFeedItemMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-514`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateRecoveredTeamStreakTrackingEventMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-515`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

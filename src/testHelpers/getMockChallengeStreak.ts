@@ -26,7 +26,7 @@ export const getMockChallengeStreak = ({ challenge, user }: { challenge: Challen
         challengeId: 'challengeId',
         challengeName: 'Writing',
         challengeStreakId: 'challengeStreakId',
-        numberOfDays: 20,
+        numberOfDays: 0,
         startDate: new Date(),
         endDate: new Date(),
     },

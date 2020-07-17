@@ -56,6 +56,7 @@ import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 import { IncompleteTeamMemberStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
 import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 import { coinChargeValues } from '../../helpers/coinChargeValues';
+import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
 
 describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
     describe(`incompleteTeamMemberStreakTaskBodyValidationMiddleware`, () => {
@@ -1375,11 +1376,12 @@ describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
     describe(`createIncompleteTeamMemberStreakActivityFeedItemMiddleware`, () => {
         test('creates a new incompletedTeamMemberStreakActivity', async () => {
             expect.assertions(2);
-            const user = { _id: '_id' };
-            const teamStreak = { _id: '_id' };
+            const user = getMockUser({ _id: '_id' });
+            const teamStreak = getMockTeamStreak({ creatorId: user._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
             const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-            const response: any = { locals: { user, teamStreak } };
+            const response: any = { locals: { user, teamStreak, teamMemberStreak } };
             const request: any = {};
             const next = jest.fn();
 

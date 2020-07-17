@@ -20,7 +20,7 @@ export const getMockSoloStreak = ({ userId }: { userId: string }): SoloStreak =>
     longestSoloStreak: {
         soloStreakId: 'soloStreakId',
         soloStreakName: 'Reading',
-        numberOfDays: 20,
+        numberOfDays: 0,
         startDate: new Date(),
         endDate: new Date(),
     },

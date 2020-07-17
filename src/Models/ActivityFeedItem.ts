@@ -38,6 +38,9 @@ export const activityFeedItemSchema = new mongoose.Schema(
         challengeName: {
             type: String,
         },
+        teamMemberStreakId: {
+            type: String,
+        },
         teamStreakId: {
             type: String,
         },

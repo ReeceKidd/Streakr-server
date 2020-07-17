@@ -640,12 +640,14 @@ export const getCreateCompleteTeamMemberStreakActivityFeedItemMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
+        const teamMemberStreak: TeamMemberStreak = response.locals.teamMemberStreak;
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const completedTeamMemberStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.completedTeamMemberStreak,
             userId: user._id,
             username: user.username,
             userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
+            teamMemberStreakId: teamMemberStreak._id,
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
         };

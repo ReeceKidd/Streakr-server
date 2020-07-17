@@ -1179,6 +1179,61 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to RecoverTeamMemberStreakTeamMemberStreakNotFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverTeamMemberStreakTeamMemberStreakNotFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-117`);
+        expect(message).toBe('Team member streak does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to RecoverTeamMemberStreakTeamStreakNotFound`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverTeamMemberStreakTeamStreakNotFound);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-118`);
+        expect(message).toBe('Team streak does not exist.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to RecoverTeamMemberStreakUserDoesNotHaveEnoughCoins`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverTeamMemberStreakUserDoesNotHaveEnoughCoins);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-119`);
+        expect(message).toBe('User does not have enough coins to recover team member streak.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to RecoverTeamMemberStreakNoLostStreak`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverTeamMemberStreakNoLostStreak);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-120`);
+        expect(message).toBe('Team member streak has no past streaks.');
+        expect(httpStatusCode).toBe(400);
+    });
+
+    test(`creates correct error when type is set to RecoverTeamStreakNoLostStreak`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverTeamStreakNoLostStreak);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-121`);
+        expect(message).toBe('Team streak has no past streaks.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -6497,6 +6552,182 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-499`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to IncreaseLongestSoloStreakForUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.IncreaseLongestSoloStreakForUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-500`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to IncreaseLongestSoloStreakForSoloStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.IncreaseLongestSoloStreakForSoloStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-501`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to IncreaseLongestChallengeStreakForUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.IncreaseLongestChallengeStreakForUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-502`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to IncreaseLongestChallengeStreakForChallengeStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.IncreaseLongestChallengeStreakForChallengeStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-503`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RetreiveTeamMemberStreakToRecoverMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RetreiveTeamMemberStreakToRecoverMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-504`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RetrieveTeamStreakToRecoverMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RetrieveTeamStreakToRecoverMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-505`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to ChargeUserCoinsToRecoverTeamMemberStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ChargeUserCoinsToRecoverTeamMemberStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-506`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to ReplaceTeamMemberStreakCurrentStreakWithLostStreak`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ReplaceTeamMemberStreakCurrentStreakWithLostStreak);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-507`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to ShouldTeamStreakBeRestoredMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.ShouldTeamStreakBeRestoredMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-508`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RecoverTeamStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RecoverTeamStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-509`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateACompleteTeamMemberStreakTaskForPreviousDayMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateACompleteTeamMemberStreakTaskForPreviousDayMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-510`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRecoveredTeamMemberStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRecoveredTeamMemberStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-511`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRecoveredTeamMemberStreakTrackingEventMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRecoveredTeamMemberStreakTrackingEventMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-512`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendRecoveredTeamMemberStreakMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendRecoveredTeamMemberStreakMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-513`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRecoveredTeamStreakActivityFeedItemMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRecoveredTeamStreakActivityFeedItemMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-514`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to CreateRecoveredTeamStreakTrackingEventMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateRecoveredTeamStreakTrackingEventMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-515`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
