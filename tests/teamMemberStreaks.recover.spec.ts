@@ -9,7 +9,6 @@ import { disconnectDatabase } from './setup/disconnectDatabase';
 import { getFriend } from './setup/getFriend';
 import { teamStreakModel } from '../src/Models/TeamStreak';
 import moment from 'moment-timezone';
-import { teamMemberStreaksRouter } from '../src/Routers/versions/v1/teamMemberStreaksRouter';
 import { teamMemberStreakModel } from '../src/Models/TeamMemberStreak';
 import { userModel } from '../src/Models/User';
 import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
