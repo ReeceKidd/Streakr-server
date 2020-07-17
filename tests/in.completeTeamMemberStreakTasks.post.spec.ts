@@ -1250,7 +1250,7 @@ describe(testName, () => {
     });
 
     test('when team member completes a task a CompletedTeamMemberStreakActivityFeedItem is created', async () => {
-        expect.assertions(6);
+        expect.assertions(7);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -1294,6 +1294,7 @@ describe(testName, () => {
             createdTeamMemberStreakActivityFeedItem.activityFeedItemType ===
                 ActivityFeedItemTypes.incompletedTeamMemberStreak
         ) {
+            expect(createdTeamMemberStreakActivityFeedItem.teamMemberStreakId).toEqual(String(teamMemberStreak._id));
             expect(createdTeamMemberStreakActivityFeedItem.teamStreakId).toEqual(String(teamStreak._id));
             expect(createdTeamMemberStreakActivityFeedItem.teamStreakName).toEqual(String(teamStreak.streakName));
             expect(createdTeamMemberStreakActivityFeedItem.userId).toEqual(String(userId));
@@ -1309,6 +1310,7 @@ describe(testName, () => {
                     'username',
                     'userProfileImage',
                     'teamStreakId',
+                    'teamMemberStreakId',
                     'teamStreakName',
                     'createdAt',
                     'updatedAt',
