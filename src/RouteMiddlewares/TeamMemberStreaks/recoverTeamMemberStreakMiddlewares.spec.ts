@@ -1122,9 +1122,9 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(19);
+        expect.assertions(17);
 
-        expect(recoverTeamMemberStreakMiddlewares.length).toBe(18);
+        expect(recoverTeamMemberStreakMiddlewares.length).toBe(16);
         expect(recoverTeamMemberStreakMiddlewares[0]).toBe(teamMemberStreakParamsValidationMiddleware);
         expect(recoverTeamMemberStreakMiddlewares[1]).toBe(retreiveTeamMemberStreakToRecoverMiddleware);
         expect(recoverTeamMemberStreakMiddlewares[2]).toBe(retrieveTeamStreakToRecoverMiddleware);
@@ -1137,13 +1137,13 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
         expect(recoverTeamMemberStreakMiddlewares[9]).toBe(
             increaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
         );
-        expect(recoverTeamMemberStreakMiddlewares[12]).toBe(
+        expect(recoverTeamMemberStreakMiddlewares[10]).toBe(
             createACompleteTeamMemberStreakTaskForPreviousDayMiddleware,
         );
-        expect(recoverTeamMemberStreakMiddlewares[13]).toBe(createRecoveredTeamMemberStreakActivityFeedItemMiddleware);
-        expect(recoverTeamMemberStreakMiddlewares[14]).toBe(createRecoveredTeamStreakActivityFeedItemMiddleware);
-        expect(recoverTeamMemberStreakMiddlewares[15]).toBe(createRecoveredTeamMemberStreakTrackingEventMiddleware);
-        expect(recoverTeamMemberStreakMiddlewares[16]).toBe(createRecoveredTeamStreakTrackingEventMiddleware);
-        expect(recoverTeamMemberStreakMiddlewares[17]).toBe(sendRecoveredTeamMemberStreakMiddleware);
+        expect(recoverTeamMemberStreakMiddlewares[11]).toBe(createRecoveredTeamMemberStreakActivityFeedItemMiddleware);
+        expect(recoverTeamMemberStreakMiddlewares[12]).toBe(createRecoveredTeamStreakActivityFeedItemMiddleware);
+        expect(recoverTeamMemberStreakMiddlewares[13]).toBe(createRecoveredTeamMemberStreakTrackingEventMiddleware);
+        expect(recoverTeamMemberStreakMiddlewares[14]).toBe(createRecoveredTeamStreakTrackingEventMiddleware);
+        expect(recoverTeamMemberStreakMiddlewares[15]).toBe(sendRecoveredTeamMemberStreakMiddleware);
     });
 });
