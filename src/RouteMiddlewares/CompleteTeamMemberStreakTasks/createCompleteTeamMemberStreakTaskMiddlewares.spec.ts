@@ -65,7 +65,6 @@ import { coinCreditValues } from '../../helpers/coinCreditValues';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 import { CompleteTeamMemberStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
 import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
-import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
 import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
 import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
 

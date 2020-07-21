@@ -13,7 +13,6 @@ import { teamMemberStreakModel } from '../src/Models/TeamMemberStreak';
 import { userModel } from '../src/Models/User';
 import { correctPopulatedTeamStreakKeys } from '../src/testHelpers/correctPopulatedTeamStreakKeys';
 import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
-import { teamStreakId } from '../src/Routers/versions/v1/teamStreakRouter';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { RecoveredTeamMemberStreakActivityFeedItem } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import { StreakTrackingEvent } from '@streakoid/streakoid-models/lib/Models/StreakTrackingEvent';
