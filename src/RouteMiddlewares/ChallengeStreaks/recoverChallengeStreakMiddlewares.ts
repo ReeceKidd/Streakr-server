@@ -24,6 +24,10 @@ import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
 import { coinChargeValues } from '../../helpers/coinChargeValues';
 import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 import { RecoverChallengeStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
+import { UserModel, userModel } from '../../Models/User';
+import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
+import { LongestChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestChallengeStreak';
+import { challengeModel, ChallengeModel } from '../../Models/Challenge';
 
 const challengeStreakParamsValidationSchema = {
     challengeStreakId: Joi.string().required(),
@@ -60,6 +64,28 @@ export const getRetreiveChallengeStreakToRecoverMiddleware = (
 
 export const retreiveChallengeStreakToRecoverMiddleware = getRetreiveChallengeStreakToRecoverMiddleware(
     challengeStreakModel,
+);
+
+export const getRecoverChallengeStreakRetreiveChallengeMiddleware = (
+    challengeModel: mongoose.Model<ChallengeModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+
+        const challenge = await challengeModel.findById(challengeStreak.challengeId);
+        if (!challenge) {
+            throw new CustomError(ErrorType.RecoverChallengeStreakChallengeNotFound);
+        }
+        response.locals.challenge = challenge;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.RecoverChallengeStreakRetreiveChallengeMiddleware, err));
+    }
+};
+
+export const recoverChallengeStreakRetreiveChallengeMiddleware = getRecoverChallengeStreakRetreiveChallengeMiddleware(
+    challengeModel,
 );
 
 export const getChargeUserCoinsToRecoverChallengeStreakMiddleware = (
@@ -108,7 +134,14 @@ export const getReplaceChallengeStreakCurrentStreakWithLostStreak = (
 
         const challengeStreakWithRestoredCurrentStreak = await challengeStreakModel.findByIdAndUpdate(
             challengeStreak._id,
-            { $set: { currentStreak: recoveredCurrentStreak, pastStreaks: challengeStreak.pastStreaks, active: true } },
+            {
+                $set: {
+                    currentStreak: recoveredCurrentStreak,
+                    pastStreaks: challengeStreak.pastStreaks,
+                    active: true,
+                    totalTimesTracked: challengeStreak.totalTimesTracked + 1,
+                },
+            },
             { new: true },
         );
         response.locals.challengeStreak = challengeStreakWithRestoredCurrentStreak;
@@ -121,6 +154,112 @@ export const getReplaceChallengeStreakCurrentStreakWithLostStreak = (
 
 export const replaceChallengeStreakCurrentStreakWithLostStreakMiddleware = getReplaceChallengeStreakCurrentStreakWithLostStreak(
     challengeStreakModel,
+);
+
+export const getIncreaseTotalStreakCompletesForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+
+        response.locals.user = await userModel.findByIdAndUpdate(
+            user._id,
+            {
+                $inc: {
+                    totalStreakCompletes: 1,
+                },
+            },
+            { new: true },
+        );
+
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.RecoverChallengeStreakIncreaseTotalStreakCompletesForUserMiddleware, err));
+    }
+};
+
+export const increaseTotalStreakCompletesForUserMiddleware = getIncreaseTotalStreakCompletesForUserMiddleware(
+    userModel,
+);
+
+export const getIncreaseLongestChallengeStreakForUserMiddleware = ({
+    userModel,
+}: {
+    userModel: mongoose.Model<UserModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const challenge: Challenge = response.locals.challenge;
+
+        if (user.longestChallengeStreak.numberOfDays < challengeStreak.currentStreak.numberOfDaysInARow) {
+            const longestChallengeStreak: LongestChallengeStreak = {
+                challengeStreakId: challengeStreak._id,
+                challengeId: challenge._id,
+                challengeName: challenge.name,
+                numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(challengeStreak.createdAt),
+            };
+            response.locals.user = await userModel.findByIdAndUpdate(
+                user._id,
+                {
+                    $set: { longestChallengeStreak },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.RecoverChallengeStreakIncreaseLongestChallengeStreakForUserMiddleware, err));
+    }
+};
+
+export const increaseLongestChallengeStreakForUserMiddleware = getIncreaseLongestChallengeStreakForUserMiddleware({
+    userModel,
+});
+
+export const getIncreaseLongestChallengeStreakForChallengeStreakMiddleware = ({
+    challengeStreakModel,
+}: {
+    challengeStreakModel: mongoose.Model<ChallengeStreakModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const challengeStreak: ChallengeStreak = response.locals.challengeStreak;
+        const challenge: Challenge = response.locals.challenge;
+        if (challengeStreak.longestChallengeStreak.numberOfDays < challengeStreak.currentStreak.numberOfDaysInARow) {
+            const longestChallengeStreak: LongestChallengeStreak = {
+                challengeStreakId: challengeStreak._id,
+                challengeId: challenge._id,
+                challengeName: challenge.name,
+                numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(challengeStreak.createdAt),
+            };
+            response.locals.challengeStreak = await challengeStreakModel.findByIdAndUpdate(
+                challengeStreak._id,
+                {
+                    $set: { longestChallengeStreak },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        next(
+            new CustomError(
+                ErrorType.RecoverChallengeStreakIncreaseLongestChallengeStreakForChallengeStreakMiddleware,
+                err,
+            ),
+        );
+    }
+};
+
+export const increaseLongestChallengeStreakForChallengeStreakMiddleware = getIncreaseLongestChallengeStreakForChallengeStreakMiddleware(
+    {
+        challengeStreakModel,
+    },
 );
 
 export const getCreateACompleteChallengeStreakTaskForPreviousDayMiddleware = (
@@ -218,8 +357,12 @@ export const sendRecoveredChallengeStreakMiddleware = (
 export const recoverChallengeStreakMiddlewares = [
     challengeStreakParamsValidationMiddleware,
     retreiveChallengeStreakToRecoverMiddleware,
+    recoverChallengeStreakRetreiveChallengeMiddleware,
     chargeUserCoinsToRecoverChallengeStreakMiddleware,
     replaceChallengeStreakCurrentStreakWithLostStreakMiddleware,
+    increaseTotalStreakCompletesForUserMiddleware,
+    increaseLongestChallengeStreakForUserMiddleware,
+    increaseLongestChallengeStreakForChallengeStreakMiddleware,
     createACompleteChallengeStreakTaskForPreviousDayMiddleware,
     createRecoveredChallengeStreakActivityFeedItemMiddleware,
     createRecoveredChallengeStreakTrackingEventMiddleware,

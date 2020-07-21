@@ -18,6 +18,14 @@ import {
     getCreateACompleteChallengeStreakTaskForPreviousDayMiddleware,
     chargeUserCoinsToRecoverChallengeStreakMiddleware,
     getChargeUserCoinsToRecoverChallengeStreakMiddleware,
+    increaseTotalStreakCompletesForUserMiddleware,
+    increaseLongestChallengeStreakForChallengeStreakMiddleware,
+    increaseLongestChallengeStreakForUserMiddleware,
+    getIncreaseTotalStreakCompletesForUserMiddleware,
+    getIncreaseLongestChallengeStreakForUserMiddleware,
+    getIncreaseLongestChallengeStreakForChallengeStreakMiddleware,
+    recoverChallengeStreakRetreiveChallengeMiddleware,
+    getRecoverChallengeStreakRetreiveChallengeMiddleware,
 } from './recoverChallengeStreakMiddlewares';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { getMockChallengeStreak } from '../../testHelpers/getMockChallengeStreak';
@@ -27,6 +35,8 @@ import moment from 'moment-timezone';
 import { coinChargeValues } from '../../helpers/coinChargeValues';
 import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 import { RecoverChallengeStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
+import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
+import { LongestChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestChallengeStreak';
 
 describe('recoverChallengeStreakMiddlewares', () => {
     describe('challengeStreakParamsValidationMiddleware', () => {
@@ -127,6 +137,60 @@ describe('recoverChallengeStreakMiddlewares', () => {
         });
     });
 
+    describe('recoverChallengeStreakRetreiveChallengeMiddleware', () => {
+        test('sets response.locals.challenge and calls next()', async () => {
+            expect.assertions(3);
+            const user = getMockUser({ _id: 'userId' });
+            const challenge = getMockChallenge();
+            const challengeStreak = getMockChallengeStreak({ user, challenge });
+            const request: any = {};
+            const response: any = { locals: { challengeStreak } };
+            const next = jest.fn();
+            const findById = jest.fn(() => Promise.resolve(true));
+            const challengeModel = { findById };
+            const middleware = getRecoverChallengeStreakRetreiveChallengeMiddleware(challengeModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findById).toBeCalledWith(challengeStreak.challengeId);
+            expect(response.locals.challenge).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws RecoverChallengeStreakChallengeNotFound error when challenge streak does not exist', async () => {
+            expect.assertions(1);
+            const user = getMockUser({ _id: 'userId' });
+            const challenge = getMockChallenge();
+            const challengeStreak = getMockChallengeStreak({ user, challenge });
+            const request: any = {};
+            const response: any = { locals: { challengeStreak } };
+            const next = jest.fn();
+            const findById = jest.fn(() => Promise.resolve(false));
+            const challengeModel = { findById };
+            const middleware = getRecoverChallengeStreakRetreiveChallengeMiddleware(challengeModel as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.RecoverChallengeStreakChallengeNotFound));
+        });
+
+        test('throws RecoverChallengeStreakRetreiveChallengeMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = { locals: {} };
+            const next = jest.fn();
+            const findOne = jest.fn(() => Promise.resolve(true));
+            const challengeStreakModel = { findOne };
+            const middleware = getRecoverChallengeStreakRetreiveChallengeMiddleware(challengeStreakModel as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.RecoverChallengeStreakRetreiveChallengeMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
     describe('chargeUserCoinsToRecoverChallengeStreakMiddleware', () => {
         test('charges user with enough coins to recover challenge streak and calls next()', async () => {
             expect.assertions(3);
@@ -221,6 +285,7 @@ describe('recoverChallengeStreakMiddlewares', () => {
                         currentStreak: { startDate, numberOfDaysInARow: lostStreak.numberOfDaysInARow },
                         pastStreaks: challengeStreak.pastStreaks,
                         active: true,
+                        totalTimesTracked: challengeStreak.totalTimesTracked + 1,
                     },
                 },
                 { new: true },
@@ -263,6 +328,254 @@ describe('recoverChallengeStreakMiddlewares', () => {
 
             expect(next).toBeCalledWith(
                 new CustomError(ErrorType.ReplaceChallengeStreakCurrentStreakWithLostStreak, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('increaseTotalStreakCompletesForUserMiddleware', () => {
+        test('increases the total streak completes for a user by one and calls next()', async () => {
+            expect.assertions(3);
+
+            const user = getMockUser({ _id: 'userId' });
+            const findByIdAndUpdate = jest.fn().mockResolvedValue(user);
+            const userModel = {
+                findByIdAndUpdate,
+            };
+            const request: any = {};
+            const response: any = { locals: { user } };
+            const next = jest.fn();
+
+            const middleware = getIncreaseTotalStreakCompletesForUserMiddleware(userModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                user._id,
+                {
+                    $inc: {
+                        totalStreakCompletes: 1,
+                    },
+                },
+                { new: true },
+            );
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws IncreaseTotalStreakCompletesForUserMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+
+            const middleware = getIncreaseTotalStreakCompletesForUserMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.IncreaseTotalStreakCompletesForUserMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('increaseLongestChallengeStreakForUserMiddleware', () => {
+        test('increases longest challenge streak for user when the current challenge streak is longer than the users longestChallengeStreak and calls next', async () => {
+            expect.assertions(2);
+
+            const user = getMockUser({ _id: 'userId' });
+            const challenge = getMockChallenge();
+            const challengeStreak: ChallengeStreak = {
+                ...getMockChallengeStreak({ user, challenge }),
+                currentStreak: {
+                    numberOfDaysInARow: 1,
+                    startDate: new Date().toString(),
+                    endDate: '',
+                },
+            };
+
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const userModel = {
+                findByIdAndUpdate,
+            } as any;
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    challengeStreak,
+                    challenge,
+                    user,
+                },
+            };
+            const next = jest.fn();
+            const middleware = getIncreaseLongestChallengeStreakForUserMiddleware({ userModel });
+
+            await middleware(request, response, next);
+
+            const longestChallengeStreak: LongestChallengeStreak = {
+                challengeStreakId: challengeStreak._id,
+                challengeId: challenge._id,
+                challengeName: challenge.name,
+                numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(challengeStreak.createdAt),
+            };
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                user._id,
+                {
+                    $set: { longestChallengeStreak },
+                },
+                { new: true },
+            );
+            expect(next).toBeCalledWith();
+        });
+
+        test('if current streak is not longer than the users longestChallengeStreak just call next.', async () => {
+            expect.assertions(2);
+
+            const user = getMockUser({ _id: 'userId' });
+            const challenge = getMockChallenge();
+            const challengeStreak: ChallengeStreak = getMockChallengeStreak({
+                user,
+                challenge,
+            });
+
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const userModel = {
+                findByIdAndUpdate,
+            } as any;
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    challengeStreak,
+                    challenge,
+                    user,
+                },
+            };
+            const next = jest.fn();
+            const middleware = getIncreaseLongestChallengeStreakForUserMiddleware({ userModel });
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).not.toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws IncreaseLongestChallengeStreakForUserMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getIncreaseLongestChallengeStreakForUserMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.RecoverChallengeStreakIncreaseLongestChallengeStreakForUserMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
+    describe('increaseLongestChallengeStreakForChallengeStreakMiddleware', () => {
+        test('increases longest challenge streak for challengeStreak when the current challenge streak is longer than the challengeStreaks longestChallengeStreak and calls next', async () => {
+            expect.assertions(2);
+
+            const user = getMockUser({ _id: 'userId' });
+            const challenge = getMockChallenge();
+            const challengeStreak: ChallengeStreak = {
+                ...getMockChallengeStreak({ user, challenge }),
+                currentStreak: {
+                    numberOfDaysInARow: 1,
+                    startDate: new Date().toString(),
+                    endDate: '',
+                },
+            };
+
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const challengeStreakModel = {
+                findByIdAndUpdate,
+            } as any;
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    challengeStreak,
+                    challenge,
+                    user,
+                },
+            };
+            const next = jest.fn();
+            const middleware = getIncreaseLongestChallengeStreakForChallengeStreakMiddleware({
+                challengeStreakModel,
+            });
+
+            await middleware(request, response, next);
+
+            const longestChallengeStreak: LongestChallengeStreak = {
+                challengeStreakId: challengeStreak._id,
+                challengeId: challenge._id,
+                challengeName: challenge.name,
+                numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(challengeStreak.createdAt),
+            };
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                challengeStreak._id,
+                {
+                    $set: { longestChallengeStreak },
+                },
+                { new: true },
+            );
+            expect(next).toBeCalledWith();
+        });
+
+        test('if current streak is not longer than the challenge streaks longestChallengeStreak just call next.', async () => {
+            expect.assertions(2);
+
+            const user = getMockUser({ _id: 'userId' });
+            const challenge = getMockChallenge();
+            const challengeStreak = getMockChallengeStreak({
+                user,
+                challenge,
+            });
+
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const challengeStreakModel = {
+                findByIdAndUpdate,
+            } as any;
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    challengeStreak,
+                    challenge,
+                    user,
+                },
+            };
+            const next = jest.fn();
+            const middleware = getIncreaseLongestChallengeStreakForChallengeStreakMiddleware({
+                challengeStreakModel,
+            });
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).not.toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws IncreaseLongestChallengeStreakForChallengeStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getIncreaseLongestChallengeStreakForChallengeStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.RecoverChallengeStreakIncreaseLongestChallengeStreakForChallengeStreakMiddleware,
+                    expect.any(Error),
+                ),
             );
         });
     });
@@ -433,16 +746,20 @@ describe('recoverChallengeStreakMiddlewares', () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(9);
+        expect.assertions(13);
 
-        expect(recoverChallengeStreakMiddlewares.length).toBe(8);
+        expect(recoverChallengeStreakMiddlewares.length).toBe(12);
         expect(recoverChallengeStreakMiddlewares[0]).toBe(challengeStreakParamsValidationMiddleware);
         expect(recoverChallengeStreakMiddlewares[1]).toBe(retreiveChallengeStreakToRecoverMiddleware);
-        expect(recoverChallengeStreakMiddlewares[2]).toBe(chargeUserCoinsToRecoverChallengeStreakMiddleware);
-        expect(recoverChallengeStreakMiddlewares[3]).toBe(replaceChallengeStreakCurrentStreakWithLostStreakMiddleware);
-        expect(recoverChallengeStreakMiddlewares[4]).toBe(createACompleteChallengeStreakTaskForPreviousDayMiddleware);
-        expect(recoverChallengeStreakMiddlewares[5]).toBe(createRecoveredChallengeStreakActivityFeedItemMiddleware);
-        expect(recoverChallengeStreakMiddlewares[6]).toBe(createRecoveredChallengeStreakTrackingEventMiddleware);
-        expect(recoverChallengeStreakMiddlewares[7]).toBe(sendRecoveredChallengeStreakMiddleware);
+        expect(recoverChallengeStreakMiddlewares[2]).toBe(recoverChallengeStreakRetreiveChallengeMiddleware);
+        expect(recoverChallengeStreakMiddlewares[3]).toBe(chargeUserCoinsToRecoverChallengeStreakMiddleware);
+        expect(recoverChallengeStreakMiddlewares[4]).toBe(replaceChallengeStreakCurrentStreakWithLostStreakMiddleware);
+        expect(recoverChallengeStreakMiddlewares[5]).toBe(increaseTotalStreakCompletesForUserMiddleware);
+        expect(recoverChallengeStreakMiddlewares[6]).toBe(increaseLongestChallengeStreakForUserMiddleware);
+        expect(recoverChallengeStreakMiddlewares[7]).toBe(increaseLongestChallengeStreakForChallengeStreakMiddleware);
+        expect(recoverChallengeStreakMiddlewares[8]).toBe(createACompleteChallengeStreakTaskForPreviousDayMiddleware);
+        expect(recoverChallengeStreakMiddlewares[9]).toBe(createRecoveredChallengeStreakActivityFeedItemMiddleware);
+        expect(recoverChallengeStreakMiddlewares[10]).toBe(createRecoveredChallengeStreakTrackingEventMiddleware);
+        expect(recoverChallengeStreakMiddlewares[11]).toBe(sendRecoveredChallengeStreakMiddleware);
     });
 });

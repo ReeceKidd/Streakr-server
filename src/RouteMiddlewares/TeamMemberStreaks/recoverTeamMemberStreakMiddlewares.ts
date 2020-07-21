@@ -8,7 +8,10 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
 import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
-import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
+import {
+    ActivityFeedItemType,
+    RecoveredTeamMemberStreakActivityFeedItem,
+} from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { createActivityFeedItem } from '../../helpers/createActivityFeedItem';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
@@ -26,6 +29,8 @@ import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 import { RecoverTeamMemberStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 import { teamStreakModel, TeamStreakModel } from '../../Models/TeamStreak';
+import { UserModel, userModel } from '../../Models/User';
+import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
 
 const teamMemberStreakParamsValidationSchema = {
     teamMemberStreakId: Joi.string().required(),
@@ -114,7 +119,7 @@ export const chargeUserCoinsToRecoverTeamMemberStreakMiddleware = getChargeUserC
     CoinTransactionHelpers.chargeUsersCoins,
 );
 
-export const getReplaceTeamMemberStreakCurrentStreakWithLostStreak = (
+export const getRecoverTeamMemberStreakMiddleware = (
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -146,15 +151,13 @@ export const getReplaceTeamMemberStreakCurrentStreakWithLostStreak = (
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.ReplaceTeamMemberStreakCurrentStreakWithLostStreak, err));
+        else next(new CustomError(ErrorType.RecoverTeamMemberStreakMiddleware, err));
     }
 };
 
-export const replaceTeamMemberStreakCurrentStreakWithLostStreakMiddleware = getReplaceTeamMemberStreakCurrentStreakWithLostStreak(
-    teamMemberStreakModel,
-);
+export const recoverTeamMemberStreakMiddleware = getRecoverTeamMemberStreakMiddleware(teamMemberStreakModel);
 
-export const getShouldTeamStreakBeRestoredMiddleware = (
+export const getShouldTeamStreakBeRecoveredMiddleware = (
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
@@ -170,11 +173,11 @@ export const getShouldTeamStreakBeRestoredMiddleware = (
         next();
     } catch (err) {
         if (err instanceof CustomError) next(err);
-        else next(new CustomError(ErrorType.ShouldTeamStreakBeRestoredMiddleware, err));
+        else next(new CustomError(ErrorType.ShouldTeamStreakBeRecoveredMiddleware, err));
     }
 };
 
-export const shouldTeamStreakBeRestoredMiddleware = getShouldTeamStreakBeRestoredMiddleware(teamMemberStreakModel);
+export const shouldTeamStreakBeRecoveredMiddleware = getShouldTeamStreakBeRecoveredMiddleware(teamMemberStreakModel);
 
 export const getRecoverTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
@@ -218,6 +221,106 @@ export const getRecoverTeamStreakMiddleware = (teamStreakModel: mongoose.Model<T
 
 export const recoverTeamStreakMiddleware = getRecoverTeamStreakMiddleware(teamStreakModel);
 
+export const getIncreaseTotalStreakCompletesForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        response.locals.user = await userModel.findByIdAndUpdate(
+            user._id,
+            {
+                $inc: { totalStreakCompletes: 1 },
+            },
+            { new: true },
+        );
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.RecoverTeamMemberStreakIncreaseTotalStreakCompletesForUserMiddleware, err));
+    }
+};
+
+export const increaseTotalStreakCompletesForUserMiddleware = getIncreaseTotalStreakCompletesForUserMiddleware(
+    userModel,
+);
+
+export const getIncreaseLongestTeamMemberStreakForUserMiddleware = ({
+    userModel,
+}: {
+    userModel: mongoose.Model<UserModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const teamMemberStreak: TeamMemberStreak = response.locals.teamMemberStreak;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        if (user.longestTeamMemberStreak.numberOfDays < teamMemberStreak.currentStreak.numberOfDaysInARow) {
+            const longestTeamMemberStreak: LongestTeamMemberStreak = {
+                teamMemberStreakId: teamMemberStreak._id,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+                numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(teamMemberStreak.createdAt),
+            };
+            response.locals.user = await userModel.findByIdAndUpdate(
+                user._id,
+                {
+                    $set: { longestTeamMemberStreak },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.RecoverTeamMemberStreakIncreaseLongestTeamMemberStreakForUserMiddleware, err));
+    }
+};
+
+export const increaseLongestTeamMemberStreakForUserMiddleware = getIncreaseLongestTeamMemberStreakForUserMiddleware({
+    userModel,
+});
+
+export const getIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware = ({
+    teamMemberStreakModel,
+}: {
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const teamMemberStreak: TeamMemberStreak = response.locals.teamMemberStreak;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        if (teamMemberStreak.longestTeamMemberStreak.numberOfDays < teamMemberStreak.currentStreak.numberOfDaysInARow) {
+            const longestTeamMemberStreak: LongestTeamMemberStreak = {
+                teamMemberStreakId: teamMemberStreak._id,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+                numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(teamMemberStreak.createdAt),
+            };
+            response.locals.teamMemberStreak = await teamMemberStreakModel.findByIdAndUpdate(
+                teamMemberStreak._id,
+                {
+                    $set: { longestTeamMemberStreak },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        next(
+            new CustomError(
+                ErrorType.RecoverTeamMemberStreakIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
+                err,
+            ),
+        );
+    }
+};
+
+export const increaseLongestTeamMemberStreakForTeamMemberStreakMiddleware = getIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware(
+    {
+        teamMemberStreakModel,
+    },
+);
+
 export const getCreateACompleteTeamMemberStreakTaskForPreviousDayMiddleware = (
     completeTeamMemberStreakTaskModel: mongoose.Model<CompleteTeamMemberStreakTaskModel>,
     getTaskCompleteTimeForYesterdayFunction: typeof MomentHelpers.getTaskCompleteTimeForYesterday,
@@ -255,7 +358,7 @@ export const getCreateRecoveredTeamMemberStreakActivityFeedItemMiddleware = (
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamMemberStreak: TeamMemberStreak = response.locals.teamMemberStreak;
 
-        const recoveredTeamMemberStreakActivityFeedItem: ActivityFeedItemType = {
+        const recoveredTeamMemberStreakActivityFeedItem: RecoveredTeamMemberStreakActivityFeedItem = {
             activityFeedItemType: ActivityFeedItemTypes.recoveredTeamMemberStreak,
             userId: user._id,
             username: user.username,
@@ -284,7 +387,7 @@ export const getCreateRecoveredTeamStreakActivityFeedItemMiddleware = (
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const teamStreakShouldBeRecovered = response.locals.teamStreakShouldBeRecovered;
         if (teamStreakShouldBeRecovered) {
-            const recoveredTeamMemberStreakActivityFeedItem: ActivityFeedItemType = {
+            const recoveredTeamStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.recoveredTeamStreak,
                 userId: user._id,
                 username: user.username,
@@ -293,7 +396,7 @@ export const getCreateRecoveredTeamStreakActivityFeedItemMiddleware = (
                 teamStreakName: teamStreak.streakName,
                 streakNumberOfDays: teamStreak.currentStreak.numberOfDaysInARow,
             };
-            createActivityFeedItemFunction(recoveredTeamMemberStreakActivityFeedItem);
+            createActivityFeedItemFunction(recoveredTeamStreakActivityFeedItem);
         }
 
         next();
@@ -371,11 +474,16 @@ export const recoverTeamMemberStreakMiddlewares = [
     retreiveTeamMemberStreakToRecoverMiddleware,
     retrieveTeamStreakToRecoverMiddleware,
     chargeUserCoinsToRecoverTeamMemberStreakMiddleware,
-    replaceTeamMemberStreakCurrentStreakWithLostStreakMiddleware,
-    shouldTeamStreakBeRestoredMiddleware,
+    recoverTeamMemberStreakMiddleware,
+    shouldTeamStreakBeRecoveredMiddleware,
     recoverTeamStreakMiddleware,
+    increaseTotalStreakCompletesForUserMiddleware,
+    increaseLongestTeamMemberStreakForUserMiddleware,
+    increaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
     createACompleteTeamMemberStreakTaskForPreviousDayMiddleware,
     createRecoveredTeamMemberStreakActivityFeedItemMiddleware,
+    createRecoveredTeamStreakActivityFeedItemMiddleware,
     createRecoveredTeamMemberStreakTrackingEventMiddleware,
+    createRecoveredTeamStreakTrackingEventMiddleware,
     sendRecoveredTeamMemberStreakMiddleware,
 ];

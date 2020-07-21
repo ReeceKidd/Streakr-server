@@ -18,6 +18,12 @@ import {
     getCreateACompleteSoloStreakTaskForPreviousDayMiddleware,
     chargeUserCoinsToRecoverSoloStreakMiddleware,
     getChargeUserCoinsToRecoverSoloStreakMiddleware,
+    increaseTotalStreakCompletesForUserMiddleware,
+    getIncreaseTotalStreakCompletesForUserMiddleware,
+    getIncreaseLongestSoloStreakForUserMiddleware,
+    getIncreaseLongestSoloStreakForSoloStreakMiddleware,
+    increaseLongestSoloStreakForUserMiddleware,
+    increaseLongestSoloStreakForSoloStreakMiddleware,
 } from './recoverSoloStreakMiddlewares';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { getMockSoloStreak } from '../../testHelpers/getMockSoloStreak';
@@ -26,6 +32,8 @@ import moment from 'moment-timezone';
 import { coinChargeValues } from '../../helpers/coinChargeValues';
 import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 import { RecoverSoloStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
+import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
+import { LongestSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestSoloStreak';
 
 describe('recoverSoloStreakMiddlewares', () => {
     describe('soloStreakParamsValidationMiddleware', () => {
@@ -216,6 +224,7 @@ describe('recoverSoloStreakMiddlewares', () => {
                         currentStreak: { startDate, numberOfDaysInARow: lostStreak.numberOfDaysInARow },
                         pastStreaks: soloStreak.pastStreaks,
                         active: true,
+                        totalTimesTracked: soloStreak.totalTimesTracked + 1,
                     },
                 },
                 { new: true },
@@ -257,6 +266,242 @@ describe('recoverSoloStreakMiddlewares', () => {
 
             expect(next).toBeCalledWith(
                 new CustomError(ErrorType.ReplaceSoloStreakCurrentStreakWithLostStreak, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('increaseTotalStreakCompletesForUserMiddleware', () => {
+        test('increases the total streak completes for a user by one and calls next()', async () => {
+            expect.assertions(3);
+
+            const user = getMockUser({ _id: 'userId' });
+            const findByIdAndUpdate = jest.fn().mockResolvedValue(user);
+            const userModel = {
+                findByIdAndUpdate,
+            };
+            const request: any = {};
+            const response: any = { locals: { user } };
+            const next = jest.fn();
+
+            const middleware = getIncreaseTotalStreakCompletesForUserMiddleware(userModel as any);
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                user._id,
+                {
+                    $inc: {
+                        totalStreakCompletes: 1,
+                    },
+                },
+                { new: true },
+            );
+            expect(response.locals.user).toBeDefined();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws IncreaseTotalStreakCompletesForUserMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+
+            const middleware = getIncreaseTotalStreakCompletesForUserMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(ErrorType.IncreaseTotalStreakCompletesForUserMiddleware, expect.any(Error)),
+            );
+        });
+    });
+
+    describe('increaseLongestSoloStreakForUserMiddleware', () => {
+        test('increases longest solo streak for user when the current solo streak is longer than the users longestSoloStreak and calls next', async () => {
+            expect.assertions(2);
+
+            const user = getMockUser({ _id: 'userId' });
+            const soloStreak: SoloStreak = {
+                ...getMockSoloStreak({ userId: user._id }),
+                currentStreak: {
+                    numberOfDaysInARow: 1,
+                    startDate: new Date().toString(),
+                    endDate: '',
+                },
+            };
+
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const userModel = {
+                findByIdAndUpdate,
+            } as any;
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    soloStreak,
+                    user,
+                },
+            };
+            const next = jest.fn();
+            const middleware = getIncreaseLongestSoloStreakForUserMiddleware({ userModel });
+
+            await middleware(request, response, next);
+
+            const longestSoloStreak: LongestSoloStreak = {
+                soloStreakId: soloStreak._id,
+                soloStreakName: soloStreak.streakName,
+                numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(soloStreak.createdAt),
+            };
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                user._id,
+                {
+                    $set: { longestSoloStreak },
+                },
+                { new: true },
+            );
+            expect(next).toBeCalledWith();
+        });
+
+        test('if current streak is not longer than the users longestSoloStreak just call next.', async () => {
+            expect.assertions(2);
+
+            const user = getMockUser({ _id: 'userId' });
+            const soloStreak: SoloStreak = getMockSoloStreak({
+                userId: user._id,
+            });
+
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const userModel = {
+                findByIdAndUpdate,
+            } as any;
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    soloStreak,
+                    user,
+                },
+            };
+            const next = jest.fn();
+            const middleware = getIncreaseLongestSoloStreakForUserMiddleware({ userModel });
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).not.toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws IncreaseLongestSoloStreakForUserMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getIncreaseLongestSoloStreakForUserMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.RecoverSoloStreakIncreaseLongestSoloStreakForUserMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
+    describe('increaseLongestSoloStreakForSoloStreakMiddleware', () => {
+        test('increases longest solo streak for soloStreak when the current solo streak is longer than the soloStreaks longestSoloStreak and calls next', async () => {
+            expect.assertions(2);
+
+            const user = getMockUser({ _id: 'userId' });
+            const soloStreak: SoloStreak = {
+                ...getMockSoloStreak({ userId: user._id }),
+                currentStreak: {
+                    numberOfDaysInARow: 1,
+                    startDate: new Date().toString(),
+                    endDate: '',
+                },
+            };
+
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const soloStreakModel = {
+                findByIdAndUpdate,
+            } as any;
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    soloStreak,
+                    user,
+                },
+            };
+            const next = jest.fn();
+            const middleware = getIncreaseLongestSoloStreakForSoloStreakMiddleware({
+                soloStreakModel,
+            });
+
+            await middleware(request, response, next);
+
+            const longestSoloStreak: LongestSoloStreak = {
+                soloStreakId: soloStreak._id,
+                soloStreakName: soloStreak.streakName,
+                numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(soloStreak.createdAt),
+            };
+
+            expect(findByIdAndUpdate).toBeCalledWith(
+                soloStreak._id,
+                {
+                    $set: { longestSoloStreak },
+                },
+                { new: true },
+            );
+            expect(next).toBeCalledWith();
+        });
+
+        test('if current streak is not longer than the challenge streaks longestSoloStreak just call next.', async () => {
+            expect.assertions(2);
+
+            const user = getMockUser({ _id: 'userId' });
+            const soloStreak = getMockSoloStreak({
+                userId: user._id,
+            });
+
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+            const soloStreakModel = {
+                findByIdAndUpdate,
+            } as any;
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    soloStreak,
+                    user,
+                },
+            };
+            const next = jest.fn();
+            const middleware = getIncreaseLongestSoloStreakForSoloStreakMiddleware({
+                soloStreakModel,
+            });
+
+            await middleware(request, response, next);
+
+            expect(findByIdAndUpdate).not.toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws IncreaseLongestSoloStreakForSoloStreakMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+            const middleware = getIncreaseLongestSoloStreakForSoloStreakMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.RecoverSoloStreakIncreaseLongestSoloStreakForSoloStreakMiddleware,
+                    expect.any(Error),
+                ),
             );
         });
     });
@@ -416,16 +661,19 @@ describe('recoverSoloStreakMiddlewares', () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(9);
+        expect.assertions(12);
 
-        expect(recoverSoloStreakMiddlewares.length).toBe(8);
+        expect(recoverSoloStreakMiddlewares.length).toBe(11);
         expect(recoverSoloStreakMiddlewares[0]).toBe(soloStreakParamsValidationMiddleware);
         expect(recoverSoloStreakMiddlewares[1]).toBe(retreiveSoloStreakToRecoverMiddleware);
         expect(recoverSoloStreakMiddlewares[2]).toBe(chargeUserCoinsToRecoverSoloStreakMiddleware);
         expect(recoverSoloStreakMiddlewares[3]).toBe(replaceSoloStreakCurrentStreakWithLostStreakMiddleware);
-        expect(recoverSoloStreakMiddlewares[4]).toBe(createACompleteSoloStreakTaskForPreviousDayMiddleware);
-        expect(recoverSoloStreakMiddlewares[5]).toBe(createRecoveredSoloStreakActivityFeedItemMiddleware);
-        expect(recoverSoloStreakMiddlewares[6]).toBe(createRecoveredSoloStreakTrackingEventMiddleware);
-        expect(recoverSoloStreakMiddlewares[7]).toBe(sendRecoveredSoloStreakMiddleware);
+        expect(recoverSoloStreakMiddlewares[4]).toBe(increaseTotalStreakCompletesForUserMiddleware);
+        expect(recoverSoloStreakMiddlewares[5]).toBe(increaseLongestSoloStreakForUserMiddleware);
+        expect(recoverSoloStreakMiddlewares[6]).toBe(increaseLongestSoloStreakForSoloStreakMiddleware);
+        expect(recoverSoloStreakMiddlewares[7]).toBe(createACompleteSoloStreakTaskForPreviousDayMiddleware);
+        expect(recoverSoloStreakMiddlewares[8]).toBe(createRecoveredSoloStreakActivityFeedItemMiddleware);
+        expect(recoverSoloStreakMiddlewares[9]).toBe(createRecoveredSoloStreakTrackingEventMiddleware);
+        expect(recoverSoloStreakMiddlewares[10]).toBe(sendRecoveredSoloStreakMiddleware);
     });
 });

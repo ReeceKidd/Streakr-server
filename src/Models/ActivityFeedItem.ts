@@ -47,6 +47,9 @@ export const activityFeedItemSchema = new mongoose.Schema(
         teamStreakName: {
             type: String,
         },
+        streakNumberOfDays: {
+            type: Number,
+        },
         teamStreakDescription: {
             type: String,
         },

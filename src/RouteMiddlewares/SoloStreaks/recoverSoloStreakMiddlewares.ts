@@ -21,6 +21,8 @@ import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
 import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 import { coinChargeValues } from '../../helpers/coinChargeValues';
 import { RecoverSoloStreakCharge } from '@streakoid/streakoid-models/lib/Models/CoinChargeTypes';
+import { UserModel, userModel } from '../../Models/User';
+import { LongestSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestSoloStreak';
 
 const soloStreakParamsValidationSchema = {
     soloStreakId: Joi.string().required(),
@@ -102,7 +104,14 @@ export const getReplaceSoloStreakCurrentStreakWithLostStreak = (
         };
         const soloStreakWithRestoredCurrentStreak = await soloStreakModel.findByIdAndUpdate(
             soloStreak._id,
-            { $set: { currentStreak: recoveredCurrentStreak, pastStreaks: soloStreak.pastStreaks, active: true } },
+            {
+                $set: {
+                    currentStreak: recoveredCurrentStreak,
+                    pastStreaks: soloStreak.pastStreaks,
+                    active: true,
+                    totalTimesTracked: soloStreak.totalTimesTracked + 1,
+                },
+            },
             { new: true },
         );
         response.locals.soloStreak = soloStreakWithRestoredCurrentStreak;
@@ -116,6 +125,100 @@ export const getReplaceSoloStreakCurrentStreakWithLostStreak = (
 export const replaceSoloStreakCurrentStreakWithLostStreakMiddleware = getReplaceSoloStreakCurrentStreakWithLostStreak(
     soloStreakModel,
 );
+
+export const getIncreaseTotalStreakCompletesForUserMiddleware = (userModel: mongoose.Model<UserModel>) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+
+        response.locals.user = await userModel.findByIdAndUpdate(
+            user._id,
+            {
+                $inc: {
+                    totalStreakCompletes: 1,
+                },
+            },
+            { new: true },
+        );
+
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.IncreaseTotalStreakCompletesForUserMiddleware, err));
+    }
+};
+
+export const increaseTotalStreakCompletesForUserMiddleware = getIncreaseTotalStreakCompletesForUserMiddleware(
+    userModel,
+);
+
+export const getIncreaseLongestSoloStreakForUserMiddleware = ({
+    userModel,
+}: {
+    userModel: mongoose.Model<UserModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        if (user.longestSoloStreak.numberOfDays < soloStreak.currentStreak.numberOfDaysInARow) {
+            const longestSoloStreak: LongestSoloStreak = {
+                soloStreakId: soloStreak._id,
+                soloStreakName: soloStreak.streakName,
+                numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(soloStreak.createdAt),
+            };
+            response.locals.user = await userModel.findByIdAndUpdate(
+                user._id,
+                {
+                    $set: { longestSoloStreak },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.RecoverSoloStreakIncreaseLongestSoloStreakForUserMiddleware, err));
+    }
+};
+
+export const increaseLongestSoloStreakForUserMiddleware = getIncreaseLongestSoloStreakForUserMiddleware({
+    userModel,
+});
+
+export const getIncreaseLongestSoloStreakForSoloStreakMiddleware = ({
+    soloStreakModel,
+}: {
+    soloStreakModel: mongoose.Model<SoloStreakModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const soloStreak: SoloStreak = response.locals.soloStreak;
+        if (soloStreak.longestSoloStreak.numberOfDays < soloStreak.currentStreak.numberOfDaysInARow) {
+            const longestSoloStreak: LongestSoloStreak = {
+                soloStreakId: soloStreak._id,
+                soloStreakName: soloStreak.streakName,
+                numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(soloStreak.createdAt),
+            };
+            response.locals.soloStreak = await soloStreakModel.findByIdAndUpdate(
+                soloStreak._id,
+                {
+                    $set: { longestSoloStreak },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.RecoverSoloStreakIncreaseLongestSoloStreakForSoloStreakMiddleware, err));
+    }
+};
+
+export const increaseLongestSoloStreakForSoloStreakMiddleware = getIncreaseLongestSoloStreakForSoloStreakMiddleware({
+    soloStreakModel,
+});
 
 export const getCreateACompleteSoloStreakTaskForPreviousDayMiddleware = (
     completeSoloStreakTaskModel: mongoose.Model<CompleteSoloStreakTaskModel>,
@@ -209,6 +312,9 @@ export const recoverSoloStreakMiddlewares = [
     retreiveSoloStreakToRecoverMiddleware,
     chargeUserCoinsToRecoverSoloStreakMiddleware,
     replaceSoloStreakCurrentStreakWithLostStreakMiddleware,
+    increaseTotalStreakCompletesForUserMiddleware,
+    increaseLongestSoloStreakForUserMiddleware,
+    increaseLongestSoloStreakForSoloStreakMiddleware,
     createACompleteSoloStreakTaskForPreviousDayMiddleware,
     createRecoveredSoloStreakActivityFeedItemMiddleware,
     createRecoveredSoloStreakTrackingEventMiddleware,

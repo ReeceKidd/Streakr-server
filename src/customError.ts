@@ -607,8 +607,8 @@ export enum ErrorType {
     RetreiveTeamMemberStreakToRecoverMiddleware,
     RetrieveTeamStreakToRecoverMiddleware,
     ChargeUserCoinsToRecoverTeamMemberStreakMiddleware,
-    ReplaceTeamMemberStreakCurrentStreakWithLostStreak,
-    ShouldTeamStreakBeRestoredMiddleware,
+    RecoverTeamMemberStreakMiddleware,
+    ShouldTeamStreakBeRecoveredMiddleware,
     RecoverTeamStreakMiddleware,
     CreateACompleteTeamMemberStreakTaskForPreviousDayMiddleware,
     CreateRecoveredTeamMemberStreakActivityFeedItemMiddleware,
@@ -621,6 +621,21 @@ export enum ErrorType {
     RecoverTeamStreakNoLostStreak,
     CreateRecoveredTeamStreakActivityFeedItemMiddleware,
     CreateRecoveredTeamStreakTrackingEventMiddleware,
+    RecoverTeamMemberStreakIncreaseTotalStreakCompletesForUserMiddleware,
+    IncreaseLongestTeamMemberStreakForUserMiddleware,
+    IncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
+    RecoverTeamMemberStreakIncreaseLongestTeamMemberStreakForUserMiddleware,
+    RecoverTeamMemberStreakIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
+    RecoverTeamMemberStreakIncreaseLongestTeamStreakForMembersMiddleware,
+    RecoverTeamStreakIncreaseLongestTeamStreakForTeamStreakMiddleware,
+    IncreaseTotalStreakCompletesForUserMiddleware,
+    RecoverSoloStreakIncreaseLongestSoloStreakForUserMiddleware,
+    RecoverSoloStreakIncreaseLongestSoloStreakForSoloStreakMiddleware,
+    RecoverChallengeStreakIncreaseTotalStreakCompletesForUserMiddleware,
+    RecoverChallengeStreakIncreaseLongestChallengeStreakForUserMiddleware,
+    RecoverChallengeStreakIncreaseLongestChallengeStreakForChallengeStreakMiddleware,
+    RecoverChallengeStreakRetreiveChallengeMiddleware,
+    RecoverChallengeStreakChallengeNotFound,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1543,6 +1558,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-121`,
                     message: 'Team streak has no past streaks.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.RecoverChallengeStreakChallengeNotFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-122`,
+                    message: 'Challenge does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -5001,14 +5024,14 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.ReplaceTeamMemberStreakCurrentStreakWithLostStreak:
+            case ErrorType.RecoverTeamMemberStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-507`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.ShouldTeamStreakBeRestoredMiddleware:
+            case ErrorType.ShouldTeamStreakBeRecoveredMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-508`,
                     message: internalServerMessage,
@@ -5060,6 +5083,104 @@ export class CustomError extends Error {
             case ErrorType.CreateRecoveredTeamStreakTrackingEventMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-515`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverTeamMemberStreakIncreaseTotalStreakCompletesForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-516`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseLongestTeamMemberStreakForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-517`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-518`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverTeamMemberStreakIncreaseLongestTeamMemberStreakForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-519`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverTeamMemberStreakIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-520`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverTeamMemberStreakIncreaseLongestTeamStreakForMembersMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-521`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverTeamStreakIncreaseLongestTeamStreakForTeamStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-522`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IncreaseTotalStreakCompletesForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-523`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverSoloStreakIncreaseLongestSoloStreakForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-524`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverSoloStreakIncreaseLongestSoloStreakForSoloStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-525`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverChallengeStreakIncreaseTotalStreakCompletesForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-526`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverChallengeStreakIncreaseLongestChallengeStreakForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-527`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverChallengeStreakIncreaseLongestChallengeStreakForChallengeStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-528`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RecoverChallengeStreakRetreiveChallengeMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-529`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

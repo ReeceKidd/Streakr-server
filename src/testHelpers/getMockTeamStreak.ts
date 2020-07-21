@@ -21,7 +21,7 @@ export const getMockTeamStreak = ({ creatorId }: { creatorId: string }): TeamStr
     longestTeamStreak: {
         teamStreakId: 'teamStreakId',
         members: [],
-        numberOfDays: 4,
+        numberOfDays: 0,
         startDate: new Date(),
         endDate: new Date(),
         teamStreakName: 'Yoga',

@@ -5,7 +5,7 @@ import { getOneTeamMemberStreakMiddlewares } from '../../../RouteMiddlewares/Tea
 import { getAllTeamMemberStreaksMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreaks/getAllTeamMemberStreaksMiddlewares';
 import { patchTeamMemberStreakMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreaks/patchTeamMemberStreakMiddlewares';
 import { authenticationMiddlewares } from '../../../../src/SharedMiddleware/authenticationMiddlewares';
-import { recoverTeamMemberStreakMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreaks/recoverTeamMemberStreak';
+import { recoverTeamMemberStreakMiddlewares } from '../../../RouteMiddlewares/TeamMemberStreaks/recoverTeamMemberStreakMiddlewares';
 
 export const teamMemberStreakId = 'teamMemberStreakId';
 

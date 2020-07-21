@@ -26,7 +26,7 @@ export const getMockTeamMemberStreak = ({
         teamStreakName: 'Running',
         startDate: new Date(),
         endDate: new Date(),
-        numberOfDays: 20,
+        numberOfDays: 0,
     },
     userId,
     timezone: 'Europe/London',

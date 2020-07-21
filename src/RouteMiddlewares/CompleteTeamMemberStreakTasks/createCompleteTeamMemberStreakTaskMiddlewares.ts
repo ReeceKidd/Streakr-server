@@ -33,6 +33,7 @@ import { oidXpValues } from '../../helpers/oidXpValues';
 import { coinCreditValues } from '../../helpers/coinCreditValues';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 import { CompleteTeamMemberStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
+import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -312,6 +313,77 @@ export const getIncreaseTotalTimesTrackedForTeamStreakMiddleware = (
 
 export const increaseTotalTimesTrackedForTeamStreakMiddleware = getIncreaseTotalTimesTrackedForTeamStreakMiddleware(
     teamStreakModel,
+);
+
+export const getIncreaseLongestTeamMemberStreakForUserMiddleware = ({
+    userModel,
+}: {
+    userModel: mongoose.Model<UserModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const teamMemberStreak: TeamMemberStreak = response.locals.teamMemberStreak;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        if (user.longestTeamMemberStreak.numberOfDays < teamMemberStreak.currentStreak.numberOfDaysInARow) {
+            const longestTeamMemberStreak: LongestTeamMemberStreak = {
+                teamMemberStreakId: teamMemberStreak._id,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+                numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(teamMemberStreak.createdAt),
+            };
+            response.locals.user = await userModel.findByIdAndUpdate(
+                user._id,
+                {
+                    $set: { longestTeamMemberStreak },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.IncreaseLongestTeamMemberStreakForUserMiddleware, err));
+    }
+};
+
+export const increaseLongestTeamMemberStreakForUserMiddleware = getIncreaseLongestTeamMemberStreakForUserMiddleware({
+    userModel,
+});
+
+export const getIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware = ({
+    teamMemberStreakModel,
+}: {
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>;
+}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const teamMemberStreak: TeamMemberStreak = response.locals.teamMemberStreak;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        if (teamMemberStreak.longestTeamMemberStreak.numberOfDays < teamMemberStreak.currentStreak.numberOfDaysInARow) {
+            const longestTeamMemberStreak: LongestTeamMemberStreak = {
+                teamMemberStreakId: teamMemberStreak._id,
+                teamStreakId: teamStreak._id,
+                teamStreakName: teamStreak.streakName,
+                numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
+                startDate: new Date(teamMemberStreak.createdAt),
+            };
+            response.locals.teamMemberStreak = await teamMemberStreakModel.findByIdAndUpdate(
+                teamMemberStreak._id,
+                {
+                    $set: { longestTeamMemberStreak },
+                },
+                { new: true },
+            );
+        }
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.IncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware, err));
+    }
+};
+
+export const increaseLongestTeamMemberStreakForTeamMemberStreakMiddleware = getIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware(
+    {
+        teamMemberStreakModel,
+    },
 );
 
 export const getCreditCoinsToUserForCompletingTeamMemberStreakMiddleware = (
@@ -675,6 +747,8 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     increaseTotalStreakCompletesForUserMiddleware,
     increaseTotalTimesTrackedForTeamMemberStreakMiddleware,
     increaseTotalTimesTrackedForTeamStreakMiddleware,
+    increaseLongestTeamMemberStreakForUserMiddleware,
+    increaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
     creditCoinsToUserForCompletingTeamMemberStreakMiddleware,
     creditOidXpToUserForCompletingTeamMemberStreakMiddleware,
     setTeamStreakToActiveMiddleware,

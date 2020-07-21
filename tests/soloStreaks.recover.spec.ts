@@ -15,6 +15,7 @@ import { userModel } from '../src/Models/User';
 import { CoinCharges } from '@streakoid/streakoid-models/lib/Types/CoinCharges';
 import { coinChargeValues } from '../src/helpers/coinChargeValues';
 import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
+import { correctPopulatedCurrentUserKeys } from '../src/testHelpers/correctPopulatedCurrentUserKeys';
 
 jest.setTimeout(120000);
 
@@ -42,8 +43,8 @@ describe(testName, () => {
         }
     });
 
-    test(`when solo streak is recovered the lost streak replaces the current streak and the lost streak is removed from the past streaks, the current streak number of days in a row increases by one and the the streak is made active`, async () => {
-        expect.assertions(6);
+    test(`when solo streak is recovered the lost streak replaces the current streak and the lost streak is removed from the past streaks, the current streak number of days in a row increases by one, the the streak is made active and the totalTimesTracked is increased by one.`, async () => {
+        expect.assertions(7);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -101,8 +102,165 @@ describe(testName, () => {
         ).toEqual(false);
         expect(recoveredSoloStreak.active).toEqual(true);
         expect(recoveredSoloStreak.completedToday).toEqual(false);
+        expect(recoveredSoloStreak.totalTimesTracked).toEqual(soloStreak.totalTimesTracked + 1);
 
         expect(Object.keys(recoveredSoloStreak).sort()).toEqual(correctSoloStreakKeys);
+    });
+
+    test(`when solo streak is recovered the users total streak completes is increased by one.`, async () => {
+        expect.assertions(2);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        await userModel.findByIdAndUpdate(userId, {
+            $set: { coins: 1000000 },
+        });
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
+
+        const startDate = new Date().toISOString();
+        const numberOfDaysInARow = 11;
+        const lostStreak = {
+            endDate: new Date().toString(),
+            startDate,
+            numberOfDaysInARow,
+        };
+
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                currentStreak: {
+                    startDate: new Date().toISOString(),
+                    numberOfDaysInARow: 0,
+                },
+                status: StreakStatus.live,
+                completedToday: false,
+                active: false,
+                pastStreaks: [
+                    { startDate: new Date().toString(), endDate: new Date().toString(), numberOfDaysInARow: 0 },
+                    lostStreak,
+                ],
+            },
+        });
+
+        await SDK.soloStreaks.recover({ soloStreakId });
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.totalStreakCompletes).toEqual(user.totalStreakCompletes + 1);
+        expect(Object.keys(updatedUser).sort()).toEqual(correctPopulatedCurrentUserKeys);
+    });
+
+    test(`when solo streak is recovered if it is longer than the users longest solo streak the users longest solo streak is replaced.`, async () => {
+        expect.assertions(5);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        await userModel.findByIdAndUpdate(userId, {
+            $set: { coins: 1000000 },
+        });
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
+
+        const startDate = new Date().toISOString();
+        const numberOfDaysInARow = 11;
+        const lostStreak = {
+            endDate: new Date().toString(),
+            startDate,
+            numberOfDaysInARow,
+        };
+
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                currentStreak: {
+                    startDate: new Date().toISOString(),
+                    numberOfDaysInARow: 0,
+                },
+                status: StreakStatus.live,
+                completedToday: false,
+                active: false,
+                pastStreaks: [
+                    { startDate: new Date().toString(), endDate: new Date().toString(), numberOfDaysInARow: 0 },
+                    lostStreak,
+                ],
+            },
+        });
+
+        await SDK.soloStreaks.recover({ soloStreakId });
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.longestSoloStreak.numberOfDays).toEqual(numberOfDaysInARow + 1);
+        expect(updatedUser.longestSoloStreak.soloStreakId).toEqual(String(soloStreakId));
+        expect(updatedUser.longestSoloStreak.soloStreakName).toEqual(String(soloStreak.streakName));
+        expect(updatedUser.longestSoloStreak.startDate).toEqual(expect.any(String));
+        expect(Object.keys(updatedUser).sort()).toEqual(correctPopulatedCurrentUserKeys);
+    });
+
+    test(`when solo streak is recovered if it is longer than the solo streaks longest solo streak the solo streaks longest solo streak is replaced.`, async () => {
+        expect.assertions(5);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        await userModel.findByIdAndUpdate(userId, {
+            $set: { coins: 1000000 },
+        });
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must do 30 minutes of Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+        const soloStreakId = soloStreak._id;
+
+        const startDate = new Date().toISOString();
+        const numberOfDaysInARow = 11;
+        const lostStreak = {
+            endDate: new Date().toString(),
+            startDate,
+            numberOfDaysInARow,
+        };
+
+        await SDK.soloStreaks.update({
+            soloStreakId,
+            updateData: {
+                currentStreak: {
+                    startDate: new Date().toISOString(),
+                    numberOfDaysInARow: 0,
+                },
+                status: StreakStatus.live,
+                completedToday: false,
+                active: false,
+                pastStreaks: [
+                    { startDate: new Date().toString(), endDate: new Date().toString(), numberOfDaysInARow: 0 },
+                    lostStreak,
+                ],
+            },
+        });
+
+        await SDK.soloStreaks.recover({ soloStreakId });
+
+        const updatedSoloStreak = await SDK.soloStreaks.getOne(soloStreakId);
+        expect(updatedSoloStreak.longestSoloStreak.numberOfDays).toEqual(numberOfDaysInARow + 1);
+        expect(updatedSoloStreak.longestSoloStreak.soloStreakId).toEqual(String(soloStreakId));
+        expect(updatedSoloStreak.longestSoloStreak.soloStreakName).toEqual(String(soloStreak.streakName));
+        expect(updatedSoloStreak.longestSoloStreak.startDate).toEqual(expect.any(String));
+        expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
     test('when solo streak is recovered a completed solo streak task is created for the previous day', async () => {
@@ -184,7 +342,7 @@ describe(testName, () => {
     });
 
     test('when solo streak is recovered a recovered solo streak activity feed is created', async () => {
-        expect.assertions(6);
+        expect.assertions(7);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -237,6 +395,7 @@ describe(testName, () => {
         if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.recoveredSoloStreak) {
             expect(activityFeedItem.soloStreakId).toEqual(String(soloStreak._id));
             expect(activityFeedItem.soloStreakName).toEqual(String(soloStreak.streakName));
+            expect(activityFeedItem.streakNumberOfDays).toEqual(numberOfDaysInARow + 1);
             expect(activityFeedItem.userId).toEqual(String(soloStreak.userId));
             expect(activityFeedItem.username).toEqual(user.username);
             expect(activityFeedItem.userProfileImage).toEqual(user.profileImages.originalImageUrl);
@@ -249,6 +408,7 @@ describe(testName, () => {
                     'userProfileImage',
                     'soloStreakId',
                     'soloStreakName',
+                    'streakNumberOfDays',
                     'createdAt',
                     'updatedAt',
                     '__v',

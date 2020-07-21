@@ -25,8 +25,8 @@
     "license": "ISC",
     "dependencies": {
         "@sentry/node": "^5.15.5",
-        "@streakoid/streakoid-models": "^1.0.95",
-        "@streakoid/streakoid-sdk": "^1.0.573",
+        "@streakoid/streakoid-models": "^1.0.96",
+        "@streakoid/streakoid-sdk": "^1.0.574",
         "@types/amazon-cognito-auth-js": "^1.2.1",
         "@types/cors": "^2.8.5",
         "@types/dotenv": "^6.1.1",
