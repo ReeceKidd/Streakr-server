@@ -23,7 +23,7 @@
 //         }),
 //     );
 
-//     // response.send('Success');
+//     response.send('Success');
 // };
 
 // export const updateDatabaseMiddlewares = [updateDatabaseMiddleware];

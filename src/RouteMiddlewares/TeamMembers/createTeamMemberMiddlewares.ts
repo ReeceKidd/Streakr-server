@@ -257,13 +257,14 @@ export const getCreateJoinedTeamStreakActivityFeedItemMiddleware = (
     createActivityFeedItemFunction: typeof createActivityFeedItem,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const user: User = response.locals.user;
+        const newTeamMember: User = response.locals.newTeamMember;
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const joinedTeamStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.joinedTeamStreak,
-            userId: user._id,
-            username: user.username,
-            userProfileImage: user && user.profileImages && user.profileImages.originalImageUrl,
+            userId: newTeamMember._id,
+            username: newTeamMember.username,
+            userProfileImage:
+                newTeamMember && newTeamMember.profileImages && newTeamMember.profileImages.originalImageUrl,
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
         };

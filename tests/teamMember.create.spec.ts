@@ -128,7 +128,6 @@ describe(testName, () => {
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
-        const userProfileImage = user.profileImages.originalImageUrl;
         const friend = await getFriend({ testName });
         const friendId = friend._id;
         const streakName = 'Daily Spanish';
@@ -155,9 +154,9 @@ describe(testName, () => {
         if (activityFeedItem && activityFeedItem.activityFeedItemType === ActivityFeedItemTypes.joinedTeamStreak) {
             expect(activityFeedItem.teamStreakId).toEqual(String(teamStreak._id));
             expect(activityFeedItem.teamStreakName).toEqual(String(teamStreak.streakName));
-            expect(activityFeedItem.userId).toEqual(String(userId));
-            expect(activityFeedItem.username).toBeDefined();
-            expect(activityFeedItem.userProfileImage).toEqual(userProfileImage);
+            expect(activityFeedItem.userId).toEqual(String(friendId));
+            expect(activityFeedItem.username).toEqual(friend.username);
+            expect(activityFeedItem.userProfileImage).toEqual(friend.profileImages.originalImageUrl);
             expect(Object.keys(activityFeedItem).sort()).toEqual(
                 [
                     '_id',

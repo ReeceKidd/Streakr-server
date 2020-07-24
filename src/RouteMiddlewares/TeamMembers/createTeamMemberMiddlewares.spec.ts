@@ -422,11 +422,11 @@ describe(`notifiyOtherTeamMembersAboutNewTeamMemberMiddleware`, () => {
 describe(`createJoinedTeamStreakActivityFeedItemMiddleware`, () => {
     test('creates a new createJoinedTeamStreakActivity', async () => {
         expect.assertions(2);
-        const user = { _id: '_id' };
-        const teamStreak = { _id: '_id' };
+        const newTeamMember = getMockUser({ _id: 'newTeamMember' });
+        const teamStreak = getMockTeamStreak({ creatorId: 'userId' });
         const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-        const response: any = { locals: { user, teamStreak } };
+        const response: any = { locals: { newTeamMember, teamStreak } };
         const request: any = { body: {} };
         const next = jest.fn();
 
