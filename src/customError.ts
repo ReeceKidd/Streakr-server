@@ -636,6 +636,9 @@ export enum ErrorType {
     RecoverChallengeStreakIncreaseLongestChallengeStreakForChallengeStreakMiddleware,
     RecoverChallengeStreakRetreiveChallengeMiddleware,
     RecoverChallengeStreakChallengeNotFound,
+    DeleteTeamMemberRetrieveTeamMemberStreakMiddleware,
+    NoTeamMemberStreakFound,
+    ArchiveTeamMemberStreakMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1566,6 +1569,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-122`,
                     message: 'Challenge does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.NoTeamMemberStreakFound: {
+                return {
+                    code: `${ResponseCodes.badRequest}-123`,
+                    message: 'No team member streak found.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -5181,6 +5192,20 @@ export class CustomError extends Error {
             case ErrorType.RecoverChallengeStreakRetreiveChallengeMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-529`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.DeleteTeamMemberRetrieveTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-530`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.ArchiveTeamMemberStreakMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-531`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

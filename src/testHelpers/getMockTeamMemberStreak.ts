@@ -1,4 +1,5 @@
 import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 const currentStreak = {
     startDate: '',
@@ -16,6 +17,7 @@ export const getMockTeamMemberStreak = ({
     _id: 'teamMemberStreakId',
     teamStreakId,
     currentStreak,
+    status: StreakStatus.live,
     completedToday: false,
     active: false,
     pastStreaks: [],

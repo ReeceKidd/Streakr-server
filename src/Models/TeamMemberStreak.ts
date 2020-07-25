@@ -2,6 +2,7 @@ import * as mongoose from 'mongoose';
 import { Collections } from './Collections';
 import { Models } from './Models';
 import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 export type TeamMemberStreakModel = TeamMemberStreak & mongoose.Document;
 
@@ -20,6 +21,10 @@ export const teamMemberStreakSchema = new mongoose.Schema(
         timezone: {
             required: true,
             type: String,
+        },
+        status: {
+            type: String,
+            default: StreakStatus.live,
         },
         completedToday: {
             type: Boolean,

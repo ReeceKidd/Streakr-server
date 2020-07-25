@@ -105,6 +105,45 @@ describe(testName, () => {
         expect(Object.keys(member.teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
     });
 
+    test(`when team member is deleted it sets the team member streak status to deleted.`, async () => {
+        expect.assertions(2);
+
+        const user = await getPayingUser({ testName });
+
+        const streakName = 'Daily Spanish';
+        const userId = user._id;
+
+        const friend = await getFriend({ testName });
+        const friendId = friend._id;
+
+        const members = [{ memberId: userId }];
+
+        const originalTeamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName,
+            members,
+        });
+
+        await SDK.teamStreaks.teamMembers.create({
+            userId: friendId,
+            teamStreakId: originalTeamStreak._id,
+        });
+
+        await SDK.teamStreaks.teamMembers.deleteOne({
+            teamStreakId: originalTeamStreak._id,
+            memberId: friendId,
+        });
+
+        const updatedTeamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId: originalTeamStreak._id,
+        });
+        const updatedTeamMemberStreak = updatedTeamMemberStreaks[0];
+
+        expect(updatedTeamMemberStreak.status).toEqual(StreakStatus.archived);
+        expect(Object.keys(updatedTeamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
+    });
+
     test(`throws error if a user who is not a member of the team streak tries to delete someone.`, async () => {
         expect.assertions(2);
 

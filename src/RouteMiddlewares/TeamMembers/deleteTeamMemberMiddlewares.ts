@@ -9,6 +9,9 @@ import { CustomError, ErrorType } from '../../customError';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { TeamMemberStreakModel, teamMemberStreakModel } from '../../Models/TeamMemberStreak';
+import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 const teamMemberParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -70,6 +73,25 @@ export const getRetrieveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<
 
 export const retrieveTeamStreakMiddleware = getRetrieveTeamStreakMiddleware(teamStreakModel);
 
+export const getRetrieveTeamMemberStreakMiddleware = (
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { teamStreakId } = request.params;
+        const teamMemberStreak = await teamMemberStreakModel.findOne({ teamStreakId });
+        if (!teamMemberStreak) {
+            throw new CustomError(ErrorType.NoTeamMemberStreakFound);
+        }
+        response.locals.teamMemberStreak = teamMemberStreak;
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.DeleteTeamMemberRetrieveTeamMemberStreakMiddleware, err));
+    }
+};
+
+export const retrieveTeamMemberStreakMiddleware = getRetrieveTeamMemberStreakMiddleware(teamMemberStreakModel);
+
 export const retrieveTeamMemberMiddleware = async (
     request: Request,
     response: Response,
@@ -92,6 +114,7 @@ export const retrieveTeamMemberMiddleware = async (
         else next(new CustomError(ErrorType.RetrieveTeamMemberMiddleware, err));
     }
 };
+
 export const getDeleteTeamMemberMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
     response: Response,
@@ -114,6 +137,24 @@ export const getDeleteTeamMemberMiddleware = (teamStreakModel: mongoose.Model<Te
 
 export const deleteTeamMemberMiddleware = getDeleteTeamMemberMiddleware(teamStreakModel);
 
+export const getArchiveTeamMemberStreakMiddleware = (
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const teamMemberStreak: TeamMemberStreak = response.locals.teamMemberStreak;
+
+        response.locals.teamMemberStreak = await teamMemberStreakModel.findByIdAndUpdate(teamMemberStreak._id, {
+            $set: { status: StreakStatus.archived, active: false },
+        });
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.ArchiveTeamMemberStreakMiddleware, err));
+    }
+};
+
+export const archiveTeamMemberStreakMiddleware = getArchiveTeamMemberStreakMiddleware(teamMemberStreakModel);
+
 export const sendTeamMemberDeletedResponseMiddleware = (
     request: Request,
     response: Response,
@@ -130,7 +171,9 @@ export const deleteTeamMemberMiddlewares = [
     teamMemberParamsValidationMiddleware,
     retrieveTeamStreakMiddleware,
     checkCurrentUserIsPartOfTeamStreakMiddleware,
+    retrieveTeamMemberStreakMiddleware,
     retrieveTeamMemberMiddleware,
     deleteTeamMemberMiddleware,
+    archiveTeamMemberStreakMiddleware,
     sendTeamMemberDeletedResponseMiddleware,
 ];

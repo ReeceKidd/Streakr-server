@@ -9,11 +9,17 @@ import {
     getRetrieveTeamStreakMiddleware,
     retrieveTeamStreakMiddleware,
     checkCurrentUserIsPartOfTeamStreakMiddleware,
+    getRetrieveTeamMemberStreakMiddleware,
+    retrieveTeamMemberStreakMiddleware,
+    archiveTeamMemberStreakMiddleware,
+    getArchiveTeamMemberStreakMiddleware,
 } from './deleteTeamMemberMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
+import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 describe('teamMemberParamsValidationMiddleware', () => {
     const teamStreakId = 'teamStreakId';
@@ -213,6 +219,58 @@ describe('checkCurrentUserIsPartOfTeamStreakMiddleware', () => {
     });
 });
 
+describe('retrieveTeamMemberStreakMiddleware', () => {
+    test('sets response.locals.teamMemberStreak and calls next()', async () => {
+        expect.assertions(3);
+        const teamStreakId = 'abc';
+        const request: any = {
+            params: { teamStreakId },
+        };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const findOne = jest.fn().mockResolvedValue(true);
+        const teamMemberStreakModel = { findOne };
+        const middleware = getRetrieveTeamMemberStreakMiddleware(teamMemberStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findOne).toBeCalledWith({ teamStreakId });
+        expect(response.locals.teamMemberStreak).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
+
+    test('throws NoTeamMemberStreakFound error when team member streak does not exist', async () => {
+        expect.assertions(1);
+        const teamStreakId = 'abc';
+        const request: any = {
+            params: { teamStreakId },
+        };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const findOne = jest.fn().mockResolvedValue(false);
+        const teamMemberStreakModel = { findOne };
+        const middleware = getRetrieveTeamMemberStreakMiddleware(teamMemberStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.NoTeamMemberStreakFound));
+    });
+
+    test('throws DeleteTeamMemberRetrieveTeamMemberStreakMiddleware error on middleware failure', async () => {
+        expect.assertions(1);
+        const request: any = {};
+        const response: any = {};
+        const next = jest.fn();
+        const middleware = getRetrieveTeamMemberStreakMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(
+            new CustomError(ErrorType.DeleteTeamMemberRetrieveTeamMemberStreakMiddleware, expect.any(Error)),
+        );
+    });
+});
+
 describe('retrieveTeamMemberMiddleware', () => {
     test('sets response.locals.member and calls next()', async () => {
         expect.assertions(2);
@@ -290,6 +348,42 @@ describe('deleteTeamMemberMiddleware', () => {
     });
 });
 
+describe('archiveTeamMemberStreakMiddleware', () => {
+    test('sets team member streak status to archived.', async () => {
+        expect.assertions(2);
+
+        const user = getMockUser({ _id: 'userId' });
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        const request: any = {};
+        const response: any = { locals: { teamMemberStreak } };
+        const next = jest.fn();
+        const findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+        const teamMemberStreakModel = {
+            findByIdAndUpdate,
+        };
+        const middleware = getArchiveTeamMemberStreakMiddleware(teamMemberStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(findByIdAndUpdate).toBeCalledWith(teamMemberStreak._id, { $set: { status: StreakStatus.archived } });
+        expect(next).toBeCalledWith();
+    });
+
+    test('calls next with ArchiveTeamMemberStreakMiddleware error on failure', async () => {
+        expect.assertions(1);
+
+        const request: any = {};
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getArchiveTeamMemberStreakMiddleware({} as any);
+
+        await middleware(request, response, next);
+
+        expect(next).toBeCalledWith(new CustomError(ErrorType.ArchiveTeamMemberStreakMiddleware, expect.any(Error)));
+    });
+});
+
 describe('sendTeamMemberDeletedResponseMiddleware', () => {
     test('responds with successful deletion', () => {
         expect.assertions(2);
@@ -322,14 +416,16 @@ describe('sendTeamMemberDeletedResponseMiddleware', () => {
 
 describe('deleteTeamMemberMiddlewares', () => {
     test('are defined in the correct order', () => {
-        expect.assertions(7);
+        expect.assertions(9);
 
-        expect(deleteTeamMemberMiddlewares.length).toEqual(6);
+        expect(deleteTeamMemberMiddlewares.length).toEqual(8);
         expect(deleteTeamMemberMiddlewares[0]).toEqual(teamMemberParamsValidationMiddleware);
         expect(deleteTeamMemberMiddlewares[1]).toEqual(retrieveTeamStreakMiddleware);
-        expect(deleteTeamMemberMiddlewares[2]).toEqual(checkCurrentUserIsPartOfTeamStreakMiddleware),
-            expect(deleteTeamMemberMiddlewares[3]).toEqual(retrieveTeamMemberMiddleware);
-        expect(deleteTeamMemberMiddlewares[4]).toEqual(deleteTeamMemberMiddleware);
-        expect(deleteTeamMemberMiddlewares[5]).toEqual(sendTeamMemberDeletedResponseMiddleware);
+        expect(deleteTeamMemberMiddlewares[2]).toEqual(checkCurrentUserIsPartOfTeamStreakMiddleware);
+        expect(deleteTeamMemberMiddlewares[3]).toEqual(retrieveTeamMemberStreakMiddleware);
+        expect(deleteTeamMemberMiddlewares[4]).toEqual(retrieveTeamMemberMiddleware);
+        expect(deleteTeamMemberMiddlewares[5]).toEqual(deleteTeamMemberMiddleware);
+        expect(deleteTeamMemberMiddlewares[6]).toEqual(archiveTeamMemberStreakMiddleware);
+        expect(deleteTeamMemberMiddlewares[7]).toEqual(sendTeamMemberDeletedResponseMiddleware);
     });
 });
