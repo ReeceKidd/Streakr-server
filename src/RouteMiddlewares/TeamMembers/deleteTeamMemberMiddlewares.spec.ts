@@ -366,7 +366,9 @@ describe('archiveTeamMemberStreakMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(findByIdAndUpdate).toBeCalledWith(teamMemberStreak._id, { $set: { status: StreakStatus.archived } });
+        expect(findByIdAndUpdate).toBeCalledWith(teamMemberStreak._id, {
+            $set: { status: StreakStatus.archived, active: false },
+        });
         expect(next).toBeCalledWith();
     });
 
