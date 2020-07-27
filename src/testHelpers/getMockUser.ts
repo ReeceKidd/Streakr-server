@@ -100,4 +100,11 @@ export const getMockUser = ({ _id }: { _id: string }): User => ({
         endDate: new Date(),
         teamStreakName: 'Yoga',
     },
+    longestEverStreak: {
+        soloStreakId: 'soloStreakId',
+        soloStreakName: 'Reading',
+        numberOfDays: 0,
+        startDate: new Date(),
+        endDate: new Date(),
+    },
 });

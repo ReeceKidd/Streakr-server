@@ -316,6 +316,54 @@ export const userSchema = new mongoose.Schema(
                 type: Date,
             },
         },
+        longestEverStreak: {
+            soloStreakId: {
+                type: String,
+                default: null,
+            },
+            soloStreakName: {
+                type: String,
+                default: null,
+            },
+            challengeStreakId: {
+                type: String,
+                default: null,
+            },
+            challengeId: {
+                type: String,
+                default: null,
+            },
+            challengeName: {
+                type: String,
+                default: null,
+            },
+            teamMemberStreakId: {
+                type: String,
+                default: null,
+            },
+            teamStreakId: {
+                type: String,
+                default: null,
+            },
+            teamStreakName: {
+                type: String,
+                default: null,
+            },
+            members: {
+                type: Array,
+                default: [],
+            },
+            numberOfDays: {
+                type: Number,
+                default: 0,
+            },
+            startDate: {
+                type: Date,
+            },
+            endDate: {
+                type: Date,
+            },
+        },
     },
     {
         timestamps: true,

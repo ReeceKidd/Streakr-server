@@ -28,6 +28,7 @@ export const correctPopulatedCurrentUserKeys = [
     'longestChallengeStreak',
     'longestTeamMemberStreak',
     'longestTeamStreak',
+    'longestEverStreak',
     'onboarding',
     'timezone',
     'updatedAt',

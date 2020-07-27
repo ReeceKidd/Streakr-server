@@ -11,6 +11,8 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { correctSoloStreakKeys } from '../../../src/testHelpers/correctSoloStreakKeys';
+import { LongestSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestSoloStreak';
+import { userModel } from '../../../src/Models/User';
 
 jest.setTimeout(120000);
 
@@ -38,8 +40,8 @@ describe(testName, () => {
         }
     });
 
-    test('updates solo streak completedToday field and creates a streak maintained tracking event', async () => {
-        expect.assertions(23);
+    test('updates solo streak completedToday field', async () => {
+        expect.assertions(15);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -79,6 +81,94 @@ describe(testName, () => {
         expect(updatedSoloStreak.createdAt).toEqual(expect.any(String));
         expect(updatedSoloStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
+    });
+
+    test('if solo streak current streak is longer than the users longest ever streak update the users longest ever streak to be the current solo streak.', async () => {
+        expect.assertions(4);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must study Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({ userId, streakName, streakDescription });
+        const soloStreakId = soloStreak._id;
+
+        await SDK.completeSoloStreakTasks.create({
+            userId,
+            soloStreakId,
+        });
+
+        const maintainedSoloStreaks = await SDK.soloStreaks.getAll({
+            completedToday: true,
+            userId,
+        });
+
+        await trackMaintainedSoloStreaks(maintainedSoloStreaks);
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        const updatedSoloStreak = await SDK.soloStreaks.getOne(soloStreak._id);
+
+        const longestEverStreak = updatedUser.longestEverStreak as LongestSoloStreak;
+
+        expect(longestEverStreak.soloStreakId).toEqual(soloStreak._id);
+        expect(longestEverStreak.soloStreakName).toEqual(soloStreak.streakName);
+        expect(longestEverStreak.numberOfDays).toEqual(updatedSoloStreak.currentStreak.numberOfDaysInARow);
+        expect(longestEverStreak.startDate).toEqual(updatedSoloStreak.currentStreak.startDate);
+    });
+
+    test('if users longest ever streak is longer than the current solo streak do nothing.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const numberOfDays = 100;
+        await userModel.findByIdAndUpdate(user._id, { $set: { 'longestEverStreak.numberOfDays': numberOfDays } });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must study Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({ userId, streakName, streakDescription });
+        const soloStreakId = soloStreak._id;
+
+        await SDK.completeSoloStreakTasks.create({
+            userId,
+            soloStreakId,
+        });
+
+        const maintainedSoloStreaks = await SDK.soloStreaks.getAll({
+            completedToday: true,
+            userId,
+        });
+
+        await trackMaintainedSoloStreaks(maintainedSoloStreaks);
+
+        const updatedUser = await SDK.user.getCurrentUser();
+
+        expect(updatedUser.longestEverStreak.numberOfDays).toEqual(numberOfDays);
+    });
+
+    test('creates a maintainedStreak streak tracking event', async () => {
+        expect.assertions(8);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must study Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({ userId, streakName, streakDescription });
+        const soloStreakId = soloStreak._id;
+
+        await SDK.completeSoloStreakTasks.create({
+            userId,
+            soloStreakId,
+        });
+
+        const maintainedSoloStreaks = await SDK.soloStreaks.getAll({
+            completedToday: true,
+            userId,
+        });
+
+        await trackMaintainedSoloStreaks(maintainedSoloStreaks);
 
         const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
