@@ -40,7 +40,7 @@ export const trackMaintainedTeamStreaks = async (
                             (populatedMember &&
                                 populatedMember.longestTeamStreak &&
                                 populatedMember.longestTeamStreak.numberOfDays) <
-                            (teamStreak && teamStreak.currentStreak.numberOfDaysInARow)
+                            teamStreak.currentStreak.numberOfDaysInARow
                         ) {
                             const startDate = teamStreak.currentStreak.startDate
                                 ? new Date(teamStreak.currentStreak.startDate)
@@ -52,9 +52,30 @@ export const trackMaintainedTeamStreaks = async (
                                 startDate,
                                 members: teamStreak.members,
                             };
-                            return userModel.findByIdAndUpdate(member.memberId, { $set: { longestTeamStreak } });
+                            await userModel.findByIdAndUpdate(member.memberId, { $set: { longestTeamStreak } });
+                        }
+
+                        if (
+                            populatedMember &&
+                            populatedMember.longestEverStreak &&
+                            populatedMember.longestEverStreak.numberOfDays < teamStreak.currentStreak.numberOfDaysInARow
+                        ) {
+                            const startDate = teamStreak.currentStreak.startDate
+                                ? new Date(teamStreak.currentStreak.startDate)
+                                : new Date();
+                            const longestTeamStreak: LongestTeamStreak = {
+                                teamStreakId: teamStreak._id,
+                                teamStreakName: teamStreak.streakName,
+                                numberOfDays: teamStreak.currentStreak.numberOfDaysInARow,
+                                startDate,
+                                members: teamStreak.members,
+                            };
+                            await userModel.findByIdAndUpdate(member.memberId, {
+                                $set: { longestEverStreak: longestTeamStreak },
+                            });
                         }
                     }
+
                     return member;
                 }),
             );

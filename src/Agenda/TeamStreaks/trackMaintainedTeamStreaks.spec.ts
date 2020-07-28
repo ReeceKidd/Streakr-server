@@ -12,7 +12,6 @@ import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEve
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 import { LongestTeamStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamStreak';
-import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 describe('trackMaintainedTeamStreaks', () => {
     afterEach(() => {
@@ -135,21 +134,12 @@ describe('trackMaintainedTeamStreaks', () => {
         });
     });
 
-    test('if the team members longestTeamStreak is longer than the team streaks current streak it does nothing.', async () => {
+    test('if the team members longestEverStreak is less than the team streaks current streak it updates the longestEverStreak for the member.', async () => {
         expect.assertions(1);
-        const user: User = {
-            ...getMockUser({ _id: '_id' }),
-            longestTeamStreak: {
-                members: [],
-                numberOfDays: 100,
-                startDate: new Date(),
-                teamStreakId: 'teamStreakId',
-                teamStreakName: 'Reading',
-            },
-        };
+        const user = getMockUser({ _id: '_id' });
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
-        userModel.findById = jest.fn().mockResolvedValue(user) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(getMockUser({ _id: '_id' })) as any;
+        userModel.findById = jest.fn().mockResolvedValue(getMockUser({ _id: '_id' })) as any;
         const currentStreak = {
             startDate: new Date().toString(),
             numberOfDaysInARow: 11,
@@ -166,6 +156,16 @@ describe('trackMaintainedTeamStreaks', () => {
         const maintainedTeamStreaks = [{ ...teamStreak, longestTeamStreak }];
         await trackMaintainedTeamStreaks(maintainedTeamStreaks as any);
 
-        expect(userModel.findByIdAndUpdate).not.toBeCalled();
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(teamStreak.members[0].memberId, {
+            $set: {
+                longestEverStreak: {
+                    teamStreakId: teamStreak._id,
+                    teamStreakName: teamStreak.streakName,
+                    numberOfDays: teamStreak.currentStreak.numberOfDaysInARow,
+                    startDate: expect.any(Date),
+                    members: teamStreak.members,
+                },
+            },
+        });
     });
 });
