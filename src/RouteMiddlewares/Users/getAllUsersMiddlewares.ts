@@ -88,7 +88,7 @@ export const getFindUsersMiddleware = (userModel: mongoose.Model<UserModel>) => 
 
         const users = await userModel
             .find(query)
-            .sort({ totalStreakCompletes: -1 })
+            .sort({ 'longestEverStreak.numberOfDays': -1 })
             .skip(Number(skip))
             .limit(Number(limit))
             .lean();

@@ -366,7 +366,7 @@ describe('findUsersMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({});
-        expect(sort).toBeCalledWith({ totalStreakCompletes: -1 });
+        expect(sort).toBeCalledWith({ 'longestEverStreak.numberOfDays': -1 });
         expect(skip).toBeCalledWith(10);
         expect(limit).toBeCalledWith(10);
         expect(lean).toBeCalledWith();
