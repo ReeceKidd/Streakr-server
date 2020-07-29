@@ -6,6 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { challengeStreakModel, ChallengeStreakModel } from '../../Models/ChallengeStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreaks';
 
 const getChallengeStreaksQueryValidationSchema = {
     userId: Joi.string(),
@@ -65,10 +66,14 @@ export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose
         if (active) {
             query.active = active === 'true';
         }
-        if (sortField) {
+        if (sortField === GetAllChallengeStreaksSortFields.currentStreak) {
             response.locals.challengeStreaks = await challengeStreakModel
                 .find(query)
                 .sort({ 'currentStreak.numberOfDaysInARow': -1 });
+        } else if (sortField === GetAllChallengeStreaksSortFields.longestChallengeStreak) {
+            response.locals.challengeStreaks = await challengeStreakModel
+                .find(query)
+                .sort({ 'longestChallengeStreak.numberOfDays': -1 });
         } else {
             response.locals.challengeStreaks = await challengeStreakModel.find(query);
         }

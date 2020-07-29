@@ -262,7 +262,7 @@ describe(testName, () => {
         expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
-    test(`solo streaks can be retrieved using sortField query parameter`, async () => {
+    test(`solo streaks can be retrieved by current streak.`, async () => {
         expect.assertions(2);
 
         const user = await getPayingUser({ testName });
@@ -277,6 +277,29 @@ describe(testName, () => {
 
         const soloStreaks = await SDK.soloStreaks.getAll({
             sortField: GetAllSoloStreaksSortFields.currentStreak,
+        });
+        expect(soloStreaks.length).toBeGreaterThanOrEqual(1);
+
+        const soloStreak = soloStreaks[0];
+
+        expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
+    });
+
+    test(`solo streaks can be retrieved by longest solo streak.`, async () => {
+        expect.assertions(2);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = '30 minutes of reading';
+        const streakDescription = 'Every day I must do 30 minutes of reading';
+        await SDK.soloStreaks.create({
+            userId,
+            streakName,
+            streakDescription,
+        });
+
+        const soloStreaks = await SDK.soloStreaks.getAll({
+            sortField: GetAllSoloStreaksSortFields.longestSoloStreak,
         });
         expect(soloStreaks.length).toBeGreaterThanOrEqual(1);
 

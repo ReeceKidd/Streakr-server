@@ -229,7 +229,7 @@ describe(testName, () => {
         expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
-    test('challenge streaks can be retrieved with a sort field', async () => {
+    test('challenge streaks can be retrieved sorted by current streak.', async () => {
         expect.assertions(2);
 
         const name = 'Duolingo';
@@ -251,6 +251,36 @@ describe(testName, () => {
 
         const challengeStreaks = await SDK.challengeStreaks.getAll({
             sortField: GetAllChallengeStreaksSortFields.currentStreak,
+        });
+        expect(challengeStreaks.length).toBeGreaterThanOrEqual(1);
+
+        const challengeStreak = challengeStreaks[0];
+
+        expect(Object.keys(challengeStreak).sort()).toEqual(correctChallengeStreakKeys);
+    });
+
+    test('challenge streaks can be retrieved sorted by longest challenge streak.', async () => {
+        expect.assertions(2);
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        await SDK.challengeStreaks.create({
+            userId,
+            challengeId: challenge._id,
+        });
+
+        const challengeStreaks = await SDK.challengeStreaks.getAll({
+            sortField: GetAllChallengeStreaksSortFields.longestChallengeStreak,
         });
         expect(challengeStreaks.length).toBeGreaterThanOrEqual(1);
 

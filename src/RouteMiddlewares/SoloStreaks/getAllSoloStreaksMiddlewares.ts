@@ -6,6 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
 
 const getSoloStreaksQueryValidationSchema = {
     userId: Joi.string(),
@@ -61,10 +62,15 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
             query.active = active === 'true';
         }
 
-        if (sortField) {
+        if (sortField === GetAllSoloStreaksSortFields.currentStreak) {
             response.locals.soloStreaks = await soloStreakModel
                 .find(query)
                 .sort({ 'currentStreak.numberOfDaysInARow': -1 });
+        }
+        if (sortField === GetAllSoloStreaksSortFields.longestSoloStreak) {
+            response.locals.soloStreaks = await soloStreakModel
+                .find(query)
+                .sort({ 'longestSoloStreak.numberOfDays': -1 });
         } else {
             response.locals.soloStreaks = await soloStreakModel.find(query);
         }

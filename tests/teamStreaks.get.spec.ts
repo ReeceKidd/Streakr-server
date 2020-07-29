@@ -205,7 +205,7 @@ describe(testName, () => {
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
     });
 
-    test(`team streaks can be retreieved using sortField query parameter`, async () => {
+    test(`team streaks can be retrieved sorted by current streak.`, async () => {
         expect.assertions(18);
         const user = await getPayingUser({ testName });
         const creatorId = user._id;
@@ -219,6 +219,51 @@ describe(testName, () => {
         });
         const teamStreaks = await SDK.teamStreaks.getAll({
             sortField: GetAllTeamStreaksSortFields.currentStreak,
+        });
+
+        expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
+
+        const teamStreak = teamStreaks[0];
+        expect(teamStreak.streakName).toEqual(expect.any(String));
+        expect(teamStreak.status).toEqual(expect.any(String));
+        expect(teamStreak.creatorId).toEqual(expect.any(String));
+        expect(teamStreak.timezone).toEqual(expect.any(String));
+        expect(teamStreak.active).toEqual(false);
+        expect(teamStreak.completedToday).toEqual(false);
+        expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
+        expect(teamStreak.pastStreaks.length).toEqual(0);
+        expect(Object.keys(teamStreak).sort()).toEqual(correctTeamStreakKeys);
+
+        expect(teamStreak.members.length).toEqual(1);
+
+        const member = teamStreak.members[0];
+        expect(member._id).toBeDefined();
+        expect(member.username).toEqual(expect.any(String));
+        expect(member.profileImage).toBeDefined();
+        expect(Object.keys(member).sort()).toEqual(['_id', 'username', 'profileImage', 'teamMemberStreak'].sort());
+
+        const { teamMemberStreak } = member;
+        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
+
+        const { currentStreak } = teamMemberStreak;
+        expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
+    });
+
+    test(`team streaks can be retrieved sorted by longest team streak.`, async () => {
+        expect.assertions(18);
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+        const streakName = 'Daily Spanish';
+
+        await SDK.teamStreaks.create({
+            creatorId,
+            streakName,
+            members,
+        });
+        const teamStreaks = await SDK.teamStreaks.getAll({
+            sortField: GetAllTeamStreaksSortFields.longestTeamStreak,
         });
 
         expect(teamStreaks.length).toBeGreaterThanOrEqual(1);

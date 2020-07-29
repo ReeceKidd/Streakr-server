@@ -6,6 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { GetAllTeamMemberStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamMemberStreaks';
 
 const getTeamMemberStreaksQueryValidationSchema = {
     userId: Joi.string(),
@@ -13,6 +14,7 @@ const getTeamMemberStreaksQueryValidationSchema = {
     timezone: Joi.string(),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
+    sortField: Joi.string(),
 };
 
 export const getTeamMemberStreaksQueryValidationMiddleware = (
@@ -31,7 +33,7 @@ export const getFindTeamMemberStreaksMiddleware = (
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, teamStreakId, timezone, completedToday, active } = request.query;
+        const { userId, teamStreakId, timezone, completedToday, active, sortField } = request.query;
 
         const query: {
             userId?: string;
@@ -39,6 +41,7 @@ export const getFindTeamMemberStreaksMiddleware = (
             timezone?: string;
             completedToday?: boolean;
             active?: boolean;
+            sortField?: string;
         } = {};
 
         if (userId) {
@@ -56,8 +59,20 @@ export const getFindTeamMemberStreaksMiddleware = (
         if (active) {
             query.active = active === 'true';
         }
+        if (sortField === GetAllTeamMemberStreaksSortFields.currentStreak) {
+            response.locals.teamMemberStreaks = await teamMemberStreakModel
+                .find(query)
+                .sort({ 'currentStreak.numberOfDaysInARow': -1 })
+                .lean();
+        } else if (sortField === GetAllTeamMemberStreaksSortFields.longestTeamMemberStreak) {
+            response.locals.teamMemberStreaks = await teamMemberStreakModel
+                .find(query)
+                .sort({ 'longestTeamMemberStreak.numberOfDays': -1 })
+                .lean();
+        } else {
+            response.locals.teamMemberStreaks = await teamMemberStreakModel.find(query).lean();
+        }
 
-        response.locals.teamMemberStreaks = await teamMemberStreakModel.find(query);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FindTeamMemberStreaksMiddleware, err));

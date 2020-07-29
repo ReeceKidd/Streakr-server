@@ -8,6 +8,7 @@ import {
 } from './getAllChallengeStreaksMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreaks';
 
 describe('getChallengeStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
@@ -124,14 +125,14 @@ describe('findChallengeStreaksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries database with just sortField and sets response.locals.challengeStreaks', async () => {
+    test('sorts challenge streaks by current streak when sort field is set to current streak and sets response.locals.challengeStreaks', async () => {
         expect.assertions(4);
         const sort = jest.fn(() => Promise.resolve(true));
         const find = jest.fn(() => ({ sort }));
         const challengeStreakModel = {
             find,
         };
-        const sortField = 'currentStreak';
+        const sortField = GetAllChallengeStreaksSortFields.currentStreak;
         const request: any = { query: { sortField } };
         const response: any = { locals: {} };
         const next = jest.fn();
@@ -141,6 +142,27 @@ describe('findChallengeStreaksMiddleware', () => {
 
         expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
+        expect(response.locals.challengeStreaks).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('sorts challenge streaks by longestChallengeStreak when sort field is set to longestChallengeStreak and sets response.locals.challengeStreaks', async () => {
+        expect.assertions(4);
+        const sort = jest.fn(() => Promise.resolve(true));
+        const find = jest.fn(() => ({ sort }));
+        const challengeStreakModel = {
+            find,
+        };
+        const sortField = GetAllChallengeStreaksSortFields.longestChallengeStreak;
+        const request: any = { query: { sortField } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindChallengeStreaksMiddleware(challengeStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({});
+        expect(sort).toBeCalledWith({ 'longestChallengeStreak.numberOfDays': -1 });
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });

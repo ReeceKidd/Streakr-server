@@ -13,6 +13,7 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
+import { GetAllTeamStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamStreaks';
 
 describe('getTeamStreaksValidationMiddleware', () => {
     const creatorId = 'creatorId';
@@ -138,7 +139,7 @@ describe('findTeamStreaksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries database with a sortField and sets response.locals.TeamStreaks with a sorted list of team streaks', async () => {
+    test('if sort field is equal to current streak it queries team streaks and sorts them by current streak and sets response.locals.TeamStreaks with a sorted list of team streaks', async () => {
         expect.assertions(5);
 
         const lean = jest.fn().mockResolvedValue(true);
@@ -147,7 +148,7 @@ describe('findTeamStreaksMiddleware', () => {
         const teamStreakModel = {
             find,
         };
-        const sortField = 'currentStreak';
+        const sortField = GetAllTeamStreaksSortFields.currentStreak;
         const request: any = { query: { sortField } };
         const response: any = { locals: {} };
         const next = jest.fn();
@@ -157,6 +158,30 @@ describe('findTeamStreaksMiddleware', () => {
 
         expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
+        expect(lean).toBeCalledWith();
+        expect(response.locals.teamStreaks).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('if sort field is equal to longest team streak it queries team streaks and sorts them by longest team streak and sets response.locals.TeamStreaks with a sorted list of team streaks', async () => {
+        expect.assertions(5);
+
+        const lean = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ lean }));
+        const find = jest.fn(() => ({ sort }));
+        const teamStreakModel = {
+            find,
+        };
+        const sortField = GetAllTeamStreaksSortFields.longestTeamStreak;
+        const request: any = { query: { sortField } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindTeamStreaksMiddleware(teamStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({});
+        expect(sort).toBeCalledWith({ 'longestTeamStreak.numberOfDays': -1 });
         expect(lean).toBeCalledWith();
         expect(response.locals.teamStreaks).toEqual(true);
         expect(next).toBeCalledWith();

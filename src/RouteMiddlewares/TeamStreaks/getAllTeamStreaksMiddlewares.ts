@@ -12,6 +12,7 @@ import { teamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import { PopulatedTeamMember } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamMember';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import { GetAllTeamStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamStreaks';
 
 const getTeamStreaksQueryValidationSchema = {
     creatorId: Joi.string(),
@@ -70,10 +71,15 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
         if (active) {
             query.active = active === 'true';
         }
-        if (sortField) {
+        if (sortField === GetAllTeamStreaksSortFields.currentStreak) {
             response.locals.teamStreaks = await teamStreakModel
                 .find(query)
                 .sort({ 'currentStreak.numberOfDaysInARow': -1 })
+                .lean();
+        } else if (sortField === GetAllTeamStreaksSortFields.longestTeamStreak) {
+            response.locals.teamStreaks = await teamStreakModel
+                .find(query)
+                .sort({ 'longestTeamStreak.numberOfDays': -1 })
                 .lean();
         } else {
             response.locals.teamStreaks = await teamStreakModel.find(query).lean();

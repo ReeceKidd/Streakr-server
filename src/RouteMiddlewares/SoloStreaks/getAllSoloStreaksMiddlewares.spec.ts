@@ -8,6 +8,7 @@ import {
 } from './getAllSoloStreaksMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
 
 describe('getSoloStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
@@ -145,14 +146,14 @@ describe('findSoloStreaksMiddleware', () => {
         expect(next).toBeCalledWith();
     });
 
-    test('queries database with just sortField which sets response.locals.soloStreaks with a sorted list of solo streaks.', async () => {
+    test('if sort filed is current streak it queries solo streaks and sorts them by currentStreak ', async () => {
         expect.assertions(4);
         const sort = jest.fn(() => Promise.resolve(true));
         const find = jest.fn(() => ({ sort }));
         const soloStreakModel = {
             find,
         };
-        const sortField = 'currentStreak';
+        const sortField = GetAllSoloStreaksSortFields.currentStreak;
         const request: any = { query: { sortField } };
         const response: any = { locals: {} };
         const next = jest.fn();
@@ -162,6 +163,27 @@ describe('findSoloStreaksMiddleware', () => {
 
         expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
+        expect(response.locals.soloStreaks).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('if sort filed is longestSoloStreak it queries solo streaks and sorts them by longestSoloStreak ', async () => {
+        expect.assertions(4);
+        const sort = jest.fn(() => Promise.resolve(true));
+        const find = jest.fn(() => ({ sort }));
+        const soloStreakModel = {
+            find,
+        };
+        const sortField = GetAllSoloStreaksSortFields.currentStreak;
+        const request: any = { query: { sortField } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({});
+        expect(sort).toBeCalledWith({ 'longestSoloStreak.numberOfDays': -1 });
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
