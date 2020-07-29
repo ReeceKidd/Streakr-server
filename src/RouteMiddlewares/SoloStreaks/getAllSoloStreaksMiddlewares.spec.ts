@@ -163,7 +163,7 @@ describe('findSoloStreaksMiddleware', () => {
 
         expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
-        expect(response.locals.soloStreaks).toEqual(true);
+        expect(response.locals.soloStreaks).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
@@ -174,7 +174,7 @@ describe('findSoloStreaksMiddleware', () => {
         const soloStreakModel = {
             find,
         };
-        const sortField = GetAllSoloStreaksSortFields.currentStreak;
+        const sortField = GetAllSoloStreaksSortFields.longestSoloStreak;
         const request: any = { query: { sortField } };
         const response: any = { locals: {} };
         const next = jest.fn();
@@ -184,7 +184,7 @@ describe('findSoloStreaksMiddleware', () => {
 
         expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'longestSoloStreak.numberOfDays': -1 });
-        expect(response.locals.soloStreaks).toEqual(true);
+        expect(response.locals.soloStreaks).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
