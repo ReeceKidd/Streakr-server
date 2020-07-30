@@ -10,6 +10,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { getUser } from './setup/getUser';
+import { correctFormattedUserKeys } from '../src/testHelpers/correctFormattedUserKeys';
 
 jest.setTimeout(120000);
 
@@ -64,20 +65,7 @@ describe(testName, () => {
         });
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                'userType',
-                'isPayingMember',
-                '_id',
-                'username',
-                'timezone',
-                'profileImages',
-                'pushNotification',
-                'totalStreakCompletes',
-                'createdAt',
-                'updatedAt',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctFormattedUserKeys);
 
         const databaseUser = await mongoose.connection.db.collection('Users').findOne({ username: user.username });
         expect(Object.keys(databaseUser.stripe)).toEqual(['customer', 'subscription']);
@@ -120,20 +108,7 @@ describe(testName, () => {
         });
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                'userType',
-                'isPayingMember',
-                '_id',
-                'username',
-                'timezone',
-                'profileImages',
-                'pushNotification',
-                'totalStreakCompletes',
-                'createdAt',
-                'updatedAt',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctFormattedUserKeys);
 
         const databaseUser = await mongoose.connection.db.collection('Users').findOne({ username: user.username });
         expect(Object.keys(databaseUser.stripe)).toEqual(['customer', 'subscription']);

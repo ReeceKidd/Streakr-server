@@ -14,7 +14,7 @@ export const getPopulatedCurrentUser = ({
     followers: BasicUser[];
     achievements: DatabaseAchievementType[];
 }): PopulatedCurrentUser => {
-    const formattedUser: PopulatedCurrentUser = {
+    const populatedCurrentUser: PopulatedCurrentUser = {
         _id: user._id,
         email: user.email,
         temporaryPassword: user.temporaryPassword,
@@ -51,5 +51,5 @@ export const getPopulatedCurrentUser = ({
         followers,
         following,
     };
-    return formattedUser;
+    return populatedCurrentUser;
 };

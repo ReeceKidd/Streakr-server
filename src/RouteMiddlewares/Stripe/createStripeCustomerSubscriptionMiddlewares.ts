@@ -8,8 +8,8 @@ import { CustomError, ErrorType } from '../../customError';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { userModel, UserModel } from '../../Models/User';
 import PaymentPlans from '@streakoid/streakoid-models/lib/Types/PaymentPlans';
-import { FormattedUser } from '@streakoid/streakoid-models/lib/Models/FormattedUser';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { getFormattedUser } from '../../formatters/getFormattedUser';
 
 const { STRIPE_SECRET_KEY, STRIPE_MONTHLY_PLAN, STRIPE_ANNUAL_PLAN } = getServiceConfig();
 
@@ -245,27 +245,21 @@ export const getUpdateUserMembershipInformationMiddleware = (userModel: Model<Us
 
 export const updateUserMembershipInformationMiddleware = getUpdateUserMembershipInformationMiddleware(userModel);
 
-export const formatUserMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const getFormattedUserMiddleware = (formatUser: typeof getFormattedUser) => (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
         const user: User = response.locals.user;
-        const formattedUser: FormattedUser = {
-            _id: user._id,
-            username: user.username,
-            isPayingMember: user.membershipInformation.isPayingMember,
-            userType: user.userType,
-            timezone: user.timezone,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-            profileImages: user.profileImages,
-            pushNotification: user.pushNotification,
-            totalStreakCompletes: Number(user.totalStreakCompletes),
-        };
-        response.locals.user = formattedUser;
+        response.locals.user = formatUser({ user });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.CreateStripeSubscriptionFormatUserMiddleware, err));
     }
 };
+
+export const formattedUserMiddleware = getFormattedUserMiddleware(getFormattedUser);
 
 export const sendSuccessfulSubscriptionMiddleware = (
     request: Request,
@@ -291,6 +285,6 @@ export const createStripeCustomerSubscriptionMiddlewares = [
     handleInitialPaymentOutcomeMiddleware,
     addStripeSubscriptionToUserMiddleware,
     updateUserMembershipInformationMiddleware,
-    formatUserMiddleware,
+    formattedUserMiddleware,
     sendSuccessfulSubscriptionMiddleware,
 ];

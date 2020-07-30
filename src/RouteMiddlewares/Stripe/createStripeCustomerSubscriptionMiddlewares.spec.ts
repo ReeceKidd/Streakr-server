@@ -17,14 +17,17 @@ import {
     updateUserStripeCustomerIdMiddleware,
     getUpdateUserStripeCustomerIdMiddleware,
     updateUserMembershipInformationMiddleware,
-    formatUserMiddleware,
     getDetermineStripePaymentPlanMiddleware,
     determineStripePaymentPlanMiddleware,
+    formattedUserMiddleware,
+    getFormattedUserMiddleware,
 } from './createStripeCustomerSubscriptionMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import PaymentPlans from '@streakoid/streakoid-models/lib/Types/PaymentPlans';
 import { getMockUser } from '../../testHelpers/getMockUser';
+import { getFormattedUser } from '../../formatters/getFormattedUser';
+import { correctFormattedUserKeys } from '../../testHelpers/correctFormattedUserKeys';
 
 describe('createStripeCustomerSubscriptionMiddlewares', () => {
     afterEach(() => {
@@ -777,7 +780,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         });
     });
 
-    describe('formatUserMiddleware', () => {
+    describe('formattedUserMiddleware', () => {
         test('populates response.locals.user with a formattedUser', () => {
             expect.assertions(3);
             const request: any = {};
@@ -785,24 +788,13 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const response: any = { locals: { user } };
             const next = jest.fn();
 
-            formatUserMiddleware(request, response, next);
+            const middleware = getFormattedUserMiddleware(getFormattedUser);
+
+            middleware(request, response, next);
 
             expect(next).toBeCalled();
             expect(response.locals.user.isPayingMember).toEqual(true);
-            expect(Object.keys(response.locals.user).sort()).toEqual(
-                [
-                    '_id',
-                    'username',
-                    'isPayingMember',
-                    'userType',
-                    'timezone',
-                    'createdAt',
-                    'updatedAt',
-                    'profileImages',
-                    'pushNotification',
-                    'totalStreakCompletes',
-                ].sort(),
-            );
+            expect(Object.keys(response.locals.user).sort()).toEqual(correctFormattedUserKeys);
         });
 
         test('calls next with CreateStripeSubscriptionFormatUserMiddleware error on middleware failure', () => {
@@ -811,7 +803,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
             const request: any = {};
             const next = jest.fn();
 
-            formatUserMiddleware(request, response, next);
+            formattedUserMiddleware(request, response, next);
 
             expect(next).toBeCalledWith(
                 new CustomError(ErrorType.CreateStripeSubscriptionFormatUserMiddleware, expect.any(Error)),
@@ -874,7 +866,7 @@ describe('createStripeCustomerSubscriptionMiddlewares', () => {
         expect(createStripeCustomerSubscriptionMiddlewares[7]).toBe(handleInitialPaymentOutcomeMiddleware);
         expect(createStripeCustomerSubscriptionMiddlewares[8]).toBe(addStripeSubscriptionToUserMiddleware);
         expect(createStripeCustomerSubscriptionMiddlewares[9]).toBe(updateUserMembershipInformationMiddleware);
-        expect(createStripeCustomerSubscriptionMiddlewares[10]).toBe(formatUserMiddleware);
+        expect(createStripeCustomerSubscriptionMiddlewares[10]).toBe(formattedUserMiddleware);
         expect(createStripeCustomerSubscriptionMiddlewares[11]).toBe(sendSuccessfulSubscriptionMiddleware);
     });
 });

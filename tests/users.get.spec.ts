@@ -8,6 +8,7 @@ import { Mongoose } from 'mongoose';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
+import { correctFormattedUserKeys } from '../src/testHelpers/correctFormattedUserKeys';
 
 jest.setTimeout(120000);
 
@@ -62,20 +63,7 @@ describe(testName, () => {
         expect(user.totalStreakCompletes).toEqual(0);
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                'userType',
-                'isPayingMember',
-                '_id',
-                'username',
-                'timezone',
-                'profileImages',
-                'pushNotification',
-                'totalStreakCompletes',
-                'createdAt',
-                'updatedAt',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctFormattedUserKeys);
     });
 
     test(`returns user when full searchTerm is used`, async () => {
@@ -105,20 +93,7 @@ describe(testName, () => {
         });
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                'userType',
-                'isPayingMember',
-                '_id',
-                'username',
-                'timezone',
-                'profileImages',
-                'pushNotification',
-                'totalStreakCompletes',
-                'createdAt',
-                'updatedAt',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctFormattedUserKeys);
     });
 
     test('returns user when partial searchTerm is used', async () => {
@@ -147,20 +122,7 @@ describe(testName, () => {
         });
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                'userType',
-                'isPayingMember',
-                '_id',
-                'username',
-                'timezone',
-                'profileImages',
-                'totalStreakCompletes',
-                'pushNotification',
-                'createdAt',
-                'updatedAt',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctFormattedUserKeys);
     });
 
     test('returns exact user when username query paramter is used', async () => {
@@ -190,20 +152,7 @@ describe(testName, () => {
         });
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                'userType',
-                'isPayingMember',
-                '_id',
-                'username',
-                'timezone',
-                'profileImages',
-                'pushNotification',
-                'totalStreakCompletes',
-                'createdAt',
-                'updatedAt',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctFormattedUserKeys);
     });
 
     test('returns exact user when email query paramter is used', async () => {
@@ -232,20 +181,7 @@ describe(testName, () => {
         expect(user.totalStreakCompletes).toEqual(expect.any(Number));
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                'userType',
-                'isPayingMember',
-                '_id',
-                'username',
-                'timezone',
-                'profileImages',
-                'pushNotification',
-                'totalStreakCompletes',
-                'createdAt',
-                'updatedAt',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctFormattedUserKeys);
     });
 
     test(`returns users specified with userIds`, async () => {
@@ -277,20 +213,7 @@ describe(testName, () => {
         });
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                'userType',
-                'isPayingMember',
-                '_id',
-                'username',
-                'timezone',
-                'profileImages',
-                'totalStreakCompletes',
-                'pushNotification',
-                'createdAt',
-                'updatedAt',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctFormattedUserKeys);
     });
 
     test(`limits to one user when two are available`, async () => {
@@ -327,19 +250,6 @@ describe(testName, () => {
         expect(user.totalStreakCompletes).toEqual(expect.any(Number));
         expect(user.createdAt).toEqual(expect.any(String));
         expect(user.updatedAt).toEqual(expect.any(String));
-        expect(Object.keys(user).sort()).toEqual(
-            [
-                'userType',
-                'isPayingMember',
-                '_id',
-                'username',
-                'timezone',
-                'profileImages',
-                'pushNotification',
-                'totalStreakCompletes',
-                'createdAt',
-                'updatedAt',
-            ].sort(),
-        );
+        expect(Object.keys(user).sort()).toEqual(correctFormattedUserKeys);
     });
 });

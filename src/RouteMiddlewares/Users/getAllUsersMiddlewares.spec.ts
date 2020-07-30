@@ -10,10 +10,13 @@ import {
     findUsersMiddleware,
     getCalculateTotalUsersCountMiddleware,
     getFindUsersMiddleware,
+    getFormatUsersMiddleware,
 } from './getAllUsersMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { getMockUser } from '../../testHelpers/getMockUser';
+import { correctFormattedUserKeys } from '../../testHelpers/correctFormattedUserKeys';
+import { getFormattedUser } from '../../formatters/getFormattedUser';
 
 describe(`getUsersValidationMiddleware`, () => {
     const limit = 10;
@@ -396,24 +399,15 @@ describe('formatUsersMiddleware', () => {
         const response: any = { locals: { users } };
         const next = jest.fn();
 
-        formatUsersMiddleware(request, response, next);
+        const getFormattedUserFunction = jest.fn(() => getFormattedUser({ user }));
+
+        const middleware = getFormatUsersMiddleware(getFormattedUserFunction);
+
+        middleware(request, response, next);
 
         expect(next).toBeCalled();
         expect(response.locals.users[0].isPayingMember).toEqual(true);
-        expect(Object.keys(response.locals.users[0]).sort()).toEqual(
-            [
-                '_id',
-                'username',
-                'isPayingMember',
-                'userType',
-                'timezone',
-                'createdAt',
-                'updatedAt',
-                'profileImages',
-                'pushNotification',
-                'totalStreakCompletes',
-            ].sort(),
-        );
+        expect(Object.keys(response.locals.users[0]).sort()).toEqual(correctFormattedUserKeys);
     });
 
     test('calls next with FormatUsersMiddleware error on middleware failure', () => {

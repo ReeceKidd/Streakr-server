@@ -7,7 +7,7 @@ import { UserModel, userModel } from '../../Models/User';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
-import { FormattedUser } from '@streakoid/streakoid-models/lib/Models/FormattedUser';
+import { getFormattedUser } from '../../formatters/getFormattedUser';
 
 export const minimumSeachQueryLength = 1;
 export const maximumSearchQueryLength = 64;
@@ -103,29 +103,23 @@ export const getFindUsersMiddleware = (userModel: mongoose.Model<UserModel>) => 
 
 export const findUsersMiddleware = getFindUsersMiddleware(userModel);
 
-export const formatUsersMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const getFormatUsersMiddleware = (formatUser: typeof getFormattedUser) => (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
         const users: User[] = response.locals.users;
         response.locals.users = users.map(user => {
-            const formattedUser: FormattedUser = {
-                _id: user._id,
-                username: user.username,
-                isPayingMember: user.membershipInformation.isPayingMember,
-                userType: user.userType,
-                timezone: user.timezone,
-                createdAt: user.createdAt,
-                updatedAt: user.updatedAt,
-                profileImages: user.profileImages,
-                pushNotification: user.pushNotification,
-                totalStreakCompletes: Number(user.totalStreakCompletes),
-            };
-            return formattedUser;
+            return formatUser({ user });
         });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.FormatUsersMiddleware, err));
     }
 };
+
+export const formatUsersMiddleware = getFormatUsersMiddleware(getFormattedUser);
 
 export const sendUsersMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
