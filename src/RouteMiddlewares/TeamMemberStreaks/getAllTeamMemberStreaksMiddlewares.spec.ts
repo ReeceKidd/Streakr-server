@@ -46,8 +46,8 @@ describe('getTeamMemberStreaksValidationMiddleware', () => {
 describe('findTeamMemberStreaksMiddleware', () => {
     test('queries database with just userId and sets response.locals.teamMemberStreaks', async () => {
         expect.assertions(4);
-        const lean = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ lean }));
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const teamMemberStreakModel = {
             find,
         };
@@ -60,15 +60,15 @@ describe('findTeamMemberStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ userId });
-        expect(lean).toBeCalled();
+        expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just timezone and sets response.locals.teamMemberStreaks', async () => {
         expect.assertions(4);
-        const lean = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ lean }));
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const teamMemberStreakModel = {
             find,
         };
@@ -81,15 +81,15 @@ describe('findTeamMemberStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ timezone });
-        expect(lean).toBeCalled();
+        expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
-    test('queries database with just completedToday as a boolean and sets response.locals.teamMemberStreaks', async () => {
+    test('queries database with just completedToday and sets response.locals.teamMemberStreaks', async () => {
         expect.assertions(4);
-        const lean = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ lean }));
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const teamMemberStreakModel = {
             find,
         };
@@ -102,15 +102,15 @@ describe('findTeamMemberStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ completedToday: true });
-        expect(lean).toBeCalled();
+        expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
-    test('queries database with just active as a boolean and sets response.locals.teamMemberStreaks', async () => {
+    test('queries database with just active and sets response.locals.teamMemberStreaks', async () => {
         expect.assertions(4);
-        const lean = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ lean }));
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const teamMemberStreakModel = {
             find,
         };
@@ -123,7 +123,7 @@ describe('findTeamMemberStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ active: true });
-        expect(lean).toBeCalled();
+        expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
@@ -131,8 +131,8 @@ describe('findTeamMemberStreaksMiddleware', () => {
     test('if sort field is equal to current streak it queries team streaks and sorts them by current streak and sets response.locals.TeamStreaks with a sorted list of team streaks', async () => {
         expect.assertions(5);
 
-        const lean = jest.fn().mockResolvedValue(true);
-        const sort = jest.fn(() => ({ lean }));
+        const limit = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ limit }));
         const find = jest.fn(() => ({ sort }));
         const teamMemberStreakModel = {
             find,
@@ -147,7 +147,7 @@ describe('findTeamMemberStreaksMiddleware', () => {
 
         expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
-        expect(lean).toBeCalledWith();
+        expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
@@ -155,8 +155,8 @@ describe('findTeamMemberStreaksMiddleware', () => {
     test('if sort field is equal to longest team streak it queries team streaks and sorts them by longest team streak and sets response.locals.TeamStreaks with a sorted list of team streaks', async () => {
         expect.assertions(5);
 
-        const lean = jest.fn().mockResolvedValue(true);
-        const sort = jest.fn(() => ({ lean }));
+        const limit = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ limit }));
         const find = jest.fn(() => ({ sort }));
         const teamMemberStreakModel = {
             find,
@@ -171,7 +171,7 @@ describe('findTeamMemberStreaksMiddleware', () => {
 
         expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'longestTeamMemberStreak.numberOfDays': -1 });
-        expect(lean).toBeCalledWith();
+        expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });

@@ -52,8 +52,9 @@ describe('getSoloStreaksValidationMiddleware', () => {
 
 describe('findSoloStreaksMiddleware', () => {
     test('queries database with just userId and sets response.locals.soloStreaks', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const soloStreakModel = {
             find,
         };
@@ -66,13 +67,15 @@ describe('findSoloStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ userId });
+        expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just timezone and sets response.locals.soloStreaks', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const soloStreakModel = {
             find,
         };
@@ -85,13 +88,15 @@ describe('findSoloStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ timezone });
+        expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just completedToday as a boolean and sets response.locals.soloStreaks', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const soloStreakModel = {
             find,
         };
@@ -104,13 +109,15 @@ describe('findSoloStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ completedToday: true });
+        expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just active as a boolean and sets response.locals.soloStreaks', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const soloStreakModel = {
             find,
         };
@@ -123,13 +130,15 @@ describe('findSoloStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ active: true });
+        expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just status and sets response.locals.soloStreaks', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const soloStreakModel = {
             find,
         };
@@ -142,13 +151,15 @@ describe('findSoloStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ status });
+        expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
-    test('if sort filed is current streak it queries solo streaks and sorts them by currentStreak ', async () => {
-        expect.assertions(4);
-        const sort = jest.fn(() => Promise.resolve(true));
+    test('if sort field is current streak it queries solo streaks and sorts them by currentStreak ', async () => {
+        expect.assertions(5);
+        const limit = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ limit }));
         const find = jest.fn(() => ({ sort }));
         const soloStreakModel = {
             find,
@@ -163,13 +174,15 @@ describe('findSoloStreaksMiddleware', () => {
 
         expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
+        expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toBeDefined();
         expect(next).toBeCalledWith();
     });
 
-    test('if sort filed is longestSoloStreak it queries solo streaks and sorts them by longestSoloStreak ', async () => {
-        expect.assertions(4);
-        const sort = jest.fn(() => Promise.resolve(true));
+    test('if sort field is longestSoloStreak it queries solo streaks and sorts them by longestSoloStreak ', async () => {
+        expect.assertions(5);
+        const limit = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ limit }));
         const find = jest.fn(() => ({ sort }));
         const soloStreakModel = {
             find,
@@ -184,7 +197,29 @@ describe('findSoloStreaksMiddleware', () => {
 
         expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'longestSoloStreak.numberOfDays': -1 });
+        expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toBeDefined();
+        expect(next).toBeCalledWith();
+    });
+
+    test('queries database with just limit and sets response.locals.soloStreaks', async () => {
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
+        const soloStreakModel = {
+            find,
+        };
+        const limitValue = 10;
+        const request: any = { query: { limit: limitValue } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({});
+        expect(limit).toBeCalledWith(limitValue);
+        expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 

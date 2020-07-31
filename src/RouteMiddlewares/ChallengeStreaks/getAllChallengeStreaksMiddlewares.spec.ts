@@ -31,8 +31,9 @@ describe('getChallengeStreaksValidationMiddleware', () => {
 
 describe('findChallengeStreaksMiddleware', () => {
     test('queries database with just userId and sets response.locals.challengeStreaks', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const challengeStreakModel = {
             find,
         };
@@ -45,13 +46,15 @@ describe('findChallengeStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ userId });
+        expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just timezone and sets response.locals.challengeStreaks', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const challengeStreakModel = {
             find,
         };
@@ -64,13 +67,15 @@ describe('findChallengeStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ timezone });
+        expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just completedToday as a boolean and sets response.locals.challengeStreaks', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const challengeStreakModel = {
             find,
         };
@@ -83,13 +88,15 @@ describe('findChallengeStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ completedToday: true });
+        expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just active as a boolean and sets response.locals.challengeStreaks', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const challengeStreakModel = {
             find,
         };
@@ -102,13 +109,15 @@ describe('findChallengeStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ active: true });
+        expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('queries database with just status and sets response.locals.challengeStreaks', async () => {
-        expect.assertions(3);
-        const find = jest.fn(() => Promise.resolve(true));
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
         const challengeStreakModel = {
             find,
         };
@@ -121,13 +130,15 @@ describe('findChallengeStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ status });
+        expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('sorts challenge streaks by current streak when sort field is set to current streak and sets response.locals.challengeStreaks', async () => {
-        expect.assertions(4);
-        const sort = jest.fn(() => Promise.resolve(true));
+        expect.assertions(5);
+        const limit = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ limit }));
         const find = jest.fn(() => ({ sort }));
         const challengeStreakModel = {
             find,
@@ -142,13 +153,15 @@ describe('findChallengeStreaksMiddleware', () => {
 
         expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
+        expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
     });
 
     test('sorts challenge streaks by longestChallengeStreak when sort field is set to longestChallengeStreak and sets response.locals.challengeStreaks', async () => {
-        expect.assertions(4);
-        const sort = jest.fn(() => Promise.resolve(true));
+        expect.assertions(5);
+        const limit = jest.fn().mockResolvedValue(true);
+        const sort = jest.fn(() => ({ limit }));
         const find = jest.fn(() => ({ sort }));
         const challengeStreakModel = {
             find,
@@ -162,6 +175,7 @@ describe('findChallengeStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({});
+        expect(limit).toBeCalled();
         expect(sort).toBeCalledWith({ 'longestChallengeStreak.numberOfDays': -1 });
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();

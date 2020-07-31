@@ -15,6 +15,7 @@ const getSoloStreaksQueryValidationSchema = {
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
     sortField: Joi.string(),
+    limit: Joi.number(),
 };
 
 export const getSoloStreaksQueryValidationMiddleware = (
@@ -36,6 +37,10 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
 ): Promise<void> => {
     try {
         const { userId, timezone, completedToday, active, status, sortField } = request.query;
+
+        const defaultLeaderboardLimit = 30;
+
+        const limit = Number(request.query.limit) || defaultLeaderboardLimit;
 
         const query: {
             userId?: string;
@@ -65,18 +70,20 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
         if (sortField === GetAllSoloStreaksSortFields.currentStreak) {
             response.locals.soloStreaks = await soloStreakModel
                 .find(query)
-                .sort({ 'currentStreak.numberOfDaysInARow': -1 });
-        }
-        if (sortField === GetAllSoloStreaksSortFields.longestSoloStreak) {
+                .sort({ 'currentStreak.numberOfDaysInARow': -1 })
+                .limit(limit);
+        } else if (sortField === GetAllSoloStreaksSortFields.longestSoloStreak) {
             response.locals.soloStreaks = await soloStreakModel
                 .find(query)
-                .sort({ 'longestSoloStreak.numberOfDays': -1 });
+                .sort({ 'longestSoloStreak.numberOfDays': -1 })
+                .limit(limit);
         } else {
-            response.locals.soloStreaks = await soloStreakModel.find(query);
+            response.locals.soloStreaks = await soloStreakModel.find(query).limit(limit);
         }
 
         next();
     } catch (err) {
+        console.log(err);
         next(new CustomError(ErrorType.FindSoloStreaksMiddleware, err));
     }
 };

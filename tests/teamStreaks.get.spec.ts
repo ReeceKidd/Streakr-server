@@ -410,4 +410,33 @@ describe(testName, () => {
         const { currentStreak } = teamMemberStreak;
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
     });
+
+    test(`team streaks can be limited`, async () => {
+        expect.assertions(2);
+
+        const user = await getPayingUser({ testName });
+        const creatorId = user._id;
+        const members = [{ memberId: creatorId }];
+
+        await SDK.teamStreaks.create({
+            creatorId,
+            streakName: 'Spanish',
+            members,
+        });
+
+        await SDK.teamStreaks.create({
+            creatorId,
+            streakName: 'Reading',
+            members,
+        });
+
+        const teamStreaks = await SDK.teamStreaks.getAll({
+            limit: 1,
+        });
+
+        expect(teamStreaks.length).toEqual(1);
+        const teamStreak = teamStreaks[0];
+
+        expect(Object.keys(teamStreak).sort()).toEqual(correctTeamStreakKeys);
+    });
 });

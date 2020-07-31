@@ -15,6 +15,7 @@ const getTeamMemberStreaksQueryValidationSchema = {
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
     sortField: Joi.string(),
+    limit: Joi.number(),
 };
 
 export const getTeamMemberStreaksQueryValidationMiddleware = (
@@ -34,6 +35,10 @@ export const getFindTeamMemberStreaksMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { userId, teamStreakId, timezone, completedToday, active, sortField } = request.query;
+
+        const defaultLeaderboardLimit = 30;
+
+        const limit = Number(request.query.limit) || defaultLeaderboardLimit;
 
         const query: {
             userId?: string;
@@ -63,14 +68,14 @@ export const getFindTeamMemberStreaksMiddleware = (
             response.locals.teamMemberStreaks = await teamMemberStreakModel
                 .find(query)
                 .sort({ 'currentStreak.numberOfDaysInARow': -1 })
-                .lean();
+                .limit(limit);
         } else if (sortField === GetAllTeamMemberStreaksSortFields.longestTeamMemberStreak) {
             response.locals.teamMemberStreaks = await teamMemberStreakModel
                 .find(query)
                 .sort({ 'longestTeamMemberStreak.numberOfDays': -1 })
-                .lean();
+                .limit(limit);
         } else {
-            response.locals.teamMemberStreaks = await teamMemberStreakModel.find(query).lean();
+            response.locals.teamMemberStreaks = await teamMemberStreakModel.find(query).limit(limit);
         }
 
         next();

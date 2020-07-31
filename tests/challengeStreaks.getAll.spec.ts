@@ -288,4 +288,42 @@ describe(testName, () => {
 
         expect(Object.keys(challengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
+
+    test('challenge streaks can be limited.', async () => {
+        expect.assertions(2);
+
+        const duolingoChallenge = await SDK.challenges.create({
+            name: 'Duolingo',
+            description: 'Everyday I must complete a duolingo lesson',
+            icon: 'duolingo',
+        });
+
+        const readingChallenge = await SDK.challenges.create({
+            name: 'Duolingo',
+            description: 'Everyday I must complete a duolingo lesson',
+            icon: 'duolingo',
+        });
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        await SDK.challengeStreaks.create({
+            userId,
+            challengeId: duolingoChallenge.challenge._id,
+        });
+
+        await SDK.challengeStreaks.create({
+            userId,
+            challengeId: readingChallenge.challenge._id,
+        });
+
+        const challengeStreaks = await SDK.challengeStreaks.getAll({
+            limit: 1,
+        });
+        expect(challengeStreaks.length).toEqual(1);
+
+        const challengeStreak = challengeStreaks[0];
+
+        expect(Object.keys(challengeStreak).sort()).toEqual(correctChallengeStreakKeys);
+    });
 });

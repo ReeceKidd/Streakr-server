@@ -307,4 +307,30 @@ describe(testName, () => {
 
         expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
+
+    test(`solo streaks can be retrieved with a limit.`, async () => {
+        expect.assertions(2);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        await SDK.soloStreaks.create({
+            userId,
+            streakName: 'Reading',
+        });
+
+        await SDK.soloStreaks.create({
+            userId,
+            streakName: 'Writing',
+        });
+
+        const soloStreaks = await SDK.soloStreaks.getAll({
+            limit: 1,
+        });
+        expect(soloStreaks.length).toEqual(1);
+
+        const soloStreak = soloStreaks[0];
+
+        expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
+    });
 });

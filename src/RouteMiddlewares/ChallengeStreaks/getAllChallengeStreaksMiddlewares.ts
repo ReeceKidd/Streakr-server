@@ -16,6 +16,7 @@ const getChallengeStreaksQueryValidationSchema = {
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
     sortField: Joi.string(),
+    limit: Joi.number(),
 };
 
 export const getChallengeStreaksQueryValidationMiddleware = (
@@ -37,6 +38,10 @@ export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose
 ): Promise<void> => {
     try {
         const { userId, challengeId, timezone, completedToday, active, status, sortField } = request.query;
+
+        const defaultLeaderboardLimit = 30;
+
+        const limit = Number(request.query.limit) || defaultLeaderboardLimit;
 
         const query: {
             userId?: string;
@@ -69,13 +74,15 @@ export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose
         if (sortField === GetAllChallengeStreaksSortFields.currentStreak) {
             response.locals.challengeStreaks = await challengeStreakModel
                 .find(query)
-                .sort({ 'currentStreak.numberOfDaysInARow': -1 });
+                .sort({ 'currentStreak.numberOfDaysInARow': -1 })
+                .limit(limit);
         } else if (sortField === GetAllChallengeStreaksSortFields.longestChallengeStreak) {
             response.locals.challengeStreaks = await challengeStreakModel
                 .find(query)
-                .sort({ 'longestChallengeStreak.numberOfDays': -1 });
+                .sort({ 'longestChallengeStreak.numberOfDays': -1 })
+                .limit(limit);
         } else {
-            response.locals.challengeStreaks = await challengeStreakModel.find(query);
+            response.locals.challengeStreaks = await challengeStreakModel.find(query).limit(limit);
         }
 
         next();

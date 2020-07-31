@@ -22,6 +22,7 @@ const getTeamStreaksQueryValidationSchema = {
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
     sortField: Joi.string(),
+    limit: Joi.number(),
 };
 
 export const getTeamStreaksQueryValidationMiddleware = (
@@ -43,6 +44,11 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
 ): Promise<void> => {
     try {
         const { creatorId, memberId, timezone, status, completedToday, active, sortField } = request.query;
+
+        const defaultLeaderboardLimit = 30;
+
+        const limit = Number(request.query.limit) || defaultLeaderboardLimit;
+
         const query: {
             creatorId?: string;
             ['members.memberId']?: string;
@@ -75,14 +81,19 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
             response.locals.teamStreaks = await teamStreakModel
                 .find(query)
                 .sort({ 'currentStreak.numberOfDaysInARow': -1 })
+                .limit(limit)
                 .lean();
         } else if (sortField === GetAllTeamStreaksSortFields.longestTeamStreak) {
             response.locals.teamStreaks = await teamStreakModel
                 .find(query)
                 .sort({ 'longestTeamStreak.numberOfDays': -1 })
+                .limit(limit)
                 .lean();
         } else {
-            response.locals.teamStreaks = await teamStreakModel.find(query).lean();
+            response.locals.teamStreaks = await teamStreakModel
+                .find(query)
+                .limit(limit)
+                .lean();
         }
 
         next();
@@ -108,15 +119,17 @@ export const getRetrieveTeamStreaksMembersInformationMiddleware = (
                             memberId: string;
                             teamMemberStreakId: string;
                         }): Promise<PopulatedTeamMember | undefined> => {
-                            const memberInfo = await userModel.findOne({ _id: member.memberId }).lean();
-                            const teamMemberStreak = await teamMemberStreakModel
-                                .findOne({ _id: member.teamMemberStreakId })
-                                .lean();
-                            if (!memberInfo) {
+                            const memberInfo = await userModel.findOne({ _id: member.memberId });
+
+                            const teamMemberStreak = await teamMemberStreakModel.findOne({
+                                _id: member.teamMemberStreakId,
+                            });
+
+                            if (!memberInfo || !teamMemberStreak) {
                                 return;
                             }
                             return {
-                                _id: memberInfo && memberInfo._id,
+                                _id: memberInfo._id,
                                 username: memberInfo.username,
                                 profileImage: memberInfo.profileImages.originalImageUrl,
                                 teamMemberStreak,
@@ -132,6 +145,7 @@ export const getRetrieveTeamStreaksMembersInformationMiddleware = (
             }),
         );
         response.locals.teamStreaks = teamStreaksWithPopulatedData;
+
         next();
     } catch (err) {
         next(new CustomError(ErrorType.RetrieveTeamStreaksMembersInformation, err));
