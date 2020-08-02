@@ -83,7 +83,6 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
 
         next();
     } catch (err) {
-        console.log(err);
         next(new CustomError(ErrorType.FindSoloStreaksMiddleware, err));
     }
 };
