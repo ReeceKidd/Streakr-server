@@ -53,6 +53,10 @@ import {
     increaseLongestTeamMemberStreakForUserMiddleware,
     getIncreaseLongestTeamMemberStreakForUserMiddleware,
     getIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
+    unlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware,
+    sendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
+    getUnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware,
+    getSendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
 } from './createCompleteTeamMemberStreakTaskMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -67,6 +71,9 @@ import { CompleteTeamMemberStreakCredit } from '@streakoid/streakoid-models/lib/
 import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
 import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
 import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
+import { OneHundredDayTeamMemberStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 
 describe('completeTeamMemberStreakTaskMiddlewares', () => {
     describe(`completeTeamMemberStreakTaskBodyValidationMiddleware`, () => {
@@ -1034,6 +1041,141 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
         });
     });
 
+    describe(`unlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware`, () => {
+        test('if teamMember streak current number of days equals 100 and user has not got the OneHundredSayTeamMemberStreakAchievement it adds to their achievements', async () => {
+            expect.assertions(4);
+            const user = { _id: '_id', achievements: [{ achievementType: 'Other achievement' }] };
+            const teamMemberStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 100 } };
+
+            const response: any = { locals: { user, teamMemberStreak } };
+            const request: any = {};
+            const next = jest.fn();
+
+            const achievementId = 'achievementId';
+            const achievementType = AchievementTypes.oneHundredDayTeamMemberStreak;
+
+            const oneHundredSayTeamMemberStreakAchievement: UserAchievement = {
+                _id: achievementId,
+                achievementType,
+            };
+            const achievement = {
+                findOne: jest.fn().mockResolvedValue(oneHundredSayTeamMemberStreakAchievement),
+            };
+            const userModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            };
+
+            const middleware = getUnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware(
+                userModel as any,
+                achievement as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(achievement.findOne).toBeCalledWith({
+                achievementType: AchievementTypes.oneHundredDayTeamMemberStreak,
+            });
+            expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+                $addToSet: { achievements: oneHundredSayTeamMemberStreakAchievement },
+            });
+            expect(response.locals.oneHundredDayTeamMemberStreakAchievement).toBeDefined();
+            expect(next).toBeCalled();
+        });
+
+        test('if teamMember streak current number of days does not equal 100 middleware ends', async () => {
+            expect.assertions(4);
+            const user = { _id: '_id', achievements: [{ achievementType: 'Other achievement' }] };
+            const teamMemberStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 99 } };
+
+            const response: any = { locals: { user, teamMemberStreak } };
+            const request: any = {};
+            const next = jest.fn();
+
+            const achievementId = 'achievementId';
+            const achievementType = AchievementTypes.oneHundredDayTeamMemberStreak;
+
+            const oneHundredSayTeamMemberStreakAchievement: UserAchievement = {
+                _id: achievementId,
+                achievementType,
+            };
+            const achievement = {
+                findOne: jest.fn().mockResolvedValue(oneHundredSayTeamMemberStreakAchievement),
+            };
+            const userModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            };
+
+            const middleware = getUnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware(
+                userModel as any,
+                achievement as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(achievement.findOne).not.toBeCalled();
+            expect(userModel.findByIdAndUpdate).not.toBeCalled();
+            expect(response.locals.achievementUnlocked).toBeUndefined();
+            expect(next).toBeCalled();
+        });
+
+        test('if teamMember streak current number of days equals 100 but user already has achievement middleware ends', async () => {
+            expect.assertions(4);
+            const user = {
+                _id: '_id',
+                achievements: [{ achievementType: AchievementTypes.oneHundredDayTeamMemberStreak }],
+            };
+            const teamMemberStreak = { _id: '_id', currentStreak: { numberOfDaysInARow: 100 } };
+
+            const response: any = { locals: { user, teamMemberStreak } };
+            const request: any = {};
+            const next = jest.fn();
+
+            const achievementId = 'achievementId';
+            const achievementType = AchievementTypes.oneHundredDayTeamMemberStreak;
+
+            const oneHundredSayTeamMemberStreakAchievement: UserAchievement = {
+                _id: achievementId,
+                achievementType,
+            };
+            const achievement = {
+                findOne: jest.fn().mockResolvedValue(oneHundredSayTeamMemberStreakAchievement),
+            };
+            const userModel = {
+                findByIdAndUpdate: jest.fn().mockResolvedValue(true),
+            };
+
+            const middleware = getUnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware(
+                userModel as any,
+                achievement as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(achievement.findOne).not.toBeCalled();
+            expect(userModel.findByIdAndUpdate).not.toBeCalled();
+            expect(response.locals.achievementUnlocked).toBeUndefined();
+            expect(next).toBeCalled();
+        });
+
+        test('calls next with UnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware error on middleware failure', () => {
+            expect.assertions(1);
+
+            const response: any = {};
+            const request: any = {};
+            const next = jest.fn();
+            const middleware = getUnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware({} as any, {} as any);
+
+            middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.UnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
     describe('setTeamStreakToActiveMiddleware', () => {
         test('sets team streak active to true and calls next', async () => {
             expect.assertions(2);
@@ -1770,10 +1912,85 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
         });
     });
 
-    test('are defined in the correct order', async () => {
-        expect.assertions(29);
+    describe(`sendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware`, () => {
+        test('if oneHundedDayTeamMemberStreakAchievement is not defined just call next', async () => {
+            expect.assertions(1);
 
-        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(28);
+            const user = getMockUser({ _id: 'abc' });
+
+            const response: any = {
+                locals: {
+                    user,
+                },
+            };
+            const request: any = { body: {} };
+
+            const next = jest.fn();
+
+            const middleware = getSendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware(
+                {} as any,
+            );
+
+            await middleware(request, response, next);
+
+            expect(next).not.toBeCalled();
+        });
+
+        test('if oneHundredDayTeamMemberStreakAchievement is defined, user has a deviceType, endpointArn and user has acheivementUpdates enabled it sends an UnlockedAchievementPushNotification', async () => {
+            expect.assertions(2);
+            const oneHundredDayTeamMemberStreakAchievement: OneHundredDayTeamMemberStreakDatabaseAchievement = {
+                _id: '_id',
+                achievementType: AchievementTypes.oneHundredDayTeamMemberStreak,
+                createdAt: 'createdAt',
+                description: 'Completed 100 days',
+                name: '100 Days',
+                updatedAt: 'updatedAt',
+            };
+            const user = getMockUser({ _id: 'abc' });
+
+            const sendPushNotification = jest.fn().mockResolvedValue(true);
+            const request: any = {};
+            const response: any = {
+                locals: {
+                    user,
+                    oneHundredDayTeamMemberStreakAchievement,
+                },
+            };
+            const next = jest.fn();
+
+            const middleware = getSendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware(
+                sendPushNotification as any,
+            );
+            await middleware(request, response, next);
+            expect(sendPushNotification).toBeCalled();
+            expect(next).not.toBeCalledWith();
+        });
+
+        test('calls next with SendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware error on middleware failure', () => {
+            expect.assertions(1);
+
+            const response: any = {};
+            const request: any = {};
+            const next = jest.fn();
+            const middleware = getSendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware(
+                {} as any,
+            );
+
+            middleware(request, response, next);
+
+            expect(next).toBeCalledWith(
+                new CustomError(
+                    ErrorType.SendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
+                    expect.any(Error),
+                ),
+            );
+        });
+    });
+
+    test('are defined in the correct order', async () => {
+        expect.assertions(31);
+
+        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(30);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[0]).toBe(
             completeTeamMemberStreakTaskBodyValidationMiddleware,
         );
@@ -1807,22 +2024,28 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
         expect(createCompleteTeamMemberStreakTaskMiddlewares[16]).toBe(
             creditOidXpToUserForCompletingTeamMemberStreakMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[17]).toBe(setTeamStreakToActiveMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[18]).toBe(haveAllTeamMembersCompletedTasksMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[19]).toBe(setTeamStreakStartDateMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[20]).toBe(setDayTeamStreakWasCompletedMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[21]).toBe(createCompleteTeamStreakDefinitionMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[22]).toBe(saveCompleteTeamStreakMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[23]).toBe(teamStreakMaintainedMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[24]).toBe(retrieveTeamMembersMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[25]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[17]).toBe(
+            unlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware,
+        );
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[18]).toBe(setTeamStreakToActiveMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[19]).toBe(haveAllTeamMembersCompletedTasksMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[20]).toBe(setTeamStreakStartDateMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[21]).toBe(setDayTeamStreakWasCompletedMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[22]).toBe(createCompleteTeamStreakDefinitionMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[23]).toBe(saveCompleteTeamStreakMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[24]).toBe(teamStreakMaintainedMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[25]).toBe(retrieveTeamMembersMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[26]).toBe(
             notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[26]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[27]).toBe(
             sendCompleteTeamMemberStreakTaskResponseMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[27]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[28]).toBe(
             createCompleteTeamMemberStreakActivityFeedItemMiddleware,
+        );
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[29]).toBe(
+            sendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
         );
     });
 });

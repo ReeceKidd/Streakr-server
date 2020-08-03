@@ -639,6 +639,9 @@ export enum ErrorType {
     DeleteTeamMemberRetrieveTeamMemberStreakMiddleware,
     NoTeamMemberStreakFound,
     ArchiveTeamMemberStreakMiddleware,
+    UnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware,
+    OneHundredDayTeamMemberStreakAchievementDoesNotExist,
+    SendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1577,6 +1580,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-123`,
                     message: 'No team member streak found.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.OneHundredDayTeamMemberStreakAchievementDoesNotExist: {
+                return {
+                    code: `${ResponseCodes.badRequest}-124`,
+                    message: 'One hundred day team member streak does not exist.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -5206,6 +5217,20 @@ export class CustomError extends Error {
             case ErrorType.ArchiveTeamMemberStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-531`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.UnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-532`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-533`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

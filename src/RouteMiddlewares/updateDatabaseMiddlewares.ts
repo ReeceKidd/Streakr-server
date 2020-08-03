@@ -1,34 +1,14 @@
 // import { Request, Response } from 'express';
-// import { userModel } from '../Models/User';
+// import { soloStreakModel } from '../Models/SoloStreak';
 
 // export const updateDatabaseMiddleware = async (request: Request, response: Response): Promise<void> => {
-//     const users = await userModel.find({});
+//     const soloStreaks = await soloStreakModel.find({});
 //     await Promise.all(
-//         users.map(async user => {
-//             let longestStreak = {
-//                 numberOfDays: 0,
-//             };
-//             const longestSoloStreak = user.longestSoloStreak.numberOfDays;
-//             if (longestStreak.numberOfDays < longestSoloStreak) {
-//                 longestStreak = user.longestSoloStreak;
+//         soloStreaks.map(async soloStreak => {
+//             if (!soloStreak.pastStreaks) {
+//                 console.log('Entered');
+//                 // await soloStreakModel.findByIdAndUpdate(soloStreak._id, { $set: { pastStreaks: [] } });
 //             }
-//             const longestChallengeStreak = user.longestChallengeStreak.numberOfDays;
-//             if (longestStreak.numberOfDays < longestChallengeStreak) {
-//                 longestStreak = user.longestChallengeStreak;
-//             }
-//             const longestTeamMemberStreak = user.longestTeamMemberStreak.numberOfDays;
-//             if (longestStreak.numberOfDays < longestTeamMemberStreak) {
-//                 longestStreak = user.longestTeamMemberStreak;
-//             }
-//             const longestTeamStreak = user.longestTeamStreak.numberOfDays;
-//             if (longestStreak.numberOfDays < longestTeamStreak) {
-//                 longestStreak = user.longestTeamStreak;
-//             }
-//             await userModel.findByIdAndUpdate(user._id, {
-//                 $set: {
-//                     longestEverStreak: longestStreak,
-//                 },
-//             });
 //         }),
 //     );
 

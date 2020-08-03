@@ -16,14 +16,20 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { CustomError, ErrorType } from '../../customError';
 import { completeTeamStreakModel, CompleteTeamStreakModel } from '../../Models/CompleteTeamStreak';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
-import { CompletedTeamStreakUpdatePushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
+import {
+    CompletedTeamStreakUpdatePushNotification,
+    UnlockedAchievementPushNotification,
+} from '@streakoid/streakoid-models/lib/Models/PushNotifications';
 import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
-import { sendPushNotification as sendPushNotificationImport } from '../../../src/helpers/sendPushNotification';
+import {
+    sendPushNotification as sendPushNotificationImport,
+    sendPushNotification,
+} from '../../../src/helpers/sendPushNotification';
 import { EndpointDisabledError } from '../../sns';
 import { CoinTransactionHelpers } from '../../helpers/CoinTransactionHelpers';
 import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
@@ -34,6 +40,10 @@ import { coinCreditValues } from '../../helpers/coinCreditValues';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 import { CompleteTeamMemberStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
 import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
+import { achievementModel, AchievementModel } from '../../Models/Achievement';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
+import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
+import { OneHundredDayTeamMemberStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
 
 export const completeTeamMemberStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -441,6 +451,48 @@ export const creditOidXpToUserForCompletingTeamMemberStreakMiddleware = getCredi
     OidXpTransactionHelpers.creditUserOidXp,
 );
 
+export const getUnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware = (
+    user: mongoose.Model<UserModel>,
+    achievement: mongoose.Model<AchievementModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const teamMemberStreak: TeamMemberStreak = response.locals.teamMemberStreak;
+        const currentUser: User = response.locals.user;
+        const currentUserHas100DayTeamMemberStreakAchievement = currentUser.achievements.find(
+            achievementObject => achievementObject.achievementType === AchievementTypes.oneHundredDayTeamMemberStreak,
+        );
+        const oneHundredDays = 100;
+        if (
+            teamMemberStreak.currentStreak.numberOfDaysInARow === oneHundredDays &&
+            !currentUserHas100DayTeamMemberStreakAchievement
+        ) {
+            const oneHundredDayTeamMemberStreakAchievement = await achievement.findOne({
+                achievementType: AchievementTypes.oneHundredDayTeamMemberStreak,
+            });
+            if (!oneHundredDayTeamMemberStreakAchievement) {
+                throw new CustomError(ErrorType.OneHundredDayTeamMemberStreakAchievementDoesNotExist);
+            }
+            const oneHundredDayTeamMemberStreakUserAchievement: UserAchievement = {
+                _id: oneHundredDayTeamMemberStreakAchievement._id,
+                achievementType: AchievementTypes.oneHundredDayTeamMemberStreak,
+            };
+            await user.findByIdAndUpdate(currentUser._id, {
+                $addToSet: { achievements: oneHundredDayTeamMemberStreakUserAchievement },
+            });
+            response.locals.oneHundredDayTeamMemberStreakAchievement = oneHundredDayTeamMemberStreakAchievement;
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.UnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware, err));
+    }
+};
+
+export const unlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware = getUnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware(
+    userModel,
+    achievementModel,
+);
+
 export const getSetTeamStreakToActiveMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
     response: Response,
@@ -733,6 +785,61 @@ export const createCompleteTeamMemberStreakActivityFeedItemMiddleware = getCreat
     createActivityFeedItem,
 );
 
+export const getSendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware = (
+    sendPush: typeof sendPushNotification,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user: User = response.locals.user;
+        const oneHundredDayTeamMemberStreakAchievement: OneHundredDayTeamMemberStreakDatabaseAchievement =
+            response.locals.oneHundredDayTeamMemberStreakAchievement;
+        const { pushNotification, pushNotifications } = user;
+        const androidEndpointArn = pushNotification.androidEndpointArn;
+        const iosEndpointArn = pushNotification.iosEndpointArn;
+        const achievementUpdatesEnabled =
+            pushNotifications && pushNotifications.achievementUpdates && pushNotifications.achievementUpdates.enabled;
+        if (
+            oneHundredDayTeamMemberStreakAchievement &&
+            (androidEndpointArn || iosEndpointArn) &&
+            achievementUpdatesEnabled
+        ) {
+            const title = `Unlocked ${oneHundredDayTeamMemberStreakAchievement.name}`;
+            const body = `You unlocked an achievement for: ${oneHundredDayTeamMemberStreakAchievement.description}`;
+            const data: UnlockedAchievementPushNotification = {
+                pushNotificationType: PushNotificationTypes.unlockedAchievement,
+                achievementId: oneHundredDayTeamMemberStreakAchievement._id,
+                title,
+                body,
+            };
+            try {
+                await sendPush({
+                    title,
+                    body,
+                    data,
+                    androidEndpointArn,
+                    iosEndpointArn,
+                    userId: user._id,
+                    pushNotificationType: PushNotificationTypes.unlockedAchievement,
+                });
+            } catch (err) {
+                if (err.code !== EndpointDisabledError) {
+                    throw err;
+                }
+            }
+        }
+    } catch (err) {
+        next(
+            new CustomError(
+                ErrorType.SendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
+                err,
+            ),
+        );
+    }
+};
+
+export const sendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware = getSendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware(
+    sendPushNotification,
+);
+
 export const createCompleteTeamMemberStreakTaskMiddlewares = [
     completeTeamMemberStreakTaskBodyValidationMiddleware,
     teamStreakExistsMiddleware,
@@ -751,6 +858,7 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     increaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
     creditCoinsToUserForCompletingTeamMemberStreakMiddleware,
     creditOidXpToUserForCompletingTeamMemberStreakMiddleware,
+    unlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware,
     setTeamStreakToActiveMiddleware,
     haveAllTeamMembersCompletedTasksMiddleware,
     setTeamStreakStartDateMiddleware,
@@ -762,4 +870,5 @@ export const createCompleteTeamMemberStreakTaskMiddlewares = [
     notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
     sendCompleteTeamMemberStreakTaskResponseMiddleware,
     createCompleteTeamMemberStreakActivityFeedItemMiddleware,
+    sendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
 ];
