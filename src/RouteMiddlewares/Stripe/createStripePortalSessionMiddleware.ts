@@ -10,6 +10,19 @@ const { STRIPE_SECRET_KEY } = getServiceConfig();
 export const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2020-03-02' });
 export const RETURN_URL = 'https://streakoid.com/account';
 
+export const isUserAStripeCustomerMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+    try {
+        const user: User = response.locals.user;
+        if (!user.stripe || !user.stripe.customer) {
+            throw new CustomError(ErrorType.UserIsNotAStripeCustomer);
+        }
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.IsUserAStripeCustomerMiddleware));
+    }
+};
+
 export const createStripePortalSessionMiddleware = async (
     request: Request,
     response: Response,
@@ -39,6 +52,7 @@ export const sendStripePortalSessionMiddleware = (request: Request, response: Re
 };
 
 export const createStripePortalSessionMiddlewares = [
+    isUserAStripeCustomerMiddleware,
     createStripePortalSessionMiddleware,
     sendStripePortalSessionMiddleware,
 ];

@@ -6,6 +6,7 @@ import {
     sendStripePortalSessionMiddleware,
     RETURN_URL,
     createStripePortalSessionMiddlewares,
+    isUserAStripeCustomerMiddleware,
 } from './createStripePortalSessionMiddleware';
 import { CustomError, ErrorType } from '../../customError';
 import { getMockUser } from '../../testHelpers/getMockUser';
@@ -13,6 +14,45 @@ import { getMockUser } from '../../testHelpers/getMockUser';
 describe('createStripePortalSessionMiddlewares', () => {
     afterEach(() => {
         jest.resetAllMocks();
+    });
+
+    describe('isUserAStripeCustomerMiddleware', () => {
+        test('calls next if user.stripe.customer is defined', async () => {
+            expect.assertions(1);
+            const user = { ...getMockUser({ _id: '_id' }), stripe: { customer: 'customer' } };
+            const request: any = {};
+            const response: any = { locals: { user } };
+            const next = jest.fn();
+
+            isUserAStripeCustomerMiddleware(request, response, next);
+
+            expect(next).toBeCalledWith();
+        });
+
+        test('throws NoUserFound when user is not found', async () => {
+            expect.assertions(1);
+
+            const user = { ...getMockUser({ _id: 'userId' }), stripe: undefined };
+            const request: any = {};
+            const response: any = { locals: { user } };
+            const next = jest.fn();
+
+            isUserAStripeCustomerMiddleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.UserIsNotAStripeCustomer, expect.any(Error)));
+        });
+
+        test('calls next with IsUserAStripeCustomerMiddleware error on middleware failure', async () => {
+            expect.assertions(1);
+
+            const request: any = {};
+            const response: any = {};
+            const next = jest.fn();
+
+            isUserAStripeCustomerMiddleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.IsUserAStripeCustomerMiddleware, expect.any(Error)));
+        });
     });
 
     describe('createStripePortalSessionMiddleware', () => {

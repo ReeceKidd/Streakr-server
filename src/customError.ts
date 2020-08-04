@@ -644,6 +644,8 @@ export enum ErrorType {
     SendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
     CreateStripePortalSessionMiddleware,
     SendStripePortalSessionMiddleware,
+    IsUserAStripeCustomerMiddleware,
+    UserIsNotAStripeCustomer,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -1590,6 +1592,14 @@ export class CustomError extends Error {
                 return {
                     code: `${ResponseCodes.badRequest}-124`,
                     message: 'One hundred day team member streak does not exist.',
+                    httpStatusCode: ResponseCodes.badRequest,
+                };
+            }
+
+            case ErrorType.UserIsNotAStripeCustomer: {
+                return {
+                    code: `${ResponseCodes.badRequest}-125`,
+                    message: 'User is not a stripe customer.',
                     httpStatusCode: ResponseCodes.badRequest,
                 };
             }
@@ -5247,6 +5257,13 @@ export class CustomError extends Error {
             case ErrorType.SendStripePortalSessionMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-535`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.IsUserAStripeCustomerMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-536`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

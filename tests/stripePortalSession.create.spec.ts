@@ -9,6 +9,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { getUser } from './setup/getUser';
+import { getPayingUser } from './setup/getPayingUser';
 
 jest.setTimeout(120000);
 
@@ -58,5 +59,20 @@ describe(testName, () => {
 
         expect(stripePortalSession.url).toEqual(expect.any(String));
         expect(stripePortalSession.return_url).toEqual(expect.any(String));
+    });
+
+    test('if user is not a stripe customer it throws an error', async () => {
+        expect.assertions(2);
+
+        await getPayingUser({ testName });
+
+        try {
+            await SDK.stripe.createPortalSession();
+        } catch (err) {
+            const error = JSON.parse(err.text);
+            const { message } = error;
+            expect(err.status).toEqual(400);
+            expect(message).toEqual(`User is not a stripe customer.`);
+        }
     });
 });

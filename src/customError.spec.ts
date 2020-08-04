@@ -1267,6 +1267,17 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(400);
     });
 
+    test(`creates correct error when type is set to UserIsNotAStripeCustomer`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.UserIsNotAStripeCustomer);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`400-125`);
+        expect(message).toBe('User is not a stripe customer.');
+        expect(httpStatusCode).toBe(400);
+    });
+
     test(`creates correct error when type is set to TokenDoesNotExist`, () => {
         expect.assertions(3);
 
@@ -7001,6 +7012,17 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-535`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to IsUserAStripeCustomerMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.IsUserAStripeCustomerMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-536`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
