@@ -130,10 +130,11 @@ describe('createStripePortalSessionMiddlewares', () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(3);
+        expect.assertions(4);
 
-        expect(createStripePortalSessionMiddlewares.length).toEqual(2);
-        expect(createStripePortalSessionMiddlewares[0]).toEqual(createStripePortalSessionMiddleware);
-        expect(createStripePortalSessionMiddlewares[1]).toEqual(sendStripePortalSessionMiddleware);
+        expect(createStripePortalSessionMiddlewares.length).toEqual(3);
+        expect(createStripePortalSessionMiddlewares[0]).toEqual(isUserAStripeCustomerMiddleware);
+        expect(createStripePortalSessionMiddlewares[1]).toEqual(createStripePortalSessionMiddleware);
+        expect(createStripePortalSessionMiddlewares[2]).toEqual(sendStripePortalSessionMiddleware);
     });
 });
