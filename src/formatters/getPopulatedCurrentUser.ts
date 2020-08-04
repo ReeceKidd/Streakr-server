@@ -47,6 +47,7 @@ export const getPopulatedCurrentUser = ({
         longestTeamMemberStreak: user.longestTeamMemberStreak,
         longestTeamStreak: user.longestTeamStreak,
         longestEverStreak: user.longestEverStreak,
+        stripe: user.stripe,
         achievements,
         followers,
         following,
