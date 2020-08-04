@@ -124,39 +124,6 @@ describe(testName, () => {
         ]);
     });
 
-    test('sends correct error when cvc check fails', async () => {
-        expect.assertions(2);
-        try {
-            const user = await getUser({ testName });
-            const userId = user._id;
-            const email = 'test@gmail.com';
-
-            const token: any = { email, id: 'tok_cvcCheckFail' };
-            await SDK.stripe.createSubscription({ token, userId, paymentPlan: PaymentPlans.Monthly });
-        } catch (err) {
-            const error = JSON.parse(err.text);
-            const { message } = error;
-            expect(err.status).toEqual(400);
-            expect(message).toEqual("Your card's security code is incorrect.");
-        }
-    });
-
-    test('sends correct error when customer has insufficient funds', async () => {
-        expect.assertions(2);
-        try {
-            const user = await getUser({ testName });
-            const userId = user._id;
-            const email = 'test@gmail.com';
-            const token: any = { email, id: 'tok_chargeDeclinedInsufficientFunds' };
-            await SDK.stripe.createSubscription({ token, userId, paymentPlan: PaymentPlans.Monthly });
-        } catch (err) {
-            const error = JSON.parse(err.text);
-            const { message } = error;
-            expect(err.status).toEqual(400);
-            expect(message).toEqual('Your card has insufficient funds.');
-        }
-    });
-
     test('sends correct error when id is empty', async () => {
         expect.assertions(2);
         try {
