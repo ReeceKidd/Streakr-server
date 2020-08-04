@@ -642,6 +642,8 @@ export enum ErrorType {
     UnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware,
     OneHundredDayTeamMemberStreakAchievementDoesNotExist,
     SendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
+    CreateStripePortalSessionMiddleware,
+    SendStripePortalSessionMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -5231,6 +5233,20 @@ export class CustomError extends Error {
             case ErrorType.SendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-533`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.CreateStripePortalSessionMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-534`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendStripePortalSessionMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-535`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

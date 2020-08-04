@@ -13,7 +13,7 @@ import { getFormattedUser } from '../../formatters/getFormattedUser';
 
 const { STRIPE_SECRET_KEY, STRIPE_MONTHLY_PLAN, STRIPE_ANNUAL_PLAN } = getServiceConfig();
 
-export const stripe = new Stripe(STRIPE_SECRET_KEY);
+export const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2020-03-02' });
 
 const createStripeCustomerBodySchema = {
     token: Joi.object().required(),

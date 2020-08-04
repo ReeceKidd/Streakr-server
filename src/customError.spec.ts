@@ -6982,4 +6982,26 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to CreateStripePortalSessionMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.CreateStripePortalSessionMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-534`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendStripePortalSessionMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendStripePortalSessionMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-535`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

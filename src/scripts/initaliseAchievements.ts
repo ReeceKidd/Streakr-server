@@ -26,4 +26,16 @@ export const initializeAchievements = async () => {
         });
         await oneHundredDayChallengeStreakAchievement.save();
     }
+
+    const doesOneHundredDayTeamMemberStreakAchievementExist = await achievementModel.findOne({
+        achievementType: AchievementTypes.oneHundredDayTeamMemberStreak,
+    });
+    if (!doesOneHundredDayTeamMemberStreakAchievementExist) {
+        const oneHundredDayTeamMemberStreakAchievement = new achievementModel({
+            achievementType: AchievementTypes.oneHundredDayTeamMemberStreak,
+            name: 'One Hundred Day Team Member Streak',
+            description: 'Complete a team member streak for one hundred days',
+        });
+        await oneHundredDayTeamMemberStreakAchievement.save();
+    }
 };
