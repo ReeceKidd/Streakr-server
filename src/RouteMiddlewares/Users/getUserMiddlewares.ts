@@ -159,6 +159,7 @@ export const formatUserMiddleware = (request: Request, response: Response, next:
             longestTeamMemberStreak: user.longestTeamMemberStreak,
             longestTeamStreak: user.longestTeamStreak,
             longestEverStreak: user.longestEverStreak,
+            longestCurrentStreak: user.longestCurrentStreak,
             achievements,
             followers,
             following,

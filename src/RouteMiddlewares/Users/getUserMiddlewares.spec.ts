@@ -307,6 +307,7 @@ describe('formatUserMiddleware', () => {
                 'longestTeamMemberStreak',
                 'longestTeamStreak',
                 'longestEverStreak',
+                'longestCurrentStreak',
                 'createdAt',
                 'updatedAt',
                 'profileImages',
