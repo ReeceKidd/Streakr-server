@@ -29,6 +29,21 @@ export const trackMaintainedTeamMemberStreaks = async (
                         },
                     });
                 }
+
+                if (user.longestCurrentStreak.numberOfDays < teamMemberStreak.currentStreak.numberOfDaysInARow) {
+                    const teamStreak = await teamStreakModel.findById(teamMemberStreak.teamStreakId);
+                    await userModel.findByIdAndUpdate(user._id, {
+                        $set: {
+                            longestCurrentStreak: {
+                                teamMemberStreakId: teamMemberStreak._id,
+                                teamStreakId: teamMemberStreak.teamStreakId,
+                                teamStreakName: teamStreak && teamStreak.streakName,
+                                numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
+                                startDate: teamMemberStreak.currentStreak.startDate,
+                            },
+                        },
+                    });
+                }
             }
             return createStreakTrackingEvent({
                 type: StreakTrackingEventTypes.maintainedStreak,

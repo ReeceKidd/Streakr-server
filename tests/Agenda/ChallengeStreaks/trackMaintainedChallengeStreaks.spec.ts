@@ -170,6 +170,87 @@ describe(testName, () => {
         expect(longestEverStreak.numberOfDays).toEqual(numberOfDays);
     });
 
+    test('if challenge streak current streak is longer than the users longest current streak it update the users longest current streak to be the current challenge streak.', async () => {
+        expect.assertions(5);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+
+        const challengeStreak = await SDK.challengeStreaks.create({ userId, challengeId: challenge._id });
+        const challengeStreakId = challengeStreak._id;
+
+        await SDK.completeChallengeStreakTasks.create({
+            userId,
+            challengeStreakId,
+        });
+
+        const maintainedChallengeStreaks = await SDK.challengeStreaks.getAll({
+            completedToday: true,
+            userId,
+        });
+
+        await trackMaintainedChallengeStreaks(maintainedChallengeStreaks);
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        const updatedChallengeStreak = await SDK.challengeStreaks.getOne({ challengeStreakId: challengeStreak._id });
+
+        const longestCurrentStreak = updatedUser.longestCurrentStreak as LongestChallengeStreak;
+
+        expect(longestCurrentStreak.challengeStreakId).toEqual(challengeStreak._id);
+        expect(longestCurrentStreak.challengeId).toEqual(challengeStreak.challengeId);
+        expect(longestCurrentStreak.challengeName).toEqual(challengeStreak.challengeName);
+        expect(longestCurrentStreak.numberOfDays).toEqual(updatedChallengeStreak.currentStreak.numberOfDaysInARow);
+        expect(longestCurrentStreak.startDate).toEqual(updatedChallengeStreak.currentStreak.startDate);
+    });
+
+    test('if users longest current streak is longer than the current challenge streak do nothing.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const numberOfDays = 100;
+        await userModel.findByIdAndUpdate(user._id, { $set: { 'longestCurrentStreak.numberOfDays': numberOfDays } });
+        const userId = user._id;
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+
+        const challengeStreak = await SDK.challengeStreaks.create({ userId, challengeId: challenge._id });
+        const challengeStreakId = challengeStreak._id;
+
+        await SDK.completeChallengeStreakTasks.create({
+            userId,
+            challengeStreakId,
+        });
+
+        const maintainedChallengeStreaks = await SDK.challengeStreaks.getAll({
+            completedToday: true,
+            userId,
+        });
+
+        await trackMaintainedChallengeStreaks(maintainedChallengeStreaks);
+
+        const updatedUser = await SDK.user.getCurrentUser();
+
+        const longestCurrentStreak = updatedUser.longestCurrentStreak as LongestChallengeStreak;
+
+        expect(longestCurrentStreak.numberOfDays).toEqual(numberOfDays);
+    });
+
     test('creates a maintained streak tracking event.', async () => {
         expect.assertions(8);
 

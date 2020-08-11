@@ -62,21 +62,30 @@ describe('trackMaintainedSoloStreaks', () => {
         });
     });
 
-    test('if solo streak current streak is not longer than the users longest ever streak the users longestEverStreak is not updated.', async () => {
+    test('if solo streak current streak is longer than the users longest current streak it updates the users longest current streak.', async () => {
         expect.assertions(1);
-        const user = { ...getMockUser({ _id: 'userId' }), longestEverStreak: { numberOfDays: 100 } };
+        const user = getMockUser({ _id: 'userId' });
         soloStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
         userModel.findById = jest.fn().mockResolvedValue(user) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
 
         const currentStreak = {
             startDate: '24/02/95',
-            numberOfDaysInARow: 1,
+            numberOfDaysInARow: 100,
         };
         const soloStreak = { ...getMockSoloStreak({ userId: user._id }), currentStreak };
         const maintainedSoloStreaks = [soloStreak];
         await trackMaintainedSoloStreaks(maintainedSoloStreaks as any);
-        expect(userModel.findByIdAndUpdate).not.toBeCalled();
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $set: {
+                longestCurrentStreak: {
+                    soloStreakId: soloStreak._id,
+                    soloStreakName: soloStreak.streakName,
+                    numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
+                    startDate: soloStreak.currentStreak.startDate,
+                },
+            },
+        });
     });
 
     test('creates a streak tracking event for each streak that is maintained', async () => {

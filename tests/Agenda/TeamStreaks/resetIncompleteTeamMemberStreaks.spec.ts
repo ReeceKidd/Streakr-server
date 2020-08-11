@@ -1,6 +1,6 @@
 import { resetIncompleteTeamMemberStreaks } from '../../../src/Agenda/TeamStreaks/resetIncompleteTeamMemberStreaks';
 import { resetIncompleteTeamStreaks } from '../../../src/Agenda/TeamStreaks/resetIncompleteTeamStreaks';
-import { originalImageUrl } from '../../../src/Models/User';
+import { originalImageUrl, userModel } from '../../../src/Models/User';
 import { isTestEnvironment } from '../../../tests/setup/isTestEnvironment';
 import { setupDatabase } from '../../setup/setupDatabase';
 import { getPayingUser } from '../../setup/getPayingUser';
@@ -15,6 +15,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { correctPopulatedTeamStreakKeys } from '../../../src/testHelpers/correctPopulatedTeamStreakKeys';
+import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
 
 jest.setTimeout(120000);
 
@@ -43,12 +44,10 @@ describe(testName, () => {
     });
 
     test('adds current team member streak to past streak, resets the current streak and create a lost streak tracking event. Sets teamStreak completedToday to false', async () => {
-        expect.assertions(42);
+        expect.assertions(26);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
-        const username = user.username || '';
-        const userProfileImage = user.profileImages.originalImageUrl;
         const streakName = 'Daily Spanish';
 
         const creatorId = userId;
@@ -122,6 +121,108 @@ describe(testName, () => {
         expect(updatedTeamStreak.createdAt).toEqual(expect.any(String));
         expect(updatedTeamStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedTeamStreak).sort()).toEqual(correctPopulatedTeamStreakKeys);
+    });
+
+    test('if longest streak id is equal to the team member streak id set the users longest current streak to an empty object.', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+
+        const creatorId = userId;
+        const members = [{ memberId: userId }];
+        const teamStreak = await SDK.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreakId = teamStreak._id;
+
+        //Emulate team streak being active so the incomplete team member streak can reset it.
+        await SDK.teamStreaks.update({
+            teamStreakId,
+            updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+        const teamMemberStreakId = teamMemberStreak._id;
+
+        const longestTeamMemberStreak: LongestTeamMemberStreak = {
+            teamMemberStreakId: teamMemberStreak._id,
+            teamStreakId: teamStreak._id,
+            teamStreakName: teamStreak.streakName,
+            numberOfDays: 10,
+            startDate: new Date(),
+        };
+
+        await userModel.findByIdAndUpdate(user._id, { $set: { longestCurrentStreak: longestTeamMemberStreak } });
+
+        // Emulate team member streak being active
+        await SDK.teamMemberStreaks.update({
+            teamMemberStreakId: teamMemberStreakId,
+            updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
+        });
+
+        const incompleteTeamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            completedToday: false,
+            active: true,
+        });
+
+        const endDate = new Date();
+
+        await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks, endDate.toString());
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0 });
+    });
+
+    test('creates a lost team member streak tracking event.', async () => {
+        expect.assertions(8);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+
+        const creatorId = userId;
+        const members = [{ memberId: userId }];
+        const teamStreak = await SDK.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreakId = teamStreak._id;
+
+        //Emulate team streak being active so the incomplete team member streak can reset it.
+        await SDK.teamStreaks.update({
+            teamStreakId,
+            updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+        const teamMemberStreakId = teamMemberStreak._id;
+
+        // Emulate team member streak being active
+        await SDK.teamMemberStreaks.update({
+            teamMemberStreakId: teamMemberStreakId,
+            updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
+        });
+
+        const incompleteTeamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            completedToday: false,
+            active: true,
+        });
+
+        const endDate = new Date();
+
+        await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks, endDate.toString());
+
+        const incompleteTeamStreaks = await teamStreakModel.find({
+            completedToday: false,
+            active: true,
+        });
+
+        await resetIncompleteTeamStreaks(incompleteTeamStreaks, endDate.toString());
 
         const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             streakId: teamMemberStreakId,
@@ -138,6 +239,56 @@ describe(testName, () => {
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
+    });
+
+    test('adds current team member streak to past streak, resets the current streak and create a lost streak tracking event. Sets teamStreak completedToday to false', async () => {
+        expect.assertions(8);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const username = user.username || '';
+        const userProfileImage = user.profileImages.originalImageUrl;
+        const streakName = 'Daily Spanish';
+
+        const creatorId = userId;
+        const members = [{ memberId: userId }];
+        const teamStreak = await SDK.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreakId = teamStreak._id;
+
+        //Emulate team streak being active so the incomplete team member streak can reset it.
+        await SDK.teamStreaks.update({
+            teamStreakId,
+            updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId,
+        });
+        const teamMemberStreak = teamMemberStreaks[0];
+        const teamMemberStreakId = teamMemberStreak._id;
+
+        // Emulate team member streak being active
+        await SDK.teamMemberStreaks.update({
+            teamMemberStreakId: teamMemberStreakId,
+            updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow: 1 } },
+        });
+
+        const incompleteTeamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            completedToday: false,
+            active: true,
+        });
+
+        const endDate = new Date();
+
+        await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks, endDate.toString());
+
+        const incompleteTeamStreaks = await teamStreakModel.find({
+            completedToday: false,
+            active: true,
+        });
+
+        await resetIncompleteTeamStreaks(incompleteTeamStreaks, endDate.toString());
 
         const lostTeamMemberStreakItems = await SDK.activityFeedItems.getAll({
             activityFeedItemType: ActivityFeedItemTypes.lostTeamStreak,

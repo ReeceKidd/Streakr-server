@@ -27,6 +27,20 @@ export const trackMaintainedChallengeStreaks = async (
                         },
                     });
                 }
+
+                if (user.longestCurrentStreak.numberOfDays < challengeStreak.currentStreak.numberOfDaysInARow) {
+                    await userModel.findByIdAndUpdate(user._id, {
+                        $set: {
+                            longestCurrentStreak: {
+                                challengeStreakId: challengeStreak._id,
+                                challengeId: challengeStreak.challengeId,
+                                challengeName: challengeStreak.challengeName,
+                                numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                                startDate: challengeStreak.currentStreak.startDate,
+                            },
+                        },
+                    });
+                }
             }
             return createStreakTrackingEvent({
                 type: StreakTrackingEventTypes.maintainedStreak,

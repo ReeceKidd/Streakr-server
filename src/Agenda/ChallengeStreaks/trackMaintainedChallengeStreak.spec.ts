@@ -72,7 +72,7 @@ describe('trackMaintainedChallengeStreaks', () => {
         });
     });
 
-    test('if challenge streak is not longer than the users longest ever streak then the users longestEverStreak is not updated.', async () => {
+    test('if challenge streak current streak is longer than the users longest current streak it updates the users longest current streak.', async () => {
         expect.assertions(1);
         const user = getMockUser({ _id: 'userId' });
         challengeStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
@@ -81,7 +81,7 @@ describe('trackMaintainedChallengeStreaks', () => {
 
         const currentStreak = {
             startDate: '24/02/95',
-            numberOfDaysInARow: 1,
+            numberOfDaysInARow: 100,
         };
 
         const challenge = getMockChallenge();
@@ -91,7 +91,7 @@ describe('trackMaintainedChallengeStreaks', () => {
 
         expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
             $set: {
-                longestEverStreak: {
+                longestCurrentStreak: {
                     challengeStreakId: challengeStreak._id,
                     challengeId: challengeStreak.challengeId,
                     challengeName: challengeStreak.challengeName,

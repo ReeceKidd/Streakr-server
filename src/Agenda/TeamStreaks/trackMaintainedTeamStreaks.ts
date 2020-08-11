@@ -74,6 +74,27 @@ export const trackMaintainedTeamStreaks = async (
                                 $set: { longestEverStreak: longestTeamStreak },
                             });
                         }
+
+                        if (
+                            populatedMember &&
+                            populatedMember.longestCurrentStreak &&
+                            populatedMember.longestCurrentStreak.numberOfDays <
+                                teamStreak.currentStreak.numberOfDaysInARow
+                        ) {
+                            const startDate = teamStreak.currentStreak.startDate
+                                ? new Date(teamStreak.currentStreak.startDate)
+                                : new Date();
+                            const longestTeamStreak: LongestTeamStreak = {
+                                teamStreakId: teamStreak._id,
+                                teamStreakName: teamStreak.streakName,
+                                numberOfDays: teamStreak.currentStreak.numberOfDaysInARow,
+                                startDate,
+                                members: teamStreak.members,
+                            };
+                            await userModel.findByIdAndUpdate(member.memberId, {
+                                $set: { longestCurrentStreak: longestTeamStreak },
+                            });
+                        }
                     }
 
                     return member;

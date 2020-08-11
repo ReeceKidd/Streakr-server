@@ -13,6 +13,8 @@ import { disconnectDatabase } from '../../setup/disconnectDatabase';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { correctChallengeStreakKeys } from '../../../src/testHelpers/correctChallengeStreakKeys';
+import { LongestChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestChallengeStreak';
+import { userModel } from '../../../src/Models/User';
 
 jest.setTimeout(120000);
 
@@ -40,8 +42,8 @@ describe(testName, () => {
         }
     });
 
-    test('adds current streak to past streak, resets the current streak and creates a lost streak tracking event.', async () => {
-        expect.assertions(38);
+    test('adds current streak to past streak and resets the current streak', async () => {
+        expect.assertions(21);
 
         const name = 'Duolingo';
         const description = 'Everyday I must complete a duolingo lesson';
@@ -49,8 +51,6 @@ describe(testName, () => {
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
-        const username = user.username;
-        const userProfileImage = user.profileImages.originalImageUrl;
 
         const { challenge } = await SDK.challenges.create({
             name,
@@ -95,6 +95,75 @@ describe(testName, () => {
         expect(updatedChallengeStreak.createdAt).toEqual(expect.any(String));
         expect(updatedChallengeStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
+    });
+
+    test('if longest current streak id is equal to challenge streak id it sets the users longest current streak to an empty object.', async () => {
+        expect.assertions(1);
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+        const challengeStreak = await SDK.challengeStreaks.create({
+            userId,
+            challengeId: challenge._id,
+        });
+
+        const longestChallengeStreak: LongestChallengeStreak = {
+            challengeStreakId: challengeStreak._id,
+            challengeId: challenge._id,
+            challengeName: challenge.name,
+            numberOfDays: 10,
+            startDate: new Date(),
+        };
+
+        await userModel.findByIdAndUpdate(user._id, { $set: { longestCurrentStreak: longestChallengeStreak } });
+
+        const incompleteChallengeStreaks = await SDK.challengeStreaks.getAll({
+            completedToday: false,
+        });
+
+        const endDate = new Date();
+        await resetIncompleteChallengeStreaks(incompleteChallengeStreaks, endDate.toString());
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0 });
+    });
+
+    test('creates streak tracking event.', async () => {
+        expect.assertions(8);
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+        await SDK.challengeStreaks.create({
+            userId,
+            challengeId: challenge._id,
+        });
+
+        const incompleteChallengeStreaks = await SDK.challengeStreaks.getAll({
+            completedToday: false,
+        });
+
+        const endDate = new Date();
+        await resetIncompleteChallengeStreaks(incompleteChallengeStreaks, endDate.toString());
 
         const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
@@ -111,6 +180,35 @@ describe(testName, () => {
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
+    });
+
+    test('creates lost streak activity feed item.', async () => {
+        expect.assertions(9);
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+        const challengeStreak = await SDK.challengeStreaks.create({
+            userId,
+            challengeId: challenge._id,
+        });
+        const challengeStreakId = challengeStreak._id;
+
+        const incompleteChallengeStreaks = await SDK.challengeStreaks.getAll({
+            completedToday: false,
+        });
+
+        const endDate = new Date();
+        await resetIncompleteChallengeStreaks(incompleteChallengeStreaks, endDate.toString());
 
         const lostChallengeStreakItems = await SDK.activityFeedItems.getAll({
             activityFeedItemType: ActivityFeedItemTypes.lostChallengeStreak,
@@ -119,8 +217,8 @@ describe(testName, () => {
         if (lostChallengeStreakItem.activityFeedItemType === ActivityFeedItemTypes.lostChallengeStreak) {
             expect(lostChallengeStreakItem.activityFeedItemType).toEqual(ActivityFeedItemTypes.lostChallengeStreak);
             expect(lostChallengeStreakItem.userId).toEqual(String(userId));
-            expect(lostChallengeStreakItem.username).toEqual(String(username));
-            expect(lostChallengeStreakItem.userProfileImage).toEqual(String(userProfileImage));
+            expect(lostChallengeStreakItem.username).toEqual(String(user.username));
+            expect(lostChallengeStreakItem.userProfileImage).toEqual(String(user.profileImages.originalImageUrl));
             expect(lostChallengeStreakItem.challengeStreakId).toEqual(String(challengeStreakId));
             expect(lostChallengeStreakItem.challengeId).toEqual(String(challenge._id));
             expect(lostChallengeStreakItem.challengeName).toEqual(String(challenge.name));

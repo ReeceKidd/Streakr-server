@@ -13,6 +13,8 @@ import { disconnectDatabase } from '../../setup/disconnectDatabase';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { correctSoloStreakKeys } from '../../../src/testHelpers/correctSoloStreakKeys';
+import { userModel } from '../../../src/Models/User';
+import { LongestSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestSoloStreak';
 
 jest.setTimeout(120000);
 
@@ -40,21 +42,18 @@ describe(testName, () => {
         }
     });
 
-    test('adds current streak to past streak,  resets the current streak and creates a lost streak tracking event.', async () => {
-        expect.assertions(34);
+    test('adds current streak to past streak and resets the current streak', async () => {
+        expect.assertions(18);
 
         const user = await getPayingUser({ testName });
         const streakName = 'Daily Spanish';
-        const userId = user._id;
-        const username = user.username || '';
-        const userProfileImage = user.profileImages.originalImageUrl;
 
-        const soloStreak = await SDK.soloStreaks.create({ userId, streakName });
+        const soloStreak = await SDK.soloStreaks.create({ userId: user._id, streakName });
 
         const soloStreakId = soloStreak._id;
 
         const incompleteSoloStreaks = await SDK.soloStreaks.getAll({
-            userId,
+            userId: user._id,
             completedToday: false,
         });
 
@@ -83,6 +82,54 @@ describe(testName, () => {
         expect(updatedSoloStreak.createdAt).toEqual(expect.any(String));
         expect(updatedSoloStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
+    });
+
+    test('if longest current streak id is equal to the solo streak id sets the users longestCurrentStreak to the default longestCurrentStreak. ', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const streakName = 'Daily Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({ userId: user._id, streakName });
+
+        const longestSoloStreak: LongestSoloStreak = {
+            soloStreakId: soloStreak._id,
+            soloStreakName: soloStreak.streakName,
+            numberOfDays: 10,
+            startDate: new Date(),
+        };
+
+        await userModel.findByIdAndUpdate(user._id, { $set: { longestCurrentStreak: longestSoloStreak } });
+
+        const incompleteSoloStreaks = await SDK.soloStreaks.getAll({
+            userId: user._id,
+            completedToday: false,
+        });
+
+        const endDate = new Date();
+        await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate.toString());
+
+        const updatedUser = await SDK.user.getCurrentUser();
+        expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0 });
+    });
+
+    test('creates a lost streak tracking event.', async () => {
+        expect.assertions(8);
+
+        const user = await getPayingUser({ testName });
+        const streakName = 'Daily Spanish';
+        const userId = user._id;
+
+        await SDK.soloStreaks.create({ userId, streakName });
+
+        const incompleteSoloStreaks = await SDK.soloStreaks.getAll({
+            userId,
+            completedToday: false,
+        });
+
+        const endDate = new Date();
+        await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate.toString());
+
         const streakTrackingEvents = await SDK.streakTrackingEvents.getAll({
             userId,
         });
@@ -98,6 +145,26 @@ describe(testName, () => {
         expect(Object.keys(streakTrackingEvent).sort()).toEqual(
             ['_id', 'type', 'streakId', 'streakType', 'userId', 'createdAt', 'updatedAt', '__v'].sort(),
         );
+    });
+
+    test('creates a lost streak activity feed item.', async () => {
+        expect.assertions(8);
+
+        const user = await getPayingUser({ testName });
+        const streakName = 'Daily Spanish';
+        const userId = user._id;
+        const username = user.username || '';
+        const userProfileImage = user.profileImages.originalImageUrl;
+
+        const soloStreak = await SDK.soloStreaks.create({ userId, streakName });
+
+        const incompleteSoloStreaks = await SDK.soloStreaks.getAll({
+            userId,
+            completedToday: false,
+        });
+
+        const endDate = new Date();
+        await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate.toString());
 
         const lostSoloStreakActivityFeedItems = await SDK.activityFeedItems.getAll({
             activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,

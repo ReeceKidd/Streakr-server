@@ -71,9 +71,9 @@ describe('trackMaintainedTeamMemberStreaks', () => {
         });
     });
 
-    test('if team member streak current streak is not longer than the users longest ever streak the users longestEverStreak is not updated.', async () => {
+    test('if team member streak current streak is longer than the users longest current streak it updates the users longest current streak.', async () => {
         expect.assertions(1);
-        const user = { ...getMockUser({ _id: 'userId' }), longestEverStreak: { numberOfDays: 100 } };
+        const user = getMockUser({ _id: 'userId' });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
         teamStreakModel.findById = jest.fn().mockResolvedValue(teamStreak) as any;
@@ -82,12 +82,22 @@ describe('trackMaintainedTeamMemberStreaks', () => {
 
         const currentStreak = {
             startDate: '24/02/95',
-            numberOfDaysInARow: 1,
+            numberOfDaysInARow: 100,
         };
         const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
         const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
-        expect(userModel.findByIdAndUpdate).not.toBeCalled();
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $set: {
+                longestCurrentStreak: {
+                    teamMemberStreakId: teamMemberStreak._id,
+                    teamStreakName: teamStreak.streakName,
+                    teamStreakId: teamStreak._id,
+                    numberOfDays: currentStreak.numberOfDaysInARow,
+                    startDate: currentStreak.startDate,
+                },
+            },
+        });
     });
 
     test('creates a streak maintained tracking event.', async () => {

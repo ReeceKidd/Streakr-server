@@ -26,6 +26,19 @@ export const trackMaintainedSoloStreaks = async (
                         },
                     });
                 }
+
+                if (user.longestCurrentStreak.numberOfDays < soloStreak.currentStreak.numberOfDaysInARow) {
+                    await userModel.findByIdAndUpdate(user._id, {
+                        $set: {
+                            longestCurrentStreak: {
+                                soloStreakId: soloStreak._id,
+                                soloStreakName: soloStreak.streakName,
+                                numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
+                                startDate: soloStreak.currentStreak.startDate,
+                            },
+                        },
+                    });
+                }
             }
             return createStreakTrackingEvent({
                 type: StreakTrackingEventTypes.maintainedStreak,

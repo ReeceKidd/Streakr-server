@@ -13,6 +13,7 @@ export const correctUserKeys = [
     'longestTeamMemberStreak',
     'longestTeamStreak',
     'longestEverStreak',
+    'longestCurrentStreak',
     'achievements',
     'followers',
     'following',

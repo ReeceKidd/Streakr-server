@@ -11,6 +11,8 @@ import { userModel } from '../../Models/User';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { createActivityFeedItem } from '../../helpers/createActivityFeedItem';
 import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
+import { LongestSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestSoloStreak';
+import { UserStreakHelper } from '../../helpers/UserStreakHelper';
 
 export const resetIncompleteSoloStreaks = async (
     incompleteSoloStreaks: SoloStreak[],
@@ -40,6 +42,18 @@ export const resetIncompleteSoloStreaks = async (
             });
 
             const user: User | null = await userModel.findById(soloStreak.userId);
+
+            const longestCurrentStreak =
+                user && user.longestCurrentStreak && (user.longestCurrentStreak as LongestSoloStreak);
+
+            if (
+                longestCurrentStreak &&
+                longestCurrentStreak.soloStreakId &&
+                longestCurrentStreak.soloStreakId === soloStreak._id &&
+                user
+            ) {
+                await UserStreakHelper.updateUsersLongestCurrentStreak({ userId: user._id });
+            }
 
             const lostStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
