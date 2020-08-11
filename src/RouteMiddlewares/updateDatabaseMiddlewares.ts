@@ -1,14 +1,13 @@
 // import { Request, Response } from 'express';
-// import { soloStreakModel } from '../Models/SoloStreak';
+
+// import { userModel } from '../Models/User';
+// import { UserStreakHelper } from '../helpers/UserStreakHelper';
 
 // export const updateDatabaseMiddleware = async (request: Request, response: Response): Promise<void> => {
-//     const soloStreaks = await soloStreakModel.find({});
+//     const users = await userModel.find({});
 //     await Promise.all(
-//         soloStreaks.map(async soloStreak => {
-//             if (!soloStreak.pastStreaks) {
-//                 console.log('Entered');
-//                 // await soloStreakModel.findByIdAndUpdate(soloStreak._id, { $set: { pastStreaks: [] } });
-//             }
+//         users.map(async user => {
+//             return UserStreakHelper.updateUsersLongestCurrentStreak({ userId: user._id });
 //         }),
 //     );
 

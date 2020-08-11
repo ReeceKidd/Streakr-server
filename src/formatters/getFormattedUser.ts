@@ -14,6 +14,7 @@ export const getFormattedUser = ({ user }: { user: User }): FormattedUser => {
         pushNotification: user.pushNotification,
         totalStreakCompletes: Number(user.totalStreakCompletes),
         longestEverStreakNumberOfDays: user.longestEverStreak.numberOfDays || 0,
+        longestCurrentStreakNumberOfDays: user.longestCurrentStreak.numberOfDays || 0,
     };
     return formattedUser;
 };

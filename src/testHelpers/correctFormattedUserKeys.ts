@@ -10,4 +10,5 @@ export const correctFormattedUserKeys = [
     'pushNotification',
     'totalStreakCompletes',
     'longestEverStreakNumberOfDays',
+    'longestCurrentStreakNumberOfDays',
 ].sort();
