@@ -74,6 +74,10 @@ export const teamMemberStreakSchema = new mongoose.Schema(
                 type: String,
                 default: null,
             },
+            streakType: {
+                type: String,
+                default: StreakTypes.teamMember,
+            },
             numberOfDays: {
                 type: Number,
                 default: 0,
