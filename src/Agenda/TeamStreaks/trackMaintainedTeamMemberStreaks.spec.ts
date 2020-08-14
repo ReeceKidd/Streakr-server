@@ -66,6 +66,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
                     teamStreakId: teamStreak._id,
                     numberOfDays: currentStreak.numberOfDaysInARow,
                     startDate: currentStreak.startDate,
+                    streakType: StreakTypes.teamMember,
                 },
             },
         });
@@ -95,6 +96,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
                     teamStreakId: teamStreak._id,
                     numberOfDays: currentStreak.numberOfDaysInARow,
                     startDate: currentStreak.startDate,
+                    streakType: StreakTypes.teamMember,
                 },
             },
         });

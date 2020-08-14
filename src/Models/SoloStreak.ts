@@ -3,6 +3,7 @@ import { Collections } from './Collections';
 import { Models } from './Models';
 import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export type SoloStreakModel = SoloStreak & mongoose.Document;
 
@@ -78,6 +79,10 @@ export const soloStreakSchema = new mongoose.Schema(
             numberOfDays: {
                 type: Number,
                 default: 0,
+            },
+            streakType: {
+                type: String,
+                default: StreakTypes.solo,
             },
             startDate: {
                 type: Date,

@@ -2,6 +2,7 @@ import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 import WhyDoYouWantToBuildNewHabitsTypes from '@streakoid/streakoid-models/lib/Types/WhyDoYouWantToBuildNewHabitsTypes';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export const getMockUser = ({ _id }: { _id: string }): User => ({
     _id,
@@ -73,45 +74,50 @@ export const getMockUser = ({ _id }: { _id: string }): User => ({
         soloStreakId: 'soloStreakId',
         soloStreakName: 'Reading',
         numberOfDays: 0,
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: new Date().toString(),
+        endDate: new Date().toString(),
+        streakType: StreakTypes.solo,
     },
     longestChallengeStreak: {
         challengeId: 'challengeId',
         challengeName: 'Writing',
         challengeStreakId: 'challengeStreakId',
         numberOfDays: 0,
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: new Date().toString(),
+        endDate: new Date().toString(),
+        streakType: StreakTypes.challenge,
     },
     longestTeamMemberStreak: {
         teamStreakId: 'teamStreakId',
         teamMemberStreakId: 'teamMemberStreakId',
         teamStreakName: 'Running',
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: new Date().toString(),
+        endDate: new Date().toString(),
         numberOfDays: 0,
+        streakType: StreakTypes.teamMember,
     },
     longestTeamStreak: {
         teamStreakId: 'teamStreakId',
         members: [],
         numberOfDays: 0,
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: new Date().toString(),
+        endDate: new Date().toString(),
         teamStreakName: 'Yoga',
+        streakType: StreakTypes.team,
     },
     longestEverStreak: {
         soloStreakId: 'soloStreakId',
         soloStreakName: 'Reading',
         numberOfDays: 0,
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: new Date().toString(),
+        endDate: new Date().toString(),
+        streakType: StreakTypes.solo,
     },
     longestCurrentStreak: {
         soloStreakId: 'soloStreakId',
         soloStreakName: 'Reading',
         numberOfDays: 0,
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: new Date().toString(),
+        streakType: StreakTypes.solo,
     },
 });

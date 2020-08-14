@@ -2,6 +2,7 @@ import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/Challeng
 import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 const currentStreak = {
     startDate: '',
@@ -27,8 +28,9 @@ export const getMockChallengeStreak = ({ challenge, user }: { challenge: Challen
         challengeName: 'Writing',
         challengeStreakId: 'challengeStreakId',
         numberOfDays: 0,
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: new Date().toString(),
+        endDate: new Date().toString(),
+        streakType: StreakTypes.challenge,
     },
     timezone: 'Europe/London',
     createdAt: new Date().toString(),

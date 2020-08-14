@@ -1,5 +1,6 @@
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 const currentStreak = {
     startDate: '',
@@ -21,8 +22,9 @@ export const getMockSoloStreak = ({ userId }: { userId: string }): SoloStreak =>
         soloStreakId: 'soloStreakId',
         soloStreakName: 'Reading',
         numberOfDays: 0,
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: new Date().toString(),
+        endDate: new Date().toString(),
+        streakType: StreakTypes.solo,
     },
     timezone: 'Europe/London',
     createdAt: new Date().toString(),

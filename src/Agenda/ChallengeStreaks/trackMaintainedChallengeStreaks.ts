@@ -5,6 +5,8 @@ import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/Stre
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
 import { userModel } from '../../Models/User';
+import { LongestEverChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverChallengeStreak';
+import { LongestCurrentChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentChallengeStreak';
 
 export const trackMaintainedChallengeStreaks = async (
     maintainedChallengeStreaks: ChallengeStreak[],
@@ -15,29 +17,33 @@ export const trackMaintainedChallengeStreaks = async (
             const user = await userModel.findById(challengeStreak.userId);
             if (user) {
                 if (user.longestEverStreak.numberOfDays < challengeStreak.currentStreak.numberOfDaysInARow) {
+                    const longestEverStreak: LongestEverChallengeStreak = {
+                        challengeStreakId: challengeStreak._id,
+                        challengeId: challengeStreak.challengeId,
+                        challengeName: challengeStreak.challengeName,
+                        numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                        startDate: challengeStreak.currentStreak.startDate || new Date().toString(),
+                        streakType: StreakTypes.challenge,
+                    };
                     await userModel.findByIdAndUpdate(user._id, {
                         $set: {
-                            longestEverStreak: {
-                                challengeStreakId: challengeStreak._id,
-                                challengeId: challengeStreak.challengeId,
-                                challengeName: challengeStreak.challengeName,
-                                numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
-                                startDate: challengeStreak.currentStreak.startDate,
-                            },
+                            longestEverStreak,
                         },
                     });
                 }
 
                 if (user.longestCurrentStreak.numberOfDays < challengeStreak.currentStreak.numberOfDaysInARow) {
+                    const longestCurrentStreak: LongestCurrentChallengeStreak = {
+                        challengeStreakId: challengeStreak._id,
+                        challengeId: challengeStreak.challengeId,
+                        challengeName: challengeStreak.challengeName,
+                        numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                        startDate: challengeStreak.currentStreak.startDate || new Date().toString(),
+                        streakType: StreakTypes.challenge,
+                    };
                     await userModel.findByIdAndUpdate(user._id, {
                         $set: {
-                            longestCurrentStreak: {
-                                challengeStreakId: challengeStreak._id,
-                                challengeId: challengeStreak.challengeId,
-                                challengeName: challengeStreak.challengeName,
-                                numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
-                                startDate: challengeStreak.currentStreak.startDate,
-                            },
+                            longestCurrentStreak,
                         },
                     });
                 }

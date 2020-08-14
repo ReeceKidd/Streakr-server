@@ -57,6 +57,7 @@ describe('trackMaintainedSoloStreaks', () => {
                     soloStreakName: soloStreak.streakName,
                     numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
                     startDate: soloStreak.currentStreak.startDate,
+                    streakType: StreakTypes.solo,
                 },
             },
         });
@@ -83,6 +84,7 @@ describe('trackMaintainedSoloStreaks', () => {
                     soloStreakName: soloStreak.streakName,
                     numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
                     startDate: soloStreak.currentStreak.startDate,
+                    streakType: StreakTypes.solo,
                 },
             },
         });

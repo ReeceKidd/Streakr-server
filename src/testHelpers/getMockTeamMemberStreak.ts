@@ -1,5 +1,6 @@
 import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 const currentStreak = {
     startDate: '',
@@ -26,9 +27,10 @@ export const getMockTeamMemberStreak = ({
         teamStreakId: 'teamStreakId',
         teamMemberStreakId: 'teamMemberStreakId',
         teamStreakName: 'Running',
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: new Date().toString(),
+        endDate: new Date().toString(),
         numberOfDays: 0,
+        streakType: StreakTypes.teamMember,
     },
     userId,
     timezone: 'Europe/London',

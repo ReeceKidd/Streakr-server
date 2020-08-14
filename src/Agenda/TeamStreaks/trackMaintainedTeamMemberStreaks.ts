@@ -6,6 +6,8 @@ import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
 import { userModel } from '../../Models/User';
 import { teamStreakModel } from '../../Models/TeamStreak';
+import { LongestEverTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverTeamMemberStreak';
+import { LongestCurrentTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentTeamMemberStreak';
 
 export const trackMaintainedTeamMemberStreaks = async (
     maintainedTeamMemberStreaks: TeamMemberStreak[],
@@ -17,30 +19,34 @@ export const trackMaintainedTeamMemberStreaks = async (
             if (user) {
                 if (user.longestEverStreak.numberOfDays < teamMemberStreak.currentStreak.numberOfDaysInARow) {
                     const teamStreak = await teamStreakModel.findById(teamMemberStreak.teamStreakId);
+                    const longestEverStreak: LongestEverTeamMemberStreak = {
+                        teamMemberStreakId: teamMemberStreak._id,
+                        teamStreakId: teamMemberStreak.teamStreakId,
+                        teamStreakName: (teamStreak && teamStreak.streakName) || '',
+                        numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
+                        startDate: teamMemberStreak.currentStreak.startDate,
+                        streakType: StreakTypes.teamMember,
+                    };
                     await userModel.findByIdAndUpdate(user._id, {
                         $set: {
-                            longestEverStreak: {
-                                teamMemberStreakId: teamMemberStreak._id,
-                                teamStreakId: teamMemberStreak.teamStreakId,
-                                teamStreakName: teamStreak && teamStreak.streakName,
-                                numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
-                                startDate: teamMemberStreak.currentStreak.startDate,
-                            },
+                            longestEverStreak,
                         },
                     });
                 }
 
                 if (user.longestCurrentStreak.numberOfDays < teamMemberStreak.currentStreak.numberOfDaysInARow) {
                     const teamStreak = await teamStreakModel.findById(teamMemberStreak.teamStreakId);
+                    const longestCurrentStreak: LongestCurrentTeamMemberStreak = {
+                        teamMemberStreakId: teamMemberStreak._id,
+                        teamStreakId: teamMemberStreak.teamStreakId,
+                        teamStreakName: (teamStreak && teamStreak.streakName) || '',
+                        numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
+                        startDate: teamMemberStreak.currentStreak.startDate,
+                        streakType: StreakTypes.teamMember,
+                    };
                     await userModel.findByIdAndUpdate(user._id, {
                         $set: {
-                            longestCurrentStreak: {
-                                teamMemberStreakId: teamMemberStreak._id,
-                                teamStreakId: teamMemberStreak.teamStreakId,
-                                teamStreakName: teamStreak && teamStreak.streakName,
-                                numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
-                                startDate: teamMemberStreak.currentStreak.startDate,
-                            },
+                            longestCurrentStreak,
                         },
                     });
                 }

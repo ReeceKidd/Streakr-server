@@ -67,6 +67,7 @@ describe('trackMaintainedChallengeStreaks', () => {
                     challengeName: challengeStreak.challengeName,
                     numberOfDays: currentStreak.numberOfDaysInARow,
                     startDate: currentStreak.startDate,
+                    streakType: StreakTypes.challenge,
                 },
             },
         });
@@ -97,6 +98,7 @@ describe('trackMaintainedChallengeStreaks', () => {
                     challengeName: challengeStreak.challengeName,
                     numberOfDays: currentStreak.numberOfDaysInARow,
                     startDate: currentStreak.startDate,
+                    streakType: StreakTypes.challenge,
                 },
             },
         });

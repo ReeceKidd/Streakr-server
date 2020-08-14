@@ -10,6 +10,7 @@ export const correctTeamMemberStreakKeys = [
     'totalTimesTracked',
     'longestTeamMemberStreak',
     'timezone',
+    'streakType',
     'createdAt',
     'updatedAt',
     '__v',

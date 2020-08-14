@@ -3,6 +3,7 @@ import { Collections } from './Collections';
 import { Models } from './Models';
 import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export type ChallengeStreakModel = ChallengeStreak & mongoose.Document;
 
@@ -79,6 +80,10 @@ export const challengeStreakSchema = new mongoose.Schema(
             challengeName: {
                 type: String,
                 default: null,
+            },
+            streakType: {
+                type: String,
+                default: StreakTypes.challenge,
             },
             startDate: {
                 type: Date,

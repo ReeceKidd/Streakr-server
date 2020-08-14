@@ -4,6 +4,7 @@ import { Models } from './Models';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import UserTypes from '@streakoid/streakoid-models/lib/Types/UserTypes';
 import { getServiceConfig } from '../../src/getServiceConfig';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 const { DEFAULT_USER_PROFILE_IMAGE_URL } = getServiceConfig();
 
@@ -237,6 +238,10 @@ export const userSchema = new mongoose.Schema(
                 type: Number,
                 default: 0,
             },
+            streakType: {
+                type: String,
+                default: StreakTypes.solo,
+            },
             startDate: {
                 type: Date,
             },
@@ -260,6 +265,10 @@ export const userSchema = new mongoose.Schema(
             numberOfDays: {
                 type: Number,
                 default: 0,
+            },
+            streakType: {
+                type: String,
+                default: StreakTypes.challenge,
             },
             startDate: {
                 type: Date,
@@ -285,6 +294,10 @@ export const userSchema = new mongoose.Schema(
                 type: Number,
                 default: 0,
             },
+            streakType: {
+                type: String,
+                default: StreakTypes.teamMember,
+            },
             startDate: {
                 type: Date,
             },
@@ -308,6 +321,10 @@ export const userSchema = new mongoose.Schema(
             numberOfDays: {
                 type: Number,
                 default: 0,
+            },
+            streakType: {
+                type: String,
+                default: StreakTypes.team,
             },
             startDate: {
                 type: Date,
@@ -363,6 +380,9 @@ export const userSchema = new mongoose.Schema(
             endDate: {
                 type: Date,
             },
+            streakType: {
+                type: String,
+            },
         },
         longestCurrentStreak: {
             soloStreakId: {
@@ -410,6 +430,9 @@ export const userSchema = new mongoose.Schema(
             },
             endDate: {
                 type: Date,
+            },
+            streakType: {
+                type: String,
             },
         },
     },

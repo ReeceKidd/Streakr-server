@@ -3,6 +3,7 @@ import { Collections } from './Collections';
 import { Models } from './Models';
 import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 
 export type TeamMemberStreakModel = TeamMemberStreak & mongoose.Document;
 
@@ -33,6 +34,10 @@ export const teamMemberStreakSchema = new mongoose.Schema(
         active: {
             type: Boolean,
             default: false,
+        },
+        streakType: {
+            type: String,
+            default: StreakTypes.teamMember,
         },
         currentStreak: {
             startDate: {
