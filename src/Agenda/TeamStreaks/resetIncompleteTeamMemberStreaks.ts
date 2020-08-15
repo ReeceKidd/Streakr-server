@@ -12,7 +12,6 @@ import { createActivityFeedItem } from '../../helpers/createActivityFeedItem';
 import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
 import { userModel } from '../../Models/User';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
-import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
 import { UserStreakHelper } from '../../helpers/UserStreakHelper';
 
 export const resetIncompleteTeamMemberStreaks = async (
@@ -50,11 +49,11 @@ export const resetIncompleteTeamMemberStreaks = async (
 
             const user: User | null = await userModel.findById(teamMemberStreak.userId);
 
-            const longestCurrentStreak =
-                user && user.longestCurrentStreak && (user.longestCurrentStreak as LongestTeamMemberStreak);
+            const longestCurrentStreak = user && user.longestCurrentStreak;
 
             if (
                 longestCurrentStreak &&
+                longestCurrentStreak.streakType === StreakTypes.teamMember &&
                 longestCurrentStreak.teamMemberStreakId &&
                 longestCurrentStreak.teamMemberStreakId === teamMemberStreak._id &&
                 user

@@ -19,8 +19,8 @@ import { userModel } from '../../Models/User';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
-import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
 import { UserStreakHelper } from '../../helpers/UserStreakHelper';
+import { LongestCurrentTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentTeamMemberStreak';
 
 describe('resetIncompleteSoloStreaks', () => {
     afterEach(() => {
@@ -67,12 +67,13 @@ describe('resetIncompleteSoloStreaks', () => {
         const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
-        const longestCurrentStreak: LongestTeamMemberStreak = {
+        const longestCurrentStreak: LongestCurrentTeamMemberStreak = {
             teamStreakId: teamStreak._id,
             teamMemberStreakId: teamMemberStreak._id,
             teamStreakName: teamStreak.streakName,
             numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.teamMember,
         };
         userModel.findById = jest.fn().mockResolvedValue({ ...user, longestCurrentStreak }) as any;
         UserStreakHelper.updateUsersLongestCurrentStreak = jest.fn().mockResolvedValue(true);

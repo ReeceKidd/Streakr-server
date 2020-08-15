@@ -1,6 +1,7 @@
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
 
 const currentStreak = {
     startDate: '',
@@ -19,6 +20,7 @@ export const getMockTeamStreak = ({ creatorId }: { creatorId: string }): TeamStr
     pastStreaks: [],
     creatorId: creatorId,
     totalTimesTracked: 0,
+    visibility: VisibilityTypes.everyone,
     longestTeamStreak: {
         teamStreakId: 'teamStreakId',
         members: [],

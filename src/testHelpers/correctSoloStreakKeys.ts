@@ -11,6 +11,7 @@ export const correctSoloStreakKeys = [
     'timezone',
     'totalTimesTracked',
     'longestSoloStreak',
+    'visibility',
     'createdAt',
     'updatedAt',
     '__v',

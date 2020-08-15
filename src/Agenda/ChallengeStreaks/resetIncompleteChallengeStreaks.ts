@@ -13,7 +13,6 @@ import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { createActivityFeedItem } from '../../helpers/createActivityFeedItem';
 import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
-import { LongestChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestChallengeStreak';
 import { UserStreakHelper } from '../../helpers/UserStreakHelper';
 
 export const resetIncompleteChallengeStreaks = async (
@@ -45,11 +44,11 @@ export const resetIncompleteChallengeStreaks = async (
 
             const user: User | null = await userModel.findById(challengeStreak.userId);
 
-            const longestCurrentStreak =
-                user && user.longestCurrentStreak && (user.longestCurrentStreak as LongestChallengeStreak);
+            const longestCurrentStreak = user && user.longestCurrentStreak;
 
             if (
                 longestCurrentStreak &&
+                longestCurrentStreak.streakType === StreakTypes.challenge &&
                 longestCurrentStreak.challengeStreakId &&
                 longestCurrentStreak.challengeStreakId === challengeStreak._id &&
                 user

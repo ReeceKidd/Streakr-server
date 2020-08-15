@@ -74,7 +74,7 @@ const updateUsersLongestCurrentStreak = async ({ userId }: { userId: string }): 
         streakType: StreakTypes.teamMember,
     };
 
-    let longestCurrentStreak: LongestCurrentStreak = { numberOfDays: 0 };
+    let longestCurrentStreak: LongestCurrentStreak = { numberOfDays: 0, streakType: StreakTypes.unknown };
 
     if (longestSoloStreak) {
         if (longestCurrentStreak.numberOfDays < longestCurrentSoloStreak.numberOfDays) {

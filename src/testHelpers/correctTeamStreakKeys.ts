@@ -10,6 +10,7 @@ export const correctTeamStreakKeys = [
     'longestTeamStreak',
     'timezone',
     'creatorId',
+    'visibility',
     'members',
     'createdAt',
     'updatedAt',

@@ -145,7 +145,7 @@ describe(`createDailyJobBodyValidationMiddleware`, () => {
         expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
         expect(send).toBeCalledWith({
             message:
-                'child "streakType" fails because ["streakType" must be one of [solo, team, teamMember, challenge]]',
+                'child "streakType" fails because ["streakType" must be one of [solo, team, teamMember, challenge, unknown]]',
         });
         expect(next).not.toBeCalled();
     });

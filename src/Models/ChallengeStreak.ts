@@ -4,6 +4,7 @@ import { Models } from './Models';
 import { ChallengeStreak } from '@streakoid/streakoid-models/lib/Models/ChallengeStreak';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
 
 export type ChallengeStreakModel = ChallengeStreak & mongoose.Document;
 
@@ -67,6 +68,10 @@ export const challengeStreakSchema = new mongoose.Schema(
         totalTimesTracked: {
             type: Number,
             default: 0,
+        },
+        visibility: {
+            type: String,
+            default: VisibilityTypes.everyone,
         },
         longestChallengeStreak: {
             challengeStreakId: {

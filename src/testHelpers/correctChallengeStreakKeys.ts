@@ -11,6 +11,7 @@ export const correctChallengeStreakKeys = [
     'challengeId',
     'challengeName',
     'totalTimesTracked',
+    'visibility',
     'longestChallengeStreak',
     'timezone',
     'createdAt',

@@ -15,7 +15,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { correctPopulatedTeamStreakKeys } from '../../../src/testHelpers/correctPopulatedTeamStreakKeys';
-import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
+import { LongestCurrentTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentTeamMemberStreak';
 
 jest.setTimeout(120000);
 
@@ -148,12 +148,13 @@ describe(testName, () => {
         const teamMemberStreak = teamMemberStreaks[0];
         const teamMemberStreakId = teamMemberStreak._id;
 
-        const longestTeamMemberStreak: LongestTeamMemberStreak = {
+        const longestTeamMemberStreak: LongestCurrentTeamMemberStreak = {
             teamMemberStreakId: teamMemberStreak._id,
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
             numberOfDays: 10,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.teamMember,
         };
 
         await userModel.findByIdAndUpdate(user._id, { $set: { longestCurrentStreak: longestTeamMemberStreak } });
