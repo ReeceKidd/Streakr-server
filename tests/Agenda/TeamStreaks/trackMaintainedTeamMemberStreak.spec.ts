@@ -10,8 +10,9 @@ import { disconnectDatabase } from '../../setup/disconnectDatabase';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { correctTeamMemberStreakKeys } from '../../../src/testHelpers/correctTeamMemberStreakKeys';
-import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
 import { userModel } from '../../../src/Models/User';
+import { LongestCurrentTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentTeamMemberStreak';
+import { LongestEverTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverTeamMemberStreak';
 
 jest.setTimeout(120000);
 
@@ -87,7 +88,7 @@ describe(testName, () => {
     });
 
     test('if teamMember streak current streak is longer than the users longest ever streak update the users longest ever streak to be the current teamMember streak.', async () => {
-        expect.assertions(5);
+        expect.assertions(6);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -119,13 +120,14 @@ describe(testName, () => {
         const updatedUser = await SDK.user.getCurrentUser();
         const updatedTeamMemberStreak = await SDK.teamMemberStreaks.getOne(teamMemberStreakId);
 
-        const longestEverStreak = updatedUser.longestEverStreak as LongestTeamMemberStreak;
+        const longestEverStreak = updatedUser.longestEverStreak as LongestEverTeamMemberStreak;
 
         expect(longestEverStreak.teamMemberStreakId).toEqual(teamMemberStreakId);
         expect(longestEverStreak.teamStreakId).toEqual(teamStreak._id);
         expect(longestEverStreak.teamStreakName).toEqual(teamStreak.streakName);
         expect(longestEverStreak.numberOfDays).toEqual(updatedTeamMemberStreak.currentStreak.numberOfDaysInARow);
         expect(longestEverStreak.startDate).toEqual(updatedTeamMemberStreak.currentStreak.startDate);
+        expect(longestEverStreak.streakType).toEqual(StreakTypes.teamMember);
     });
 
     test('if users longest ever streak is longer than the current team member streak do nothing.', async () => {
@@ -166,7 +168,7 @@ describe(testName, () => {
     });
 
     test('if teamMember streak current streak is longer than the users longest current streak update the users longest current streak to be the current teamMember streak.', async () => {
-        expect.assertions(5);
+        expect.assertions(6);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -198,13 +200,14 @@ describe(testName, () => {
         const updatedUser = await SDK.user.getCurrentUser();
         const updatedTeamMemberStreak = await SDK.teamMemberStreaks.getOne(teamMemberStreakId);
 
-        const longestCurrentStreak = updatedUser.longestCurrentStreak as LongestTeamMemberStreak;
+        const longestCurrentStreak = updatedUser.longestCurrentStreak as LongestCurrentTeamMemberStreak;
 
         expect(longestCurrentStreak.teamMemberStreakId).toEqual(teamMemberStreakId);
         expect(longestCurrentStreak.teamStreakId).toEqual(teamStreak._id);
         expect(longestCurrentStreak.teamStreakName).toEqual(teamStreak.streakName);
         expect(longestCurrentStreak.numberOfDays).toEqual(updatedTeamMemberStreak.currentStreak.numberOfDaysInARow);
         expect(longestCurrentStreak.startDate).toEqual(updatedTeamMemberStreak.currentStreak.startDate);
+        expect(longestCurrentStreak.streakType).toEqual(StreakTypes.teamMember);
     });
 
     test('if users longest current streak is longer than the current team member streak do nothing.', async () => {

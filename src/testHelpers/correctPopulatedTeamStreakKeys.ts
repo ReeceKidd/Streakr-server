@@ -9,6 +9,7 @@ export const correctPopulatedTeamStreakKeys = [
     'timezone',
     'creator',
     'creatorId',
+    'visibility',
     'members',
     'createdAt',
     'updatedAt',
