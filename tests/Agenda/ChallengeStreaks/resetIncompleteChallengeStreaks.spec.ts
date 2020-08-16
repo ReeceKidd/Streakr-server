@@ -136,7 +136,7 @@ describe(testName, () => {
         await resetIncompleteChallengeStreaks(incompleteChallengeStreaks, endDate.toString());
 
         const updatedUser = await SDK.user.getCurrentUser();
-        expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0 });
+        expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0, streakType: StreakTypes.unknown });
     });
 
     test('creates streak tracking event.', async () => {

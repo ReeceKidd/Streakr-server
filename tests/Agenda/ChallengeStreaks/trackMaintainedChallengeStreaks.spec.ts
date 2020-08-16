@@ -173,7 +173,7 @@ describe(testName, () => {
     });
 
     test('if challenge streak current streak is longer than the users longest current streak it update the users longest current streak to be the current challenge streak.', async () => {
-        expect.assertions(6);
+        expect.assertions(5);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
