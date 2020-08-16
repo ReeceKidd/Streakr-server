@@ -7,9 +7,10 @@ import { streakoidTestSDK } from '../setup/streakoidTestSDK';
 import { tearDownDatabase } from '../setup/tearDownDatabase';
 import { disconnectDatabase } from '../setup/disconnectDatabase';
 import { getPayingUser } from '../setup/getPayingUser';
-import { LongestSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestSoloStreak';
-import { LongestChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestChallengeStreak';
-import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
+import { LongestCurrentSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentSoloStreak';
+import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
+import { LongestCurrentChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentChallengeStreak';
+import { LongestCurrentTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentTeamMemberStreak';
 
 jest.setTimeout(120000);
 
@@ -38,7 +39,7 @@ describe(testName, () => {
     });
 
     test(`if users longest current streak is a solo streak set the users longestCurrentStreak to the solo streak.`, async () => {
-        expect.assertions(4);
+        expect.assertions(5);
 
         const user = await getPayingUser({ testName });
 
@@ -78,16 +79,17 @@ describe(testName, () => {
 
         const updatedUser = await SDK.user.getCurrentUser();
 
-        const longestCurrentStreak = updatedUser.longestCurrentStreak as LongestSoloStreak;
+        const longestCurrentStreak = updatedUser.longestCurrentStreak as LongestCurrentSoloStreak;
 
         expect(longestCurrentStreak.soloStreakId).toEqual(String(soloStreak._id));
         expect(longestCurrentStreak.soloStreakName).toEqual(soloStreak.streakName);
         expect(longestCurrentStreak.numberOfDays).toEqual(soloStreak.currentStreak.numberOfDaysInARow + 1);
         expect(longestCurrentStreak.startDate).toBeDefined();
+        expect(longestCurrentStreak.streakType).toEqual(StreakTypes.solo);
     });
 
     test(`if users longest current streak is a challenge streak set the users longestCurrentStreak to the challenge streak.`, async () => {
-        expect.assertions(5);
+        expect.assertions(6);
 
         const user = await getPayingUser({ testName });
 
@@ -127,13 +129,14 @@ describe(testName, () => {
 
         const updatedUser = await SDK.user.getCurrentUser();
 
-        const longestCurrentStreak = updatedUser.longestCurrentStreak as LongestChallengeStreak;
+        const longestCurrentStreak = updatedUser.longestCurrentStreak as LongestCurrentChallengeStreak;
 
         expect(longestCurrentStreak.challengeStreakId).toEqual(String(challengeStreak._id));
         expect(longestCurrentStreak.challengeId).toEqual(challenge._id);
         expect(longestCurrentStreak.challengeName).toEqual(challenge.name);
         expect(longestCurrentStreak.numberOfDays).toEqual(challengeStreak.currentStreak.numberOfDaysInARow + 1);
         expect(longestCurrentStreak.startDate).toBeDefined();
+        expect(longestCurrentStreak.streakType).toEqual(StreakTypes.challenge);
     });
 
     test(`if users longest current streak is a team member streak set the users longestCurrentStreak to the team member streak.`, async () => {
@@ -186,13 +189,14 @@ describe(testName, () => {
 
         const updatedUser = await SDK.user.getCurrentUser();
 
-        const longestCurrentStreak = updatedUser.longestCurrentStreak as LongestTeamMemberStreak;
+        const longestCurrentStreak = updatedUser.longestCurrentStreak as LongestCurrentTeamMemberStreak;
 
         expect(longestCurrentStreak.teamMemberStreakId).toEqual(String(teamMemberStreak._id));
         expect(longestCurrentStreak.teamStreakId).toEqual(teamStreak._id);
         expect(longestCurrentStreak.teamStreakName).toEqual(teamStreak.streakName);
         expect(longestCurrentStreak.numberOfDays).toEqual(teamStreak.currentStreak.numberOfDaysInARow + 1);
         expect(longestCurrentStreak.startDate).toBeDefined();
+        expect(longestCurrentStreak.streakType).toEqual(StreakTypes.teamMember);
     });
 
     test(`if user has no active streaks it remains an object with just number of days.`, async () => {
