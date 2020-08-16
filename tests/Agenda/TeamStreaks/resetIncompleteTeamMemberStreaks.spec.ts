@@ -175,7 +175,7 @@ describe(testName, () => {
         await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks, endDate.toString());
 
         const updatedUser = await SDK.user.getCurrentUser();
-        expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0 });
+        expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0, streakType: StreakTypes.unknown });
     });
 
     test('creates a lost team member streak tracking event.', async () => {

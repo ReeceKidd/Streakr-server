@@ -140,7 +140,7 @@ describe(testName, () => {
     });
 
     test(`if users longest current streak is a team member streak set the users longestCurrentStreak to the team member streak.`, async () => {
-        expect.assertions(5);
+        expect.assertions(6);
 
         const user = await getPayingUser({ testName });
 
@@ -245,6 +245,6 @@ describe(testName, () => {
 
         const longestCurrentStreak = updatedUser.longestCurrentStreak;
 
-        expect(longestCurrentStreak).toEqual({ numberOfDays: 0 });
+        expect(longestCurrentStreak).toEqual({ numberOfDays: 0, streakType: StreakTypes.unknown });
     });
 });

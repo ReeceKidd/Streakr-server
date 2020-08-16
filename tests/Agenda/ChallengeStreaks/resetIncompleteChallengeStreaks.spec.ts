@@ -13,8 +13,8 @@ import { disconnectDatabase } from '../../setup/disconnectDatabase';
 import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { correctChallengeStreakKeys } from '../../../src/testHelpers/correctChallengeStreakKeys';
-import { LongestChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestChallengeStreak';
 import { userModel } from '../../../src/Models/User';
+import { LongestCurrentChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentChallengeStreak';
 
 jest.setTimeout(120000);
 
@@ -117,12 +117,13 @@ describe(testName, () => {
             challengeId: challenge._id,
         });
 
-        const longestChallengeStreak: LongestChallengeStreak = {
+        const longestChallengeStreak: LongestCurrentChallengeStreak = {
             challengeStreakId: challengeStreak._id,
             challengeId: challenge._id,
             challengeName: challenge.name,
             numberOfDays: 10,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.challenge,
         };
 
         await userModel.findByIdAndUpdate(user._id, { $set: { longestCurrentStreak: longestChallengeStreak } });

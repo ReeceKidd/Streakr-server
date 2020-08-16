@@ -13,7 +13,6 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { correctPopulatedTeamStreakKeys } from '../../../src/testHelpers/correctPopulatedTeamStreakKeys';
-import { LongestTeamStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamStreak';
 import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
 import { LongestEverTeamStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverTeamStreak';
 
@@ -62,12 +61,13 @@ describe(testName, () => {
 
         const teamMemberStreakId = teamMemberStreaks[0]._id;
 
-        const longestTeamStreak: LongestTeamStreak = {
+        const longestTeamStreak: LongestEverTeamStreak = {
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
             members: [{ memberId: userId, teamMemberStreakId: 'teamMemberStreakId' }],
             numberOfDays: 100,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.team,
         };
 
         await teamStreakModel.findByIdAndUpdate(teamStreakId, { $set: { longestTeamStreak } });
@@ -119,12 +119,13 @@ describe(testName, () => {
 
         const teamMemberStreakId = teamMemberStreaks[0]._id;
 
-        const longestTeamStreak: LongestTeamStreak = {
+        const longestTeamStreak: LongestEverTeamStreak = {
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
             members: [{ memberId: userId, teamMemberStreakId }],
             numberOfDays: 100,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.team,
         };
 
         const currentStreak: CurrentStreak = {
@@ -204,12 +205,13 @@ describe(testName, () => {
 
         const teamMemberStreakId = teamMemberStreaks[0]._id;
 
-        const longestTeamStreak: LongestTeamStreak = {
+        const longestTeamStreak: LongestEverTeamStreak = {
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
             members: [{ memberId: userId, teamMemberStreakId }],
             numberOfDays: 0,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.team,
         };
 
         const currentStreak: CurrentStreak = {
@@ -289,12 +291,13 @@ describe(testName, () => {
 
         const teamMemberStreakId = teamMemberStreaks[0]._id;
 
-        const longestTeamStreak: LongestTeamStreak = {
+        const longestTeamStreak: LongestEverTeamStreak = {
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
             members: [{ memberId: userId, teamMemberStreakId }],
             numberOfDays: 1,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.team,
         };
 
         const currentStreak: CurrentStreak = {
@@ -342,12 +345,13 @@ describe(testName, () => {
 
         const teamMemberStreakId = teamMemberStreaks[0]._id;
 
-        const longestTeamStreak: LongestTeamStreak = {
+        const longestTeamStreak: LongestEverTeamStreak = {
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
             members: [{ memberId: userId, teamMemberStreakId }],
             numberOfDays: 100,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.team,
         };
 
         const currentStreak: CurrentStreak = {
@@ -395,12 +399,13 @@ describe(testName, () => {
 
         const teamMemberStreakId = teamMemberStreaks[0]._id;
 
-        const longestTeamStreak: LongestTeamStreak = {
+        const longestTeamStreak: LongestEverTeamStreak = {
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
             members: [{ memberId: userId, teamMemberStreakId }],
             numberOfDays: 1,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.team,
         };
 
         const currentStreak: CurrentStreak = {
@@ -450,12 +455,13 @@ describe(testName, () => {
 
         const teamMemberStreakId = teamMemberStreaks[0]._id;
 
-        const longestTeamStreak: LongestTeamStreak = {
+        const longestTeamStreak: LongestEverTeamStreak = {
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
             members: [{ memberId: userId, teamMemberStreakId }],
             numberOfDays: 100,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.team,
         };
 
         const currentStreak: CurrentStreak = {

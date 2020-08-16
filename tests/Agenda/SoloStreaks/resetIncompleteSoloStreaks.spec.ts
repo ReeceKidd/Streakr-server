@@ -14,7 +14,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { correctSoloStreakKeys } from '../../../src/testHelpers/correctSoloStreakKeys';
 import { userModel } from '../../../src/Models/User';
-import { LongestSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestSoloStreak';
+import { LongestCurrentSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentSoloStreak';
 
 jest.setTimeout(120000);
 
@@ -92,11 +92,12 @@ describe(testName, () => {
 
         const soloStreak = await SDK.soloStreaks.create({ userId: user._id, streakName });
 
-        const longestSoloStreak: LongestSoloStreak = {
+        const longestSoloStreak: LongestCurrentSoloStreak = {
             soloStreakId: soloStreak._id,
             soloStreakName: soloStreak.streakName,
             numberOfDays: 10,
-            startDate: new Date(),
+            startDate: new Date().toString(),
+            streakType: StreakTypes.solo,
         };
 
         await userModel.findByIdAndUpdate(user._id, { $set: { longestCurrentStreak: longestSoloStreak } });
@@ -110,7 +111,7 @@ describe(testName, () => {
         await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate.toString());
 
         const updatedUser = await SDK.user.getCurrentUser();
-        expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0 });
+        expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0, streakType: StreakTypes.unknown });
     });
 
     test('creates a lost streak tracking event.', async () => {
