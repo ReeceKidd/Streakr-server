@@ -12,7 +12,7 @@ import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTyp
 
 jest.setTimeout(120000);
 
-const testName = 'GET-team-member-streaks';
+const testName = 'GET-user-team-member-streaks';
 
 describe(testName, () => {
     let database: Mongoose;
@@ -36,38 +36,7 @@ describe(testName, () => {
         }
     });
 
-    test(`team member streaks can be retrieved with userId query parameter`, async () => {
-        expect.assertions(2);
-
-        const user = await getPayingUser({ testName });
-        const userId = user._id;
-        const streakName = 'Daily Spanish';
-        const members = [{ memberId: userId }];
-
-        const teamStreak = await SDK.teamStreaks.create({
-            creatorId: userId,
-            streakName,
-            members,
-        });
-        const teamStreakId = teamStreak._id;
-
-        await SDK.teamMemberStreaks.create({
-            userId,
-            teamStreakId,
-        });
-
-        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
-            userId,
-        });
-
-        const teamMemberStreak = teamMemberStreaks[0];
-
-        expect(teamMemberStreak.userId).toEqual(String(userId));
-
-        expect(Object.keys(teamMemberStreak).sort()).toEqual(correctTeamMemberStreakKeys);
-    });
-
-    test(`team member streaks with visibility of "onlyMe" are not returned`, async () => {
+    test(`team member streaks with visibility of "onlyMe" are returned`, async () => {
         expect.assertions(1);
 
         const user = await getPayingUser({ testName });
@@ -92,9 +61,9 @@ describe(testName, () => {
             updateData: { visibility: VisibilityTypes.onlyMe },
         });
 
-        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({});
+        const teamMemberStreaks = await SDK.user.teamMemberStreaks({});
 
-        expect(teamMemberStreaks.length).toEqual(0);
+        expect(teamMemberStreaks.length).toEqual(1);
     });
 
     test(`team member streaks can be retrieved with timezone query parameter`, async () => {
@@ -117,7 +86,7 @@ describe(testName, () => {
             teamStreakId,
         });
 
-        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await SDK.user.teamMemberStreaks({
             timezone: 'Europe/London',
         });
 
@@ -146,7 +115,7 @@ describe(testName, () => {
             teamStreakId,
         });
 
-        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await SDK.user.teamMemberStreaks({
             sortField: GetAllTeamMemberStreaksSortFields.currentStreak,
         });
 
@@ -175,7 +144,7 @@ describe(testName, () => {
             teamStreakId,
         });
 
-        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await SDK.user.teamMemberStreaks({
             completedToday: false,
             active: false,
         });
@@ -213,7 +182,7 @@ describe(testName, () => {
             teamMemberStreakId: createdTeamMemberStreak._id,
         });
 
-        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await SDK.user.teamMemberStreaks({
             completedToday: true,
         });
 
@@ -253,7 +222,7 @@ describe(testName, () => {
             teamStreakId: readingTeamStreak._id,
         });
 
-        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+        const teamMemberStreaks = await SDK.user.teamMemberStreaks({
             limit: 1,
         });
         expect(teamMemberStreaks.length).toEqual(1);

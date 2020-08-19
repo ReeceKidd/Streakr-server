@@ -646,6 +646,16 @@ export enum ErrorType {
     SendStripePortalSessionMiddleware,
     IsUserAStripeCustomerMiddleware,
     UserIsNotAStripeCustomer,
+    FindSoloStreaksForCurrentUserMiddleware,
+    SendSoloStreaksForCurrentUserMiddleware,
+    GetCurrentUserChallengeStreaksMiddlewares,
+    SendCurrentUserChallengeStreaksMiddleware,
+    FindCurrentUserTeamMemberStreaksMiddleware,
+    SendCurrentUserTeamMemberStreaksMiddleware,
+    FindCurrentUserTeamStreaksMiddleware,
+    RetrieveCurrentUserTeamStreaksMembersInformation,
+    FormatCurrentUserTeamStreaksMiddleware,
+    SendCurrentUserTeamStreaksMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -5264,6 +5274,76 @@ export class CustomError extends Error {
             case ErrorType.IsUserAStripeCustomerMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-536`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindSoloStreaksForCurrentUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-537`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendSoloStreaksForCurrentUserMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-538`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.GetCurrentUserChallengeStreaksMiddlewares:
+                return {
+                    code: `${ResponseCodes.warning}-539`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendCurrentUserChallengeStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-540`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindCurrentUserTeamMemberStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-541`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendCurrentUserTeamMemberStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-542`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FindCurrentUserTeamStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-543`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.RetrieveCurrentUserTeamStreaksMembersInformation:
+                return {
+                    code: `${ResponseCodes.warning}-544`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.FormatCurrentUserTeamStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-545`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.SendCurrentUserTeamStreaksMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-546`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

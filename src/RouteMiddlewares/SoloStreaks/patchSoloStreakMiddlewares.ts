@@ -15,6 +15,7 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
+import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
 
 const soloStreakParamsValidationSchema = {
     soloStreakId: Joi.string().required(),
@@ -43,6 +44,7 @@ const soloStreakBodyValidationSchema = {
     currentStreak: Joi.object(),
     pastStreaks: Joi.array(),
     userDefinedIndex: Joi.number(),
+    visibility: Joi.string().valid(Object.keys(VisibilityTypes)),
 };
 
 export const soloStreakRequestBodyValidationMiddleware = (

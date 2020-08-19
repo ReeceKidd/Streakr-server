@@ -2,15 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 
-import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
-import { challengeStreakModel, ChallengeStreakModel } from '../../Models/ChallengeStreak';
-import { ResponseCodes } from '../../Server/responseCodes';
-import { CustomError, ErrorType } from '../../customError';
 import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddleware/validationErrorMessageSenderMiddleware';
+import { ChallengeStreakModel, challengeStreakModel } from '../../../Models/ChallengeStreak';
+import { CustomError, ErrorType } from '../../../customError';
+import { ResponseCodes } from '../../../Server/responseCodes';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 const getChallengeStreaksQueryValidationSchema = {
-    userId: Joi.string(),
     challengeId: Joi.string(),
     timezone: Joi.string(),
     status: Joi.string(),
@@ -32,34 +31,25 @@ export const getChallengeStreaksQueryValidationMiddleware = (
     );
 };
 
-export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose.Model<ChallengeStreakModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const getFindCurrentUserChallengeStreaksMiddleware = (
+    challengeStreakModel: mongoose.Model<ChallengeStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, challengeId, timezone, completedToday, active, status, sortField } = request.query;
+        const user: User = response.locals.user;
+        const { challengeId, timezone, completedToday, active, status, sortField } = request.query;
 
-        const defaultLeaderboardLimit = 30;
-
-        const limit = Number(request.query.limit) || defaultLeaderboardLimit;
+        const limit = Number(request.query.limit);
 
         const query: {
-            visibility: VisibilityTypes;
-            userId?: string;
+            userId: string;
             challengeId?: string;
             timezone?: string;
             status?: string;
             completedToday?: boolean;
             active?: boolean;
             sortField?: string;
-        } = {
-            visibility: VisibilityTypes.everyone,
-        };
+        } = { userId: user._id };
 
-        if (userId) {
-            query.userId = userId;
-        }
         if (challengeId) {
             query.challengeId = challengeId;
         }
@@ -75,6 +65,7 @@ export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose
         if (active) {
             query.active = active === 'true';
         }
+
         if (sortField === GetAllChallengeStreaksSortFields.currentStreak) {
             response.locals.challengeStreaks = await challengeStreakModel
                 .find(query)
@@ -85,29 +76,37 @@ export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose
                 .find(query)
                 .sort({ 'longestChallengeStreak.numberOfDays': -1 })
                 .limit(limit);
+        } else if (!limit) {
+            response.locals.challengeStreaks = await challengeStreakModel.find(query);
         } else {
             response.locals.challengeStreaks = await challengeStreakModel.find(query).limit(limit);
         }
 
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.FindChallengeStreaksMiddleware, err));
+        next(new CustomError(ErrorType.GetCurrentUserChallengeStreaksMiddlewares, err));
     }
 };
 
-export const findChallengeStreaksMiddleware = getFindChallengeStreaksMiddleware(challengeStreakModel);
+export const findCurrentUserChallengeStreaksMiddleware = getFindCurrentUserChallengeStreaksMiddleware(
+    challengeStreakModel,
+);
 
-export const sendChallengeStreaksMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const sendCurrentUserChallengeStreaksMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
         const { challengeStreaks } = response.locals;
         response.status(ResponseCodes.success).send(challengeStreaks);
     } catch (err) {
-        next(new CustomError(ErrorType.SendChallengeStreaksMiddleware, err));
+        next(new CustomError(ErrorType.SendCurrentUserChallengeStreaksMiddleware, err));
     }
 };
 
-export const getAllChallengeStreaksMiddlewares = [
+export const getCurrentUserChallengeStreaksMiddleware = [
     getChallengeStreaksQueryValidationMiddleware,
-    findChallengeStreaksMiddleware,
-    sendChallengeStreaksMiddleware,
+    findCurrentUserChallengeStreaksMiddleware,
+    sendCurrentUserChallengeStreaksMiddleware,
 ];

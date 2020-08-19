@@ -1,16 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
-
-import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
-import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
-import { ResponseCodes } from '../../Server/responseCodes';
-import { CustomError, ErrorType } from '../../customError';
+import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddleware/validationErrorMessageSenderMiddleware';
+import { TeamMemberStreakModel, teamMemberStreakModel } from '../../../Models/TeamMemberStreak';
 import { GetAllTeamMemberStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamMemberStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import { ErrorType, CustomError } from '../../../customError';
+import { ResponseCodes } from '../../../Server/responseCodes';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 const getTeamMemberStreaksQueryValidationSchema = {
-    userId: Joi.string(),
     teamStreakId: Joi.string(),
     timezone: Joi.string(),
     completedToday: Joi.boolean(),
@@ -19,7 +17,7 @@ const getTeamMemberStreaksQueryValidationSchema = {
     limit: Joi.number(),
 };
 
-export const getTeamMemberStreaksQueryValidationMiddleware = (
+export const getCurrentUserTeamMemberStreaksQueryValidationMiddleware = (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -31,31 +29,26 @@ export const getTeamMemberStreaksQueryValidationMiddleware = (
     );
 };
 
-export const getFindTeamMemberStreaksMiddleware = (
+export const getFindCurrentUserTeamMemberStreaksMiddleware = (
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, teamStreakId, timezone, completedToday, active, sortField } = request.query;
+        const user: User = response.locals.user;
+        const { teamStreakId, timezone, completedToday, active, sortField } = request.query;
 
         const defaultLeaderboardLimit = 30;
 
         const limit = Number(request.query.limit) || defaultLeaderboardLimit;
 
         const query: {
-            visibility: VisibilityTypes;
-            userId?: string;
+            userId: string;
             teamStreakId?: string;
             timezone?: string;
             completedToday?: boolean;
             active?: boolean;
             sortField?: string;
-        } = {
-            visibility: VisibilityTypes.everyone,
-        };
+        } = { userId: user._id };
 
-        if (userId) {
-            query.userId = userId;
-        }
         if (teamStreakId) {
             query.teamStreakId = teamStreakId;
         }
@@ -84,23 +77,29 @@ export const getFindTeamMemberStreaksMiddleware = (
 
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.FindTeamMemberStreaksMiddleware, err));
+        next(new CustomError(ErrorType.FindCurrentUserTeamMemberStreaksMiddleware, err));
     }
 };
 
-export const findTeamMemberStreaksMiddleware = getFindTeamMemberStreaksMiddleware(teamMemberStreakModel);
+export const findCurrentUserTeamMemberStreaksMiddleware = getFindCurrentUserTeamMemberStreaksMiddleware(
+    teamMemberStreakModel,
+);
 
-export const sendTeamMemberStreaksMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const sendCurrentUserTeamMemberStreaksMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
         const { teamMemberStreaks } = response.locals;
         response.status(ResponseCodes.success).send(teamMemberStreaks);
     } catch (err) {
-        next(new CustomError(ErrorType.SendTeamMemberStreaksMiddleware, err));
+        next(new CustomError(ErrorType.SendCurrentUserTeamMemberStreaksMiddleware, err));
     }
 };
 
-export const getAllTeamMemberStreaksMiddlewares = [
-    getTeamMemberStreaksQueryValidationMiddleware,
-    findTeamMemberStreaksMiddleware,
-    sendTeamMemberStreaksMiddleware,
+export const getCurrentUserTeamMemberStreaksMiddlewares = [
+    getCurrentUserTeamMemberStreaksQueryValidationMiddleware,
+    findCurrentUserTeamMemberStreaksMiddleware,
+    sendCurrentUserTeamMemberStreaksMiddleware,
 ];

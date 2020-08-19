@@ -14,6 +14,9 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
+import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
+import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import { PastStreak } from '@streakoid/streakoid-models/lib/Models/PastStreak';
 
 jest.setTimeout(120000);
 
@@ -63,18 +66,34 @@ describe(testName, () => {
         });
         const challengeStreakId = challengeStreak._id;
 
-        const updatedTimezone = 'Europe/Paris';
+        const status = StreakStatus.archived;
+        const completedToday = false;
+        const timezone = 'Europe/London';
+        const active = false;
+        const currentStreak: CurrentStreak = {
+            numberOfDaysInARow: 10,
+            startDate: new Date().toString(),
+            endDate: new Date().toString(),
+        };
+        const pastStreaks: PastStreak[] = [];
         const userDefinedIndex = 10;
+        const visibility = VisibilityTypes.onlyMe;
 
         const updatedChallengeStreak = await SDK.challengeStreaks.update({
             challengeStreakId,
             updateData: {
-                timezone: updatedTimezone,
+                status,
+                completedToday,
+                timezone,
+                active,
+                currentStreak,
+                pastStreaks,
                 userDefinedIndex,
+                visibility,
             },
         });
 
-        expect(updatedChallengeStreak.status).toEqual(StreakStatus.live);
+        expect(updatedChallengeStreak.status).toEqual(status);
         expect(updatedChallengeStreak.userId).toEqual(String(user._id));
         expect(updatedChallengeStreak.username).toEqual(user.username);
         expect(updatedChallengeStreak.userProfileImage).toEqual(user.profileImages.originalImageUrl);
@@ -83,10 +102,10 @@ describe(testName, () => {
         expect(updatedChallengeStreak.completedToday).toEqual(false);
         expect(updatedChallengeStreak.active).toEqual(false);
         expect(updatedChallengeStreak.pastStreaks).toEqual([]);
-        expect(updatedChallengeStreak.timezone).toEqual(updatedTimezone);
+        expect(updatedChallengeStreak.timezone).toEqual(timezone);
         expect(updatedChallengeStreak.userDefinedIndex).toEqual(userDefinedIndex);
-        expect(updatedChallengeStreak.currentStreak.numberOfDaysInARow).toEqual(0);
-        expect(Object.keys(updatedChallengeStreak.currentStreak)).toEqual(['numberOfDaysInARow']);
+        expect(updatedChallengeStreak.visibility).toEqual(visibility);
+        expect(updatedChallengeStreak.currentStreak.numberOfDaysInARow).toEqual(currentStreak.numberOfDaysInARow);
         expect(updatedChallengeStreak._id).toEqual(expect.any(String));
         expect(updatedChallengeStreak.createdAt).toEqual(expect.any(String));
         expect(updatedChallengeStreak.updatedAt).toEqual(expect.any(String));

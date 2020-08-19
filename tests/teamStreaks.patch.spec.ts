@@ -10,6 +10,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctTeamStreakKeys } from '../src/testHelpers/correctTeamStreakKeys';
+import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
 
 jest.setTimeout(120000);
 
@@ -38,7 +39,7 @@ describe(testName, () => {
     });
 
     test(`that request passes when team streak is patched with correct keys`, async () => {
-        expect.assertions(16);
+        expect.assertions(17);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -57,6 +58,7 @@ describe(testName, () => {
         const numberOfMinutes = 30;
         const updatedTimezone = 'Europe/Rome';
         const numberOfDaysInARow = 10;
+        const visibility = VisibilityTypes.everyone;
 
         const teamStreak = await SDK.teamStreaks.update({
             teamStreakId: originalTeamStreak._id,
@@ -73,6 +75,7 @@ describe(testName, () => {
                 pastStreaks: [],
                 completedToday: false,
                 active: false,
+                visibility,
             },
         });
 
@@ -88,6 +91,7 @@ describe(testName, () => {
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(numberOfDaysInARow);
         expect(teamStreak.currentStreak.startDate).toEqual(expect.any(String));
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['startDate', 'numberOfDaysInARow'].sort());
+        expect(teamStreak.visibility).toEqual(visibility);
         expect(teamStreak.pastStreaks.length).toEqual(0);
         expect(Object.keys(teamStreak).sort()).toEqual(
             [...correctTeamStreakKeys, 'inviteKey', 'numberOfMinutes', 'streakDescription'].sort(),

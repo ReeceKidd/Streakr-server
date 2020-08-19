@@ -2,22 +2,20 @@ import { Request, Response, NextFunction } from 'express';
 import * as Joi from 'joi';
 import * as mongoose from 'mongoose';
 
-import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
-import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
-import { ResponseCodes } from '../../Server/responseCodes';
-import { CustomError, ErrorType } from '../../customError';
-import { userModel, UserModel } from '../../Models/User';
-import { TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
-import { teamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import { PopulatedTeamMember } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamMember';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 import { GetAllTeamStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import { getValidationErrorMessageSenderMiddleware } from '../../../SharedMiddleware/validationErrorMessageSenderMiddleware';
+import { TeamStreakModel, teamStreakModel } from '../../../Models/TeamStreak';
+import { CustomError, ErrorType } from '../../../customError';
+import { UserModel, userModel } from '../../../Models/User';
+import { TeamMemberStreakModel, teamMemberStreakModel } from '../../../Models/TeamMemberStreak';
+import { ResponseCodes } from '../../../Server/responseCodes';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 const getTeamStreaksQueryValidationSchema = {
     creatorId: Joi.string(),
-    memberId: Joi.string(),
     timezone: Joi.string(),
     status: Joi.string().valid(Object.keys(StreakStatus)),
     completedToday: Joi.boolean(),
@@ -26,7 +24,7 @@ const getTeamStreaksQueryValidationSchema = {
     limit: Joi.number(),
 };
 
-export const getTeamStreaksQueryValidationMiddleware = (
+export const getCurrentUserTeamStreaksQueryValidationMiddleware = (
     request: Request,
     response: Response,
     next: NextFunction,
@@ -38,36 +36,33 @@ export const getTeamStreaksQueryValidationMiddleware = (
     );
 };
 
-export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
+export const getCurrentUserFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { creatorId, memberId, timezone, status, completedToday, active, sortField } = request.query;
+        const user: User = response.locals.user;
+        const { creatorId, timezone, status, completedToday, active, sortField } = request.query;
 
         const defaultLeaderboardLimit = 30;
 
         const limit = Number(request.query.limit) || defaultLeaderboardLimit;
 
         const query: {
-            visibility: VisibilityTypes;
+            ['members.memberId']: string;
             creatorId?: string;
-            ['members.memberId']?: string;
             timezone?: string;
             status?: string;
             completedToday?: boolean;
             active?: boolean;
             sortField?: string;
         } = {
-            visibility: VisibilityTypes.everyone,
+            ['members.memberId']: String(user._id),
         };
 
         if (creatorId) {
             query.creatorId = creatorId;
-        }
-        if (memberId) {
-            query['members.memberId'] = memberId;
         }
         if (timezone) {
             query.timezone = timezone;
@@ -81,6 +76,7 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
         if (active) {
             query.active = active === 'true';
         }
+
         if (sortField === GetAllTeamStreaksSortFields.currentStreak) {
             response.locals.teamStreaks = await teamStreakModel
                 .find(query)
@@ -102,13 +98,13 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
 
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.FindTeamStreaksMiddleware, err));
+        next(new CustomError(ErrorType.FindCurrentUserTeamStreaksMiddleware, err));
     }
 };
 
-export const findTeamStreaksMiddleware = getFindTeamStreaksMiddleware(teamStreakModel);
+export const findCurrentUserTeamStreaksMiddleware = getCurrentUserFindTeamStreaksMiddleware(teamStreakModel);
 
-export const getRetrieveTeamStreaksMembersInformationMiddleware = (
+export const getRetrieveCurrentUserTeamStreaksMembersInformationMiddleware = (
     userModel: mongoose.Model<UserModel>,
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -152,38 +148,46 @@ export const getRetrieveTeamStreaksMembersInformationMiddleware = (
 
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.RetrieveTeamStreaksMembersInformation, err));
+        next(new CustomError(ErrorType.RetrieveCurrentUserTeamStreaksMembersInformation, err));
     }
 };
 
-export const retrieveTeamStreaksMembersInformationMiddleware = getRetrieveTeamStreaksMembersInformationMiddleware(
+export const retrieveCurrentUserTeamStreaksMembersInformationMiddleware = getRetrieveCurrentUserTeamStreaksMembersInformationMiddleware(
     userModel,
     teamMemberStreakModel,
 );
 
-export const formatTeamStreaksMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const formatCurrentUserTeamStreaksMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
         const teamStreaks: TeamStreak[] = response.locals.teamStreaks;
         response.locals.teamStreaks = teamStreaks.map(teamStreak => ({ ...teamStreak, inviteKey: undefined }));
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.FormatTeamStreaksMiddleware, err));
+        next(new CustomError(ErrorType.FormatCurrentUserTeamStreaksMiddleware, err));
     }
 };
 
-export const sendTeamStreaksMiddleware = (request: Request, response: Response, next: NextFunction): void => {
+export const sendCurrentUserTeamStreaksMiddleware = (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): void => {
     try {
         const { teamStreaks } = response.locals;
         response.status(ResponseCodes.success).send(teamStreaks);
     } catch (err) {
-        next(new CustomError(ErrorType.SendTeamStreaksMiddleware, err));
+        next(new CustomError(ErrorType.SendCurrentUserTeamStreaksMiddleware, err));
     }
 };
 
-export const getAllTeamStreaksMiddlewares = [
-    getTeamStreaksQueryValidationMiddleware,
-    findTeamStreaksMiddleware,
-    retrieveTeamStreaksMembersInformationMiddleware,
-    formatTeamStreaksMiddleware,
-    sendTeamStreaksMiddleware,
+export const getCurrentUserTeamStreaksMiddlewares = [
+    getCurrentUserTeamStreaksQueryValidationMiddleware,
+    findCurrentUserTeamStreaksMiddleware,
+    retrieveCurrentUserTeamStreaksMembersInformationMiddleware,
+    formatCurrentUserTeamStreaksMiddleware,
+    sendCurrentUserTeamStreaksMiddleware,
 ];

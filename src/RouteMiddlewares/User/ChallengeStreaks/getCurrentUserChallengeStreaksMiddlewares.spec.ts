@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    getAllChallengeStreaksMiddlewares,
-    getChallengeStreaksQueryValidationMiddleware,
-    getFindChallengeStreaksMiddleware,
-    findChallengeStreaksMiddleware,
-    sendChallengeStreaksMiddleware,
-} from './getAllChallengeStreaksMiddlewares';
-import { ResponseCodes } from '../../Server/responseCodes';
-import { CustomError, ErrorType } from '../../customError';
+
 import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import {
+    getChallengeStreaksQueryValidationMiddleware,
+    getFindCurrentUserChallengeStreaksMiddleware,
+    getCurrentUserChallengeStreaksMiddleware,
+    findCurrentUserChallengeStreaksMiddleware,
+    sendCurrentUserChallengeStreaksMiddleware,
+} from './getCurrentUserChallengeStreaksMiddlewares';
+import { CustomError, ErrorType } from '../../../customError';
+import { ResponseCodes } from '../../../Server/responseCodes';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 describe('getChallengeStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
@@ -17,7 +18,15 @@ describe('getChallengeStreaksValidationMiddleware', () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            query: { userId: '1234' },
+            query: {
+                challengeId: 'challengeId',
+                timezone: 'Europe/London',
+                status: StreakStatus.archived,
+                completedToday: false,
+                active: true,
+                sortField: GetAllChallengeStreaksSortFields.currentStreak,
+                limit: 10,
+            },
         };
         const response: any = {
             status,
@@ -30,28 +39,7 @@ describe('getChallengeStreaksValidationMiddleware', () => {
     });
 });
 
-describe('findChallengeStreaksMiddleware', () => {
-    test('queries database with just userId and sets response.locals.challengeStreaks', async () => {
-        expect.assertions(4);
-        const limit = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ limit }));
-        const challengeStreakModel = {
-            find,
-        };
-        const userId = '1234';
-        const request: any = { query: { userId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getFindChallengeStreaksMiddleware(challengeStreakModel as any);
-
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ userId, visibility: VisibilityTypes.everyone });
-        expect(limit).toBeCalled();
-        expect(response.locals.challengeStreaks).toEqual(true);
-        expect(next).toBeCalledWith();
-    });
-
+describe('findCurrentUserChallengeStreaksMiddleware', () => {
     test('queries database with just timezone and sets response.locals.challengeStreaks', async () => {
         expect.assertions(4);
         const limit = jest.fn().mockResolvedValue(true);
@@ -63,11 +51,11 @@ describe('findChallengeStreaksMiddleware', () => {
         const request: any = { query: { timezone } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getFindChallengeStreaksMiddleware(challengeStreakModel as any);
+        const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ timezone, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ timezone });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -84,11 +72,11 @@ describe('findChallengeStreaksMiddleware', () => {
         const request: any = { query: { completedToday } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getFindChallengeStreaksMiddleware(challengeStreakModel as any);
+        const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ completedToday: true, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ completedToday: true });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -105,11 +93,11 @@ describe('findChallengeStreaksMiddleware', () => {
         const request: any = { query: { active } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getFindChallengeStreaksMiddleware(challengeStreakModel as any);
+        const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ active: true, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ active: true });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -126,11 +114,11 @@ describe('findChallengeStreaksMiddleware', () => {
         const request: any = { query: { status } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getFindChallengeStreaksMiddleware(challengeStreakModel as any);
+        const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ status, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ status });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -148,11 +136,11 @@ describe('findChallengeStreaksMiddleware', () => {
         const request: any = { query: { sortField } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getFindChallengeStreaksMiddleware(challengeStreakModel as any);
+        const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({});
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
@@ -171,11 +159,11 @@ describe('findChallengeStreaksMiddleware', () => {
         const request: any = { query: { sortField } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getFindChallengeStreaksMiddleware(challengeStreakModel as any);
+        const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({});
         expect(limit).toBeCalled();
         expect(sort).toBeCalledWith({ 'longestChallengeStreak.numberOfDays': -1 });
         expect(response.locals.challengeStreaks).toEqual(true);
@@ -192,7 +180,7 @@ describe('findChallengeStreaksMiddleware', () => {
         const request: any = { query: { userId: '1234' } };
         const response: any = { locals: {} };
         const next = jest.fn();
-        const middleware = getFindChallengeStreaksMiddleware(challengeStreakModel as any);
+        const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
@@ -215,7 +203,7 @@ describe('sendChallengeStreaksMiddleware', () => {
         const response: any = { locals: { challengeStreaks }, status };
         const next = jest.fn();
 
-        sendChallengeStreaksMiddleware(request, response, next);
+        sendCurrentUserChallengeStreaksMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(next).not.toBeCalled();
@@ -234,19 +222,19 @@ describe('sendChallengeStreaksMiddleware', () => {
         const request: any = {};
         const next = jest.fn();
 
-        sendChallengeStreaksMiddleware(request, response, next);
+        sendCurrentUserChallengeStreaksMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SendChallengeStreaksMiddleware, expect.any(Error)));
     });
 });
 
-describe(`getAllChallengeStreaksMiddlewares`, () => {
+describe(`getCurrentUserChallengeStreaksMiddleware`, () => {
     test('are in the correct order', async () => {
         expect.assertions(4);
 
-        expect(getAllChallengeStreaksMiddlewares.length).toEqual(3);
-        expect(getAllChallengeStreaksMiddlewares[0]).toBe(getChallengeStreaksQueryValidationMiddleware);
-        expect(getAllChallengeStreaksMiddlewares[1]).toBe(findChallengeStreaksMiddleware);
-        expect(getAllChallengeStreaksMiddlewares[2]).toBe(sendChallengeStreaksMiddleware);
+        expect(getCurrentUserChallengeStreaksMiddleware.length).toEqual(3);
+        expect(getCurrentUserChallengeStreaksMiddleware[0]).toBe(getChallengeStreaksQueryValidationMiddleware);
+        expect(getCurrentUserChallengeStreaksMiddleware[1]).toBe(findCurrentUserChallengeStreaksMiddleware);
+        expect(getCurrentUserChallengeStreaksMiddleware[2]).toBe(sendCurrentUserChallengeStreaksMiddleware);
     });
 });

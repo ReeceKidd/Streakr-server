@@ -9,6 +9,7 @@ import {
 } from './patchTeamMemberStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
 
 describe('teamMemberStreakParamsValidationMiddleware', () => {
     test('sends correct error response when teamMemberStreakId is not defined', () => {
@@ -60,13 +61,32 @@ describe('teamMemberStreakRequestBodyValidationMiddleware', () => {
     const active = true;
     const currentStreak = {};
     const pastStreaks: object[] = [];
+    const visibility = VisibilityTypes.onlyMe;
     const body = {
         timezone,
         completedToday,
         active,
         currentStreak,
         pastStreaks,
+        visibility,
     };
+
+    test('allows valid request with all keys to pass', () => {
+        expect.assertions(1);
+        const send = jest.fn();
+        const status = jest.fn(() => ({ send }));
+        const request: any = {
+            body,
+        };
+        const response: any = {
+            status,
+        };
+        const next = jest.fn();
+
+        teamMemberStreakRequestBodyValidationMiddleware(request, response, next);
+
+        expect(next).toBeCalled();
+    });
     test('sends correct error response when unsupported key is sent', () => {
         expect.assertions(3);
         const send = jest.fn();

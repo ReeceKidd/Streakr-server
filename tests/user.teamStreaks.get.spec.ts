@@ -14,7 +14,7 @@ import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTyp
 
 jest.setTimeout(120000);
 
-const testName = 'GET-team-streaks';
+const testName = 'GET-user-team-streaks';
 
 describe(testName, () => {
     let database: Mongoose;
@@ -38,8 +38,8 @@ describe(testName, () => {
         }
     });
 
-    test(`team streaks can be retrieved with creatorId query paramter`, async () => {
-        expect.assertions(18);
+    test(`current user team streaks can be retrieved.`, async () => {
+        expect.assertions(17);
 
         const user = await getPayingUser({ testName });
         const creatorId = user._id;
@@ -52,8 +52,7 @@ describe(testName, () => {
             members,
         });
 
-        const teamStreaks = await SDK.teamStreaks.getAll({ creatorId });
-        expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
+        const teamStreaks = await SDK.user.teamStreaks({});
 
         const teamStreak = teamStreaks[0];
         expect(teamStreak.streakName).toEqual(expect.any(String));
@@ -82,7 +81,7 @@ describe(testName, () => {
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
     });
 
-    test(`team streaks with visibility of "onlyMe" are not returned.`, async () => {
+    test(`team streaks with visibility of "onlyMe" are returned.`, async () => {
         expect.assertions(1);
 
         const user = await getPayingUser({ testName });
@@ -101,27 +100,8 @@ describe(testName, () => {
             updateData: { visibility: VisibilityTypes.onlyMe },
         });
 
-        const teamStreaks = await SDK.teamStreaks.getAll({ creatorId });
-        expect(teamStreaks.length).toEqual(0);
-    });
-
-    test('returns no team streaks when invalid creatorId is used', async () => {
-        expect.assertions(1);
-        const user = await getPayingUser({ testName });
-        const creatorId = user._id;
-        const members = [{ memberId: creatorId }];
-        const streakName = 'Daily Spanish';
-
-        await SDK.teamStreaks.create({
-            creatorId,
-            streakName,
-            members,
-        });
-
-        const teamStreaks = await SDK.teamStreaks.getAll({
-            creatorId: 'InvalidID',
-        });
-        expect(teamStreaks.length).toEqual(0);
+        const teamStreaks = await SDK.user.teamStreaks({});
+        expect(teamStreaks.length).toEqual(1);
     });
 
     test(`team streaks can be retrieved with memberId query parameter`, async () => {
@@ -137,7 +117,7 @@ describe(testName, () => {
             members,
         });
 
-        const teamStreaks = await SDK.teamStreaks.getAll({
+        const teamStreaks = await SDK.user.teamStreaks({
             memberId: creatorId,
         });
         expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
@@ -168,24 +148,6 @@ describe(testName, () => {
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
     });
 
-    test('returns no team streaks when invalid memberId is used', async () => {
-        expect.assertions(1);
-        const user = await getPayingUser({ testName });
-        const creatorId = user._id;
-        const members = [{ memberId: creatorId }];
-        const streakName = 'Daily Spanish';
-
-        await SDK.teamStreaks.create({
-            creatorId,
-            streakName,
-            members,
-        });
-        const teamStreaks = await SDK.teamStreaks.getAll({
-            memberId: 'InvalidID',
-        });
-        expect(teamStreaks.length).toEqual(0);
-    });
-
     test(`team streaks can be retreieved with timezone query parameter`, async () => {
         expect.assertions(18);
         const user = await getPayingUser({ testName });
@@ -198,7 +160,7 @@ describe(testName, () => {
             streakName,
             members,
         });
-        const teamStreaks = await SDK.teamStreaks.getAll({ timezone: 'Europe/London' });
+        const teamStreaks = await SDK.user.teamStreaks({ timezone: 'Europe/London' });
 
         expect(teamStreaks.length).toBeGreaterThanOrEqual(1);
 
@@ -241,7 +203,7 @@ describe(testName, () => {
             streakName,
             members,
         });
-        const teamStreaks = await SDK.teamStreaks.getAll({
+        const teamStreaks = await SDK.user.teamStreaks({
             sortField: GetAllTeamStreaksSortFields.currentStreak,
         });
 
@@ -286,7 +248,7 @@ describe(testName, () => {
             streakName,
             members,
         });
-        const teamStreaks = await SDK.teamStreaks.getAll({
+        const teamStreaks = await SDK.user.teamStreaks({
             sortField: GetAllTeamStreaksSortFields.longestTeamStreak,
         });
 
@@ -319,24 +281,6 @@ describe(testName, () => {
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
     });
 
-    test('returns no team streaks when timezone with no team streaks is used', async () => {
-        expect.assertions(1);
-        const user = await getPayingUser({ testName });
-        const creatorId = user._id;
-        const members = [{ memberId: creatorId }];
-        const streakName = 'Daily Spanish';
-
-        await SDK.teamStreaks.create({
-            creatorId,
-            streakName,
-            members,
-        });
-        const teamStreaks = await SDK.teamStreaks.getAll({
-            timezone: 'Europe/Gambier Islands',
-        });
-        expect(teamStreaks.length).toEqual(0);
-    });
-
     test(`archived team streaks can be retrieved`, async () => {
         expect.assertions(17);
 
@@ -356,7 +300,7 @@ describe(testName, () => {
             updateData: { status: StreakStatus.archived },
         });
 
-        const teamStreaks = await SDK.teamStreaks.getAll({
+        const teamStreaks = await SDK.user.teamStreaks({
             status: StreakStatus.archived,
         });
         const teamStreak = teamStreaks[0];
@@ -405,7 +349,7 @@ describe(testName, () => {
             updateData: { status: StreakStatus.deleted },
         });
 
-        const teamStreaks = await SDK.teamStreaks.getAll({
+        const teamStreaks = await SDK.user.teamStreaks({
             status: StreakStatus.deleted,
         });
         const teamStreak = teamStreaks[0];
@@ -454,7 +398,7 @@ describe(testName, () => {
             members,
         });
 
-        const teamStreaks = await SDK.teamStreaks.getAll({
+        const teamStreaks = await SDK.user.teamStreaks({
             limit: 1,
         });
 

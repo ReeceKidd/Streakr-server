@@ -7026,4 +7026,114 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to FindSoloStreaksForCurrentUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FindSoloStreaksForCurrentUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-537`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendSoloStreaksForCurrentUserMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendSoloStreaksForCurrentUserMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-538`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to GetCurrentUserChallengeStreaksMiddlewares`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.GetCurrentUserChallengeStreaksMiddlewares);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-539`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendCurrentUserChallengeStreaksMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendCurrentUserChallengeStreaksMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-540`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to FindCurrentUserTeamMemberStreaksMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FindCurrentUserTeamMemberStreaksMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-541`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendCurrentUserTeamMemberStreaksMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendCurrentUserTeamMemberStreaksMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-542`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to FindCurrentUserTeamStreaksMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FindCurrentUserTeamStreaksMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-543`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to RetrieveCurrentUserTeamStreaksMembersInformation`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.RetrieveCurrentUserTeamStreaksMembersInformation);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-544`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to FormatCurrentUserTeamStreaksMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.FormatCurrentUserTeamStreaksMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-545`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
+
+    test(`creates correct error when type is set to SendCurrentUserTeamStreaksMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.SendCurrentUserTeamStreaksMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-546`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

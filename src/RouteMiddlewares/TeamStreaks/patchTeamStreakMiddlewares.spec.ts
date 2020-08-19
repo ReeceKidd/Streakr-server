@@ -28,6 +28,7 @@ import { CustomError, ErrorType } from '../../customError';
 import { CustomStreakReminder, CustomTeamStreakReminder } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
+import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
 
 describe('patchTeamStreakMiddlewares', () => {
     describe('teamStreakParamsValidationMiddleware', () => {
@@ -83,6 +84,7 @@ describe('patchTeamStreakMiddlewares', () => {
         const status = StreakStatus.archived;
         const completedToday = true;
         const active = true;
+        const visibility = VisibilityTypes.onlyMe;
 
         const body = {
             creatorId,
@@ -93,7 +95,21 @@ describe('patchTeamStreakMiddlewares', () => {
             status,
             completedToday,
             active,
+            visibility,
         };
+
+        test('allows valid request to pass', () => {
+            expect.assertions(1);
+            const request: any = {
+                body,
+            };
+            const response: any = {};
+            const next = jest.fn();
+
+            teamStreakParamsValidationMiddleware(request, response, next);
+
+            expect(next).toBeCalled();
+        });
 
         test('sends correct error response when unsupported key is sent', () => {
             expect.assertions(3);

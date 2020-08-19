@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    getAllTeamMemberStreaksMiddlewares,
-    getTeamMemberStreaksQueryValidationMiddleware,
-    getFindTeamMemberStreaksMiddleware,
-    findTeamMemberStreaksMiddleware,
-    sendTeamMemberStreaksMiddleware,
-} from './getAllTeamMemberStreaksMiddlewares';
-import { ResponseCodes } from '../../Server/responseCodes';
-import { CustomError, ErrorType } from '../../customError';
-import { GetAllTeamMemberStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamMemberStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
 
-describe('getTeamMemberStreaksValidationMiddleware', () => {
-    const userId = 'userId';
+import { GetAllTeamMemberStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamMemberStreaks';
+import {
+    getCurrentUserTeamMemberStreaksQueryValidationMiddleware,
+    getFindCurrentUserTeamMemberStreaksMiddleware,
+    findCurrentUserTeamMemberStreaksMiddleware,
+    sendCurrentUserTeamMemberStreaksMiddleware,
+    getCurrentUserTeamMemberStreaksMiddlewares,
+} from './getCurrentUserTeamMemberStreaksMiddlewares';
+import { CustomError, ErrorType } from '../../../customError';
+import { ResponseCodes } from '../../../Server/responseCodes';
+import { getMockUser } from '../../../testHelpers/getMockUser';
+
+describe('getCurrentUserTeamMemberStreaksValidationMiddleware', () => {
     const teamStreakId = 'teamStreakId';
     const completedToday = true;
     const timezone = 'Europe/London';
@@ -21,7 +21,6 @@ describe('getTeamMemberStreaksValidationMiddleware', () => {
     const limit = 10;
 
     const query = {
-        userId,
         teamStreakId,
         completedToday,
         timezone,
@@ -42,36 +41,16 @@ describe('getTeamMemberStreaksValidationMiddleware', () => {
         };
         const next = jest.fn();
 
-        getTeamMemberStreaksQueryValidationMiddleware(request, response, next);
+        getCurrentUserTeamMemberStreaksQueryValidationMiddleware(request, response, next);
 
         expect(next).toBeCalledWith();
     });
 });
 
-describe('findTeamMemberStreaksMiddleware', () => {
-    test('queries database with just userId and sets response.locals.teamMemberStreaks', async () => {
-        expect.assertions(4);
-        const limit = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ limit }));
-        const teamMemberStreakModel = {
-            find,
-        };
-        const userId = '1234';
-        const request: any = { query: { userId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getFindTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
-
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ userId, visibility: VisibilityTypes.everyone });
-        expect(limit).toBeCalled();
-        expect(response.locals.teamMemberStreaks).toEqual(true);
-        expect(next).toBeCalledWith();
-    });
-
+describe('findCurrentUserTeamMemberStreaksMiddleware', () => {
     test('queries database with just timezone and sets response.locals.teamMemberStreaks', async () => {
         expect.assertions(4);
+
         const limit = jest.fn().mockResolvedValue(true);
         const find = jest.fn(() => ({ limit }));
         const teamMemberStreakModel = {
@@ -79,13 +58,14 @@ describe('findTeamMemberStreaksMiddleware', () => {
         };
         const timezone = 'Europe/London';
         const request: any = { query: { timezone } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
+        const middleware = getFindCurrentUserTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ timezone, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ timezone, userId: user._id });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -100,13 +80,14 @@ describe('findTeamMemberStreaksMiddleware', () => {
         };
         const completedToday = 'true';
         const request: any = { query: { completedToday } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
+        const middleware = getFindCurrentUserTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ completedToday: true, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ completedToday: true, userId: user._id });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -121,13 +102,14 @@ describe('findTeamMemberStreaksMiddleware', () => {
         };
         const active = 'true';
         const request: any = { query: { active } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
+        const middleware = getFindCurrentUserTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ active: true, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ active: true, userId: user._id });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -144,13 +126,14 @@ describe('findTeamMemberStreaksMiddleware', () => {
         };
         const sortField = GetAllTeamMemberStreaksSortFields.currentStreak;
         const request: any = { query: { sortField } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
+        const middleware = getFindCurrentUserTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ userId: user._id });
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
@@ -168,13 +151,14 @@ describe('findTeamMemberStreaksMiddleware', () => {
         };
         const sortField = GetAllTeamMemberStreaksSortFields.longestTeamMemberStreak;
         const request: any = { query: { sortField } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
+        const middleware = getFindCurrentUserTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ userId: user._id });
         expect(sort).toBeCalledWith({ 'longestTeamMemberStreak.numberOfDays': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
@@ -183,15 +167,11 @@ describe('findTeamMemberStreaksMiddleware', () => {
 
     test('calls next with FindTeamMemberStreaksMiddleware error on middleware failure', async () => {
         expect.assertions(1);
-        const ERROR_MESSAGE = 'error';
-        const find = jest.fn(() => Promise.reject(ERROR_MESSAGE));
-        const teamMemberStreakModel = {
-            find,
-        };
-        const request: any = { query: { userId: '1234' } };
-        const response: any = { locals: {} };
+
+        const request: any = {};
+        const response: any = {};
         const next = jest.fn();
-        const middleware = getFindTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
+        const middleware = getFindCurrentUserTeamMemberStreaksMiddleware({} as any);
 
         await middleware(request, response, next);
 
@@ -214,7 +194,7 @@ describe('sendTeamMemberStreaksMiddleware', () => {
         const response: any = { locals: { teamMemberStreaks }, status };
         const next = jest.fn();
 
-        sendTeamMemberStreaksMiddleware(request, response, next);
+        sendCurrentUserTeamMemberStreaksMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(next).not.toBeCalled();
@@ -233,18 +213,20 @@ describe('sendTeamMemberStreaksMiddleware', () => {
         const request: any = {};
         const next = jest.fn();
 
-        sendTeamMemberStreaksMiddleware(request, response, next);
+        sendCurrentUserTeamMemberStreaksMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SendTeamMemberStreaksMiddleware, expect.any(Error)));
     });
 });
 
-describe(`getAllTeamMemberStreaksMiddlewares`, () => {
+describe(`getCurrentUserTeamMemberStreaksMiddlewares`, () => {
     test('that getTeamMemberStreaksMiddlewares are defined in the correct order', async () => {
         expect.assertions(3);
 
-        expect(getAllTeamMemberStreaksMiddlewares[0]).toBe(getTeamMemberStreaksQueryValidationMiddleware);
-        expect(getAllTeamMemberStreaksMiddlewares[1]).toBe(findTeamMemberStreaksMiddleware);
-        expect(getAllTeamMemberStreaksMiddlewares[2]).toBe(sendTeamMemberStreaksMiddleware);
+        expect(getCurrentUserTeamMemberStreaksMiddlewares[0]).toBe(
+            getCurrentUserTeamMemberStreaksQueryValidationMiddleware,
+        );
+        expect(getCurrentUserTeamMemberStreaksMiddlewares[1]).toBe(findCurrentUserTeamMemberStreaksMiddleware);
+        expect(getCurrentUserTeamMemberStreaksMiddlewares[2]).toBe(sendCurrentUserTeamMemberStreaksMiddleware);
     });
 });

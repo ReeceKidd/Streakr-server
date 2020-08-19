@@ -13,7 +13,7 @@ import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTyp
 
 jest.setTimeout(120000);
 
-const testName = 'GET-challenge-streaks';
+const testName = 'GET-user-challenge-streaks';
 
 describe(testName, () => {
     let database: Mongoose;
@@ -37,7 +37,7 @@ describe(testName, () => {
         }
     });
 
-    test(`challenge streaks can be retrieved with user query parameter`, async () => {
+    test(`challenge streaks can be retrieved`, async () => {
         expect.assertions(17);
 
         const user = await getPayingUser({ testName });
@@ -56,7 +56,7 @@ describe(testName, () => {
             challengeId: challenge._id,
         });
 
-        const challengeStreaks = await SDK.challengeStreaks.getAll({ userId });
+        const challengeStreaks = await SDK.user.challengeStreaks({});
         expect(challengeStreaks.length).toBeGreaterThanOrEqual(1);
 
         const challengeStreak = challengeStreaks[0];
@@ -81,7 +81,7 @@ describe(testName, () => {
         expect(Object.keys(challengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
-    test(`challenge streaks with a visibility of "onlyMe" cannot be retrieved.`, async () => {
+    test(`challenge streaks with a visibility of "onlyMe" can be retrieved`, async () => {
         expect.assertions(1);
 
         const user = await getPayingUser({ testName });
@@ -95,18 +95,18 @@ describe(testName, () => {
             description,
             icon,
         });
-        const createdChallengeStreak = await SDK.challengeStreaks.create({
+        const challengeStreak = await SDK.challengeStreaks.create({
             userId,
             challengeId: challenge._id,
         });
 
         await SDK.challengeStreaks.update({
-            challengeStreakId: createdChallengeStreak._id,
+            challengeStreakId: challengeStreak._id,
             updateData: { visibility: VisibilityTypes.onlyMe },
         });
 
-        const challengeStreaks = await SDK.challengeStreaks.getAll({ userId });
-        expect(challengeStreaks.length).toEqual(0);
+        const challengeStreaks = await SDK.user.challengeStreaks({});
+        expect(challengeStreaks.length).toEqual(1);
     });
 
     test('incomplete challenge streaks can be retrieved', async () => {
@@ -143,7 +143,7 @@ describe(testName, () => {
             },
         });
 
-        const challengeStreaks = await SDK.challengeStreaks.getAll({
+        const challengeStreaks = await SDK.user.challengeStreaks({
             completedToday: false,
             active: true,
             status: StreakStatus.live,
@@ -213,7 +213,7 @@ describe(testName, () => {
             challengeStreakId: challengeStreak._id,
             updateData: { status: StreakStatus.archived },
         });
-        const challengeStreaks = await SDK.challengeStreaks.getAll({
+        const challengeStreaks = await SDK.user.challengeStreaks({
             status: StreakStatus.archived,
         });
 
@@ -248,7 +248,7 @@ describe(testName, () => {
             updateData: { status: StreakStatus.deleted },
         });
 
-        const challengeStreaks = await SDK.challengeStreaks.getAll({
+        const challengeStreaks = await SDK.user.challengeStreaks({
             status: StreakStatus.deleted,
         });
 
@@ -278,7 +278,7 @@ describe(testName, () => {
             challengeId: challenge._id,
         });
 
-        const challengeStreaks = await SDK.challengeStreaks.getAll({
+        const challengeStreaks = await SDK.user.challengeStreaks({
             sortField: GetAllChallengeStreaksSortFields.currentStreak,
         });
         expect(challengeStreaks.length).toBeGreaterThanOrEqual(1);
@@ -308,7 +308,7 @@ describe(testName, () => {
             challengeId: challenge._id,
         });
 
-        const challengeStreaks = await SDK.challengeStreaks.getAll({
+        const challengeStreaks = await SDK.user.challengeStreaks({
             sortField: GetAllChallengeStreaksSortFields.longestChallengeStreak,
         });
         expect(challengeStreaks.length).toBeGreaterThanOrEqual(1);
@@ -346,7 +346,7 @@ describe(testName, () => {
             challengeId: readingChallenge.challenge._id,
         });
 
-        const challengeStreaks = await SDK.challengeStreaks.getAll({
+        const challengeStreaks = await SDK.user.challengeStreaks({
             limit: 1,
         });
         expect(challengeStreaks.length).toEqual(1);

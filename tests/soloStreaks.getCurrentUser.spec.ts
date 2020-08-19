@@ -9,11 +9,10 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
 import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
 
 jest.setTimeout(120000);
 
-const testName = 'GET-solo-streaks';
+const testName = 'GET-solo-streaks-current-user';
 
 describe(testName, () => {
     let database: Mongoose;
@@ -71,28 +70,6 @@ describe(testName, () => {
         expect(soloStreak.createdAt).toEqual(expect.any(String));
         expect(soloStreak.updatedAt).toEqual(expect.any(String));
         expect(Object.keys(soloStreak).sort()).toEqual(correctSoloStreakKeys);
-    });
-
-    test(`solo streaks with "onlyMe" visibility cannot be retrieved.`, async () => {
-        expect.assertions(1);
-
-        const user = await getPayingUser({ testName });
-        const userId = user._id;
-        const streakName = 'Daily Spanish';
-        const streakDescription = 'Everyday I must do Spanish';
-        const createdSoloStreak = await SDK.soloStreaks.create({
-            userId,
-            streakName,
-            streakDescription,
-        });
-
-        await SDK.soloStreaks.update({
-            soloStreakId: createdSoloStreak._id,
-            updateData: { visibility: VisibilityTypes.onlyMe },
-        });
-
-        const soloStreaks = await SDK.soloStreaks.getAll({ userId });
-        expect(soloStreaks.length).toEqual(0);
     });
 
     test('incomplete solo streaks can be retrieved', async () => {

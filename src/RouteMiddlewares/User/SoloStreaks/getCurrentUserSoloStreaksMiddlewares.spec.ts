@@ -1,21 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-    getAllSoloStreaksMiddlewares,
     getSoloStreaksQueryValidationMiddleware,
-    getFindSoloStreaksMiddleware,
-    findSoloStreaksMiddleware,
-    sendSoloStreaksMiddleware,
-} from './getAllSoloStreaksMiddlewares';
-import { ResponseCodes } from '../../Server/responseCodes';
-import { CustomError, ErrorType } from '../../customError';
+    getFindSoloStreaksForCurrentUserMiddleware,
+    sendSoloStreaksForCurrentUserMiddleware,
+    findSoloStreaksForCurrentUserMiddleware,
+} from './getCurrentUserSoloStreaksMiddlewares';
+import { ResponseCodes } from '../../../Server/responseCodes';
+import { CustomError, ErrorType } from '../../../customError';
 import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
+import { getMockUser } from '../../../testHelpers/getMockUser';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import { getCurrentUserSoloStreaksMiddlewares } from './getCurrentUserSoloStreaksMiddlewares';
 describe('getSoloStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
         expect.assertions(1);
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
         const request: any = {
-            query: { userId: '1234' },
+            query: {
+                status: StreakStatus.archived,
+                completedToday: false,
+                active: true,
+                sortField: GetAllSoloStreaksSortFields.currentStreak,
+                limit: 10,
+            },
         };
         const response: any = {
             status,
@@ -25,73 +33,10 @@ describe('getSoloStreaksValidationMiddleware', () => {
         getSoloStreaksQueryValidationMiddleware(request, response, next);
 
         expect(next).toBeCalledWith();
-    });
-
-    test('sends userId cannot be a number error', () => {
-        expect.assertions(3);
-        const send = jest.fn();
-        const status = jest.fn(() => ({ send }));
-        const request: any = {
-            query: { userId: 123 },
-        };
-        const response: any = {
-            status,
-        };
-        const next = jest.fn();
-
-        getSoloStreaksQueryValidationMiddleware(request, response, next);
-
-        expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-        expect(send).toBeCalledWith({
-            message: 'child "userId" fails because ["userId" must be a string]',
-        });
-        expect(next).not.toBeCalled();
     });
 });
 
-describe('findSoloStreaksMiddleware', () => {
-    test('queries database with just userId and sets response.locals.soloStreaks', async () => {
-        expect.assertions(4);
-        const limit = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ limit }));
-        const soloStreakModel = {
-            find,
-        };
-        const userId = '1234';
-        const request: any = { query: { userId } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
-
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ userId });
-        expect(limit).toBeCalled();
-        expect(response.locals.soloStreaks).toEqual(true);
-        expect(next).toBeCalledWith();
-    });
-
-    test('queries database with just timezone and sets response.locals.soloStreaks', async () => {
-        expect.assertions(4);
-        const limit = jest.fn().mockResolvedValue(true);
-        const find = jest.fn(() => ({ limit }));
-        const soloStreakModel = {
-            find,
-        };
-        const timezone = 'Europe/London';
-        const request: any = { query: { timezone } };
-        const response: any = { locals: {} };
-        const next = jest.fn();
-        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
-
-        await middleware(request, response, next);
-
-        expect(find).toBeCalledWith({ timezone });
-        expect(limit).toBeCalled();
-        expect(response.locals.soloStreaks).toEqual(true);
-        expect(next).toBeCalledWith();
-    });
-
+describe('findSoloStreaksForCurrentUserMiddleware', () => {
     test('queries database with just completedToday as a boolean and sets response.locals.soloStreaks', async () => {
         expect.assertions(4);
         const limit = jest.fn().mockResolvedValue(true);
@@ -100,14 +45,15 @@ describe('findSoloStreaksMiddleware', () => {
             find,
         };
         const completedToday = 'true';
+        const user = getMockUser({ _id: 'userId' });
         const request: any = { query: { completedToday } };
-        const response: any = { locals: {} };
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+        const middleware = getFindSoloStreaksForCurrentUserMiddleware(soloStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ completedToday: true });
+        expect(find).toBeCalledWith({ completedToday: true, userId: user._id });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -121,14 +67,15 @@ describe('findSoloStreaksMiddleware', () => {
             find,
         };
         const active = 'true';
+        const user = getMockUser({ _id: 'userId' });
         const request: any = { query: { active } };
-        const response: any = { locals: {} };
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+        const middleware = getFindSoloStreaksForCurrentUserMiddleware(soloStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ active: true });
+        expect(find).toBeCalledWith({ active: true, userId: user._id });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -142,14 +89,15 @@ describe('findSoloStreaksMiddleware', () => {
             find,
         };
         const status = 'active';
-        const request: any = { query: { status } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const request: any = { query: { status, userId: user._id } };
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+        const middleware = getFindSoloStreaksForCurrentUserMiddleware(soloStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ status });
+        expect(find).toBeCalledWith({ status, userId: user._id });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -165,13 +113,14 @@ describe('findSoloStreaksMiddleware', () => {
         };
         const sortField = GetAllSoloStreaksSortFields.currentStreak;
         const request: any = { query: { sortField } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+        const middleware = getFindSoloStreaksForCurrentUserMiddleware(soloStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({});
+        expect(find).toBeCalledWith({ userId: user._id });
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toBeDefined();
@@ -187,14 +136,15 @@ describe('findSoloStreaksMiddleware', () => {
             find,
         };
         const sortField = GetAllSoloStreaksSortFields.longestSoloStreak;
-        const request: any = { query: { sortField } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const request: any = { query: { sortField, userId: user._id } };
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+        const middleware = getFindSoloStreaksForCurrentUserMiddleware(soloStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({});
+        expect(find).toBeCalledWith({ userId: user._id });
         expect(sort).toBeCalledWith({ 'longestSoloStreak.numberOfDays': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toBeDefined();
@@ -209,14 +159,15 @@ describe('findSoloStreaksMiddleware', () => {
             find,
         };
         const limitValue = 10;
-        const request: any = { query: { limit: limitValue } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const request: any = { query: { limit: limitValue, userId: user._id } };
+        const response: any = { locals: { user } };
         const next = jest.fn();
-        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+        const middleware = getFindSoloStreaksForCurrentUserMiddleware(soloStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({});
+        expect(find).toBeCalledWith({ userId: user._id });
         expect(limit).toBeCalledWith(limitValue);
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -229,10 +180,10 @@ describe('findSoloStreaksMiddleware', () => {
         const soloStreakModel = {
             find,
         };
-        const request: any = { query: { userId: '1234' } };
-        const response: any = { locals: {} };
+        const request: any = {};
+        const response: any = {};
         const next = jest.fn();
-        const middleware = getFindSoloStreaksMiddleware(soloStreakModel as any);
+        const middleware = getFindSoloStreaksForCurrentUserMiddleware(soloStreakModel as any);
 
         await middleware(request, response, next);
 
@@ -240,7 +191,7 @@ describe('findSoloStreaksMiddleware', () => {
     });
 });
 
-describe('sendSoloStreaksMiddleware', () => {
+describe('sendSoloStreaksForCurrentUserMiddleware', () => {
     test('sends soloStreaks in response', () => {
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));
@@ -255,7 +206,7 @@ describe('sendSoloStreaksMiddleware', () => {
         const response: any = { locals: { soloStreaks }, status };
         const next = jest.fn();
 
-        sendSoloStreaksMiddleware(request, response, next);
+        sendSoloStreaksForCurrentUserMiddleware(request, response, next);
 
         expect.assertions(3);
         expect(next).not.toBeCalled();
@@ -274,19 +225,19 @@ describe('sendSoloStreaksMiddleware', () => {
         const request: any = {};
         const next = jest.fn();
 
-        sendSoloStreaksMiddleware(request, response, next);
+        sendSoloStreaksForCurrentUserMiddleware(request, response, next);
 
         expect(next).toBeCalledWith(new CustomError(ErrorType.SendSoloStreaksMiddleware, expect.any(Error)));
     });
 });
 
-describe(`getAllSoloStreaksMiddlewares`, () => {
+describe(`getCurrentUserSoloStreaksMiddlewares`, () => {
     test('are in the correct order', async () => {
         expect.assertions(4);
 
-        expect(getAllSoloStreaksMiddlewares.length).toEqual(3);
-        expect(getAllSoloStreaksMiddlewares[0]).toBe(getSoloStreaksQueryValidationMiddleware);
-        expect(getAllSoloStreaksMiddlewares[1]).toBe(findSoloStreaksMiddleware);
-        expect(getAllSoloStreaksMiddlewares[2]).toBe(sendSoloStreaksMiddleware);
+        expect(getCurrentUserSoloStreaksMiddlewares.length).toEqual(3);
+        expect(getCurrentUserSoloStreaksMiddlewares[0]).toBe(getSoloStreaksQueryValidationMiddleware);
+        expect(getCurrentUserSoloStreaksMiddlewares[1]).toBe(findSoloStreaksForCurrentUserMiddleware);
+        expect(getCurrentUserSoloStreaksMiddlewares[2]).toBe(sendSoloStreaksForCurrentUserMiddleware);
     });
 });
