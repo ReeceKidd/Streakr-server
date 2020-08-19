@@ -9,6 +9,7 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
+import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
 describe('getSoloStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
         expect.assertions(1);
@@ -65,7 +66,7 @@ describe('findSoloStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ userId });
+        expect(find).toBeCalledWith({ userId, visibility: VisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -86,7 +87,7 @@ describe('findSoloStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ timezone });
+        expect(find).toBeCalledWith({ timezone, visibility: VisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -107,7 +108,7 @@ describe('findSoloStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ completedToday: true });
+        expect(find).toBeCalledWith({ completedToday: true, visibility: VisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -128,7 +129,7 @@ describe('findSoloStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ active: true });
+        expect(find).toBeCalledWith({ active: true, visibility: VisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -149,7 +150,7 @@ describe('findSoloStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ status });
+        expect(find).toBeCalledWith({ status, visibility: VisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -171,7 +172,7 @@ describe('findSoloStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({});
+        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toBeDefined();
@@ -194,7 +195,7 @@ describe('findSoloStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({});
+        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
         expect(sort).toBeCalledWith({ 'longestSoloStreak.numberOfDays': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.soloStreaks).toBeDefined();
@@ -216,7 +217,7 @@ describe('findSoloStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({});
+        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
         expect(limit).toBeCalledWith(limitValue);
         expect(response.locals.soloStreaks).toEqual(true);
         expect(next).toBeCalledWith();

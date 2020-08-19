@@ -11,6 +11,7 @@ import {
 import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
+import { getMockUser } from '../../../testHelpers/getMockUser';
 
 describe('getChallengeStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
@@ -49,13 +50,14 @@ describe('findCurrentUserChallengeStreaksMiddleware', () => {
         };
         const timezone = 'Europe/London';
         const request: any = { query: { timezone } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
         const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ timezone });
+        expect(find).toBeCalledWith({ timezone, userId: user._id });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -70,13 +72,14 @@ describe('findCurrentUserChallengeStreaksMiddleware', () => {
         };
         const completedToday = 'true';
         const request: any = { query: { completedToday } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
         const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ completedToday: true });
+        expect(find).toBeCalledWith({ completedToday: true, userId: user._id });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -91,13 +94,14 @@ describe('findCurrentUserChallengeStreaksMiddleware', () => {
         };
         const active = 'true';
         const request: any = { query: { active } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
         const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ active: true });
+        expect(find).toBeCalledWith({ active: true, userId: user._id });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -112,13 +116,14 @@ describe('findCurrentUserChallengeStreaksMiddleware', () => {
         };
         const status = 'active';
         const request: any = { query: { status } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
         const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ status });
+        expect(find).toBeCalledWith({ status, userId: user._id });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -134,13 +139,14 @@ describe('findCurrentUserChallengeStreaksMiddleware', () => {
         };
         const sortField = GetAllChallengeStreaksSortFields.currentStreak;
         const request: any = { query: { sortField } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
         const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({});
+        expect(find).toBeCalledWith({ userId: user._id });
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
@@ -157,13 +163,14 @@ describe('findCurrentUserChallengeStreaksMiddleware', () => {
         };
         const sortField = GetAllChallengeStreaksSortFields.longestChallengeStreak;
         const request: any = { query: { sortField } };
-        const response: any = { locals: {} };
+        const user = getMockUser({ _id: 'userId' });
+        const response: any = { locals: { user } };
         const next = jest.fn();
         const middleware = getFindCurrentUserChallengeStreaksMiddleware(challengeStreakModel as any);
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({});
+        expect(find).toBeCalledWith({ userId: user._id });
         expect(limit).toBeCalled();
         expect(sort).toBeCalledWith({ 'longestChallengeStreak.numberOfDays': -1 });
         expect(response.locals.challengeStreaks).toEqual(true);

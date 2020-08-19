@@ -100,48 +100,6 @@ describe('patchChallengeStreakMiddlewares', () => {
             });
             expect(next).not.toBeCalled();
         });
-
-        test('sends correct error when streakName is not a string', () => {
-            expect.assertions(3);
-            const send = jest.fn();
-            const status = jest.fn(() => ({ send }));
-            const request: any = {
-                body: { streakName: 1234 },
-            };
-            const response: any = {
-                status,
-            };
-            const next = jest.fn();
-
-            challengeStreakRequestBodyValidationMiddleware(request, response, next);
-
-            expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-            expect(send).toBeCalledWith({
-                message: 'child "streakName" fails because ["streakName" must be a string]',
-            });
-            expect(next).not.toBeCalled();
-        });
-
-        test('sends correct response is sent when streakDescription is not a string', () => {
-            expect.assertions(3);
-            const send = jest.fn();
-            const status = jest.fn(() => ({ send }));
-            const request: any = {
-                body: { streakDescription: 1234 },
-            };
-            const response: any = {
-                status,
-            };
-            const next = jest.fn();
-
-            challengeStreakRequestBodyValidationMiddleware(request, response, next);
-
-            expect(status).toHaveBeenCalledWith(ResponseCodes.unprocessableEntity);
-            expect(send).toBeCalledWith({
-                message: 'child "streakDescription" fails because ["streakDescription" must be a string]',
-            });
-            expect(next).not.toBeCalled();
-        });
     });
 
     describe('patchChallengeStreakMiddleware', () => {

@@ -38,7 +38,9 @@ export const getFindCurrentUserChallengeStreaksMiddleware = (
         const user: User = response.locals.user;
         const { challengeId, timezone, completedToday, active, status, sortField } = request.query;
 
-        const limit = Number(request.query.limit);
+        const defaultLeaderboardItems = 30;
+
+        const limit = Number(request.query.limit) || defaultLeaderboardItems;
 
         const query: {
             userId: string;
@@ -76,8 +78,6 @@ export const getFindCurrentUserChallengeStreaksMiddleware = (
                 .find(query)
                 .sort({ 'longestChallengeStreak.numberOfDays': -1 })
                 .limit(limit);
-        } else if (!limit) {
-            response.locals.challengeStreaks = await challengeStreakModel.find(query);
         } else {
             response.locals.challengeStreaks = await challengeStreakModel.find(query).limit(limit);
         }

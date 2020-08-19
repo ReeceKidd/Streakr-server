@@ -69,7 +69,7 @@ describe('findTeamStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ creatorId, ['member.memberId']: user._id });
+        expect(find).toBeCalledWith({ creatorId, ['members.memberId']: user._id });
         expect(limit).toBeCalled();
         expect(lean).toBeCalled();
         expect(response.locals.teamStreaks).toEqual(true);
@@ -93,7 +93,7 @@ describe('findTeamStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ timezone, ['member.memberId']: user._id });
+        expect(find).toBeCalledWith({ timezone, ['members.memberId']: user._id });
         expect(limit).toBeCalled();
         expect(lean).toBeCalled();
         expect(response.locals.teamStreaks).toEqual(true);
@@ -117,7 +117,7 @@ describe('findTeamStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ status, ['member.memberId']: user._id });
+        expect(find).toBeCalledWith({ status, ['members.memberId']: user._id });
         expect(limit).toBeCalled();
         expect(lean).toBeCalled();
         expect(response.locals.teamStreaks).toEqual(true);
@@ -142,7 +142,7 @@ describe('findTeamStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ ['member.memberId']: user._id });
+        expect(find).toBeCalledWith({ ['members.memberId']: user._id });
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(limit).toBeCalled();
         expect(lean).toBeCalled();
@@ -168,7 +168,7 @@ describe('findTeamStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ ['member.memberId']: user._id });
+        expect(find).toBeCalledWith({ ['members.memberId']: user._id });
         expect(sort).toBeCalledWith({ 'longestTeamStreak.numberOfDays': -1 });
         expect(limit).toBeCalled();
         expect(lean).toBeCalled();
