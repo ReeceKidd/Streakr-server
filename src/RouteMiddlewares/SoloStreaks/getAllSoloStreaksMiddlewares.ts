@@ -7,7 +7,7 @@ import { soloStreakModel, SoloStreakModel } from '../../Models/SoloStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 const getSoloStreaksQueryValidationSchema = {
     userId: Joi.string(),
@@ -44,7 +44,7 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
         const limit = Number(request.query.limit) || defaultLeaderboardLimit;
 
         const query: {
-            visibility: VisibilityTypes;
+            visibility: IndividualVisibilityTypes;
             userId?: string;
             timezone?: string;
             status?: string;
@@ -52,7 +52,7 @@ export const getFindSoloStreaksMiddleware = (soloStreakModel: mongoose.Model<Sol
             active?: boolean;
             sortField?: string;
         } = {
-            visibility: VisibilityTypes.everyone,
+            visibility: IndividualVisibilityTypes.everyone,
         };
 
         if (userId) {

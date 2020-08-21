@@ -7,7 +7,7 @@ import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamM
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { GetAllTeamMemberStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamMemberStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 const getTeamMemberStreaksQueryValidationSchema = {
     userId: Joi.string(),
@@ -42,7 +42,7 @@ export const getFindTeamMemberStreaksMiddleware = (
         const limit = Number(request.query.limit) || defaultLeaderboardLimit;
 
         const query: {
-            visibility: VisibilityTypes;
+            visibility: TeamVisibilityTypes;
             userId?: string;
             teamStreakId?: string;
             timezone?: string;
@@ -50,7 +50,7 @@ export const getFindTeamMemberStreaksMiddleware = (
             active?: boolean;
             sortField?: string;
         } = {
-            visibility: VisibilityTypes.everyone,
+            visibility: TeamVisibilityTypes.everyone,
         };
 
         if (userId) {

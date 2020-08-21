@@ -4,7 +4,7 @@ import { Models } from './Models';
 import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 export type SoloStreakModel = SoloStreak & mongoose.Document;
 
@@ -70,7 +70,7 @@ export const soloStreakSchema = new mongoose.Schema(
         },
         visibility: {
             type: String,
-            default: VisibilityTypes.everyone,
+            default: IndividualVisibilityTypes.everyone,
         },
         longestSoloStreak: {
             soloStreakId: {

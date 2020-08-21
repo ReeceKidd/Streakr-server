@@ -28,7 +28,7 @@ import { CustomError, ErrorType } from '../../customError';
 import { CustomStreakReminder, CustomTeamStreakReminder } from '@streakoid/streakoid-models/lib/Models/StreakReminders';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 describe('patchTeamStreakMiddlewares', () => {
     describe('teamStreakParamsValidationMiddleware', () => {
@@ -84,7 +84,7 @@ describe('patchTeamStreakMiddlewares', () => {
         const status = StreakStatus.archived;
         const completedToday = true;
         const active = true;
-        const visibility = VisibilityTypes.onlyMe;
+        const visibility = TeamVisibilityTypes.onlyMe;
 
         const body = {
             creatorId,

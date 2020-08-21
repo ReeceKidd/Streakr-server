@@ -10,7 +10,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctTeamStreakKeys } from '../src/testHelpers/correctTeamStreakKeys';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 jest.setTimeout(120000);
 
@@ -58,7 +58,7 @@ describe(testName, () => {
         const numberOfMinutes = 30;
         const updatedTimezone = 'Europe/Rome';
         const numberOfDaysInARow = 10;
-        const visibility = VisibilityTypes.everyone;
+        const visibility = TeamVisibilityTypes.everyone;
 
         const teamStreak = await SDK.teamStreaks.update({
             teamStreakId: originalTeamStreak._id,

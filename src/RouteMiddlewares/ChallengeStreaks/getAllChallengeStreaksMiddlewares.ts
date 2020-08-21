@@ -7,7 +7,7 @@ import { challengeStreakModel, ChallengeStreakModel } from '../../Models/Challen
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 const getChallengeStreaksQueryValidationSchema = {
     userId: Joi.string(),
@@ -45,7 +45,7 @@ export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose
         const limit = Number(request.query.limit) || defaultLeaderboardLimit;
 
         const query: {
-            visibility: VisibilityTypes;
+            visibility: IndividualVisibilityTypes;
             userId?: string;
             challengeId?: string;
             timezone?: string;
@@ -54,7 +54,7 @@ export const getFindChallengeStreaksMiddleware = (challengeStreakModel: mongoose
             active?: boolean;
             sortField?: string;
         } = {
-            visibility: VisibilityTypes.everyone,
+            visibility: IndividualVisibilityTypes.everyone,
         };
 
         if (userId) {

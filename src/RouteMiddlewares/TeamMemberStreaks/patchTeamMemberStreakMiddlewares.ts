@@ -6,7 +6,7 @@ import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddlewar
 import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 const teamMemberStreakParamsValidationSchema = {
     teamMemberStreakId: Joi.string().required(),
@@ -30,7 +30,7 @@ const teamMemberStreakBodyValidationSchema = {
     active: Joi.boolean(),
     currentStreak: Joi.object(),
     pastStreaks: Joi.array(),
-    visibility: Joi.string().valid(Object.keys(VisibilityTypes)),
+    visibility: Joi.string().valid(Object.keys(TeamVisibilityTypes)),
 };
 
 export const teamMemberStreakRequestBodyValidationMiddleware = (

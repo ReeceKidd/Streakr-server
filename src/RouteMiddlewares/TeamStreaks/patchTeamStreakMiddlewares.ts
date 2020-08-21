@@ -15,7 +15,7 @@ import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 const teamStreakParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -44,7 +44,7 @@ const teamStreakBodyValidationSchema = {
     status: Joi.string().valid(Object.keys(StreakStatus)),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
-    visibility: Joi.string().valid(Object.keys(VisibilityTypes)),
+    visibility: Joi.string().valid(Object.keys(TeamVisibilityTypes)),
 };
 
 export const teamStreakRequestBodyValidationMiddleware = (

@@ -15,7 +15,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
 import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 import { PastStreak } from '@streakoid/streakoid-models/lib/Models/PastStreak';
 
 jest.setTimeout(120000);
@@ -77,7 +77,7 @@ describe(testName, () => {
         };
         const pastStreaks: PastStreak[] = [];
         const userDefinedIndex = 10;
-        const visibility = VisibilityTypes.onlyMe;
+        const visibility = IndividualVisibilityTypes.onlyMe;
 
         const updatedChallengeStreak = await SDK.challengeStreaks.update({
             challengeStreakId,

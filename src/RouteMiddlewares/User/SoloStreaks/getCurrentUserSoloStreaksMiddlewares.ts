@@ -7,7 +7,7 @@ import { soloStreakModel, SoloStreakModel } from '../../../Models/SoloStreak';
 import { ResponseCodes } from '../../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../../customError';
 import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 
 const getSoloStreaksQueryValidationSchema = {
@@ -49,7 +49,7 @@ export const getFindSoloStreaksForCurrentUserMiddleware = (soloStreakModel: mong
             completedToday?: boolean;
             active?: boolean;
             sortField?: string;
-            visibility?: VisibilityTypes;
+            visibility?: IndividualVisibilityTypes;
         } = { userId: user._id };
 
         if (status) {

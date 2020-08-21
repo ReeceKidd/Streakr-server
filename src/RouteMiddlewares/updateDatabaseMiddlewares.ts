@@ -1,6 +1,6 @@
 // import { Request, Response } from 'express';
 
-// import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+// import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 // import { teamMemberStreakModel } from '../Models/TeamMemberStreak';
 
 // export const updateDatabaseMiddleware = async (request: Request, response: Response): Promise<void> => {
@@ -8,7 +8,7 @@
 //     await Promise.all(
 //         teamMemberStreaks.map(async teamMemberStreak => {
 //             return teamMemberStreakModel.findByIdAndUpdate(teamMemberStreak._id, {
-//                 $set: { visibility: VisibilityTypes.everyone },
+//                 $set: { visibility: IndividualVisibilityTypes.everyone },
 //             });
 //         }),
 //     );

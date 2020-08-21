@@ -4,7 +4,7 @@ import { Models } from './Models';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 export type TeamStreakModel = TeamStreak & mongoose.Document;
 
@@ -71,7 +71,7 @@ export const teamStreakSchema = new mongoose.Schema(
         },
         visibility: {
             type: String,
-            default: VisibilityTypes.everyone,
+            default: TeamVisibilityTypes.everyone,
         },
         longestTeamStreak: {
             teamStreakId: {

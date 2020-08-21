@@ -9,7 +9,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreaks';
 import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 jest.setTimeout(120000);
 
@@ -102,7 +102,7 @@ describe(testName, () => {
 
         await SDK.challengeStreaks.update({
             challengeStreakId: createdChallengeStreak._id,
-            updateData: { visibility: VisibilityTypes.onlyMe },
+            updateData: { visibility: IndividualVisibilityTypes.onlyMe },
         });
 
         const challengeStreaks = await SDK.challengeStreaks.getAll({ userId });

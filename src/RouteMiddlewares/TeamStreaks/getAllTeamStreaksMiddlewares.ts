@@ -13,7 +13,7 @@ import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import { PopulatedTeamMember } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamMember';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 import { GetAllTeamStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 const getTeamStreaksQueryValidationSchema = {
     creatorId: Joi.string(),
@@ -51,7 +51,7 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
         const limit = Number(request.query.limit) || defaultLeaderboardLimit;
 
         const query: {
-            visibility: VisibilityTypes;
+            visibility: TeamVisibilityTypes;
             creatorId?: string;
             ['members.memberId']?: string;
             timezone?: string;
@@ -60,7 +60,7 @@ export const getFindTeamStreaksMiddleware = (teamStreakModel: mongoose.Model<Tea
             active?: boolean;
             sortField?: string;
         } = {
-            visibility: VisibilityTypes.everyone,
+            visibility: TeamVisibilityTypes.everyone,
         };
 
         if (creatorId) {

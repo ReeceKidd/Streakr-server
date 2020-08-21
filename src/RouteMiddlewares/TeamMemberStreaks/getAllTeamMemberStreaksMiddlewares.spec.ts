@@ -9,7 +9,7 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { GetAllTeamMemberStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamMemberStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 describe('getTeamMemberStreaksValidationMiddleware', () => {
     const userId = 'userId';
@@ -64,7 +64,7 @@ describe('findTeamMemberStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ userId, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ userId, visibility: TeamVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -85,7 +85,7 @@ describe('findTeamMemberStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ timezone, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ timezone, visibility: TeamVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -106,7 +106,7 @@ describe('findTeamMemberStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ completedToday: true, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ completedToday: true, visibility: TeamVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -127,7 +127,7 @@ describe('findTeamMemberStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ active: true, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ active: true, visibility: TeamVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -150,7 +150,7 @@ describe('findTeamMemberStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ visibility: TeamVisibilityTypes.everyone });
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
@@ -174,7 +174,7 @@ describe('findTeamMemberStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ visibility: TeamVisibilityTypes.everyone });
         expect(sort).toBeCalledWith({ 'longestTeamMemberStreak.numberOfDays': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);

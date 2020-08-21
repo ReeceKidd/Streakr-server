@@ -9,7 +9,7 @@ import {
 } from './patchTeamMemberStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 describe('teamMemberStreakParamsValidationMiddleware', () => {
     test('sends correct error response when teamMemberStreakId is not defined', () => {
@@ -61,7 +61,7 @@ describe('teamMemberStreakRequestBodyValidationMiddleware', () => {
     const active = true;
     const currentStreak = {};
     const pastStreaks: object[] = [];
-    const visibility = VisibilityTypes.onlyMe;
+    const visibility = TeamVisibilityTypes.onlyMe;
     const body = {
         timezone,
         completedToday,

@@ -8,7 +8,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
 import { GetAllTeamMemberStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamMemberStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 jest.setTimeout(120000);
 
@@ -89,7 +89,7 @@ describe(testName, () => {
 
         await SDK.teamMemberStreaks.update({
             teamMemberStreakId: createdTeamMemberStreak._id,
-            updateData: { visibility: VisibilityTypes.onlyMe },
+            updateData: { visibility: TeamVisibilityTypes.onlyMe },
         });
 
         const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({});

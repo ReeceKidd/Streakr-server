@@ -20,7 +20,7 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import StreakReminderTypes from '@streakoid/streakoid-models/lib/Types/StreakReminderTypes';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 const challengeStreakParamsValidationSchema = {
     challengeStreakId: Joi.string().required(),
@@ -46,7 +46,7 @@ const challengeStreakBodyValidationSchema = {
     currentStreak: Joi.object(),
     pastStreaks: Joi.array(),
     userDefinedIndex: Joi.number(),
-    visibility: Joi.string().valid(Object.keys(VisibilityTypes)),
+    visibility: Joi.string().valid(Object.keys(IndividualVisibilityTypes)),
 };
 
 export const challengeStreakRequestBodyValidationMiddleware = (

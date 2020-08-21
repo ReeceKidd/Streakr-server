@@ -3,7 +3,7 @@ import { Challenge } from '@streakoid/streakoid-models/lib/Models/Challenge';
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 const currentStreak = {
     startDate: '',
@@ -24,7 +24,7 @@ export const getMockChallengeStreak = ({ challenge, user }: { challenge: Challen
     active: false,
     pastStreaks: [],
     totalTimesTracked: 0,
-    visibility: VisibilityTypes.everyone,
+    visibility: IndividualVisibilityTypes.everyone,
     longestChallengeStreak: {
         challengeId: 'challengeId',
         challengeName: 'Writing',

@@ -10,7 +10,7 @@ import { disconnectDatabase } from './setup/disconnectDatabase';
 import { GetAllTeamStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamStreaks';
 import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
 import { correctTeamStreakKeys } from '../src/testHelpers/correctTeamStreakKeys';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 jest.setTimeout(120000);
 
@@ -98,7 +98,7 @@ describe(testName, () => {
 
         await SDK.teamStreaks.update({
             teamStreakId: createdTeamStreak._id,
-            updateData: { visibility: VisibilityTypes.onlyMe },
+            updateData: { visibility: TeamVisibilityTypes.onlyMe },
         });
 
         const teamStreaks = await SDK.teamStreaks.getAll({ creatorId });

@@ -13,12 +13,14 @@ import { SoloStreak } from '@streakoid/streakoid-models/lib/Models/SoloStreak';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { userModel, UserModel } from '../../../src/Models/User';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 const createSoloStreakBodyValidationSchema = {
     userId: Joi.string().required(),
     streakName: Joi.string().required(),
     streakDescription: Joi.string(),
     numberOfMinutes: Joi.number().positive(),
+    achievementType: Joi.string().valid(Object.keys(IndividualVisibilityTypes)),
 };
 
 export const createSoloStreakBodyValidationMiddleware = (

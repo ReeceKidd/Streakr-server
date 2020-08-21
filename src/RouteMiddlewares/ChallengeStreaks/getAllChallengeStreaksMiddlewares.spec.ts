@@ -9,7 +9,7 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { GetAllChallengeStreaksSortFields } from '@streakoid/streakoid-sdk/lib/challengeStreaks';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 describe('getChallengeStreaksValidationMiddleware', () => {
     test('passes valid request', () => {
@@ -46,7 +46,7 @@ describe('findChallengeStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ userId, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ userId, visibility: IndividualVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -67,7 +67,7 @@ describe('findChallengeStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ timezone, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ timezone, visibility: IndividualVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -88,7 +88,7 @@ describe('findChallengeStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ completedToday: true, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ completedToday: true, visibility: IndividualVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -109,7 +109,7 @@ describe('findChallengeStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ active: true, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ active: true, visibility: IndividualVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -130,7 +130,7 @@ describe('findChallengeStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ status, visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ status, visibility: IndividualVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
         expect(next).toBeCalledWith();
@@ -152,7 +152,7 @@ describe('findChallengeStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ visibility: IndividualVisibilityTypes.everyone });
         expect(sort).toBeCalledWith({ 'currentStreak.numberOfDaysInARow': -1 });
         expect(limit).toBeCalled();
         expect(response.locals.challengeStreaks).toEqual(true);
@@ -175,7 +175,7 @@ describe('findChallengeStreaksMiddleware', () => {
 
         await middleware(request, response, next);
 
-        expect(find).toBeCalledWith({ visibility: VisibilityTypes.everyone });
+        expect(find).toBeCalledWith({ visibility: IndividualVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(sort).toBeCalledWith({ 'longestChallengeStreak.numberOfDays': -1 });
         expect(response.locals.challengeStreaks).toEqual(true);

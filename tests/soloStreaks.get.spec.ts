@@ -9,7 +9,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import { GetAllSoloStreaksSortFields } from '@streakoid/streakoid-sdk/lib/soloStreaks';
 import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 jest.setTimeout(120000);
 
@@ -88,7 +88,7 @@ describe(testName, () => {
 
         await SDK.soloStreaks.update({
             soloStreakId: createdSoloStreak._id,
-            updateData: { visibility: VisibilityTypes.onlyMe },
+            updateData: { visibility: IndividualVisibilityTypes.onlyMe },
         });
 
         const soloStreaks = await SDK.soloStreaks.getAll({ userId });

@@ -11,7 +11,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
-import VisibilityTypes from '@streakoid/streakoid-models/lib/Types/VisibilityTypes';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 jest.setTimeout(120000);
 
@@ -47,7 +47,7 @@ describe(testName, () => {
         const streakName = 'Daily Spanish';
         const streakDescription = 'Everyday I must do 30 minutes of Spanish';
         const userDefinedIndex = 1;
-        const visibility = VisibilityTypes.onlyMe;
+        const visibility = IndividualVisibilityTypes.onlyMe;
 
         const soloStreak = await SDK.soloStreaks.create({
             userId,
