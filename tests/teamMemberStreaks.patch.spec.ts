@@ -64,7 +64,7 @@ describe(testName, () => {
             startDate: new Date().toString(),
         };
         const pastStreaks: PastStreak[] = [];
-        const visibility = TeamVisibilityTypes.onlyMe;
+        const visibility = TeamVisibilityTypes.members;
 
         const updatedTeamMemberStreak = await SDK.teamMemberStreaks.update({
             teamMemberStreakId,

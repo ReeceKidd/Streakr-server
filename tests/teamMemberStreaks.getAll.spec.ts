@@ -89,7 +89,7 @@ describe(testName, () => {
 
         await SDK.teamMemberStreaks.update({
             teamMemberStreakId: createdTeamMemberStreak._id,
-            updateData: { visibility: TeamVisibilityTypes.onlyMe },
+            updateData: { visibility: TeamVisibilityTypes.members },
         });
 
         const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({});
