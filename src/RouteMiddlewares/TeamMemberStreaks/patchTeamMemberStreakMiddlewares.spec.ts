@@ -61,7 +61,7 @@ describe('teamMemberStreakRequestBodyValidationMiddleware', () => {
     const active = true;
     const currentStreak = {};
     const pastStreaks: object[] = [];
-    const visibility = TeamVisibilityTypes.onlyMe;
+    const visibility = TeamVisibilityTypes.members;
     const body = {
         timezone,
         completedToday,

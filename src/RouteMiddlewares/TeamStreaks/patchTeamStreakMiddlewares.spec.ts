@@ -84,7 +84,7 @@ describe('patchTeamStreakMiddlewares', () => {
         const status = StreakStatus.archived;
         const completedToday = true;
         const active = true;
-        const visibility = TeamVisibilityTypes.onlyMe;
+        const visibility = TeamVisibilityTypes.members;
 
         const body = {
             creatorId,
