@@ -20,7 +20,7 @@ const createSoloStreakBodyValidationSchema = {
     streakName: Joi.string().required(),
     streakDescription: Joi.string(),
     numberOfMinutes: Joi.number().positive(),
-    achievementType: Joi.string().valid(Object.keys(IndividualVisibilityTypes)),
+    visibility: Joi.string().valid(Object.keys(IndividualVisibilityTypes)),
 };
 
 export const createSoloStreakBodyValidationMiddleware = (
@@ -42,13 +42,14 @@ export const getCreateSoloStreakFromRequestMiddleware = (soloStreak: mongoose.Mo
 ): Promise<void> => {
     try {
         const { timezone } = response.locals;
-        const { streakName, streakDescription, userId, numberOfMinutes } = request.body;
+        const { streakName, streakDescription, userId, numberOfMinutes, visibility } = request.body;
         const newSoloStreak = new soloStreak({
             streakName,
             streakDescription,
             userId,
             timezone,
             numberOfMinutes,
+            visibility,
         });
         response.locals.savedSoloStreak = await newSoloStreak.save();
         next();

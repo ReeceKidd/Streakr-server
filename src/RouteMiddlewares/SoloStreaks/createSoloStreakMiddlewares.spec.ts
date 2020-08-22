@@ -12,17 +12,22 @@ import {
 } from './createSoloStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 describe('createSoloStreakMiddlewares', () => {
     describe(`createSoloStreakBodyValidationMiddleware`, () => {
         const userId = '12345678';
         const streakName = 'Spanish Streak';
         const streakDescription = ' Do the insane amount of XP for Duolingo each day';
+        const numberOfMinutes = 30;
+        const visibility = IndividualVisibilityTypes.everyone;
 
         const body = {
             userId,
             streakName,
             streakDescription,
+            numberOfMinutes,
+            visibility,
         };
 
         test('valid request passes validation', () => {
@@ -176,12 +181,14 @@ describe('createSoloStreakMiddlewares', () => {
             const streakName = 'streak streakName';
             const streakDescription = 'mock streak streakDescription';
             const timezone = 'Europe/London';
+            const numberOfMinutes = 30;
+            const visibility = IndividualVisibilityTypes.everyone;
             const save = jest.fn().mockResolvedValue(true);
 
             const soloStreak = jest.fn(() => ({ save }));
 
             const response: any = { locals: { timezone } };
-            const request: any = { body: { userId, streakName, streakDescription } };
+            const request: any = { body: { userId, streakName, streakDescription, numberOfMinutes, visibility } };
             const next = jest.fn();
 
             const middleware = getCreateSoloStreakFromRequestMiddleware(soloStreak as any);

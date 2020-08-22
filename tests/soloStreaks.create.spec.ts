@@ -9,6 +9,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
+import IndividualVisibilityTypes from '@streakoid/streakoid-models/lib/Types/IndividualVisibilityTypes';
 
 jest.setTimeout(120000);
 
@@ -36,12 +37,13 @@ describe(testName, () => {
         }
     });
 
-    test(`creates solo streak with a description and numberOfMinutes`, async () => {
+    test(`creates solo streak with all available parameters`, async () => {
         expect.assertions(14);
 
         const streakName = 'Daily Spanish';
         const streakDescription = 'I must do 30 minutes of Spanish everyday';
         const numberOfMinutes = 30;
+        const visibility = IndividualVisibilityTypes.onlyMe;
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -51,6 +53,7 @@ describe(testName, () => {
             streakName,
             streakDescription,
             numberOfMinutes,
+            visibility,
         });
 
         const { status, _id, currentStreak, completedToday, active, pastStreaks, createdAt, updatedAt } = soloStreak;
@@ -71,7 +74,7 @@ describe(testName, () => {
         expect(Object.keys(soloStreak).sort()).toEqual([...correctSoloStreakKeys, 'numberOfMinutes'].sort());
     });
 
-    test(`creates solo streak without a description or number of minutes`, async () => {
+    test(`creates solo streak with minimum number of parameters`, async () => {
         expect.assertions(14);
 
         const streakName = 'Daily Spanish';
