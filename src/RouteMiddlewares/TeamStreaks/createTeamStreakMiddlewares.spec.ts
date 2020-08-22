@@ -24,6 +24,7 @@ import {
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 describe(`createTeamStreakMiddlewares`, () => {
     describe(`createTeamStreakBodyValidationMiddleware`, () => {
@@ -34,6 +35,7 @@ describe(`createTeamStreakMiddlewares`, () => {
         const memberId = 'memberId';
         const teamMemberStreakId = 'teamMemberStreakId';
         const members = [{ memberId, teamMemberStreakId }];
+        const visibility = TeamVisibilityTypes.members;
 
         const body: TeamStreakRegistrationRequestBody = {
             creatorId,
@@ -41,6 +43,7 @@ describe(`createTeamStreakMiddlewares`, () => {
             streakDescription,
             numberOfMinutes,
             members,
+            visibility,
         };
 
         test('valid request passes validation', () => {
@@ -239,6 +242,7 @@ describe(`createTeamStreakMiddlewares`, () => {
             const streakName = 'Daily BJJ';
             const streakDescription = 'Everyday I must drill BJJ';
             const numberOfMinutes = 30;
+            const visibility = TeamVisibilityTypes.members;
 
             const save = jest.fn(() => Promise.resolve(true));
             class TeamStreakModel {
@@ -247,6 +251,7 @@ describe(`createTeamStreakMiddlewares`, () => {
                 streakDescription: string;
                 numberOfMinutes: Date;
                 timezone: string;
+                visibility: TeamVisibilityTypes;
 
                 constructor(
                     creatorId: string,
@@ -254,12 +259,14 @@ describe(`createTeamStreakMiddlewares`, () => {
                     streakDescription: string,
                     numberOfMinutes: Date,
                     timezone: string,
+                    visibility: TeamVisibilityTypes,
                 ) {
                     this.creatorId = creatorId;
                     this.streakName = streakName;
                     this.streakDescription = streakDescription;
                     this.numberOfMinutes = numberOfMinutes;
                     this.timezone = timezone;
+                    this.visibility = visibility;
                 }
 
                 save = save;
@@ -270,6 +277,7 @@ describe(`createTeamStreakMiddlewares`, () => {
                     streakName,
                     streakDescription,
                     numberOfMinutes,
+                    visibility,
                 },
             };
             const response: any = {

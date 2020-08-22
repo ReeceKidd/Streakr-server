@@ -11,6 +11,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctTeamMemberStreakKeys } from '../src/testHelpers/correctTeamMemberStreakKeys';
 import { correctCurrentUserPopulatedTeamStreakKeys } from '../src/testHelpers/correctCurrentUserPopulatedTeamStreakKeys';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 jest.setTimeout(120000);
 
@@ -38,8 +39,8 @@ describe(testName, () => {
         }
     });
 
-    test(`team streak can be created with description and numberOfMinutes`, async () => {
-        expect.assertions(21);
+    test(`team streak can be created with maximum parameters`, async () => {
+        expect.assertions(22);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -49,6 +50,7 @@ describe(testName, () => {
         const streakDescription = 'Everyday I must do 30 minutes of reading';
         const numberOfMinutes = 30;
         const members: { memberId: string; teamMemberStreakId?: string }[] = [{ memberId: userId }];
+        const visibility = TeamVisibilityTypes.members;
 
         const teamStreak = await SDK.teamStreaks.create({
             creatorId: userId,
@@ -56,6 +58,7 @@ describe(testName, () => {
             streakDescription,
             numberOfMinutes,
             members,
+            visibility,
         });
 
         expect(teamStreak.members.length).toEqual(1);
@@ -71,6 +74,7 @@ describe(testName, () => {
         expect(teamStreak.status).toEqual(StreakStatus.live);
         expect(teamStreak.streakDescription).toEqual(streakDescription);
         expect(teamStreak.numberOfMinutes).toEqual(numberOfMinutes);
+        expect(teamStreak.visibility).toEqual(visibility);
         expect(teamStreak.creatorId).toBeDefined();
         expect(teamStreak.timezone).toBeDefined();
         expect(teamStreak.active).toEqual(false);
@@ -89,8 +93,8 @@ describe(testName, () => {
         expect(Object.keys(creator).sort()).toEqual(['_id', 'username'].sort());
     });
 
-    test(`team streak can be created without description or numberOfMinutes`, async () => {
-        expect.assertions(19);
+    test(`team streak can be created with minimum parameters`, async () => {
+        expect.assertions(20);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -122,6 +126,7 @@ describe(testName, () => {
         expect(teamStreak.inviteKey).toEqual(expect.any(String));
         expect(teamStreak.completedToday).toEqual(false);
         expect(teamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(teamStreak.visibility).toEqual(TeamVisibilityTypes.everyone);
         expect(Object.keys(teamStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamStreak.pastStreaks.length).toEqual(0);
         expect(Object.keys(teamStreak).sort()).toEqual(correctCurrentUserPopulatedTeamStreakKeys);

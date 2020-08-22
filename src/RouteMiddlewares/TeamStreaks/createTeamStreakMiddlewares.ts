@@ -14,6 +14,7 @@ import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/Act
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import { PopulatedTeamStreak } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamStreak';
 import shortid from 'shortid';
+import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 
 export interface TeamStreakRegistrationRequestBody {
     creatorId: string;
@@ -21,6 +22,7 @@ export interface TeamStreakRegistrationRequestBody {
     streakDescription: string;
     numberOfMinutes: number;
     members: { memberId: string; teamMemberStreakId: string }[];
+    visibility: TeamVisibilityTypes;
 }
 
 const member = Joi.object().keys({
@@ -36,6 +38,7 @@ const createTeamStreakBodyValidationSchema = {
     members: Joi.array()
         .min(1)
         .items(member),
+    visibility: Joi.string().valid(Object.keys(TeamVisibilityTypes)),
 };
 
 export const createTeamStreakBodyValidationMiddleware = (
@@ -57,13 +60,14 @@ export const getCreateTeamStreakMiddleware = (teamStreak: mongoose.Model<TeamStr
 ): Promise<void> => {
     try {
         const { timezone } = response.locals;
-        const { creatorId, streakName, streakDescription, numberOfMinutes } = request.body;
+        const { creatorId, streakName, streakDescription, numberOfMinutes, visibility } = request.body;
         response.locals.newTeamStreak = await new teamStreak({
             creatorId,
             streakName,
             streakDescription,
             numberOfMinutes,
             timezone,
+            visibility,
         }).save();
         next();
     } catch (err) {
