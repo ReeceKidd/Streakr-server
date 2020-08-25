@@ -214,7 +214,7 @@ describe(`createTeamMemberStreakMiddlewares`, () => {
 
             const middleware = getCreateTeamMemberStreakMiddleware(createTeamMemberStreakFunction as any);
 
-            middleware(request, response, next);
+            await middleware(request, response, next);
 
             expect(createTeamMemberStreakFunction).toBeCalledWith({
                 userId: user._id,
@@ -227,7 +227,7 @@ describe(`createTeamMemberStreakMiddlewares`, () => {
             expect(next).toBeCalledWith();
         });
 
-        test('calls next with CreateTeamMemberStreakMiddleware error on middleware failure', () => {
+        test('calls next with CreateTeamMemberStreakMiddleware error on middleware failure', async () => {
             expect.assertions(1);
 
             const response: any = {};
@@ -235,7 +235,7 @@ describe(`createTeamMemberStreakMiddlewares`, () => {
             const next = jest.fn();
             const middleware = getCreateTeamMemberStreakMiddleware({} as any);
 
-            middleware(request, response, next);
+            await middleware(request, response, next);
 
             expect(next).toBeCalledWith(new CustomError(ErrorType.CreateTeamMemberStreakMiddleware, expect.any(Error)));
         });
