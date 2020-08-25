@@ -7,6 +7,8 @@ export const correctTeamMemberStreakKeys = [
     'active',
     'pastStreaks',
     'userId',
+    'username',
+    'userProfileImage',
     'teamStreakId',
     'totalTimesTracked',
     'visibility',

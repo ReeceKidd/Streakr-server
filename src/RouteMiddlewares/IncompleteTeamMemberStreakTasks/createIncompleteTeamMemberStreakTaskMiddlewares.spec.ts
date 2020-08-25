@@ -1378,7 +1378,7 @@ describe('createIncompleteTeamMemberStreakTaskMiddlewares', () => {
             expect.assertions(2);
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
             const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
             const response: any = { locals: { user, teamStreak, teamMemberStreak } };

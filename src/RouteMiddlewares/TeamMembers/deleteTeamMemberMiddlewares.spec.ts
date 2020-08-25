@@ -354,7 +354,7 @@ describe('archiveTeamMemberStreakMiddleware', () => {
 
         const user = getMockUser({ _id: 'userId' });
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         const request: any = {};
         const response: any = { locals: { teamMemberStreak } };
         const next = jest.fn();

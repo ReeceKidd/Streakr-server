@@ -31,7 +31,7 @@ describe('resetIncompleteSoloStreaks', () => {
         expect.assertions(2);
         const user = getMockUser({ _id: 'abc' });
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
         userModel.findById = jest.fn().mockResolvedValue(user) as any;
@@ -64,7 +64,7 @@ describe('resetIncompleteSoloStreaks', () => {
         expect.assertions(1);
         const user = getMockUser({ _id: 'abc' });
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
         const longestCurrentStreak: LongestCurrentTeamMemberStreak = {
@@ -91,7 +91,7 @@ describe('resetIncompleteSoloStreaks', () => {
         expect.assertions(1);
         const user = getMockUser({ _id: 'abc' });
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
         userModel.findById = jest.fn().mockResolvedValue(user) as any;
@@ -118,7 +118,7 @@ describe('resetIncompleteSoloStreaks', () => {
         expect.assertions(1);
         const user = getMockUser({ _id: 'abc' });
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
         userModel.findById = jest.fn().mockResolvedValue(user) as any;

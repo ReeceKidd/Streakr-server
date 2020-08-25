@@ -138,7 +138,7 @@ export enum ErrorType {
     SendFeedbackDeletedResponseMiddleware,
     NoFeedbackToDeleteFound,
     RetrieveTeamStreakCreatorInformationMiddleware,
-    CreateTeamMemberStreakFromRequestMiddleware,
+    CreateTeamMemberStreakMiddleware,
     SaveTeamMemberStreakToDatabaseMiddleware,
     SendFormattedTeamMemberStreakMiddleware,
     CreateTeamMemberStreakRetrieveUserMiddleware,
@@ -2478,7 +2478,7 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.CreateTeamMemberStreakFromRequestMiddleware:
+            case ErrorType.CreateTeamMemberStreakMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-110`,
                     message: internalServerMessage,

@@ -8,8 +8,8 @@ import {
     getAddUserToTeamStreakMiddleware,
     sendCreateTeamMemberResponseMiddleware,
     getTeamStreakExistsMiddleware,
-    getCreateTeamMemberStreakMiddleware,
-    createTeamMemberStreakMiddleware,
+    createTeamMemberCreateTeamMemberStreakMiddleware,
+    getCreateTeamMemberCreateTeamMemberStreakMiddleware,
     createTeamMemberParamsValidationMiddleware,
     getCreateJoinedTeamStreakActivityFeedItemMiddleware,
     createJoinedTeamStreakActivityFeedItemMiddleware,
@@ -22,6 +22,7 @@ import {
 } from './createTeamMemberMiddlewares';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 import { getMockUser } from '../../testHelpers/getMockUser';
+import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
 
 describe(`createTeamMemberParamsValidationMiddleware`, () => {
     const teamStreakId = 'abcdefg';
@@ -247,37 +248,32 @@ describe('preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware', () =>
     });
 });
 
-describe(`createTeamMemberStreakMiddleware`, () => {
+describe(`createTeamMeberCreateTeamMemberStreakMiddleware`, () => {
     test('sets response.locals.teamMemberStreak', async () => {
         expect.assertions(2);
 
         const user = getMockUser({ _id: '_id' });
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
         const timezone = 'Europe/London';
-        const save = jest.fn().mockResolvedValue(true);
-        class TeamMember {
-            userId: string;
-            teamStreakId: string;
-            streakName: string;
-            timezone: string;
 
-            constructor({ userId, teamStreakId, streakName, timezone }: any) {
-                this.userId = userId;
-                this.teamStreakId = teamStreakId;
-                this.streakName = streakName;
-                this.timezone = timezone;
-            }
+        const createTeamMemberStreakFunction = jest.fn().mockResolvedValue(teamMemberStreak);
 
-            save = save;
-        }
-        const response: any = { locals: { timezone, teamStreak } };
-        const request: any = { body: { userId: user._id } };
+        const response: any = { locals: { timezone, teamStreak, user } };
+        const request: any = {};
         const next = jest.fn();
-        const middleware = getCreateTeamMemberStreakMiddleware(TeamMember as any);
+        const middleware = getCreateTeamMemberCreateTeamMemberStreakMiddleware(createTeamMemberStreakFunction as any);
 
         await middleware(request, response, next);
 
-        expect(save).toBeCalled();
+        expect(createTeamMemberStreakFunction).toBeCalledWith({
+            userId: user._id,
+            username: user.username,
+            userProfileImage: user.profileImages.originalImageUrl,
+            teamStreakId: teamStreak._id,
+            timezone,
+            streakName: teamStreak.streakName,
+        });
         expect(next).toBeCalledWith();
     });
 
@@ -286,7 +282,7 @@ describe(`createTeamMemberStreakMiddleware`, () => {
         const response: any = {};
         const request: any = {};
         const next = jest.fn();
-        const middleware = getCreateTeamMemberStreakMiddleware({} as any);
+        const middleware = getCreateTeamMemberCreateTeamMemberStreakMiddleware({} as any);
 
         middleware(request, response, next);
 
@@ -466,7 +462,7 @@ describe(`createTeamMemberMiddlewares`, () => {
         expect(createTeamMemberMiddlewares[2]).toBe(userExistsMiddleware);
         expect(createTeamMemberMiddlewares[3]).toBe(teamStreakExistsMiddleware);
         expect(createTeamMemberMiddlewares[4]).toBe(preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware);
-        expect(createTeamMemberMiddlewares[5]).toBe(createTeamMemberStreakMiddleware);
+        expect(createTeamMemberMiddlewares[5]).toBe(createTeamMemberCreateTeamMemberStreakMiddleware);
         expect(createTeamMemberMiddlewares[6]).toBe(addUserToTeamStreakMiddleware);
         expect(createTeamMemberMiddlewares[7]).toBe(sendCreateTeamMemberResponseMiddleware);
         expect(createTeamMemberMiddlewares[8]).toBe(notifiyOtherTeamMembersAboutNewTeamMemberMiddleware);

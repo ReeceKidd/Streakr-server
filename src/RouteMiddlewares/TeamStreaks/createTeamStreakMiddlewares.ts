@@ -16,6 +16,7 @@ import { PopulatedTeamStreak } from '@streakoid/streakoid-models/lib/Models/Popu
 import shortid from 'shortid';
 import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import { createTeamMemberStreak } from '../../helpers/createTeamMemberStreak';
 
 export interface TeamStreakRegistrationRequestBody {
     creatorId: string;
@@ -62,7 +63,7 @@ export const getCreateTeamStreakMiddleware = (teamStreak: mongoose.Model<TeamStr
     try {
         const { timezone } = response.locals;
         const { creatorId, streakName, streakDescription, numberOfMinutes, visibility } = request.body;
-        response.locals.newTeamStreak = await new teamStreak({
+        response.locals.teamStreak = await new teamStreak({
             creatorId,
             streakName,
             streakDescription,
@@ -86,9 +87,9 @@ export const getAddInviteKeyToTeamStreakMiddleware = ({
     teamStreakModel: mongoose.Model<TeamStreakModel>;
 }) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const newTeamStreak: PopulatedTeamStreak = response.locals.newTeamStreak;
-        response.locals.newTeamStreak = await teamStreakModel.findByIdAndUpdate(
-            newTeamStreak._id,
+        const teamStreak: PopulatedTeamStreak = response.locals.teamStreak;
+        response.locals.teamStreak = await teamStreakModel.findByIdAndUpdate(
+            teamStreak._id,
             { $set: { inviteKey: generatedInviteKey } },
             { new: true },
         );
@@ -105,10 +106,11 @@ export const addInviteKeyToTeamStreakMiddleware = getAddInviteKeyToTeamStreakMid
 
 export const getCreateTeamMemberStreaksMiddleware = (
     userModel: mongoose.Model<UserModel>,
-    teamMemberStreak: mongoose.Model<TeamMemberStreakModel>,
+    createTeamMemberStreakFunction: typeof createTeamMemberStreak,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const teamStreak: TeamStreak = response.locals.newTeamStreak;
+        const user: User = response.locals.user;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
         const { timezone } = response.locals;
         const { members } = request.body;
 
@@ -119,12 +121,14 @@ export const getCreateTeamMemberStreaksMiddleware = (
                     throw new CustomError(ErrorType.TeamMemberDoesNotExist);
                 }
 
-                const newTeamMemberStreak = await new teamMemberStreak({
-                    userId: member.memberId,
+                const newTeamMemberStreak = await createTeamMemberStreakFunction({
+                    userId: user._id,
+                    userProfileImage: user.profileImages.originalImageUrl,
                     teamStreakId: teamStreak._id,
+                    username: user.username,
                     streakName: teamStreak.streakName,
                     timezone,
-                }).save();
+                });
 
                 return {
                     memberId: member.memberId,
@@ -142,19 +146,22 @@ export const getCreateTeamMemberStreaksMiddleware = (
     }
 };
 
-export const createTeamMemberStreaksMiddleware = getCreateTeamMemberStreaksMiddleware(userModel, teamMemberStreakModel);
+export const createTeamMemberStreaksMiddleware = getCreateTeamMemberStreaksMiddleware(
+    userModel,
+    createTeamMemberStreak,
+);
 
-export const getUpdateTeamStreakMembersArray = (teamStreak: mongoose.Model<TeamStreakModel>) => async (
+export const getUpdateTeamStreakMembersArray = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { membersWithTeamMemberStreakIds, newTeamStreak } = response.locals;
+        const { membersWithTeamMemberStreakIds, teamStreak } = response.locals;
 
-        response.locals.newTeamStreak = await teamStreak
+        response.locals.teamStreak = await teamStreakModel
             .findByIdAndUpdate(
-                newTeamStreak._id,
+                teamStreak._id,
                 {
                     members: membersWithTeamMemberStreakIds,
                 },
@@ -175,9 +182,9 @@ export const getPopulateTeamStreakMembersInformationMiddleware = (
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { newTeamStreak } = response.locals;
-        const { members } = newTeamStreak;
-        newTeamStreak.members = await Promise.all(
+        const { teamStreak } = response.locals;
+        const { members } = teamStreak;
+        teamStreak.members = await Promise.all(
             members.map(async (member: { memberId: string; teamMemberStreakId: string }) => {
                 const [memberInfo, teamMemberStreak] = await Promise.all([
                     userModel.findOne({ _id: member.memberId }).lean(),
@@ -190,7 +197,7 @@ export const getPopulateTeamStreakMembersInformationMiddleware = (
                 };
             }),
         );
-        response.locals.newTeamStreak = newTeamStreak;
+        response.locals.teamStreak = teamStreak;
         next();
     } catch (err) {
         next(new CustomError(ErrorType.PopulateTeamStreakMembersInformation, err));
@@ -206,14 +213,14 @@ export const getRetrieveCreatedTeamStreakCreatorInformationMiddleware = (
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { newTeamStreak } = response.locals;
-        const { creatorId } = newTeamStreak;
+        const { teamStreak } = response.locals;
+        const { creatorId } = teamStreak;
         const creator = await userModel.findOne({ _id: creatorId }).lean();
-        newTeamStreak.creator = {
+        teamStreak.creator = {
             _id: creator._id,
             username: creator.username,
         };
-        response.locals.newTeamStreak = newTeamStreak;
+        response.locals.teamStreak = teamStreak;
         next();
     } catch (err) {
         next(new CustomError(ErrorType.RetrieveCreatedTeamStreakCreatorInformationMiddleware, err));
@@ -228,8 +235,8 @@ export const getIncreaseTeamStreakMembersTotalLiveStreaksByOneMiddleware = (
     userModel: mongoose.Model<UserModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const newTeamStreak: PopulatedTeamStreak = response.locals.newTeamStreak;
-        const { members } = newTeamStreak;
+        const teamStreak: PopulatedTeamStreak = response.locals.teamStreak;
+        const { members } = teamStreak;
         await Promise.all(
             members.map(member => {
                 return userModel.findByIdAndUpdate(member._id, { $inc: { totalLiveStreaks: 1 } });
@@ -250,7 +257,7 @@ export const getCreateTeamStreakActivityFeedItemMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
-        const teamStreak: PopulatedTeamStreak = response.locals.newTeamStreak;
+        const teamStreak: PopulatedTeamStreak = response.locals.teamStreak;
         const createdTeamStreakActivityFeedItem: ActivityFeedItemType = {
             activityFeedItemType: ActivityFeedItemTypes.createdTeamStreak,
             userId: user._id,
@@ -272,8 +279,8 @@ export const createdTeamStreakActivityFeedItemMiddleware = getCreateTeamStreakAc
 
 export const sendTeamStreakMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
-        const { newTeamStreak } = response.locals;
-        response.status(ResponseCodes.created).send(newTeamStreak);
+        const { teamStreak } = response.locals;
+        response.status(ResponseCodes.created).send(teamStreak);
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedTeamStreakMiddleware, err));
     }

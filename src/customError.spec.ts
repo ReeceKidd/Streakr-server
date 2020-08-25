@@ -2566,10 +2566,10 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to CreateTeamMemberStreakFromRequestMiddleware`, () => {
+    test(`creates correct error when type is set to CreateTeamMemberStreakMiddleware`, () => {
         expect.assertions(3);
 
-        const customError = new CustomError(ErrorType.CreateTeamMemberStreakFromRequestMiddleware);
+        const customError = new CustomError(ErrorType.CreateTeamMemberStreakMiddleware);
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-110`);

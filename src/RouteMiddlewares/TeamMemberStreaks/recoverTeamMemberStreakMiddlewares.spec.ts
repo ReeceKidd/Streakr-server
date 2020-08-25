@@ -148,7 +148,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             expect.assertions(3);
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
             const request: any = {};
             const response: any = { locals: { teamMemberStreak } };
             const next = jest.fn();
@@ -168,7 +168,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
 
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
             const request: any = {};
             const response: any = { locals: { teamMemberStreak } };
             const next = jest.fn();
@@ -201,7 +201,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             expect.assertions(3);
             const user = { ...getMockUser({ _id: '_id' }), coins: 100000 };
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
 
             const request: any = {};
             const response: any = { locals: { user, teamStreak, teamMemberStreak } };
@@ -229,7 +229,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             expect.assertions(1);
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
 
             const request: any = {};
             const response: any = { locals: { user, teamStreak, teamMemberStreak } };
@@ -264,7 +264,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             const request: any = {};
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
             const startDate = new Date().toString();
             const lostStreak: PastStreak = {
                 startDate,
@@ -305,7 +305,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
             const teamMemberStreak = {
-                ...getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id }),
+                ...getMockTeamMemberStreak({ user, teamStreak }),
                 pastStreaks: [],
             };
 
@@ -342,7 +342,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             expect.assertions(2);
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
             const request: any = {};
             const response: any = { locals: { teamStreak } };
             const next = jest.fn();
@@ -362,7 +362,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             expect.assertions(2);
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
             const request: any = {};
             const response: any = { locals: { teamStreak } };
             const next = jest.fn();
@@ -541,7 +541,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             const user = getMockUser({ _id: 'userId' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
             const teamMemberStreak: TeamMemberStreak = {
-                ...getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id }),
+                ...getMockTeamMemberStreak({ user, teamStreak }),
                 currentStreak: {
                     numberOfDaysInARow: 1,
                     startDate: new Date().toString(),
@@ -590,8 +590,8 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             const user = getMockUser({ _id: 'userId' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
             const teamMemberStreak: TeamMemberStreak = getMockTeamMemberStreak({
-                userId: user._id,
-                teamStreakId: teamStreak._id,
+                user,
+                teamStreak,
             });
 
             const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
@@ -640,7 +640,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             const user = getMockUser({ _id: 'userId' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
             const teamMemberStreak: TeamMemberStreak = {
-                ...getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id }),
+                ...getMockTeamMemberStreak({ user, teamStreak }),
                 currentStreak: {
                     numberOfDaysInARow: 1,
                     startDate: new Date().toString(),
@@ -691,8 +691,8 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             const user = getMockUser({ _id: 'userId' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
             const teamMemberStreak = getMockTeamMemberStreak({
-                userId: user._id,
-                teamStreakId: teamStreak._id,
+                user,
+                teamStreak,
             });
 
             const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
@@ -743,7 +743,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             const user = getMockUser({ _id: 'userId' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
             const teamMemberStreak: TeamMemberStreak = {
-                ...getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id }),
+                ...getMockTeamMemberStreak({ user, teamStreak }),
                 currentStreak: {
                     numberOfDaysInARow: 1,
                     startDate: new Date().toString(),
@@ -794,8 +794,8 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             const user = getMockUser({ _id: 'userId' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
             const teamMemberStreak = getMockTeamMemberStreak({
-                userId: user._id,
-                teamStreakId: teamStreak._id,
+                user,
+                teamStreak,
             });
 
             const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
@@ -850,7 +850,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
 
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
 
             const request: any = {};
             const response: any = { locals: { user, teamMemberStreak } };
@@ -898,7 +898,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
             expect.assertions(2);
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
             const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
             const response: any = { locals: { user, teamStreak, teamMemberStreak } };
@@ -992,7 +992,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
 
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
 
             const createStreakTrackingEvent = jest.fn().mockResolvedValue(true);
 
@@ -1093,7 +1093,7 @@ describe('recoverTeamMemberStreakMiddlewares', () => {
 
             const user = getMockUser({ _id: '_id' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
             const response: any = { locals: { teamMemberStreak }, status };
             const request: any = {};
             const next = jest.fn();

@@ -26,6 +26,7 @@ import { CustomError, ErrorType } from '../../customError';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
 import { getMockUser } from '../../testHelpers/getMockUser';
+import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
 
 describe(`createTeamStreakMiddlewares`, () => {
     describe(`createTeamStreakBodyValidationMiddleware`, () => {
@@ -236,7 +237,7 @@ describe(`createTeamStreakMiddlewares`, () => {
     });
 
     describe(`createTeamStreakMiddleware`, () => {
-        test('sets response.locals.newTeamStreak and calls next', async () => {
+        test('sets response.locals.teamStreak and calls next', async () => {
             expect.assertions(3);
             const timezone = 'Europe/London';
             const creatorId = 'creatorId';
@@ -289,7 +290,7 @@ describe(`createTeamStreakMiddlewares`, () => {
 
             await middleware(request, response, next);
 
-            expect(response.locals.newTeamStreak).toBeDefined();
+            expect(response.locals.teamStreak).toBeDefined();
             expect(save).toBeCalledWith();
             expect(next).toBeCalledWith();
         });
@@ -312,7 +313,7 @@ describe(`createTeamStreakMiddlewares`, () => {
     describe(`addInviteKeyToTeamStreakMiddleware`, () => {
         test('updates team streak models inviteKey to equal the generated invite key.', async () => {
             expect.assertions(2);
-            const newTeamStreak = getMockTeamStreak({ creatorId: 'creatorId' });
+            const teamStreak = getMockTeamStreak({ creatorId: 'creatorId' });
 
             const generatedInviteKey = '123456';
 
@@ -320,7 +321,7 @@ describe(`createTeamStreakMiddlewares`, () => {
                 findByIdAndUpdate: jest.fn().mockResolvedValue(true),
             } as any;
 
-            const response: any = { locals: { newTeamStreak } };
+            const response: any = { locals: { teamStreak } };
             const request: any = {};
             const next = jest.fn();
 
@@ -329,7 +330,7 @@ describe(`createTeamStreakMiddlewares`, () => {
             await middleware(request, response, next);
 
             expect(teamStreakModel.findByIdAndUpdate).toBeCalledWith(
-                newTeamStreak._id,
+                teamStreak._id,
                 {
                     $set: { inviteKey: generatedInviteKey },
                 },
@@ -358,42 +359,40 @@ describe(`createTeamStreakMiddlewares`, () => {
         test('for each member create a new team member streak and return the memberId and the teamMemberStreakId', async () => {
             expect.assertions(3);
             const timezone = 'Europe/London';
-            const memberId = 'memberId';
-            const members = [{ memberId }];
+
             const user = getMockUser({ _id: 'userId' });
-            const newTeamStreak = getMockTeamStreak({ creatorId: user._id });
-            const findOne = jest.fn(() => Promise.resolve(true));
+            const members = [{ memberId: user._id }];
+
+            const teamStreak = getMockTeamStreak({ creatorId: user._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
+
+            const createTeamMemberStreakFunction = jest.fn().mockResolvedValue(teamMemberStreak);
+            const findOne = jest.fn(() => Promise.resolve(user));
             const userModel = { findOne };
 
-            const save = jest.fn(() => Promise.resolve(true));
-            class TeamMemberStreakModel {
-                userId: string;
-                teamStreakId: string;
-                streakName: string;
-                timezone: string;
-
-                constructor(userId: string, teamStreakId: string, streakName: string, timezone: string) {
-                    this.userId = userId;
-                    this.teamStreakId = teamStreakId;
-                    this.streakName = streakName;
-                    this.timezone = timezone;
-                }
-
-                save = save;
-            }
             const request: any = {
                 body: { members },
             };
             const response: any = {
-                locals: { timezone, newTeamStreak },
+                locals: { timezone, user, teamStreak },
             };
             const next = jest.fn();
-            const middleware = getCreateTeamMemberStreaksMiddleware(userModel as any, TeamMemberStreakModel as any);
+            const middleware = getCreateTeamMemberStreaksMiddleware(
+                userModel as any,
+                createTeamMemberStreakFunction as any,
+            );
 
             await middleware(request, response, next);
 
             expect(response.locals.membersWithTeamMemberStreakIds).toBeDefined();
-            expect(save).toBeCalledWith();
+            expect(createTeamMemberStreakFunction).toBeCalledWith({
+                userId: user._id,
+                userProfileImage: user.profileImages.originalImageUrl,
+                teamStreakId: teamStreak._id,
+                username: user.username,
+                streakName: teamStreak.streakName,
+                timezone,
+            });
             expect(next).toBeCalledWith();
         });
 
@@ -402,36 +401,24 @@ describe(`createTeamStreakMiddlewares`, () => {
             const timezone = 'Europe/London';
             const memberId = 'memberId';
             const members = [{ memberId }];
-            const _id = '_id';
-            const newTeamStreak = {
-                _id,
-            };
+            const user = getMockUser({ _id: 'userId' });
+            const teamStreak = getMockTeamStreak({ creatorId: user._id });
 
             const findOne = jest.fn(() => Promise.resolve(false));
             const userModel = { findOne };
+            const createTeamMemberStreakFunction = jest.fn().mockResolvedValue(true);
 
-            const save = jest.fn(() => Promise.resolve(true));
-            class TeamMemberStreakModel {
-                userId: string;
-                teamStreakId: string;
-                timezone: string;
-
-                constructor(userId: string, teamStreakId: string, timezone: string) {
-                    this.userId = userId;
-                    this.teamStreakId = teamStreakId;
-                    this.timezone = timezone;
-                }
-
-                save = save;
-            }
             const request: any = {
                 body: { members },
             };
             const response: any = {
-                locals: { timezone, newTeamStreak },
+                locals: { timezone, user, teamStreak },
             };
             const next = jest.fn();
-            const middleware = getCreateTeamMemberStreaksMiddleware(userModel as any, TeamMemberStreakModel as any);
+            const middleware = getCreateTeamMemberStreaksMiddleware(
+                userModel as any,
+                createTeamMemberStreakFunction as any,
+            );
 
             await middleware(request, response, next);
 
@@ -456,7 +443,7 @@ describe(`createTeamStreakMiddlewares`, () => {
     });
 
     describe(`createTeamStreakMiddleware`, () => {
-        test('sets response.locals.newTeamStreak and calls next', async () => {
+        test('sets response.locals.teamStreak and calls next', async () => {
             expect.assertions(3);
             const timezone = 'Europe/London';
             const creatorId = 'creatorId';
@@ -499,7 +486,7 @@ describe(`createTeamStreakMiddlewares`, () => {
 
             await middleware(request, response, next);
 
-            expect(response.locals.newTeamStreak).toBeDefined();
+            expect(response.locals.teamStreak).toBeDefined();
             expect(save).toBeCalledWith();
             expect(next).toBeCalledWith();
         });
@@ -524,12 +511,12 @@ describe(`createTeamStreakMiddlewares`, () => {
             expect.assertions(3);
             const membersWithTeamMemberStreakIds: string[] = [];
             const _id = '_id';
-            const newTeamStreak = {
+            const teamStreak = {
                 _id,
             };
             const request: any = {};
             const response: any = {
-                locals: { membersWithTeamMemberStreakIds, newTeamStreak },
+                locals: { membersWithTeamMemberStreakIds, teamStreak },
             };
             const next = jest.fn();
             const lean = jest.fn().mockResolvedValue(true);
@@ -568,7 +555,7 @@ describe(`createTeamStreakMiddlewares`, () => {
     });
 
     describe('populateTeamStreakMembersInformation', () => {
-        test('populates team streak members information and sets response.locals.newTeamStreak', async () => {
+        test('populates team streak members information and sets response.locals.teamStreak', async () => {
             expect.assertions(5);
 
             const user = { _id: '12345678', username: 'usernames' };
@@ -581,9 +568,9 @@ describe(`createTeamStreakMiddlewares`, () => {
                 findOne,
             };
             const members = [{ memberId: '12345678', teamMemberStreakId: 'ABC' }];
-            const newTeamStreak = { _id: 'abc', members };
+            const teamStreak = { _id: 'abc', members };
             const request: any = {};
-            const response: any = { locals: { newTeamStreak } };
+            const response: any = { locals: { teamStreak } };
             const next = jest.fn();
 
             const middleware = getPopulateTeamStreakMembersInformationMiddleware(userModel, teamStreakModel);
@@ -592,8 +579,8 @@ describe(`createTeamStreakMiddlewares`, () => {
             expect(findOne).toHaveBeenCalledTimes(2);
             expect(lean).toHaveBeenCalledTimes(2);
 
-            expect(response.locals.newTeamStreak).toBeDefined();
-            const member = response.locals.newTeamStreak.members[0];
+            expect(response.locals.teamStreak).toBeDefined();
+            const member = response.locals.teamStreak.members[0];
             expect(Object.keys(member)).toEqual(['_id', 'username', 'teamMemberStreak']);
 
             expect(next).toBeCalledWith();
@@ -616,7 +603,7 @@ describe(`createTeamStreakMiddlewares`, () => {
     });
 
     describe('retrieveCreatedTeamStreakCreatorInformation', () => {
-        test('retrieves team streak creator information and sets response.locals.newTeamStreak', async () => {
+        test('retrieves team streak creator information and sets response.locals.teamStreak', async () => {
             expect.assertions(4);
 
             const user = { _id: '12345678', username: 'usernames' };
@@ -626,9 +613,9 @@ describe(`createTeamStreakMiddlewares`, () => {
                 findOne,
             };
             const creatorId = 'creatorId';
-            const newTeamStreak = { _id: 'abc', creatorId };
+            const teamStreak = { _id: 'abc', creatorId };
             const request: any = {};
-            const response: any = { locals: { newTeamStreak } };
+            const response: any = { locals: { teamStreak } };
             const next = jest.fn();
 
             const middleware = getRetrieveCreatedTeamStreakCreatorInformationMiddleware(userModel);
@@ -636,7 +623,7 @@ describe(`createTeamStreakMiddlewares`, () => {
 
             expect(findOne).toHaveBeenCalledWith({ _id: creatorId });
             expect(lean).toHaveBeenCalled();
-            expect(response.locals.newTeamStreak.creator).toBeDefined();
+            expect(response.locals.teamStreak.creator).toBeDefined();
             expect(next).toBeCalledWith();
         });
 
@@ -660,7 +647,7 @@ describe(`createTeamStreakMiddlewares`, () => {
         test('increases team streak creators totalLiveStreaks by one when they create a team streak', async () => {
             expect.assertions(2);
             const memberId = 'memberId';
-            const newTeamStreak = {
+            const teamStreak = {
                 creatorId: 'creatorId',
                 members: [{ _id: memberId }],
             };
@@ -669,7 +656,7 @@ describe(`createTeamStreakMiddlewares`, () => {
                 findByIdAndUpdate: jest.fn().mockResolvedValue(true),
             };
 
-            const response: any = { locals: { newTeamStreak } };
+            const response: any = { locals: { teamStreak } };
             const request: any = {};
             const next = jest.fn();
 
@@ -703,10 +690,10 @@ describe(`createTeamStreakMiddlewares`, () => {
         test('creates a new createTeamStreakActivity', async () => {
             expect.assertions(2);
             const user = { _id: '_id' };
-            const newTeamStreak = { _id: '_id' };
+            const teamStreak = { _id: '_id' };
             const createActivityFeedItem = jest.fn().mockResolvedValue(true);
 
-            const response: any = { locals: { user, newTeamStreak } };
+            const response: any = { locals: { user, teamStreak } };
             const request: any = {};
             const next = jest.fn();
 
@@ -738,7 +725,7 @@ describe(`createTeamStreakMiddlewares`, () => {
         test('responds with status 201 with teamStreak', () => {
             expect.assertions(3);
 
-            const newTeamStreak = {
+            const teamStreak = {
                 userId: 'abc',
                 streakName: 'Daily Spanish',
                 streakDescription: 'Practice spanish every day',
@@ -747,7 +734,7 @@ describe(`createTeamStreakMiddlewares`, () => {
 
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
-            const response: any = { locals: { newTeamStreak }, status };
+            const response: any = { locals: { teamStreak }, status };
             const request: any = {};
             const next = jest.fn();
 
@@ -755,7 +742,7 @@ describe(`createTeamStreakMiddlewares`, () => {
 
             expect(next).not.toBeCalled();
             expect(status).toBeCalledWith(ResponseCodes.created);
-            expect(send).toBeCalledWith(newTeamStreak);
+            expect(send).toBeCalledWith(teamStreak);
         });
 
         test('calls next with SendFormattedTeamStreakMiddleware error on middleware failure', () => {

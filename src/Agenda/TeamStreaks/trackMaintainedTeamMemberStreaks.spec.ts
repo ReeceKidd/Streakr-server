@@ -32,7 +32,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
             startDate: '24/02/95',
             numberOfDaysInARow: 1,
         };
-        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
         expect(teamMemberStreakModel.findByIdAndUpdate).toBeCalledWith(teamMemberStreak._id, {
@@ -55,7 +55,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
             startDate: '24/02/95',
             numberOfDaysInARow: 100,
         };
-        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
         expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
@@ -85,7 +85,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
             startDate: '24/02/95',
             numberOfDaysInARow: 100,
         };
-        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
         expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
@@ -115,7 +115,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
             startDate: '24/02/95',
             numberOfDaysInARow: 1,
         };
-        const teamMemberStreak = getMockTeamMemberStreak({ teamStreakId: teamStreak._id, userId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
 

@@ -4,12 +4,13 @@ import * as mongoose from 'mongoose';
 
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 
-import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { userModel, UserModel } from '../../Models/User';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import { User } from '@streakoid/streakoid-models/lib/Models/User';
+import { createTeamMemberStreak } from '../../helpers/createTeamMemberStreak';
 
 export interface TeamMemberStreakRegistrationRequestBody {
     userId: string;
@@ -75,42 +76,30 @@ export const getRetrieveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<
 
 export const retrieveTeamStreakMiddleware = getRetrieveTeamStreakMiddleware(teamStreakModel);
 
-export const getCreateTeamMemberStreakFromRequestMiddleware = (
-    teamMemberStreak: mongoose.Model<TeamMemberStreakModel>,
-) => (request: Request, response: Response, next: NextFunction): void => {
-    try {
-        const teamStreak: TeamStreak = response.locals.teamStreak;
-        const { timezone } = response.locals;
-        const { userId } = request.body;
-        response.locals.newTeamMemberStreak = new teamMemberStreak({
-            userId,
-            teamStreakId: teamStreak._id,
-            streakName: teamStreak.streakName,
-            timezone,
-        });
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.CreateTeamMemberStreakFromRequestMiddleware, err));
-    }
-};
-
-export const createTeamMemberStreakFromRequestMiddleware = getCreateTeamMemberStreakFromRequestMiddleware(
-    teamMemberStreakModel,
-);
-
-export const saveTeamMemberStreakToDatabaseMiddleware = async (
+export const getCreateTeamMemberStreakMiddleware = (createTeamMemberStreakFunction: typeof createTeamMemberStreak) => (
     request: Request,
     response: Response,
     next: NextFunction,
-): Promise<void> => {
+): void => {
     try {
-        const newTeamMemberStreak: TeamMemberStreakModel = response.locals.newTeamMemberStreak;
-        response.locals.savedTeamMemberStreak = await newTeamMemberStreak.save();
+        const user: User = response.locals.user;
+        const teamStreak: TeamStreak = response.locals.teamStreak;
+        const { timezone } = response.locals;
+        response.locals.teamMemberStreak = createTeamMemberStreakFunction({
+            userId: user._id,
+            userProfileImage: user.profileImages.originalImageUrl,
+            username: user.username,
+            timezone,
+            streakName: teamStreak.streakName,
+            teamStreakId: teamStreak._id,
+        });
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.SaveTeamMemberStreakToDatabaseMiddleware, err));
+        next(new CustomError(ErrorType.CreateTeamMemberStreakMiddleware, err));
     }
 };
+
+export const createTeamMemberStreakMiddleware = getCreateTeamMemberStreakMiddleware(createTeamMemberStreak);
 
 export const sendFormattedTeamMemberStreakMiddleware = (
     request: Request,
@@ -118,8 +107,8 @@ export const sendFormattedTeamMemberStreakMiddleware = (
     next: NextFunction,
 ): void => {
     try {
-        const { savedTeamMemberStreak } = response.locals;
-        response.status(ResponseCodes.created).send(savedTeamMemberStreak);
+        const { teamMemberStreak } = response.locals;
+        response.status(ResponseCodes.created).send(teamMemberStreak);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.SendFormattedTeamMemberStreakMiddleware, err));
@@ -145,8 +134,7 @@ export const createTeamMemberStreakMiddlewares = [
     createTeamMemberStreakBodyValidationMiddleware,
     retrieveUserMiddleware,
     retrieveTeamStreakMiddleware,
-    createTeamMemberStreakFromRequestMiddleware,
-    saveTeamMemberStreakToDatabaseMiddleware,
+    createTeamMemberStreakMiddleware,
     sendFormattedTeamMemberStreakMiddleware,
     increaseUsersTotalLiveStreaksByOneMiddleware,
 ];

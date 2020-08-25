@@ -9,7 +9,6 @@ import { userModel, UserModel } from '../../Models/User';
 import { getValidationErrorMessageSenderMiddleware } from '../../SharedMiddleware/validationErrorMessageSenderMiddleware';
 import { CustomError, ErrorType } from '../../customError';
 
-import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
 import { createActivityFeedItem } from '../../../src/helpers/createActivityFeedItem';
 import { TeamMember } from '@streakoid/streakoid-models/lib/Models/TeamMember';
@@ -21,6 +20,7 @@ import { sendPushNotification } from '../../helpers/sendPushNotification';
 import { JoinedTeamStreakPushNotification } from '@streakoid/streakoid-models/lib/Models/PushNotifications';
 import PushNotificationTypes from '@streakoid/streakoid-models/lib/Types/PushNotificationTypes';
 import { EndpointDisabledError } from '../../sns';
+import { createTeamMemberStreak } from '../../helpers/createTeamMemberStreak';
 
 export const createTeamMemberParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -127,28 +127,30 @@ export const preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware = (
     }
 };
 
-export const getCreateTeamMemberStreakMiddleware = (teamMemberStreak: mongoose.Model<TeamMemberStreakModel>) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const getCreateTeamMemberCreateTeamMemberStreakMiddleware = (
+    createTeamMemberStreakFunction: typeof createTeamMemberStreak,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
+        const user: User = response.locals.user;
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const { timezone } = response.locals;
-        const { userId } = request.body;
-        response.locals.teamMemberStreak = await new teamMemberStreak({
-            userId: userId,
+        response.locals.teamMemberStreak = await createTeamMemberStreakFunction({
+            userId: user._id,
+            username: user.username,
+            userProfileImage: user.profileImages.originalImageUrl,
             teamStreakId: teamStreak._id,
-            streakName: teamStreak.streakName,
             timezone,
-        }).save();
+            streakName: teamStreak.streakName,
+        });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.CreateTeamMemberCreateTeamMemberStreakMiddleware, err));
     }
 };
 
-export const createTeamMemberStreakMiddleware = getCreateTeamMemberStreakMiddleware(teamMemberStreakModel);
+export const createTeamMemberCreateTeamMemberStreakMiddleware = getCreateTeamMemberCreateTeamMemberStreakMiddleware(
+    createTeamMemberStreak,
+);
 
 export const getAddUserToTeamStreakMiddleware = (teamStreakModel: mongoose.Model<TeamStreakModel>) => async (
     request: Request,
@@ -285,7 +287,7 @@ export const createTeamMemberMiddlewares = [
     userExistsMiddleware,
     teamStreakExistsMiddleware,
     preventExistingTeamMembersFromBeingAddedToTeamStreakMiddleware,
-    createTeamMemberStreakMiddleware,
+    createTeamMemberCreateTeamMemberStreakMiddleware,
     addUserToTeamStreakMiddleware,
     sendCreateTeamMemberResponseMiddleware,
     notifiyOtherTeamMembersAboutNewTeamMemberMiddleware,

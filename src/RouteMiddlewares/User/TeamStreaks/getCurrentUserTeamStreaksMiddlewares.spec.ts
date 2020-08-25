@@ -196,7 +196,7 @@ describe('retrieveCurrentUserTeamStreakMembersInformationMiddleware', () => {
 
         const user = getMockUser({ _id: 'userId' });
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        const teamMemberStreak = getMockTeamMemberStreak({ userId: user._id, teamStreakId: teamStreak._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
 
         const userFindOne = jest.fn().mockResolvedValue(user);
         const userModel: any = {

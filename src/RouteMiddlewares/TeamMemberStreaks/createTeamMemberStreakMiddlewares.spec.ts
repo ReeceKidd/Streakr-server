@@ -2,9 +2,7 @@
 import {
     createTeamMemberStreakMiddlewares,
     createTeamMemberStreakBodyValidationMiddleware,
-    createTeamMemberStreakFromRequestMiddleware,
-    getCreateTeamMemberStreakFromRequestMiddleware,
-    saveTeamMemberStreakToDatabaseMiddleware,
+    getCreateTeamMemberStreakMiddleware,
     sendFormattedTeamMemberStreakMiddleware,
     retrieveUserMiddleware,
     getRetrieveTeamStreakMiddleware,
@@ -12,11 +10,13 @@ import {
     retrieveTeamStreakMiddleware,
     getIncreaseUsersTotalLiveStreaksByOneMiddleware,
     increaseUsersTotalLiveStreaksByOneMiddleware,
+    createTeamMemberStreakMiddleware,
 } from './createTeamMemberStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
+import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
 
 describe(`createTeamMemberStreakMiddlewares`, () => {
     describe(`createTeamMemberStreakBodyValidationMiddleware`, () => {
@@ -198,117 +198,60 @@ describe(`createTeamMemberStreakMiddlewares`, () => {
         });
     });
 
-    describe(`createTeamMemberStreakFromRequestMiddleware`, () => {
-        test('sets response.locals.newTeamMemberStreak', async () => {
+    describe(`createTeamMemberStreakMiddleware`, () => {
+        test('sets response.locals.teamMemberStreak', async () => {
             expect.assertions(2);
             const user = getMockUser({ _id: 'userId' });
             const teamStreak = getMockTeamStreak({ creatorId: user._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
             const timezone = 'Europe/London';
-            class TeamMemberStreak {
-                userId: string;
-                teamStreakId: string;
-                timezone: string;
-                streakName: string;
 
-                constructor({ userId, teamStreakId, streakName, timezone }: any) {
-                    this.userId = userId;
-                    this.teamStreakId = teamStreakId;
-                    this.timezone = timezone;
-                    this.streakName = streakName;
-                }
-            }
-            const response: any = { locals: { timezone, teamStreak } };
+            const createTeamMemberStreakFunction = jest.fn().mockResolvedValue(teamMemberStreak);
+
+            const response: any = { locals: { timezone, teamStreak, user } };
             const request: any = { body: { userId: user._id } };
             const next = jest.fn();
-            const newTeamMemberStreak = new TeamMemberStreak({
-                userId: user._id,
-                teamStreakId: teamStreak._id,
-                streakName: teamStreak.streakName,
-                timezone,
-            });
-            const middleware = getCreateTeamMemberStreakFromRequestMiddleware(TeamMemberStreak as any);
+
+            const middleware = getCreateTeamMemberStreakMiddleware(createTeamMemberStreakFunction as any);
 
             middleware(request, response, next);
 
-            expect(response.locals.newTeamMemberStreak).toEqual(newTeamMemberStreak);
+            expect(createTeamMemberStreakFunction).toBeCalledWith({
+                userId: user._id,
+                userProfileImage: user.profileImages.originalImageUrl,
+                username: user.username,
+                timezone,
+                streakName: teamStreak.streakName,
+                teamStreakId: teamStreak._id,
+            });
             expect(next).toBeCalledWith();
         });
 
-        test('calls next with CreateTeamMemberStreakFromRequestMiddleware error on middleware failure', () => {
+        test('calls next with CreateTeamMemberStreakMiddleware error on middleware failure', () => {
             expect.assertions(1);
 
             const response: any = {};
             const request: any = {};
             const next = jest.fn();
-            const middleware = getCreateTeamMemberStreakFromRequestMiddleware({} as any);
+            const middleware = getCreateTeamMemberStreakMiddleware({} as any);
 
             middleware(request, response, next);
 
-            expect(next).toBeCalledWith(
-                new CustomError(ErrorType.CreateTeamMemberStreakFromRequestMiddleware, expect.any(Error)),
-            );
-        });
-    });
-
-    describe(`saveTeamMemberStreakToDatabaseMiddleware`, () => {
-        const ERROR_MESSAGE = 'error';
-
-        test('sets response.locals.savedTeamMemberStreak', async () => {
-            expect.assertions(3);
-            const save = jest.fn(() => {
-                return Promise.resolve(true);
-            });
-            const mockTeamMemberStreak = {
-                userId: 'userId',
-                email: 'user@gmail.com',
-                password: 'password',
-                save,
-            } as any;
-            const response: any = {
-                locals: { newTeamMemberStreak: mockTeamMemberStreak },
-            };
-            const request: any = {};
-            const next = jest.fn();
-
-            await saveTeamMemberStreakToDatabaseMiddleware(request, response, next);
-
-            expect(save).toBeCalled();
-            expect(response.locals.savedTeamMemberStreak).toBeDefined();
-            expect(next).toBeCalled();
-        });
-
-        test('calls next with SaveTeamMemberStreakToDatabaseMiddleware error on middleware failure', async () => {
-            expect.assertions(1);
-            const save = jest.fn(() => {
-                return Promise.reject(ERROR_MESSAGE);
-            });
-            const request: any = {};
-            const response: any = { locals: { newTeamMemberStreak: { save } } };
-            const next = jest.fn();
-
-            await saveTeamMemberStreakToDatabaseMiddleware(request, response, next);
-
-            expect(next).toBeCalledWith(
-                new CustomError(ErrorType.SaveTeamMemberStreakToDatabaseMiddleware, expect.any(Error)),
-            );
+            expect(next).toBeCalledWith(new CustomError(ErrorType.CreateTeamMemberStreakMiddleware, expect.any(Error)));
         });
     });
 
     describe(`sendFormattedTeamMemberStreakMiddleware`, () => {
-        const ERROR_MESSAGE = 'error';
-        const savedTeamMemberStreak = {
-            userId: 'abc',
-            streakName: 'Daily Spanish',
-            streakDescription: 'Practice spanish every day',
-            startDate: new Date(),
-        };
-
         test('responds with status 201 with teamMemberStreak', () => {
             expect.assertions(4);
+
+            const user = getMockUser({ _id: 'userId' });
+            const teamStreak = getMockTeamStreak({ creatorId: user._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
             const send = jest.fn();
             const status = jest.fn(() => ({ send }));
             const teamMemberStreakResponseLocals = {
-                savedTeamMemberStreak,
+                teamMemberStreak,
             };
             const response: any = { locals: teamMemberStreakResponseLocals, status };
             const request: any = {};
@@ -319,18 +262,14 @@ describe(`createTeamMemberStreakMiddlewares`, () => {
             expect(response.locals.user).toBeUndefined();
             expect(next).toBeCalled();
             expect(status).toBeCalledWith(ResponseCodes.created);
-            expect(send).toBeCalledWith(savedTeamMemberStreak);
+            expect(send).toBeCalledWith(teamMemberStreak);
         });
 
         test('calls next with SendFormattedTeamMemberStreakMiddleware error on middleware failure', () => {
             expect.assertions(1);
-            const send = jest.fn(() => {
-                throw new Error(ERROR_MESSAGE);
-            });
-            const status = jest.fn(() => ({ send }));
-            const response: any = { locals: { savedTeamMemberStreak }, status };
 
             const request: any = {};
+            const response: any = {};
             const next = jest.fn();
 
             sendFormattedTeamMemberStreakMiddleware(request, response, next);
@@ -382,15 +321,14 @@ describe(`createTeamMemberStreakMiddlewares`, () => {
     });
 
     test('that createTeamMemberStreak middlewares are defined in the correct order', async () => {
-        expect.assertions(8);
+        expect.assertions(7);
 
-        expect(createTeamMemberStreakMiddlewares.length).toEqual(7);
+        expect(createTeamMemberStreakMiddlewares.length).toEqual(6);
         expect(createTeamMemberStreakMiddlewares[0]).toBe(createTeamMemberStreakBodyValidationMiddleware);
         expect(createTeamMemberStreakMiddlewares[1]).toBe(retrieveUserMiddleware);
         expect(createTeamMemberStreakMiddlewares[2]).toBe(retrieveTeamStreakMiddleware);
-        expect(createTeamMemberStreakMiddlewares[3]).toBe(createTeamMemberStreakFromRequestMiddleware);
-        expect(createTeamMemberStreakMiddlewares[4]).toBe(saveTeamMemberStreakToDatabaseMiddleware);
-        expect(createTeamMemberStreakMiddlewares[5]).toBe(sendFormattedTeamMemberStreakMiddleware);
-        expect(createTeamMemberStreakMiddlewares[6]).toBe(increaseUsersTotalLiveStreaksByOneMiddleware);
+        expect(createTeamMemberStreakMiddlewares[3]).toBe(createTeamMemberStreakMiddleware);
+        expect(createTeamMemberStreakMiddlewares[4]).toBe(sendFormattedTeamMemberStreakMiddleware);
+        expect(createTeamMemberStreakMiddlewares[5]).toBe(increaseUsersTotalLiveStreaksByOneMiddleware);
     });
 });
