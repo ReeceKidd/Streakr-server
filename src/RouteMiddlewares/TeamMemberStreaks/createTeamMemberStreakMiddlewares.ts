@@ -76,16 +76,14 @@ export const getRetrieveTeamStreakMiddleware = (teamStreakModel: mongoose.Model<
 
 export const retrieveTeamStreakMiddleware = getRetrieveTeamStreakMiddleware(teamStreakModel);
 
-export const getCreateTeamMemberStreakMiddleware = (createTeamMemberStreakFunction: typeof createTeamMemberStreak) => (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): void => {
+export const getCreateTeamMemberStreakMiddleware = (
+    createTeamMemberStreakFunction: typeof createTeamMemberStreak,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const { timezone } = response.locals;
-        response.locals.teamMemberStreak = createTeamMemberStreakFunction({
+        response.locals.teamMemberStreak = await createTeamMemberStreakFunction({
             userId: user._id,
             userProfileImage: user.profileImages.originalImageUrl,
             username: user.username,
