@@ -35,7 +35,7 @@ describe(testName, () => {
     });
 
     test(`creates teamMember streak associated with teamId`, async () => {
-        expect.assertions(12);
+        expect.assertions(13);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -66,6 +66,7 @@ describe(testName, () => {
         } = teamMemberStreak;
 
         expect(Object.keys(currentStreak)).toEqual(['numberOfDaysInARow']);
+        expect(teamMemberStreak.streakName).toEqual(streakName);
         expect(currentStreak.numberOfDaysInARow).toEqual(0);
         expect(completedToday).toEqual(false);
         expect(active).toEqual(false);

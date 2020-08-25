@@ -15,6 +15,7 @@ import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/Activit
 import { PopulatedTeamStreak } from '@streakoid/streakoid-models/lib/Models/PopulatedTeamStreak';
 import shortid from 'shortid';
 import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 
 export interface TeamStreakRegistrationRequestBody {
     creatorId: string;
@@ -107,7 +108,8 @@ export const getCreateTeamMemberStreaksMiddleware = (
     teamMemberStreak: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { timezone, newTeamStreak } = response.locals;
+        const teamStreak: TeamStreak = response.locals.newTeamStreak;
+        const { timezone } = response.locals;
         const { members } = request.body;
 
         const membersWithTeamMemberStreakIds = await Promise.all(
@@ -119,7 +121,8 @@ export const getCreateTeamMemberStreaksMiddleware = (
 
                 const newTeamMemberStreak = await new teamMemberStreak({
                     userId: member.memberId,
-                    teamStreakId: newTeamStreak._id,
+                    teamStreakId: teamStreak._id,
+                    streakName: teamStreak.streakName,
                     timezone,
                 }).save();
 

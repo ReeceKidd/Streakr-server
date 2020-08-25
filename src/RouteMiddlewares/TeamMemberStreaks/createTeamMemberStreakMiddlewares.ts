@@ -9,6 +9,7 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { userModel, UserModel } from '../../Models/User';
 import { TeamStreakModel, teamStreakModel } from '../../Models/TeamStreak';
+import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 
 export interface TeamMemberStreakRegistrationRequestBody {
     userId: string;
@@ -78,11 +79,13 @@ export const getCreateTeamMemberStreakFromRequestMiddleware = (
     teamMemberStreak: mongoose.Model<TeamMemberStreakModel>,
 ) => (request: Request, response: Response, next: NextFunction): void => {
     try {
+        const teamStreak: TeamStreak = response.locals.teamStreak;
         const { timezone } = response.locals;
-        const { userId, teamStreakId } = request.body;
+        const { userId } = request.body;
         response.locals.newTeamMemberStreak = new teamMemberStreak({
             userId,
-            teamStreakId,
+            teamStreakId: teamStreak._id,
+            streakName: teamStreak.streakName,
             timezone,
         });
         next();

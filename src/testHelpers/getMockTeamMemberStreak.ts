@@ -18,6 +18,7 @@ export const getMockTeamMemberStreak = ({
 }): TeamMemberStreak => ({
     _id: 'teamMemberStreakId',
     teamStreakId,
+    streakName: 'Running',
     currentStreak,
     status: StreakStatus.live,
     completedToday: false,

@@ -35,7 +35,7 @@ describe(testName, () => {
     });
 
     test(`team member streak can be retrieved`, async () => {
-        expect.assertions(12);
+        expect.assertions(13);
 
         const user = await getPayingUser({ testName });
         const userId = user._id;
@@ -57,6 +57,7 @@ describe(testName, () => {
         const teamMemberStreak = await SDK.teamMemberStreaks.getOne(teamMemberStreakId);
 
         expect(teamMemberStreak._id).toEqual(expect.any(String));
+        expect(teamMemberStreak.streakName).toEqual(streakName);
         expect(teamMemberStreak.currentStreak.numberOfDaysInARow).toEqual(0);
         expect(Object.keys(teamMemberStreak.currentStreak).sort()).toEqual(['numberOfDaysInARow'].sort());
         expect(teamMemberStreak.completedToday).toEqual(false);

@@ -25,6 +25,7 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
+import { getMockUser } from '../../testHelpers/getMockUser';
 
 describe(`createTeamStreakMiddlewares`, () => {
     describe(`createTeamStreakBodyValidationMiddleware`, () => {
@@ -359,11 +360,8 @@ describe(`createTeamStreakMiddlewares`, () => {
             const timezone = 'Europe/London';
             const memberId = 'memberId';
             const members = [{ memberId }];
-            const _id = '_id';
-            const newTeamStreak = {
-                _id,
-            };
-
+            const user = getMockUser({ _id: 'userId' });
+            const newTeamStreak = getMockTeamStreak({ creatorId: user._id });
             const findOne = jest.fn(() => Promise.resolve(true));
             const userModel = { findOne };
 
@@ -371,11 +369,13 @@ describe(`createTeamStreakMiddlewares`, () => {
             class TeamMemberStreakModel {
                 userId: string;
                 teamStreakId: string;
+                streakName: string;
                 timezone: string;
 
-                constructor(userId: string, teamStreakId: string, timezone: string) {
+                constructor(userId: string, teamStreakId: string, streakName: string, timezone: string) {
                     this.userId = userId;
                     this.teamStreakId = teamStreakId;
+                    this.streakName = streakName;
                     this.timezone = timezone;
                 }
 

@@ -1,5 +1,6 @@
 export const correctTeamMemberStreakKeys = [
     '_id',
+    'streakName',
     'currentStreak',
     'completedToday',
     'status',

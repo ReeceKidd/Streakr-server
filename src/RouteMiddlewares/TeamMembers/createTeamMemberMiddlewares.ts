@@ -133,12 +133,13 @@ export const getCreateTeamMemberStreakMiddleware = (teamMemberStreak: mongoose.M
     next: NextFunction,
 ): Promise<void> => {
     try {
+        const teamStreak: TeamStreak = response.locals.teamStreak;
         const { timezone } = response.locals;
-        const { teamStreakId } = request.params;
         const { userId } = request.body;
         response.locals.teamMemberStreak = await new teamMemberStreak({
             userId: userId,
-            teamStreakId,
+            teamStreakId: teamStreak._id,
+            streakName: teamStreak.streakName,
             timezone,
         }).save();
         next();

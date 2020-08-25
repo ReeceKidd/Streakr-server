@@ -20,6 +20,9 @@ export const teamMemberStreakSchema = new mongoose.Schema(
             type: String,
             index: true,
         },
+        streakName: {
+            type: String,
+        },
         timezone: {
             required: true,
             type: String,

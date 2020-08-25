@@ -251,25 +251,27 @@ describe(`createTeamMemberStreakMiddleware`, () => {
     test('sets response.locals.teamMemberStreak', async () => {
         expect.assertions(2);
 
-        const userId = 'abcdefg';
-        const teamStreakId = '1a2b3c';
+        const user = getMockUser({ _id: '_id' });
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
         const timezone = 'Europe/London';
         const save = jest.fn().mockResolvedValue(true);
         class TeamMember {
             userId: string;
             teamStreakId: string;
+            streakName: string;
             timezone: string;
 
-            constructor({ userId, teamStreakId, timezone }: any) {
+            constructor({ userId, teamStreakId, streakName, timezone }: any) {
                 this.userId = userId;
                 this.teamStreakId = teamStreakId;
+                this.streakName = streakName;
                 this.timezone = timezone;
             }
 
             save = save;
         }
-        const response: any = { locals: { timezone } };
-        const request: any = { body: { userId }, params: { teamStreakId } };
+        const response: any = { locals: { timezone, teamStreak } };
+        const request: any = { body: { userId: user._id } };
         const next = jest.fn();
         const middleware = getCreateTeamMemberStreakMiddleware(TeamMember as any);
 
