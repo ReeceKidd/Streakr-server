@@ -7136,4 +7136,15 @@ describe('customError', () => {
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
+
+    test(`creates correct error when type is set to UpdateTeamStreakTeamMemberStreaksNamesMiddleware`, () => {
+        expect.assertions(3);
+
+        const customError = new CustomError(ErrorType.UpdateTeamStreakTeamMemberStreaksNamesMiddleware);
+        const { code, message, httpStatusCode } = customError;
+
+        expect(code).toBe(`500-547`);
+        expect(message).toBe('Internal Server Error.');
+        expect(httpStatusCode).toBe(500);
+    });
 });

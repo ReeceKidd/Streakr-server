@@ -656,6 +656,7 @@ export enum ErrorType {
     RetrieveCurrentUserTeamStreaksMembersInformation,
     FormatCurrentUserTeamStreaksMiddleware,
     SendCurrentUserTeamStreaksMiddleware,
+    UpdateTeamStreakTeamMemberStreaksNamesMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -5344,6 +5345,13 @@ export class CustomError extends Error {
             case ErrorType.SendCurrentUserTeamStreaksMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-546`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.UpdateTeamStreakTeamMemberStreaksNamesMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-547`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

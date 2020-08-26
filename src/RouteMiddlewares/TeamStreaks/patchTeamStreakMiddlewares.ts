@@ -16,6 +16,7 @@ import { User } from '@streakoid/streakoid-models/lib/Models/User';
 import { ActivityFeedItemType } from '@streakoid/streakoid-models/lib/Models/ActivityFeedItemType';
 import ActivityFeedItemTypes from '@streakoid/streakoid-models/lib/Types/ActivityFeedItemTypes';
 import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
+import { teamMemberStreakModel, TeamMemberStreakModel } from '../../Models/TeamMemberStreak';
 
 const teamStreakParamsValidationSchema = {
     teamStreakId: Joi.string().required(),
@@ -84,6 +85,33 @@ export const getPatchTeamStreakMiddleware = (teamStreakModel: mongoose.Model<Tea
 };
 
 export const patchTeamStreakMiddleware = getPatchTeamStreakMiddleware(teamStreakModel);
+
+export const getUpdateTeamStreakTeamMemberStreaksNamesMiddleware = (
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { teamStreakId } = request.params;
+        const streakName = request.body;
+
+        if (streakName) {
+            const teamMemberStreaks = await teamMemberStreakModel.find({ teamStreakId });
+            await Promise.all(
+                teamMemberStreaks.map(teamMemberStreak => {
+                    return teamMemberStreakModel.findByIdAndUpdate(teamMemberStreak._id, { $set: { streakName } });
+                }),
+            );
+        }
+
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.UpdateTeamStreakTeamMemberStreaksNamesMiddleware, err));
+    }
+};
+
+export const updateTeamStreakTeamMemberStreaksNamesMiddleware = getUpdateTeamStreakTeamMemberStreaksNamesMiddleware(
+    teamMemberStreakModel,
+);
 
 export const sendUpdatedTeamStreakMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
