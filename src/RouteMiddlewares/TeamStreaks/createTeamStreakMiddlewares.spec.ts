@@ -374,7 +374,7 @@ describe(`createTeamStreakMiddlewares`, () => {
                 body: { members },
             };
             const response: any = {
-                locals: { timezone, user, teamStreak },
+                locals: { timezone, teamStreak },
             };
             const next = jest.fn();
             const middleware = getCreateTeamMemberStreaksMiddleware(

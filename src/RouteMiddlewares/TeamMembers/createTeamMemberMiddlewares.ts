@@ -131,13 +131,13 @@ export const getCreateTeamMemberCreateTeamMemberStreakMiddleware = (
     createTeamMemberStreakFunction: typeof createTeamMemberStreak,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const user: User = response.locals.user;
+        const newTeamMember: User = response.locals.newTeamMember;
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const { timezone } = response.locals;
         response.locals.teamMemberStreak = await createTeamMemberStreakFunction({
-            userId: user._id,
-            username: user.username,
-            userProfileImage: user.profileImages.originalImageUrl,
+            userId: newTeamMember._id,
+            username: newTeamMember.username,
+            userProfileImage: newTeamMember.profileImages.originalImageUrl,
             teamStreakId: teamStreak._id,
             timezone,
             streakName: teamStreak.streakName,
