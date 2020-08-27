@@ -122,10 +122,10 @@ export const getCreateTeamMemberStreaksMiddleware = (
                 }
 
                 const newTeamMemberStreak = await createTeamMemberStreakFunction({
-                    userId: user._id,
+                    userId: member.memberId,
                     userProfileImage: user.profileImages.originalImageUrl,
                     teamStreakId: teamStreak._id,
-                    username: user.username,
+                    username: memberInfo.username,
                     streakName: teamStreak.streakName,
                     timezone,
                 });

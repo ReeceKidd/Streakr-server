@@ -91,7 +91,7 @@ export const getUpdateTeamStreakTeamMemberStreaksNamesMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const { teamStreakId } = request.params;
-        const streakName = request.body;
+        const { streakName } = request.body;
 
         if (streakName) {
             const teamMemberStreaks = await teamMemberStreakModel.find({ teamStreakId });
@@ -371,6 +371,7 @@ export const patchTeamStreakMiddlewares = [
     teamStreakParamsValidationMiddleware,
     teamStreakRequestBodyValidationMiddleware,
     patchTeamStreakMiddleware,
+    updateTeamStreakTeamMemberStreaksNamesMiddleware,
     sendUpdatedTeamStreakMiddleware,
     decreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
     increaseTeamMembersLiveStreaksByOneWhenStreakIsRestoredMiddleware,

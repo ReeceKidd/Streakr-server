@@ -467,6 +467,7 @@ describe(testName, () => {
             teamStreakId: teamStreakWithTwoMembers._id,
             teamMemberStreakId: userTeamMemberStreakId,
         });
+
         expect(completeTeamMemberStreakTask._id).toEqual(expect.any(String));
         expect(completeTeamMemberStreakTask.userId).toBeDefined();
         expect(completeTeamMemberStreakTask.teamStreakId).toEqual(teamStreakWithTwoMembers._id);
