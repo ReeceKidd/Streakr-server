@@ -252,14 +252,14 @@ describe(`createTeamMeberCreateTeamMemberStreakMiddleware`, () => {
     test('sets response.locals.teamMemberStreak', async () => {
         expect.assertions(2);
 
-        const user = getMockUser({ _id: '_id' });
-        const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        const teamMemberStreak = getMockTeamMemberStreak({ user, teamStreak });
+        const newTeamMember = getMockUser({ _id: '_id' });
+        const teamStreak = getMockTeamStreak({ creatorId: newTeamMember._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ user: newTeamMember, teamStreak });
         const timezone = 'Europe/London';
 
         const createTeamMemberStreakFunction = jest.fn().mockResolvedValue(teamMemberStreak);
 
-        const response: any = { locals: { timezone, teamStreak, user } };
+        const response: any = { locals: { timezone, teamStreak, newTeamMember } };
         const request: any = {};
         const next = jest.fn();
         const middleware = getCreateTeamMemberCreateTeamMemberStreakMiddleware(createTeamMemberStreakFunction as any);
@@ -267,9 +267,9 @@ describe(`createTeamMeberCreateTeamMemberStreakMiddleware`, () => {
         await middleware(request, response, next);
 
         expect(createTeamMemberStreakFunction).toBeCalledWith({
-            userId: user._id,
-            username: user.username,
-            userProfileImage: user.profileImages.originalImageUrl,
+            userId: newTeamMember._id,
+            username: newTeamMember.username,
+            userProfileImage: newTeamMember.profileImages.originalImageUrl,
             teamStreakId: teamStreak._id,
             timezone,
             streakName: teamStreak.streakName,
