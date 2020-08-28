@@ -11,6 +11,7 @@ import { streakoidTestSDK } from './setup/streakoidTestSDK';
 import { disconnectDatabase } from './setup/disconnectDatabase';
 import { correctTeamStreakKeys } from '../src/testHelpers/correctTeamStreakKeys';
 import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
+import { teamMemberStreakModel } from '../src/Models/TeamMemberStreak';
 
 jest.setTimeout(120000);
 
@@ -204,6 +205,34 @@ describe(testName, () => {
         const teamMemberStreak = teamMemberStreaks[0];
 
         expect(teamMemberStreak.streakName).toEqual(updatedStreakName);
+    });
+
+    test(`when team streak visibility is changed all associated team member streaks are changed. `, async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const visibility = TeamVisibilityTypes.members;
+
+        const members = [{ memberId: userId }];
+
+        const originalTeamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName: 'Reading',
+            members,
+        });
+
+        await SDK.teamStreaks.update({
+            teamStreakId: originalTeamStreak._id,
+            updateData: {
+                visibility,
+            },
+        });
+
+        const teamMemberStreaks = await teamMemberStreakModel.find({});
+        const teamMemberStreak = teamMemberStreaks[0];
+
+        expect(teamMemberStreak.visibility).toEqual(visibility);
     });
 
     test(`when team streak is archived an ArchivedTeamStreakActivityFeedItem is created`, async () => {

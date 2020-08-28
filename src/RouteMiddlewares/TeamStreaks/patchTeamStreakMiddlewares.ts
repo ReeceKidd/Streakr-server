@@ -113,6 +113,33 @@ export const updateTeamStreakTeamMemberStreaksNamesMiddleware = getUpdateTeamStr
     teamMemberStreakModel,
 );
 
+export const getUpdateTeamStreakTeamMemberStreaksVisibilitiesMiddleware = (
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { teamStreakId } = request.params;
+        const { visibility } = request.body;
+
+        if (visibility) {
+            const teamMemberStreaks = await teamMemberStreakModel.find({ teamStreakId });
+            await Promise.all(
+                teamMemberStreaks.map(teamMemberStreak => {
+                    return teamMemberStreakModel.findByIdAndUpdate(teamMemberStreak._id, { $set: { visibility } });
+                }),
+            );
+        }
+
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.UpdateTeamStreakTeamMemberStreaksVisibilityMiddleware, err));
+    }
+};
+
+export const updateTeamStreakTeamMemberStreaksVisibilitiesMiddleware = getUpdateTeamStreakTeamMemberStreaksVisibilitiesMiddleware(
+    teamMemberStreakModel,
+);
+
 export const sendUpdatedTeamStreakMiddleware = (request: Request, response: Response, next: NextFunction): void => {
     try {
         const { updatedTeamStreak } = response.locals;
@@ -372,6 +399,7 @@ export const patchTeamStreakMiddlewares = [
     teamStreakRequestBodyValidationMiddleware,
     patchTeamStreakMiddleware,
     updateTeamStreakTeamMemberStreaksNamesMiddleware,
+    updateTeamStreakTeamMemberStreaksVisibilitiesMiddleware,
     sendUpdatedTeamStreakMiddleware,
     decreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
     increaseTeamMembersLiveStreaksByOneWhenStreakIsRestoredMiddleware,
