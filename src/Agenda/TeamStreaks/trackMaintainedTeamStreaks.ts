@@ -22,11 +22,7 @@ export const trackMaintainedTeamStreaks = async (
                     streakType: StreakTypes.team,
                 };
                 await teamStreakModel.findByIdAndUpdate(teamStreak._id, {
-                    $set: { longestTeamStreak, completedToday: false },
-                });
-            } else {
-                await teamStreakModel.findByIdAndUpdate(teamStreak._id, {
-                    $set: { completedToday: false },
+                    $set: { longestTeamStreak },
                 });
             }
 
@@ -73,6 +69,10 @@ export const trackMaintainedTeamStreaks = async (
                     return member;
                 }),
             );
+
+            await teamStreakModel.findByIdAndUpdate(teamStreak._id, {
+                $set: { completedToday: false },
+            });
 
             return createStreakTrackingEvent({
                 type: StreakTrackingEventTypes.maintainedStreak,

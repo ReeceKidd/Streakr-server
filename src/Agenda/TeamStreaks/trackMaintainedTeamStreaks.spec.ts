@@ -69,7 +69,7 @@ describe('trackMaintainedTeamStreaks', () => {
             streakType: StreakTypes.team,
         };
         expect(teamStreakModel.findByIdAndUpdate).toBeCalledWith(teamStreak._id, {
-            $set: { longestTeamStreak, completedToday: false },
+            $set: { longestTeamStreak },
         });
     });
 
