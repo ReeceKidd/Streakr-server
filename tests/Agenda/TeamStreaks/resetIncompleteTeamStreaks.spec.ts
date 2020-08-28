@@ -13,6 +13,7 @@ import { StreakoidSDK } from '@streakoid/streakoid-sdk/lib/streakoidSDKFactory';
 import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { correctPopulatedTeamStreakKeys } from '../../../src/testHelpers/correctPopulatedTeamStreakKeys';
+import { getFriend } from '../../setup/getFriend';
 
 jest.setTimeout(120000);
 
@@ -38,6 +39,46 @@ describe(testName, () => {
         if (isTestEnvironment()) {
             await disconnectDatabase({ database });
         }
+    });
+
+    test('if only one of the two users completes the team streak, reset the team streak.', async () => {
+        expect.assertions(3);
+
+        const user = await getPayingUser({ testName });
+        const friend = await getFriend({ testName });
+
+        const members = [{ memberId: user._id }, { memberId: friend._id }];
+        const teamStreak = await SDK.teamStreaks.create({ creatorId: user._id, streakName: 'Reading', members });
+
+        const numberOfDaysInARow = 1;
+        // Emulate team  streak being active
+        await SDK.teamStreaks.update({
+            teamStreakId: teamStreak._id,
+            updateData: { active: true, currentStreak: { startDate: new Date().toString(), numberOfDaysInARow } },
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({ userId: user._id });
+        const teamMemberStreak = teamMemberStreaks[0];
+
+        await SDK.completeTeamMemberStreakTasks.create({
+            userId: user._id,
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+        });
+
+        const incompleteTeamStreaks = await teamStreakModel.find({
+            completedToday: false,
+            active: true,
+        });
+
+        const endDate = new Date();
+        await resetIncompleteTeamStreaks(incompleteTeamStreaks, endDate.toString());
+
+        const updatedTeamStreak = await SDK.teamStreaks.getOne(teamStreak._id);
+
+        expect(updatedTeamStreak.currentStreak.numberOfDaysInARow).toEqual(0);
+        expect(updatedTeamStreak.currentStreak.startDate).toBeNull();
+        expect(updatedTeamStreak.pastStreaks.length).toEqual(1);
     });
 
     test('adds current streak to past streak,  resets the current streak and creates a lost streak tracking event.', async () => {
