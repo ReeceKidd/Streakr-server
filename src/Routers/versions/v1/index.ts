@@ -32,7 +32,6 @@ import { achievementsRouter } from './achievementRouter';
 //import { updateDatabaseMiddlewares } from '../../../RouteMiddlewares/updateDatabaseMiddlewares';
 
 const v1Router = Router();
-
 //v1Router.post('/update', ...updateDatabaseMiddlewares);
 
 v1Router.use(...timezoneMiddlewares);
