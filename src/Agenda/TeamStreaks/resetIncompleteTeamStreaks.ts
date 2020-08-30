@@ -13,13 +13,21 @@ export const resetIncompleteTeamStreaks = async (
 ): Promise<StreakTrackingEvent[]> => {
     return Promise.all(
         incompleteTeamStreaks.map(async teamStreak => {
-            const pastStreak: PastStreak = {
-                endDate: endDate,
-                startDate: teamStreak.currentStreak.startDate || endDate,
-                numberOfDaysInARow: teamStreak.currentStreak.numberOfDaysInARow,
-            };
+            if (teamStreak.currentStreak.numberOfDaysInARow > 0) {
+                const pastStreak: PastStreak = {
+                    endDate: endDate,
+                    startDate: teamStreak.currentStreak.startDate || endDate,
+                    numberOfDaysInARow: teamStreak.currentStreak.numberOfDaysInARow,
+                };
 
-            const pastStreaks: PastStreak[] = [...teamStreak.pastStreaks, pastStreak];
+                const pastStreaks: PastStreak[] = [...teamStreak.pastStreaks, pastStreak];
+
+                await teamStreakModel.findByIdAndUpdate(teamStreak._id, {
+                    $set: {
+                        pastStreaks,
+                    },
+                });
+            }
 
             const currentStreak: CurrentStreak = {
                 startDate: '',
@@ -28,9 +36,8 @@ export const resetIncompleteTeamStreaks = async (
 
             await teamStreakModel.findByIdAndUpdate(teamStreak._id, {
                 $set: {
-                    currentStreak,
-                    pastStreaks,
                     active: false,
+                    currentStreak,
                 },
             });
 
