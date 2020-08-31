@@ -84,6 +84,40 @@ describe(testName, () => {
         expect(Object.keys(updatedSoloStreak).sort()).toEqual(correctSoloStreakKeys);
     });
 
+    test('if solo streak current streak is longer than the soloStreaks longestSoloStreak update the users longestSoloStreak to be the current solo streak.', async () => {
+        expect.assertions(5);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+        const streakDescription = 'Everyday I must study Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({ userId, streakName, streakDescription });
+        const soloStreakId = soloStreak._id;
+
+        await SDK.completeSoloStreakTasks.create({
+            userId,
+            soloStreakId,
+        });
+
+        const maintainedSoloStreaks = await SDK.soloStreaks.getAll({
+            completedToday: true,
+            userId,
+        });
+
+        await trackMaintainedSoloStreaks(maintainedSoloStreaks);
+
+        const updatedSoloStreak = await SDK.soloStreaks.getOne(soloStreak._id);
+
+        const longestSoloStreak = updatedSoloStreak.longestSoloStreak as LongestEverSoloStreak;
+
+        expect(longestSoloStreak.soloStreakId).toEqual(soloStreak._id);
+        expect(longestSoloStreak.soloStreakName).toEqual(soloStreak.streakName);
+        expect(longestSoloStreak.numberOfDays).toEqual(updatedSoloStreak.currentStreak.numberOfDaysInARow);
+        expect(longestSoloStreak.startDate).toEqual(updatedSoloStreak.currentStreak.startDate);
+        expect(longestSoloStreak.streakType).toEqual(StreakTypes.solo);
+    });
+
     test('if solo streak current streak is longer than the users longest ever streak update the users longest ever streak to be the current solo streak.', async () => {
         expect.assertions(5);
 

@@ -600,10 +600,6 @@ export enum ErrorType {
     RecoverChallengeStreakUserDoesNotHaveEnoughCoins,
     ChargeUserCoinsToRecoverSoloStreakMiddleware,
     RecoverSoloStreakUserDoesNotHaveEnoughCoins,
-    IncreaseLongestSoloStreakForUserMiddleware,
-    IncreaseLongestSoloStreakForSoloStreakMiddleware,
-    IncreaseLongestChallengeStreakForUserMiddleware,
-    IncreaseLongestChallengeStreakForChallengeStreakMiddleware,
     RetreiveTeamMemberStreakToRecoverMiddleware,
     RetrieveTeamStreakToRecoverMiddleware,
     ChargeUserCoinsToRecoverTeamMemberStreakMiddleware,
@@ -622,8 +618,6 @@ export enum ErrorType {
     CreateRecoveredTeamStreakActivityFeedItemMiddleware,
     CreateRecoveredTeamStreakTrackingEventMiddleware,
     RecoverTeamMemberStreakIncreaseTotalStreakCompletesForUserMiddleware,
-    IncreaseLongestTeamMemberStreakForUserMiddleware,
-    IncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
     RecoverTeamMemberStreakIncreaseLongestTeamMemberStreakForUserMiddleware,
     RecoverTeamMemberStreakIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
     RecoverTeamMemberStreakIncreaseLongestTeamStreakForMembersMiddleware,
@@ -5021,34 +5015,6 @@ export class CustomError extends Error {
                     httpStatusCode: ResponseCodes.warning,
                 };
 
-            case ErrorType.IncreaseLongestSoloStreakForUserMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-500`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.IncreaseLongestSoloStreakForSoloStreakMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-501`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.IncreaseLongestChallengeStreakForUserMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-502`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.IncreaseLongestChallengeStreakForChallengeStreakMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-503`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
             case ErrorType.RetreiveTeamMemberStreakToRecoverMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-504`,
@@ -5136,20 +5102,6 @@ export class CustomError extends Error {
             case ErrorType.RecoverTeamMemberStreakIncreaseTotalStreakCompletesForUserMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-516`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.IncreaseLongestTeamMemberStreakForUserMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-517`,
-                    message: internalServerMessage,
-                    httpStatusCode: ResponseCodes.warning,
-                };
-
-            case ErrorType.IncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware:
-                return {
-                    code: `${ResponseCodes.warning}-518`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

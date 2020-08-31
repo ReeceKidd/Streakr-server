@@ -14,6 +14,23 @@ export const trackMaintainedChallengeStreaks = async (
     return Promise.all(
         maintainedChallengeStreaks.map(async challengeStreak => {
             await challengeStreakModel.findByIdAndUpdate(challengeStreak._id, { $set: { completedToday: false } });
+            if (
+                challengeStreak.longestChallengeStreak.numberOfDays < challengeStreak.currentStreak.numberOfDaysInARow
+            ) {
+                const longestChallengeStreak: LongestEverChallengeStreak = {
+                    challengeStreakId: challengeStreak._id,
+                    challengeId: challengeStreak.challengeId,
+                    challengeName: challengeStreak.challengeName,
+                    numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                    startDate: challengeStreak.currentStreak.startDate || new Date().toString(),
+                    streakType: StreakTypes.challenge,
+                };
+                await challengeStreakModel.findByIdAndUpdate(challengeStreak._id, {
+                    $set: {
+                        longestChallengeStreak,
+                    },
+                });
+            }
             const user = await userModel.findById(challengeStreak.userId);
             if (user) {
                 if (user.longestEverStreak.numberOfDays < challengeStreak.currentStreak.numberOfDaysInARow) {

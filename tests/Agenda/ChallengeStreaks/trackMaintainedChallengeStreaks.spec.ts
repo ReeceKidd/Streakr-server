@@ -90,6 +90,48 @@ describe(testName, () => {
         expect(Object.keys(updatedChallengeStreak).sort()).toEqual(correctChallengeStreakKeys);
     });
 
+    test('if challenge streak current streak is longer than the challenge streaks longest challenge streak it updates the challenge streaks longest challenge streak to be the current challenge streak.', async () => {
+        expect.assertions(6);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+
+        const challengeStreak = await SDK.challengeStreaks.create({ userId, challengeId: challenge._id });
+        const challengeStreakId = challengeStreak._id;
+
+        await SDK.completeChallengeStreakTasks.create({
+            userId,
+            challengeStreakId,
+        });
+
+        const maintainedChallengeStreaks = await SDK.challengeStreaks.getAll({
+            completedToday: true,
+            userId,
+        });
+
+        await trackMaintainedChallengeStreaks(maintainedChallengeStreaks);
+
+        const updatedChallengeStreak = await SDK.challengeStreaks.getOne({ challengeStreakId: challengeStreak._id });
+
+        const longestChallengeStreak = updatedChallengeStreak.longestChallengeStreak as LongestEverChallengeStreak;
+
+        expect(longestChallengeStreak.challengeStreakId).toEqual(challengeStreak._id);
+        expect(longestChallengeStreak.challengeId).toEqual(challengeStreak.challengeId);
+        expect(longestChallengeStreak.challengeName).toEqual(challengeStreak.challengeName);
+        expect(longestChallengeStreak.numberOfDays).toEqual(updatedChallengeStreak.currentStreak.numberOfDaysInARow);
+        expect(longestChallengeStreak.startDate).toEqual(updatedChallengeStreak.currentStreak.startDate);
+        expect(longestChallengeStreak.streakType).toEqual(StreakTypes.challenge);
+    });
+
     test('if challenge streak current streak is longer than the users longest ever streak update the users longest ever streak to be the current challenge streak.', async () => {
         expect.assertions(6);
 

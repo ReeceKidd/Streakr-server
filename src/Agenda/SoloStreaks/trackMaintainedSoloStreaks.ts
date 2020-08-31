@@ -14,6 +14,17 @@ export const trackMaintainedSoloStreaks = async (
     return Promise.all(
         maintainedSoloStreaks.map(async soloStreak => {
             await soloStreakModel.findByIdAndUpdate(soloStreak._id, { $set: { completedToday: false } });
+
+            if (soloStreak.longestSoloStreak.numberOfDays < soloStreak.currentStreak.numberOfDaysInARow) {
+                const longestSoloStreak: LongestEverSoloStreak = {
+                    soloStreakId: soloStreak._id,
+                    soloStreakName: soloStreak.streakName,
+                    numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
+                    startDate: soloStreak.currentStreak.startDate || new Date().toString(),
+                    streakType: StreakTypes.solo,
+                };
+                await soloStreakModel.findByIdAndUpdate(soloStreak._id, { $set: { longestSoloStreak } });
+            }
             const user = await userModel.findById(soloStreak.userId);
             if (user) {
                 if (user.longestEverStreak.numberOfDays < soloStreak.currentStreak.numberOfDaysInARow) {

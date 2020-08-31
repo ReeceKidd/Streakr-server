@@ -49,10 +49,6 @@ import {
     increaseTotalTimesTrackedForTeamMemberStreakMiddleware,
     getIncreaseTotalTimesTrackedForTeamStreakMiddleware,
     increaseTotalTimesTrackedForTeamStreakMiddleware,
-    increaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
-    increaseLongestTeamMemberStreakForUserMiddleware,
-    getIncreaseLongestTeamMemberStreakForUserMiddleware,
-    getIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
     unlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware,
     sendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
     getUnlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware,
@@ -69,8 +65,6 @@ import { coinCreditValues } from '../../helpers/coinCreditValues';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 import { CompleteTeamMemberStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
 import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
-import { TeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/TeamMemberStreak';
-import { LongestTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestTeamMemberStreak';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { UserAchievement } from '@streakoid/streakoid-models/lib/Models/UserAchievement';
 import { OneHundredDayTeamMemberStreakDatabaseAchievement } from '@streakoid/streakoid-models/lib/Models/DatabaseAchievement';
@@ -745,205 +739,6 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
 
             expect(next).toBeCalledWith(
                 new CustomError(ErrorType.IncreaseTotalTimesTrackedForTeamStreakMiddleware, expect.any(Error)),
-            );
-        });
-    });
-
-    describe('increaseLongestTeamMemberStreakForUserMiddleware', () => {
-        test('increases longest team member streak for user when the current team member streak is longer than the users longestTeamMemberStreak and calls next', async () => {
-            expect.assertions(2);
-
-            const user = getMockUser({ _id: 'userId' });
-            const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak: TeamMemberStreak = {
-                ...getMockTeamMemberStreak({ user, teamStreak }),
-                currentStreak: {
-                    numberOfDaysInARow: 1,
-                    startDate: new Date().toString(),
-                    endDate: '',
-                },
-            };
-
-            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
-            const userModel = {
-                findByIdAndUpdate,
-            } as any;
-            const request: any = {};
-            const response: any = {
-                locals: {
-                    teamMemberStreak,
-                    teamStreak,
-                    user,
-                },
-            };
-            const next = jest.fn();
-            const middleware = getIncreaseLongestTeamMemberStreakForUserMiddleware({ userModel });
-
-            await middleware(request, response, next);
-
-            const longestTeamMemberStreak: LongestTeamMemberStreak = {
-                teamMemberStreakId: teamMemberStreak._id,
-                teamStreakId: teamStreak._id,
-                teamStreakName: teamStreak.streakName,
-                numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
-                startDate: new Date(teamMemberStreak.createdAt),
-            };
-
-            expect(findByIdAndUpdate).toBeCalledWith(
-                user._id,
-                {
-                    $set: { longestTeamMemberStreak },
-                },
-                { new: true },
-            );
-            expect(next).toBeCalledWith();
-        });
-
-        test('if current streak is not longer than the users longestTeamMemberStreak just call next.', async () => {
-            expect.assertions(2);
-
-            const user = getMockUser({ _id: 'userId' });
-            const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak: TeamMemberStreak = getMockTeamMemberStreak({
-                user,
-                teamStreak,
-            });
-
-            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
-            const userModel = {
-                findByIdAndUpdate,
-            } as any;
-            const request: any = {};
-            const response: any = {
-                locals: {
-                    teamMemberStreak,
-                    teamStreak,
-                    user,
-                },
-            };
-            const next = jest.fn();
-            const middleware = getIncreaseLongestTeamMemberStreakForUserMiddleware({ userModel });
-
-            await middleware(request, response, next);
-
-            expect(findByIdAndUpdate).not.toBeCalled();
-            expect(next).toBeCalledWith();
-        });
-
-        test('throws IncreaseLongestTeamMemberStreakForUserMiddleware error on middleware failure', async () => {
-            expect.assertions(1);
-            const request: any = {};
-            const response: any = {};
-            const next = jest.fn();
-            const middleware = getIncreaseLongestTeamMemberStreakForUserMiddleware({} as any);
-
-            await middleware(request, response, next);
-
-            expect(next).toBeCalledWith(
-                new CustomError(ErrorType.IncreaseLongestTeamMemberStreakForUserMiddleware, expect.any(Error)),
-            );
-        });
-    });
-
-    describe('increaseLongestTeamMemberStreakForTeamMemberStreakMiddleware', () => {
-        test('increases longest challenge streak for teamMemberStreak when the current team member streak is longer than the teamMemberStreaks longestTeamMemberStreak and calls next', async () => {
-            expect.assertions(2);
-
-            const user = getMockUser({ _id: 'userId' });
-            const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak: TeamMemberStreak = {
-                ...getMockTeamMemberStreak({ user, teamStreak }),
-                currentStreak: {
-                    numberOfDaysInARow: 1,
-                    startDate: new Date().toString(),
-                    endDate: '',
-                },
-            };
-
-            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
-            const teamMemberStreakModel = {
-                findByIdAndUpdate,
-            } as any;
-            const request: any = {};
-            const response: any = {
-                locals: {
-                    teamMemberStreak,
-                    teamStreak,
-                    user,
-                },
-            };
-            const next = jest.fn();
-            const middleware = getIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware({
-                teamMemberStreakModel,
-            });
-
-            await middleware(request, response, next);
-
-            const longestTeamMemberStreak: LongestTeamMemberStreak = {
-                teamMemberStreakId: teamMemberStreak._id,
-                teamStreakId: teamStreak._id,
-                teamStreakName: teamStreak.streakName,
-                numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
-                startDate: new Date(teamMemberStreak.createdAt),
-            };
-
-            expect(findByIdAndUpdate).toBeCalledWith(
-                teamMemberStreak._id,
-                {
-                    $set: { longestTeamMemberStreak },
-                },
-                { new: true },
-            );
-            expect(next).toBeCalledWith();
-        });
-
-        test('if current streak is not longer than the challenge streaks longestTeamMemberStreak just call next.', async () => {
-            expect.assertions(2);
-
-            const user = getMockUser({ _id: 'userId' });
-            const teamStreak = getMockTeamStreak({ creatorId: user._id });
-            const teamMemberStreak: TeamMemberStreak = getMockTeamMemberStreak({
-                user,
-                teamStreak,
-            });
-
-            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
-            const teamMemberStreakModel = {
-                findByIdAndUpdate,
-            } as any;
-            const request: any = {};
-            const response: any = {
-                locals: {
-                    teamMemberStreak,
-                    teamStreak,
-                    user,
-                },
-            };
-            const next = jest.fn();
-            const middleware = getIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware({
-                teamMemberStreakModel,
-            });
-
-            await middleware(request, response, next);
-
-            expect(findByIdAndUpdate).not.toBeCalled();
-            expect(next).toBeCalledWith();
-        });
-
-        test('throws IncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware error on middleware failure', async () => {
-            expect.assertions(1);
-            const request: any = {};
-            const response: any = {};
-            const next = jest.fn();
-            const middleware = getIncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware({} as any);
-
-            await middleware(request, response, next);
-
-            expect(next).toBeCalledWith(
-                new CustomError(
-                    ErrorType.IncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
-                    expect.any(Error),
-                ),
             );
         });
     });
@@ -1988,9 +1783,9 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
     });
 
     test('are defined in the correct order', async () => {
-        expect.assertions(31);
+        expect.assertions(29);
 
-        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(30);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares.length).toEqual(28);
         expect(createCompleteTeamMemberStreakTaskMiddlewares[0]).toBe(
             completeTeamMemberStreakTaskBodyValidationMiddleware,
         );
@@ -2013,38 +1808,32 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             increaseTotalTimesTrackedForTeamStreakMiddleware,
         );
         expect(createCompleteTeamMemberStreakTaskMiddlewares[13]).toBe(
-            increaseLongestTeamMemberStreakForUserMiddleware,
-        );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[14]).toBe(
-            increaseLongestTeamMemberStreakForTeamMemberStreakMiddleware,
-        );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[15]).toBe(
             creditCoinsToUserForCompletingTeamMemberStreakMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[16]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[14]).toBe(
             creditOidXpToUserForCompletingTeamMemberStreakMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[17]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[15]).toBe(
             unlockOneHundredDayTeamMemberStreakAchievementForUserMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[18]).toBe(setTeamStreakToActiveMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[19]).toBe(haveAllTeamMembersCompletedTasksMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[20]).toBe(setTeamStreakStartDateMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[21]).toBe(setDayTeamStreakWasCompletedMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[22]).toBe(createCompleteTeamStreakDefinitionMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[23]).toBe(saveCompleteTeamStreakMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[24]).toBe(teamStreakMaintainedMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[25]).toBe(retrieveTeamMembersMiddleware);
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[26]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[16]).toBe(setTeamStreakToActiveMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[17]).toBe(haveAllTeamMembersCompletedTasksMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[18]).toBe(setTeamStreakStartDateMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[19]).toBe(setDayTeamStreakWasCompletedMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[20]).toBe(createCompleteTeamStreakDefinitionMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[21]).toBe(saveCompleteTeamStreakMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[22]).toBe(teamStreakMaintainedMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[23]).toBe(retrieveTeamMembersMiddleware);
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[24]).toBe(
             notifiyTeamMembersThatUserHasCompletedTaskMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[27]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[25]).toBe(
             sendCompleteTeamMemberStreakTaskResponseMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[28]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[26]).toBe(
             createCompleteTeamMemberStreakActivityFeedItemMiddleware,
         );
-        expect(createCompleteTeamMemberStreakTaskMiddlewares[29]).toBe(
+        expect(createCompleteTeamMemberStreakTaskMiddlewares[27]).toBe(
             sendOneHundredDayTeamMemberStreakAchievementUnlockedPushNotificationMiddleware,
         );
     });

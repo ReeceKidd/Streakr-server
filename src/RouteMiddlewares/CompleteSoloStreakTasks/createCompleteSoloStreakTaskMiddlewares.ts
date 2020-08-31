@@ -31,7 +31,6 @@ import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
 import { CompleteSoloStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 import { coinCreditValues } from '../../helpers/coinCreditValues';
-import { LongestSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestSoloStreak';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -280,71 +279,6 @@ export const increaseTotalTimesTrackedForSoloStreakMiddleware = getIncreaseTotal
     soloStreakModel,
 );
 
-export const getIncreaseLongestSoloStreakForUserMiddleware = ({
-    userModel,
-}: {
-    userModel: mongoose.Model<UserModel>;
-}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-    try {
-        const user: User = response.locals.user;
-        const soloStreak: SoloStreak = response.locals.soloStreak;
-        if (user.longestSoloStreak.numberOfDays < soloStreak.currentStreak.numberOfDaysInARow) {
-            const longestSoloStreak: LongestSoloStreak = {
-                soloStreakId: soloStreak._id,
-                soloStreakName: soloStreak.streakName,
-                numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
-                startDate: new Date(soloStreak.createdAt),
-            };
-            response.locals.user = await userModel.findByIdAndUpdate(
-                user._id,
-                {
-                    $set: { longestSoloStreak },
-                },
-                { new: true },
-            );
-        }
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.IncreaseLongestSoloStreakForUserMiddleware, err));
-    }
-};
-
-export const increaseLongestSoloStreakForUserMiddleware = getIncreaseLongestSoloStreakForUserMiddleware({
-    userModel,
-});
-
-export const getIncreaseLongestSoloStreakForSoloStreakMiddleware = ({
-    soloStreakModel,
-}: {
-    soloStreakModel: mongoose.Model<SoloStreakModel>;
-}) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-    try {
-        const soloStreak: SoloStreak = response.locals.soloStreak;
-        if (soloStreak.longestSoloStreak.numberOfDays < soloStreak.currentStreak.numberOfDaysInARow) {
-            const longestSoloStreak: LongestSoloStreak = {
-                soloStreakId: soloStreak._id,
-                soloStreakName: soloStreak.streakName,
-                numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
-                startDate: new Date(soloStreak.createdAt),
-            };
-            response.locals.soloStreak = await soloStreakModel.findByIdAndUpdate(
-                soloStreak._id,
-                {
-                    $set: { longestSoloStreak },
-                },
-                { new: true },
-            );
-        }
-        next();
-    } catch (err) {
-        next(new CustomError(ErrorType.IncreaseLongestSoloStreakForSoloStreakMiddleware, err));
-    }
-};
-
-export const increaseLongestSoloStreakForSoloStreakMiddleware = getIncreaseLongestSoloStreakForSoloStreakMiddleware({
-    soloStreakModel,
-});
-
 export const getCreditCoinsToUserForCompletingSoloStreakMiddleware = (
     creditUserCoins: typeof CoinTransactionHelpers.creditUsersCoins,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -536,8 +470,6 @@ export const createCompleteSoloStreakTaskMiddlewares = [
     increaseNumberOfDaysInARowForSoloStreakMiddleware,
     increaseTotalStreakCompletesForUserMiddleware,
     increaseTotalTimesTrackedForSoloStreakMiddleware,
-    increaseLongestSoloStreakForUserMiddleware,
-    increaseLongestSoloStreakForSoloStreakMiddleware,
     creditCoinsToUserForCompletingSoloStreakMiddleware,
     creditOidXpToUserForCompletingSoloStreakMiddleware,
     unlockOneHundredDaySoloStreakAchievementForUserMiddleware,

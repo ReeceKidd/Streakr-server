@@ -10,7 +10,6 @@ import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
 import { getMockUser } from '../../testHelpers/getMockUser';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
-import { teamStreakModel } from '../../Models/TeamStreak';
 import { userModel } from '../../Models/User';
 import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
 
@@ -23,8 +22,6 @@ describe('trackMaintainedTeamMemberStreaks', () => {
         expect.assertions(1);
         const user = getMockUser({ _id: 'userId' });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
-        const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        teamStreakModel.findById = jest.fn().mockResolvedValue(teamStreak) as any;
         userModel.findById = jest.fn().mockResolvedValue(user) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
 
@@ -32,6 +29,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
             startDate: '24/02/95',
             numberOfDaysInARow: 1,
         };
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
         const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
@@ -42,12 +40,11 @@ describe('trackMaintainedTeamMemberStreaks', () => {
         });
     });
 
-    test('if team member streak current streak is longer than the users longest ever streak it updates the users longest ever streak.', async () => {
-        expect.assertions(1);
+    test('if team member streak current streak is longer than the teamMemberStreaks longestTeamMemberStreak streak it updates the users longest team member streak.', async () => {
+        expect.assertions(2);
         const user = getMockUser({ _id: 'userId' });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
-        const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        teamStreakModel.findById = jest.fn().mockResolvedValue(teamStreak) as any;
+
         userModel.findById = jest.fn().mockResolvedValue(user) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
 
@@ -55,6 +52,42 @@ describe('trackMaintainedTeamMemberStreaks', () => {
             startDate: '24/02/95',
             numberOfDaysInARow: 100,
         };
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
+        const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
+        await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
+        expect(teamMemberStreakModel.findByIdAndUpdate).toBeCalledWith(teamMemberStreak._id, {
+            $set: {
+                completedToday: false,
+            },
+        });
+        expect(teamMemberStreakModel.findByIdAndUpdate).toBeCalledWith(teamMemberStreak._id, {
+            $set: {
+                longestTeamMemberStreak: {
+                    teamMemberStreakId: teamMemberStreak._id,
+                    teamStreakName: teamStreak.streakName,
+                    teamStreakId: teamStreak._id,
+                    numberOfDays: currentStreak.numberOfDaysInARow,
+                    startDate: currentStreak.startDate,
+                    streakType: StreakTypes.teamMember,
+                },
+            },
+        });
+    });
+
+    test('if team member streak current streak is longer than the users longest ever streak it updates the users longest ever streak.', async () => {
+        expect.assertions(1);
+        const user = getMockUser({ _id: 'userId' });
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
+
+        userModel.findById = jest.fn().mockResolvedValue(user) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
+
+        const currentStreak = {
+            startDate: '24/02/95',
+            numberOfDaysInARow: 100,
+        };
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
         const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
@@ -76,8 +109,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
         expect.assertions(1);
         const user = getMockUser({ _id: 'userId' });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
-        const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        teamStreakModel.findById = jest.fn().mockResolvedValue(teamStreak) as any;
+
         userModel.findById = jest.fn().mockResolvedValue(user) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
 
@@ -85,6 +117,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
             startDate: '24/02/95',
             numberOfDaysInARow: 100,
         };
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
         const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
@@ -106,8 +139,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
         expect.assertions(1);
         const user = getMockUser({ _id: 'userId' });
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
-        const teamStreak = getMockTeamStreak({ creatorId: user._id });
-        teamStreakModel.findById = jest.fn().mockResolvedValue(teamStreak) as any;
+
         userModel.findById = jest.fn().mockResolvedValue(user) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
 
@@ -115,6 +147,7 @@ describe('trackMaintainedTeamMemberStreaks', () => {
             startDate: '24/02/95',
             numberOfDaysInARow: 1,
         };
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
         const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
         const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
         await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);

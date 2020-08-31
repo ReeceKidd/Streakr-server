@@ -6600,50 +6600,6 @@ describe('customError', () => {
         expect(httpStatusCode).toBe(500);
     });
 
-    test(`creates correct error when type is set to IncreaseLongestSoloStreakForUserMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.IncreaseLongestSoloStreakForUserMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-500`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to IncreaseLongestSoloStreakForSoloStreakMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.IncreaseLongestSoloStreakForSoloStreakMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-501`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to IncreaseLongestChallengeStreakForUserMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.IncreaseLongestChallengeStreakForUserMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-502`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to IncreaseLongestChallengeStreakForChallengeStreakMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.IncreaseLongestChallengeStreakForChallengeStreakMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-503`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
     test(`creates correct error when type is set to RetreiveTeamMemberStreakToRecoverMiddleware`, () => {
         expect.assertions(3);
 
@@ -6785,28 +6741,6 @@ describe('customError', () => {
         const { code, message, httpStatusCode } = customError;
 
         expect(code).toBe(`500-516`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to IncreaseLongestTeamMemberStreakForUserMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.IncreaseLongestTeamMemberStreakForUserMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-517`);
-        expect(message).toBe('Internal Server Error.');
-        expect(httpStatusCode).toBe(500);
-    });
-
-    test(`creates correct error when type is set to IncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware`, () => {
-        expect.assertions(3);
-
-        const customError = new CustomError(ErrorType.IncreaseLongestTeamMemberStreakForTeamMemberStreakMiddleware);
-        const { code, message, httpStatusCode } = customError;
-
-        expect(code).toBe(`500-518`);
         expect(message).toBe('Internal Server Error.');
         expect(httpStatusCode).toBe(500);
     });
