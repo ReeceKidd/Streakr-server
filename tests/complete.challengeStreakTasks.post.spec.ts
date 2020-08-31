@@ -19,8 +19,6 @@ import { oidXpTransactionModel } from '../src/Models/OidXpTransaction';
 import { coinCreditValues } from '../src/helpers/coinCreditValues';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 import { correctChallengeStreakKeys } from '../src/testHelpers/correctChallengeStreakKeys';
-import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
-import { challengeStreakModel } from '../src/Models/ChallengeStreak';
 jest.setTimeout(120000);
 
 const testName = 'POST-complete-challenge-streak-tasks';
@@ -418,78 +416,6 @@ describe(testName, () => {
 
             const updatedChallengeStreak = await SDK.challengeStreaks.getOne({ challengeStreakId });
             expect(updatedChallengeStreak.totalTimesTracked).toEqual(1);
-        });
-
-        test('when a user completes a challenge streak if the challenge streak is longer than the users longestChallengeStreak the users longestChallengeStreak is updated.', async () => {
-            expect.assertions(1);
-
-            const user = await getPayingUser({ testName });
-            const userId = user._id;
-
-            const name = 'Duolingo';
-            const description = 'Everyday I must complete a duolingo lesson';
-            const icon = 'duolingo';
-            const { challenge } = await SDK.challenges.create({ name, description, icon });
-            const challengeId = challenge._id;
-            const challengeStreak = await SDK.challengeStreaks.create({ userId, challengeId });
-
-            const currentStreak: CurrentStreak = {
-                numberOfDaysInARow: 100,
-                startDate: new Date().toString(),
-            };
-
-            await challengeStreakModel.findByIdAndUpdate(challengeStreak._id, { $set: { currentStreak } });
-
-            await SDK.completeChallengeStreakTasks.create({
-                userId,
-                challengeStreakId: challengeStreak._id,
-            });
-
-            const updatedUser = await SDK.user.getCurrentUser();
-            expect(updatedUser.longestChallengeStreak).toEqual({
-                numberOfDays: currentStreak.numberOfDaysInARow + 1,
-                challengeStreakId: challengeStreak._id,
-                challengeId: challenge._id,
-                challengeName: challenge.name,
-                startDate: expect.any(String),
-            });
-        });
-
-        test('when a user completes a challenge streak if the challenge streak is longer than the challenge streaks longestChallengeStreak the challenge streaks longestChallengeStreak is updated.', async () => {
-            expect.assertions(1);
-
-            const user = await getPayingUser({ testName });
-            const userId = user._id;
-
-            const name = 'Duolingo';
-            const description = 'Everyday I must complete a duolingo lesson';
-            const icon = 'duolingo';
-            const { challenge } = await SDK.challenges.create({ name, description, icon });
-            const challengeId = challenge._id;
-            const challengeStreak = await SDK.challengeStreaks.create({ userId, challengeId });
-
-            const currentStreak: CurrentStreak = {
-                numberOfDaysInARow: 100,
-                startDate: new Date().toString(),
-            };
-
-            await challengeStreakModel.findByIdAndUpdate(challengeStreak._id, { $set: { currentStreak } });
-
-            await SDK.completeChallengeStreakTasks.create({
-                userId,
-                challengeStreakId: challengeStreak._id,
-            });
-
-            const updatedChallengeStreak = await SDK.challengeStreaks.getOne({
-                challengeStreakId: challengeStreak._id,
-            });
-            expect(updatedChallengeStreak.longestChallengeStreak).toEqual({
-                numberOfDays: currentStreak.numberOfDaysInARow + 1,
-                challengeStreakId: challengeStreak._id,
-                challengeId: challenge._id,
-                challengeName: challenge.name,
-                startDate: expect.any(String),
-            });
         });
 
         test('when a user completes a challenge streak they are credited with coins.', async () => {

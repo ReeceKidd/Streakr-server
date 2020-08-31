@@ -19,8 +19,6 @@ import OidXpTransactionTypes from '@streakoid/streakoid-models/lib/Types/OidXpTr
 import { coinCreditValues } from '../src/helpers/coinCreditValues';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 import { correctSoloStreakKeys } from '../src/testHelpers/correctSoloStreakKeys';
-import { soloStreakModel } from '../src/Models/SoloStreak';
-import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
 
 jest.setTimeout(120000);
 
@@ -347,68 +345,6 @@ describe(testName, () => {
 
             const updatedSoloStreak = await SDK.soloStreaks.getOne(soloStreak._id);
             expect(updatedSoloStreak.totalTimesTracked).toEqual(1);
-        });
-
-        test('if solo streaks current streak is longer tha the users longestSoloStreak the users longestSoloStreak becomes equal to the current streak.', async () => {
-            expect.assertions(1);
-
-            const user = await getPayingUser({ testName });
-            const userId = user._id;
-
-            const soloStreak = await SDK.soloStreaks.create({ userId, streakName: 'Reading' });
-            const soloStreakId = soloStreak._id;
-
-            const currentStreak: CurrentStreak = {
-                numberOfDaysInARow: 100,
-                startDate: new Date().toString(),
-            };
-
-            await soloStreakModel.findByIdAndUpdate(soloStreakId, { $set: { currentStreak } });
-
-            await SDK.completeSoloStreakTasks.create({
-                userId,
-                soloStreakId,
-            });
-
-            const updatedUser = await SDK.user.getCurrentUser();
-
-            expect(updatedUser.longestSoloStreak).toEqual({
-                numberOfDays: currentStreak.numberOfDaysInARow + 1,
-                soloStreakId,
-                soloStreakName: soloStreak.streakName,
-                startDate: expect.any(String),
-            });
-        });
-
-        test('if solo streaks current streak is longer tha the solo streaks longestSoloStreak the solo streaks longestSoloStreak becomes equal to the current streak.', async () => {
-            expect.assertions(1);
-
-            const user = await getPayingUser({ testName });
-            const userId = user._id;
-
-            const soloStreak = await SDK.soloStreaks.create({ userId, streakName: 'Reading' });
-            const soloStreakId = soloStreak._id;
-
-            const currentStreak: CurrentStreak = {
-                numberOfDaysInARow: 100,
-                startDate: new Date().toString(),
-            };
-
-            await soloStreakModel.findByIdAndUpdate(soloStreakId, { $set: { currentStreak } });
-
-            await SDK.completeSoloStreakTasks.create({
-                userId,
-                soloStreakId,
-            });
-
-            const updatedSoloStreak = await SDK.soloStreaks.getOne(soloStreakId);
-
-            expect(updatedSoloStreak.longestSoloStreak).toEqual({
-                numberOfDays: currentStreak.numberOfDaysInARow + 1,
-                soloStreakId,
-                soloStreakName: soloStreak.streakName,
-                startDate: expect.any(String),
-            });
         });
 
         test('when a user completes a solo streak task they are credited with coins.', async () => {
