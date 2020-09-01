@@ -135,6 +135,48 @@ describe('trackMaintainedTeamMemberStreaks', () => {
         });
     });
 
+    test('if team member streak current streak is longer than the users longest team member streak update the users longestTeamMemberStreak', async () => {
+        expect.assertions(1);
+        const user = getMockUser({ _id: 'userId' });
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
+
+        userModel.findById = jest.fn().mockResolvedValue({
+            ...user,
+            longestEverStreak: {
+                currentStreak: {
+                    numberOfDays: 100,
+                },
+            },
+            longestCurrentStreak: {
+                currentStreak: {
+                    numberOfDays: 100,
+                },
+            },
+        }) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
+
+        const currentStreak = {
+            startDate: '24/02/95',
+            numberOfDaysInARow: 100,
+        };
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
+        const maintainedTeamMemberStreaks = [{ ...teamMemberStreak, currentStreak }];
+        await trackMaintainedTeamMemberStreaks(maintainedTeamMemberStreaks as any);
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $set: {
+                longestTeamMemberStreak: {
+                    teamMemberStreakId: teamMemberStreak._id,
+                    teamStreakName: teamStreak.streakName,
+                    teamStreakId: teamStreak._id,
+                    numberOfDays: currentStreak.numberOfDaysInARow,
+                    startDate: currentStreak.startDate,
+                    streakType: StreakTypes.teamMember,
+                },
+            },
+        });
+    });
+
     test('creates a streak maintained tracking event.', async () => {
         expect.assertions(1);
         const user = getMockUser({ _id: 'userId' });
