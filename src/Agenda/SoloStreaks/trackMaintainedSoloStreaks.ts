@@ -56,6 +56,21 @@ export const trackMaintainedSoloStreaks = async (
                         },
                     });
                 }
+
+                if (user.longestSoloStreak.numberOfDays < soloStreak.currentStreak.numberOfDaysInARow) {
+                    const longestSoloStreak: LongestEverSoloStreak = {
+                        soloStreakId: soloStreak._id,
+                        soloStreakName: soloStreak.streakName,
+                        numberOfDays: soloStreak.currentStreak.numberOfDaysInARow,
+                        startDate: soloStreak.currentStreak.startDate || new Date().toString(),
+                        streakType: StreakTypes.solo,
+                    };
+                    await userModel.findByIdAndUpdate(user._id, {
+                        $set: {
+                            longestSoloStreak,
+                        },
+                    });
+                }
             }
             return createStreakTrackingEvent({
                 type: StreakTrackingEventTypes.maintainedStreak,
