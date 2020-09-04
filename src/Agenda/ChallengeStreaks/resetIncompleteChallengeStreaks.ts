@@ -56,6 +56,34 @@ export const resetIncompleteChallengeStreaks = async (
                 await UserStreakHelper.updateUsersLongestCurrentStreak({ userId: user._id });
             }
 
+            const longestEverStreak = user && user.longestEverStreak;
+
+            if (
+                longestEverStreak &&
+                longestEverStreak.streakType === StreakTypes.challenge &&
+                longestEverStreak.challengeStreakId &&
+                longestEverStreak.challengeStreakId === challengeStreak._id &&
+                user
+            ) {
+                await userModel.findByIdAndUpdate(user._id, {
+                    $set: { longestEverStreak: { ...longestEverStreak, endDate } },
+                });
+            }
+
+            const longestChallengeStreak = user && user.longestChallengeStreak;
+
+            if (
+                longestChallengeStreak &&
+                longestChallengeStreak.streakType === StreakTypes.challenge &&
+                longestChallengeStreak.challengeStreakId &&
+                longestChallengeStreak.challengeStreakId === challengeStreak._id &&
+                user
+            ) {
+                await userModel.findByIdAndUpdate(user._id, {
+                    $set: { longestChallengeStreak: { ...longestChallengeStreak, endDate } },
+                });
+            }
+
             const challenge: Challenge | null = await challengeModel.findById(challengeStreak.challengeId);
 
             const lostChallengeStreakActivityFeedItem: ActivityFeedItemType = {

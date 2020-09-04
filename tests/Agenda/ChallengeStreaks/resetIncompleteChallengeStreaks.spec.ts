@@ -15,6 +15,7 @@ import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { correctChallengeStreakKeys } from '../../../src/testHelpers/correctChallengeStreakKeys';
 import { userModel } from '../../../src/Models/User';
 import { LongestCurrentChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentChallengeStreak';
+import { LongestEverChallengeStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverChallengeStreak';
 
 jest.setTimeout(120000);
 
@@ -137,6 +138,96 @@ describe(testName, () => {
 
         const updatedUser = await SDK.user.getCurrentUser();
         expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0, streakType: StreakTypes.unknown });
+    });
+
+    test('if the users longest ever streak is equal to the current streak it adds an endDate to the users longest ever streak.', async () => {
+        expect.assertions(1);
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+        const challengeStreak = await SDK.challengeStreaks.create({
+            userId,
+            challengeId: challenge._id,
+        });
+
+        const longestEverStreak: LongestEverChallengeStreak = {
+            challengeStreakId: challengeStreak._id,
+            challengeId: challenge._id,
+            challengeName: challenge.name,
+            numberOfDays: 10,
+            startDate: new Date().toString(),
+            streakType: StreakTypes.challenge,
+        };
+
+        await userModel.findByIdAndUpdate(user._id, { $set: { longestEverStreak } });
+
+        const incompleteChallengeStreaks = await SDK.challengeStreaks.getAll({
+            completedToday: false,
+        });
+
+        const endDate = new Date();
+        await resetIncompleteChallengeStreaks(incompleteChallengeStreaks, endDate.toString());
+
+        const updatedUser = await SDK.user.getCurrentUser();
+
+        const longestEverChallengeStreak = updatedUser.longestEverStreak as LongestEverChallengeStreak;
+
+        expect(longestEverChallengeStreak.endDate).toBeDefined();
+    });
+
+    test('if the users longest challenge streak is equal to the current streak it adds an endDate to the users longest challenge streak.', async () => {
+        expect.assertions(1);
+
+        const name = 'Duolingo';
+        const description = 'Everyday I must complete a duolingo lesson';
+        const icon = 'duolingo';
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+
+        const { challenge } = await SDK.challenges.create({
+            name,
+            description,
+            icon,
+        });
+        const challengeStreak = await SDK.challengeStreaks.create({
+            userId,
+            challengeId: challenge._id,
+        });
+
+        const longestChallengeStreak: LongestEverChallengeStreak = {
+            challengeStreakId: challengeStreak._id,
+            challengeId: challenge._id,
+            challengeName: challenge.name,
+            numberOfDays: 10,
+            startDate: new Date().toString(),
+            streakType: StreakTypes.challenge,
+        };
+
+        await userModel.findByIdAndUpdate(user._id, { $set: { longestChallengeStreak } });
+
+        const incompleteChallengeStreaks = await SDK.challengeStreaks.getAll({
+            completedToday: false,
+        });
+
+        const endDate = new Date();
+        await resetIncompleteChallengeStreaks(incompleteChallengeStreaks, endDate.toString());
+
+        const updatedUser = await SDK.user.getCurrentUser();
+
+        const updatedLongestChallengeStreak = updatedUser.longestChallengeStreak as LongestEverChallengeStreak;
+
+        expect(updatedLongestChallengeStreak.endDate).toBeDefined();
     });
 
     test('creates streak tracking event.', async () => {
