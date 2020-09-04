@@ -31,23 +31,6 @@ export const trackMaintainedTeamStreaks = async (
                     const populatedMember = await userModel.findById(member.memberId);
                     if (populatedMember) {
                         if (
-                            (populatedMember &&
-                                populatedMember.longestTeamStreak &&
-                                populatedMember.longestTeamStreak.numberOfDays) <
-                            teamStreak.currentStreak.numberOfDaysInARow
-                        ) {
-                            const longestTeamStreak: LongestEverTeamStreak = {
-                                teamStreakId: teamStreak._id,
-                                teamStreakName: teamStreak.streakName,
-                                numberOfDays: teamStreak.currentStreak.numberOfDaysInARow,
-                                startDate: teamStreak.currentStreak.startDate || new Date().toString(),
-                                members: teamStreak.members,
-                                streakType: StreakTypes.team,
-                            };
-                            await userModel.findByIdAndUpdate(member.memberId, { $set: { longestTeamStreak } });
-                        }
-
-                        if (
                             populatedMember &&
                             populatedMember.longestEverStreak &&
                             populatedMember.longestEverStreak.numberOfDays < teamStreak.currentStreak.numberOfDaysInARow
@@ -63,6 +46,23 @@ export const trackMaintainedTeamStreaks = async (
                             await userModel.findByIdAndUpdate(member.memberId, {
                                 $set: { longestEverStreak: longestTeamStreak },
                             });
+                        }
+
+                        if (
+                            (populatedMember &&
+                                populatedMember.longestTeamStreak &&
+                                populatedMember.longestTeamStreak.numberOfDays) <
+                            teamStreak.currentStreak.numberOfDaysInARow
+                        ) {
+                            const longestTeamStreak: LongestEverTeamStreak = {
+                                teamStreakId: teamStreak._id,
+                                teamStreakName: teamStreak.streakName,
+                                numberOfDays: teamStreak.currentStreak.numberOfDaysInARow,
+                                startDate: teamStreak.currentStreak.startDate || new Date().toString(),
+                                members: teamStreak.members,
+                                streakType: StreakTypes.team,
+                            };
+                            await userModel.findByIdAndUpdate(member.memberId, { $set: { longestTeamStreak } });
                         }
                     }
 

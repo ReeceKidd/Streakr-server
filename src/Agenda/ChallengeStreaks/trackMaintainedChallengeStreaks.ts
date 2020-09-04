@@ -64,6 +64,22 @@ export const trackMaintainedChallengeStreaks = async (
                         },
                     });
                 }
+
+                if (user.longestChallengeStreak.numberOfDays < challengeStreak.currentStreak.numberOfDaysInARow) {
+                    const longestChallengeStreak: LongestEverChallengeStreak = {
+                        challengeStreakId: challengeStreak._id,
+                        challengeId: challengeStreak.challengeId,
+                        challengeName: challengeStreak.challengeName,
+                        numberOfDays: challengeStreak.currentStreak.numberOfDaysInARow,
+                        startDate: challengeStreak.currentStreak.startDate || new Date().toString(),
+                        streakType: StreakTypes.challenge,
+                    };
+                    await userModel.findByIdAndUpdate(user._id, {
+                        $set: {
+                            longestChallengeStreak,
+                        },
+                    });
+                }
             }
             return createStreakTrackingEvent({
                 type: StreakTrackingEventTypes.maintainedStreak,

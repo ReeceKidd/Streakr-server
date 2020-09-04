@@ -140,6 +140,49 @@ describe('trackMaintainedChallengeStreaks', () => {
         });
     });
 
+    test('if challenge streak current streak is longer than the users longest challenge streak it updates the users longest challenge streak.', async () => {
+        expect.assertions(2);
+        const user = getMockUser({ _id: 'userId' });
+        challengeStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
+        userModel.findById = jest.fn().mockResolvedValue(user) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
+
+        const currentStreak = {
+            startDate: '24/02/95',
+            numberOfDaysInARow: 100,
+        };
+
+        const challenge = getMockChallenge();
+        const challengeStreak = getMockChallengeStreak({ user, challenge });
+        const maintainedChallengeStreaks = [{ ...challengeStreak, currentStreak }];
+        await trackMaintainedChallengeStreaks(maintainedChallengeStreaks as any);
+
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $set: {
+                longestCurrentStreak: {
+                    challengeStreakId: challengeStreak._id,
+                    challengeId: challengeStreak.challengeId,
+                    challengeName: challengeStreak.challengeName,
+                    numberOfDays: currentStreak.numberOfDaysInARow,
+                    startDate: currentStreak.startDate,
+                    streakType: StreakTypes.challenge,
+                },
+            },
+        });
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $set: {
+                longestChallengeStreak: {
+                    challengeStreakId: challengeStreak._id,
+                    challengeId: challengeStreak.challengeId,
+                    challengeName: challengeStreak.challengeName,
+                    numberOfDays: currentStreak.numberOfDaysInARow,
+                    startDate: currentStreak.startDate,
+                    streakType: StreakTypes.challenge,
+                },
+            },
+        });
+    });
+
     test('creates a streak tracking event when streak is maintained.', async () => {
         expect.assertions(1);
         const user = getMockUser({ _id: 'userId' });
