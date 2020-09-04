@@ -20,6 +20,7 @@ import { getMockUser } from '../../testHelpers/getMockUser';
 import { getMockSoloStreak } from '../../testHelpers/getMockSoloStreak';
 import { UserStreakHelper } from '../../helpers/UserStreakHelper';
 import { LongestCurrentSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentSoloStreak';
+import { LongestEverSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverSoloStreak';
 
 describe('resetIncompleteSoloStreaks', () => {
     afterEach(() => {
@@ -32,6 +33,7 @@ describe('resetIncompleteSoloStreaks', () => {
         const user = getMockUser({ _id: 'abc' });
         const incompleteSoloStreak = getMockSoloStreak({ userId: user._id });
         userModel.findById = jest.fn().mockResolvedValue(user) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
         UserStreakHelper.updateUsersLongestCurrentStreak = jest.fn().mockResolvedValue(true);
         const endDate = new Date().toString();
 
@@ -61,6 +63,7 @@ describe('resetIncompleteSoloStreaks', () => {
             streakType: StreakTypes.solo,
         };
         userModel.findById = jest.fn().mockResolvedValue({ ...user, longestCurrentStreak }) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
         UserStreakHelper.updateUsersLongestCurrentStreak = jest.fn().mockResolvedValue(true);
         const endDate = new Date().toString();
 
@@ -68,6 +71,56 @@ describe('resetIncompleteSoloStreaks', () => {
         await resetIncompleteSoloStreaks(incompleteSoloStreaks as any, endDate);
 
         expect(UserStreakHelper.updateUsersLongestCurrentStreak).toBeCalledWith({ userId: user._id });
+    });
+
+    test('that users longestEverStreak has an end date added to it if it matches the solo streak to be reset..', async () => {
+        expect.assertions(1);
+        soloStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
+
+        const user = getMockUser({ _id: 'abc' });
+        const incompleteSoloStreak = getMockSoloStreak({ userId: user._id });
+        const longestEverStreak: LongestEverSoloStreak = {
+            soloStreakId: incompleteSoloStreak._id,
+            soloStreakName: incompleteSoloStreak.streakName,
+            numberOfDays: incompleteSoloStreak.currentStreak.numberOfDaysInARow,
+            startDate: new Date().toString(),
+            streakType: StreakTypes.solo,
+        };
+        userModel.findById = jest.fn().mockResolvedValue({ ...user, longestEverStreak }) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
+        const endDate = new Date().toString();
+
+        const incompleteSoloStreaks = [incompleteSoloStreak];
+        await resetIncompleteSoloStreaks(incompleteSoloStreaks as any, endDate);
+
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $set: { longestEverStreak: { ...longestEverStreak, endDate } },
+        });
+    });
+
+    test('that users longestSoloStreak has an end date added to it if it matches the solo streak to be reset..', async () => {
+        expect.assertions(1);
+        soloStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
+
+        const user = getMockUser({ _id: 'abc' });
+        const incompleteSoloStreak = getMockSoloStreak({ userId: user._id });
+        const longestSoloStreak: LongestEverSoloStreak = {
+            soloStreakId: incompleteSoloStreak._id,
+            soloStreakName: incompleteSoloStreak.streakName,
+            numberOfDays: incompleteSoloStreak.currentStreak.numberOfDaysInARow,
+            startDate: new Date().toString(),
+            streakType: StreakTypes.solo,
+        };
+        userModel.findById = jest.fn().mockResolvedValue({ ...user, longestSoloStreak }) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
+        const endDate = new Date().toString();
+
+        const incompleteSoloStreaks = [incompleteSoloStreak];
+        await resetIncompleteSoloStreaks(incompleteSoloStreaks as any, endDate);
+
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $set: { longestSoloStreak: { ...longestSoloStreak, endDate } },
+        });
     });
 
     test('that lostStreakActivityFeedItem is created', async () => {

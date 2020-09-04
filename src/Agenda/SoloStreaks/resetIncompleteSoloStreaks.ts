@@ -54,6 +54,44 @@ export const resetIncompleteSoloStreaks = async (
                 await UserStreakHelper.updateUsersLongestCurrentStreak({ userId: user._id });
             }
 
+            const longestEverStreak = user && user.longestEverStreak;
+
+            if (
+                longestEverStreak &&
+                longestEverStreak.streakType === StreakTypes.solo &&
+                longestEverStreak.soloStreakId &&
+                longestEverStreak.soloStreakId === soloStreak._id &&
+                user
+            ) {
+                await userModel.findByIdAndUpdate(user._id, {
+                    $set: {
+                        longestEverStreak: {
+                            ...user.longestEverStreak,
+                            endDate,
+                        },
+                    },
+                });
+            }
+
+            const longestSoloStreak = user && user.longestSoloStreak;
+
+            if (
+                longestSoloStreak &&
+                longestSoloStreak.streakType === StreakTypes.solo &&
+                longestSoloStreak.soloStreakId &&
+                longestSoloStreak.soloStreakId === soloStreak._id &&
+                user
+            ) {
+                await userModel.findByIdAndUpdate(user._id, {
+                    $set: {
+                        longestSoloStreak: {
+                            ...user.longestSoloStreak,
+                            endDate,
+                        },
+                    },
+                });
+            }
+
             const lostStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.lostSoloStreak,
                 userId: soloStreak.userId,

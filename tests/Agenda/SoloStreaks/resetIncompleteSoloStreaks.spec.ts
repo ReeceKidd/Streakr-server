@@ -15,6 +15,7 @@ import { streakoidTestSDK } from '../../setup/streakoidTestSDK';
 import { correctSoloStreakKeys } from '../../../src/testHelpers/correctSoloStreakKeys';
 import { userModel } from '../../../src/Models/User';
 import { LongestCurrentSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentSoloStreak';
+import { LongestEverSoloStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverSoloStreak';
 
 jest.setTimeout(120000);
 
@@ -112,6 +113,38 @@ describe(testName, () => {
 
         const updatedUser = await SDK.user.getCurrentUser();
         expect(updatedUser.longestCurrentStreak).toEqual({ numberOfDays: 0, streakType: StreakTypes.unknown });
+    });
+
+    test('if the users longest ever streak id is equal to the solo streak id sets the users longestEverStreak to the default longestEverStreak. ', async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const streakName = 'Daily Spanish';
+
+        const soloStreak = await SDK.soloStreaks.create({ userId: user._id, streakName });
+
+        const longestEverStreak: LongestEverSoloStreak = {
+            soloStreakId: soloStreak._id,
+            soloStreakName: soloStreak.streakName,
+            numberOfDays: 10,
+            startDate: new Date().toString(),
+            streakType: StreakTypes.solo,
+        };
+
+        await userModel.findByIdAndUpdate(user._id, { $set: { longestEverStreak } });
+
+        const incompleteSoloStreaks = await SDK.soloStreaks.getAll({
+            userId: user._id,
+            completedToday: false,
+        });
+
+        const endDate = new Date();
+        await resetIncompleteSoloStreaks(incompleteSoloStreaks, endDate.toString());
+
+        const updatedUser = await SDK.user.getCurrentUser();
+
+        const updatedLongestEverStreak = updatedUser.longestEverStreak as LongestEverSoloStreak;
+        expect(updatedLongestEverStreak.endDate).toBeDefined();
     });
 
     test('creates a lost streak tracking event.', async () => {
