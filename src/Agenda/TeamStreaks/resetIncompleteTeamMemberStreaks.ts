@@ -61,6 +61,34 @@ export const resetIncompleteTeamMemberStreaks = async (
                 await UserStreakHelper.updateUsersLongestCurrentStreak({ userId: user._id });
             }
 
+            const longestEverStreak = user && user.longestEverStreak;
+
+            if (
+                longestEverStreak &&
+                longestEverStreak.streakType === StreakTypes.teamMember &&
+                longestEverStreak.teamMemberStreakId &&
+                longestEverStreak.teamMemberStreakId === teamMemberStreak._id &&
+                user
+            ) {
+                await userModel.findByIdAndUpdate(user._id, {
+                    $set: { longestEverStreak: { ...longestEverStreak, endDate } },
+                });
+            }
+
+            const longestTeamMemberStreak = user && user.longestTeamMemberStreak;
+
+            if (
+                longestTeamMemberStreak &&
+                longestTeamMemberStreak.streakType === StreakTypes.teamMember &&
+                longestTeamMemberStreak.teamMemberStreakId &&
+                longestTeamMemberStreak.teamMemberStreakId === teamMemberStreak._id &&
+                user
+            ) {
+                await userModel.findByIdAndUpdate(user._id, {
+                    $set: { longestTeamMemberStreak: { ...longestTeamMemberStreak, endDate } },
+                });
+            }
+
             const lostTeamStreakActivityFeedItem: ActivityFeedItemType = {
                 activityFeedItemType: ActivityFeedItemTypes.lostTeamStreak,
                 userId: teamMemberStreak.userId,

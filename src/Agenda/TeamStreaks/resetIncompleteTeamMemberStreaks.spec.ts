@@ -21,6 +21,7 @@ import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStre
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 import { UserStreakHelper } from '../../helpers/UserStreakHelper';
 import { LongestCurrentTeamMemberStreak } from '@streakoid/streakoid-models/lib/Models/LongestCurrentTeamMemberStreak';
+import { LongestEverStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverStreak';
 
 describe('resetIncompleteSoloStreaks', () => {
     afterEach(() => {
@@ -35,6 +36,7 @@ describe('resetIncompleteSoloStreaks', () => {
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
         userModel.findById = jest.fn().mockResolvedValue(user) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
         UserStreakHelper.updateUsersLongestCurrentStreak = jest.fn().mockResolvedValue(true);
 
         const incompleteTeamMemberStreaks = [teamMemberStreak];
@@ -76,6 +78,7 @@ describe('resetIncompleteSoloStreaks', () => {
             streakType: StreakTypes.teamMember,
         };
         userModel.findById = jest.fn().mockResolvedValue({ ...user, longestCurrentStreak }) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
         UserStreakHelper.updateUsersLongestCurrentStreak = jest.fn().mockResolvedValue(true);
 
         const incompleteTeamMemberStreaks = [teamMemberStreak];
@@ -87,6 +90,94 @@ describe('resetIncompleteSoloStreaks', () => {
         expect(UserStreakHelper.updateUsersLongestCurrentStreak).toBeCalledWith({ userId: user._id });
     });
 
+    test('that users longestCurrentStreak is set to an empty object if longestCurrentStreak.teamMemberStreak id equals team member streak.', async () => {
+        expect.assertions(1);
+        const user = getMockUser({ _id: 'abc' });
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
+        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
+        const longestCurrentStreak: LongestCurrentTeamMemberStreak = {
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+            teamStreakName: teamStreak.streakName,
+            numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
+            startDate: new Date().toString(),
+            streakType: StreakTypes.teamMember,
+        };
+        userModel.findById = jest.fn().mockResolvedValue({ ...user, longestCurrentStreak }) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
+        UserStreakHelper.updateUsersLongestCurrentStreak = jest.fn().mockResolvedValue(true);
+
+        const incompleteTeamMemberStreaks = [teamMemberStreak];
+
+        const endDate = new Date().toString();
+
+        await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks as any, endDate);
+
+        expect(UserStreakHelper.updateUsersLongestCurrentStreak).toBeCalledWith({ userId: user._id });
+    });
+
+    test('if the current streak is equal to the users longestEverStreak an end date is added to the longestEverStreak.', async () => {
+        expect.assertions(1);
+        const user = getMockUser({ _id: 'abc' });
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
+        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
+        const longestEverStreak: LongestCurrentTeamMemberStreak = {
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+            teamStreakName: teamStreak.streakName,
+            numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
+            startDate: new Date().toString(),
+            streakType: StreakTypes.teamMember,
+        };
+        userModel.findById = jest.fn().mockResolvedValue({ ...user, longestEverStreak }) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
+        UserStreakHelper.updateUsersLongestCurrentStreak = jest.fn().mockResolvedValue(true);
+
+        const incompleteTeamMemberStreaks = [teamMemberStreak];
+
+        const endDate = new Date().toString();
+
+        await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks as any, endDate);
+
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $set: { longestEverStreak: { ...longestEverStreak, endDate } },
+        });
+    });
+
+    test('if the current streak is equal to the users longestTeamMemberStreak an end date is added to the longestTeamMemberStreak.', async () => {
+        expect.assertions(1);
+        const user = getMockUser({ _id: 'abc' });
+        const teamStreak = getMockTeamStreak({ creatorId: user._id });
+        const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
+        teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
+        teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
+        const longestTeamMemberStreak: LongestEverStreak = {
+            teamStreakId: teamStreak._id,
+            teamMemberStreakId: teamMemberStreak._id,
+            teamStreakName: teamStreak.streakName,
+            numberOfDays: teamMemberStreak.currentStreak.numberOfDaysInARow,
+            startDate: new Date().toString(),
+            streakType: StreakTypes.teamMember,
+        };
+        userModel.findById = jest.fn().mockResolvedValue({ ...user, longestTeamMemberStreak }) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
+        UserStreakHelper.updateUsersLongestCurrentStreak = jest.fn().mockResolvedValue(true);
+
+        const incompleteTeamMemberStreaks = [teamMemberStreak];
+
+        const endDate = new Date().toString();
+
+        await resetIncompleteTeamMemberStreaks(incompleteTeamMemberStreaks as any, endDate);
+
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $set: { longestTeamMemberStreak: { ...longestTeamMemberStreak, endDate } },
+        });
+    });
+
     test('creates a lost team member streak activity feed item.', async () => {
         expect.assertions(1);
         const user = getMockUser({ _id: 'abc' });
@@ -95,6 +186,7 @@ describe('resetIncompleteSoloStreaks', () => {
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamMemberStreak) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue(teamStreak) as any;
         userModel.findById = jest.fn().mockResolvedValue(user) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
         UserStreakHelper.updateUsersLongestCurrentStreak = jest.fn().mockResolvedValue(true);
 
         const incompleteTeamMemberStreaks = [teamMemberStreak];
