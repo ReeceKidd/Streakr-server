@@ -6,6 +6,7 @@ import StreakTrackingEventTypes from '@streakoid/streakoid-models/lib/Types/Stre
 import StreakTypes from '@streakoid/streakoid-models/lib/Types/StreakTypes';
 import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEvent';
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
+import { userModel } from '../../Models/User';
 
 export const resetIncompleteTeamStreaks = async (
     incompleteTeamStreaks: TeamStreak[],
@@ -40,6 +41,27 @@ export const resetIncompleteTeamStreaks = async (
                     currentStreak,
                 },
             });
+
+            const users = await userModel.find({ _id: teamStreak.members.map(member => member.memberId) });
+
+            await Promise.all(
+                users.map(user => {
+                    const longestTeamStreak = user && user.longestTeamStreak;
+
+                    if (
+                        longestTeamStreak &&
+                        longestTeamStreak.streakType === StreakTypes.team &&
+                        longestTeamStreak.teamStreakId &&
+                        longestTeamStreak.teamStreakId === teamStreak._id &&
+                        user
+                    ) {
+                        return userModel.findByIdAndUpdate(user._id, {
+                            $set: { longestTeamStreak: { ...longestTeamStreak, endDate } },
+                        });
+                    }
+                    return;
+                }),
+            );
 
             return createStreakTrackingEvent({
                 type: StreakTrackingEventTypes.lostStreak,
