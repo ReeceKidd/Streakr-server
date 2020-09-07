@@ -9,9 +9,7 @@ NODE_ENV=test
 
 PORT=3001
 
-DATABASE_URI=mongodb+srv://reece:G3PUluuoctP4wBfJ@cluster0-kxrys.mongodb.net/DEV
-
-#DATABASE_URI=mongodb://localhost:27017/streakoid-test
+DATABASE_URI=mongodb://localhost:27017/streakoid-test
 
 AWS_ACCESS_KEY_ID=AKIAI4DFSUY6CD6WEYPA
 
