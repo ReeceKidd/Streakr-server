@@ -14,15 +14,17 @@ import { getMockUser } from '../../testHelpers/getMockUser';
 import { LongestEverTeamStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverTeamStreak';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
+import { any } from 'joi';
 
 describe('resetIncompleteTeamStreaks', () => {
     afterEach(() => {
         jest.resetAllMocks();
     });
 
-    test('if current streak is greater than 0 the current streak is reset and old streak is pushed to past streaks', async () => {
+    test.only('if current streak is greater than 0 the current streak is reset and old streak is pushed to past streaks', async () => {
         expect.assertions(3);
-        userModel.find = jest.fn().mockResolvedValue([]) as any;
+        const lean = jest.fn().mockResolvedValue([]) as any;
+        userModel.find = jest.fn(() => ({ lean })) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
@@ -83,7 +85,8 @@ describe('resetIncompleteTeamStreaks', () => {
 
     test('if current streak equals 0 the current streak is reset and old streak is pushed to past streaks', async () => {
         expect.assertions(2);
-        userModel.find = jest.fn().mockResolvedValue([]) as any;
+        const lean = jest.fn().mockResolvedValue([]) as any;
+        userModel.find = jest.fn(() => ({ lean })) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
@@ -150,7 +153,8 @@ describe('resetIncompleteTeamStreaks', () => {
             teamStreakId: teamStreak._id,
             teamStreakName: teamStreak.streakName,
         };
-        userModel.find = jest.fn().mockResolvedValue([{ ...user, longestTeamStreak }]) as any;
+        const lean = jest.fn().mockResolvedValue([{ ...user, longestTeamStreak }]) as any;
+        userModel.find = jest.fn(() => ({ lean })) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
@@ -168,6 +172,8 @@ describe('resetIncompleteTeamStreaks', () => {
 
     test('creates a lost team streak tracking event.', async () => {
         expect.assertions(1);
+        const lean = jest.fn().mockResolvedValue([]) as any;
+        userModel.find = jest.fn(() => ({ lean })) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
         teamStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
         teamMemberStreakModel.findByIdAndUpdate = jest.fn().mockResolvedValue({ data: {} }) as any;
