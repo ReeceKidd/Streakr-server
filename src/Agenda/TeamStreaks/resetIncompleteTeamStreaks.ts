@@ -56,9 +56,7 @@ export const resetIncompleteTeamStreaks = async (
                     if (
                         longestTeamStreak &&
                         longestTeamStreak.streakType === StreakTypes.team &&
-                        longestTeamStreak.teamStreakId &&
-                        longestTeamStreak.teamStreakId === teamStreak._id &&
-                        user
+                        longestTeamStreak.teamStreakId == teamStreak._id
                     ) {
                         return userModel.findByIdAndUpdate(user._id, {
                             $set: { longestTeamStreak: { ...longestTeamStreak, endDate } },

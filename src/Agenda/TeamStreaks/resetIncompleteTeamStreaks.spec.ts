@@ -14,15 +14,14 @@ import { getMockUser } from '../../testHelpers/getMockUser';
 import { LongestEverTeamStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverTeamStreak';
 import { getMockTeamStreak } from '../../testHelpers/getMockTeamStreak';
 import { getMockTeamMemberStreak } from '../../testHelpers/getMockTeamMemberStreak';
-import { any } from 'joi';
 
 describe('resetIncompleteTeamStreaks', () => {
     afterEach(() => {
         jest.resetAllMocks();
     });
 
-    test.only('if current streak is greater than 0 the current streak is reset and old streak is pushed to past streaks', async () => {
-        expect.assertions(3);
+    test('if current streak is greater than 0 the current streak is reset and old streak is pushed to past streaks', async () => {
+        expect.assertions(2);
         const lean = jest.fn().mockResolvedValue([]) as any;
         userModel.find = jest.fn(() => ({ lean })) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
@@ -84,7 +83,7 @@ describe('resetIncompleteTeamStreaks', () => {
     });
 
     test('if current streak equals 0 the current streak is reset and old streak is pushed to past streaks', async () => {
-        expect.assertions(2);
+        expect.assertions(1);
         const lean = jest.fn().mockResolvedValue([]) as any;
         userModel.find = jest.fn(() => ({ lean })) as any;
         userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true) as any;
@@ -140,7 +139,7 @@ describe('resetIncompleteTeamStreaks', () => {
     });
 
     test('if one of the members longestTeamStreaks is equal to the current team streak add an endDate to the users longestTeamStreak.', async () => {
-        expect.assertions(2);
+        expect.assertions(1);
 
         const user = getMockUser({ _id: 'userId' });
         const teamStreak = getMockTeamStreak({ creatorId: user._id });
