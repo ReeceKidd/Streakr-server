@@ -26,6 +26,8 @@ import {
     updateTeamStreakTeamMemberStreaksNamesMiddleware,
     updateTeamStreakTeamMemberStreaksVisibilitiesMiddleware,
     getUpdateTeamStreakTeamMemberStreaksVisibilitiesMiddleware,
+    updateTeamStreakTeamMemberStreaksStatusMiddleware,
+    getUpdateTeamStreakTeamMemberStreaksStatusMiddleware,
 } from './patchTeamStreakMiddlewares';
 import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
@@ -442,6 +444,79 @@ describe('patchTeamStreakMiddlewares', () => {
             await middleware(request, response, next);
 
             expect(next).toBeCalledWith(new CustomError(ErrorType.PatchTeamStreakMiddleware));
+        });
+    });
+
+    describe('updateTeamStreakTeamMemberStreaksStatusMiddleware', () => {
+        test('if stratus is changed update the status of associated team member streaks.', async () => {
+            expect.assertions(3);
+            const teamStreakId = 'abc123';
+            const status = StreakStatus.archived;
+            const request: any = {
+                params: { teamStreakId },
+                body: { status },
+            };
+            const response: any = { locals: {} };
+            const user = getMockUser({ _id: 'userId' });
+            const teamStreak = getMockTeamStreak({ creatorId: user._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
+            const next = jest.fn();
+            const find = jest.fn().mockResolvedValue([teamMemberStreak]);
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+
+            const teamMemberStreakModel = {
+                find,
+                findByIdAndUpdate,
+            };
+            const middleware = getUpdateTeamStreakTeamMemberStreaksStatusMiddleware(teamMemberStreakModel as any);
+
+            await middleware(request, response, next);
+
+            expect(find).toBeCalled();
+            expect(findByIdAndUpdate).toBeCalledWith(teamMemberStreak._id, { $set: { status } });
+            expect(next).toBeCalledWith();
+        });
+
+        test('if status is not changed it does nothing.', async () => {
+            expect.assertions(3);
+            const teamStreakId = 'abc123';
+            const request: any = {
+                params: { teamStreakId },
+                body: {},
+            };
+            const response: any = { locals: {} };
+            const user = getMockUser({ _id: 'userId' });
+            const teamStreak = getMockTeamStreak({ creatorId: user._id });
+            const teamMemberStreak = getMockTeamMemberStreak({ teamStreak, user });
+            const next = jest.fn();
+            const find = jest.fn().mockResolvedValue([teamMemberStreak]);
+            const findByIdAndUpdate = jest.fn(() => Promise.resolve(true));
+
+            const teamMemberStreakModel = {
+                find,
+                findByIdAndUpdate,
+            };
+            const middleware = getUpdateTeamStreakTeamMemberStreaksStatusMiddleware(teamMemberStreakModel as any);
+
+            await middleware(request, response, next);
+
+            expect(find).not.toBeCalled();
+            expect(findByIdAndUpdate).not.toBeCalled();
+            expect(next).toBeCalledWith();
+        });
+
+        test('calls next with UpdateTeamStreakTeamMemberStreaksStatusMiddleware on middleware failure', async () => {
+            expect.assertions(1);
+
+            const request: any = {};
+            const response: any = { locals: {} };
+            const next = jest.fn();
+
+            const middleware = getUpdateTeamStreakTeamMemberStreaksStatusMiddleware({} as any);
+
+            await middleware(request, response, next);
+
+            expect(next).toBeCalledWith(new CustomError(ErrorType.UpdateTeamStreakTeamMemberStreaksStatusMiddleware));
         });
     });
 
@@ -1115,24 +1190,25 @@ describe('patchTeamStreakMiddlewares', () => {
     });
 
     test('are defined in the correct order', () => {
-        expect.assertions(15);
+        expect.assertions(16);
 
-        expect(patchTeamStreakMiddlewares.length).toBe(14);
+        expect(patchTeamStreakMiddlewares.length).toBe(15);
         expect(patchTeamStreakMiddlewares[0]).toBe(teamStreakParamsValidationMiddleware);
         expect(patchTeamStreakMiddlewares[1]).toBe(teamStreakRequestBodyValidationMiddleware);
         expect(patchTeamStreakMiddlewares[2]).toBe(patchTeamStreakMiddleware);
-        expect(patchTeamStreakMiddlewares[3]).toBe(updateTeamStreakTeamMemberStreaksNamesMiddleware);
-        expect(patchTeamStreakMiddlewares[4]).toBe(updateTeamStreakTeamMemberStreaksVisibilitiesMiddleware);
-        expect(patchTeamStreakMiddlewares[5]).toBe(sendUpdatedTeamStreakMiddleware);
-        expect(patchTeamStreakMiddlewares[6]).toBe(
+        expect(patchTeamStreakMiddlewares[3]).toBe(updateTeamStreakTeamMemberStreaksStatusMiddleware);
+        expect(patchTeamStreakMiddlewares[4]).toBe(updateTeamStreakTeamMemberStreaksNamesMiddleware);
+        expect(patchTeamStreakMiddlewares[5]).toBe(updateTeamStreakTeamMemberStreaksVisibilitiesMiddleware);
+        expect(patchTeamStreakMiddlewares[6]).toBe(sendUpdatedTeamStreakMiddleware);
+        expect(patchTeamStreakMiddlewares[7]).toBe(
             decreaseTeamMembersTotalLiveStreaksByOneWhenStreakIsArchivedMiddleware,
         );
-        expect(patchTeamStreakMiddlewares[7]).toBe(increaseTeamMembersLiveStreaksByOneWhenStreakIsRestoredMiddleware);
-        expect(patchTeamStreakMiddlewares[8]).toBe(disableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware);
-        expect(patchTeamStreakMiddlewares[9]).toBe(createArchivedTeamStreakActivityFeedItemMiddleware);
-        expect(patchTeamStreakMiddlewares[10]).toBe(createRestoredTeamStreakActivityFeedItemMiddleware);
-        expect(patchTeamStreakMiddlewares[11]).toBe(createDeletedTeamStreakActivityFeedItemMiddleware);
-        expect(patchTeamStreakMiddlewares[12]).toBe(createEditedTeamStreakNameActivityFeedItemMiddleware);
-        expect(patchTeamStreakMiddlewares[13]).toBe(createEditedTeamStreakDescriptionActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[8]).toBe(increaseTeamMembersLiveStreaksByOneWhenStreakIsRestoredMiddleware);
+        expect(patchTeamStreakMiddlewares[9]).toBe(disableTeamMembersRemindersWhenTeamStreakIsArchivedMiddleware);
+        expect(patchTeamStreakMiddlewares[10]).toBe(createArchivedTeamStreakActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[11]).toBe(createRestoredTeamStreakActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[12]).toBe(createDeletedTeamStreakActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[13]).toBe(createEditedTeamStreakNameActivityFeedItemMiddleware);
+        expect(patchTeamStreakMiddlewares[14]).toBe(createEditedTeamStreakDescriptionActivityFeedItemMiddleware);
     });
 });

@@ -26,16 +26,16 @@ export const teamMemberStreakSchema = new mongoose.Schema(
         username: {
             type: String,
         },
+        status: {
+            type: StreakStatus,
+            default: StreakStatus.live,
+        },
         userProfileImage: {
             type: String,
         },
         timezone: {
             required: true,
             type: String,
-        },
-        status: {
-            type: String,
-            default: StreakStatus.live,
         },
         completedToday: {
             type: Boolean,

@@ -177,6 +177,36 @@ describe(testName, () => {
         expect(updatedFriend.totalLiveStreaks).toEqual(1);
     });
 
+    test(`when team streak streak status is changed all associated team member streaks are changed. `, async () => {
+        expect.assertions(1);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+
+        const members = [{ memberId: userId }];
+
+        const originalTeamStreak = await SDK.teamStreaks.create({
+            creatorId: userId,
+            streakName,
+            members,
+        });
+
+        const status = StreakStatus.archived;
+
+        const teamStreak = await SDK.teamStreaks.update({
+            teamStreakId: originalTeamStreak._id,
+            updateData: {
+                status,
+            },
+        });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({ teamStreakId: teamStreak._id });
+        const teamMemberStreak = teamMemberStreaks[0];
+
+        expect(teamMemberStreak.status).toEqual(status);
+    });
+
     test(`when team streak streak name is changed all associated team member streaks are changed. `, async () => {
         expect.assertions(1);
 

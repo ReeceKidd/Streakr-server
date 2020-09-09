@@ -86,6 +86,33 @@ export const getPatchTeamStreakMiddleware = (teamStreakModel: mongoose.Model<Tea
 
 export const patchTeamStreakMiddleware = getPatchTeamStreakMiddleware(teamStreakModel);
 
+export const getUpdateTeamStreakTeamMemberStreaksStatusMiddleware = (
+    teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { teamStreakId } = request.params;
+        const { status } = request.body;
+
+        if (status) {
+            const teamMemberStreaks = await teamMemberStreakModel.find({ teamStreakId });
+            await Promise.all(
+                teamMemberStreaks.map(teamMemberStreak => {
+                    return teamMemberStreakModel.findByIdAndUpdate(teamMemberStreak._id, { $set: { status } });
+                }),
+            );
+        }
+
+        next();
+    } catch (err) {
+        if (err instanceof CustomError) next(err);
+        else next(new CustomError(ErrorType.UpdateTeamStreakTeamMemberStreaksStatusMiddleware, err));
+    }
+};
+
+export const updateTeamStreakTeamMemberStreaksStatusMiddleware = getUpdateTeamStreakTeamMemberStreaksStatusMiddleware(
+    teamMemberStreakModel,
+);
+
 export const getUpdateTeamStreakTeamMemberStreaksNamesMiddleware = (
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
@@ -398,6 +425,7 @@ export const patchTeamStreakMiddlewares = [
     teamStreakParamsValidationMiddleware,
     teamStreakRequestBodyValidationMiddleware,
     patchTeamStreakMiddleware,
+    updateTeamStreakTeamMemberStreaksStatusMiddleware,
     updateTeamStreakTeamMemberStreaksNamesMiddleware,
     updateTeamStreakTeamMemberStreaksVisibilitiesMiddleware,
     sendUpdatedTeamStreakMiddleware,
