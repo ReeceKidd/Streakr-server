@@ -15,6 +15,8 @@ import { teamStreakModel } from '../../../src/Models/TeamStreak';
 import { correctPopulatedTeamStreakKeys } from '../../../src/testHelpers/correctPopulatedTeamStreakKeys';
 import { CurrentStreak } from '@streakoid/streakoid-models/lib/Models/CurrentStreak';
 import { LongestEverTeamStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverTeamStreak';
+import { OneHundredDayTeamStreakAchievement } from '@streakoid/streakoid-models/lib/Models/Achievement';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 
 jest.setTimeout(120000);
 
@@ -490,5 +492,65 @@ describe(testName, () => {
         expect(longestEverStreak.teamStreakId).toEqual(longestTeamStreak.teamStreakId);
         expect(longestEverStreak.teamStreakName).toEqual(longestTeamStreak.teamStreakName);
         expect(longestEverStreak.streakType).toEqual(StreakTypes.team);
+    });
+
+    test('if team streaks current streak equals 100 it unlocks the one hundred day team streak achievement for each of user that does not already have it.', async () => {
+        expect.assertions(8);
+
+        const user = await getPayingUser({ testName });
+        const userId = user._id;
+        const streakName = 'Daily Spanish';
+
+        const creatorId = userId;
+        const members = [{ memberId: userId }];
+        const teamStreak = await SDK.teamStreaks.create({ creatorId, streakName, members });
+        const teamStreakId = teamStreak._id;
+
+        const currentStreak: CurrentStreak = {
+            startDate: new Date().toString(),
+            numberOfDaysInARow: 99,
+        };
+
+        const achievementToCreate: OneHundredDayTeamStreakAchievement = {
+            achievementType: AchievementTypes.oneHundredDayTeamStreak,
+            name: '100 Hundred Days',
+            description: '100 Day team streak',
+        };
+        await SDK.achievements.create(achievementToCreate);
+
+        await teamStreakModel.findByIdAndUpdate(teamStreakId, { $set: { currentStreak } });
+
+        const teamMemberStreaks = await SDK.teamMemberStreaks.getAll({
+            userId,
+            teamStreakId,
+        });
+
+        const teamMemberStreakId = teamMemberStreaks[0]._id;
+
+        await SDK.completeTeamMemberStreakTasks.create({
+            userId,
+            teamStreakId,
+            teamMemberStreakId,
+        });
+
+        const maintainedTeamStreaks = await teamStreakModel.find({
+            completedToday: true,
+        });
+
+        await trackMaintainedTeamStreaks(maintainedTeamStreaks);
+
+        const updatedUser = await SDK.users.getOne(userId);
+
+        expect(updatedUser.achievements.length).toEqual(1);
+        const oneHundredDayTeamStreakAchievement = updatedUser.achievements[0];
+        expect(oneHundredDayTeamStreakAchievement.achievementType).toEqual(AchievementTypes.oneHundredDayTeamStreak);
+        expect(oneHundredDayTeamStreakAchievement.name).toEqual(achievementToCreate.name);
+        expect(oneHundredDayTeamStreakAchievement.description).toEqual(achievementToCreate.description);
+        expect(oneHundredDayTeamStreakAchievement._id).toEqual(expect.any(String));
+        expect(oneHundredDayTeamStreakAchievement.createdAt).toEqual(expect.any(String));
+        expect(oneHundredDayTeamStreakAchievement.updatedAt).toEqual(expect.any(String));
+        expect(Object.keys(oneHundredDayTeamStreakAchievement).sort()).toEqual(
+            ['__v', 'createdAt', 'updatedAt', 'achievementType', '_id', 'description', 'name'].sort(),
+        );
     });
 });

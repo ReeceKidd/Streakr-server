@@ -6,6 +6,8 @@ import { createStreakTrackingEvent } from '../../helpers/createStreakTrackingEve
 import { TeamStreak } from '@streakoid/streakoid-models/lib/Models/TeamStreak';
 import { userModel } from '../../Models/User';
 import { LongestEverTeamStreak } from '@streakoid/streakoid-models/lib/Models/LongestEverTeamStreak';
+import { achievementModel } from '../../Models/Achievement';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 
 export const trackMaintainedTeamStreaks = async (
     maintainedTeamStreaks: TeamStreak[],
@@ -31,7 +33,6 @@ export const trackMaintainedTeamStreaks = async (
                     const populatedMember = await userModel.findById(member.memberId);
                     if (populatedMember) {
                         if (
-                            populatedMember &&
                             populatedMember.longestEverStreak &&
                             populatedMember.longestEverStreak.numberOfDays < teamStreak.currentStreak.numberOfDaysInARow
                         ) {
@@ -49,10 +50,8 @@ export const trackMaintainedTeamStreaks = async (
                         }
 
                         if (
-                            (populatedMember &&
-                                populatedMember.longestTeamStreak &&
-                                populatedMember.longestTeamStreak.numberOfDays) <
-                            teamStreak.currentStreak.numberOfDaysInARow
+                            populatedMember.longestTeamStreak &&
+                            populatedMember.longestTeamStreak.numberOfDays < teamStreak.currentStreak.numberOfDaysInARow
                         ) {
                             const longestTeamStreak: LongestEverTeamStreak = {
                                 teamStreakId: teamStreak._id,
@@ -69,6 +68,24 @@ export const trackMaintainedTeamStreaks = async (
                     return member;
                 }),
             );
+
+            const oneHundredDays = 100;
+            if (teamStreak.currentStreak.numberOfDaysInARow === oneHundredDays) {
+                await Promise.all(
+                    teamStreak.members.map(async member => {
+                        const oneHundredDayTeamStreakAchievement = await achievementModel.findOne({
+                            achievementType: AchievementTypes.oneHundredDayTeamStreak,
+                        });
+                        const populatedMember = await userModel.findById(member.memberId);
+                        if (populatedMember && oneHundredDayTeamStreakAchievement) {
+                            await userModel.findByIdAndUpdate(populatedMember._id, {
+                                $addToSet: { achievements: oneHundredDayTeamStreakAchievement },
+                            });
+                        }
+                        return member;
+                    }),
+                );
+            }
 
             await teamStreakModel.findByIdAndUpdate(teamStreak._id, {
                 $set: { completedToday: false },
