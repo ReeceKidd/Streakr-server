@@ -80,7 +80,7 @@ describe('recoverSoloStreakMiddlewares', () => {
         });
     });
 
-    describe('retreiveSoloStreakToRecoverMiddleware', () => {
+    describe('retrieveSoloStreakToRecoverMiddleware', () => {
         test('sets response.locals.soloStreak and calls next()', async () => {
             expect.assertions(3);
             const soloStreakId = 'abc';

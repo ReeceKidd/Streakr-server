@@ -688,11 +688,11 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
         test('credits user account with coins for completing challenge streaks', async () => {
             expect.assertions(3);
             const challengeStreakId = '123abc';
-            const userId = 'userId';
+            const user = getMockUser({ _id: 'userId' });
             const challenge = { _id: '_id', name: 'reading' };
             const createCoinTransaction = jest.fn(() => Promise.resolve(true));
-            const request: any = { body: { challengeStreakId, userId } };
-            const response: any = { locals: { challenge } };
+            const request: any = { body: { challengeStreakId } };
+            const response: any = { locals: { challenge, user } };
             const next = jest.fn();
             const middleware = getCreditCoinsToUserForCompletingChallengeStreakMiddleware(createCoinTransaction as any);
 
@@ -706,7 +706,7 @@ describe('createCompleteChallengeStreakTaskMiddlewares', () => {
             };
             const coins = coinCreditValues[CoinCredits.completeChallengeStreak];
             expect(createCoinTransaction).toBeCalledWith({
-                userId,
+                user,
                 coinCreditType,
                 coins,
             });

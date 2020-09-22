@@ -747,11 +747,11 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
         test('credits user account with coins for completing teamMember streaks', async () => {
             expect.assertions(3);
             const teamMemberStreakId = '123abc';
-            const userId = 'userId';
-            const teamStreak = getMockTeamStreak({ creatorId: userId });
+            const user = getMockUser({ _id: 'userId' });
+            const teamStreak = getMockTeamStreak({ creatorId: user._id });
             const createCoinTransaction = jest.fn(() => Promise.resolve(true));
-            const request: any = { body: { teamMemberStreakId, userId } };
-            const response: any = { locals: { teamStreak } };
+            const request: any = { body: { teamMemberStreakId } };
+            const response: any = { locals: { teamStreak, user } };
             const next = jest.fn();
             const middleware = getCreditCoinsToUserForCompletingTeamMemberStreakMiddleware(
                 createCoinTransaction as any,
@@ -768,7 +768,7 @@ describe('completeTeamMemberStreakTaskMiddlewares', () => {
             const coins = coinCreditValues[CoinCredits.completeTeamMemberStreak];
 
             expect(createCoinTransaction).toBeCalledWith({
-                userId,
+                user,
                 coinCreditType,
                 coins,
             });

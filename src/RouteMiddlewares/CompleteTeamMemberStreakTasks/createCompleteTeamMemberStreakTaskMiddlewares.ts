@@ -328,7 +328,8 @@ export const getCreditCoinsToUserForCompletingTeamMemberStreakMiddleware = (
     creditUserCoins: typeof CoinTransactionHelpers.creditUsersCoins,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, teamMemberStreakId } = request.body;
+        const { teamMemberStreakId } = request.body;
+        const user: User = response.locals.user;
         const teamStreak: TeamStreak = response.locals.teamStreak;
         const coinCreditType: CompleteTeamMemberStreakCredit = {
             coinCreditType: CoinCredits.completeTeamMemberStreak,
@@ -338,7 +339,7 @@ export const getCreditCoinsToUserForCompletingTeamMemberStreakMiddleware = (
         };
         const coins = coinCreditValues[CoinCredits.completeTeamMemberStreak];
         response.locals.user = await creditUserCoins({
-            userId,
+            user,
             coinCreditType,
             coins,
         });

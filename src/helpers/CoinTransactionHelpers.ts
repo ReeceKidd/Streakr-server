@@ -31,23 +31,21 @@ const chargeUsersCoins = async ({
 };
 
 const creditUsersCoins = async ({
-    userId,
+    user,
     coins,
-    userCoinBalance,
     coinCreditType,
 }: {
-    userId: string;
+    user: User;
     coins: number;
-    userCoinBalance: number;
     coinCreditType: CoinCreditTypes;
 }): Promise<User | null> => {
-    const userWithCoinChanges = await userModel.findByIdAndUpdate(userId, { $inc: { coins } }, { new: true });
+    const userWithCoinChanges = await userModel.findByIdAndUpdate(user._id, { $inc: { coins } }, { new: true });
     if (!userWithCoinChanges) {
         return null;
     }
 
     const newCoinTransaction = new coinTransactionModel({
-        userId,
+        userId: user._id,
         coins,
         transactionType: CoinTransactionTypes.credit,
         coinCreditType,
@@ -55,7 +53,6 @@ const creditUsersCoins = async ({
     await newCoinTransaction.save();
     return unlockCoinsAchievements({
         user: userWithCoinChanges,
-        userCoinBalance,
         coinsToCredit: coins,
     });
 };

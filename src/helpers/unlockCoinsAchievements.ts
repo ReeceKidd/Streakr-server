@@ -103,19 +103,6 @@ export const unlockCoinsAchievements = async ({
         }
     }
     if (
-        user.coins < coinAchievementValues[AchievementTypes.fiveHundredThousandCoins] &&
-        coinsToCredit + user.coins >= coinAchievementValues[AchievementTypes.fiveHundredThousandCoins]
-    ) {
-        const fiveHundredThousandCoinsAchievement = await achievementModel.findOne({
-            achievementType: AchievementTypes.fiveHundredThousandCoins,
-        });
-        if (fiveHundredThousandCoinsAchievement) {
-            return userModel.findByIdAndUpdate(user._id, {
-                $addToSet: { achievements: fiveHundredThousandCoinsAchievement },
-            });
-        }
-    }
-    if (
         user.coins < coinAchievementValues[AchievementTypes.oneMillionCoins] &&
         coinsToCredit + user.coins >= coinAchievementValues[AchievementTypes.oneMillionCoins]
     ) {

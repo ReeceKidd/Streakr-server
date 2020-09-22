@@ -283,14 +283,15 @@ export const getCreditCoinsToUserForCompletingSoloStreakMiddleware = (
     creditUserCoins: typeof CoinTransactionHelpers.creditUsersCoins,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, soloStreakId } = request.body;
+        const { soloStreakId } = request.body;
+        const user: User = response.locals.user;
         const coinCreditType: CompleteSoloStreakCredit = {
             coinCreditType: CoinCredits.completeSoloStreak,
             soloStreakId,
         };
         const coins = coinCreditValues[CoinCredits.completeSoloStreak];
         response.locals.user = await creditUserCoins({
-            userId,
+            user,
             coinCreditType,
             coins,
         });
