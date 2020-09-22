@@ -12,6 +12,45 @@ export const unlockCoinsAchievements = async ({
     coinsToCredit: number;
 }): Promise<User | null> => {
     if (
+        user.coins < coinAchievementValues[AchievementTypes.oneHundredCoins] &&
+        coinsToCredit + user.coins >= coinAchievementValues[AchievementTypes.oneHundredCoins]
+    ) {
+        const oneHundredCoinsAchievement = await achievementModel.findOne({
+            achievementType: AchievementTypes.oneHundredCoins,
+        });
+        if (oneHundredCoinsAchievement) {
+            return userModel.findByIdAndUpdate(user._id, {
+                $addToSet: { achievements: oneHundredCoinsAchievement },
+            });
+        }
+    }
+    if (
+        user.coins < coinAchievementValues[AchievementTypes.twoHundredAndFiftyCoins] &&
+        coinsToCredit + user.coins >= coinAchievementValues[AchievementTypes.twoHundredAndFiftyCoins]
+    ) {
+        const twoHundredAndFiftyCoinsAchievement = await achievementModel.findOne({
+            achievementType: AchievementTypes.twoHundredAndFiftyCoins,
+        });
+        if (twoHundredAndFiftyCoinsAchievement) {
+            return userModel.findByIdAndUpdate(user._id, {
+                $addToSet: { achievements: twoHundredAndFiftyCoinsAchievement },
+            });
+        }
+    }
+    if (
+        user.coins < coinAchievementValues[AchievementTypes.fiveHundredCoins] &&
+        coinsToCredit + user.coins >= coinAchievementValues[AchievementTypes.fiveHundredCoins]
+    ) {
+        const fiveHundredCoinsAchievement = await achievementModel.findOne({
+            achievementType: AchievementTypes.fiveHundredCoins,
+        });
+        if (fiveHundredCoinsAchievement) {
+            return userModel.findByIdAndUpdate(user._id, {
+                $addToSet: { achievements: fiveHundredCoinsAchievement },
+            });
+        }
+    }
+    if (
         user.coins < coinAchievementValues[AchievementTypes.oneThousandCoins] &&
         coinsToCredit + user.coins >= coinAchievementValues[AchievementTypes.oneThousandCoins]
     ) {

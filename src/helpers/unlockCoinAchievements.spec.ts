@@ -10,6 +10,72 @@ describe('unlockCoinsAchievements', () => {
         jest.resetAllMocks();
     });
 
+    test('when user.coins is less than 100 and coins to credit + user.coins is greater than 100 it creates a one hundred coins achievement.', async () => {
+        expect.assertions(2);
+
+        const user = { ...getMockUser({ _id: 'userId' }), coins: 99 };
+
+        const achievement = {
+            type: AchievementTypes.oneHundredCoins,
+        };
+
+        achievementModel.findOne = jest.fn().mockResolvedValue(achievement) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
+
+        await unlockCoinsAchievements({ user, coinsToCredit: 10 });
+
+        expect(achievementModel.findOne).toBeCalledWith({
+            achievementType: AchievementTypes.oneHundredCoins,
+        });
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $addToSet: { achievements: achievement },
+        });
+    });
+
+    test('when user.coins is less than 250 and coins to credit + user.coins is greater than 250 it creates a one two hundred and fifty coins achievement.', async () => {
+        expect.assertions(2);
+
+        const user = { ...getMockUser({ _id: 'userId' }), coins: 249 };
+
+        const achievement = {
+            type: AchievementTypes.twoHundredAndFiftyCoins,
+        };
+
+        achievementModel.findOne = jest.fn().mockResolvedValue(achievement) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
+
+        await unlockCoinsAchievements({ user, coinsToCredit: 10 });
+
+        expect(achievementModel.findOne).toBeCalledWith({
+            achievementType: AchievementTypes.twoHundredAndFiftyCoins,
+        });
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $addToSet: { achievements: achievement },
+        });
+    });
+
+    test('when user.coins is less than 500 and coins to credit + user.coins is greater than 500 it creates a five hundred coins achievement.', async () => {
+        expect.assertions(2);
+
+        const user = { ...getMockUser({ _id: 'userId' }), coins: 499 };
+
+        const achievement = {
+            type: AchievementTypes.fiveHundredCoins,
+        };
+
+        achievementModel.findOne = jest.fn().mockResolvedValue(achievement) as any;
+        userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(user) as any;
+
+        await unlockCoinsAchievements({ user, coinsToCredit: 10 });
+
+        expect(achievementModel.findOne).toBeCalledWith({
+            achievementType: AchievementTypes.fiveHundredCoins,
+        });
+        expect(userModel.findByIdAndUpdate).toBeCalledWith(user._id, {
+            $addToSet: { achievements: achievement },
+        });
+    });
+
     test('when user.coins is less than 1000 and coins to credit + user.coins is greater than 1000 it creates a one thousand coins achievement.', async () => {
         expect.assertions(2);
 

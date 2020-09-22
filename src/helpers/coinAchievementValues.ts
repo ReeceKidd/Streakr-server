@@ -1,6 +1,9 @@
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 
 export const coinAchievementValues = {
+    [AchievementTypes.oneHundredCoins]: 100,
+    [AchievementTypes.twoHundredAndFiftyCoins]: 250,
+    [AchievementTypes.fiveHundredCoins]: 500,
     [AchievementTypes.oneThousandCoins]: 1000,
     [AchievementTypes.tenThousandCoins]: 10000,
     [AchievementTypes.twentyFiveThousandCoins]: 25000,
