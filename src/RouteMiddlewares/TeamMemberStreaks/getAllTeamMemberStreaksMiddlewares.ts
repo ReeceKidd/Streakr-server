@@ -8,6 +8,7 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { GetAllTeamMemberStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamMemberStreaks';
 import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 const getTeamMemberStreaksQueryValidationSchema = {
     userId: Joi.string(),
@@ -17,6 +18,7 @@ const getTeamMemberStreaksQueryValidationSchema = {
     active: Joi.boolean(),
     sortField: Joi.string(),
     limit: Joi.number(),
+    status: Joi.string(),
 };
 
 export const getTeamMemberStreaksQueryValidationMiddleware = (
@@ -35,7 +37,7 @@ export const getFindTeamMemberStreaksMiddleware = (
     teamMemberStreakModel: mongoose.Model<TeamMemberStreakModel>,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const { userId, teamStreakId, timezone, completedToday, active, sortField } = request.query;
+        const { userId, teamStreakId, timezone, completedToday, active, sortField, status } = request.query;
 
         const defaultLeaderboardLimit = 30;
 
@@ -49,6 +51,7 @@ export const getFindTeamMemberStreaksMiddleware = (
             completedToday?: boolean;
             active?: boolean;
             sortField?: string;
+            status?: StreakStatus;
         } = {
             visibility: TeamVisibilityTypes.everyone,
         };
@@ -67,6 +70,9 @@ export const getFindTeamMemberStreaksMiddleware = (
         }
         if (active) {
             query.active = active === 'true';
+        }
+        if (status) {
+            query.status = status;
         }
         if (sortField === GetAllTeamMemberStreaksSortFields.currentStreak) {
             response.locals.teamMemberStreaks = await teamMemberStreakModel

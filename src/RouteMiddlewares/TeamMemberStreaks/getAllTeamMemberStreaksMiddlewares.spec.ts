@@ -10,6 +10,7 @@ import { ResponseCodes } from '../../Server/responseCodes';
 import { CustomError, ErrorType } from '../../customError';
 import { GetAllTeamMemberStreaksSortFields } from '@streakoid/streakoid-sdk/lib/teamMemberStreaks';
 import TeamVisibilityTypes from '@streakoid/streakoid-models/lib/Types/TeamVisibilityTypes';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 describe('getTeamMemberStreaksValidationMiddleware', () => {
     const userId = 'userId';
@@ -19,6 +20,7 @@ describe('getTeamMemberStreaksValidationMiddleware', () => {
     const active = true;
     const sortField = GetAllTeamMemberStreaksSortFields.currentStreak;
     const limit = 10;
+    const status = StreakStatus.live;
 
     const query = {
         userId,
@@ -28,6 +30,7 @@ describe('getTeamMemberStreaksValidationMiddleware', () => {
         active,
         sortField,
         limit,
+        status,
     };
 
     test('passes valid request', () => {
@@ -128,6 +131,27 @@ describe('findTeamMemberStreaksMiddleware', () => {
         await middleware(request, response, next);
 
         expect(find).toBeCalledWith({ active: true, visibility: TeamVisibilityTypes.everyone });
+        expect(limit).toBeCalled();
+        expect(response.locals.teamMemberStreaks).toEqual(true);
+        expect(next).toBeCalledWith();
+    });
+
+    test('queries database with just status and sets response.locals.teamMemberStreaks', async () => {
+        expect.assertions(4);
+        const limit = jest.fn().mockResolvedValue(true);
+        const find = jest.fn(() => ({ limit }));
+        const teamMemberStreakModel = {
+            find,
+        };
+        const status = StreakStatus.live;
+        const request: any = { query: { status } };
+        const response: any = { locals: {} };
+        const next = jest.fn();
+        const middleware = getFindTeamMemberStreaksMiddleware(teamMemberStreakModel as any);
+
+        await middleware(request, response, next);
+
+        expect(find).toBeCalledWith({ status, visibility: TeamVisibilityTypes.everyone });
         expect(limit).toBeCalled();
         expect(response.locals.teamMemberStreaks).toEqual(true);
         expect(next).toBeCalledWith();
