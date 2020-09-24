@@ -13,6 +13,7 @@ const getTeamMemberStreaksQueryValidationSchema = {
     timezone: Joi.string(),
     completedToday: Joi.boolean(),
     active: Joi.boolean(),
+    status: Joi.string(),
     sortField: Joi.string(),
     limit: Joi.number(),
 };
@@ -34,7 +35,7 @@ export const getFindCurrentUserTeamMemberStreaksMiddleware = (
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user: User = response.locals.user;
-        const { teamStreakId, timezone, completedToday, active, sortField } = request.query;
+        const { teamStreakId, timezone, completedToday, active, status, sortField } = request.query;
 
         const defaultLeaderboardLimit = 30;
 
@@ -46,6 +47,7 @@ export const getFindCurrentUserTeamMemberStreaksMiddleware = (
             timezone?: string;
             completedToday?: boolean;
             active?: boolean;
+            status?: string;
             sortField?: string;
         } = { userId: user._id };
 
@@ -60,6 +62,9 @@ export const getFindCurrentUserTeamMemberStreaksMiddleware = (
         }
         if (active) {
             query.active = active === 'true';
+        }
+        if (status) {
+            query.status = status;
         }
         if (sortField === GetAllTeamMemberStreaksSortFields.currentStreak) {
             response.locals.teamMemberStreaks = await teamMemberStreakModel

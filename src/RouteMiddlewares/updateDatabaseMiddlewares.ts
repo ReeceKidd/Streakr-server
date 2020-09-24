@@ -1,14 +1,23 @@
 import { Request, Response } from 'express';
 
 import { userModel } from '../Models/User';
+import { achievementModel } from '../Models/Achievement';
+import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 
 export const updateDatabaseMiddleware = async (request: Request, response: Response): Promise<void> => {
-    const users = await userModel.find({ username: 'reece' });
+    const users = await userModel.find({ username: 'kaja' });
+
     await Promise.all(
         users.map(async user => {
-            return userModel.findByIdAndUpdate(user._id, {
-                $set: { achievements: user.achievements.filter(achievement => achievement !== null) },
+            const oneHundredDayTeamStreakAchievement = await achievementModel.findOne({
+                achievementType: AchievementTypes.oneHundredDayTeamStreak,
             });
+
+            await userModel.findByIdAndUpdate(user._id, {
+                $addToSet: { achievements: oneHundredDayTeamStreakAchievement },
+            });
+
+            return user;
         }),
     );
 

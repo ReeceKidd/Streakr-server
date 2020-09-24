@@ -11,12 +11,14 @@ import {
 import { CustomError, ErrorType } from '../../../customError';
 import { ResponseCodes } from '../../../Server/responseCodes';
 import { getMockUser } from '../../../testHelpers/getMockUser';
+import StreakStatus from '@streakoid/streakoid-models/lib/Types/StreakStatus';
 
 describe('getCurrentUserTeamMemberStreaksValidationMiddleware', () => {
     const teamStreakId = 'teamStreakId';
     const completedToday = true;
     const timezone = 'Europe/London';
     const active = true;
+    const status = StreakStatus.live;
     const sortField = GetAllTeamMemberStreaksSortFields.currentStreak;
     const limit = 10;
 
@@ -25,6 +27,7 @@ describe('getCurrentUserTeamMemberStreaksValidationMiddleware', () => {
         completedToday,
         timezone,
         active,
+        status,
         sortField,
         limit,
     };
