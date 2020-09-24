@@ -64,7 +64,7 @@ export const initializeAchievements = async () => {
     }
 
     const doesTwoHundredAndFiftyCoinAchievementExist = await achievementModel.findOne({
-        achievementType: AchievementTypes.oneHundredCoins,
+        achievementType: AchievementTypes.twoHundredAndFiftyCoins,
     });
     if (!doesTwoHundredAndFiftyCoinAchievementExist) {
         const twoHundredAndFiftyCoinAchievement = new achievementModel({
