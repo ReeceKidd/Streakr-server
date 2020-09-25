@@ -19,6 +19,7 @@ export const getMockUser = ({ _id }: { _id: string }): User => ({
     temporaryPassword: '12345',
     oidXp: 0,
     coins: 0,
+    totalCoins: 0,
     createdAt: 'Jan 1st',
     updatedAt: 'Jan 1st',
     timezone: 'Europe/London',
