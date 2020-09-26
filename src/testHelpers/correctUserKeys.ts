@@ -5,6 +5,7 @@ export const correctUserKeys = [
     'username',
     'timezone',
     'coins',
+    'totalCoins',
     'oidXp',
     'totalLiveStreaks',
     'profileImages',
