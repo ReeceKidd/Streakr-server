@@ -279,6 +279,26 @@ export const increaseTotalTimesTrackedForSoloStreakMiddleware = getIncreaseTotal
     soloStreakModel,
 );
 
+export const getUnlockTotalimesTrackedForUserkMiddleware = (soloStreak: typeof soloStreakModel) => async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const soloStreak = response.locals.soloStreak as SoloStreak;
+        const { totalTimesTracked } = soloStreak;
+        // Add function for checking totalTimesTracked for user.
+        //Update error message as well.
+        next();
+    } catch (err) {
+        next(new CustomError(ErrorType.IncreaseTotalTimesTrackedForSoloStreakMiddleware, err));
+    }
+};
+
+export const unlockTotalTimesTrackedForSoloStreakMiddleware = getUnlockTotalimesTrackedForUserkMiddleware(
+    soloStreakModel,
+);
+
 export const getCreditCoinsToUserForCompletingSoloStreakMiddleware = (
     creditUserCoins: typeof CoinTransactionHelpers.creditUsersCoins,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
