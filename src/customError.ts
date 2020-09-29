@@ -653,6 +653,7 @@ export enum ErrorType {
     UpdateTeamStreakTeamMemberStreaksNamesMiddleware,
     UpdateTeamStreakTeamMemberStreaksVisibilityMiddleware,
     UpdateTeamStreakTeamMemberStreaksStatusMiddleware,
+    UnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddleware,
 }
 
 const internalServerMessage = 'Internal Server Error.';
@@ -5320,6 +5321,13 @@ export class CustomError extends Error {
             case ErrorType.UpdateTeamStreakTeamMemberStreaksStatusMiddleware:
                 return {
                     code: `${ResponseCodes.warning}-549`,
+                    message: internalServerMessage,
+                    httpStatusCode: ResponseCodes.warning,
+                };
+
+            case ErrorType.UnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddleware:
+                return {
+                    code: `${ResponseCodes.warning}-550`,
                     message: internalServerMessage,
                     httpStatusCode: ResponseCodes.warning,
                 };

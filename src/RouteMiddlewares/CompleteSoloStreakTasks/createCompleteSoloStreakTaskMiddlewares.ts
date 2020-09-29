@@ -279,11 +279,9 @@ export const increaseTotalTimesTrackedForSoloStreakMiddleware = getIncreaseTotal
     soloStreakModel,
 );
 
-export const getUnlockTotalimesTrackedForUserkMiddleware = (soloStreak: typeof soloStreakModel) => async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
+export const getUnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddleware = (
+    soloStreak: typeof soloStreakModel,
+) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const soloStreak = response.locals.soloStreak as SoloStreak;
         const { totalTimesTracked } = soloStreak;
@@ -295,7 +293,7 @@ export const getUnlockTotalimesTrackedForUserkMiddleware = (soloStreak: typeof s
     }
 };
 
-export const unlockTotalTimesTrackedForSoloStreakMiddleware = getUnlockTotalimesTrackedForUserkMiddleware(
+export const unlockTotalTimesTrackedAchievementForCompletingSoloStreakMiddleware = getUnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddleware(
     soloStreakModel,
 );
 
