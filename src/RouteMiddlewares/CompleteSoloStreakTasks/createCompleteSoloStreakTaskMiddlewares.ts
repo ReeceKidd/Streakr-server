@@ -280,13 +280,11 @@ export const increaseTotalTimesTrackedForSoloStreakMiddleware = getIncreaseTotal
 );
 
 export const getUnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddleware = (
-    soloStreak: typeof soloStreakModel,
+    unlockTotalTimesTrackedAchievement: Function,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
-        const soloStreak = response.locals.soloStreak as SoloStreak;
-        const { totalTimesTracked } = soloStreak;
-        // Add function for checking totalTimesTracked for user.
-        //Update error message as well.
+        const user = response.locals.user as User;
+        unlockTotalTimesTrackedAchievement(user);
         next();
     } catch (err) {
         next(new CustomError(ErrorType.IncreaseTotalTimesTrackedForSoloStreakMiddleware, err));
