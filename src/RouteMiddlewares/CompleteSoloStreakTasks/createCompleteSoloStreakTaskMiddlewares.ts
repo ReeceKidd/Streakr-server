@@ -287,7 +287,7 @@ export const getUnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddlew
         unlockTotalTimesTrackedAchievement(user);
         next();
     } catch (err) {
-        next(new CustomError(ErrorType.IncreaseTotalTimesTrackedForSoloStreakMiddleware, err));
+        next(new CustomError(ErrorType.UnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddleware, err));
     }
 };
 
