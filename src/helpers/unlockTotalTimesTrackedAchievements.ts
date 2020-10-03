@@ -1,5 +1,5 @@
 import { User } from '@streakoid/streakoid-models/lib/Models/User';
-import { totalTimesTrackedValues } from './totalTimesTrackedValuesValues';
+import { totalTimesTrackedValues } from './totalTimesTrackedValues';
 import AchievementTypes from '@streakoid/streakoid-models/lib/Types/AchievementTypes';
 import { achievementModel } from '../Models/Achievement';
 import { userModel } from '../Models/User';
@@ -13,7 +13,8 @@ export const unlockTotalTimesTrackedAchievements = async ({
 }): Promise<User | null> => {
     if (
         user.totalStreakCompletes < totalTimesTrackedValues[AchievementTypes.tenTotalTimesTracked] &&
-        totalTimesTrackedValues + user.coins >= totalTimesTrackedValues[AchievementTypes.oneHundredTotalTimesTracked]
+        totalTimesTracked + user.totalStreakCompletes >=
+            totalTimesTrackedValues[AchievementTypes.oneHundredTotalTimesTracked]
     ) {
         const oneHundredTotalTimesTrackedAchievement = await achievementModel.findOne({
             achievementType: AchievementTypes.oneHundredTotalTimesTracked,
@@ -25,9 +26,9 @@ export const unlockTotalTimesTrackedAchievements = async ({
         }
     }
     if (
-        user.coins < totalTimesTrackedValues[AchievementTypes.twoHundredAndFiftyTotalTimesTracked] &&
-        totalTimesTrackedValues + user.coins >=
-            totalTimesTrackedValues[AchievementTypes.twoHundredAndFiftyTotalTimesTracked]
+        user.totalStreakCompletes < totalTimesTrackedValues[AchievementTypes.fiftyTotalTimesTracked] &&
+        totalTimesTracked + user.totalStreakCompletes >=
+            totalTimesTrackedValues[AchievementTypes.fiftyTotalTimesTracked]
     ) {
         const twoHundredAndFiftyTotalTimesTrackedAchievement = await achievementModel.findOne({
             achievementType: AchievementTypes.twoHundredAndFiftyTotalTimesTracked,
@@ -39,8 +40,23 @@ export const unlockTotalTimesTrackedAchievements = async ({
         }
     }
     if (
-        user.coins < totalTimesTrackedValues[AchievementTypes.fiveHundredTotalTimesTracked] &&
-        totalTimesTrackedValues + user.coins >= totalTimesTrackedValues[AchievementTypes.fiveHundredTotalTimesTracked]
+        user.totalStreakCompletes < totalTimesTrackedValues[AchievementTypes.oneHundredTotalTimesTracked] &&
+        totalTimesTracked + user.totalStreakCompletes >=
+            totalTimesTrackedValues[AchievementTypes.oneHundredTotalTimesTracked]
+    ) {
+        const twoHundredAndFiftyTotalTimesTrackedAchievement = await achievementModel.findOne({
+            achievementType: AchievementTypes.twoHundredAndFiftyTotalTimesTracked,
+        });
+        if (twoHundredAndFiftyTotalTimesTrackedAchievement) {
+            return userModel.findByIdAndUpdate(user._id, {
+                $addToSet: { achievements: twoHundredAndFiftyTotalTimesTrackedAchievement },
+            });
+        }
+    }
+    if (
+        user.totalStreakCompletes < totalTimesTrackedValues[AchievementTypes.fiveHundredTotalTimesTracked] &&
+        totalTimesTracked + user.totalStreakCompletes >=
+            totalTimesTrackedValues[AchievementTypes.fiveHundredTotalTimesTracked]
     ) {
         const fiveHundredTotalTimesTrackedAchievement = await achievementModel.findOne({
             achievementType: AchievementTypes.fiveHundredTotalTimesTracked,
@@ -52,8 +68,9 @@ export const unlockTotalTimesTrackedAchievements = async ({
         }
     }
     if (
-        user.coins < totalTimesTrackedValues[AchievementTypes.oneThousandTotalTimesTracked] &&
-        totalTimesTrackedValues + user.coins >= totalTimesTrackedValues[AchievementTypes.oneThousandTotalTimesTracked]
+        user.totalStreakCompletes < totalTimesTrackedValues[AchievementTypes.oneThousandTotalTimesTracked] &&
+        totalTimesTracked + user.totalStreakCompletes >=
+            totalTimesTrackedValues[AchievementTypes.oneThousandTotalTimesTracked]
     ) {
         const oneThousandTotalTimesTrackedAchievement = await achievementModel.findOne({
             achievementType: AchievementTypes.oneThousandTotalTimesTracked,
@@ -61,19 +78,6 @@ export const unlockTotalTimesTrackedAchievements = async ({
         if (oneThousandTotalTimesTrackedAchievement) {
             return userModel.findByIdAndUpdate(user._id, {
                 $addToSet: { achievements: oneThousandTotalTimesTrackedAchievement },
-            });
-        }
-    }
-    if (
-        user.coins < totalTimesTrackedValues[AchievementTypes.tenThousandTotalTimesTracked] &&
-        totalTimesTrackedValues + user.coins >= totalTimesTrackedValues[AchievementTypes.tenThousandTotalTimesTracked]
-    ) {
-        const tenThousandTotalTimesTrackedAchievement = await achievementModel.findOne({
-            achievementType: AchievementTypes.tenThousandTotalTimesTracked,
-        });
-        if (tenThousandTotalTimesTrackedAchievement) {
-            return userModel.findByIdAndUpdate(user._id, {
-                $addToSet: { achievements: tenThousandTotalTimesTrackedAchievement },
             });
         }
     }
