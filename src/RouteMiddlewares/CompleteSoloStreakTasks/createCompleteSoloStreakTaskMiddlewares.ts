@@ -31,6 +31,7 @@ import { OidXpTransactionHelpers } from '../../helpers/OidXpTransactionHelpers';
 import { CompleteSoloStreakCredit } from '@streakoid/streakoid-models/lib/Models/CoinCreditTypes';
 import { CoinCredits } from '@streakoid/streakoid-models/lib/Types/CoinCredits';
 import { coinCreditValues } from '../../helpers/coinCreditValues';
+import { unlockTotalTimesTrackedAchievements } from '../../helpers/unlockTotalTimesTrackedAchievements';
 
 export const completeSoloStreakTaskBodyValidationSchema = {
     userId: Joi.string().required(),
@@ -280,11 +281,14 @@ export const increaseTotalTimesTrackedForSoloStreakMiddleware = getIncreaseTotal
 );
 
 export const getUnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddleware = (
-    unlockTotalTimesTrackedAchievement: Function,
+    unlockTotalTimesTrackedAchievementsFunction: typeof unlockTotalTimesTrackedAchievements,
 ) => async (request: Request, response: Response, next: NextFunction): Promise<void> => {
     try {
         const user = response.locals.user as User;
-        unlockTotalTimesTrackedAchievement(user);
+        response.locals.user = await unlockTotalTimesTrackedAchievementsFunction({
+            user,
+            totalTimesTracked: user.totalStreakCompletes,
+        });
         next();
     } catch (err) {
         next(new CustomError(ErrorType.UnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddleware, err));
@@ -292,7 +296,7 @@ export const getUnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddlew
 };
 
 export const unlockTotalTimesTrackedAchievementForCompletingSoloStreakMiddleware = getUnlockTotalimesTrackedAchievementForCompletingSoloStreakkMiddleware(
-    soloStreakModel,
+    unlockTotalTimesTrackedAchievements,
 );
 
 export const getCreditCoinsToUserForCompletingSoloStreakMiddleware = (
