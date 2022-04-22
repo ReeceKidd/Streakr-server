@@ -1,6 +1,6 @@
-# Streakr-server
+# Strakoid server
 
-Node JS Backend for streakr application
+Node JS Backend for streakoid application
 
 # Environment variables
 
